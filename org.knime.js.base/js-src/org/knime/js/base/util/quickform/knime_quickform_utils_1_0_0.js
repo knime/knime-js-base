@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME GmbH, Konstanz, Germany
  *  Website: http://www.knime.org; Email: contact@knime.org
  *
@@ -37,7 +38,7 @@
  *  License, the License does not apply to Nodes, you are not required to
  *  license Nodes under the License, and you are granted a license to
  *  prepare and propagate Nodes, in each case even if such Nodes are
- *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  propagated with or for interoperation with KNIME. The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
@@ -45,52 +46,38 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME.com AG, Zurich, Switzerland): created
  */
-org_knime_js_base_node_quickform_selection_multiple = function() {
-	var multiSelection = {
-		version : "1.0.0"
-	};
-	multiSelection.name = "Multiple selections";
-	var viewValue;
-	var selector;
 
-	multiSelection.init = function(representation, value) {
-		if (checkMissingData(representation, value)) {
-			return;
-		}
+resizeParent = function() {
+	if (parent != undefined && parent.KnimePageLoader != undefined) {
+		parent.KnimePageLoader.autoResize(window.frameElement.id);
+	}
+};
+
+callUpdate = function() {
+	if (parent != undefined && parent.KnimePageLoader != undefined) {
+		parent.KnimePageLoader.getPageValues();
+	}
+};
+
+injectCSS = function(rule) {
+	var div = $("<div />", {html: '<style>' + rule + '</style>'}).appendTo("head");    
+}
+
+isValid = function(object) {
+	return object != undefined && object != null;
+}
+
+checkMissingData = function(representation, value) {
+	if (isValid(representation) && isValid(value)) {
+		return false;
+	} else {
 		var body = $('body');
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
-		qfdiv.attr('title', representation.description);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
-		viewValue = value;
-		if (representation.possibleChoices.length > 0) {
-			if (representation.type == 'Check boxes (vertical)') {
-				selector = new checkBoxesMultipleSelections(true);
-			} else if (representation.type == 'Check boxes (horizontal)') {
-				selector = new checkBoxesMultipleSelections(false);
-			} else if (representation.type == 'List') {
-				selector = new listMultipleSelections();
-			} else {
-				selector = new twinlistMultipleSelections();
-			}
-			qfdiv.append(selector.getComponent());
-			selector.setChoices(representation.possibleChoices);
-			var selections = value.value;
-			selector.setSelections(selections);
-			selector.addValueChangedListener(callUpdate);
-		}
+		var error = $("<span>Error: Data is missing, can not display view.</span>");
+		error.css('color', 'red');
+		qfdiv.append(error);
 		resizeParent();
-		callUpdate();
-	};
-
-	multiSelection.value = function() {
-		if (!isValid(viewValue)) {
-			return null;
-		}
-		viewValue.value = selector.getSelections();
-		return viewValue;
-	};
-
-	return multiSelection;
-
-}();
+		return true;
+	}
+}
