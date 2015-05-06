@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./sample.png" type="Other"  xmlns="http://knime.org/node/v2.10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Sample Dynamic Node</name>
+    <shortDescription>Sample node dynamically created.</shortDescription>
+    <fullDescription>
+	    <intro>
+    	    This is an example of a dynamically created node.
+    	</intro>
+    	<!--  Options are defined in sampleConfig.xml -->
+    </fullDescription>
+    <ports />
+    <!--  Port descriptions are defined in sampleConfig.xml -->
+</knimeNode>

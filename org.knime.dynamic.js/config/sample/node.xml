@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12" 
+		xmlns="http://knime.org/dynamicnode/v2.12"
+		xmlns:n="http://knime.org/node/v2.12"
+ 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
+ 		jsNamespace="sample_namespace" nodeID="dynamic_sample_node" categoryPath="/labs/quickform/view"
+ 		icon="./sample.png" type="Other">
+    <name>Sample Dynamic Node</name>
+    <shortDescription>Sample node dynamically created.</shortDescription>
+    <fullDescription>
+	    <intro>
+    	    This is an example of a dynamically created node.
+    	</intro>
+    	<tab name="Tab 1">
+			<description>This is the first tab.</description>
+			<options>
+				<checkBoxOption id="sample_checkbox_option" name="Sample Boolean" label="Sample Checkbox" 
+						defaultValue="false" tooltip="This checkbox has a tooltip!">
+					This is a sample checkbox.
+				</checkBoxOption>
+				<stringOption id="sample_string_option" name="Sample String" label="Sample String Option" allowEmptyString="false" 
+						defaultValue="sample" enableDependency="sample_checkbox_option" enableValue="true" >
+					This is a sample string option.
+				</stringOption>
+				<columnSelectorOption name="Column Selector" id="sample_col_sel" inPortIndex="0" label="Sample Column Selector" 
+						defaultColumn="Universe_0_0" filterClasses="org.knime.core.data.DoubleValue" >
+					This is a sample column selection option.
+				</columnSelectorOption>
+			</options>
+		</tab>
+		<tab name="Tab 2">
+			<description>This is the second tab.</description>
+			<options>
+				<columnFilterOption id="sample_column_filter" name="Sample Column Filter" inPortIndex="0" 
+						label="Sample Column Filter" enableDependency="sample_string_option" enableValue="enable">
+					This would be a sample column filter for the first data in port.
+				</columnFilterOption>
+			</options>
+		</tab>
+    </fullDescription>
+    <interactiveView name="Sample View">
+    	This is an example of an interactive view in a dynamically created node.
+    </interactiveView>
+    <ports>
+		<inPort portType="Data" name="SampleInport" index="0">
+			Sample description for a sample inport.
+		</inPort>
+		<outPort portType="FlowVariable" name="SampleOutport" index="0">
+			Sample description for a <n:i>sample</n:i> outport.
+		</outPort>
+	</ports>
+	<js:resources>
+		<js:ressource type="js" path="sample.js" />
+		<js:ressource type="css" path="sample.css" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="D3" path="D3_3.2.8" type="local" />
+		<js:dependency name="jQuery" path="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="url" />
+	</js:dependencies>
+</js:knimeNode>

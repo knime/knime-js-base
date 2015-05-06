@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamicNodeConfig xmlns="http://www.knime.org/dynamicnodeconfig/2015/04/22"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.knime.org/dynamicnodeconfig/2015/04/22 ../dynamicNodeConfig.xsd">
+
+	<ports>
+		<inPort portType="Data" name="SampleInport" index="0"></inPort>
+		<outPort portType="FlowVariable" name="SampleOutport" index="0"></outPort>
+	</ports>
+	<options>
+		<stringOption id="sample_string" label="Sample String Option" allowEmptyString="false" defaultValue="sample" enableDependency="sample_checkbox" enableValue="false">
+			<description>
+				This is a sample string option.
+			</description>
+		</stringOption>
+		<checkBoxOption id="sample_checkbox" label="Sample Checkbox" defaultValue="false" tooltip="This checkbox has a tooltip!">
+			<description>
+				This is a sample checkbox.
+			</description>
+		</checkBoxOption>
+	</options>
+
+</dynamicNodeConfig>
