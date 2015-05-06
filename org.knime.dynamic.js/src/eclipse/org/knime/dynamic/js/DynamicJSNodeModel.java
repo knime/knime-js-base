@@ -266,7 +266,7 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 		for (SettingsModel model : m_config.getModels().values()) {
 			if (model instanceof SettingsModelBoolean) {
 				SettingsModelBoolean bM = (SettingsModelBoolean)model;
-				options.put(bM.getKey(), bM.getBooleanValue());
+				options.put(bM.getConfigName(), bM.getBooleanValue());
 			} else if (model instanceof SettingsModelString) {
 				SettingsModelString sM = (SettingsModelString)model;
 				options.put(sM.getKey(), sM.getStringValue());
