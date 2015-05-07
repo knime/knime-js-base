@@ -52,12 +52,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
@@ -316,7 +316,7 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 		try {
 			byte[] fileBytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
 			if (encodeBase64) {
-				return Base64.getEncoder().encodeToString(fileBytes);
+				return Base64.encodeBase64String(fileBytes);
 			} else {
 				return new String(fileBytes);
 			}
