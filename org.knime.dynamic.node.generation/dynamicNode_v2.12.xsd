@@ -14,6 +14,7 @@
 	  <xs:element name="name" type="xs:string" />
 	  <xs:element name="shortDescription" type="xs:string" />
 	  <xs:element name="fullDescription" type="DynamicFullDescription" />
+	  <xs:element name="outputOptions" type="OutputOptions" minOccurs="0" maxOccurs="1" />
 	  <xs:element name="interactiveView" minOccurs="0" maxOccurs="1" type="node:AbstractView" />
 	  <xs:element name="ports" type="DynamicPorts">
 		<xs:unique name="uniqueInportIndex">
@@ -92,8 +93,22 @@
     <xs:choice minOccurs="1" maxOccurs="unbounded">
       <xs:element name="checkBoxOption" type="CheckBoxOption" />
       <xs:element name="stringOption" type="StringOption" />
+      <xs:element name="integerOption" type="IntegerOption" />
+      <xs:element name="doubleOption" type="DoubleOption" />
+      <xs:element name="dateOption" type="DateOption" />
       <xs:element name="columnFilterOption" type="ColumnFilterOption" />
       <xs:element name="columnSelectorOption" type="ColumnSelectorOption" />
+      <xs:element name="fileOption" type="FileOption" />
+      <xs:element name="colorOption" type="ColorOption" />
+      <xs:element name="flowVariableSelectorOption" type="FlowVariableSelectorOption" />
+      <xs:element name="svgOption" type="SvgOption" />
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:complexType name="OutputOptions">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+	  <xs:element name="dataOutputOption" type="DataOutOption" />
+      <xs:element name="flowVariableOutputOption" type="FlowVariableOutOption" />    
     </xs:choice>
   </xs:complexType>
 
@@ -105,6 +120,7 @@
 		<xs:attribute name="tooltip" type="xs:string" />
 		<xs:attribute name="enableDependency" type="xs:IDREF" />
 		<xs:attribute name="enableValue" type="xs:anySimpleType" />
+		<xs:attribute name="saveInView" type="xs:boolean" default="false" />
 	  </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -146,28 +162,165 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
+  <xs:complexType name="NumberOption">
+  	<xs:complexContent>
+      <xs:extension base="DynamicOption">
+  		<xs:attribute name="stepSize" type="xs:double" default="1" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="IntegerOption">
+  	<xs:complexContent>
+      <xs:extension base="NumberOption">
+      	<xs:attribute name="minValue" type="xs:integer" use="optional" />
+      	<xs:attribute name="maxValue" type="xs:integer" use="optional" />
+      	<xs:attribute name="defaultValue" type="xs:integer" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DoubleOption">
+  	<xs:complexContent>
+      <xs:extension base="NumberOption">
+      	<xs:attribute name="minValue" type="xs:double" use="optional" />
+      	<xs:attribute name="maxValue" type="xs:double" use="optional" />
+      	<xs:attribute name="defaultValue" type="xs:double" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ColorOption">
+  	<xs:complexContent>
+      <xs:extension base="DynamicOption">
+        <xs:attribute name="format" type="ColorFormat" use="required" />
+        <xs:attribute name="defaultR" type="ColorValue" />
+      	<xs:attribute name="defaultG" type="ColorValue" />
+      	<xs:attribute name="defaultB" type="ColorValue" />
+      	<xs:attribute name="defaultAlpha" type="ColorValue" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="ColorFormat">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="HexString" />
+      <xs:enumeration value="RgbaString" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ColorValue">
+  	<xs:restriction base="xs:integer">
+  	  <xs:minInclusive value="0" />
+  	  <xs:maxInclusive value="255" />
+  	</xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="DateOption">
+	<xs:complexContent>
+	  <xs:extension base="DynamicOption">
+	    <xs:attribute name="defaultValue" type="xs:dateTime" />
+	    <xs:attribute name="mode" type="DateInputMode" />
+	  </xs:extension>
+	</xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:simpleType name="DateInputMode">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NODATE" />
+      <xs:enumeration value="NOTIME" />
+      <xs:enumeration value="HOURS" />
+      <xs:enumeration value="MINUTES" />
+      <xs:enumeration value="SECONDS" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="FileOption">
+    <xs:complexContent>
+	  <xs:extension base="DynamicOption">
+	    <xs:attribute name="defaultValue" type="xs:string" />
+	    <xs:attribute name="historyId" type="xs:string" />
+	    <xs:attribute name="validExtensions" type="xs:string" />
+	    <xs:attribute name="directoryOnly" type="xs:boolean" />
+	  </xs:extension>
+	</xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="FlowVariableSelectorOption">
+    <xs:complexContent>
+	  <xs:extension base="DynamicOption">
+	    <xs:attribute name="defaultValue" type="xs:string" />
+	    <xs:attribute name="flowVariableType" type="FlowVariableType" />
+	  </xs:extension>
+	</xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="SvgOption">
+    <xs:complexContent>
+      <xs:extension base="DynamicOption">
+        <xs:attribute name="portIndex" type="xs:int" use="required" />
+        <xs:attribute name="defaultWidth" type="xs:positiveInteger" default="800" />
+        <xs:attribute name="defaultHeight" type="xs:positiveInteger" default="600" />
+        <xs:attribute name="allowFullscreen" type="xs:boolean" default="true" />
+        <xs:attribute name="defaultFullscreen" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DataOutOption">
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="outPortIndex" type="xs:int" use="required" />
+    <xs:attribute name="inPortIndex" type="xs:int" />
+    <xs:attribute name="additionalColumnType" type="ColumnType" default="STRING" />
+    <xs:attribute name="additionalColumnName" type="xs:string" />
+  </xs:complexType>
+  
+  <xs:complexType name="FlowVariableOutOption">
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="variableName" type="xs:string" use="required" />
+    <xs:attribute name="variableType" type="FlowVariableType" use="required" />
+  </xs:complexType>
+  
+  <xs:simpleType name="FlowVariableType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="DOUBLE" />
+      <xs:enumeration value="INTEGER" />
+      <xs:enumeration value="STRING" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ColumnType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="DOUBLE" />
+      <xs:enumeration value="INTEGER" />
+      <xs:enumeration value="STRING" />
+      <xs:enumeration value="BOOLEAN" />
+      <xs:enumeration value="DATETIME" />
+    </xs:restriction>
+  </xs:simpleType>
 
 	<!-- All dialog components: 
 		
-		Boolean 
-		Button 
-		ButtonGroup 
-		ButtonLabel 
-		ColorChooser 
-		ColumnFilter 
-		ColumnNameSelection 
-		Date 
-		DoubleRange 
-		FileChooser 
-		FlowVariableNameSelection 
-		Label 
-		MultiLineString 
-		Number 
-		NumberEdit 
+		✓ Boolean
+		x Button 
+		x ButtonGroup 
+		x ButtonLabel 
+		✓ ColorChooser
+		✓ ColumnFilter
+		✓ ColumnNameSelection 
+		✓ Date 
+		✓ DoubleRange 
+		✓ FileChooser 
+		✓ FlowVariableNameSelection 
+		- Label 
+		- MultiLineString 
+		✓ Number 
+		✓ NumberEdit 
 		OptionalString 
-		Password 
-		String 
-		StringListSelection 
-		StringSelection -->
+		x Password 
+		✓ String 
+		x StringListSelection 
+		x StringSelection -->
 		
 </xs:schema>

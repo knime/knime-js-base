@@ -47,6 +47,7 @@
  */
 package org.knime.dynamic.js;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,17 +70,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DynamicJSViewRepresentation extends JSONViewContent {
 
-	private static final String NUM_SETTINGS = "numSettings";
+	static final String NUM_SETTINGS = "numSettings";
 	private static final String JS_NAMESPACE = "jsNamespace";
 	private static final String JS_CODE = "jsCode";
 	private static final String CSS_CODE = "cssCode";
 	private static final String JS_DEPENDENCIES = "jsDependencies";
     private static final String CSS_DEPENDENCIES = "cssDependencies";
     private static final String URL_DEPENDENCIES = "urlDependencies";
-    private static final String TABLES = "tables";
-    private static final String FLOW_VARIABLES = "variables";
-    private static final String OPTIONS = "options";
     private static final String BINARY_FILES = "binaryFiles";
+    static final String TABLES = "tables";
+    static final String FLOW_VARIABLES = "variables";
+    static final String OPTIONS = "options";
 
     private String m_jsNamespace = new String();
     private String[] m_jsCode = new String[0];
@@ -210,7 +211,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         }
 	}
 
-	private void saveMap(final NodeSettingsWO settings, final Map<String, ?> map, final boolean objectMap) {
+	@SuppressWarnings("unchecked")
+    static void saveMap(final NodeSettingsWO settings, final Map<String, ?> map, final boolean objectMap) {
 		settings.addInt(NUM_SETTINGS, map.size());
 		String mapClass = objectMap ? "object" : "string";
 		settings.addString("mapClass", mapClass);
@@ -234,6 +236,14 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 				settings.addDouble(valueKey, (Double)value);
 			} else if (value instanceof String){
 				settings.addString(valueKey, (String)value);
+			} else if (value instanceof String[]) {
+			    settings.addStringArray(valueKey, (String[])value);
+			} else if (value instanceof Date) {
+			    settings.addLong(valueKey, ((Date)value).getTime());
+			} else if (value instanceof JSONDataTable) {
+			    ((JSONDataTable)value).saveJSONToNodeSettings(settings.addNodeSettings(valueKey));
+			} else if (value instanceof Map<?,?>) {
+			    saveMap(settings.addNodeSettings(valueKey), (Map<String, ?>)value, true);
 			} else {
 				settings.addString(valueKey, value.toString());
 			}
@@ -264,7 +274,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Map<String, ?> loadMap(final NodeSettingsRO settings) throws InvalidSettingsException {
+	static Map<String, ?> loadMap(final NodeSettingsRO settings) throws InvalidSettingsException {
 		int numSettings = settings.getInt(NUM_SETTINGS);
 		String mapClass = settings.getString("mapClass");
 		Map map;
@@ -285,7 +295,17 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 			} else if (Double.class.getName().equals(clazz)) {
 				value = settings.getDouble(valueKey);
 			} else if (String.class.getName().equals(clazz)) {
-					value = settings.getString(valueKey);
+				value = settings.getString(valueKey);
+			} else if (String[].class.getName().equals(clazz)) {
+			    value = settings.getStringArray(valueKey);
+			} else if (Date.class.getName().equals(clazz)) {
+			    Date d = new Date();
+			    d.setTime(settings.getLong(valueKey));
+			    value = d;
+			} else if (JSONDataTable.class.getName().equals(clazz)) {
+			    value = JSONDataTable.loadFromNodeSettings(settings.getNodeSettings(valueKey));
+			} else if (Map.class.getName().equals(clazz)) {
+			    value = loadMap(settings.getNodeSettings(valueKey));
 			} else {
 				throw new InvalidSettingsException("Unsupported map type: " + clazz);
 			}

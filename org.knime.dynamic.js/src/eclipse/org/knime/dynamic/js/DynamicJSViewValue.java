@@ -41,17 +41,19 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
 package org.knime.dynamic.js;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -59,34 +61,99 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * 
+ *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DynamicJSViewValue extends JSONViewContent {
-	
-	private Map<String, Object> m_options;
-	
+
+	private static final String OUT_COLUMNS = "outColumns";
+
+    private Map<String, Object> m_options = new HashMap<String, Object>();
+	private Map<String, Map<String, Object>> m_outColumns = new HashMap<String, Map<String,Object>>();
+	private Map<String, JSONDataTable> m_tables = new HashMap<String, JSONDataTable>();
+	private Map<String, String> m_flowVariables = new HashMap<String, String>();
+
+	/**
+     * @return the options
+     */
     @JsonProperty("options")
     public Map<String, Object> getOptions() {
 		return m_options;
 	}
-    
+
+    /**
+     * @param options the options to set
+     */
     @JsonProperty("options")
-    public void setOptions(Map<String, Object> options) {
+    public void setOptions(final Map<String, Object> options) {
 		m_options = options;
 	}
 
-	@Override
-	public void saveToNodeSettings(NodeSettingsWO settings) { 
-		//TODO: save and load options
-	}
+    /**
+     * @return the outColumns
+     */
+    @JsonProperty("outColumns")
+    public Map<String, Map<String, Object>> getOutColumns() {
+        return m_outColumns;
+    }
+
+    /**
+     * @param outColumns the outColumns to set
+     */
+    @JsonProperty("outColumns")
+    public void setOutColumns(final Map<String, Map<String, Object>> outColumns) {
+        m_outColumns = outColumns;
+    }
+
+    /**
+     * @return the tables
+     */
+    @JsonProperty("tables")
+    public Map<String, JSONDataTable> getTables() {
+        return m_tables;
+    }
+
+    /**
+     * @param tables the tables to set
+     */
+    @JsonProperty("tables")
+    public void setTables(final Map<String, JSONDataTable> tables) {
+        m_tables = tables;
+    }
+
+    /**
+     * @return the flowVariables
+     */
+    @JsonProperty("flowVariables")
+    public Map<String, String> getFlowVariables() {
+        return m_flowVariables;
+    }
+
+    /**
+     * @param flowVariables the flowVariables to set
+     */
+    @JsonProperty("flowVariables")
+    public void setFlowVariables(final Map<String, String> flowVariables) {
+        m_flowVariables = flowVariables;
+    }
 
 	@Override
-	public void loadFromNodeSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException { 
-		
+	public void saveToNodeSettings(final NodeSettingsWO settings) {
+	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.OPTIONS), m_options, true);
+	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(OUT_COLUMNS), m_outColumns, true);
+	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.TABLES), m_tables, true);
+	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.FLOW_VARIABLES), m_flowVariables, false);
+	}
+
+	@SuppressWarnings("unchecked")
+    @Override
+	public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	    m_options = (Map<String, Object>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.OPTIONS));
+	    m_outColumns = (Map<String, Map<String, Object>>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(OUT_COLUMNS));
+	    m_tables = (Map<String, JSONDataTable>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.TABLES));
+	    m_flowVariables = (Map<String, String>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.FLOW_VARIABLES));
 	}
 
 }

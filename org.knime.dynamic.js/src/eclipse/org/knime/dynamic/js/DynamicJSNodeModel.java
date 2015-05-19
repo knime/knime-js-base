@@ -47,10 +47,12 @@
  */
 package org.knime.dynamic.js;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,10 +60,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.xmlbeans.XmlObject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.knime.base.data.xml.SvgCell;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.container.AbstractCellFactory;
+import org.knime.core.data.container.CellFactory;
+import org.knime.core.data.container.ColumnRearranger;
+import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -71,8 +88,12 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelColor;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
+import org.knime.core.node.defaultnodesettings.SettingsModelDate;
+import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
+import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -81,23 +102,39 @@ import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.image.ImagePortObject;
+import org.knime.core.node.port.image.ImagePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicjsnode.v212.WebDependency;
 import org.knime.dynamicjsnode.v212.WebRessource;
 import org.knime.dynamicjsnode.v212.WebRessources;
+import org.knime.dynamicnode.v212.ColorFormat;
+import org.knime.dynamicnode.v212.ColorOption;
+import org.knime.dynamicnode.v212.ColumnFilterOption;
+import org.knime.dynamicnode.v212.ColumnType;
+import org.knime.dynamicnode.v212.DataOutOption;
 import org.knime.dynamicnode.v212.DynamicInPort;
+import org.knime.dynamicnode.v212.DynamicOption;
+import org.knime.dynamicnode.v212.DynamicOptions;
 import org.knime.dynamicnode.v212.DynamicOutPort;
 import org.knime.dynamicnode.v212.DynamicPorts;
+import org.knime.dynamicnode.v212.DynamicTab;
+import org.knime.dynamicnode.v212.FlowVariableOutOption;
+import org.knime.dynamicnode.v212.FlowVariableType;
+import org.knime.dynamicnode.v212.PortType.Enum;
+import org.knime.js.core.CSSUtils;
 import org.knime.js.core.JSONDataTable;
-import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
-public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
+public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeModel.class);
 
@@ -152,30 +189,110 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 		return null;
 	}
 
-	private static PortObjectSpec getPortSpec(final org.knime.dynamicnode.v212.PortType.Enum portType, final PortObjectSpec[] inSpecs, final int portIndex) {
+	private PortObjectSpec getPortSpec(final org.knime.dynamicnode.v212.PortType.Enum portType, final PortObjectSpec[] inSpecs, final int portIndex) {
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.DATA)) {
-			if (inSpecs[portIndex] instanceof DataTableSpec) {
-				return inSpecs[portIndex];
-			} else {
-				return new DataTableSpec();
-			}
+		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
+		    Integer inSpecIndex = null;
+            if (m_node.getOutputOptions() != null) {
+                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
+                    if (option.getOutPortIndex() == portIndex) {
+                        // if an inport index is given a column is appended to the incoming data table
+                        if (option.isSetInPortIndex()) {
+                            if (inSpecIndex == null) {
+                                inSpecIndex = option.getInPortIndex();
+                                if (!(inSpecs[inSpecIndex] instanceof DataTableSpec)) {
+                                    throw new IllegalArgumentException(
+                                        "in port index spec for additional column definition should be of type DataTableSpec but was"
+                                            + inSpecs[inSpecIndex].getClass().getSimpleName());
+                                }
+                            }
+                            if (!inSpecIndex.equals(option.getInPortIndex())) {
+                                throw new IllegalArgumentException("Several additional columns for data out port "
+                                    + portIndex + " were defined but in port indices do not match (only one allowed).");
+                            }
+                            optionList.add(option);
+                        }
+                    }
+                }
+            }
+		    if (optionList.size() > 0 && inSpecIndex != null) {
+		        ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null);
+		        return rearranger.createSpec();
+		    }
+		    // otherwise the spec is unknown at this point
+			return null;
 		}
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObjectSpec.INSTANCE;
 		}
+		if (portType.equals(org.knime.dynamicnode.v212.PortType.IMAGE)) {
+		    if (generateImage()) {
+	            return new ImagePortObjectSpec(SvgCell.TYPE);
+	        } else {
+	            return InactiveBranchPortObjectSpec.INSTANCE;
+	        }
+		}
 		return null;
 	}
 
-	private static PortObject getPortObject(final org.knime.dynamicnode.v212.PortType.Enum portType, final PortObject[] inObjects, final int portIndex) {
+	private PortObject getPortObject(final int outPortIndex, final PortObject[] inObjects, final ExecutionContext exec) throws CanceledExecutionException {
+	    DynamicOutPort port = m_node.getPorts().getOutPortList().get(outPortIndex);
+	    Enum portType = port.getPortType();
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.DATA)) {
-			if (inObjects[portIndex] instanceof BufferedDataTable) {
-				return inObjects[portIndex];
+		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
+		    DataOutOption newTableOption = null;
+		    Integer inSpecIndex = null;
+            if (m_node.getOutputOptions() != null) {
+                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
+                    if (option.getOutPortIndex() == outPortIndex) {
+                        if (option.isSetInPortIndex()) {
+                            optionList.add(option);
+                            inSpecIndex = option.getInPortIndex();
+                        } else {
+                            if (newTableOption != null) {
+                                LOGGER.error("Multiple dataOutOptions creating new tables found for out port "
+                                    + outPortIndex + ".");
+                                return InactiveBranchPortObject.INSTANCE;
+                            }
+                            newTableOption = option;
+                        }
+                    }
+                }
+            }
+			if (optionList.size() == 0 && newTableOption == null) {
+			    LOGGER.error("No corresponding dataOutOption found for data out port " + outPortIndex + ".");
+			    return InactiveBranchPortObject.INSTANCE;
+			}
+			if (optionList.size() > 0 && newTableOption != null) {
+			    LOGGER.error("Multiple dataOutOptions creating new tables and appending columns found for out port " + outPortIndex + ".");
+			    return InactiveBranchPortObject.INSTANCE;
+			}
+			if (optionList.size() > 0 && inSpecIndex != null) {
+			    List<Map<String, Object>> values = new ArrayList<Map<String,Object>>();
+			    for (DataOutOption option : optionList) {
+			        Map<String, Object> map = getViewValue().getOutColumns().get(option.getId());
+			        if (map == null) {
+			            map = new HashMap<String, Object>();
+			        }
+			        values.add(map);
+			    }
+			    ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inObjects[inSpecIndex].getSpec(), optionList, values);
+                return exec.createColumnRearrangeTable((BufferedDataTable)inObjects[inSpecIndex], rearranger, exec);
+			}
+			if (newTableOption != null) {
+			    JSONDataTable table = getViewValue().getTables().get(newTableOption.getId());
+			    if (table != null) {
+			        return table.createBufferedDataTable(exec);
+			    }
+			    LOGGER.error("Table with id " + newTableOption.getId() + " expected but not found. Possible implementation error.");
+			    return InactiveBranchPortObject.INSTANCE;
 			}
 		}
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObject.INSTANCE;
 		}
-		return null;
+		LOGGER.warn("Port object of type " + portType + " not supported.");
+		return InactiveBranchPortObject.INSTANCE;
 	}
 
 	@Override
@@ -195,23 +312,38 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 
 	@Override
 	public boolean isHideInWizard() {
-		return false;
+		return m_config.getHideInWizard();
 	}
 
 	@Override
-	public ValidationError validateViewValue(final DynamicJSViewValue viewContent) {
-		// validation not possible
+	public ValidationError validateViewValue(final DynamicJSViewValue value) {
+		//TODO: validate options, flow variables, tables and maps
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void saveCurrentValue(final NodeSettingsWO content) {
-		// TODO Auto-generated method stub
+	public void loadViewValue(final DynamicJSViewValue value, final boolean useAsDefault) {
+	    // TODO make sure maps of validated view value are converted to correct types before calling super method
+	    super.loadViewValue(value, useAsDefault);
+	}
+
+	@Override
+    protected void useCurrentValueAsDefault() {
+        setOptionsOnConfig();
+    }
+
+	@Override
+	public void saveCurrentValue(final NodeSettingsWO settings) {
+		getViewValue().saveToNodeSettings(settings);
 	}
 
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
+	    pushFlowVariables();
 		List<DynamicOutPort> ports = m_node.getPorts().getOutPortList();
 		PortObjectSpec[] specs = new PortObjectSpec[ports.size()];
 		for (int i = 0; i < ports.size(); i++) {
@@ -220,9 +352,71 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 		return specs;
 	}
 
+	private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<DataOutOption> options, final List<Map<String, Object>> values) {
+	    if (values != null && options.size() != values.size()) {
+	        throw new IllegalArgumentException("Data out options defined in node description do not match actual values. Possible implementation error.");
+	    }
+	    List<DataColumnSpec> outSpecs = new ArrayList<DataColumnSpec>();
+        for (DataOutOption option : options) {
+            String newColName = option.getAdditionalColumnName();
+            if (newColName == null || newColName.isEmpty()) {
+                newColName = String.format(DynamicJSConfig.DEFAULT_APPENDED_COLUMN_NAME, m_node.getName(), option.getOutPortIndex());
+            }
+            newColName = DataTableSpec.getUniqueColumnName(spec, newColName);
+            Class<? extends DataCell> colClass = null;
+            if (option.getAdditionalColumnType().equals(ColumnType.BOOLEAN)) {
+                colClass = BooleanCell.class;
+            } else if (option.getAdditionalColumnType().equals(ColumnType.DOUBLE)) {
+                colClass = DoubleCell.class;
+            } else if (option.getAdditionalColumnType().equals(ColumnType.INTEGER)) {
+                colClass = IntCell.class;
+            } else if (option.getAdditionalColumnType().equals(ColumnType.DATETIME)) {
+                colClass = DateAndTimeCell.class;
+            } else {
+                colClass = StringCell.class;
+            }
+            outSpecs.add(new DataColumnSpecCreator(newColName, DataType.getType(colClass)).createSpec());
+        }
+        ColumnRearranger rearranger = new ColumnRearranger(spec);
+        CellFactory fac = new AbstractCellFactory(outSpecs.toArray(new DataColumnSpec[0])) {
+
+            @Override
+            public DataCell[] getCells(final DataRow row) {
+                DataCell[] cells = new DataCell[values.size()];
+                for (int i = 0; i < values.size(); i++) {
+                    Map<String, Object> valueMap = values.get(i);
+                    if (!valueMap.containsKey(row.getKey().getString())) {
+                        cells[i] = DataType.getMissingCell();
+                        break;
+                    }
+                    Object value = valueMap.get(row.getKey().getString());
+                    DataOutOption option = options.get(i);
+                    if (option.getAdditionalColumnType().equals(ColumnType.BOOLEAN)) {
+                        cells[i] = BooleanCell.get((boolean)value);
+                    } else if (option.getAdditionalColumnType().equals(ColumnType.DOUBLE)) {
+                        cells[i] = new DoubleCell((double)value);
+                    } else if (option.getAdditionalColumnType().equals(ColumnType.INTEGER)) {
+                        cells[i] = new IntCell((int)value);
+                    } else if (option.getAdditionalColumnType().equals(ColumnType.DATETIME)) {
+                        try {
+                            cells[i] = DateAndTimeCell.fromString((String)value);
+                        } catch (ParseException e) {
+                            LOGGER.error("Parsing value as date time failed: " + e.getMessage());
+                            cells[i] = DataType.getMissingCell();
+                        }
+                    } else {
+                        cells[i] = new StringCell((String)value);
+                    }
+                }
+                return cells;
+            }
+        };
+        rearranger.append(fac);
+        return rearranger;
+    }
+
 	@Override
-	protected PortObject[] performExecute(final PortObject[] inObjects,
-			final ExecutionContext exec) throws Exception {
+	protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
 
 		synchronized (getLock()) {
 			DynamicJSViewRepresentation viewRepresentation = getViewRepresentation();
@@ -251,37 +445,198 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 			viewRepresentation.setJsNamespace(m_node.getJsNamespace());
 			setPathsFromLibNames(getDependencies(true));
 			viewRepresentation.setUrlDependencies(getDependencies(false));
-			setOptionsOnRepresentation();
+			setOptionsOnViewContent(inObjects);
 		}
-		List<DynamicOutPort> ports = m_node.getPorts().getOutPortList();
-		PortObject[] pOArray = new PortObject[ports.size()];
-		for (int i = 0; i < ports.size(); i++) {
-			pOArray[i] = getPortObject(ports.get(i).getPortType(), inObjects, i);
-		}
-		return pOArray;
 	}
 
-	private void setOptionsOnRepresentation() {
-		Map<String, Object> options = new HashMap<String, Object>();
-		for (SettingsModel model : m_config.getModels().values()) {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects, final ExecutionContext exec)
+	        throws Exception {
+	    pushFlowVariables();
+	    List<DynamicOutPort> ports = m_node.getPorts().getOutPortList();
+        PortObject[] pOArray = new PortObject[ports.size()];
+        for (int i = 0; i < ports.size(); i++) {
+            if (ports.get(i).getPortType().equals(org.knime.dynamicnode.v212.PortType.IMAGE)) {
+                pOArray[i] = svgImageFromView;
+            } else {
+                pOArray[i] = getPortObject(i, inObjects, exec);
+            }
+        }
+        return pOArray;
+	}
+
+    private void pushFlowVariables() {
+        if (m_node.getOutputOptions() == null) {
+            return;
+        }
+        for (FlowVariableOutOption option : m_node.getOutputOptions().getFlowVariableOutputOptionList()) {
+            String var = getViewValue().getFlowVariables().get(option.getId());
+            if (option.getVariableType().equals(FlowVariableType.INTEGER)) {
+                Integer out = null;
+                if (var == null) {
+                    out = 0;
+                } else {
+                    try {
+                        out = Integer.parseInt(var);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(
+                            "Value could not be parsed as integer when creating flow variable. " + e.getMessage());
+                    }
+                }
+                if (out != null) {
+                    pushFlowVariableInt(option.getVariableName(), out.intValue());
+                }
+            } else if (option.getVariableType().equals(FlowVariableType.DOUBLE)) {
+                Double out = null;
+                if (var == null) {
+                    out = 0d;
+                } else {
+                    try {
+                        out = Double.parseDouble(var);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Value could not be parsed as double when creating flow variable. "
+                                + e.getMessage());
+                    }
+                }
+                if (out != null) {
+                    pushFlowVariableDouble(option.getVariableName(), out.doubleValue());
+                }
+            } else {
+                String out = var == null ? "" : var;
+                pushFlowVariableString(option.getVariableName(), out);
+            }
+        }
+    }
+
+	private void setOptionsOnViewContent(final PortObject[] inObjects) {
+		Map<String, Object> repOptions = new HashMap<String, Object>();
+		Map<String, Object> valOptions = new HashMap<String, Object>();
+		for (Entry<String, SettingsModel> entry : m_config.getModels().entrySet()) {
+		    SettingsModel model = entry.getValue();
+		    DynamicOption option = getOptionForId(entry.getKey());
+		    if (option == null) {
+		        continue;
+		    }
+		    Object value = null;
 			if (model instanceof SettingsModelBoolean) {
-				SettingsModelBoolean bM = (SettingsModelBoolean)model;
-				options.put(bM.getConfigName(), bM.getBooleanValue());
-			} else if (model instanceof SettingsModelString) {
-				SettingsModelString sM = (SettingsModelString)model;
-				options.put(sM.getKey(), sM.getStringValue());
+				value = ((SettingsModelBoolean)model).getBooleanValue();
+			} else  if (model instanceof SettingsModelInteger) {
+			    value = ((SettingsModelInteger)model).getIntValue();
+			} else if (model instanceof SettingsModelDouble) {
+			    value = ((SettingsModelDouble)model).getDoubleValue();
+			} else if (model instanceof SettingsModelDate) {
+			    value = ((SettingsModelDate)model).getTimeInMillis();
+			} else if (model instanceof SettingsModelColor) {
+			    Color color = ((SettingsModelColor)model).getColorValue();
+			    org.knime.dynamicnode.v212.ColorFormat.Enum colorFormat = ((ColorOption)option).getFormat();
+			    if (colorFormat.equals(ColorFormat.HEX_STRING)) {
+			        value = CSSUtils.cssHexStringFromColor(color);
+			    } else if (colorFormat.equals(ColorFormat.RGBA_STRING)) {
+			        value = CSSUtils.rgbaStringFromColor(color);
+			    }
 			} else if (model instanceof SettingsModelColumnFilter2) {
 				SettingsModelColumnFilter2 cM = (SettingsModelColumnFilter2)model;
-				//TODO: nothing to extract from column filter model!!!
+				ColumnFilterOption cf = (ColumnFilterOption)option;
+				FilterResult filter = cM.applyTo((DataTableSpec)inObjects[cf.getInPortIndex()].getSpec());
+				value = filter.getIncludes();
 			} else if (model instanceof SettingsModelColumnName) {
-			    SettingsModelColumnName cM = (SettingsModelColumnName)model;
-			    options.put(cM.getKey(), cM.getColumnName());
+			    value = ((SettingsModelColumnName)model).getColumnName();
+			} else if (model instanceof SettingsModelString) {
+                // This covers various components (String, FlowVariableSelection, FileInput)
+                value = ((SettingsModelString)model).getStringValue();
+			}
+			if (value != null) {
+			    if (option.getSaveInView()) {
+			        valOptions.put(entry.getKey(), value);
+			    } else {
+			        repOptions.put(entry.getKey(), value);
+			    }
 			}
 		}
-		getViewRepresentation().setOptions(options);
+		getViewRepresentation().setOptions(repOptions);
+		getViewValue().setOptions(valOptions);
 	}
 
-	private void readResourceContents() {
+	private void setOptionsOnConfig() {
+	    for (Entry<String, Object> entry : getViewValue().getOptions().entrySet()) {
+            SettingsModel model = m_config.getModel(entry.getKey());
+            if (model == null) {
+                LOGGER.warn("SettingsModel for option " + entry.getKey() + " not found. Ignoring option.");
+                continue;
+            }
+            DynamicOption option = getOptionForId(entry.getKey());
+            if (option == null) {
+                LOGGER.warn("No option in node description defined for " + entry.getKey() + ". Ignoring option.");
+                continue;
+            }
+	        if (model instanceof SettingsModelBoolean) {
+	            ((SettingsModelBoolean)model).setBooleanValue((boolean)entry.getValue());
+	        } else if (model instanceof SettingsModelInteger) {
+	            ((SettingsModelInteger)model).setIntValue((int)entry.getValue());
+	        } else if (model instanceof SettingsModelDouble) {
+	            ((SettingsModelDouble)model).setDoubleValue((double)entry.getValue());
+	        } else if (model instanceof SettingsModelDate) {
+	            ((SettingsModelDate)model).setTimeInMillis((long)entry.getValue());
+	        } else if (model instanceof SettingsModelColor) {
+	            org.knime.dynamicnode.v212.ColorFormat.Enum colorFormat = ((ColorOption)option).getFormat();
+	            Color color = null;
+                try {
+                    if (colorFormat.equals(ColorFormat.HEX_STRING)) {
+                        color = CSSUtils.colorFromCssHexString((String)entry.getValue());
+                    } else if (colorFormat.equals(ColorFormat.RGBA_STRING)) {
+                        color = CSSUtils.colorFromRgbaString((String)entry.getValue());
+                    }
+                } catch (Exception e) {}
+                if (color != null) {
+                    ((SettingsModelColor)model).setColorValue(color);
+                } else {
+                    LOGGER.error("Could not parse color string " + entry.getValue()
+                        + " Possible implementation error.");
+                }
+	        } else if (model instanceof SettingsModelColumnName) {
+	            ((SettingsModelColumnName)model).setSelection((String)entry.getValue(), false);
+	        } else if (model instanceof SettingsModelColumnFilter2) {
+	            LOGGER.warn("Using columnFilterOption as new default is not supported");
+	        } else if (model instanceof SettingsModelString) {
+	            // This covers various components (String, FlowVariableSelection, FileInput)
+	            ((SettingsModelString)model).setStringValue((String)entry.getValue());
+	        }
+	    }
+	}
+
+    private DynamicOption getOptionForId(final String key) {
+        DynamicOption option = null;
+        if (m_node.getFullDescription().getOptions() != null) {
+            option = getOptionForId(key, m_node.getFullDescription().getOptions());
+            if (option != null) {
+                return option;
+            }
+        }
+        for (DynamicTab tab : m_node.getFullDescription().getTabList()) {
+            option = getOptionForId(key, tab.getOptions());
+            if (option != null) {
+                return option;
+            }
+        }
+        return null;
+    }
+
+    private DynamicOption getOptionForId(final String key, final DynamicOptions options) {
+        XmlObject[] oOptions = options.selectPath("$this/*");
+        for (XmlObject option : oOptions) {
+            if (option instanceof DynamicOption) {
+                if (key.equals(((DynamicOption)option).getId())) {
+                    return (DynamicOption)option;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void readResourceContents() {
 		WebRessources resources = m_node.getResources();
 		List<String> jsCode = new ArrayList<String>();
 		List<String> cssCode = new ArrayList<String>();
@@ -405,12 +760,6 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 	}
 
 	@Override
-	protected void useCurrentValueAsDefault() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
 		m_config.saveToNodeSettings(settings);
 	}
@@ -427,6 +776,11 @@ public class DynamicJSNodeModel extends AbstractWizardNodeModel<DynamicJSViewRep
 		m_config.loadFromNodeSettings(settings);
 	}
 
-
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean generateImage() {
+        return m_config.getHasSvgImageOutport() & m_config.getGenerateImage();
+    }
 }

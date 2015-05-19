@@ -47,10 +47,13 @@
  */
 package org.knime.dynamic.js;
 
+import java.awt.Color;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -63,24 +66,42 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentDate;
+import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
+import org.knime.core.node.defaultnodesettings.DialogComponentFlowVariableNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelColor;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
+import org.knime.core.node.defaultnodesettings.SettingsModelDate;
+import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
+import org.knime.core.node.defaultnodesettings.SettingsModelNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.DataValueColumnFilter;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicnode.v212.CheckBoxOption;
+import org.knime.dynamicnode.v212.ColorOption;
 import org.knime.dynamicnode.v212.ColumnFilterOption;
 import org.knime.dynamicnode.v212.ColumnSelectorOption;
+import org.knime.dynamicnode.v212.DateOption;
 import org.knime.dynamicnode.v212.DynamicFullDescription;
 import org.knime.dynamicnode.v212.DynamicOptions;
 import org.knime.dynamicnode.v212.DynamicTab;
+import org.knime.dynamicnode.v212.FileOption;
+import org.knime.dynamicnode.v212.FlowVariableSelectorOption;
+import org.knime.dynamicnode.v212.FlowVariableType;
+import org.knime.dynamicnode.v212.FlowVariableType.Enum;
+import org.knime.dynamicnode.v212.NumberOption;
 import org.knime.dynamicnode.v212.StringOption;
 
 /**
@@ -93,6 +114,11 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private DynamicJSConfig m_config;
 	private Map<String, DialogComponent> m_components = new HashMap<String, DialogComponent>();
 
+	private DialogComponentBoolean m_hideInWizardComponent;
+	private DialogComponentNumber m_maxRowsComponent;
+	private DialogComponentBoolean m_generateImageComponent;
+
+	private String m_firstTab = "Options";
 
 	/**
 	 * @param nodeConfig
@@ -102,15 +128,21 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 		m_config = new DynamicJSConfig(nodeConfig);
 		DynamicFullDescription desc = m_nodeConfig.getFullDescription();
 		if (desc.getOptions() != null) {
+		    createAdditionalOptions();
 			fillOptions(desc.getOptions());
 		}
 		if (desc.getTabList() != null && desc.getTabList().size() > 0) {
-			removeTab("Options");
+			removeTab(m_firstTab);
+			m_firstTab = desc.getTabArray(0).getName();
 		}
 		for (DynamicTab tab : desc.getTabList()) {
-			createNewTab(tab.getName());
+		    createNewTab(tab.getName());
+		    if (tab.getName().equals(m_firstTab)) {
+		        createAdditionalOptions();
+		    }
 			fillOptions(tab.getOptions());
 		}
+
 	}
 
 	private void fillOptions(final DynamicOptions options) {
@@ -123,8 +155,67 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 				bComp.setToolTipText(cO.getTooltip());
 				m_components.put(cO.getId(), bComp);
 				addDialogComponent(bComp);
-			} else if (option instanceof StringOption) {
-				StringOption sO = (StringOption)option;
+			} else if (option instanceof NumberOption) {
+			    NumberOption iO = (NumberOption)option;
+			    SettingsModelNumber model = (SettingsModelNumber)m_config.getModel(iO.getId());
+			    DialogComponentNumber iComp = new DialogComponentNumber(model, iO.getLabel(), iO.getStepSize());
+			    iComp.setToolTipText(iO.getTooltip());
+			    m_components.put(iO.getId(), iComp);
+			    addDialogComponent(iComp);
+			} else if (option instanceof DateOption) {
+			    DateOption dO = (DateOption)option;
+			    SettingsModelDate model = (SettingsModelDate)m_config.getModel(dO.getId());
+			    DialogComponentDate dComp = new DialogComponentDate(model, dO.getLabel(), dO.getOptional());
+			    dComp.setToolTipText(dO.getTooltip());
+			    m_components.put(dO.getId(), dComp);
+			    addDialogComponent(dComp);
+			} else if (option instanceof ColorOption) {
+			    ColorOption cO = (ColorOption)option;
+			    SettingsModelColor model = (SettingsModelColor)m_config.getModel(cO.getId());
+			    DialogComponentColorChooser cComp = new DialogComponentColorChooser(model, cO.getLabel(), true);
+			    cComp.setColor(new Color(cO.getDefaultR(), cO.getDefaultG(), cO.getDefaultB(), cO.getDefaultAlpha()));
+			    cComp.setToolTipText(cO.getTooltip());
+			    m_components.put(cO.getId(), cComp);
+			    addDialogComponent(cComp);
+            } else if (option instanceof FlowVariableSelectorOption) {
+                FlowVariableSelectorOption fO = (FlowVariableSelectorOption)option;
+                SettingsModelString model = (SettingsModelString)m_config.getModel(fO.getId());
+                Collection<FlowVariable> flowVars = getAvailableFlowVariables().values();
+                Type flowVarType = null;
+                if (fO.isSetFlowVariableType()) {
+                    Enum type = fO.getFlowVariableType();
+                    if (type.equals(FlowVariableType.INTEGER)) {
+                        flowVarType = Type.INTEGER;
+                    } else if (type.equals(FlowVariableType.DOUBLE)) {
+                        flowVarType = Type.DOUBLE;
+                    } else if (type.equals(FlowVariableType.STRING)) {
+                        flowVarType = Type.STRING;
+                    }
+                }
+                DialogComponentFlowVariableNameSelection fComp =
+                    new DialogComponentFlowVariableNameSelection(model, fO.getLabel(), flowVars, fO.getOptional(),
+                        flowVarType);
+                fComp.setToolTipText(fO.getTooltip());
+                m_components.put(fO.getId(), fComp);
+                addDialogComponent(fComp);
+            } else if (option instanceof FileOption) {
+                FileOption fO = (FileOption)option;
+                SettingsModelString model = (SettingsModelString)m_config.getModel(fO.getId());
+                String[] extensions = null;
+                if (fO.isSetValidExtensions()) {
+                    extensions = fO.getValidExtensions().split(",");
+                    for (int i = 0; i < extensions.length; i++) {
+                        extensions[i] = extensions[i].trim();
+                    }
+                }
+                DialogComponentFileChooser fComp =
+                    new DialogComponentFileChooser(model, fO.getHistoryId(), JFileChooser.OPEN_DIALOG,
+                        fO.getDirectoryOnly(), extensions);
+                fComp.setToolTipText(fO.getTooltip());
+                m_components.put(fO.getId(), fComp);
+                addDialogComponent(fComp);
+            } else if (option instanceof StringOption) {
+                StringOption sO = (StringOption)option;
 				SettingsModelString model = (SettingsModelString)m_config.getModel(sO.getId());
 				DialogComponentString sComp = new DialogComponentString(model, sO.getLabel());
 				sComp.setToolTipText(sO.getTooltip());
@@ -158,6 +249,25 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
                 addDialogComponent(cComp);
 			}
 		}
+	}
+
+	private void createAdditionalOptions() {
+	    createNewGroup("General Settings");
+
+	    m_hideInWizardComponent = new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.HIDE_IN_WIZARD_CONF + "model", DynamicJSConfig.DEFAULT_HIDE_IN_WIZARD), "Hide in Wizard");
+	    addDialogComponent(m_hideInWizardComponent);
+
+	    if (m_config.getHasSvgImageOutport()) {
+	        m_generateImageComponent = new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.GENERATE_IMAGE_CONF + "model", DynamicJSConfig.DEFAULT_GENERATE_IMAGE), "Generate image");
+	        addDialogComponent(m_generateImageComponent);
+	    }
+
+	    if (m_config.getNumberDataInPorts() > 0) {
+	        m_maxRowsComponent = new DialogComponentNumber(new SettingsModelIntegerBounded(DynamicJSConfig.MAX_ROWS_CONF + "model", DynamicJSConfig.DEFAULT_MAX_ROWS, 0, Integer.MAX_VALUE), "Maximum number of rows", 1);
+	        addDialogComponent(m_maxRowsComponent);
+	    }
+
+	    closeCurrentGroup();
 	}
 
 	/**
@@ -198,6 +308,15 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			final PortObjectSpec[] specs) throws NotConfigurableException {
 		m_config.loadAdditionalNodeSettingsInDialog(settings);
 		super.loadAdditionalSettingsFrom(settings, specs);
+        if (m_hideInWizardComponent != null) {
+            ((SettingsModelBoolean)m_hideInWizardComponent.getModel()).setBooleanValue(m_config.getHideInWizard());
+        }
+        if (m_maxRowsComponent != null) {
+            ((SettingsModelIntegerBounded)m_maxRowsComponent.getModel()).setIntValue(m_config.getMaxRows());
+        }
+        if (m_generateImageComponent != null) {
+            ((SettingsModelBoolean)m_generateImageComponent.getModel()).setBooleanValue(m_config.getGenerateImage());
+        }
 		for (final Vector<String> dependency : m_config.getEnableDependencies()) {
 			DialogComponent cFrom = m_components.get(dependency.get(0));
 			final DialogComponent cTo = m_components.get(dependency.get(1));
@@ -215,7 +334,16 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	@Override
 	public void saveAdditionalSettingsTo(final NodeSettingsWO settings)
 			throws InvalidSettingsException {
-		m_config.saveAdditionalSettings(settings);
-		super.saveAdditionalSettingsTo(settings);
+        if (m_hideInWizardComponent != null) {
+            m_config.setHideInWizard(((SettingsModelBoolean)m_hideInWizardComponent.getModel()).getBooleanValue());
+        }
+        if (m_maxRowsComponent != null) {
+            m_config.setMaxRows(((SettingsModelIntegerBounded)m_maxRowsComponent.getModel()).getIntValue());
+        }
+        if (m_generateImageComponent != null) {
+            m_config.setGenerateImage(((SettingsModelBoolean)m_generateImageComponent.getModel()).getBooleanValue());
+        }
+        m_config.saveAdditionalSettings(settings);
+        super.saveAdditionalSettingsTo(settings);
 	}
 }

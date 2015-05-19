@@ -11,6 +11,7 @@ Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.4.3,3.0.0)",
- org.apache.commons.codec;bundle-version="[1.6.0,2.0.0)"
+ org.apache.commons.codec;bundle-version="[1.6.0,2.0.0)",
+ org.knime.ext.svg;bundle-version="[2.12.0,3.0.0)"
 Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
  lib/schemas.jar

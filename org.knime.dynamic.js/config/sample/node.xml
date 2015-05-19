@@ -20,7 +20,7 @@
 					This is a sample checkbox.
 				</checkBoxOption>
 				<stringOption id="sample_string_option" name="Sample String" label="Sample String Option" allowEmptyString="false" 
-						defaultValue="sample" enableDependency="sample_checkbox_option" enableValue="true" >
+						defaultValue="sample" enableDependency="sample_checkbox_option" enableValue="true" saveInView="true" >
 					This is a sample string option.
 				</stringOption>
 				<columnSelectorOption name="Column Selector" id="sample_col_sel" inPortIndex="0" label="Sample Column Selector" 
