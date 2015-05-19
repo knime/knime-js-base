@@ -74,7 +74,11 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     public DialogComponentSVGOptions(final SettingsModelSVGOptions model) {
         super(model);
-        // TODO Auto-generated constructor stub
+        m_widthLabel = new JLabel("Image width:");
+        m_heightLabel = new JLabel("Image height:");
+        m_widthSpinner = new JSpinner();
+        m_heightSpinner = new JSpinner();
+        m_allowFullscreenCheckBox = new JCheckBox("Scale view to window");
     }
 
     /**
