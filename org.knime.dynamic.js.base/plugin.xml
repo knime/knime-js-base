@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.knime.dynamic.node.generation.dynamicNodes">
+      <dynamicNodeFolder
+            description="A collection of dynamically created nodes utilising the D3 framework."
+            function="js"
+            name="D3 Sample Nodes"
+            path="nodes/">
+      </dynamicNodeFolder>
+   </extension>
+
+</plugin>
