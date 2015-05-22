@@ -46,10 +46,13 @@
  */
 package org.knime.dynamic.js;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
@@ -86,6 +89,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
     }
 
     private final KnimeNodeDocument m_document;
+    private File m_nodeDir;
 
     /**
      * Creates a new proxy object using the given XML document. If assertions are enabled (see
@@ -106,9 +110,11 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
      * reports errors via the logger.
      *
      * @param doc a knime node document
+     * @param nodeDir the directory in which the node is configured
      */
-    public DynamicJSNodeDescription212Proxy(final KnimeNodeDocument doc) {
+    public DynamicJSNodeDescription212Proxy(final KnimeNodeDocument doc, final File nodeDir) {
         m_document = doc;
+        m_nodeDir = nodeDir;
         if (KNIMEConstants.ASSERTIONS_ENABLED) {
             validate();
         }
@@ -135,12 +141,28 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
         return valid;
     }
 
+    private static final Pattern ICON_PATH_PATTERN = Pattern.compile("[^\\./]+/\\.\\./");
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String getIconPath() {
-        return m_document.getKnimeNode().getIcon();
+        String iconPath = m_document.getKnimeNode().getIcon();
+        //construct absolute file path
+        iconPath = iconPath.replaceAll("//", "/");
+        if (iconPath.startsWith("./")) {
+            iconPath = iconPath.substring("./".length());
+        }
+        if (!iconPath.startsWith("/")) {
+            iconPath = m_nodeDir.getAbsolutePath() + "/" + iconPath;
+            Matcher m = ICON_PATH_PATTERN.matcher(iconPath);
+            while (m.find()) {
+                iconPath = iconPath.replaceAll("[^./]+/\\.\\./", "");
+                m = ICON_PATH_PATTERN.matcher(iconPath);
+            }
+        }
+        return iconPath;
     }
 
     /**

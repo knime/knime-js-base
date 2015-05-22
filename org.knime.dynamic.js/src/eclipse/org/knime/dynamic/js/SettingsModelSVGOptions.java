@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 18, 2015 (albrecht): created
+ *   May 18, 2015 (Christian Albrecht): created
  */
 package org.knime.dynamic.js;
 
@@ -57,7 +57,7 @@ import org.knime.core.node.port.PortObjectSpec;
 
 /**
  *
- * @author albrecht
+ * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  */
 public class SettingsModelSVGOptions extends SettingsModel {
 

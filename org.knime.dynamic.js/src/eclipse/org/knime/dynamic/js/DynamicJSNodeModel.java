@@ -132,7 +132,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  */
 public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
 
@@ -427,8 +427,11 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 						tables.add(createJSONTableFromBufferedDataTable(
 								exec.createSubExecutionContext(1d / inObjects.length),
 								(BufferedDataTable) inObject));
+					} else {
+					    // add null to keep in port index
+					    tables.add(null);
+					    // nothing to do on other types?
 					}
-					// nothing to do on other types?
 				}
 				viewRepresentation.setTables(tables.toArray(new JSONDataTable[0]));
 			}
@@ -473,7 +476,26 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
             return;
         }
         for (FlowVariableOutOption option : m_node.getOutputOptions().getFlowVariableOutputOptionList()) {
-            String var = getViewValue().getFlowVariables().get(option.getId());
+            String var = null;
+            if (getViewValue() != null) {
+                var = getViewValue().getFlowVariables().get(option.getId());
+            }
+            if (var == null && option.isSetDefaultFromOptions()) {
+                SettingsModel model = m_config.getModel(option.getDefaultFromOptions());
+                if (model instanceof SettingsModelInteger) {
+                    var = Integer.toString(((SettingsModelInteger)model).getIntValue());
+                } else if (model instanceof SettingsModelDouble) {
+                    var = Double.toString(((SettingsModelDouble)model).getDoubleValue());
+                } else if (model instanceof SettingsModelString) {
+                    var = ((SettingsModelString)model).getStringValue();
+                } else {
+                    LOGGER.warn("Assigning default value to flow variable from option "
+                        + option.getDefaultFromOptions() + " not possible. Type not supported.");
+                }
+            }
+            if (var == null && option.isSetDefaultValue()) {
+                var = option.getDefaultValue();
+            }
             if (option.getVariableType().equals(FlowVariableType.INTEGER)) {
                 Integer out = null;
                 if (var == null) {
@@ -512,8 +534,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
     }
 
 	private void setOptionsOnViewContent(final PortObject[] inObjects) {
-		Map<String, Object> repOptions = new HashMap<String, Object>();
-		Map<String, Object> valOptions = new HashMap<String, Object>();
+	    Map<String, Object> repOptions = getViewRepresentation().getOptions();
+	    Map<String, Object> valueOptions = getViewValue().getOptions();
 		for (Entry<String, SettingsModel> entry : m_config.getModels().entrySet()) {
 		    SettingsModel model = entry.getValue();
 		    DynamicOption option = getOptionForId(entry.getKey());
@@ -550,14 +572,14 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			}
 			if (value != null) {
 			    if (option.getSaveInView()) {
-			        valOptions.put(entry.getKey(), value);
+			        if (!valueOptions.containsKey(entry.getKey())) {
+			            valueOptions.put(entry.getKey(), value);
+			        }
 			    } else {
 			        repOptions.put(entry.getKey(), value);
 			    }
 			}
 		}
-		getViewRepresentation().setOptions(repOptions);
-		getViewValue().setOptions(valOptions);
 	}
 
 	private void setOptionsOnConfig() {

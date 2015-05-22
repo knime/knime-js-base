@@ -280,6 +280,8 @@
     <xs:attribute name="id" type="xs:string" use="required" />
     <xs:attribute name="variableName" type="xs:string" use="required" />
     <xs:attribute name="variableType" type="FlowVariableType" use="required" />
+    <xs:attribute name="defaultValue" type="xs:string" />
+    <xs:attribute name="defaultFromOptions" type="xs:string" />
   </xs:complexType>
   
   <xs:simpleType name="FlowVariableType">
@@ -304,7 +306,7 @@
 		
 		✓ Boolean
 		x Button 
-		x ButtonGroup 
+		- ButtonGroup 
 		x ButtonLabel 
 		✓ ColorChooser
 		✓ ColumnFilter
@@ -317,10 +319,10 @@
 		- MultiLineString 
 		✓ Number 
 		✓ NumberEdit 
-		OptionalString 
+		x OptionalString 
 		x Password 
 		✓ String 
-		x StringListSelection 
-		x StringSelection -->
+		- StringListSelection 
+		- StringSelection -->
 		
 </xs:schema>

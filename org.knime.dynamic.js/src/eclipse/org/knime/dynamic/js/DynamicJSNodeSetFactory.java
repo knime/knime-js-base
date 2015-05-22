@@ -75,7 +75,7 @@ import org.osgi.framework.Bundle;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  */
 public class DynamicJSNodeSetFactory implements NodeSetFactory {
 

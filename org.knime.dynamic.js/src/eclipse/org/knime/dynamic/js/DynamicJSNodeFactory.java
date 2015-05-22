@@ -66,7 +66,7 @@ import org.knime.dynamicnode.v212.DynamicFullDescription;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  */
 public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel> implements
 		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue> {
@@ -81,7 +81,7 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	@Override
 	protected NodeDescription createNodeDescription() {
 	    if (m_doc != null) {
-	        return new DynamicJSNodeDescription212Proxy(m_doc);
+	        return new DynamicJSNodeDescription212Proxy(m_doc, m_nodeDir);
 	    }
 		return new NoDescriptionProxy(getClass());
 	}
