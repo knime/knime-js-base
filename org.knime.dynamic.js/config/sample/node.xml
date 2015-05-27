@@ -51,8 +51,8 @@
 		</outPort>
 	</ports>
 	<js:resources>
-		<js:ressource type="js" path="sample.js" />
-		<js:ressource type="css" path="sample.css" />
+		<js:resource type="js" path="sample.js" />
+		<js:resource type="css" path="sample.css" />
 	</js:resources>
 	<js:dependencies>
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />

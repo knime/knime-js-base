@@ -28,12 +28,12 @@
 
 	<xs:complexType name="WebRessources">
 		<xs:sequence>
-			<xs:element name="ressource" type="WebRessource"
+			<xs:element name="resource" type="WebResource"
 				maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="WebRessource">
+	<xs:complexType name="WebResource">
 		<xs:attribute name="path" type="xs:string" use="required" />
 		<xs:attribute name="type" use="required">
 			<xs:simpleType>

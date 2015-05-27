@@ -46,7 +46,7 @@
     	</outPort>
     </ports>
     <js:resources>
-		<js:ressource type="js" path="autocomplete.js" />
+		<js:resource type="js" path="autocomplete.js" />
 		<!-- <js:ressource type="css" path="sample.css" /> -->
 	</js:resources>
 	<js:dependencies>

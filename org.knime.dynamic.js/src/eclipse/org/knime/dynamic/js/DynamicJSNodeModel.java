@@ -110,7 +110,7 @@ import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicjsnode.v212.WebDependency;
-import org.knime.dynamicjsnode.v212.WebRessource;
+import org.knime.dynamicjsnode.v212.WebResource;
 import org.knime.dynamicjsnode.v212.WebRessources;
 import org.knime.dynamicnode.v212.ColorFormat;
 import org.knime.dynamicnode.v212.ColorOption;
@@ -664,12 +664,12 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		List<String> cssCode = new ArrayList<String>();
 		Map<String, String> binaryFiles = new HashMap<String, String>();
 		if (resources != null) {
-			for (WebRessource res : resources.getRessourceList()) {
-				if (res.getType().equals(WebRessource.Type.JS)) {
+			for (WebResource res : resources.getResourceList()) {
+				if (res.getType().equals(WebResource.Type.JS)) {
 					jsCode.add(fileToString(res.getPath(), false));
-				} else if (res.getType().equals(WebRessource.Type.CSS)) {
+				} else if (res.getType().equals(WebResource.Type.CSS)) {
 					cssCode.add(fileToString(res.getPath(), false));
-				} else if (res.getType().equals(WebRessource.Type.FILE)) {
+				} else if (res.getType().equals(WebResource.Type.FILE)) {
 					binaryFiles.put(res.getPath(), fileToString(res.getPath(), true));
 				}
 			}
