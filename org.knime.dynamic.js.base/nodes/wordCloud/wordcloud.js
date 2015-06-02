@@ -122,6 +122,11 @@
 	wordCloud.getComponentValue = function() {
 		return _value;
 	}
+	
+	wordCloud.getSVG = function() {
+		var svg = d3.select("svg")[0][0];
+		return (new XMLSerializer()).serializeToString(svg);
+	}
 
 	return wordCloud;
 

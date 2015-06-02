@@ -39,6 +39,8 @@
 			<doubleOption name="Font size maximum" id="fontSizeMaximum" label="Font size maximum" defaultValue="100" minValue="1">
 				Maximum font size.
 			</doubleOption>
+			<svgOption name="Image" id="wordCloud" portIndex="0" label="Word cloud">
+			</svgOption>
 			
 		</options>
 	</fullDescription>
@@ -51,6 +53,9 @@
 			string column with the words and a column with the
 			words size.
 		</inPort>
+		<outPort portType="Image" name="Word cloud" index="0">
+			The word cloud.
+		</outPort>
 	</ports>
 	<js:resources>
 		<js:resource type="js" path="wordcloud.js" />
