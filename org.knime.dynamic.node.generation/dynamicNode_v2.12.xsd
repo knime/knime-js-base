@@ -331,7 +331,7 @@
 		
 		✓ Boolean
 		x Button 
-		- ButtonGroup 
+		✓ ButtonGroup 
 		x ButtonLabel 
 		✓ ColorChooser
 		✓ ColumnFilter
@@ -347,7 +347,7 @@
 		x OptionalString 
 		x Password 
 		✓ String 
-		- StringListSelection 
-		- StringSelection -->
+		✓ StringListSelection 
+		✓ StringSelection -->
 		
 </xs:schema>
