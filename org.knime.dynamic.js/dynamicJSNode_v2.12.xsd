@@ -14,8 +14,8 @@
 			<xs:extension base="dn:DynamicKnimeNode">
 				<xs:sequence>
 					<xs:element name="resources" type="WebRessources" />
-					<xs:element name="dependencies"
-						type="WebDependencies" minOccurs="0" maxOccurs="1" />
+					<xs:element name="dependencies" type="WebDependencies" minOccurs="0" maxOccurs="1" />
+					<xs:element name="javaProcessor" type="JavaProcessor" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 				<xs:attribute name="nodeID" type="xs:string"
 					use="required" />
@@ -64,6 +64,10 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:complexType name="JavaProcessor">
+		<xs:attribute name="className" type="xs:string" use="required" />
 	</xs:complexType>
 
 </xs:schema>

@@ -38,12 +38,12 @@
 		p.appendChild(document.createTextNode(string));
 		p = document.createElement("p");
 		body.appendChild(p);
-		string = " Checking tables: ";
-		if (representation.dataTables.length > 0) {
-			string += "Found " + representation.dataTables.length + " tables. Check!";
+		string = " Checking in port data: ";
+		if (representation.inObjects.length > 0) {
+			string += "Found " + representation.inObjects.length + " in objects. Check!";
 			p.className = "success";
 		} else {
-			string += "No tables found. FAILURE!";
+			string += "No port objects found. FAILURE!";
 			p.className = "failure";
 		}
 		p.appendChild(document.createTextNode(string));

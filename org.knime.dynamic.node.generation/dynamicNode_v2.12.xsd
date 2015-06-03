@@ -95,6 +95,8 @@
       <xs:element name="stringOption" type="StringOption" />
       <xs:element name="integerOption" type="IntegerOption" />
       <xs:element name="doubleOption" type="DoubleOption" />
+      <xs:element name="radioButtonOption" type="RadioButtonOption" />
+      <xs:element name="stringListOption" type="StringListOption" />
       <xs:element name="dateOption" type="DateOption" />
       <xs:element name="columnFilterOption" type="ColumnFilterOption" />
       <xs:element name="columnSelectorOption" type="ColumnSelectorOption" />
@@ -187,6 +189,25 @@
       	<xs:attribute name="minValue" type="xs:double" use="optional" />
       	<xs:attribute name="maxValue" type="xs:double" use="optional" />
       	<xs:attribute name="defaultValue" type="xs:double" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="RadioButtonOption">
+  	<xs:complexContent>
+  	  <xs:extension base="DynamicOption">
+  	  	<xs:attribute name="defaultValue" type="xs:string" use="optional" />
+  	  	<xs:attribute name="possibleValues" use="required" type="StringList" />
+  	  </xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="StringListOption">
+    <xs:complexContent>
+      <xs:extension base="DynamicOption">
+        <xs:attribute name="allowMultipleSelection" type="xs:boolean" default="false" />
+        <xs:attribute name="possibleValues" use="required" type="StringList" />
+        <xs:attribute name="defaultValues" use="optional" type="StringList" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -300,6 +321,10 @@
       <xs:enumeration value="BOOLEAN" />
       <xs:enumeration value="DATETIME" />
     </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="StringList">
+    <xs:list itemType="xs:string" />
   </xs:simpleType>
 
 	<!-- All dialog components: 

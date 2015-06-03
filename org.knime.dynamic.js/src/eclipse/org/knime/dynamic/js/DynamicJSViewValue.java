@@ -69,10 +69,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class DynamicJSViewValue extends JSONViewContent {
 
 	private static final String OUT_COLUMNS = "outColumns";
+	private static final String OUT_TABLES = "outTables";
 
     private Map<String, Object> m_options = new HashMap<String, Object>();
 	private Map<String, Map<String, Object>> m_outColumns = new HashMap<String, Map<String,Object>>();
-	private Map<String, JSONDataTable> m_tables = new HashMap<String, JSONDataTable>();
+	private Map<String, JSONDataTable> m_outTables = new HashMap<String, JSONDataTable>();
 	private Map<String, String> m_flowVariables = new HashMap<String, String>();
 
 	/**
@@ -112,7 +113,7 @@ public class DynamicJSViewValue extends JSONViewContent {
      */
     @JsonProperty("tables")
     public Map<String, JSONDataTable> getTables() {
-        return m_tables;
+        return m_outTables;
     }
 
     /**
@@ -120,7 +121,7 @@ public class DynamicJSViewValue extends JSONViewContent {
      */
     @JsonProperty("tables")
     public void setTables(final Map<String, JSONDataTable> tables) {
-        m_tables = tables;
+        m_outTables = tables;
     }
 
     /**
@@ -143,7 +144,7 @@ public class DynamicJSViewValue extends JSONViewContent {
 	public void saveToNodeSettings(final NodeSettingsWO settings) {
 	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.OPTIONS), m_options, true);
 	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(OUT_COLUMNS), m_outColumns, true);
-	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.TABLES), m_tables, true);
+	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(OUT_TABLES), m_outTables, true);
 	    DynamicJSViewRepresentation.saveMap(settings.addNodeSettings(DynamicJSViewRepresentation.FLOW_VARIABLES), m_flowVariables, false);
 	}
 
@@ -152,7 +153,7 @@ public class DynamicJSViewValue extends JSONViewContent {
 	public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 	    m_options = (Map<String, Object>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.OPTIONS));
 	    m_outColumns = (Map<String, Map<String, Object>>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(OUT_COLUMNS));
-	    m_tables = (Map<String, JSONDataTable>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.TABLES));
+	    m_outTables = (Map<String, JSONDataTable>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(OUT_TABLES));
 	    m_flowVariables = (Map<String, String>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.FLOW_VARIABLES));
 	}
 

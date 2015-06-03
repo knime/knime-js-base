@@ -95,6 +95,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDate;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -142,6 +143,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private DynamicJSConfig m_config;
 	private final String m_viewName;
 	private final String m_rootPath;
+	private final DynamicJSProcessor m_processor;
 
 	/**
 	 * @param nodeConfig
@@ -154,9 +156,32 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		m_config = new DynamicJSConfig(nodeConfig);
 		m_rootPath = configRootPath;
 		m_viewName = viewName;
+		m_processor = initProcessor();
 	}
 
-	private static PortType[] getPortTypeArray(final DynamicJSKnimeNode nodeConfig, final boolean getInPorts) {
+	/**
+     * @return
+     */
+    private DynamicJSProcessor initProcessor() {
+        DynamicJSProcessor processor = null;
+        if (m_node.isSetJavaProcessor()) {
+            String className = m_node.getJavaProcessor().getClassName();
+            try {
+                Class<?> processorClass = Class.forName(className);
+                Object pO = processorClass.newInstance();
+                if (!(pO instanceof DynamicJSProcessor)) {
+                    throw new IllegalArgumentException("Processor class " + className
+                        + " must implement the DynamicJSProcessor interface.");
+                }
+                processor = (DynamicJSProcessor)pO;
+            } catch (Exception e) {
+                LOGGER.error("Cannot instantiate java processor class " + className + " - " + e.getMessage(), e);
+            }
+        }
+        return processor;
+    }
+
+    private static PortType[] getPortTypeArray(final DynamicJSKnimeNode nodeConfig, final boolean getInPorts) {
 		DynamicPorts ports = nodeConfig.getPorts();
 		if (getInPorts) {
 			List<PortType> inPorts = new ArrayList<PortType>();
@@ -417,39 +442,52 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 
 	@Override
 	protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-
 		synchronized (getLock()) {
 			DynamicJSViewRepresentation viewRepresentation = getViewRepresentation();
-			if (viewRepresentation.getTables().length <= 0) {
-				List<JSONDataTable> tables = new ArrayList<JSONDataTable>();
-				for (PortObject inObject : inObjects) {
-					if (inObject instanceof BufferedDataTable) {
-						tables.add(createJSONTableFromBufferedDataTable(
-								exec.createSubExecutionContext(1d / inObjects.length),
-								(BufferedDataTable) inObject));
-					} else {
-					    // add null to keep in port index
-					    tables.add(null);
-					    // nothing to do on other types?
-					}
-				}
-				viewRepresentation.setTables(tables.toArray(new JSONDataTable[0]));
-			}
-			if (viewRepresentation.getFlowVariables().size() <= 0) {
-				Map<String, String> vStringMap = new HashMap<String, String>();
-				for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
-					vStringMap.put(vEntry.getKey(), vEntry.getValue().getValueAsString());
-				}
-				viewRepresentation.setFlowVariables(vStringMap);
-			}
-			if (viewRepresentation.getJsCode().length <= 0) {
-				readResourceContents();
-			}
-			viewRepresentation.setJsNamespace(m_node.getJsNamespace());
-			setPathsFromLibNames(getDependencies(true));
-			viewRepresentation.setUrlDependencies(getDependencies(false));
-			setOptionsOnViewContent(inObjects);
-		}
+            if (viewRepresentation.isNew()) {
+                // try pre-processing input
+                Object[] processedInputs = inObjects;
+                if (m_processor != null) {
+                    processedInputs = m_processor.processInputObjects(inObjects, exec, m_config);
+                }
+
+                List<Object> viewInObjects = new ArrayList<Object>();
+                double remainingProgress = 1d - exec.getProgressMonitor().getProgress();
+                double subProgress = remainingProgress / inObjects.length;
+                for (Object processedObject : processedInputs) {
+                    // unprocessed inObjects
+                    if (processedObject instanceof PortObject) {
+                        // only data in ports supported atm
+                        if (processedObject instanceof BufferedDataTable) {
+                            viewInObjects.add(createJSONTableFromBufferedDataTable(
+                                exec.createSubExecutionContext(subProgress),
+                                (BufferedDataTable)processedObject));
+                        } else {
+                            // add null for all other unprocessed in port types
+                            viewInObjects.addAll(null);
+                            exec.setProgress(exec.getProgressMonitor().getProgress() + subProgress);
+                        }
+                    } else {
+                        // processed inObjects, assume they are directly serializable to JSON
+                        viewInObjects.add(processedObject);
+                    }
+                }
+                viewRepresentation.setInObjects(viewInObjects.toArray(new Object[0]));
+
+                Map<String, String> vStringMap = new HashMap<String, String>();
+                for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
+                    vStringMap.put(vEntry.getKey(), vEntry.getValue().getValueAsString());
+                }
+                viewRepresentation.setFlowVariables(vStringMap);
+
+                readResourceContents();
+                viewRepresentation.setJsNamespace(m_node.getJsNamespace());
+                setPathsFromLibNames(getDependencies(true));
+                viewRepresentation.setUrlDependencies(getDependencies(false));
+                setOptionsOnViewContent(inObjects);
+                viewRepresentation.setInitialized();
+            }
+        }
 	}
 
 	/**
@@ -567,8 +605,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			} else if (model instanceof SettingsModelColumnName) {
 			    value = ((SettingsModelColumnName)model).getColumnName();
 			} else if (model instanceof SettingsModelString) {
-                // This covers various components (String, FlowVariableSelection, FileInput)
+                // This covers various components (String, FlowVariableSelection, FileInput, etc.)
                 value = ((SettingsModelString)model).getStringValue();
+			} else if (model instanceof SettingsModelStringArray) {
+			    value = ((SettingsModelStringArray)model).getStringArrayValue();
 			}
 			if (value != null) {
 			    if (option.getSaveInView()) {
@@ -625,6 +665,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	        } else if (model instanceof SettingsModelString) {
 	            // This covers various components (String, FlowVariableSelection, FileInput)
 	            ((SettingsModelString)model).setStringValue((String)entry.getValue());
+	        } else if (model instanceof SettingsModelStringArray) {
+	            ((SettingsModelStringArray)model).setStringArrayValue((String[])entry.getValue());
 	        }
 	    }
 	}

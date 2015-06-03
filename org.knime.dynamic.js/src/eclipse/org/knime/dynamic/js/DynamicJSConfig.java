@@ -69,6 +69,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDate;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicnode.v212.CheckBoxOption;
 import org.knime.dynamicnode.v212.ColorOption;
@@ -85,6 +86,8 @@ import org.knime.dynamicnode.v212.FileOption;
 import org.knime.dynamicnode.v212.FlowVariableSelectorOption;
 import org.knime.dynamicnode.v212.IntegerOption;
 import org.knime.dynamicnode.v212.PortType;
+import org.knime.dynamicnode.v212.RadioButtonOption;
+import org.knime.dynamicnode.v212.StringListOption;
 import org.knime.dynamicnode.v212.StringOption;
 import org.knime.dynamicnode.v212.SvgOption;
 
@@ -215,6 +218,29 @@ public class DynamicJSConfig {
                 }
                 SettingsModelDoubleBounded dModel = new SettingsModelDoubleBounded(dO.getId(), defaultValue, minValue, maxValue);
                 m_models.put(dO.getId(), dModel);
+            } else if (option instanceof RadioButtonOption) {
+                RadioButtonOption rO = (RadioButtonOption)option;
+                SettingsModelString sModel = new SettingsModelString(rO.getId(), rO.getDefaultValue());
+                m_models.put(rO.getId(), sModel);
+            } else if (option instanceof StringListOption) {
+                StringListOption sO = (StringListOption)option;
+                SettingsModel sModel;
+                @SuppressWarnings("unchecked")
+                List<String> defaultValues = sO.getDefaultValues();
+                if (sO.getAllowMultipleSelection()) {
+                    String[] defaultStrings = null;
+                    if (defaultValues != null) {
+                        defaultStrings = defaultValues.toArray(new String[0]);
+                    }
+                    sModel = new SettingsModelStringArray(sO.getId(), defaultStrings);
+                } else {
+                    String defaultString = null;
+                    if (defaultValues != null && defaultValues.size() > 0) {
+                        defaultString = defaultValues.get(0);
+                    }
+                    sModel = new SettingsModelString(sO.getId(), defaultString);
+                }
+                m_models.put(sO.getId(), sModel);
             } else if (option instanceof DateOption) {
                 DateOption dO = (DateOption)option;
                 SettingsModelDate dModel = new SettingsModelDate(dO.getId());

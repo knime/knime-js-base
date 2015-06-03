@@ -53,14 +53,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
  *
@@ -70,6 +76,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DynamicJSViewRepresentation extends JSONViewContent {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSViewRepresentation.class);
+
 	static final String NUM_SETTINGS = "numSettings";
 	private static final String JS_NAMESPACE = "jsNamespace";
 	private static final String JS_CODE = "jsCode";
@@ -78,9 +86,11 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private static final String CSS_DEPENDENCIES = "cssDependencies";
     private static final String URL_DEPENDENCIES = "urlDependencies";
     private static final String BINARY_FILES = "binaryFiles";
-    static final String TABLES = "tables";
+    static final String IN_OBJECTS = "inObjects";
     static final String FLOW_VARIABLES = "variables";
     static final String OPTIONS = "options";
+    static final String CLASS_NAME = "className";
+    static final String JSON_VALUE = "jsonValue";
 
     private String m_jsNamespace = new String();
     private String[] m_jsCode = new String[0];
@@ -88,10 +98,12 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private String[] m_jsDependencies = new String[0];
     private String[] m_cssDependencies = new String[0];
     private String[] m_urlDependencies = new String[0];
-    private JSONDataTable[] m_tables = new JSONDataTable[0];
+    private Object[] m_inObjects = new Object[0];
     private Map<String, String> m_flowVariables = new HashMap<String, String>();
     private Map<String, Object> m_options = new HashMap<String, Object>();
     private Map<String, String> m_binaryFiles = new HashMap<String, String>();
+
+    private boolean m_new = true;
 
     @JsonProperty("jsCode")
     public String[] getJsCode() {
@@ -153,14 +165,14 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		m_cssDependencies = cssDependencies;
 	}
 
-    @JsonProperty("dataTables")
-    public JSONDataTable[] getTables() {
-		return m_tables;
+    @JsonProperty("inObjects")
+    public Object[] getInObjects() {
+		return m_inObjects;
 	}
 
-    @JsonProperty("dataTables")
-    public void setTables(final JSONDataTable[] tables) {
-		m_tables = tables;
+    @JsonProperty("inObjects")
+    public void setInObjects(final Object[] inObjects) {
+		m_inObjects = inObjects;
 	}
 
     @JsonProperty("flowVariables")
@@ -193,6 +205,16 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		m_binaryFiles = binaryFiles;
 	}
 
+    @JsonIgnore
+    public boolean isNew() {
+        return m_new;
+    }
+
+    @JsonIgnore
+    public void setInitialized() {
+        m_new = false;
+    }
+
 	@Override
 	public void saveToNodeSettings(final NodeSettingsWO settings) {
 		settings.addString(JS_NAMESPACE, m_jsNamespace);
@@ -204,10 +226,27 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         saveMap(settings.addNodeSettings(FLOW_VARIABLES), m_flowVariables, false);
         saveMap(settings.addNodeSettings(BINARY_FILES), m_binaryFiles, false);
         saveMap(settings.addNodeSettings(OPTIONS), m_options, true);
-        NodeSettingsWO tables = settings.addNodeSettings(TABLES);
-        tables.addInt(NUM_SETTINGS, m_tables.length);
-        for (int i = 0; i < m_tables.length; i++) {
-        	m_tables[i].saveJSONToNodeSettings(tables.addNodeSettings("table_" + i));
+        NodeSettingsWO inObjects = settings.addNodeSettings(IN_OBJECTS);
+        inObjects.addInt(NUM_SETTINGS, m_inObjects.length);
+        for (int i = 0; i < m_inObjects.length; i++) {
+            NodeSettingsWO objectSettings = inObjects.addNodeSettings("inObject_" + i);
+            if (m_inObjects[i] instanceof JSONDataTable) {
+                ((JSONDataTable)m_inObjects[i]).saveJSONToNodeSettings(objectSettings);
+            } else {
+                String jsonString = null;
+                if (m_inObjects[i] != null) {
+                    try {
+                        // assume object is serializable into JSON
+                        ObjectMapper mapper = new ObjectMapper();
+                        jsonString = mapper.writeValueAsString(m_inObjects[i]);
+                    } catch (JsonProcessingException e) {
+                        LOGGER.error("Failed to write inObject from port index " + i
+                            + ". Possible implementation or processing error: " + e.getMessage(), e);
+                    }
+                    objectSettings.addString(CLASS_NAME, m_inObjects[i].getClass().getName());
+                }
+                objectSettings.addString(JSON_VALUE, jsonString);
+            }
         }
 	}
 
@@ -264,12 +303,31 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         m_flowVariables = (Map<String, String>) loadMap(settings.getNodeSettings(FLOW_VARIABLES));
         m_binaryFiles = (Map<String, String>) loadMap(settings.getNodeSettings(BINARY_FILES));
         m_options = (Map<String, Object>) loadMap(settings.getNodeSettings(OPTIONS));
-        NodeSettingsRO tables = settings.getNodeSettings(TABLES);
-        int numSettings = tables.getInt(NUM_SETTINGS);
-        m_tables = new JSONDataTable[numSettings];
+        NodeSettingsRO inObjects = settings.getNodeSettings(IN_OBJECTS);
+        int numSettings = inObjects.getInt(NUM_SETTINGS);
+        m_inObjects = new Object[numSettings];
         for (int i = 0; i < numSettings; i++) {
-			m_tables[i] = JSONDataTable.loadFromNodeSettings(tables
-					.getNodeSettings("table_" + i));
+            NodeSettingsRO objectSettings = inObjects.getNodeSettings("inObject_" + i);
+            if (objectSettings.containsKey(JSONDataTable.KNIME_DATA_TABLE_CONF)) {
+                m_inObjects[i] = JSONDataTable.loadFromNodeSettings(objectSettings);
+            } else {
+                String jsonString = objectSettings.getString(JSON_VALUE);
+                Object jsonObject = null;
+                if (jsonString != null && !jsonString.isEmpty()) {
+                    try {
+                        // TODO: Possibly use URLClassLoader for inner classes of DynamicJSProcessors
+                        Class<?> c = Class.forName(objectSettings.getString(CLASS_NAME));
+                        jsonObject = c.newInstance();
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                        ObjectReader reader = mapper.readerForUpdating(jsonObject);
+                        reader.readValue(jsonString);
+                    } catch (Exception e) {
+                        LOGGER.error("Unable to deserialize inObject from JSON: " + e.getMessage(), e);
+                    }
+                }
+                m_inObjects[i] = jsonObject;
+            }
         }
 	}
 

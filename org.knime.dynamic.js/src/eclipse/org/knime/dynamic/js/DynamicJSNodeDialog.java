@@ -50,6 +50,7 @@ package org.knime.dynamic.js;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -66,6 +67,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
@@ -74,6 +76,8 @@ import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentFlowVariableNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
+import org.knime.core.node.defaultnodesettings.DialogComponentStringListSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
@@ -83,6 +87,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDate;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.DataValueColumnFilter;
@@ -102,6 +107,8 @@ import org.knime.dynamicnode.v212.FlowVariableSelectorOption;
 import org.knime.dynamicnode.v212.FlowVariableType;
 import org.knime.dynamicnode.v212.FlowVariableType.Enum;
 import org.knime.dynamicnode.v212.NumberOption;
+import org.knime.dynamicnode.v212.RadioButtonOption;
+import org.knime.dynamicnode.v212.StringListOption;
 import org.knime.dynamicnode.v212.StringOption;
 
 /**
@@ -162,6 +169,30 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    iComp.setToolTipText(iO.getTooltip());
 			    m_components.put(iO.getId(), iComp);
 			    addDialogComponent(iComp);
+			} else if (option instanceof RadioButtonOption) {
+			   RadioButtonOption rO = (RadioButtonOption)option;
+			   SettingsModelString model = (SettingsModelString)m_config.getModel(rO.getId());
+			   @SuppressWarnings("unchecked")
+			   String[] possibleValues = ((List<String>)rO.getPossibleValues()).toArray(new String[0]);
+			   DialogComponentButtonGroup rComp = new DialogComponentButtonGroup(model, false, rO.getLabel(), possibleValues);
+			   rComp.setToolTipText(rO.getTooltip());
+			   m_components.put(rO.getId(), rComp);
+			   addDialogComponent(rComp);
+			} else if (option instanceof StringListOption) {
+			    StringListOption sO = (StringListOption)option;
+			    DialogComponent sComp;
+			    @SuppressWarnings("unchecked")
+			    List<String> possibleValues = sO.getPossibleValues();
+			    if (sO.getAllowMultipleSelection()) {
+			        SettingsModelStringArray model = (SettingsModelStringArray)m_config.getModel(sO.getId());
+			        sComp = new DialogComponentStringListSelection(model, sO.getLabel(), possibleValues, !sO.getOptional(), 10);
+			    } else {
+			        SettingsModelString model = (SettingsModelString)m_config.getModel(sO.getId());
+			        sComp = new DialogComponentStringSelection(model, sO.getLabel(), possibleValues, true);
+			    }
+			    sComp.setToolTipText(sO.getTooltip());
+			    m_components.put(sO.getId(), sComp);
+			    addDialogComponent(sComp);
 			} else if (option instanceof DateOption) {
 			    DateOption dO = (DateOption)option;
 			    SettingsModelDate model = (SettingsModelDate)m_config.getModel(dO.getId());

@@ -58,4 +58,5 @@
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 		<js:dependency name="jQuery" path="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="url" />
 	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.sample.Processor" />
 </js:knimeNode>
