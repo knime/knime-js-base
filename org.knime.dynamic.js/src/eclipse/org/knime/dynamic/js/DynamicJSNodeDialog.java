@@ -174,7 +174,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			   SettingsModelString model = (SettingsModelString)m_config.getModel(rO.getId());
 			   @SuppressWarnings("unchecked")
 			   String[] possibleValues = ((List<String>)rO.getPossibleValues()).toArray(new String[0]);
-			   DialogComponentButtonGroup rComp = new DialogComponentButtonGroup(model, false, rO.getLabel(), possibleValues);
+			   DialogComponentButtonGroup rComp = new DialogComponentButtonGroup(model, rO.getAlignVertical(), rO.getLabel(), possibleValues);
 			   rComp.setToolTipText(rO.getTooltip());
 			   m_components.put(rO.getId(), rComp);
 			   addDialogComponent(rComp);
@@ -185,10 +185,14 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    List<String> possibleValues = sO.getPossibleValues();
 			    if (sO.getAllowMultipleSelection()) {
 			        SettingsModelStringArray model = (SettingsModelStringArray)m_config.getModel(sO.getId());
-			        sComp = new DialogComponentStringListSelection(model, sO.getLabel(), possibleValues, !sO.getOptional(), 10);
+			        int numRows = -1;
+			        if (sO.isSetNumRowsVisible()) {
+			            numRows = sO.getNumRowsVisible().intValue();
+			        }
+			        sComp = new DialogComponentStringListSelection(model, sO.getLabel(), possibleValues, !sO.getOptional(), numRows);
 			    } else {
 			        SettingsModelString model = (SettingsModelString)m_config.getModel(sO.getId());
-			        sComp = new DialogComponentStringSelection(model, sO.getLabel(), possibleValues, true);
+			        sComp = new DialogComponentStringSelection(model, sO.getLabel(), possibleValues, sO.getEditable());
 			    }
 			    sComp.setToolTipText(sO.getTooltip());
 			    m_components.put(sO.getId(), sComp);
