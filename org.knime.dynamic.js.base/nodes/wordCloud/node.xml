@@ -27,20 +27,20 @@
 			<checkBoxOption name="Use color property" id="useColorProperty" label="Use color property">
 				Use the rows color properties to determine word color.
 			</checkBoxOption>
-			<stringOption name="Color palette" id="colorPalette" label="Color palette" defaultValue="Palette A" enableDependency="useColorProperty" enableValue="false">
+			<stringListOption name="Color palette" id="colorPalette" label="Color palette" possibleValues="Palette-A Palette-B Palette-C" defaultValues="Palette-A" enableDependency="useColorProperty" enableValue="false">
 				Select the color palette that will be used.
-			</stringOption>
-			<stringOption name="Font" id="font" label="Font" defaultValue="Impact">
+			</stringListOption>
+			<stringListOption name="Font" id="font" possibleValues="Arial Calibri Courier Cursive Helvetica Impact Modern Monospace Sans-serif Serif Times Verdana" label="Font" defaultValues="Impact">
 				Select the font that will be used.
-			</stringOption>
+			</stringListOption>
 			<doubleOption name="Font size minimum" id="fontSizeMinimum" label="Font size minimum" defaultValue="10" minValue="1">
 				Minimum font size.
 			</doubleOption>
 			<doubleOption name="Font size maximum" id="fontSizeMaximum" label="Font size maximum" defaultValue="100" minValue="1">
 				Maximum font size.
 			</doubleOption>
-			<svgOption name="Image" id="wordCloud" portIndex="0" label="Word cloud">
-			</svgOption>
+			<!-- <svgOption name="Image" id="wordCloud" portIndex="0" label="Word cloud">
+			</svgOption> -->
 			
 		</options>
 	</fullDescription>
@@ -53,9 +53,9 @@
 			string column with the words and a column with the
 			words size.
 		</inPort>
-		<outPort portType="Image" name="Word cloud" index="0">
+		<!-- <outPort portType="Image" name="Word cloud" index="0">
 			The word cloud.
-		</outPort>
+		</outPort> -->
 	</ports>
 	<js:resources>
 		<js:resource type="js" path="wordcloud.js" />

@@ -8,7 +8,7 @@
 		_representation = representation;
 		_value = value;
 		var knimeTable = new kt();
-		knimeTable.setDataTable(_representation.dataTables[0]);
+		knimeTable.setDataTable(_representation.inObjects[0]);
 		var fontSizeMinimum = _representation.options["fontSizeMinimum"];
 		var fontSizeMaximum = _representation.options["fontSizeMaximum"];
 		var wordCol = knimeTable
@@ -56,10 +56,10 @@
 						var fill = d3.scale.category20();
 						var colorPalette = _representation.options["colorPalette"];
 						switch (colorPalette) {
-						case "Palette B":
+						case "Palette-B":
 							fill = d3.scale.category20b();
 							break;
-						case "Palette C":
+						case "Palette-C":
 							fill = d3.scale.category20c();
 							break;
 						}
