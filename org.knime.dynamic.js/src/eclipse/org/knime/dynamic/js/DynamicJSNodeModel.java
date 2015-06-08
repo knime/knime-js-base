@@ -166,7 +166,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         DynamicJSProcessor processor = null;
         if (m_node.isSetJavaProcessor()) {
             String className = m_node.getJavaProcessor().getClassName();
+            Thread current = Thread.currentThread();
+            ClassLoader oldLoader = current.getContextClassLoader();
             try {
+                current.setContextClassLoader(getClass().getClassLoader());
                 Class<?> processorClass = Class.forName(className);
                 Object pO = processorClass.newInstance();
                 if (!(pO instanceof DynamicJSProcessor)) {
@@ -176,6 +179,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 processor = (DynamicJSProcessor)pO;
             } catch (Exception e) {
                 LOGGER.error("Cannot instantiate java processor class " + className + " - " + e.getMessage(), e);
+            } finally {
+                current.setContextClassLoader(oldLoader);
             }
         }
         return processor;
