@@ -69,8 +69,9 @@ public interface DynamicJSProcessor {
      * @return An array of processed input objects. If an object is not modified the original PortObject is expected,
      *         otherwise new PortObjects can be created or arbitrary Java objects, that can be serialized directly to
      *         JSON. The indices of the array are expected to be the same as in the inObjects array.
+     * @throws Exception If processing the inputs fails for any reason.
      */
     public Object[] processInputObjects(final PortObject[] inObjects, final ExecutionContext exec,
-        final DynamicJSConfig config);
+        final DynamicJSConfig config) throws Exception;
 
 }
