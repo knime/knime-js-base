@@ -68,6 +68,7 @@
 	
 	<xs:complexType name="JavaProcessor">
 		<xs:attribute name="className" type="xs:string" use="required" />
+		<xs:attribute name="hidesLimitRowOption" type="xs:boolean" default="false" />
 	</xs:complexType>
 
 </xs:schema>

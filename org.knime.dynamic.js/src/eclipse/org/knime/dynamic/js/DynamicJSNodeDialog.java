@@ -126,6 +126,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private DialogComponentBoolean m_generateImageComponent;
 
 	private String m_firstTab = "Options";
+	private boolean m_showMaxRows = true;
 
 	/**
 	 * @param nodeConfig
@@ -133,6 +134,11 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	public DynamicJSNodeDialog(final DynamicJSKnimeNode nodeConfig) {
 		m_nodeConfig = nodeConfig;
 		m_config = new DynamicJSConfig(nodeConfig);
+
+		if (m_nodeConfig.isSetJavaProcessor()) {
+		    m_showMaxRows = !m_nodeConfig.getJavaProcessor().getHidesLimitRowOption();
+		}
+
 		DynamicFullDescription desc = m_nodeConfig.getFullDescription();
 		if (desc.getOptions() != null) {
 		    createAdditionalOptions();
@@ -297,7 +303,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	        addDialogComponent(m_generateImageComponent);
 	    }
 
-	    if (m_config.getNumberDataInPorts() > 0) {
+	    if (m_showMaxRows && m_config.getNumberDataInPorts() > 0) {
 	        m_maxRowsComponent = new DialogComponentNumber(new SettingsModelIntegerBounded(DynamicJSConfig.MAX_ROWS_CONF + "model", DynamicJSConfig.DEFAULT_MAX_ROWS, 0, Integer.MAX_VALUE), "Maximum number of rows", 1);
 	        addDialogComponent(m_maxRowsComponent);
 	    }
