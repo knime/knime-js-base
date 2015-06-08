@@ -16,3 +16,4 @@ Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)",
 Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
  lib/schemas.jar
 Export-Package: org.knime.dynamic.js
+Eclipse-BuddyPolicy: dependent
