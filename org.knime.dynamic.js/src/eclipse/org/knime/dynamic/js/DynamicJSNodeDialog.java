@@ -59,7 +59,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.xmlbeans.XmlObject;
-import org.knime.core.data.DataValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -277,7 +276,9 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    ColumnFilter filter = null;
 			    if (cO.isSetFilterClasses()) {
 			        try {
-			            filter = new DataValueColumnFilter(getFilterClasses(cO.getFilterClasses()));
+			            @SuppressWarnings("unchecked")
+			            List<String> filterClasses = cO.getFilterClasses();
+			            filter = new DataValueColumnFilter(m_config.getFilterClasses(filterClasses));
 			        } catch (Exception e) {
 			            throw new ClassCastException(e.getMessage());
 			        }
@@ -310,23 +311,6 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 
 	    closeCurrentGroup();
 	}
-
-	/**
-     * @param filterClasses
-     * @return
-	 * @throws ClassNotFoundException
-     */
-    @SuppressWarnings("unchecked")
-    private Class<? extends DataValue>[] getFilterClasses(final String filterClasses) throws ClassNotFoundException {
-        String[] classes = filterClasses.split(",");
-        Class<? extends DataValue>[] filters =  new Class[classes.length];
-        int i = 0;
-        for (String clazz : classes) {
-            Class<? extends DataValue> c = (Class<? extends DataValue>)Class.forName(clazz);
-            filters[i++] = c;
-        }
-        return filters;
-    }
 
     private void setEnabled(final SettingsModel source, final SettingsModel dest, final String value) {
 		if (value == null) {

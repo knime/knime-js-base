@@ -56,6 +56,7 @@ import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.apache.xmlbeans.XmlObject;
+import org.knime.core.data.DataValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
@@ -180,7 +181,19 @@ public class DynamicJSConfig {
                 m_models.put(sO.getId(), sModel);
             } else if (option instanceof ColumnFilterOption) {
                 ColumnFilterOption cO = (ColumnFilterOption)option;
-                SettingsModelColumnFilter2 cModel = new SettingsModelColumnFilter2(cO.getId());
+                SettingsModelColumnFilter2 cModel = null;
+                if (cO.isSetFilterClasses()) {
+                    try {
+                        @SuppressWarnings("unchecked")
+                        List<String> filterClasses = cO.getFilterClasses();
+                        cModel = new SettingsModelColumnFilter2(cO.getId(), getFilterClasses(filterClasses));
+                    } catch (ClassNotFoundException e) {
+                        //make unchecked
+                        throw new ClassCastException(e.getMessage());
+                    }
+                } else {
+                    cModel = new SettingsModelColumnFilter2(cO.getId());
+                }
                 m_models.put(cO.getId(), cModel);
             } else if (option instanceof ColumnSelectorOption) {
                 ColumnSelectorOption cO = (ColumnSelectorOption)option;
@@ -212,7 +225,7 @@ public class DynamicJSConfig {
                 if (dO.isSetMaxValue()) {
                     maxValue = dO.getMaxValue();
                 }
-                double defaultValue = 0;
+                double defaultValue = 0d;
                 if (dO.isSetDefaultValue()) {
                     defaultValue = dO.getDefaultValue();
                 }
@@ -291,6 +304,22 @@ public class DynamicJSConfig {
                 }
             }
         }
+    }
+
+    /**
+     * @param filterClasses
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    Class<? extends DataValue>[] getFilterClasses(final List<String> filterClasses) throws ClassNotFoundException {
+        Class<? extends DataValue>[] filters =  new Class[filterClasses.size()];
+        int i = 0;
+        for (String clazz : filterClasses) {
+            Class<? extends DataValue> c = (Class<? extends DataValue>)Class.forName(clazz);
+            filters[i++] = c;
+        }
+        return filters;
     }
 
     /**

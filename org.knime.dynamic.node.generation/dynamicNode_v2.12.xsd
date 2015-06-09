@@ -151,6 +151,7 @@
         <xs:attribute name="inPortIndex" type="xs:int" use="required" />
         <xs:attribute name="includeTitle" type="xs:string" />
         <xs:attribute name="excludeTitle" type="xs:string" />
+        <xs:attribute name="filterClasses" type="StringList" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -160,7 +161,7 @@
       <xs:extension base="DynamicOption">
         <xs:attribute name="inPortIndex" type="xs:int" use="required" />
         <xs:attribute name="defaultColumn" type="xs:string" />
-        <xs:attribute name="filterClasses" type="xs:string" />
+        <xs:attribute name="filterClasses" type="StringList" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
