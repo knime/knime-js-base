@@ -109,6 +109,7 @@ import org.knime.dynamicnode.v212.NumberOption;
 import org.knime.dynamicnode.v212.RadioButtonOption;
 import org.knime.dynamicnode.v212.StringListOption;
 import org.knime.dynamicnode.v212.StringOption;
+import org.knime.dynamicnode.v212.SvgOption;
 
 /**
  *
@@ -289,6 +290,13 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
                 cComp.setToolTipText(cO.getTooltip());
                 m_components.put(cO.getId(), cComp);
                 addDialogComponent(cComp);
+			} else if (option instanceof SvgOption) {
+			    SvgOption sO = (SvgOption)option;
+			    SettingsModelSVGOptions model = (SettingsModelSVGOptions)m_config.getModel(sO.getId());
+			    DialogComponentSVGOptions sComp = new DialogComponentSVGOptions(model, sO.getLabel());
+			    sComp.setToolTipText(sO.getTooltip());
+			    m_components.put(sO.getId(), sComp);
+			    addDialogComponent(sComp);
 			}
 		}
 	}

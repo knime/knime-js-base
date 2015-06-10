@@ -109,6 +109,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicjsnode.v212.WebDependency;
 import org.knime.dynamicjsnode.v212.WebResource;
@@ -134,6 +135,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 2.12
  */
 public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
 
@@ -609,9 +611,12 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 value = ((SettingsModelString)model).getStringValue();
 			} else if (model instanceof SettingsModelStringArray) {
 			    value = ((SettingsModelStringArray)model).getStringArrayValue();
+			} else if (model instanceof SettingsModelSVGOptions) {
+			    value = ((SettingsModelSVGOptions)model).getJSONSerializableObject();
 			}
 			if (value != null) {
 			    if (option.getSaveInView()) {
+			        // Don't overwrite options in view value if already set!
 			        if (!valueOptions.containsKey(entry.getKey())) {
 			            valueOptions.put(entry.getKey(), value);
 			        }
@@ -667,6 +672,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	            ((SettingsModelString)model).setStringValue((String)entry.getValue());
 	        } else if (model instanceof SettingsModelStringArray) {
 	            ((SettingsModelStringArray)model).setStringArrayValue((String[])entry.getValue());
+	        } else if (model instanceof SettingsModelSVGOptions) {
+	            ((SettingsModelSVGOptions)model).setFromJSON((JSONSVGOptions)entry.getValue());
 	        }
 	    }
 	}

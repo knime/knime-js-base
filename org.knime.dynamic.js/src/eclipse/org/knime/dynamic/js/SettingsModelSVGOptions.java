@@ -48,12 +48,17 @@
  */
 package org.knime.dynamic.js;
 
+import javax.swing.event.ChangeListener;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.port.PortObjectSpec;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
@@ -64,14 +69,16 @@ public class SettingsModelSVGOptions extends SettingsModel {
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
     private static final String FULLSCREEN = "fullscreen";
+    private static final String SHOW_FULLSCREEN = "showFullscreen";
 
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 600;
     private static final boolean DEFAULT_FULLSCREEN = true;
 
-    private int m_width;
-    private int m_height;
-    private boolean m_fullscreen;
+    private int m_width = DEFAULT_WIDTH;
+    private int m_height = DEFAULT_HEIGHT;
+    private boolean m_showFullscreenOption = DEFAULT_FULLSCREEN;
+    private boolean m_fullscreen = DEFAULT_FULLSCREEN;
 
     private final String m_configName;
 
@@ -176,6 +183,20 @@ public class SettingsModelSVGOptions extends SettingsModel {
     /**
      * @return The allow fullscreen flag.
      */
+    public boolean getShowFullscreenOption() {
+        return m_showFullscreenOption;
+    }
+
+    /**
+     * @param showFullscreenOption the showFullscreenOption to set
+     */
+    public void setShowFullscreenOption(final boolean showFullscreenOption) {
+        m_showFullscreenOption = showFullscreenOption;
+    }
+
+    /**
+     * @return The allow fullscreen flag.
+     */
     public boolean getAllowFullscreen() {
         return m_fullscreen;
     }
@@ -189,6 +210,27 @@ public class SettingsModelSVGOptions extends SettingsModel {
         if (prevFullscreen != m_fullscreen) {
             notifyChangeListeners();
         }
+    }
+
+    /**
+     * @return an object serializable as JSON string
+     */
+    public JSONSVGOptions getJSONSerializableObject() {
+        JSONSVGOptions options = new JSONSVGOptions();
+        options.setWidth(getWidth());
+        options.setHeight(getHeight());
+        options.setFullscreen(getAllowFullscreen());
+        return options;
+    }
+
+    /**
+     * Sets the values from a JSON deserialized object.
+     * @param options the JSON object
+     */
+    public void setFromJSON(final JSONSVGOptions options) {
+        setWidth(options.getWidth());
+        setHeight(options.getHeight());
+        setAllowFullscreen(options.getFullscreen());
     }
 
 
@@ -210,6 +252,7 @@ public class SettingsModelSVGOptions extends SettingsModel {
             setWidth(svgSettings.getInt(WIDTH, m_width));
             setHeight(svgSettings.getInt(HEIGHT, m_height));
             setAllowFullscreen(svgSettings.getBoolean(FULLSCREEN, m_fullscreen));
+            setShowFullscreenOption(svgSettings.getBoolean(SHOW_FULLSCREEN, m_showFullscreenOption));
         } catch (final IllegalArgumentException iae) {
             // if the argument is not accepted: keep the old value.
         }
@@ -225,6 +268,7 @@ public class SettingsModelSVGOptions extends SettingsModel {
         svgSettings.addInt(WIDTH, getWidth());
         svgSettings.addInt(HEIGHT, getHeight());
         svgSettings.addBoolean(FULLSCREEN, getAllowFullscreen());
+        svgSettings.addBoolean(SHOW_FULLSCREEN, getShowFullscreenOption());
     }
 
     /**
@@ -236,6 +280,7 @@ public class SettingsModelSVGOptions extends SettingsModel {
         svgSettings.getInt(WIDTH);
         svgSettings.getInt(HEIGHT);
         svgSettings.getBoolean(FULLSCREEN);
+        svgSettings.getBoolean(SHOW_FULLSCREEN);
     }
 
     /**
@@ -249,6 +294,7 @@ public class SettingsModelSVGOptions extends SettingsModel {
             setWidth(svgSettings.getInt(WIDTH));
             setHeight(svgSettings.getInt(HEIGHT));
             setAllowFullscreen(svgSettings.getBoolean(FULLSCREEN));
+            setShowFullscreenOption(svgSettings.getBoolean(SHOW_FULLSCREEN));
         } catch (final IllegalArgumentException iae) {
             throw new InvalidSettingsException(iae.getMessage());
         }
@@ -263,6 +309,7 @@ public class SettingsModelSVGOptions extends SettingsModel {
         svgSettings.addInt(WIDTH, getWidth());
         svgSettings.addInt(HEIGHT, getHeight());
         svgSettings.addBoolean(FULLSCREEN, getAllowFullscreen());
+        svgSettings.addBoolean(SHOW_FULLSCREEN, getShowFullscreenOption());
     }
 
     /**
@@ -271,6 +318,93 @@ public class SettingsModelSVGOptions extends SettingsModel {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " ('" + m_configName + "')";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void prependChangeListener(final ChangeListener l) {
+        // make method visible in this package
+        super.prependChangeListener(l);
+    }
+
+    /**
+     * Wrapper for JSON serialization
+     * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+     */
+    @JsonAutoDetect
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+    public static class JSONSVGOptions {
+
+        int m_width;
+        int m_height;
+        boolean m_fullscreen;
+
+        /**
+         * @return the width
+         */
+        public int getWidth() {
+            return m_width;
+        }
+
+        /**
+         * @param width the width to set
+         */
+        public void setWidth(final int width) {
+            m_width = width;
+        }
+
+        /**
+         * @return the height
+         */
+        public int getHeight() {
+            return m_height;
+        }
+
+        /**
+         * @param height the height to set
+         */
+        public void setHeight(final int height) {
+            m_height = height;
+        }
+
+        /**
+         * @return true if fullscreen
+         */
+        public boolean getFullscreen() {
+            return m_fullscreen;
+        }
+
+        /**
+         * @param fullscreen the fullscreen to set
+         */
+        public void setFullscreen(final boolean fullscreen) {
+            m_fullscreen = fullscreen;
+        }
+
+        /**
+         * @param settings
+         */
+        public void saveToNodeSettings(final NodeSettingsWO settings) {
+            settings.addInt(WIDTH, m_width);
+            settings.addInt(HEIGHT, m_height);
+            settings.addBoolean(FULLSCREEN, m_fullscreen);
+        }
+
+        /**
+         * @param settings
+         * @return
+         * @throws InvalidSettingsException
+         */
+        public static JSONSVGOptions loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+            JSONSVGOptions options = new JSONSVGOptions();
+            options.setWidth(settings.getInt(WIDTH));
+            options.setHeight(settings.getInt(HEIGHT));
+            options.setFullscreen(settings.getBoolean(FULLSCREEN));
+            return options;
+        }
+
     }
 
 }

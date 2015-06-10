@@ -48,9 +48,18 @@
  */
 package org.knime.dynamic.js;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
@@ -68,17 +77,60 @@ public class DialogComponentSVGOptions extends DialogComponent {
     private final JSpinner m_widthSpinner;
     private final JSpinner m_heightSpinner;
     private final JCheckBox m_allowFullscreenCheckBox;
+    private final boolean m_showFullscreenOption;
 
     /**
      * @param model
+     * @param label
      */
-    public DialogComponentSVGOptions(final SettingsModelSVGOptions model) {
+    public DialogComponentSVGOptions(final SettingsModelSVGOptions model, final String label) {
         super(model);
+        JPanel panel = getComponentPanel();
         m_widthLabel = new JLabel("Image width:");
         m_heightLabel = new JLabel("Image height:");
-        m_widthSpinner = new JSpinner();
-        m_heightSpinner = new JSpinner();
+        m_widthSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+        m_widthSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                updateModel();
+            }
+        });
+        m_heightSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+        m_heightSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                updateModel();
+            }
+        });
         m_allowFullscreenCheckBox = new JCheckBox("Scale view to window");
+        m_allowFullscreenCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                updateModel();
+            }
+        });
+        m_showFullscreenOption = model.getShowFullscreenOption();
+
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory
+                .createEtchedBorder(), label));
+        panel.add(m_widthLabel);
+        panel.add(m_widthSpinner);
+        panel.add(m_heightLabel);
+        panel.add(m_heightSpinner);
+        if (m_showFullscreenOption) {
+            panel.add(m_allowFullscreenCheckBox);
+        }
+
+        // update the inputs, whenever the model changes
+        model.prependChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                updateComponent();
+            }
+        });
+
+        updateComponent();
     }
 
     /**
@@ -86,8 +138,27 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     @Override
     protected void updateComponent() {
-        // TODO Auto-generated method stub
+        SettingsModelSVGOptions model = (SettingsModelSVGOptions)getModel();
+        int width = model.getWidth();
+        int height = model.getHeight();
+        boolean fullscreen = model.getAllowFullscreen();
+        if (!m_widthSpinner.getValue().equals(width)) {
+            m_widthSpinner.setValue(width);
+        }
+        if (!m_heightSpinner.getValue().equals(height)) {
+            m_heightSpinner.setValue(height);
+        }
+        if (!m_allowFullscreenCheckBox.isSelected() == fullscreen) {
+            m_allowFullscreenCheckBox.setSelected(fullscreen);
+        }
+        setEnabledComponents(model.isEnabled());
+    }
 
+    private void updateModel() {
+        SettingsModelSVGOptions model = (SettingsModelSVGOptions)getModel();
+        model.setWidth((int)m_widthSpinner.getValue());
+        model.setHeight((int)m_heightSpinner.getValue());
+        model.setAllowFullscreen(m_allowFullscreenCheckBox.isSelected());
     }
 
     /**
@@ -95,8 +166,7 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     @Override
     protected void validateSettingsBeforeSave() throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
+        updateModel();
     }
 
     /**
@@ -104,8 +174,7 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     @Override
     protected void checkConfigurabilityBeforeLoad(final PortObjectSpec[] specs) throws NotConfigurableException {
-        // TODO Auto-generated method stub
-
+        // always ok
     }
 
     /**
@@ -113,8 +182,9 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     @Override
     protected void setEnabledComponents(final boolean enabled) {
-        // TODO Auto-generated method stub
-
+        m_widthSpinner.setEnabled(enabled);
+        m_heightSpinner.setEnabled(enabled);
+        m_allowFullscreenCheckBox.setEnabled(enabled);
     }
 
     /**
@@ -122,8 +192,7 @@ public class DialogComponentSVGOptions extends DialogComponent {
      */
     @Override
     public void setToolTipText(final String text) {
-        // TODO Auto-generated method stub
-
+        getComponentPanel().setToolTipText(text);
     }
 
 }

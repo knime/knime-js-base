@@ -291,6 +291,22 @@ public class DynamicJSConfig {
                 FileOption fO = (FileOption)option;
                 SettingsModelString sModel = new SettingsModelString(fO.getId(), fO.getDefaultValue());
                 m_models.put(fO.getId(), sModel);
+            } else if (options instanceof SvgOption) {
+                SvgOption sO = (SvgOption)option;
+                SettingsModelSVGOptions sModel = new SettingsModelSVGOptions(sO.getId());
+                if (sO.isSetDefaultWidth()) {
+                    sModel.setWidth(sO.getDefaultWidth().intValue());
+                }
+                if (sO.isSetDefaultHeight()) {
+                    sModel.setHeight(sO.getDefaultHeight().intValue());
+                }
+                if (sO.isSetDefaultFullscreen()) {
+                    sModel.setAllowFullscreen(sO.getDefaultFullscreen());
+                }
+                if (sO.isSetAllowFullscreen()) {
+                    sModel.setShowFullscreenOption(sO.getAllowFullscreen());
+                }
+                m_models.put(sO.getId(), sModel);
             }
 
             if (option instanceof DynamicOption) {

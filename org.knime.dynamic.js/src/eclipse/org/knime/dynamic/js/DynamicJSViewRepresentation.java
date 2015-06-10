@@ -56,6 +56,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
@@ -281,6 +282,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 			    settings.addLong(valueKey, ((Date)value).getTime());
 			} else if (value instanceof JSONDataTable) {
 			    ((JSONDataTable)value).saveJSONToNodeSettings(settings.addNodeSettings(valueKey));
+			} else if (value instanceof JSONSVGOptions) {
+			    ((JSONSVGOptions)value).saveToNodeSettings(settings.addNodeSettings(valueKey));
 			} else if (value instanceof Map<?,?>) {
 			    saveMap(settings.addNodeSettings(valueKey), (Map<String, ?>)value, true);
 			} else {
@@ -362,6 +365,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 			    value = d;
 			} else if (JSONDataTable.class.getName().equals(clazz)) {
 			    value = JSONDataTable.loadFromNodeSettings(settings.getNodeSettings(valueKey));
+			} else if (JSONSVGOptions.class.getName().equals(clazz)) {
+			    value = JSONSVGOptions.loadFromNodeSettings(settings.getNodeSettings(valueKey));
 			} else if (Map.class.getName().equals(clazz)) {
 			    value = loadMap(settings.getNodeSettings(valueKey));
 			} else {
