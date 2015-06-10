@@ -291,7 +291,7 @@ public class DynamicJSConfig {
                 FileOption fO = (FileOption)option;
                 SettingsModelString sModel = new SettingsModelString(fO.getId(), fO.getDefaultValue());
                 m_models.put(fO.getId(), sModel);
-            } else if (options instanceof SvgOption) {
+            } else if (option instanceof SvgOption) {
                 SvgOption sO = (SvgOption)option;
                 SettingsModelSVGOptions sModel = new SettingsModelSVGOptions(sO.getId());
                 if (sO.isSetDefaultWidth()) {

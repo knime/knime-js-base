@@ -293,10 +293,12 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			} else if (option instanceof SvgOption) {
 			    SvgOption sO = (SvgOption)option;
 			    SettingsModelSVGOptions model = (SettingsModelSVGOptions)m_config.getModel(sO.getId());
-			    DialogComponentSVGOptions sComp = new DialogComponentSVGOptions(model, sO.getLabel());
-			    sComp.setToolTipText(sO.getTooltip());
-			    m_components.put(sO.getId(), sComp);
-			    addDialogComponent(sComp);
+			    if (model != null) {
+			        DialogComponentSVGOptions sComp = new DialogComponentSVGOptions(model, sO.getLabel());
+			        sComp.setToolTipText(sO.getTooltip());
+			        m_components.put(sO.getId(), sComp);
+			        addDialogComponent(sComp);
+			    }
 			}
 		}
 	}
