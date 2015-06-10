@@ -287,6 +287,7 @@
         <xs:attribute name="portIndex" type="xs:int" use="required" />
         <xs:attribute name="defaultWidth" type="xs:positiveInteger" default="800" />
         <xs:attribute name="defaultHeight" type="xs:positiveInteger" default="600" />
+        <xs:attribute name="additionalWait" type="xs:positiveInteger" use="optional" />
         <xs:attribute name="allowFullscreen" type="xs:boolean" default="true" />
         <xs:attribute name="defaultFullscreen" type="xs:boolean" default="true" />
       </xs:extension>
