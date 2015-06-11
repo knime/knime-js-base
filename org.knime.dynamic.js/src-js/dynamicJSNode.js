@@ -67,6 +67,10 @@ dynamicJSNode = function() {
 		});
 	};
 	
+	node.getSVG = function() {
+	   return window[_innerNamespace].getSVG();
+	}
+	
 	node.validate = function() {
 		return window[_innerNamespace].validate();
 	}
