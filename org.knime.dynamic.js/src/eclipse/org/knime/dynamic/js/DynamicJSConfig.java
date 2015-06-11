@@ -198,7 +198,7 @@ public class DynamicJSConfig {
             } else if (option instanceof ColumnSelectorOption) {
                 ColumnSelectorOption cO = (ColumnSelectorOption)option;
                 SettingsModel model;
-                if (cO.getUseRowID()) {
+                if (cO.getAllowRowID()) {
                     model = new SettingsModelColumnName(cO.getId(), cO.getDefaultColumn());
                 } else {
                     model = new SettingsModelString(cO.getId(), cO.getDefaultColumn());

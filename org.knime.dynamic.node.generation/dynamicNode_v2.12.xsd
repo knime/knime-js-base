@@ -163,7 +163,7 @@
         <xs:attribute name="defaultColumn" type="xs:string" />
         <xs:attribute name="filterClasses" type="StringList" />
         <xs:attribute name="allowNoneColumn" type="xs:boolean" default="false" />
-        <xs:attribute name="useRowID" type="xs:boolean" default="false" />
+        <xs:attribute name="allowRowID" type="xs:boolean" default="false" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
