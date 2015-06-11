@@ -489,6 +489,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 setOptionsOnViewContent(inObjects);
                 viewRepresentation.setInitialized();
             }
+            viewRepresentation.setRunningInView(false);
         }
 	}
 
@@ -508,6 +509,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 pOArray[i] = getPortObject(i, inObjects, exec);
             }
         }
+        getViewRepresentation().setRunningInView(true);
         return pOArray;
 	}
 

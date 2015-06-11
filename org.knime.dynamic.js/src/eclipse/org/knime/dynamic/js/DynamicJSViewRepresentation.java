@@ -92,6 +92,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     static final String OPTIONS = "options";
     static final String CLASS_NAME = "className";
     static final String JSON_VALUE = "jsonValue";
+    private static final String NEW = "new";
+    private static final String IN_VIEW = "inView";
 
     private String m_jsNamespace = new String();
     private String[] m_jsCode = new String[0];
@@ -105,6 +107,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private Map<String, String> m_binaryFiles = new HashMap<String, String>();
 
     private boolean m_new = true;
+    private boolean m_runningInView = true;
 
     @JsonProperty("jsCode")
     public String[] getJsCode() {
@@ -216,6 +219,20 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         m_new = false;
     }
 
+    /**
+     * @return if running in view
+     */
+    public boolean getRunningInView() {
+        return m_runningInView;
+    }
+
+    /**
+     * @param runningInView the runningInView to set
+     */
+    public void setRunningInView(final boolean runningInView) {
+        m_runningInView = runningInView;
+    }
+
 	@Override
 	public void saveToNodeSettings(final NodeSettingsWO settings) {
 		settings.addString(JS_NAMESPACE, m_jsNamespace);
@@ -224,6 +241,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		settings.addStringArray(JS_DEPENDENCIES, m_jsDependencies);
         settings.addStringArray(CSS_DEPENDENCIES, m_cssDependencies);
         settings.addStringArray(URL_DEPENDENCIES, m_urlDependencies);
+        settings.addBoolean(NEW, m_new);
+        settings.addBoolean(IN_VIEW, m_runningInView);
         saveMap(settings.addNodeSettings(FLOW_VARIABLES), m_flowVariables, false);
         saveMap(settings.addNodeSettings(BINARY_FILES), m_binaryFiles, false);
         saveMap(settings.addNodeSettings(OPTIONS), m_options, true);
@@ -303,6 +322,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		m_jsNamespace = settings.getString(JS_NAMESPACE);
         m_cssDependencies = settings.getStringArray(CSS_DEPENDENCIES);
         m_urlDependencies = settings.getStringArray(URL_DEPENDENCIES);
+        m_new = settings.getBoolean(NEW);
+        m_runningInView = settings.getBoolean(IN_VIEW);
         m_flowVariables = (Map<String, String>) loadMap(settings.getNodeSettings(FLOW_VARIABLES));
         m_binaryFiles = (Map<String, String>) loadMap(settings.getNodeSettings(BINARY_FILES));
         m_options = (Map<String, Object>) loadMap(settings.getNodeSettings(OPTIONS));
