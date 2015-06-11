@@ -197,8 +197,13 @@ public class DynamicJSConfig {
                 m_models.put(cO.getId(), cModel);
             } else if (option instanceof ColumnSelectorOption) {
                 ColumnSelectorOption cO = (ColumnSelectorOption)option;
-                SettingsModelColumnName cModel = new SettingsModelColumnName(cO.getId(), cO.getDefaultColumn());
-                m_models.put(cO.getId(), cModel);
+                SettingsModel model;
+                if (cO.getUseRowID()) {
+                    model = new SettingsModelColumnName(cO.getId(), cO.getDefaultColumn());
+                } else {
+                    model = new SettingsModelString(cO.getId(), cO.getDefaultColumn());
+                }
+                m_models.put(cO.getId(), model);
             } else if (option instanceof IntegerOption) {
                 IntegerOption iO = (IntegerOption)option;
                 int minValue = Integer.MIN_VALUE;

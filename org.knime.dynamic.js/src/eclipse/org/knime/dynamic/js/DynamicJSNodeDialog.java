@@ -273,7 +273,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 				addDialogComponent(cComp);
 			} else if (option instanceof ColumnSelectorOption) {
 			    ColumnSelectorOption cO = (ColumnSelectorOption)option;
-			    SettingsModelColumnName model = (SettingsModelColumnName)m_config.getModel(cO.getId());
+			    SettingsModelString model = (SettingsModelString)m_config.getModel(cO.getId());
 			    ColumnFilter filter = null;
 			    if (cO.isSetFilterClasses()) {
 			        try {
@@ -286,7 +286,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    }
                 DialogComponentColumnNameSelection cComp =
                     new DialogComponentColumnNameSelection(model, cO.getLabel(), cO.getInPortIndex(), cO.getOptional(),
-                        true, filter);
+                       cO.getAllowNoneColumn(), filter);
                 cComp.setToolTipText(cO.getTooltip());
                 m_components.put(cO.getId(), cComp);
                 addDialogComponent(cComp);
