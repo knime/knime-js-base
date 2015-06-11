@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
+	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd"
+	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/labs/quickform/view"
+	icon="../js.png" type="Visualizer">
+
+	<name>Box Plot</name>
+	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
+	<fullDescription>
+		<intro>
+			The categories and values can be selected from the input table.
+		</intro>
+		<tab name="Options">
+			<options>
+			    <checkBoxOption name="Conditional Box Plot" id="conditional"
+                    label="Plot conditional box plot" defaultValue="false">
+                    Check to plot the conditional box plot, where a box for each class is drawn.
+                </checkBoxOption>
+                
+                <checkBoxOption name="Multiple boxes" id="multi"
+                    label="Plot multiple boxes" defaultValue="true" enableDependency="conditional" enableValue="false">
+                    Check to plot boxes for each of the selected column.
+                    If not checked, the plot contains a dropdown selector for choosing the column to plot.
+                </checkBoxOption>
+			
+				<!-- Not sure this should be StringValue -->
+				<columnSelectorOption name="Category Column" enableDependency="conditional" enableValue="true"
+					id="catCol" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
+					Select the column that contains the category values.
+				</columnSelectorOption>
+
+				<!-- These should be numeric? -->
+				<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
+				<columnFilterOption name="Selected columns"
+					id="columns" inPortIndex="0" label="Columns to show" filterClasses="org.knime.core.data.DoubleValue">
+					Select the columns for which you wish to plot boxes.
+				</columnFilterOption>
+				
+				<!-- Not sure this should be StringValue -->
+                <columnSelectorOption name="Numeric Column" saveInView="true"
+                    id="numCol" inPortIndex="0" label="Numeric Column" filterClasses="org.knime.core.data.DoubleValue">
+                    Select the column that contains the numeric values.
+                </columnSelectorOption>
+			</options>
+		</tab>
+		<tab name="General Plot Options">
+			<options>
+				<stringOption name="Title" id="title" label="Title"
+					defaultValue="Title of Graph" optional="true" saveInView="true">
+					The chart title.
+				</stringOption>
+				
+				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
+                    defaultValue="Subtitle of Graph" optional="true" saveInView="true">
+                    The chart subtitle.
+                </stringOption>
+<!-- 
+				<stringOption name="catLabel" id="catLabel" label="Category-axis label"
+					optional="true" defaultValue="Category-axis label">
+					The label used for the category axis.
+				</stringOption>
+
+				<stringOption name="freqLabel" id="freqLabel"
+					label="y-axis label" optional="true" defaultValue="y-axis label">
+					The label used for the Y axis.
+				</stringOption>
+ -->
+				
+				<svgOption name="Create image at outport" id="svg" portIndex="0" label="Create image at output port"></svgOption>
+				
+<!-- 
+                <checkBoxOption name="Resize to window" id="resizeToWindow"
+                    label="Resize to window" defaultValue="true">
+                    Check to let the chart fill all available space in the window.
+                </checkBoxOption>
+                
+				<integerOption name="Image width (in pixels)" id="width"
+					label="Image width (in pixels)" defaultValue="800" minValue="1"
+					maxValue="20000">
+					Image width (in pixels)
+				</integerOption>
+
+				<integerOption name="Image height (in pixels)" id="height"
+					label="Image height (in pixels)" defaultValue="600" minValue="1"
+					maxValue="20000">
+					Image height (in pixels)
+				</integerOption>
+				 -->
+				 
+				<colorOption name="Background color" id="backgroundColor" label="Background color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+                    
+                    <colorOption name="Data area color" id="daColor" label="Data area color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+
+				<!-- Use a color selector to choose bar colors? -->
+				<colorOption name="Box color" id="boxColor" label="Box color"
+					format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+			</options>
+		</tab>
+		
+		<tab name="Control Options">
+          <options>
+              <checkBoxOption name="Enable view controls" id="enableViewControls"
+                   label="Enable view controls" defaultValue="true">
+                   Check to enable controls in the chart.
+               </checkBoxOption>
+               <checkBoxOption name="Enable column selection" id="enableColumnSelection"
+                   label="Enable column selection" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+                   Check to enable the selection of the numeric column to show the box plot for.
+               </checkBoxOption>
+               <checkBoxOption name="Enable Title editing" id="enableTitleEdit"
+                   label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+                   Check to enable the editing of the title within the view.
+               </checkBoxOption>
+               <checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
+                   label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+                   Check to enable the editing of the subtitle within the view.
+               </checkBoxOption>
+           </options>
+        </tab>
+
+	</fullDescription>
+	<outputOptions>
+		<dataOutputOption outPortIndex="0" id="chartImage" />
+	</outputOptions>
+	<interactiveView name="D3 Box Plot">
+		A D3.js implementation of a Box Plot.
+	</interactiveView>
+	<ports>
+		<inPort portType="Data" name="Input Data" index="0">
+			Data table containing the categories and values to be plotted in a box plot.
+		</inPort>
+		<outPort portType="Image" name="Box Plot image" index="0">
+			SVG image of the box plot.
+		</outPort>
+	</ports>
+	<js:resources>
+		<js:resource type="js" path="boxplot.js" />
+		<js:resource type="css" path="styles.css" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="D3" path="D3_3.2.8" type="local" />
+		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
+	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.base.boxplot.BoxplotProcessor" hidesLimitRowOption="true"/>
+</js:knimeNode>
