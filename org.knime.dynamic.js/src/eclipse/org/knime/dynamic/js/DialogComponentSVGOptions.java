@@ -48,12 +48,15 @@
  */
 package org.knime.dynamic.js;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -86,9 +89,16 @@ public class DialogComponentSVGOptions extends DialogComponent {
     public DialogComponentSVGOptions(final SettingsModelSVGOptions model, final String label) {
         super(model);
         JPanel panel = getComponentPanel();
-        m_widthLabel = new JLabel("Image width:");
-        m_heightLabel = new JLabel("Image height:");
+        m_widthLabel = new JLabel("Image width");
+        m_widthLabel.setPreferredSize(new Dimension(100, 22));
+        m_heightLabel = new JLabel("Image height");
+        m_heightLabel.setPreferredSize(new Dimension(100, 22));
         m_widthSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+        m_widthSpinner.setMaximumSize(new Dimension(100, 22));
+        JSpinner.DefaultEditor editor =
+                (JSpinner.DefaultEditor)m_widthSpinner.getEditor();
+        editor.getTextField().setColumns(7);
+        editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
         m_widthSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
@@ -96,13 +106,17 @@ public class DialogComponentSVGOptions extends DialogComponent {
             }
         });
         m_heightSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+        m_heightSpinner.setMaximumSize(new Dimension(100, 22));
+        editor = (JSpinner.DefaultEditor)m_heightSpinner.getEditor();
+        editor.getTextField().setColumns(7);
+        editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
         m_heightSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 updateModel();
             }
         });
-        m_allowFullscreenCheckBox = new JCheckBox("Scale view to window");
+        m_allowFullscreenCheckBox = new JCheckBox("Scale view to window size");
         m_allowFullscreenCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -114,13 +128,32 @@ public class DialogComponentSVGOptions extends DialogComponent {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory
                 .createEtchedBorder(), label));
-        panel.add(m_widthLabel);
-        panel.add(m_widthSpinner);
-        panel.add(m_heightLabel);
-        panel.add(m_heightSpinner);
+        panel.add(Box.createGlue());
+        Box widthBox = Box.createHorizontalBox();
+        widthBox.add(Box.createHorizontalGlue());
+        widthBox.add(m_widthLabel);
+        widthBox.add(m_widthSpinner);
+        widthBox.add(Box.createHorizontalGlue());
+        panel.add(widthBox);
+        panel.add(Box.createVerticalStrut(5));
+
+        Box heightBox = Box.createHorizontalBox();
+        heightBox.add(Box.createHorizontalGlue());
+        heightBox.add(m_heightLabel);
+        heightBox.add(m_heightSpinner);
+        heightBox.add(Box.createHorizontalGlue());
+        panel.add(heightBox);
+
         if (m_showFullscreenOption) {
-            panel.add(m_allowFullscreenCheckBox);
+            Box fullscreenBox = Box.createHorizontalBox();
+            fullscreenBox.add(Box.createHorizontalGlue());
+            fullscreenBox.add(m_allowFullscreenCheckBox);
+            fullscreenBox.add(Box.createHorizontalGlue());
+            fullscreenBox.setPreferredSize(new Dimension(250, 22));
+            panel.add(Box.createVerticalStrut(5));
+            panel.add(fullscreenBox);
         }
+        panel.add(Box.createGlue());
 
         // update the inputs, whenever the model changes
         model.prependChangeListener(new ChangeListener() {

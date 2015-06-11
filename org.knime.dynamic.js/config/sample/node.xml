@@ -36,6 +36,9 @@
 						label="Sample Column Filter" enableDependency="sample_string_option" enableValue="enable">
 					This would be a sample column filter for the first data in port.
 				</columnFilterOption>
+				<svgOption name="Image" id="svg" portIndex="1" label="Image" additionalWait="3000" defaultWidth="400" defaultHeight="400" defaultFullscreen="false">
+					Settings for image generation.
+				</svgOption>
 			</options>
 		</tab>
     </fullDescription>
@@ -48,6 +51,9 @@
 		</inPort>
 		<outPort portType="FlowVariable" name="SampleOutport" index="0">
 			Sample description for a <n:i>sample</n:i> outport.
+		</outPort>
+		<outPort portType="Image" name="Generated SVG" index="1">
+			Sample image outport.
 		</outPort>
 	</ports>
 	<js:resources>
