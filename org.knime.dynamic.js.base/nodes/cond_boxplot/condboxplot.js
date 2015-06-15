@@ -87,7 +87,7 @@
     function createControls(controlsContainer) {
         if (_representation.options.enableViewControls) {
         
-            if (!_representation.options.multi && _representation.options.enableColumnSelection) {
+            if (_representation.options.enableColumnSelection) {
                 var colSelectDiv = controlsContainer.append("div");
                 colSelectDiv.append("label").attr("for", "colSelect").text("Selected column: ");
                 var select = colSelectDiv.append("select").attr("id", "colSelect");
@@ -144,13 +144,7 @@
     }
 
     function drawChart(resizing) {
-        
-        if (_representation.options.multi) {
-            _data = _representation.inObjects[0];
-        } else {
-            _data = {};
-            _data[_value.options.numCol] = _representation.inObjects[0][_value.options.numCol];
-        }
+        _data = _representation.inObjects[0][_value.options.numCol];
         
         maxY = Number.NEGATIVE_INFINITY;
         for (var key in _data) {
@@ -210,12 +204,29 @@
             
        d3YAxis.select("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
         
+        plotG.selectAll(".axis-label").remove();
+
+        plotG.append("text")
+            .attr("class", "y axis-label")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text(_value.options.numCol);
+            
+       plotG.append("text")
+        .attr("class", "x axis-label")
+        .attr("text-anchor", "end")
+        .attr("x", w)
+        .attr("y", h - 6)
+        .text("class");
+
         var range = x.range();
         var duration = 500;
         
         var boxG = plotG.selectAll("g.box")
         .data(d3.entries(_data), function(d) {
-            return (_representation.options.multi) ? d.key : "__dummy__";
+            return d.key;
         });
         
         boxG.exit().remove();

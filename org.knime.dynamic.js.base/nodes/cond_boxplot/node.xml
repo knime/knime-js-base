@@ -6,26 +6,29 @@
 	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/labs/quickform/view"
 	icon="../js.png" type="Visualizer">
 
-	<name>Box Plot</name>
-	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
+	<name>Conditional Box Plot</name>
+	<shortDescription>This node provides a view with a Conditional Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>
 			The categories and values can be selected from the input table.
 		</intro>
 		<tab name="Options">
 			<options>
+				<!-- Not sure this should be StringValue -->
+				<columnSelectorOption name="Category Column"
+					id="catCol" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
+					Select the column that contains the category values.
+				</columnSelectorOption>
+
+				<!-- These should be numeric? -->
+				<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
 				<columnFilterOption name="Included columns"
 					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
 					Select the columns for which you wish to plot boxes.
 				</columnFilterOption>
 				
-				<checkBoxOption name="Multiple boxes" id="multi"
-                    label="Plot multiple boxes" defaultValue="true">
-                    Check to plot boxes for each of the selected column.
-                    If not checked, the plot contains a dropdown selector for choosing the column to plot.
-                </checkBoxOption>
 				<!-- Not sure this should be StringValue -->
-                <columnSelectorOption name="Selected Column" saveInView="true" enableDependency="multi" enableValue="false"
+                <columnSelectorOption name="Selected Column" saveInView="true"
                     id="numCol" inPortIndex="0" label="Selected Column" filterClasses="org.knime.core.data.DoubleValue">
                     Select the column that contains the numeric values.
                 </columnSelectorOption>
@@ -42,39 +45,10 @@
                     defaultValue="Subtitle of Graph" optional="true" saveInView="true">
                     The chart subtitle.
                 </stringOption>
-<!-- 
-				<stringOption name="catLabel" id="catLabel" label="Category-axis label"
-					optional="true" defaultValue="Category-axis label">
-					The label used for the category axis.
-				</stringOption>
 
-				<stringOption name="freqLabel" id="freqLabel"
-					label="y-axis label" optional="true" defaultValue="y-axis label">
-					The label used for the Y axis.
-				</stringOption>
- -->
 				
 				<svgOption name="Create image at outport" id="svg" portIndex="0" label="Create image at output port"></svgOption>
-				
-<!-- 
-                <checkBoxOption name="Resize to window" id="resizeToWindow"
-                    label="Resize to window" defaultValue="true">
-                    Check to let the chart fill all available space in the window.
-                </checkBoxOption>
-                
-				<integerOption name="Image width (in pixels)" id="width"
-					label="Image width (in pixels)" defaultValue="800" minValue="1"
-					maxValue="20000">
-					Image width (in pixels)
-				</integerOption>
 
-				<integerOption name="Image height (in pixels)" id="height"
-					label="Image height (in pixels)" defaultValue="600" minValue="1"
-					maxValue="20000">
-					Image height (in pixels)
-				</integerOption>
-				 -->
-				 
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
                     
@@ -112,7 +86,7 @@
 	<outputOptions>
 		<dataOutputOption outPortIndex="0" id="chartImage" />
 	</outputOptions>
-	<interactiveView name="D3 Box Plot">
+	<interactiveView name="D3 Conditional Box Plot">
 		A D3.js implementation of a Box Plot.
 	</interactiveView>
 	<ports>
@@ -124,12 +98,12 @@
 		</outPort>
 	</ports>
 	<js:resources>
-		<js:resource type="js" path="boxplot.js" />
+		<js:resource type="js" path="condboxplot.js" />
 		<js:resource type="css" path="styles.css" />
 	</js:resources>
 	<js:dependencies>
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
 	</js:dependencies>
-	<js:javaProcessor className="org.knime.dynamic.js.base.boxplot.BoxplotProcessor" hidesLimitRowOption="true"/>
+	<js:javaProcessor className="org.knime.dynamic.js.base.boxplot.ConditionalBoxplotProcessor" hidesLimitRowOption="true"/>
 </js:knimeNode>
