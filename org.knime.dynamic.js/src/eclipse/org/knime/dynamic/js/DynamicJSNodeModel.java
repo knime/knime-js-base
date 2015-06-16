@@ -484,8 +484,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 
                 readResourceContents();
                 viewRepresentation.setJsNamespace(m_node.getJsNamespace());
-                setPathsFromLibNames(getDependencies(true));
-                viewRepresentation.setUrlDependencies(getDependencies(false));
+                List<DynamicJSDependency> dependencies = setPathsFromLibNames(getDependencies(true));
+                dependencies.addAll(getDependencies(false));
+                viewRepresentation.setJsDependencies(dependencies.toArray(new DynamicJSDependency[0]));
                 setOptionsOnViewContent(inObjects);
                 viewRepresentation.setInitialized();
             }
@@ -754,18 +755,29 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return null;
 	}
 
-	private String[] getDependencies(final boolean local) {
-		List<String> deps = new ArrayList<String>();
+	private List<DynamicJSDependency> getDependencies(final boolean local) {
+		List<DynamicJSDependency> deps = new ArrayList<DynamicJSDependency>();
 		if (m_node.getDependencies() != null) {
 			for (WebDependency dep : m_node.getDependencies().getDependencyList()) {
+			    DynamicJSDependency jsDep = new DynamicJSDependency();
+			    jsDep.setName(dep.getName());
+			    jsDep.setPath(dep.getPath());
+			    jsDep.setUsesDefine(dep.getUsesDefine());
+			    jsDep.setExports(dep.getExports());
+			    @SuppressWarnings("unchecked")
+                List<String> recDeps = dep.getDependsOn();
+			    if (recDeps != null && recDeps.size() > 0) {
+			        jsDep.setDependencies(recDeps.toArray(new String[0]));
+			    }
+			    jsDep.setLocal(local);
 				if (local && dep.getType().equals(WebDependency.Type.LOCAL)) {
-					deps.add(dep.getPath());
+					deps.add(jsDep);
 				} else if (!local && dep.getType().equals(WebDependency.Type.URL)) {
-					deps.add(dep.getPath());
+					deps.add(jsDep);
 				}
 			}
 		}
-		return deps.toArray(new String[0]);
+		return deps;
 	}
 
 	private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable) throws CanceledExecutionException {
@@ -780,21 +792,23 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private static final String ID_WEB_RES = "org.knime.js.core.webResources";
     private static final String ATTR_RES_BUNDLE_ID = "webResourceBundleID";
     private static final String ID_IMPORT_RES = "importResource";
+    private static final String ID_DEPENDENCY = "webDependency";
     private static final String ATTR_PATH = "relativePath";
     private static final String ATTR_TYPE = "type";
 
-    private void setPathsFromLibNames(final String[] libNames) {
-        ArrayList<String> jsPaths = new ArrayList<String>();
+    private List<DynamicJSDependency> setPathsFromLibNames(final List<DynamicJSDependency> libDeps) {
+        ArrayList<DynamicJSDependency> jsDependencies = new ArrayList<DynamicJSDependency>();
         ArrayList<String> cssPaths = new ArrayList<String>();
-        for (String lib : libNames) {
-            IConfigurationElement confElement = getConfigurationFromWebResID(lib);
+        for (DynamicJSDependency lib : libDeps) {
+            IConfigurationElement confElement = getConfigurationFromWebResID(lib.getPath());
             if (confElement != null) {
                 for (IConfigurationElement resElement : confElement.getChildren(ID_IMPORT_RES)) {
                     String path = resElement.getAttribute(ATTR_PATH);
                     String type = resElement.getAttribute(ATTR_TYPE);
                     if (path != null && type != null) {
                         if (type.equalsIgnoreCase("javascript")) {
-                            jsPaths.add(path);
+                            lib.setPath(path);
+                            jsDependencies.add(lib);
                         } else if (type.equalsIgnoreCase("css")) {
                             cssPaths.add(path);
                         }
@@ -802,13 +816,25 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                         setWarningMessage("Required library " + lib + " is not correctly configured");
                     }
                 }
+                List<DynamicJSDependency> recDeps = new ArrayList<DynamicJSDependency>();
+                for (IConfigurationElement dependencyConf : confElement.getChildren(ID_DEPENDENCY)) {
+                    String dependencyID = dependencyConf.getAttribute(ATTR_RES_BUNDLE_ID);
+                    DynamicJSDependency dep = new DynamicJSDependency();
+                    dep.setName(dependencyID);
+                    dep.setPath(dependencyID);
+                    recDeps.add(dep);
+                    lib.addDependencies(dependencyID);
+                }
+                if (recDeps.size() > 0) {
+                    jsDependencies.addAll(setPathsFromLibNames(recDeps));
+                }
             } else {
                 setWarningMessage("Required library is not registered: " + lib);
             }
         }
         DynamicJSViewRepresentation representation = getViewRepresentation();
-        representation.setJsDependencies(jsPaths.toArray(new String[0]));
-        representation.setCssDependencies(cssPaths.toArray(new String[0]));
+        representation.addCssDependencies(cssPaths.toArray(new String[0]));
+        return jsDependencies;
     }
 
     private IConfigurationElement getConfigurationFromWebResID(final String id) {

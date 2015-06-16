@@ -61,8 +61,9 @@
 		<js:resource type="css" path="sample.css" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="D3" path="D3_3.2.8" type="local" />
-		<js:dependency name="jQuery" path="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="url" />
+		<js:dependency name="d3" path="D3_3.2.8" type="local" exports="d3" />
+		<js:dependency name="d3-tip" path="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js" type="url" dependsOn="d3" exports="d3.tip" />
+		<js:dependency name="jquery" path="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="url" usesDefine="true" />
 	</js:dependencies>
 	<js:javaProcessor className="org.knime.dynamic.js.sample.Processor" />
 </js:knimeNode>

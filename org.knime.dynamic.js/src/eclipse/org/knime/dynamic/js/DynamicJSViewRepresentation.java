@@ -47,8 +47,11 @@
  */
 package org.knime.dynamic.js;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -85,7 +88,6 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	private static final String CSS_CODE = "cssCode";
 	private static final String JS_DEPENDENCIES = "jsDependencies";
     private static final String CSS_DEPENDENCIES = "cssDependencies";
-    private static final String URL_DEPENDENCIES = "urlDependencies";
     private static final String BINARY_FILES = "binaryFiles";
     static final String IN_OBJECTS = "inObjects";
     static final String FLOW_VARIABLES = "variables";
@@ -98,9 +100,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private String m_jsNamespace = new String();
     private String[] m_jsCode = new String[0];
     private String[] m_cssCode = new String[0];
-    private String[] m_jsDependencies = new String[0];
-    private String[] m_cssDependencies = new String[0];
-    private String[] m_urlDependencies = new String[0];
+    private DynamicJSDependency[] m_jsDependencies = new DynamicJSDependency[0];
+    private List<String> m_cssDependencies = new ArrayList<String>();
     private Object[] m_inObjects = new Object[0];
     private Map<String, String> m_flowVariables = new HashMap<String, String>();
     private Map<String, Object> m_options = new HashMap<String, Object>();
@@ -130,23 +131,13 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("jsDependencies")
-    public String[] getJsDependencies() {
+    public DynamicJSDependency[] getJsDependencies() {
 		return m_jsDependencies;
 	}
 
     @JsonProperty("jsDependencies")
-    public void setJsDependencies(final String[] jsDependencies) {
+    public void setJsDependencies(final DynamicJSDependency[] jsDependencies) {
 		m_jsDependencies = jsDependencies;
-	}
-
-    @JsonProperty("urlDependencies")
-    public String[] getUrlDependencies() {
-		return m_urlDependencies;
-	}
-
-    @JsonProperty("urlDependencies")
-    public void setUrlDependencies(final String[] urlDependencies) {
-		m_urlDependencies = urlDependencies;
 	}
 
     @JsonProperty("jsNamespace")
@@ -161,13 +152,18 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 
     @JsonProperty("cssDependencies")
     public String[] getCssDependencies() {
-		return m_cssDependencies;
+		return m_cssDependencies.toArray(new String[0]);
 	}
 
     @JsonProperty("cssDependencies")
     public void setCssDependencies(final String[] cssDependencies) {
-		m_cssDependencies = cssDependencies;
+		m_cssDependencies = Arrays.asList(cssDependencies);
 	}
+
+    @JsonIgnore
+    public void addCssDependencies(final String... cssDependencies) {
+        m_cssDependencies.addAll(Arrays.asList(cssDependencies));
+    }
 
     @JsonProperty("inObjects")
     public Object[] getInObjects() {
@@ -238,9 +234,12 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		settings.addString(JS_NAMESPACE, m_jsNamespace);
 		settings.addStringArray(JS_CODE, m_jsCode);
 		settings.addStringArray(CSS_CODE, m_cssCode);
-		settings.addStringArray(JS_DEPENDENCIES, m_jsDependencies);
-        settings.addStringArray(CSS_DEPENDENCIES, m_cssDependencies);
-        settings.addStringArray(URL_DEPENDENCIES, m_urlDependencies);
+		NodeSettingsWO dependencySettings = settings.addNodeSettings(JS_DEPENDENCIES);
+		dependencySettings.addInt(NUM_SETTINGS, m_jsDependencies.length);
+		for (int i = 0; i < m_jsDependencies.length; i++) {
+		    m_jsDependencies[i].saveToNodeSettings(dependencySettings.addNodeSettings("dependency_" + i));
+		}
+        settings.addStringArray(CSS_DEPENDENCIES, m_cssDependencies.toArray(new String[0]));
         settings.addBoolean(NEW, m_new);
         settings.addBoolean(IN_VIEW, m_runningInView);
         saveMap(settings.addNodeSettings(FLOW_VARIABLES), m_flowVariables, false);
@@ -316,12 +315,17 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	@Override
 	public void loadFromNodeSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_jsDependencies = settings.getStringArray(JS_DEPENDENCIES);
+		NodeSettingsRO dependencySettings = settings.getNodeSettings(JS_DEPENDENCIES);
+		m_jsDependencies = new DynamicJSDependency[dependencySettings.getInt(NUM_SETTINGS)];
+		for (int i = 0; i < m_jsDependencies.length; i++) {
+		    DynamicJSDependency dep = new DynamicJSDependency();
+		    dep.loadFromNodeSettings(dependencySettings.getNodeSettings("dependency_" + i));
+		    m_jsDependencies[i] = dep;
+		}
 		m_jsCode = settings.getStringArray(JS_CODE);
 		m_cssCode = settings.getStringArray(CSS_CODE);
 		m_jsNamespace = settings.getString(JS_NAMESPACE);
-        m_cssDependencies = settings.getStringArray(CSS_DEPENDENCIES);
-        m_urlDependencies = settings.getStringArray(URL_DEPENDENCIES);
+        m_cssDependencies = Arrays.asList(settings.getStringArray(CSS_DEPENDENCIES));
         m_new = settings.getBoolean(NEW);
         m_runningInView = settings.getBoolean(IN_VIEW);
         m_flowVariables = (Map<String, String>) loadMap(settings.getNodeSettings(FLOW_VARIABLES));

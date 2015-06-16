@@ -15,27 +15,41 @@
 		} else {
 			text.appendChild(document.createTextNode("Checkbox was not checked"));
 		}
+		
 		var p = document.createElement("p");
 		body.appendChild(p);
 		var string = "Checking dependencies: ";
 		if (typeof d3 != 'undefined') {
-			string += "D3 present. Check!";
+			string += "D3 present (Local load). Check!";
 			p.className = "success";
 		} else {
 			string += "D3 not loaded. FAILURE!";
 			p.className = "failure";
 		}
 		p.appendChild(document.createTextNode(string));
+		
 		p = document.createElement("p");
 		body.appendChild(p);
 		if (typeof jQuery != 'undefined') {
-			string = "jQuery present. Check!";
+			string = "jQuery present (URL load). Check!";
 			p.className = "success";				
 		} else {
 			string = "jQuery not loaded. FAILURE!";
 			p.className = "failure";
 		}
 		p.appendChild(document.createTextNode(string));
+		
+		p = document.createElement("p");
+		body.appendChild(p);
+		if (typeof d3.tip != 'undefined') {
+			string = "D3-Tip present (URL load with dependency). Check!";
+			p.className = "success";				
+		} else {
+			string = "D3-Tip not loaded. FAILURE!";
+			p.className = "failure";
+		}
+		p.appendChild(document.createTextNode(string));
+		
 		p = document.createElement("p");
 		body.appendChild(p);
 		string = " Checking in port data: ";
@@ -55,6 +69,20 @@
 	
 	sample.getComponentValue = function() {
 		return _value;
+	}
+	
+	sample.getSVG = function() {
+		var fill = 'red';
+		if (typeof jQuery != 'undefined') {
+			fill = 'yellow';
+			if (typeof d3 != 'undefined') {
+				fill = 'orange';
+				if (typeof d3.tip != 'undefined') {
+					fill = 'green';
+				}
+			}
+		} 
+		return '<svg width="200px" height="200px"><g transform="translate(50,50)"><rect x="0" y="0" width="150" height="50" style="fill:' + fill + ';" /></g></svg>';
 	}
 	
 	return sample;

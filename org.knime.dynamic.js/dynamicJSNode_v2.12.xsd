@@ -17,8 +17,7 @@
 					<xs:element name="dependencies" type="WebDependencies" minOccurs="0" maxOccurs="1" />
 					<xs:element name="javaProcessor" type="JavaProcessor" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
-				<xs:attribute name="nodeID" type="xs:string"
-					use="required" />
+				<xs:attribute name="nodeID" type="xs:string" use="required" />
 				<xs:attribute name="categoryPath" type="xs:string" />
 				<xs:attribute name="afterID" type="xs:string" />
 				<xs:attribute name="jsNamespace" type="xs:string" />
@@ -54,7 +53,7 @@
 	</xs:complexType>
 
 	<xs:complexType name="WebDependency">
-		<xs:attribute name="name" type="xs:string" use="optional" />
+		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="path" type="xs:string" use="required" />
 		<xs:attribute name="type" default="local">
 			<xs:simpleType>
@@ -64,6 +63,9 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="usesDefine" type="xs:boolean" default="false" />
+		<xs:attribute name="exports" type="xs:string" use="optional" />
+		<xs:attribute name="dependsOn" type="dn:StringList" use="optional" />
 	</xs:complexType>
 	
 	<xs:complexType name="JavaProcessor">
