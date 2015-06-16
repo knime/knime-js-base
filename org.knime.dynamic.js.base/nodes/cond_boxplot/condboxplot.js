@@ -195,14 +195,14 @@
             .attr("transform", "translate(0," + (h + 5) + ")")
             .call(xAxis);
             
-        d3XAxis.select("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
+        d3XAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
     
         // Add the Y Axis
         var d3YAxis = plotG.append("g")
             .attr("class", "y axis")
             .call(yAxis);
             
-       d3YAxis.select("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
+       d3YAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
         
         plotG.selectAll(".axis-label").remove();
 
@@ -380,7 +380,7 @@
        outl.enter().append("circle")
         .attr("class", "mo")
         .attr("r", 5)
-        .attr("fill", "white")
+        .attr("fill", _representation.options.daColor)
         .attr("stroke", "black")
         .attr("cx", middle)
         .attr("cy", function(d) { return y(d.value); })
