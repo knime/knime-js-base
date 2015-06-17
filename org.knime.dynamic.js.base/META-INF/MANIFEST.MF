@@ -5,4 +5,7 @@ Bundle-SymbolicName: org.knime.dynamic.js.base;singleton:=true
 Bundle-Version: 2.12.0.qualifier
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
 Require-Bundle: org.knime.dynamic.js;bundle-version="[2.12.0,3.0.0)",
- org.knime.dynamic.node.generation;bundle-version="[2.12.0,3.0.0)"
+ org.knime.dynamic.node.generation;bundle-version="[2.12.0,3.0.0)",
+ org.knime.core;bundle-version="[2.12.0,3.0.0)",
+ org.knime.base;bundle-version="[2.12.0,3.0.0)"
+Bundle-ClassPath: org-knime-dynamic-js-base.jar
