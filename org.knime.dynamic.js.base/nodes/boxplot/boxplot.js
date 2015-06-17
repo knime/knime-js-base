@@ -18,6 +18,13 @@
             alert("No numeric columns selected");
             return;
         }
+        
+        if (_representation.options.multi) {
+            _data = _representation.inObjects[0];
+        } else {
+            _data = {};
+            _data[_value.options.numCol] = _representation.inObjects[0][_value.options.numCol];
+        }
 
         d3.select("html").style("width", "100%").style("height", "100%")
         d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
@@ -143,14 +150,7 @@
     }
 
     function drawChart(resizing) {
-        
-        if (_representation.options.multi) {
-            _data = _representation.inObjects[0];
-        } else {
-            _data = {};
-            _data[_value.options.numCol] = _representation.inObjects[0][_value.options.numCol];
-        }
-        
+         
         maxY = Number.NEGATIVE_INFINITY;
         for (var key in _data) {
             maxY = Math.max(_data[key].max, maxY);
@@ -184,6 +184,7 @@
         d3svg.select("#bgr").attr({width : w + margin.left + margin.right, height : h + margin.top + margin.bottom});
         
         var x = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0,w], 0.75, 0.5);
+        console.log(x.rangeBand());
         var y = d3.scale.linear().domain([0, maxY]).range([h, 0]).nice();
         
         var xAxis = d3.svg.axis().scale(x)
@@ -210,7 +211,7 @@
        d3YAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
         
         var range = x.range();
-        var duration = 500;
+        var duration = _representation.runningInView ? 500 : 0;
         
         var boxG = plotG.selectAll("g.box")
         .data(d3.entries(_data), function(d) {
@@ -243,7 +244,8 @@
         var middle = x.rangeBand() / 2;
         
         box.append("text")
-            .attr("x", -30)
+            .attr("x", -5)
+            .attr("text-anchor", "end")
             .attr("class", "uqText");
             
         boxG.selectAll(".uqText")
@@ -253,7 +255,8 @@
             .text(function(d) { return Math.round(d.value.upperQuartile * 100) / 100; });
             
         box.append("text")
-            .attr("x", -30)
+            .attr("x", -5)
+            .attr("text-anchor", "end")
             .attr("class", "lqText");
             
        boxG.selectAll(".lqText")

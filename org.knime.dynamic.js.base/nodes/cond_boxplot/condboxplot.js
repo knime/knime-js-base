@@ -6,7 +6,10 @@
     var maxY = 0;
     var _representation, _value;
     
-    input.init = function(representation, value) {  
+    input.init = function(representation, value) { 
+    
+        _data = _representation.inObjects[0][_value.options.numCol];
+             
         _value = value;
         _representation = representation;
         
@@ -144,7 +147,6 @@
     }
 
     function drawChart(resizing) {
-        _data = _representation.inObjects[0][_value.options.numCol];
         
         maxY = Number.NEGATIVE_INFINITY;
         for (var key in _data) {
@@ -222,7 +224,7 @@
         .text("class");
 
         var range = x.range();
-        var duration = 500;
+        var duration = _representation.runningInView ? 500 : 0;
         
         var boxG = plotG.selectAll("g.box")
         .data(d3.entries(_data), function(d) {
@@ -255,7 +257,8 @@
         var middle = x.rangeBand() / 2;
         
         box.append("text")
-            .attr("x", -30)
+            .attr("x", -5)
+            .attr("text-anchor", "end")
             .attr("class", "uqText");
             
         boxG.selectAll(".uqText")
@@ -265,7 +268,8 @@
             .text(function(d) { return Math.round(d.value.upperQuartile * 100) / 100; });
             
         box.append("text")
-            .attr("x", -30)
+            .attr("x", -5)
+            .attr("text-anchor", "end")
             .attr("class", "lqText");
             
        boxG.selectAll(".lqText")

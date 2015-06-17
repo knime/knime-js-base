@@ -82,7 +82,8 @@
 				</stringOption>
  -->
 				
-				<svgOption name="Create image at outport" id="svg" portIndex="0" label="Create image at output port"></svgOption>
+				<svgOption name="Create image at outport" additionalWait="500"
+				id="svg" portIndex="0" label="Create image at output port"></svgOption>
 				
 <!-- 
                 <checkBoxOption name="Resize to window" id="resizeToWindow"

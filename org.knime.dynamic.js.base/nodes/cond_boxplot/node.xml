@@ -80,7 +80,8 @@
                 </stringOption>
 
 				
-				<svgOption name="Create image at outport" id="svg" portIndex="0" label="Create image at output port"></svgOption>
+				<svgOption name="Create image at outport" id="svg" additionalWait="500"
+				    portIndex="0" label="Create image at output port"></svgOption>
 
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
