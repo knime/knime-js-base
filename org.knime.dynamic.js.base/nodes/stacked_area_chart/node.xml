@@ -7,10 +7,12 @@
 	icon="../js.png" type="Visualizer">
 
 	<name>Stacked Area Chart</name>
-	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
+	<shortDescription>This node provides a view with a Stacked Area Chart implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>
-			The categories and values can be selected from the input table.
+			This d3 chart shows multiple columns as stacked areas.
+			The chart normalizes the data across columns so that the largest sum is shown as 1.0.
+			By selecting the interpolation method "step" the chart can be made to look similar to a stacked bar chart.
 		</intro>
 		<tab name="Options">
 			<options>
@@ -40,10 +42,6 @@
                     <colorOption name="Data area color" id="daColor" label="Data area color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
 
-				<!-- Use a color selector to choose bar colors? -->
-				<colorOption name="Box color" id="boxColor" label="Box color"
-					format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
-			     
 			    <checkBoxOption name="Show X Grid" id="showXGrid" label="Show X Grid" saveInView="true"></checkBoxOption>
 			    
 			    <checkBoxOption name="Show Y Grid" id="showYGrid" label="Show Y Grid" saveInView="true"></checkBoxOption>
