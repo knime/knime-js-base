@@ -4,7 +4,6 @@
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var _representation, _value;
-    var yMax = Number.NEGATIVE_INFINITY;
     var maxX = 0;
     
     input.init = function(representation, value) {  
@@ -191,20 +190,9 @@
             d.push(datum);
             maxX = datum.values.length;
         }
-        for (var i = 0; i < maxX; i++) {
-            var sum = 0;
-            for (var j = 0; j < cols.length; j++) {
-                sum += input.rows[i].data[j];
-            }
-            yMax = Math.max(yMax, sum);
-        }
         return d;
     }
-    
-    function norm(d) {
-        return d / yMax;
-    }
-    
+
     function drawChart(resizing) {
 
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
@@ -248,7 +236,7 @@
         
         var color = d3.scale.category20();
         
-        var stack = d3.layout.stack()
+        var stack = d3.layout.stack().offset("expand")
             .values(function(d) { return d.values; });
             
         var xAxis = d3.svg.axis()
@@ -261,8 +249,8 @@
             
         var area = d3.svg.area().interpolate(_value.options.interpolation)
             .x(function(d, i) { return x(d.x); })
-            .y0(function(d) { return y(norm(d.y0)); })
-            .y1(function(d) { return y(norm(d.y0 + d.y)); });
+            .y0(function(d) { return y(d.y0); })
+            .y1(function(d) { return y(d.y0 + d.y); });
         
         color.domain(d3.keys(_data));
         
@@ -327,7 +315,7 @@
           .text(function(d) { return d.name; });
           
          plotG.selectAll(".label")
-            .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(norm(d.value.y0) + norm(d.value.y / 2)) + ")"; })
+            .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(d.value.y0 + d.value.y / 2) + ")"; })
           
         if (_representation.options.svg.fullscreen) {
             var win = document.defaultView || document.parentWindow;
