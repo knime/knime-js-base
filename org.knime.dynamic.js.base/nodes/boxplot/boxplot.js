@@ -162,7 +162,7 @@
         var chartWidth = cw + "px;"
         var chartHeight = ch + "px";
         
-        if (_representation.options.svg.fullscreen) {
+        if (_representation.options.svg.fullscreen && _representation.runningInView) {
             chartWidth = "100%";
             chartHeight = "100%";
         }
