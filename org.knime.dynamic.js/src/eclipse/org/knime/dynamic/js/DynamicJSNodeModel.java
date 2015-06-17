@@ -491,10 +491,11 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 viewRepresentation.setInitialized();
             }
             viewRepresentation.setRunningInView(false);
+            setOptionalViewWaitTime((long)m_config.getAdditionalWait());
         }
 	}
 
-	/**
+    /**
 	 * {@inheritDoc}
 	 */
 	@Override

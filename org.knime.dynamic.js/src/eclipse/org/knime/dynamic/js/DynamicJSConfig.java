@@ -123,6 +123,8 @@ public class DynamicJSConfig {
 
     private List<Vector<String>> m_enableDependencies = new ArrayList<Vector<String>>();
 
+    private int m_additionalWait = 0;
+
     /**
      * Creates a new config object, populating SettingsModels with the default values taken from the given node config
      * parameter.
@@ -311,6 +313,9 @@ public class DynamicJSConfig {
                 if (sO.isSetAllowFullscreen()) {
                     sModel.setShowFullscreenOption(sO.getAllowFullscreen());
                 }
+                if (sO.isSetAdditionalWait()) {
+                    m_additionalWait = Math.max(m_additionalWait, sO.getAdditionalWait().intValue());
+                }
                 m_models.put(sO.getId(), sModel);
             }
 
@@ -441,6 +446,13 @@ public class DynamicJSConfig {
      */
     public void setEnableDependencies(final List<Vector<String>> enableDependencies) {
         m_enableDependencies = enableDependencies;
+    }
+
+    /**
+     * @return the additionalWait
+     */
+    public int getAdditionalWait() {
+        return m_additionalWait;
     }
 
     /**
