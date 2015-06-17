@@ -241,11 +241,11 @@
             .attr("transform", function(d) { return "translate(" + x(d.key) + ",0)"; });
             
         box.append("rect")
-            .attr("id", "boxrect")
+            .attr("class", "boxrect")
             .attr("stroke", "black")
             .attr("fill", _representation.options.boxColor || "none");
        
-        boxG.selectAll("#boxrect")
+        boxG.selectAll(".boxrect")
                 .data(function(d) { return [d]; } )
                 .transition().duration(resizing ? 0 : duration)
                 .attr("y", function(d) { return y(d.value.upperQuartile); })
@@ -256,9 +256,9 @@
         
         box.append("text")
             .attr("x", -30)
-            .attr("id", "uqText");
+            .attr("class", "uqText");
             
-        boxG.selectAll("#uqText")
+        boxG.selectAll(".uqText")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("y", function(d) { return y(d.value.upperQuartile) + 3; })
@@ -266,9 +266,9 @@
             
         box.append("text")
             .attr("x", -30)
-            .attr("id", "lqText");
+            .attr("class", "lqText");
             
-       boxG.selectAll("#lqText")
+       boxG.selectAll(".lqText")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("y", function(d) { return y(d.value.lowerQuartile) + 3; })
@@ -280,9 +280,9 @@
             .attr("stroke", "black")
             .attr("stroke-width", 3)
             .attr("x1", "0")
-            .attr("id", "median");
+            .attr("class", "median");
             
-        boxG.selectAll("#median")
+        boxG.selectAll(".median")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x2", x.rangeBand())
@@ -290,9 +290,9 @@
             .attr("y2", function(d) { return y(d.value.median); });
         
         box.append("text")
-            .attr("id", "medianText");
+            .attr("class", "medianText");
             
-        boxG.selectAll("#medianText")
+        boxG.selectAll(".medianText")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x", x.rangeBand() + 5)
@@ -302,9 +302,9 @@
         // Upper whisker       
         box.append("line")
             .attr("stroke", "black")
-            .attr("id", "uwL1");
+            .attr("class", "uwL1");
             
-        boxG.selectAll("#uwL1")
+        boxG.selectAll(".uwL1")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x1", middle)
@@ -317,9 +317,9 @@
         box.append("line")
             .attr("stroke", "black")
             .attr("x1", "0")
-            .attr("id", "uwL2");
+            .attr("class", "uwL2");
             
-        boxG.selectAll("#uwL2")
+        boxG.selectAll(".uwL2")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x2", x.rangeBand())
@@ -327,9 +327,9 @@
             .attr("y2", function(d) { return y(d.value.upperWhisker); });
 
         box.append("text")
-            .attr("id", "uwText");
+            .attr("class", "uwText");
             
-        boxG.selectAll("#uwText")
+        boxG.selectAll(".uwText")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x", x.rangeBand() + 5)
@@ -339,9 +339,9 @@
         // Lower whisker
         box.append("line")
             .attr("stroke", "black")
-            .attr("id", "ulL1");
+            .attr("class", "ulL1");
             
-       boxG.selectAll("#ulL1")
+       boxG.selectAll(".ulL1")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x1", middle)
@@ -353,9 +353,9 @@
        box.append("line")
             .attr("stroke", "black")
             .attr("x1", "0")
-            .attr("id", "ulL2");
+            .attr("class", "ulL2");
             
-       boxG.selectAll("#ulL2")
+       boxG.selectAll(".ulL2")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x2", x.rangeBand())
@@ -363,9 +363,9 @@
             .attr("y2", function(d) { return y(d.value.lowerWhisker); });
             
        box.append("text")
-            .attr("id", "ulText");
+            .attr("class", "ulText");
             
-       boxG.selectAll("#ulText")
+       boxG.selectAll(".ulText")
             .data(function(d) { return [d]; } )
             .transition().duration(resizing ? 0 : duration)
             .attr("x", x.rangeBand() + 5)
