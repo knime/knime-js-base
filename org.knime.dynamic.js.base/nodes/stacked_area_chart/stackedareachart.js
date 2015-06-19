@@ -4,6 +4,7 @@
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var _representation, _value;
+    var yMax = Number.NEGATIVE_INFINITY;
     var maxX = 0;
     
     input.init = function(representation, value) {  
@@ -190,9 +191,20 @@
             d.push(datum);
             maxX = datum.values.length;
         }
+        for (var i = 0; i < maxX; i++) {
+            var sum = 0;
+            for (var j = 0; j < cols.length; j++) {
+                sum += input.rows[i].data[j];
+            }
+            yMax = Math.max(yMax, sum);
+        }
         return d;
     }
-
+    
+    function norm(d) {
+        return d / yMax;
+    }
+    
     function drawChart(resizing) {
 
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
@@ -232,11 +244,11 @@
         }
         
         var y = d3.scale.linear().domain([0, 1])
-            .range([h, 0]);
+            .range([h, 0]).nice();
         
         var color = d3.scale.category20();
         
-        var stack = d3.layout.stack().offset("expand")
+        var stack = d3.layout.stack()
             .values(function(d) { return d.values; });
             
         var xAxis = d3.svg.axis()
