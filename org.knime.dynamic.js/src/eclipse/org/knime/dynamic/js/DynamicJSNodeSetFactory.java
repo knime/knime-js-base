@@ -97,8 +97,10 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
         for (IConfigurationElement configElement : configurationElements) {
             if (DYNAMIC_FUNCTION.equals(configElement.getAttribute("function"))) {
                 try {
-                    Bundle bundle = Platform.getBundle(configElement.getContributor().getName());
-                    URL configURL = bundle.getEntry(configElement.getAttribute("path"));
+                    final String pluginName = configElement.getContributor().getName();
+                    Bundle bundle = Platform.getBundle(pluginName);
+                    final String configFolderRelative = configElement.getAttribute("path");
+                    URL configURL = bundle.getEntry(configFolderRelative);
                     File configFolder = FileUtil.resolveToPath(FileLocator.toFileURL(configURL)).toFile();
                     m_configFolders.add(configFolder);
                     String[] nodeList = configFolder.list(new FilenameFilter() {
@@ -118,8 +120,9 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
                                                 "Node config XML did not validate against schema.");
                                     }
                                     String categoryPath = doc.getKnimeNode().getCategoryPath();
-                                    m_paths.put(configDir.getAbsolutePath(), categoryPath == null ? "unknown" : categoryPath);
-                                    m_afterIDs.put(configDir.getAbsolutePath(), doc.getKnimeNode().getAfterID());
+                                    String nodeID = pluginName + ":" + configFolderRelative + ":" + name;
+                                    m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
+                                    m_afterIDs.put(nodeID, doc.getKnimeNode().getAfterID());
                                 } catch (XmlException | IOException e) {
                                     LOGGER.warn("Node config in folder " + configDir
                                             + " could not be read. " + e.getMessage()
@@ -131,7 +134,7 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
                         }
                     });
                     for (int i = 0; i < nodeList.length; i++) {
-                        nodeList[i] = new File(configFolder, nodeList[i]).getAbsolutePath();
+                        nodeList[i] = pluginName + ":" + configFolderRelative + ":" + nodeList[i];
                     }
                     factoryIds.addAll(Arrays.asList(nodeList));
                 } catch (Exception e) {
@@ -161,8 +164,7 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 	@Override
 	public ConfigRO getAdditionalSettings(final String id) {
 		NodeSettings s = new NodeSettings("root");
-		File nodeDir = new File(id);
-		s.addString(DynamicJSNodeFactory.NODE_DIR_CONF, nodeDir.getAbsolutePath());
+		s.addString(DynamicJSNodeFactory.NODE_DIR_CONF, id);
 		return s;
 	}
 }

@@ -49,8 +49,12 @@ package org.knime.dynamic.js;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.xmlbeans.XmlException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NoDescriptionProxy;
@@ -61,8 +65,10 @@ import org.knime.core.node.NodeView;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.util.FileUtil;
 import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
 import org.knime.dynamicnode.v212.DynamicFullDescription;
+import org.osgi.framework.Bundle;
 
 /**
  *
@@ -74,8 +80,13 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeFactory.class);
 
 	static final String NODE_DIR_CONF = "nodeDir";
+	static final String NODE_PLUGIN = "nodePlugin";
+	static final String PLUGIN_FOLDER = "pluginFolder";
 
 	private File m_nodeDir;
+	private String m_pluginName;
+	private String m_configFolder;
+	private String m_nodeFolder;
 	private KnimeNodeDocument m_doc;
 
 	@Override
@@ -89,8 +100,28 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	@Override
 	public void loadAdditionalFactorySettings(final ConfigRO config)
 			throws InvalidSettingsException {
-		m_nodeDir = new File(config.getString(NODE_DIR_CONF));
-		try {
+	    String confString = config.getString(NODE_DIR_CONF);
+        String[] confParts = confString.split(":");
+	    if (confParts.length != 3) {
+	        throw new InvalidSettingsException("Error reading factory settings. Expected pluginName:configFolder:nodeFolder, but was " + confString);
+	    }
+	    m_pluginName = confParts[0];
+	    m_configFolder = confParts[1];
+	    m_nodeFolder = confParts[2];
+	    Bundle bundle = Platform.getBundle(m_pluginName);
+        URL configURL = bundle.getEntry(m_configFolder);
+        try {
+            File configFolder = FileUtil.resolveToPath(FileLocator.toFileURL(configURL)).toFile();
+            m_nodeDir = new File(configFolder, m_nodeFolder);
+            if (!configFolder.exists() || !m_nodeDir.exists()) {
+                throw new IOException("Node folder " + m_nodeDir.getAbsolutePath() + " does not exist.");
+            }
+        } catch (IOException | URISyntaxException e) {
+            LOGGER.error("Error retrieving node description folder for " + m_pluginName + ", " + m_configFolder);
+            throw new InvalidSettingsException(e);
+        }
+
+        try {
 			m_doc = KnimeNodeDocument.Factory.parse(new File(m_nodeDir, "node.xml"));
 		} catch (XmlException | IOException e) {
 			LOGGER.error("Error reading node config: " + e.getMessage(), e);
@@ -101,7 +132,7 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 
 	@Override
 	public void saveAdditionalFactorySettings(final ConfigWO config) {
-		config.addString(NODE_DIR_CONF, m_nodeDir.getAbsolutePath());
+		config.addString(NODE_DIR_CONF, m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
 		super.saveAdditionalFactorySettings(config);
 	}
 
