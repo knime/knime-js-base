@@ -48,10 +48,12 @@
             controlHeight = 0;
         }
 
-        layoutContainer.style({
-            "height" : "calc(100% - " + controlHeight + "px)",
-            "min-height" :  (MIN_HEIGHT + controlHeight) + "px"
-        });
+        if (_representation.options.svg.fullscreen && _representation.runningInView) {
+            layoutContainer.style({
+                "height" : "calc(100% - " + controlHeight + "px)",
+                "min-height" :  (MIN_HEIGHT + controlHeight) + "px"
+            });
+        }
         
         var div = layoutContainer.append("div")
             .attr("id", "svgContainer")
