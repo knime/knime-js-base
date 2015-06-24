@@ -3,7 +3,7 @@
 	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd"
-	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/labs/quickform/view"
+	jsNamespace="boxplot_namespace" nodeID="conditionalBoxplotJS" categoryPath="/labs/quickform/view"
 	icon="../js.png" type="Visualizer">
 
 	<name>Conditional Box Plot</name>

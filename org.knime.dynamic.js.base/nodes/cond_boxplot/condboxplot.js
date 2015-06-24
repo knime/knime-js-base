@@ -7,12 +7,10 @@
     var _representation, _value;
     
     input.init = function(representation, value) { 
-    
-        _data = _representation.inObjects[0][_value.options.numCol];
-             
+                
         _value = value;
         _representation = representation;
-        
+     
         if (!_value.options.numCol) {
             _value.options.numCol = _representation.options.columns[0];
         }
@@ -28,11 +26,18 @@
         var body = d3.select("body");
         
         layoutContainer = body.append("div").attr("id", "layoutContainer")
-                .style("width", "100%").style("height", "calc(100% - 0px)")
                 .style("min-width", MIN_WIDTH + "px");
         
+        if (_representation.options.svg.fullscreen && _representation.runningInView) {
+            layoutContainer.style("width", "100%")
+            .style("height", "100%");
+        } else {
+            layoutContainer.style("width", _representation.options.svg.width + "px")
+            .style("height", _representation.options.svg.height + "px");
+        }
+        
         var controlHeight;
-        if (_representation.enableControls || true) {
+        if (_representation.options.enableViewControls && _representation.runningInView) {
              var controlsContainer = body.append("div").style({position : "absolute", bottom : "0px",
                          width : "100%", padding : "5px", "padding-left" : "60px",
                           "border-top" : "1px solid black", "background-color" : "white"}).attr("id", "controlContainer");
@@ -147,7 +152,7 @@
     }
 
     function drawChart(resizing) {
-        
+        _data = _representation.inObjects[0][_value.options.numCol];
         maxY = Number.NEGATIVE_INFINITY;
         for (var key in _data) {
             maxY = Math.max(_data[key].max, maxY);
