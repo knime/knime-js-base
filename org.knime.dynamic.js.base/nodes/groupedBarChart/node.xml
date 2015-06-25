@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12" 
+		xmlns="http://knime.org/dynamicnode/v2.12"
+		xmlns:n="http://knime.org/node/v2.12"
+ 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
+ 		jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart" categoryPath="/labs/quickform/view"
+ 		icon="./sample.png" type="Visualizer">
+    <name>Grouped Bar Chart</name>
+    <shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
+    <fullDescription>
+	    <intro>
+    	    This is an example of a dynamically created node.
+    	</intro>
+    	<tab name="Tab 1">
+			<description>This is the first tab.</description>
+			<options>
+				<checkBoxOption id="sample_checkbox_option" name="Sample Boolean" label="Sample Checkbox" 
+						defaultValue="false" tooltip="This checkbox has a tooltip!">
+					This is a sample checkbox.
+				</checkBoxOption>
+				<stringOption id="sample_string_option" name="Sample String" label="Sample String Option" allowEmptyString="false" 
+						defaultValue="sample" enableDependency="sample_checkbox_option" enableValue="true" saveInView="true" >
+					This is a sample string option.
+				</stringOption>
+				<columnSelectorOption name="Column Selector" id="sample_col_sel" inPortIndex="0" label="Sample Column Selector" 
+						defaultColumn="Universe_0_0" filterClasses="org.knime.core.data.DoubleValue" >
+					This is a sample column selection option.
+				</columnSelectorOption>
+			</options>
+		</tab>
+		<tab name="Tab 2">
+			<description>This is the second tab.</description>
+			<options>
+				<columnFilterOption id="sample_column_filter" name="Sample Column Filter" inPortIndex="0" 
+						label="Sample Column Filter" enableDependency="sample_string_option" enableValue="enable">
+					This would be a sample column filter for the first data in port.
+				</columnFilterOption>
+				<svgOption name="Image" id="svg" portIndex="1" label="Image" additionalWait="3000" defaultWidth="400" defaultHeight="400" defaultFullscreen="false">
+					Settings for image generation.
+				</svgOption>
+			</options>
+		</tab>
+    </fullDescription>
+    <interactiveView name="Sample View">
+    	This is an example of an interactive view in a dynamically created node.
+    </interactiveView>
+    <ports>
+		<inPort portType="Data" name="SampleInport" index="0">
+			Sample description for a sample inport.
+		</inPort>
+		<outPort portType="FlowVariable" name="SampleOutport" index="0">
+			Sample description for a <n:i>sample</n:i> outport.
+		</outPort>
+		<outPort portType="Image" name="Generated SVG" index="1">
+			Sample image outport.
+		</outPort>
+	</ports>
+	<js:resources>
+		<js:resource type="js" path="groupedbarchart.js" />
+		<!-- <js:resource type="css" path="sample.css" /> -->
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="jquery" path="jQuery_1.11.0" type="local" usesDefine="true" />
+		<!-- <js:dependency name="d3" path="D3_3.2.8" type="local" exports="d3" /> -->
+		<!-- <js:dependency name="d3" path="D3_3.5.5" type="local" usesDefine="true" /> -->
+		<js:dependency name="nvd3" path="NVD3_1.7.1" type="local" exports="nv" />
+	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.sample.Processor" />
+</js:knimeNode>
