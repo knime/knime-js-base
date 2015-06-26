@@ -41,6 +41,9 @@
 		_representation = representation;
 		_value = value;
 		
+		var optWidth = _representation.options["width"];
+		var optHeight = _representation.options["height"];
+		
 		var test_data = stream_layers(3,10+Math.random()*100,.1).map(function(data, i) {
 	        return {
 	            key: 'Stream' + i,
@@ -62,6 +65,8 @@
 	    });
 
 	    var svg = d3.select("body").append("svg")
+	    .attr("width", optWidth)
+		.attr("height", optHeight)
 	    var chart;
 	    nv.addGraph(function() {
 	        chart = nv.models.multiBarChart()

@@ -12,50 +12,94 @@
 	    <intro>
     	    This is an example of a dynamically created node.
     	</intro>
-    	<tab name="Tab 1">
-			<description>This is the first tab.</description>
-			<options>
-				<checkBoxOption id="sample_checkbox_option" name="Sample Boolean" label="Sample Checkbox" 
-						defaultValue="false" tooltip="This checkbox has a tooltip!">
-					This is a sample checkbox.
-				</checkBoxOption>
-				<stringOption id="sample_string_option" name="Sample String" label="Sample String Option" allowEmptyString="false" 
-						defaultValue="sample" enableDependency="sample_checkbox_option" enableValue="true" saveInView="true" >
-					This is a sample string option.
-				</stringOption>
-				<columnSelectorOption name="Column Selector" id="sample_col_sel" inPortIndex="0" label="Sample Column Selector" 
-						defaultColumn="Universe_0_0" filterClasses="org.knime.core.data.DoubleValue" >
-					This is a sample column selection option.
-				</columnSelectorOption>
-			</options>
-		</tab>
-		<tab name="Tab 2">
-			<description>This is the second tab.</description>
-			<options>
-				<columnFilterOption id="sample_column_filter" name="Sample Column Filter" inPortIndex="0" 
-						label="Sample Column Filter" enableDependency="sample_string_option" enableValue="enable">
-					This would be a sample column filter for the first data in port.
-				</columnFilterOption>
-				<svgOption name="Image" id="svg" portIndex="1" label="Image" additionalWait="3000" defaultWidth="400" defaultHeight="400" defaultFullscreen="false">
-					Settings for image generation.
-				</svgOption>
-			</options>
-		</tab>
+    	<tab name="Options">
+    		    	<options>
+    		<!-- Not sure this should be StringValue -->
+   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
+    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue">
+    			Select the column that contains the category values.
+    		</columnSelectorOption>
+ 
+ 			<!-- These should be numeric? -->
+ 			<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
+    		<columnFilterOption name="Select frequency columns" id="freq" 
+    			inPortIndex="0" label="Frequency Columns" saveInView="true">
+    			Select the columns with frequencies for which you wish to plot bars.
+    		</columnFilterOption>
+   		    		
+    	</options>
+    	</tab>
+    	<tab name="General Plot Options">
+    	<options>
+    	<stringOption name="Title" id="title" label="Title" defaultValue="Title of Graph" optional="true">
+    			The chart title.
+    		</stringOption>
+
+    		<stringOption name="catLabel" id="catLabel" label="Category-axis label" optional="true" 
+    			defaultValue="Category-axis label">
+    			The label used for the category axis.
+    		</stringOption>
+    		 
+    		<stringOption name="freqLabel" id="freqLabel" label="Frequency-axis label" optional="true"
+    			defaultValue="Frequency-axis label">
+    			The label used for the frequency axis.
+    		</stringOption>
+
+			<doubleOption name="rotateCatLabels" id="rotate" label="Rotate Category-axis Labels" 
+				defaultValue="0.1">
+				The angle in degrees that the category axis labels should be rotated by.
+			</doubleOption>
+
+			<checkBoxOption name="displayLegend" id="legend" label="Display legend">
+				When checked, the bar chart legend is displayed.
+			</checkBoxOption>
+
+			<doubleOption name="scaleFonts" id="scaleFont" label="Scale Fonts" minValue="0.1" 
+				maxValue="100.0" defaultValue="1.0">
+				The ratio to scale the default font sizes by.	
+			</doubleOption>
+
+    		<checkBoxOption name="Horizontal bars" id="horizontal" 
+    			label="Plot horizontal bar chart" defaultValue="false">
+    			Check to plot the bar chart horizontally. By default bar chart is plotted vertically.
+    		</checkBoxOption>
+
+			<integerOption name="Image width (in pixels)" id="width" 
+				label="Image width (in pixels)" defaultValue="600" minValue="1" maxValue="20000">
+				Image width (in pixels)</integerOption>
+				
+			<integerOption name="Image height (in pixels)" id="height" 
+				label="Image height (in pixels)"  defaultValue="480" minValue="1" maxValue="20000">
+				Image height (in pixels)</integerOption>
+				
+    		<!-- Use a color selector to choose bar colors? -->
+    		<colorOption name="bar color" id="barColor" label="Bar color" format="HexString" 
+    			defaultR="255" defaultG="0" defaultB="0"></colorOption>
+    		
+    		
+    		
+    		</options>
+    	</tab>
+
     </fullDescription>
-    <interactiveView name="Sample View">
-    	This is an example of an interactive view in a dynamically created node.
+    <outputOptions>
+    	<dataOutputOption outPortIndex="1" id="selection" inPortIndex="0" additionalColumnName="Selected Bars" 
+    			additionalColumnType="BOOLEAN"/>
+    </outputOptions>
+    <interactiveView name="D3 Bar chart">
+    	A D3.js implementation of a Bar Chart.
     </interactiveView>
     <ports>
-		<inPort portType="Data" name="SampleInport" index="0">
-			Sample description for a sample inport.
-		</inPort>
-		<outPort portType="FlowVariable" name="SampleOutport" index="0">
-			Sample description for a <n:i>sample</n:i> outport.
-		</outPort>
-		<outPort portType="Image" name="Generated SVG" index="1">
-			Sample image outport.
-		</outPort>
-	</ports>
+    	<inPort portType="Data" name="Autocomplete Options" index="0">
+    		Data table containing the categories and values to be plotted in a bar chart.
+    	</inPort>
+    	<outPort portType="Image" name="Bar chart image" index="0">
+    		SVG image of the bar chart.
+    	</outPort>
+    	<outPort portType="Data" name="Entered String" index="1">
+    		Data table with no function yet...
+    	</outPort>
+    </ports>
 	<js:resources>
 		<js:resource type="js" path="groupedbarchart.js" />
 		<!-- <js:resource type="css" path="sample.css" /> -->
