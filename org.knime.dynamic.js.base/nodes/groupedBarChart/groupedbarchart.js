@@ -60,6 +60,8 @@
 	            })
 	        };
 	    });
+
+	    var svg = d3.select("body").append("svg")
 	    var chart;
 	    nv.addGraph(function() {
 	        chart = nv.models.multiBarChart()
@@ -85,7 +87,7 @@
 	        chart.dispatch.on('renderEnd', function(){
 	            nv.log('Render Complete');
 	        });
-	        d3.select('#chart1 svg')
+	        svg
 	            .datum(negative_test_data)
 	            .call(chart);
 	        nv.utils.windowResize(chart.update);
