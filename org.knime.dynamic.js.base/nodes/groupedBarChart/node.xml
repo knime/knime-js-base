@@ -45,12 +45,7 @@
     			The label used for the frequency axis.
     		</stringOption>
 
-			<doubleOption name="rotateCatLabels" id="rotate" label="Rotate Category-axis Labels" 
-				defaultValue="0.1">
-				The angle in degrees that the category axis labels should be rotated by.
-			</doubleOption>
-
-			<checkBoxOption name="displayLegend" id="legend" label="Display legend">
+			<checkBoxOption name="displayLegend" id="legend" label="Display legend" defaultValue="true">
 				When checked, the bar chart legend is displayed.
 			</checkBoxOption>
 
@@ -72,12 +67,6 @@
 				label="Image height (in pixels)"  defaultValue="480" minValue="1" maxValue="20000">
 				Image height (in pixels)</integerOption>
 				
-    		<!-- Use a color selector to choose bar colors? -->
-    		<colorOption name="bar color" id="barColor" label="Bar color" format="HexString" 
-    			defaultR="255" defaultG="0" defaultB="0"></colorOption>
-    		
-    		
-    		
     		</options>
     	</tab>
 

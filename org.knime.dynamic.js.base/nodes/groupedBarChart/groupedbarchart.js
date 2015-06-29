@@ -41,28 +41,69 @@
 		_representation = representation;
 		_value = value;
 		
+		/*
+		 * Process options
+		 */
 		var optWidth = _representation.options["width"];
 		var optHeight = _representation.options["height"];
 		
-		var test_data = stream_layers(3,10+Math.random()*100,.1).map(function(data, i) {
-	        return {
-	            key: 'Stream' + i,
-	            values: data
-	        };
-	    });
-	    console.log('td',test_data);
-	    var negative_test_data = new d3.range(0,3).map(function(d,i) {
-	        return {
-	            key: 'Stream' + i,
-	            values: new d3.range(0,11).map( function(f,j) {
-	                return {
-	                    y: 10 + Math.random()*100 * (Math.floor(Math.random()*100)%2 ? 1 : -1),
-	                    x: j,
-	                    yErr: [-Math.random() * 30, Math.random() * 30]
-	                }
-	            })
-	        };
-	    });
+		var optTitle = _representation.options["title"];
+		var optCatLabel = _representation.options["catLabel"];
+		var optFreqLabel = _representation.options["freqLabel"];
+
+		var optRotateCatLabels = _representation.options["rotateCatLabels"];
+		var optLegend = _representation.options["legend"];
+		var optScaleFont = _representation.options["scaleFont"];
+
+		var optHorizontal = _representation.options["horizontal"];	
+
+		var optWidth = _representation.options["width"];
+		var optHeight = _representation.options["height"];
+		
+		var optFreqCol = _value.options["freq"];
+		var optCat = _representation.options["cat"];
+		
+		/* 
+		 * Process data
+		 */
+		var knimeTable = new kt();
+		// Add the data from the input port to the knimeTable.
+		var port0dataTable = _representation.inObjects[0];
+		knimeTable.setDataTable(port0dataTable);
+		
+		var categories = knimeTable.getColumn(optCat);
+		
+		// Get the frequency columns
+		var valCols = []
+		for (var k = 0; k < optFreqCol.length; k++) {
+			var valCol = knimeTable.getColumn(optFreqCol[k]);
+			valCols.push( valCol );
+		}
+		
+		var plot_data = [];
+				
+		if (valCols.length > 0) {
+			numDataPoints = valCols[0].length;
+			for (var j = 0; j < optFreqCol.length; j++) {	
+
+				var key = optFreqCol[j];
+				var values = [];
+
+				for (var i = 0; i < numDataPoints; i++) {
+					var dataObj = {};
+
+					dataObj["x"] = categories[i];
+					dataObj["y"] = valCols[j][i];
+					
+					values.push(dataObj);
+				}
+				plot_stream = {"key": key, "values": values};
+				plot_data.push(plot_stream);
+			}
+		}
+		/*
+		 * Plot chart
+		 */
 
 	    var svg = d3.select("body").append("svg")
 	    .attr("width", optWidth)
@@ -78,14 +119,15 @@
 	            .errorBarColor(function() { return 'red'; })
 	        ;
 	        chart.reduceXTicks(false).staggerLabels(true);
+        	// needs both label and category label
 	        chart.xAxis
-	            .axisLabel("ID of Furry Cat Households")
+	            .axisLabel(optCatLabel)
 	            .axisLabelDistance(35)
 	            .showMaxMin(false)
 	            .tickFormat(d3.format(',.6f'))
 	        ;
 	        chart.yAxis
-	            .axisLabel("Change in Furry Cat Population")
+	            .axisLabel(optFreqLabel)
 	            .axisLabelDistance(-5)
 	            .tickFormat(d3.format(',.01f'))
 	        ;
@@ -93,7 +135,7 @@
 	            nv.log('Render Complete');
 	        });
 	        svg
-	            .datum(negative_test_data)
+	            .datum(plot_data)
 	            .call(chart);
 	        nv.utils.windowResize(chart.update);
 	        chart.dispatch.on('stateChange', function(e) {
