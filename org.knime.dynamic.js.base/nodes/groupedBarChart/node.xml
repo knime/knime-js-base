@@ -45,16 +45,17 @@
     			The label used for the frequency axis.
     		</stringOption>
 
+			<checkBoxOption name="rotateLabels" id="rotateLabels" label="Rotate labels"
+				defaultValue="false">
+				When checked, the bar chart x-axis legend is rotated 45 degrees to
+				improve readability for long category names.			
+			</checkBoxOption>
+			
 			<checkBoxOption name="displayLegend" id="legend" label="Display legend" defaultValue="true">
 				When checked, the bar chart legend is displayed.
 			</checkBoxOption>
 
-			<doubleOption name="scaleFonts" id="scaleFont" label="Scale Fonts" minValue="0.1" 
-				maxValue="100.0" defaultValue="1.0">
-				The ratio to scale the default font sizes by.	
-			</doubleOption>
-
-    		<checkBoxOption name="Horizontal bars" id="horizontal" 
+    		<checkBoxOption name="Horizontal bars" id="orientation" 
     			label="Plot horizontal bar chart" defaultValue="false">
     			Check to plot the bar chart horizontally. By default bar chart is plotted vertically.
     		</checkBoxOption>

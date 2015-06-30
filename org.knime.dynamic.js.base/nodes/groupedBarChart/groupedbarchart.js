@@ -51,11 +51,10 @@
 		var optCatLabel = _representation.options["catLabel"];
 		var optFreqLabel = _representation.options["freqLabel"];
 
-		var optRotateCatLabels = _representation.options["rotateCatLabels"];
+		var optRotateLabels = _representation.options["rotateLabels"];
 		var optLegend = _representation.options["legend"];
-		var optScaleFont = _representation.options["scaleFont"];
 
-		var optHorizontal = _representation.options["horizontal"];	
+		var optOrientation = _representation.options["orientation"];	
 
 		var optWidth = _representation.options["width"];
 		var optHeight = _representation.options["height"];
@@ -98,34 +97,61 @@
 					values.push(dataObj);
 				}
 				plot_stream = {"key": key, "values": values};
-				plot_data.push(plot_stream);
+				plot_data[j] = plot_stream;
 			}
 		}
+		// nvd3 will alter this data...
+		console.log(plot_data);
 		/*
 		 * Plot chart
 		 */
 
 	    var svg = d3.select("body").append("svg")
-	    .attr("width", optWidth)
-		.attr("height", optHeight)
+	    
+	    if (optWidth > 0) {
+		    svg.attr("width", optWidth);
+	    }
+	    if (optHeight > 0) {
+			svg.attr("height", optHeight);
+	    }
+	    
 	    var chart;
 	    nv.addGraph(function() {
-	        chart = nv.models.multiBarChart()
+	    	if (optOrientation == true) {
+	    		chart = nv.models.multiBarHorizontalChart();
+	    		//chart.reduceYTicks(false).staggerLabels(true);
+	    	} else if (optOrientation == false) {
+	    		chart = nv.models.multiBarChart();
+	    		chart.reduceXTicks(false).staggerLabels(true);
+		        // Not relevant for horizontal chart...
+	    		if (optRotateLabels == true) {
+		        	chart.rotateLabels(45);
+		        }
+	    	}
+	        chart
 	            .barColor(d3.scale.category20().range())
 	            .duration(300)
 	            .margin({bottom: 100, left: 70})
-	            .rotateLabels(45)
 	            .groupSpacing(0.1)
 	            .errorBarColor(function() { return 'red'; })
 	        ;
-	        chart.reduceXTicks(false).staggerLabels(true);
+	        
+	        ////
         	// needs both label and category label
+	        
+
+	        
+	        //chart.title
+	        //	.title(optChartTitle);
+	        
 	        chart.xAxis
 	            .axisLabel(optCatLabel)
 	            .axisLabelDistance(35)
 	            .showMaxMin(false)
-	            .tickFormat(d3.format(',.6f'))
+	            //.tickFormat(d3.format(',.6f'))
 	        ;
+	        
+	        // tick format probably needs scaling...
 	        chart.yAxis
 	            .axisLabel(optFreqLabel)
 	            .axisLabelDistance(-5)
