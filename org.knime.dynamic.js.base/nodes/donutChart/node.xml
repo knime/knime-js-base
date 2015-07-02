@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12" 
+		xmlns="http://knime.org/dynamicnode/v2.12"
+		xmlns:n="http://knime.org/node/v2.12"
+ 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
+ 		jsNamespace="donut_chart_namespace" nodeID="donut_chart" categoryPath="/labs/quickform/view"
+ 		icon="./sample.png" type="Visualizer">
+    <name>Donut Chart</name>
+    <shortDescription>A donut chart based on the NVD3 library.</shortDescription>
+    <fullDescription>
+	    <intro>
+    	    Generates a donut chart, essentially a pie chart with the middle cut out.
+    	</intro>
+    	<tab name="Options">
+	    	<options>
+	   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
+	    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue">
+	    			Select the column that contains the category values.
+	    		</columnSelectorOption>
+	    		<columnSelectorOption name="Select frequency column" id="freq" 
+	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
+	    			filterClasses="org.knime.core.data.DoubleValue">
+	    			Select the column with the frequency for the donut chart.
+	    		</columnSelectorOption>
+	    	</options>
+    	</tab>
+    	<tab name="General Plot Options">
+	    	<options>
+	 	    	<doubleOption name="Label Threshold" id="labelThreshold" 
+					label="Label Threshold" defaultValue="0.05" minValue="0" maxValue="1">
+					Configure the minimum slice size for labels to show up
+				</doubleOption>
+	 			<!-- Radio button for key, value, percent (for labels) id="labelType" -->
+	    	 	<checkBoxOption name="Show labels" id="showLabels" label="Show labels"
+					defaultValue="true">
+					Show or hide the category labels	
+				</checkBoxOption>			 			
+				<doubleOption name="Hole size" id="holeSize" 
+					label="Donut Hole Size"  defaultValue="0.35" minValue="0" maxValue="1">
+					Configure how big you want the donut hole size to be.
+				</doubleOption>
+				<svgOption name="Image" id="svg" portIndex="0" label="Image" additionalWait="3000" defaultWidth="600" defaultHeight="400" defaultFullscreen="false">
+					Settings for image generation.
+				</svgOption>
+    		</options>
+    	</tab>
+
+    </fullDescription>
+    <interactiveView name="D3 Bar chart">
+    	An NVD3.js implementation of a donut chart.
+    </interactiveView>
+    <ports>
+    	<inPort portType="Data" name="Input data frequency wise" index="0">
+    		Data table containing the categories and values to be plotted in the donut chart.
+    	</inPort>
+    	<outPort portType="Image" name="Donut chart image" index="0">
+    		SVG image of the donut chart.
+    	</outPort>
+    </ports>
+	<js:resources>
+		<js:resource type="js" path="donutchart.js" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="nvd3" path="NVD3_1.7.1" type="local" exports="nv" />
+	</js:dependencies>
+</js:knimeNode>
