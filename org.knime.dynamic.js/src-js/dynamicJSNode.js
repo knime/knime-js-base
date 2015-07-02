@@ -5,8 +5,8 @@ dynamicJSNode = function() {
 	var VAADIN_PREFIX = "./VAADIN/src-js/";
 	
 	node.init = function(representation, value) {
-		if (representation.jsCode == null) {
-			document.body.innerHTML = 'Error: No script available.';
+		if (!representation.jsNamespace) {
+			document.body.innerHTML = 'No data to display.';
 			return;
 		}
 		_innerNamespace = representation.jsNamespace;
