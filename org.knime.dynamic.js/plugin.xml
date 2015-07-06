@@ -52,13 +52,5 @@
             name="Dynamic JS View Nodes">
       </dynamicNodeFunction>
    </extension>
-   <extension
-         point="org.knime.dynamic.node.generation.dynamicNodes">
-      <dynamicNodeFolder
-            function="js"
-            name="Sample Config Folder"
-            path="config/">
-      </dynamicNodeFolder>
-   </extension>
 
 </plugin>
