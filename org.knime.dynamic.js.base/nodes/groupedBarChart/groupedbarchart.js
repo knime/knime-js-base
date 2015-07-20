@@ -127,7 +127,7 @@
 
 		var optOrientation = _value.options["orientation"];	
 
-		var optFullscreen = _representation.options["svg"]["fullscreen"];
+		var optFullscreen = _representation.options["svg"]["fullscreen"] & _representation.runningInView;
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
 
@@ -141,10 +141,10 @@
 		.style("min-width", MIN_WIDTH + "px");
 
 		var controlHeight;
-		if (_representation.enableControls || true) {
+		if (_representation.enableControls) {
 			var controlsContainer = body.append("div").style({position : "absolute", bottom : "0px",
 				width : "100%", padding : "5px", "padding-left" : "60px",
-				"border-top" : "1px solid black", "background-color" : "white"}).attr("id", "controlContainer");
+				"border-top" : "1px solid black", "background-color" : "white", "box-sizing": "border-box"}).attr("id", "controlContainer");
 
 			createControls(controlsContainer);
 			controlHeight = controlsContainer.node().getBoundingClientRect().height;
@@ -162,7 +162,6 @@
 		.style("min-width", MIN_WIDTH + "px")
 		.style("min-height", MIN_HEIGHT + "px")
 		.style("box-sizing", "border-box")
-		.style("display", "inline-block")
 		.style("overflow", "hidden")
 		.style("margin", "0")
 
@@ -178,6 +177,8 @@
 		div[0][0].appendChild(svg1);
 
 		var svg = d3.select("svg");
+		svg.style("font-family", "sans-serif");
+		svg.classed("colored", true);
 
 		if (optFullscreen == false) {
 			if (optWidth > 0) {
@@ -221,8 +222,6 @@
 		var isDuplicate = false;
 		var retained = [];
 
-		console.log(colSet);
-		
 		for (var k = 0; k < optFreqCol.length; k++) {
 			var colHasNull = false;
 			
@@ -237,17 +236,21 @@
 			// Add an isDuplicate test here...
 			if ((colHasNull != true) && (isDuplicate != true)) {
 				valCols.push( valCol );
-				retained.push(j);
+				retained.push(optFreqCol[k]);
 			}
 		}
-		console.log(valCols);
+		
+		var colorScale = d3.scale.category10();
+    	if (categories.length > 10) {
+    		colorScale = d3.scale.category20();
+    	}
+		
 		var plot_data = [];
-
 		if (valCols.length > 0) {
-			numDataPoints = valCols[0].length;
+			var numDataPoints = valCols[0].length;
 			for (var j = 0; j < retained.length; j++) {	
 
-				var key = optFreqCol[retained[j]];
+				var key = retained[j];
 				var values = [];
 
 				for (var i = 0; i < numDataPoints; i++) {
@@ -265,12 +268,13 @@
 						} else {
 							dataObj["x"] = categories[i];
 							dataObj["y"] = valCols[j][i];
+							/*dataObj["color"] = colorScale(j);*/
 							values.push(dataObj);
 						} 						
 					}
 
 				}
-				plot_stream = {"key": key, "values": values};
+				var plot_stream = {"key": key, "values": values};
 				plot_data[j] = plot_stream;
 			}
 		} else {
@@ -283,6 +287,8 @@
 			}
 
 		}
+		
+		console.log('td', plot_data);
 
 		/*
 		 * Plot chart
@@ -293,53 +299,78 @@
 				chart = nv.models.multiBarHorizontalChart();
 			} else if (optOrientation == false) {
 				chart = nv.models.multiBarChart();
-				chart.reduceXTicks(false).staggerLabels(true);
+				chart.reduceXTicks(false)
+					.staggerLabels(false);
 				// Not relevant for horizontal chart...
 				if (optRotateLabels == true) {
 					chart.rotateLabels(45);
 				}
 			}
+			
 			chart
-			.barColor(d3.scale.category20().range())
-			.duration(300)
-			.margin({bottom: 100, left: 100})
-			.groupSpacing(0.1);
+				.color(colorScale.range())
+				.duration(300)
+				.margin({left: 40, right: 20, top: 60, bottom: 40})
+				.groupSpacing(0.1)
 			;
+			var topMargin = 10;
+			topMargin += _value.options.title ? 10 : 0;
+			topMargin += _value.options.subtitle ? 8 : 0;
+			chart.legend.margin({top: topMargin, bottom: topMargin});
+			chart.controls.margin({top: topMargin, bottom: topMargin})
 
-			//TODO: Show/hide optChartLegend.
+			if (!_representation.runningInView) {
+	        	chart.showControls(false);
+	        }
+			//chart.legend.color(colorScale.range());
+			chart.showLegend(_representation.options["legend"]);
 
 			chart.xAxis
-			.axisLabel(optCatLabel)
-			.axisLabelDistance(35)
-			.showMaxMin(false)
+				.axisLabel(optCatLabel)
+				.axisLabelDistance(35)
+				.showMaxMin(false)
 			;
 
 			// tick format probably needs scaling...
 			chart.yAxis
-			.axisLabel(optFreqLabel)
-			.axisLabelDistance(15)
-			.tickFormat(d3.format(',.01f'))
+				.axisLabel(optFreqLabel)
+				.axisLabelDistance(15)
+				.tickFormat(d3.format(',.01f'))
 			;
 
-			//TODO: Fix tooltip colours...
+			if (_value.options.title) {
+				svg.append("text")
+					.attr("x", 20)             
+					.attr("y", 30)
+					.attr("font-size", 24)
+					.attr("id", "title")
+					.text(_value.options.title);
+			}
+			if (_value.options.subtitle) {
+				svg.append("text")
+					.attr("x", 20)             
+					.attr("y", _value.options.title ? 46 : 20)
+					.attr("font-size", 12)
+					.attr("id", "subtitle")
+					.text(_value.options.subtitle);
+			}
 
-			//TODO: Add chart title. Check API docs.
-			//chart.title(_value.options.title);
-
-			chart.dispatch.on('renderEnd', function(){
+			/*chart.dispatch.on('renderEnd', function(){
 				nv.log('Render Complete');
-			});
-			svg
-			.datum(plot_data)
-			.call(chart);
+			});*/
+			
+			svg.datum(plot_data)
+				.transition().duration(300)
+				.call(chart);
 			nv.utils.windowResize(chart.update);
-			chart.dispatch.on('stateChange', function(e) {
+			
+			/*chart.dispatch.on('stateChange', function(e) {
 				nv.log('New State:', JSON.stringify(e));
 			});
 			chart.state.dispatch.on('change', function(state){
 				nv.log('state', JSON.stringify(state));
 			});
-			console.log('chart',chart);
+			console.log('chart',chart);*/
 
 			return chart;
 		});	
@@ -361,6 +392,21 @@
 	}
 
 	barchart.getSVG = function() {
+		// add external nvd3 styles to svg
+		var styles = document.styleSheets;
+		for (i = 0; i < styles.length; i++) {
+			if (!styles[i].cssRules) {
+				styles[i].cssRules = styles[i].rules;
+			}
+			for (var j = 0; j < styles[i].cssRules.length; j++) {
+				var rule = styles[i].cssRules[j];
+				d3.selectAll(rule.selectorText).each(function(){
+					for (var k = 0; k < rule.style.length; k++) {
+						d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+					}
+				});
+			}
+		}
 		var svgElement = d3.select("svg")[0][0];
 		// Return the SVG as a string.
 		return (new XMLSerializer()).serializeToString(svgElement);

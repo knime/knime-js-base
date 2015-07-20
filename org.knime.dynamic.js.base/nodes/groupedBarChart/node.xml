@@ -1,143 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12" 
-		xmlns="http://knime.org/dynamicnode/v2.12"
-		xmlns:n="http://knime.org/node/v2.12"
- 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
- 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
- 		jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart" categoryPath="/labs/quickform/view"
- 		icon="./sample.png" type="Visualizer">
-    <name>Grouped Bar Chart</name>
-    <shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
-    <fullDescription>
-	    <intro>
-    	    This is an example of a dynamically created node.
-    	</intro>
-    	<tab name="Options">
-    		    	<options>
-    		<!-- Not sure this should be StringValue -->
-   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
-    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue"
-    	    	saveInView="true">
-    			Select the column that contains the category values.
-    		</columnSelectorOption>
- 
- 			<!-- These should be numeric? -->
- 			<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
-    		<columnFilterOption name="Select frequency columns" id="freq" 
-    			inPortIndex="0" label="Frequency Columns" saveInView="true" filterClasses="org.knime.core.data.DoubleValue">
-    			Select the columns with frequencies for which you wish to plot bars.
-    		</columnFilterOption>
-   		    		
-    	</options>
-    	</tab>
-    	<tab name="General Plot Options">
-    	<options>
-    	<stringOption name="Title" id="title" label="Title" defaultValue="Title of Graph" 
-    		optional="true" saveInView="true">
-    			The chart title.
-    		</stringOption>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
+	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd"
+	jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart"
+	categoryPath="/labs/quickform/view" icon="../js.png" type="Visualizer">
+	<name>Grouped Bar Chart</name>
+	<shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
+	<fullDescription>
+		<intro>
+			This is an example of a dynamically created node.
+		</intro>
+		<tab name="Options">
+			<options>
+				<!-- Not sure this should be StringValue -->
+				<columnSelectorOption name="Category Column"
+					id="cat" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue"
+					saveInView="true">
+					Select the column that contains the category values.
+				</columnSelectorOption>
 
-    		<stringOption name="catLabel" id="catLabel" label="Category-axis label" 
-    			optional="true" defaultValue="Category-axis label" saveInView="true">
-    			The label used for the category axis.
-    		</stringOption>
-    		 
-    		<stringOption name="freqLabel" id="freqLabel" label="Frequency-axis label" 
-    			optional="true" defaultValue="Frequency-axis label" saveInView="true">
-    			The label used for the frequency axis.
-    		</stringOption>
+				<!-- These should be numeric? -->
+				<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
+				<columnFilterOption name="Select frequency columns"
+					id="freq" inPortIndex="0" label="Frequency Columns" saveInView="true"
+					filterClasses="org.knime.core.data.DoubleValue">
+					Select the columns with frequencies for which you wish to plot bars.
+				</columnFilterOption>
 
-			<checkBoxOption name="rotateLabels" id="rotateLabels" label="Rotate labels"
-				defaultValue="false">
-				When checked, the bar chart x-axis legend is rotated 45 degrees to
-				improve readability for long category names.			
-			</checkBoxOption>
-			
-			<checkBoxOption name="displayLegend" id="legend" label="Display legend" 
-				defaultValue="true">
-				When checked, the bar chart legend is displayed.
-			</checkBoxOption>
+			</options>
+		</tab>
+		<tab name="General Plot Options">
+			<options>
+				<stringOption name="Title" id="title" label="Title"
+					defaultValue="Title of Graph" optional="true" saveInView="true">
+					The chart title.
+				</stringOption>
+				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
+					defaultValue="Subtitle of Graph" optional="true" saveInView="true">
+					The chart subtitle.
+				</stringOption>
 
-    		<checkBoxOption name="Horizontal bars" id="orientation" 
-    			label="Plot horizontal bar chart" defaultValue="false"
-    			saveInView="true">
-    			Check to plot the bar chart horizontally. By default bar chart is 
-    			plotted with vertical bars.
-    		</checkBoxOption>
+				<stringOption name="catLabel" id="catLabel" label="Category-axis label"
+					optional="true" defaultValue="Category-axis label" saveInView="true">
+					The label used for the category axis.
+				</stringOption>
 
-			<integerOption name="Image width (in pixels)" id="width" 
-				label="Image width (in pixels)" defaultValue="600" minValue="1" maxValue="20000">
-				Image width (in pixels)</integerOption>
-				
-			<integerOption name="Image height (in pixels)" id="height" 
-				label="Image height (in pixels)"  defaultValue="480" minValue="1" maxValue="20000">
-				Image height (in pixels)</integerOption>
-				
-			<svgOption name="Image" id="svg" portIndex="1" label="Image" additionalWait="300" 
-				defaultWidth="600" defaultHeight="400" defaultFullscreen="false">
-				Settings for image generation.
-			</svgOption>	
-				
-    		</options>
-    	</tab>
+				<stringOption name="freqLabel" id="freqLabel"
+					label="Frequency-axis label" optional="true" defaultValue="Frequency-axis label"
+					saveInView="true">
+					The label used for the frequency axis.
+				</stringOption>
+
+				<checkBoxOption name="rotateLabels" id="rotateLabels"
+					label="Rotate labels" defaultValue="false">
+					When checked, the bar chart x-axis legend is rotated 45 degrees to
+					improve readability for long category names.
+				</checkBoxOption>
+
+				<checkBoxOption name="displayLegend" id="legend"
+					label="Display legend" defaultValue="true">
+					When checked, the bar chart legend is displayed.
+				</checkBoxOption>
+
+				<checkBoxOption name="Horizontal bars" id="orientation"
+					label="Plot horizontal bar chart" defaultValue="false" saveInView="true">
+					Check to plot the bar chart horizontally. By default bar chart is
+					plotted with vertical bars.
+				</checkBoxOption>
+
+				<svgOption name="Image" id="svg" portIndex="0" label="Image"
+					additionalWait="500" defaultWidth="600" defaultHeight="400"
+					defaultFullscreen="false">
+					Settings for image generation.
+				</svgOption>
+
+			</options>
+		</tab>
 		<tab name="Control Options">
-          <options>
-              <checkBoxOption name="Enable view controls" id="enableViewControls"
-                   label="Enable view controls" defaultValue="true">
-                   Check to enable controls in the chart.
-               </checkBoxOption>
-               <checkBoxOption name="Enable Title editing" id="enableTitleEdit"
-                   label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the editing of the title within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable Axis title editing" id="enableAxisEdit"
-                   label="Enable Axis editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the editing of the axis titles within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
-                   label="Enable Display Options" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the interactive selection of a category column.
-               </checkBoxOption>
-               <checkBoxOption name="Enable Frequency Column Chooser" id="enableFrequencyColumnChooser"
-                   label="Enable Display Options" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the interactive selection of a frequency columns.
-               </checkBoxOption>
-               <checkBoxOption name="Enable plot orientation change" id="enableHorizontalToggle"
-                   label="Enable Display Options" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable interactive toggling between a horizontal or
-                   vertical bar chart.
-               </checkBoxOption>
-               
-           </options>
-        </tab>
-    </fullDescription>
-    <outputOptions>
-    	<dataOutputOption outPortIndex="1" id="selection" inPortIndex="0" additionalColumnName="Selected Bars" 
-    			additionalColumnType="BOOLEAN"/>
-    </outputOptions>
-    <interactiveView name="D3 Bar chart">
-    	A D3.js implementation of a Bar Chart.
-    </interactiveView>
-    <ports>
-    	<inPort portType="Data" name="Autocomplete Options" index="0">
-    		Data table containing the categories and values to be plotted in a bar chart.
-    	</inPort>
-    	<outPort portType="Image" name="Bar chart image" index="0">
-    		SVG image of the bar chart.
-    	</outPort>
-    	<outPort portType="Data" name="Entered String" index="1">
-    		Data table with no function yet...
-    	</outPort>
-    </ports>
+			<options>
+				<checkBoxOption name="Enable view controls" id="enableViewControls"
+					label="Enable view controls" defaultValue="true">
+					Check to enable controls in the chart.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
+					label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the title within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Axis title editing" id="enableAxisEdit"
+					label="Enable Axis title editing" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable the editing of the axis titles within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
+					label="Enable Category Chooser" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable the interactive selection of a category column.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Frequency Column Chooser"
+					id="enableFrequencyColumnChooser" label="Enable Frequency Column Chooser"
+					defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the interactive selection of a frequency columns.
+				</checkBoxOption>
+				<checkBoxOption name="Enable plot orientation change"
+					id="enableHorizontalToggle" label="Enable plot orientation change"
+					defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable interactive toggling between a horizontal or
+					vertical bar chart.
+				</checkBoxOption>
+			</options>
+		</tab>
+	</fullDescription>
+	<outputOptions>
+		<dataOutputOption outPortIndex="1" id="selection"
+			inPortIndex="0" additionalColumnName="Selected Bars"
+			additionalColumnType="BOOLEAN" />
+	</outputOptions>
+	<interactiveView name="D3 Bar chart">
+		A D3.js implementation of a Bar Chart.
+	</interactiveView>
+	<ports>
+		<inPort portType="Data" name="Display data" index="0">
+			Data table containing the categories and values to be plotted in a bar
+			chart.
+		</inPort>
+		<inPort portType="Data" name="Bar color data" index="1" optional="true">
+			Data table containing one column with the column names of table which has in addition a color assigned.
+		</inPort>
+		<outPort portType="Image" name="Bar chart image" index="0">
+			SVG image of the bar chart.
+		</outPort>
+		<outPort portType="Data" name="Entered String" index="1">
+			Data table with no function yet...
+		</outPort>
+	</ports>
 	<js:resources>
+		<!-- <js:resource type="js" path="nv.d3.js" /> -->
+		<!-- Added for inlining style rules when generating svg -->
+		<js:resource type="css" path="nv.d3.v1_8_1.min.css" />
 		<js:resource type="js" path="groupedbarchart.js" />
-		<!-- <js:resource type="css" path="sample.css" /> -->
+		<js:resource type="css" path="groupedbarchart.css" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="jquery" path="jQuery_1.11.0" type="local" usesDefine="true" />
-		<!-- <js:dependency name="d3" path="D3_3.2.8" type="local" exports="d3" /> -->
-		<!-- <js:dependency name="d3" path="D3_3.5.5" type="local" usesDefine="true" /> -->
-		<js:dependency name="nvd3" path="NVD3_1.7.1" type="local" exports="nv" />
+		<!-- <js:dependency name="d3" path="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" type="url" usesDefine="true" /> -->
+		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local" exports="nv" />
 	</js:dependencies>
-	<js:javaProcessor className="org.knime.dynamic.js.sample.Processor" />
 </js:knimeNode>
