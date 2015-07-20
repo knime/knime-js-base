@@ -3,7 +3,7 @@
 		xmlns="http://knime.org/dynamicnode/v2.12"
 		xmlns:n="http://knime.org/node/v2.12"
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
- 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd" 
  		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/labs/quickform/view"
  		icon="./sample.png" type="Visualizer">
     <name>Pie/Donut Chart</name>
@@ -103,6 +103,6 @@
 		<js:resource type="js" path="donutchart.js" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="nvd3" path="NVD3_1.7.1" type="local" exports="nv" />
+		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local" exports="nv" />
 	</js:dependencies>
 </js:knimeNode>
