@@ -188,30 +188,30 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		if (getInPorts) {
 			List<PortType> inPorts = new ArrayList<PortType>();
 			for (DynamicInPort port : ports.getInPortList()) {
-				inPorts.add(getPortType(port.getPortType()));
+				inPorts.add(getPortType(port.getPortType(), port.getOptional()));
 			}
 			return inPorts.toArray(new PortType[0]);
 		} else {
 			List<PortType> outPorts = new ArrayList<PortType>();
 			for (DynamicOutPort port : ports.getOutPortList()) {
-				outPorts.add(getPortType(port.getPortType()));
+				outPorts.add(getPortType(port.getPortType(), false));
 			}
 			return outPorts.toArray(new PortType[0]);
 		}
 	}
 
-	private static PortType getPortType(final org.knime.dynamicnode.v212.PortType.Enum portType) {
+	private static PortType getPortType(final org.knime.dynamicnode.v212.PortType.Enum portType, final boolean optional) {
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.DATA)) {
-			return BufferedDataTable.TYPE;
+			return optional ? BufferedDataTable.TYPE_OPTIONAL : BufferedDataTable.TYPE;
 		}
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.FLOW_VARIABLE)) {
-			return FlowVariablePortObject.TYPE;
+			return optional ? FlowVariablePortObject.TYPE_OPTIONAL : FlowVariablePortObject.TYPE;
 		}
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.IMAGE)) {
-			return ImagePortObject.TYPE;
+			return optional ? ImagePortObject.TYPE_OPTIONAL : ImagePortObject.TYPE;
 		}
 		if (portType.equals(org.knime.dynamicnode.v212.PortType.DATABASE)) {
-			return DatabasePortObject.TYPE;
+			return optional ? DatabasePortObject.TYPE_OPTIONAL : DatabasePortObject.TYPE;
 		}
 		return null;
 	}
@@ -814,7 +814,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                             cssPaths.add(path);
                         }
                     } else {
-                        setWarningMessage("Required library " + lib + " is not correctly configured");
+                        setWarningMessage("Required library " + lib.getPath() + " is not correctly configured");
                     }
                 }
                 List<DynamicJSDependency> recDeps = new ArrayList<DynamicJSDependency>();
@@ -830,7 +830,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     jsDependencies.addAll(setPathsFromLibNames(recDeps));
                 }
             } else {
-                setWarningMessage("Required library is not registered: " + lib);
+                setWarningMessage("Required library is not registered: " + lib.getPath());
             }
         }
         DynamicJSViewRepresentation representation = getViewRepresentation();
