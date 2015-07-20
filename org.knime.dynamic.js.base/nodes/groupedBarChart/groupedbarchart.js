@@ -4,6 +4,7 @@
 	var layoutContainer;
 	var MIN_HEIGHT = 200, MIN_WIDTH = 300;
 	var _representation, _value;
+	var chart, svg;
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
@@ -91,7 +92,7 @@
 		var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		div[0][0].appendChild(svg1);
 
-		var svg = d3.select("svg");
+		svg = d3.select("svg");
 		svg.style("font-family", "sans-serif");
 		svg.classed("colored", true);
 
@@ -234,7 +235,6 @@
 		/*
 		 * Plot chart
 		 */
-		var chart;
 		nv.addGraph(function() {
 			if (optOrientation) {
 				chart = nv.models.multiBarHorizontalChart();
@@ -256,11 +256,8 @@
 				.margin({left: 70, right: 20, top: 60, bottom: 40})
 				.groupSpacing(0.1)
 			;
-			var topMargin = 10;
-			topMargin += _value.options.title ? 10 : 0;
-			topMargin += _value.options.subtitle ? 8 : 0;
-			chart.legend.margin({top: topMargin, bottom: topMargin});
-			chart.controls.margin({top: topMargin, bottom: topMargin})
+			
+			updateTitles(false);
 
 	        chart.showControls(_representation.runningInView && optControls);
 			//chart.legend.color(colorScale.range());
@@ -278,23 +275,6 @@
 				.axisLabelDistance(-10)
 				.tickFormat(d3.format(',.01f'))
 			;
-
-			if (_value.options.title) {
-				svg.append("text")
-					.attr("x", 20)             
-					.attr("y", 30)
-					.attr("font-size", 24)
-					.attr("id", "title")
-					.text(_value.options.title);
-			}
-			if (_value.options.subtitle) {
-				svg.append("text")
-					.attr("x", 20)             
-					.attr("y", _value.options.title ? 46 : 20)
-					.attr("font-size", 12)
-					.attr("id", "subtitle")
-					.text(_value.options.subtitle);
-			}
 
 			/*chart.dispatch.on('renderEnd', function(){
 				nv.log('Render Complete');
@@ -315,6 +295,55 @@
 
 			return chart;
 		});	
+	}
+	
+	function updateTitles(updateChart) {
+		if (chart) {
+			var curTitle = d3.select("#title");
+			var curSubtitle = d3.select("#subtitle");
+			var chartNeedsUpdating = curTitle.empty() != !(_value.options.title) 
+				|| curSubtitle.empty() != !(_value.options.subtitle);
+			if (!_value.options.title) {
+				curTitle.remove();
+			}
+			if (_value.options.title) {
+				if (curTitle.empty()) {
+					svg.append("text")
+						.attr("x", 20)             
+						.attr("y", 30)
+						.attr("font-size", 24)
+						.attr("id", "title")
+						.text(_value.options.title);
+				} else {
+					curTitle.text(_value.options.title);
+				}
+			}
+			if (!_value.options.subtitle) {
+				curSubtitle.remove();
+			} 
+			if (_value.options.subtitle) {
+				if (curSubtitle.empty()) {
+					svg.append("text")
+						.attr("x", 20)             
+						.attr("y", _value.options.title ? 46 : 20)
+						.attr("font-size", 12)
+						.attr("id", "subtitle")
+						.text(_value.options.subtitle);
+				} else {
+					curSubtitle.text(_value.options.subtitle)
+					.attr("y", _value.options.title ? 46 : 20);
+				}
+			}
+			
+			var topMargin = 10;
+			topMargin += _value.options.title ? 10 : 0;
+			topMargin += _value.options.subtitle ? 8 : 0;
+			chart.legend.margin({top: topMargin, bottom: topMargin});
+			chart.controls.margin({top: topMargin, bottom: topMargin});
+			if (updateChart && chartNeedsUpdating) {
+				chart.update();
+			}
+		}
 	}
 
 	function createControls(controlsContainer) {
@@ -416,12 +445,23 @@
 				titleDiv.append("input")
 				.attr({id : "titleIn", type : "text", value : _value.options.title}).style("width", 150)
 				.on("keyup", function() {
-					var hadTitles = (_value.options.title.length > 0);
-					_value.options.title = this.value;
-					var hasTitles = (_value.options.title.length > 0);
-					//d3.select("#title").text(this.value);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
+					if (_value.options.title != this.value) {
+						_value.options.title = this.value;
+						updateTitles(true);
+					}
+				});
+			}
+			
+			if (_representation.options.enableSubtitleEdit) {
+				titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
+
+				titleDiv.append("label").attr("for", "subtitleIn").text("Subtitle:").style({"display" : "inline-block", "width" : "100px"});
+				titleDiv.append("input")
+				.attr({id : "subtitleIn", type : "text", value : _value.options.subtitle}).style("width", 150)
+				.on("keyup", function() {
+					if (_value.options.subtitle != this.value) {
+						_value.options.subtitle = this.value;
+						updateTitles(true);
 					}
 				});
 			}
