@@ -465,6 +465,10 @@
 					}
 				});
 			}
+			
+			if (d3.selectAll("#controlContainer *").empty()) {
+				controlContainer.remove();
+			}
 		}
 	}
 
