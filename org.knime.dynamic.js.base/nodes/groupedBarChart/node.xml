@@ -80,11 +80,11 @@
 		<tab name="Control Options">
 			<options>
 				<checkBoxOption name="Enable view controls" id="enableViewControls"
-					label="Enable view controls" defaultValue="false">
+					label="Enable view controls" defaultValue="true">
 					Check to enable controls in the chart.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Grouped/Stacked Chooser" id="enableStackedEdit"
-					label="Enable Grouped/Stacked Chooser" defaultValue="false" enableDependency="enableViewControls"
+					label="Enable Grouped/Stacked Chooser" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the display a control to choose grouped or stacked display of the bars.
 				</checkBoxOption>
