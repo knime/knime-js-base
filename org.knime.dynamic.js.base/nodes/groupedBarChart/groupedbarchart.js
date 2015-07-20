@@ -203,10 +203,25 @@
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
 		}
-
+		
 		/* 
 		 * Process data
 		 */
+    	var customColors, colorScale;
+		if (_representation.inObjects[1]) {
+			// Custom color scale
+			var colorTable = new kt();
+			colorTable.setDataTable(_representation.inObjects[1]);
+			if (colorTable.getColumnTypes()[0] == 'string') {
+				customColors = {};
+				var colorCol = colorTable.getColumn(0);
+				for (var i = 0; i < colorCol.length; i++) {
+					customColors[colorCol[i]] = colorTable.getRowColors()[i];
+				}
+				colorScale = [];
+			}
+		}
+		
 		var knimeTable = new kt();
 		// Add the data from the input port to the knimeTable.
 		var port0dataTable = _representation.inObjects[0];
@@ -215,6 +230,14 @@
 		var categories = knimeTable.getColumn(optCat);
 		/////TODO: Check duplicates. Use a set, see API docs.
 		var colSet = d3.set(optFreqCol);
+		
+		// Default color scale
+		if (!customColors) {
+			colorScale = d3.scale.category10();
+			if (categories.length > 10) {
+				colorScale = d3.scale.category20();
+			}
+		}
 
 		// Get the frequency columns
 		var valCols = [];
@@ -239,11 +262,6 @@
 				retained.push(optFreqCol[k]);
 			}
 		}
-		
-		var colorScale = d3.scale.category10();
-    	if (categories.length > 10) {
-    		colorScale = d3.scale.category20();
-    	}
 		
 		var plot_data = [];
 		if (valCols.length > 0) {
@@ -276,6 +294,14 @@
 				}
 				var plot_stream = {"key": key, "values": values};
 				plot_data[j] = plot_stream;
+				
+				if (customColors) {
+					var color = customColors[key];
+					if (!color) {
+						color = "#7C7C7C";
+					}
+					colorScale.push(color);
+				}
 			}
 		} else {
 			if (hasNull == false) {
@@ -307,8 +333,10 @@
 				}
 			}
 			
+			var colorRange = customColors ? colorScale : colorScale.range();
+			
 			chart
-				.color(colorScale.range())
+				.color(colorRange)
 				.duration(300)
 				.margin({left: 40, right: 20, top: 60, bottom: 40})
 				.groupSpacing(0.1)
