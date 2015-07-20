@@ -2,119 +2,23 @@
 
 	var barchart = {};
 	var layoutContainer;
-	var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+	var MIN_HEIGHT = 200, MIN_WIDTH = 300;
 	var _representation, _value;
+	
+	barchart.init = function(representation, value) {  
+		_value = value;
+		_representation = representation;
 
-	function createControls(controlsContainer) {
-		if (_representation.options.enableViewControls) {
-
-			if (_representation.options.enableCategoryChooser) {
-				var interpolationDiv = controlsContainer.append("div");
-				interpolationDiv.append("label").attr("for", "columnSelect").text("Category Column: ");
-				var select = interpolationDiv.append("select").attr("id", "cat");
-				var COLUMNS = _representation.inObjects[0].spec.colNames;
-				var COLTYPES = _representation.inObjects[0].spec.colTypes;
-				for (var i = 0; i < COLUMNS.length; i++) {
-					if (COLTYPES[i] == "string") {
-						var interp = COLUMNS[i];
-						var o = select.append("option").text(interp).attr("value", interp);
-						if (interp === _value.options.cat) {
-							o.property("selected", true);
-						}
-					}
-				}
-				select.on("change", function() {
-					var orig = _value.options.cat;
-					_value.options.cat = select.property("value");
-					var res = drawChart(true);
-					if (res == "missing") {
-						_value.options.cat = orig;
-						drawChart(true);
-					}
-				});
-			}
-
-			if (_representation.options.enableFrequencyColumnChooser) {
-				//TODO: Add a multi-column selector here...
-			}
-
-			var orientationToggle;
-
-			if (_representation.options.enableHorizontalToggle) {
-				//TODO: Make work in touch interface...
-				orientationToggle = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				orientationToggle.append("label").attr("for", "orientation")
-				.text("Plot horizontal bar chart:").style({"display" : "inline-block", "width" : "100px"});
-				orientationToggle.append("input")
-				.attr({id : "orientation", type : "checkbox", checked : _value.options["orientation"]}).style("width", 150)
-				.on("click", function() {
-					if (_value.options["orientation"] != this.checked) {
-						_value.options["orientation"] = this.checked;
-						drawChart(true);
-					}
-				});
-			}
-
-			var axisDiv;
-
-			if (_representation.options.enableAxisEdit) {
-				axisDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				axisDiv.append("label").attr("for", "yaxisIn").text("y-axis title:").style({"display" : "inline-block", "width" : "100px"});
-				axisDiv.append("input")
-				.attr({id : "yaxisIn", type : "text", value : _value.options.freqLabel}).style("width", 150)
-				.on("keyup", function() {
-					var hadTitles = (_value.options.freqLabel.length > 0);
-					_value.options.freqLabel = this.value;
-					var hasTitles = (_value.options.freqLabel.length > 0);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
-					}
-				});
-
-				axisDiv.append("label").attr("for", "xaxisIn").text("x-axis title:").style({"display" : "inline-block", "width" : "100px"});
-				axisDiv.append("input")
-				.attr({id : "xaxisIn", type : "text", value : _value.options.catLabel}).style("width", 150)
-				.on("keyup", function() {
-					var hadTitles = (_value.options.catLabel.length > 0);
-					_value.options.catLabel = this.value;
-					var hasTitles = (_value.options.catLabel.length > 0);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
-					}
-				});
-
-			}
-
-			var titleDiv;
-
-			if (_representation.options.enableTitleEdit) {
-				titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				titleDiv.append("label").attr("for", "titleIn").text("Title:").style({"display" : "inline-block", "width" : "100px"});
-				titleDiv.append("input")
-				.attr({id : "titleIn", type : "text", value : _value.options.title}).style("width", 150)
-				.on("keyup", function() {
-					var hadTitles = (_value.options.title.length > 0);
-					_value.options.title = this.value;
-					var hasTitles = (_value.options.title.length > 0);
-					//d3.select("#title").text(this.value);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
-					}
-				});
-			}
-		}
+		drawChart();
 	}
 
 	function drawChart(redraw) {
-		d3.select("html").style("width", "100%").style("height", "100%")
-		d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
+		d3.selectAll("html, body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
 
 		/*
 		 * Process options
 		 */
+		var viewControls = _representation.options.enableViewControls;
 		var optWidth = _representation.options["width"];
 		var optHeight = _representation.options["height"];
 
@@ -124,10 +28,11 @@
 
 		var optRotateLabels = _representation.options["rotateLabels"];
 		var optLegend = _representation.options["legend"];
+		var optControls = _representation.options["enableStackedEdit"] && viewControls;
 
 		var optOrientation = _value.options["orientation"];	
 
-		var optFullscreen = _representation.options["svg"]["fullscreen"] & _representation.runningInView;
+		var optFullscreen = _representation.options["svg"]["fullscreen"] && _representation.runningInView;
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
 
@@ -136,42 +41,52 @@
 
 		var body = d3.select("body");
 
-		layoutContainer = body.append("div").attr("id", "layoutContainer")
-		.style("width", "100%").style("height", "calc(100% - 0px)")
-		.style("min-width", MIN_WIDTH + "px");
-
-		var controlHeight;
-		if (_representation.enableControls) {
-			var controlsContainer = body.append("div").style({position : "absolute", bottom : "0px",
-				width : "100%", padding : "5px", "padding-left" : "60px",
-				"border-top" : "1px solid black", "background-color" : "white", "box-sizing": "border-box"}).attr("id", "controlContainer");
-
-			createControls(controlsContainer);
-			controlHeight = controlsContainer.node().getBoundingClientRect().height;
+		var width = optWidth + "px";
+		var height = optHeight + "px";
+		if (optFullscreen) {
+			width = height = "100%";
+		}
+		
+		var div;
+		if (redraw) {
+			d3.select("svg").remove();
+			div = d3.select("#svgContainer");
 		} else {
-			controlHeight = 0;
+			layoutContainer = body.append("div").attr("id", "layoutContainer")
+				.style("width", width).style("height", height)
+				.style("min-width", MIN_WIDTH + "px");
+
+			var controlHeight;
+			if (_representation.options.enableViewControls) {
+				var controlsContainer = body.append("div")
+					.style({bottom : "0px",
+							width : "100%", 
+							padding : "5px", 
+							"padding-left" : "60px",
+							"border-top" : "1px solid black", 
+							"background-color" : "white", 
+							"box-sizing": "border-box"})
+							.attr("id", "controlContainer");
+
+				createControls(controlsContainer);
+				controlHeight = controlsContainer.node().getBoundingClientRect().height;
+				layoutContainer.style("min-height", (MIN_HEIGHT + controlHeight) + "px");
+				if (optFullscreen) {
+					layoutContainer.style("height", "calc(100% - " + controlHeight + "px)");
+				}
+			} else {
+				controlHeight = 0;
+			}
+			
+			div = layoutContainer.append("div")
+				.attr("id", "svgContainer")
+				.style("min-width", MIN_WIDTH + "px")
+				.style("min-height", "calc(" + MIN_HEIGHT + "px - " + controlHeight + "px")
+				.style("box-sizing", "border-box")
+				.style("overflow", "hidden")
+				.style("margin", "0")
 		}
 
-		layoutContainer.style({
-			"height" : "calc(100% - " + controlHeight + "px)",
-			"min-height" :  (MIN_HEIGHT + controlHeight) + "px"
-		});
-
-		var div = layoutContainer.append("div")
-		.attr("id", "svgContainer")
-		.style("min-width", MIN_WIDTH + "px")
-		.style("min-height", MIN_HEIGHT + "px")
-		.style("box-sizing", "border-box")
-		.style("overflow", "hidden")
-		.style("margin", "0")
-
-
-		if (redraw != true) {
-			//TODO: Check API docs. Delete the current SVG element.
-			//chart.drop/delete etc. See lines 231/233.
-		} else {
-			//d3.select("svg").remove();
-		}
 
 		var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		div[0][0].appendChild(svg1);
@@ -321,9 +236,9 @@
 		 */
 		var chart;
 		nv.addGraph(function() {
-			if (optOrientation == true) {
+			if (optOrientation) {
 				chart = nv.models.multiBarHorizontalChart();
-			} else if (optOrientation == false) {
+			} else {
 				chart = nv.models.multiBarChart();
 				chart.reduceXTicks(false)
 					.staggerLabels(false);
@@ -338,7 +253,7 @@
 			chart
 				.color(colorRange)
 				.duration(300)
-				.margin({left: 40, right: 20, top: 60, bottom: 40})
+				.margin({left: 70, right: 20, top: 60, bottom: 40})
 				.groupSpacing(0.1)
 			;
 			var topMargin = 10;
@@ -347,22 +262,20 @@
 			chart.legend.margin({top: topMargin, bottom: topMargin});
 			chart.controls.margin({top: topMargin, bottom: topMargin})
 
-			if (!_representation.runningInView) {
-	        	chart.showControls(false);
-	        }
+	        chart.showControls(_representation.runningInView && optControls);
 			//chart.legend.color(colorScale.range());
-			chart.showLegend(_representation.options["legend"]);
+			chart.showLegend(optLegend);
 
 			chart.xAxis
 				.axisLabel(optCatLabel)
-				.axisLabelDistance(35)
+				.axisLabelDistance(0)
 				.showMaxMin(false)
 			;
 
 			// tick format probably needs scaling...
 			chart.yAxis
 				.axisLabel(optFreqLabel)
-				.axisLabelDistance(15)
+				.axisLabelDistance(-10)
 				.tickFormat(d3.format(',.01f'))
 			;
 
@@ -404,11 +317,115 @@
 		});	
 	}
 
-	barchart.init = function(representation, value) {  
-		_value = value;
-		_representation = representation;
+	function createControls(controlsContainer) {
+		if (_representation.options.enableViewControls) {
+			
+			/*.style("width", "100%")*/
+			/*var controlTable = controlsContainer.append("table")
+	    		.attr("id", "scatterControls")
+	    		.style("padding", "10px")
+	    		.style("margin", "0 auto")
+	    		.style("box-sizing", "border-box")
+	    		.style("font-family", defaultFont)
+	    		.style("font-size", defaultFontSize+"px")
+	    		.style("border-spacing", 0)
+	    		.style("border-collapse", "collapse");*/
 
-		drawChart();
+			if (_representation.options.enableCategoryChooser) {
+				var interpolationDiv = controlsContainer.append("div");
+				interpolationDiv.append("label").attr("for", "columnSelect").text("Category Column: ");
+				var select = interpolationDiv.append("select").attr("id", "cat");
+				var COLUMNS = _representation.inObjects[0].spec.colNames;
+				var COLTYPES = _representation.inObjects[0].spec.colTypes;
+				for (var i = 0; i < COLUMNS.length; i++) {
+					if (COLTYPES[i] == "string") {
+						var interp = COLUMNS[i];
+						var o = select.append("option").text(interp).attr("value", interp);
+						if (interp === _value.options.cat) {
+							o.property("selected", true);
+						}
+					}
+				}
+				select.on("change", function() {
+					var orig = _value.options.cat;
+					_value.options.cat = select.property("value");
+					var res = drawChart(true);
+					if (res == "missing") {
+						_value.options.cat = orig;
+						drawChart(true);
+					}
+				});
+			}
+			
+			// Add orientation selector
+			var orientationToggle;
+			if (_representation.options.enableHorizontalToggle) {
+				orientationToggle = controlsContainer.append("div").style({"margin-top" : "5px"});
+
+				orientationToggle.append("label").attr("for", "orientation")
+				.text("Plot horizontal bar chart:").style({"display" : "inline-block", "width" : "100px"});
+				orientationToggle.append("input")
+				.attr({id : "orientation", type : "checkbox"})
+				.property("checked", _value.options["orientation"])
+				.style("width", 150)
+				.on("click", function() {
+					if (_value.options["orientation"] != this.checked) {
+						_value.options["orientation"] = this.checked;
+						drawChart(true);
+					}
+				});
+			}
+
+			var axisDiv;
+
+			if (_representation.options.enableAxisEdit) {
+				axisDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
+
+				axisDiv.append("label").attr("for", "yaxisIn").text("y-axis title:").style({"display" : "inline-block", "width" : "100px"});
+				axisDiv.append("input")
+				.attr({id : "yaxisIn", type : "text", value : _value.options.freqLabel}).style("width", 150)
+				.on("keyup", function() {
+					var hadTitles = (_value.options.freqLabel.length > 0);
+					_value.options.freqLabel = this.value;
+					var hasTitles = (_value.options.freqLabel.length > 0);
+					if (hasTitles != hadTitles) {
+						drawChart(true);
+					}
+				});
+
+				axisDiv.append("label").attr("for", "xaxisIn").text("x-axis title:").style({"display" : "inline-block", "width" : "100px"});
+				axisDiv.append("input")
+				.attr({id : "xaxisIn", type : "text", value : _value.options.catLabel}).style("width", 150)
+				.on("keyup", function() {
+					var hadTitles = (_value.options.catLabel.length > 0);
+					_value.options.catLabel = this.value;
+					var hasTitles = (_value.options.catLabel.length > 0);
+					if (hasTitles != hadTitles) {
+						drawChart(true);
+					}
+				});
+
+			}
+
+			var titleDiv;
+
+			if (_representation.options.enableTitleEdit) {
+				titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
+
+				titleDiv.append("label").attr("for", "titleIn").text("Title:").style({"display" : "inline-block", "width" : "100px"});
+				titleDiv.append("input")
+				.attr({id : "titleIn", type : "text", value : _value.options.title}).style("width", 150)
+				.on("keyup", function() {
+					var hadTitles = (_value.options.title.length > 0);
+					_value.options.title = this.value;
+					var hasTitles = (_value.options.title.length > 0);
+					//d3.select("#title").text(this.value);
+					if (hasTitles != hadTitles) {
+						drawChart(true);
+					}
+				});
+			}
+		}
 	}
 
 	barchart.validate = function() {
@@ -420,7 +437,7 @@
 	}
 
 	barchart.getSVG = function() {
-		// add external nvd3 styles to svg
+		// inline global style declarations for SVG export
 		var styles = document.styleSheets;
 		for (i = 0; i < styles.length; i++) {
 			if (!styles[i].cssRules) {

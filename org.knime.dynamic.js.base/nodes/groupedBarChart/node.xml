@@ -80,33 +80,43 @@
 		<tab name="Control Options">
 			<options>
 				<checkBoxOption name="Enable view controls" id="enableViewControls"
-					label="Enable view controls" defaultValue="true">
+					label="Enable view controls" defaultValue="false">
 					Check to enable controls in the chart.
 				</checkBoxOption>
+				<checkBoxOption name="Enable Grouped/Stacked Chooser" id="enableStackedEdit"
+					label="Enable Grouped/Stacked Chooser" defaultValue="false" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the display a control to choose grouped or stacked display of the bars.
+				</checkBoxOption>
 				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
-					label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls"
+					label="Enable Title editing" defaultValue="false" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the editing of the title within the view.
 				</checkBoxOption>
+				<checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
+					label="Enable Subtitle editing" defaultValue="false" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the subtitle within the view.
+				</checkBoxOption>
 				<checkBoxOption name="Enable Axis title editing" id="enableAxisEdit"
-					label="Enable Axis title editing" defaultValue="true"
+					label="Enable Axis title editing" defaultValue="false"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the axis titles within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
-					label="Enable Category Chooser" defaultValue="true"
+					label="Enable Category Chooser" defaultValue="false"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the interactive selection of a category column.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Frequency Column Chooser"
 					id="enableFrequencyColumnChooser" label="Enable Frequency Column Chooser"
-					defaultValue="true" enableDependency="enableViewControls"
+					defaultValue="false" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the interactive selection of a frequency columns.
 				</checkBoxOption>
 				<checkBoxOption name="Enable plot orientation change"
 					id="enableHorizontalToggle" label="Enable plot orientation change"
-					defaultValue="true" enableDependency="enableViewControls"
+					defaultValue="false" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable interactive toggling between a horizontal or
 					vertical bar chart.
@@ -114,12 +124,12 @@
 			</options>
 		</tab>
 	</fullDescription>
-	<outputOptions>
+	<!-- <outputOptions>
 		<dataOutputOption outPortIndex="1" id="selection"
 			inPortIndex="0" additionalColumnName="Selected Bars"
 			additionalColumnType="BOOLEAN" />
-	</outputOptions>
-	<interactiveView name="D3 Bar chart">
+	</outputOptions> -->
+	<interactiveView name="Grouped Bar Chart">
 		A D3.js implementation of a Bar Chart.
 	</interactiveView>
 	<ports>
@@ -133,9 +143,9 @@
 		<outPort portType="Image" name="Bar chart image" index="0">
 			SVG image of the bar chart.
 		</outPort>
-		<outPort portType="Data" name="Entered String" index="1">
+		<!-- <outPort portType="Data" name="Entered String" index="1">
 			Data table with no function yet...
-		</outPort>
+		</outPort> -->
 	</ports>
 	<js:resources>
 		<!-- <js:resource type="js" path="nv.d3.js" /> -->
