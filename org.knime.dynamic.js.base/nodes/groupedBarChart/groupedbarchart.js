@@ -350,122 +350,132 @@
 		if (_representation.options.enableViewControls) {
 			
 			/*.style("width", "100%")*/
-			/*var controlTable = controlsContainer.append("table")
-	    		.attr("id", "scatterControls")
+			var controlTable = controlsContainer.append("table")
+	    		.attr("id", "barControls")
 	    		.style("padding", "10px")
 	    		.style("margin", "0 auto")
 	    		.style("box-sizing", "border-box")
-	    		.style("font-family", defaultFont)
-	    		.style("font-size", defaultFontSize+"px")
+	    		.style("font-family", "sans-serif")
+	    		.style("font-size", "12px")
 	    		.style("border-spacing", 0)
-	    		.style("border-collapse", "collapse");*/
-
-			if (_representation.options.enableCategoryChooser) {
-				var interpolationDiv = controlsContainer.append("div");
-				interpolationDiv.append("label").attr("for", "columnSelect").text("Category Column: ");
-				var select = interpolationDiv.append("select").attr("id", "cat");
-				var COLUMNS = _representation.inObjects[0].spec.colNames;
-				var COLTYPES = _representation.inObjects[0].spec.colTypes;
-				for (var i = 0; i < COLUMNS.length; i++) {
-					if (COLTYPES[i] == "string") {
-						var interp = COLUMNS[i];
-						var o = select.append("option").text(interp).attr("value", interp);
-						if (interp === _value.options.cat) {
-							o.property("selected", true);
+	    		.style("border-collapse", "collapse");
+			
+			var titleEdit = _representation.options.enableTitleEdit;
+			var subtitleEdit = _representation.options.enableSubtitleEdit;
+			
+			if (titleEdit || subtitleEdit) {
+				var titleEditContainer = controlsContainer.append("tr");
+		    	if (titleEdit) {
+		    		titleEditContainer.append("td").append("label").attr("for", "chartTitleText").text("Chart Title:").style("margin-right", "5px");
+		    		var chartTitleText = titleEditContainer.append("td").append("input")
+	    				.attr("type", "text")
+	    				.attr("id", "chartTitleText")
+	    				.attr("name", "chartTitleText")
+	    				.attr("value", _value.options.title)
+	    				.style("font-family", "sans-serif")
+	    				.style("font-size", "12px")
+	    				.on("keyup", function() {
+	    					if (_value.options.title != this.value) {
+	    						_value.options.title = this.value;
+	    						updateTitles(true);
+	    					}
+	    			});
+		    	}
+		    	if (subtitleEdit) {
+		    		titleEditContainer.append("td").append("label").attr("for", "chartSubtitleText").text("Chart Subtitle:").style("margin-right", "5px");
+		    		var chartTitleText = titleEditContainer.append("td").append("input")
+	    				.attr("type", "text")
+	    				.attr("id", "chartSubtitleText")
+	    				.attr("name", "chartSubtitleText")
+	    				.attr("value", _value.options.subtitle)
+	    				.style("font-family", "sans-serif")
+	    				.style("font-size", "12px")
+	    				.on("keyup", function() {
+	    					if (_value.options.subtitle != this.value) {
+	    						_value.options.subtitle = this.value;
+	    						updateTitles(true);
+	    					}
+	    			});
+		    	}
+			}
+			
+			var orientationEdit = _representation.options.enableHorizontalToggle;
+			var categoryEdit = _representation.options.enableCategoryChooser;
+			
+			if (orientationEdit || categoryEdit) {
+				var orientationContainer = controlsContainer.append("tr");
+				if (orientationEdit) {
+					orientationContainer.append("td").append("label").attr("for", "orientation").text("Plot horizontal bar chart:").style("margin-right", "5px");
+		    		var orientationCheckbox = orientationContainer.append("td").append("input")
+	    				.attr("type", "checkbox")
+	    				.attr("id", "orientation")
+	    				.property("checked", _value.options.orientation)
+	    				.on("click", function() {
+	    					if (_value.options["orientation"] != this.checked) {
+	    						_value.options["orientation"] = this.checked;
+	    						drawChart(true);
+	    					}
+	    				});
+				}
+				if (categoryEdit) {
+					orientationContainer.append("td").append("label").attr("for", "cat").text("Category Column:").style("margin-right", "5px");
+					var categoryBox = orientationContainer.append("td").append("select")
+						.attr("id", "cat");
+					var COLUMNS = _representation.inObjects[0].spec.colNames;
+					var COLTYPES = _representation.inObjects[0].spec.colTypes;
+					for (var i = 0; i < COLUMNS.length; i++) {
+						if (COLTYPES[i] == "string") {
+							var interp = COLUMNS[i];
+							var o = categoryBox.append("option").text(interp).attr("value", interp);
+							if (interp === _value.options.cat) {
+								o.property("selected", true);
+							}
 						}
 					}
+					categoryBox.on("change", function() {
+						var orig = _value.options.cat;
+						_value.options.cat = categoryBox.property("value");
+						var res = drawChart(true);
+						if (res == "missing") {
+							_value.options.cat = orig;
+							drawChart(true);
+						}
+					});
 				}
-				select.on("change", function() {
-					var orig = _value.options.cat;
-					_value.options.cat = select.property("value");
-					var res = drawChart(true);
-					if (res == "missing") {
-						_value.options.cat = orig;
-						drawChart(true);
-					}
-				});
 			}
-			
-			// Add orientation selector
-			var orientationToggle;
-			if (_representation.options.enableHorizontalToggle) {
-				orientationToggle = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				orientationToggle.append("label").attr("for", "orientation")
-				.text("Plot horizontal bar chart:").style({"display" : "inline-block", "width" : "100px"});
-				orientationToggle.append("input")
-				.attr({id : "orientation", type : "checkbox"})
-				.property("checked", _value.options["orientation"])
-				.style("width", 150)
-				.on("click", function() {
-					if (_value.options["orientation"] != this.checked) {
-						_value.options["orientation"] = this.checked;
-						drawChart(true);
-					}
-				});
-			}
-
-			var axisDiv;
 
 			if (_representation.options.enableAxisEdit) {
-				axisDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				axisDiv.append("label").attr("for", "yaxisIn").text("y-axis title:").style({"display" : "inline-block", "width" : "100px"});
-				axisDiv.append("input")
-				.attr({id : "yaxisIn", type : "text", value : _value.options.freqLabel}).style("width", 150)
-				.on("keyup", function() {
-					var hadTitles = (_value.options.freqLabel.length > 0);
-					_value.options.freqLabel = this.value;
-					var hasTitles = (_value.options.freqLabel.length > 0);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
-					}
-				});
-
-				axisDiv.append("label").attr("for", "xaxisIn").text("x-axis title:").style({"display" : "inline-block", "width" : "100px"});
-				axisDiv.append("input")
-				.attr({id : "xaxisIn", type : "text", value : _value.options.catLabel}).style("width", 150)
-				.on("keyup", function() {
-					var hadTitles = (_value.options.catLabel.length > 0);
-					_value.options.catLabel = this.value;
-					var hasTitles = (_value.options.catLabel.length > 0);
-					if (hasTitles != hadTitles) {
-						drawChart(true);
-					}
-				});
-
+				var axisContainer = controlsContainer.append("tr");
+				axisContainer.append("td").append("label").attr("for", "freqAxisLabel").text("Frequency axis label:").style("margin-right", "5px");
+				var categoryBox = axisContainer.append("td").append("input")
+					.attr("id", "freqAxisLabel")
+					.attr("type", "text")
+					.attr("value", _value.options.freqLabel)
+					.on("keyup", function() {
+						var hadTitles = (_value.options.freqLabel.length > 0);
+						_value.options.freqLabel = this.value;
+						var hasTitles = (_value.options.freqLabel.length > 0);
+						if (hasTitles != hadTitles) {
+							drawChart(true);
+						}
+					});
+				
+				axisContainer.append("td").append("label").attr("for", "catAxisLabel").text("Category axis label:").style("margin-right", "5px");
+				var categoryBox = axisContainer.append("td").append("input")
+					.attr("id", "catAxisLabel")
+					.attr("type", "text")
+					.attr("value", _value.options.catLabel)
+					.on("keyup", function() {
+						var hadTitles = (_value.options.catLabel.length > 0);
+						_value.options.catLabel = this.value;
+						var hasTitles = (_value.options.catLabel.length > 0);
+						if (hasTitles != hadTitles) {
+							drawChart(true);
+						}
+					});
+					
 			}
-
-			var titleDiv;
-
-			if (_representation.options.enableTitleEdit) {
-				titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				titleDiv.append("label").attr("for", "titleIn").text("Title:").style({"display" : "inline-block", "width" : "100px"});
-				titleDiv.append("input")
-				.attr({id : "titleIn", type : "text", value : _value.options.title}).style("width", 150)
-				.on("keyup", function() {
-					if (_value.options.title != this.value) {
-						_value.options.title = this.value;
-						updateTitles(true);
-					}
-				});
-			}
-			
-			if (_representation.options.enableSubtitleEdit) {
-				titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-
-				titleDiv.append("label").attr("for", "subtitleIn").text("Subtitle:").style({"display" : "inline-block", "width" : "100px"});
-				titleDiv.append("input")
-				.attr({id : "subtitleIn", type : "text", value : _value.options.subtitle}).style("width", 150)
-				.on("keyup", function() {
-					if (_value.options.subtitle != this.value) {
-						_value.options.subtitle = this.value;
-						updateTitles(true);
-					}
-				});
-			}
-			
+				
 			if (d3.selectAll("#controlContainer *").empty()) {
 				controlContainer.remove();
 			}
