@@ -5,12 +5,15 @@
 	var MIN_HEIGHT = 200, MIN_WIDTH = 300;
 	var _representation, _value;
 	var chart, svg;
+	var staggerCheckbox;
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
 		_representation = representation;
-
 		drawChart();
+		if (parent != undefined && parent.KnimePageLoader != undefined) {
+			parent.KnimePageLoader.autoResize(window.frameElement.id);
+		}
 	}
 
 	function drawChart(redraw) {
@@ -27,7 +30,7 @@
 		var optCatLabel = _value.options["catLabel"];
 		var optFreqLabel = _value.options["freqLabel"];
 
-		var optRotateLabels = _representation.options["rotateLabels"];
+		var optStaggerLabels = _representation.options["staggerLabels"];
 		var optLegend = _representation.options["legend"];
 		var optControls = _representation.options["enableStackedEdit"] && viewControls;
 
@@ -37,8 +40,8 @@
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
 
-		var optFreqCol = _value.options["freq"];
-		var optCat = _value.options["cat"];
+		var optFreqCol = _representation.options["freq"];
+		var optCat = _representation.options["cat"];
 
 		var body = d3.select("body");
 
@@ -240,12 +243,7 @@
 				chart = nv.models.multiBarHorizontalChart();
 			} else {
 				chart = nv.models.multiBarChart();
-				chart.reduceXTicks(false)
-					.staggerLabels(false);
-				// Not relevant for horizontal chart...
-				if (optRotateLabels == true) {
-					chart.rotateLabels(45);
-				}
+				chart.reduceXTicks(false);
 			}
 			
 			var colorRange = customColors ? colorScale : colorScale.range();
@@ -253,25 +251,15 @@
 			chart
 				.color(colorRange)
 				.duration(300)
-				.margin({left: optOrientation ? 100 : 70, right: 20, top: 60, bottom: 40})
-				.groupSpacing(0.1)
-			;
+				.margin({right: 20, top: 60})
+				.groupSpacing(0.1);
 			
 			updateTitles(false);
 
 	        chart.showControls(_representation.runningInView && optControls);
 			chart.showLegend(optLegend);
 
-			chart.xAxis
-				.axisLabel(optCatLabel)
-				.axisLabelDistance(optOrientation ? 30 : -10)
-				.showMaxMin(false);
-
-			// tick format probably needs scaling...
-			chart.yAxis
-				.axisLabel(optFreqLabel)
-				.axisLabelDistance(optOrientation ? -10 : 0)
-				/*.tickFormat(d3.format(',.01f'))*/;
+			updateAxisLabels(false);
 
 			svg.datum(plot_data)
 				.transition().duration(300)
@@ -330,6 +318,59 @@
 			}
 		}
 	}
+	
+	function updateAxisLabels(updateChart) {
+		if (chart) {
+			var optOrientation = _value.options["orientation"];
+			var optStaggerLabels = _value.options["staggerLabels"];
+			var curCatAxisLabel, curFreqAxisLabel;
+			var curCatAxisLabelElement = d3.select(".nv-x.nv-axis .nv-axis-label");
+			var curFreqAxisLabelElement = d3.select(".nv-y.nv-axis .nv-axis-label");
+			if (!curCatAxisLabelElement.empty()) {
+				curCatAxisLabel = curCatAxisLabelElement.text();
+			}
+			if (!curFreqAxisLabelElement.empty()) {
+				curFreqAxisLabel = curCatAxisLabelElement.text();
+			}
+			var chartNeedsUpdating = curCatAxisLabel != _value.options.catLabel
+				|| curFreqAxisLabel != _value.options.freqLabel;
+			if (!chartNeedsUpdating) return;
+			
+			chart.xAxis
+				.axisLabel(_value.options.catLabel)
+				.axisLabelDistance(optOrientation ? 30 : optStaggerLabels ? 10 : -5)
+				.showMaxMin(false);
+
+			// tick format needed?
+			chart.yAxis
+				.axisLabel(_value.options.freqLabel)
+				.axisLabelDistance(optOrientation ? -5 : 0)
+				/*.tickFormat(d3.format(',.01f'))*/;
+			
+			var leftMargin = optOrientation ? 100 : 70;
+			var bottomMargin = 35;
+			if (!_value.options.catLabel) {
+				bottomMargin = optOrientation ? bottomMargin : 25;
+				leftMargin = optOrientation ? 70 : leftMargin;
+			}
+			if (!_value.options.freqLabel) {
+				bottomMargin = optOrientation ? 25 : bottomMargin;
+				leftMargin = optOrientation ? leftMargin : 50;
+			}
+			if (!optOrientation) {
+				chart.staggerLabels(optStaggerLabels);
+				if (optStaggerLabels) {
+					bottomMargin += _value.options.catLabel ? 25 : 15;
+				}
+			}
+			
+			chart.margin({left: leftMargin, bottom: bottomMargin})
+			
+			if (updateChart) {
+				chart.update();
+			}
+		}
+	}
 
 	function createControls(controlsContainer) {
 		if (_representation.options.enableViewControls) {
@@ -345,11 +386,76 @@
 	    		.style("border-spacing", 0)
 	    		.style("border-collapse", "collapse");
 			
+			var orientationEdit = _representation.options.enableHorizontalToggle;
+			var staggerLabels = _representation.options.enableStaggerToggle;
+			var categoryEdit = _representation.options.enableCategoryChooser;
+			
+			if (orientationEdit || staggerLabels) {
+				var orientationContainer = controlTable.append("tr");
+				if (orientationEdit) {
+					orientationContainer.append("td").append("label").attr("for", "orientation").text("Plot horizontal bar chart:").style("margin", "0 5px");
+		    		var orientationCheckbox = orientationContainer.append("td").append("input")
+	    				.attr("type", "checkbox")
+	    				.attr("id", "orientation")
+	    				.style("margin-right", "15px")
+	    				.property("checked", _value.options.orientation)
+	    				.on("click", function() {
+	    					if (_value.options["orientation"] != this.checked) {
+	    						_value.options["orientation"] = this.checked;
+	    						staggerCheckbox.property("disabled", this.checked);
+	    						drawChart(true);
+	    					}
+	    				});
+				}
+				if (staggerLabels) {
+					orientationContainer.append("td").append("label").attr("for", "stagger").text("Stagger labels:").style("margin", "0 5px");
+		    		staggerCheckbox = orientationContainer.append("td").append("input")
+	    				.attr("type", "checkbox")
+	    				.attr("id", "stagger")
+	    				.style("margin-right", "15px")
+	    				.property("checked", _value.options.staggerLabels)
+	    				.property("disabled", _value.options["orientation"])
+	    				.on("click", function() {
+	    					if (_value.options.staggerLabels != this.checked) {
+	    						_value.options.staggerLabels = this.checked;
+	    						drawChart(true);
+	    					}
+	    				});
+				}
+				/*if (categoryEdit) {
+					orientationContainer.append("td").append("label").attr("for", "cat").text("Category Column:").style("margin", "0 5px");
+					var categoryBox = orientationContainer.append("td").append("select")
+						.attr("id", "cat")
+						.style("width", "150px")
+						.style("margin-right", "15px");
+					var COLUMNS = _representation.inObjects[0].spec.colNames;
+					var COLTYPES = _representation.inObjects[0].spec.colTypes;
+					for (var i = 0; i < COLUMNS.length; i++) {
+						if (COLTYPES[i] == "string") {
+							var interp = COLUMNS[i];
+							var o = categoryBox.append("option").text(interp).attr("value", interp);
+							if (interp === _representation.options.cat) {
+								o.property("selected", true);
+							}
+						}
+					}
+					categoryBox.on("change", function() {
+						var orig = _value.options.cat;
+						_value.options.cat = categoryBox.property("value");
+						var res = drawChart(true);
+						if (res == "missing") {
+							_representation.options.cat = orig;
+							drawChart(true);
+						}
+					});
+				}*/
+			}
+			
 			var titleEdit = _representation.options.enableTitleEdit;
 			var subtitleEdit = _representation.options.enableSubtitleEdit;
 			
 			if (titleEdit || subtitleEdit) {
-				var titleEditContainer = controlsContainer.append("tr");
+				var titleEditContainer = controlTable.append("tr");
 		    	if (titleEdit) {
 		    		titleEditContainer.append("td").append("label").attr("for", "chartTitleText").text("Chart Title:").style("margin", "0 5px");
 		    		var chartTitleText = titleEditContainer.append("td").append("input")
@@ -359,6 +465,8 @@
 	    				.attr("value", _value.options.title)
 	    				.style("font-family", "sans-serif")
 	    				.style("font-size", "12px")
+	    				.style("width", "150px")
+	    				.style("margin-right", "15px")
 	    				.on("keyup", function() {
 	    					if (_value.options.title != this.value) {
 	    						_value.options.title = this.value;
@@ -375,6 +483,8 @@
 	    				.attr("value", _value.options.subtitle)
 	    				.style("font-family", "sans-serif")
 	    				.style("font-size", "12px")
+	    				.style("width", "150px")
+	    				.style("margin-right", "15px")
 	    				.on("keyup", function() {
 	    					if (_value.options.subtitle != this.value) {
 	    						_value.options.subtitle = this.value;
@@ -384,63 +494,19 @@
 		    	}
 			}
 			
-			var orientationEdit = _representation.options.enableHorizontalToggle;
-			var categoryEdit = _representation.options.enableCategoryChooser;
-			
-			if (orientationEdit || categoryEdit) {
-				var orientationContainer = controlsContainer.append("tr");
-				if (orientationEdit) {
-					orientationContainer.append("td").append("label").attr("for", "orientation").text("Plot horizontal bar chart:").style("margin", "0 5px");
-		    		var orientationCheckbox = orientationContainer.append("td").append("input")
-	    				.attr("type", "checkbox")
-	    				.attr("id", "orientation")
-	    				.property("checked", _value.options.orientation)
-	    				.on("click", function() {
-	    					if (_value.options["orientation"] != this.checked) {
-	    						_value.options["orientation"] = this.checked;
-	    						drawChart(true);
-	    					}
-	    				});
-				}
-				if (categoryEdit) {
-					orientationContainer.append("td").append("label").attr("for", "cat").text("Category Column:").style("margin", "0 5px");
-					var categoryBox = orientationContainer.append("td").append("select")
-						.attr("id", "cat");
-					var COLUMNS = _representation.inObjects[0].spec.colNames;
-					var COLTYPES = _representation.inObjects[0].spec.colTypes;
-					for (var i = 0; i < COLUMNS.length; i++) {
-						if (COLTYPES[i] == "string") {
-							var interp = COLUMNS[i];
-							var o = categoryBox.append("option").text(interp).attr("value", interp);
-							if (interp === _value.options.cat) {
-								o.property("selected", true);
-							}
-						}
-					}
-					categoryBox.on("change", function() {
-						var orig = _value.options.cat;
-						_value.options.cat = categoryBox.property("value");
-						var res = drawChart(true);
-						if (res == "missing") {
-							_value.options.cat = orig;
-							drawChart(true);
-						}
-					});
-				}
-			}
-
 			if (_representation.options.enableAxisEdit) {
-				var axisContainer = controlsContainer.append("tr");
+				var axisContainer = controlTable.append("tr");
 				
 				axisContainer.append("td").append("label").attr("for", "catAxisLabel").text("Category axis label:").style("margin", "0 5px");
 				var categoryBox = axisContainer.append("td").append("input")
 					.attr("id", "catAxisLabel")
 					.attr("type", "text")
 					.attr("value", _value.options.catLabel)
+					.style("width", "150px")
+					.style("margin-right", "15px")
 					.on("keyup", function() {
 						_value.options.catLabel = this.value;
-						chart.xAxis.axisLabel(_value.options.catLabel);
-						chart.update();
+						updateAxisLabels(true);
 					});
 				
 				axisContainer.append("td").append("label").attr("for", "freqAxisLabel").text("Frequency axis label:").style("margin", "0 5px");
@@ -448,15 +514,16 @@
 					.attr("id", "freqAxisLabel")
 					.attr("type", "text")
 					.attr("value", _value.options.freqLabel)
+					.style("width", "150px")
+					.style("margin-right", "15px")
 					.on("keyup", function() {
 						_value.options.freqLabel = this.value;
-						chart.yAxis.axisLabel(_value.options.freqLabel);
-						chart.update();
+						updateAxisLabels(true);
 					});
 					
 			}
 				
-			if (d3.selectAll("#controlContainer *").empty()) {
+			if (d3.selectAll("#controlContainer table *").empty()) {
 				controlContainer.remove();
 			}
 		}

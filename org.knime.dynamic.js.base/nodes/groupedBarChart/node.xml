@@ -9,22 +9,17 @@
 	<shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
-			This is an example of a dynamically created node.
+			A grouped bar chart based on the NVD3 library.
 		</intro>
 		<tab name="Options">
 			<options>
-				<!-- Not sure this should be StringValue -->
 				<columnSelectorOption name="Category Column"
-					id="cat" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue"
-					saveInView="true">
-					Select the column that contains the category values.
+					id="cat" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
+					Select the column that contains the category values. Please note that the values are assumed to be unique.
 				</columnSelectorOption>
 
-				<!-- These should be numeric? -->
-				<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
 				<columnFilterOption name="Select frequency columns"
-					id="freq" inPortIndex="0" label="Frequency Columns" saveInView="true"
-					filterClasses="org.knime.core.data.DoubleValue">
+					id="freq" inPortIndex="0" label="Frequency Columns" filterClasses="org.knime.core.data.DoubleValue">
 					Select the columns with frequencies for which you wish to plot bars.
 				</columnFilterOption>
 
@@ -32,38 +27,33 @@
 		</tab>
 		<tab name="General Plot Options">
 			<options>
-				<stringOption name="Title" id="title" label="Title"
-					defaultValue="Title of Graph" optional="true" saveInView="true">
+				<stringOption name="Title" id="title" label="Title" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
-				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
-					defaultValue="Subtitle of Graph" optional="true" saveInView="true">
+				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
 					The chart subtitle.
 				</stringOption>
 
-				<stringOption name="catLabel" id="catLabel" label="Category-axis label"
-					optional="true" defaultValue="Category-axis label" saveInView="true">
+				<stringOption name="Category-axis label" id="catLabel" label="Category-axis label" optional="true" saveInView="true">
 					The label used for the category axis.
 				</stringOption>
 
-				<stringOption name="freqLabel" id="freqLabel"
-					label="Frequency-axis label" optional="true" defaultValue="Frequency-axis label"
-					saveInView="true">
+				<stringOption name="Frequency-axis label" id="freqLabel" label="Frequency-axis label" optional="true" saveInView="true">
 					The label used for the frequency axis.
 				</stringOption>
 
-				<checkBoxOption name="rotateLabels" id="rotateLabels"
-					label="Rotate labels" defaultValue="false">
-					When checked, the bar chart x-axis legend is rotated 45 degrees to
-					improve readability for long category names.
+				<checkBoxOption name="Stagger labels" id="staggerLabels"
+					label="Stagger labels" defaultValue="false" saveInView="true">
+					When checked, the bar chart category legend is rendered in a staggered fashion to
+					allow more room for readability for long category names.
 				</checkBoxOption>
 
-				<checkBoxOption name="displayLegend" id="legend"
+				<checkBoxOption name="Display legend" id="legend"
 					label="Display legend" defaultValue="true">
 					When checked, the bar chart legend is displayed.
 				</checkBoxOption>
 
-				<checkBoxOption name="Horizontal bars" id="orientation"
+				<checkBoxOption name="Plot horizontal bar chart" id="orientation"
 					label="Plot horizontal bar chart" defaultValue="false" saveInView="true">
 					Check to plot the bar chart horizontally. By default bar chart is
 					plotted with vertical bars.
@@ -71,8 +61,8 @@
 
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="500" defaultWidth="600" defaultHeight="400"
-					defaultFullscreen="false">
-					Settings for image generation.
+					defaultFullscreen="true">
+					Settings for SVG image generation.
 				</svgOption>
 
 			</options>
@@ -87,6 +77,19 @@
 					label="Enable Grouped/Stacked Chooser" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the display a control to choose grouped or stacked display of the bars.
+				</checkBoxOption>
+				<checkBoxOption name="Enable plot orientation change"
+					id="enableHorizontalToggle" label="Enable plot orientation change"
+					defaultValue="false" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable interactive toggling between a horizontal or
+					vertical bar chart.
+				</checkBoxOption>
+				<checkBoxOption name="Enable stagger label change"
+					id="enableStaggerToggle" label="Enable stagger label change"
+					defaultValue="false" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable editing whether or not the labels for the category axis are rendered staggered.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
 					label="Enable Title editing" defaultValue="false" enableDependency="enableViewControls"
@@ -103,29 +106,22 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the axis titles within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
+				<!-- <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
 					label="Enable Category Chooser" defaultValue="false"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the interactive selection of a category column.
-				</checkBoxOption>
+				</checkBoxOption> -->
 				<!-- <checkBoxOption name="Enable Frequency Column Chooser"
 					id="enableFrequencyColumnChooser" label="Enable Frequency Column Chooser"
 					defaultValue="false" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the interactive selection of a frequency columns.
 				</checkBoxOption> -->
-				<checkBoxOption name="Enable plot orientation change"
-					id="enableHorizontalToggle" label="Enable plot orientation change"
-					defaultValue="false" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable interactive toggling between a horizontal or
-					vertical bar chart.
-				</checkBoxOption>
 			</options>
 		</tab>
 	</fullDescription>
 	<interactiveView name="Grouped Bar Chart">
-		A D3.js implementation of a Bar Chart.
+		A bar chart based on the NVD3 library.
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">

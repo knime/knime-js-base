@@ -19,7 +19,13 @@ public class BarChartProcessor implements DynamicJSProcessor {
 			ExecutionContext exec, DynamicJSConfig config) throws Exception {
 		BufferedDataTable table = (BufferedDataTable)inObjects[0];
 		String colName = ((SettingsModelString)config.getModel("cat")).getStringValue();
+		if (colName == null) {
+			throw new IllegalArgumentException("No column selected for category values.");
+		}
 		int columnIndex = table.getDataTableSpec().findColumnIndex(colName);
+		if (columnIndex < 0) {
+			throw new IllegalArgumentException("Index for column with name " + colName + " not found.");
+		}
 		Set<String> possibleValues = new HashSet<String>();
 		try (CloseableRowIterator iterator = table.iterator()) {
 			while (iterator.hasNext()) {
