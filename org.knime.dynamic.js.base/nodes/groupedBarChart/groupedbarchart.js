@@ -88,7 +88,7 @@
 				.style("min-height", "calc(" + MIN_HEIGHT + "px - " + controlHeight + "px")
 				.style("box-sizing", "border-box")
 				.style("overflow", "hidden")
-				.style("margin", "0")
+				.style("margin", "0");
 		}
 
 
