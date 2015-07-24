@@ -740,7 +740,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		}
 		File file = new File(rootFile, path);
 		if (!file.exists() || !file.isFile()) {
-			LOGGER.error("Specified resource file " + file + "does not exist!");
+			LOGGER.error("Specified resource file " + file + " does not exist!");
 			return null;
 		}
 		try {
