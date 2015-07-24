@@ -1,4 +1,4 @@
-package org.knime.dynamic.js.base.barchart;
+package org.knime.dynamic.js.base.grouped;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.DynamicJSConfig;
 import org.knime.dynamic.js.DynamicJSProcessor;
 
-public class BarChartProcessor implements DynamicJSProcessor {
+public class GroupedProcessor implements DynamicJSProcessor {
 
 	@Override
 	public Object[] processInputObjects(PortObject[] inObjects,

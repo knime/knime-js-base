@@ -99,7 +99,7 @@
 		svg.style("font-family", "sans-serif");
 		svg.classed("colored", true);
 
-		if (optFullscreen == false) {
+		if (!optFullscreen) {
 			if (optWidth > 0) {
 				div.style("width", optWidth+"px")
 				svg.attr("width", optWidth);
@@ -147,8 +147,6 @@
 		knimeTable.setDataTable(port0dataTable);
 
 		var categories = knimeTable.getColumn(optCat);
-		/////TODO: Check duplicates. Use a set, see API docs.
-		var colSet = d3.set(optFreqCol);
 		
 		// Default color scale
 		if (!customColors) {
@@ -233,7 +231,7 @@
 
 		}
 		
-		console.log('td', plot_data);
+		//console.log('td', plot_data);
 
 		/*
 		 * Plot chart
@@ -402,14 +400,14 @@
 	    				.on("click", function() {
 	    					if (_value.options["orientation"] != this.checked) {
 	    						_value.options["orientation"] = this.checked;
-	    						staggerCheckbox.property("disabled", this.checked);
+	    						d3.select("#stagger").property("disabled", this.checked);
 	    						drawChart(true);
 	    					}
 	    				});
 				}
 				if (staggerLabels) {
 					orientationContainer.append("td").append("label").attr("for", "stagger").text("Stagger labels:").style("margin", "0 5px");
-		    		staggerCheckbox = orientationContainer.append("td").append("input")
+		    		var staggerCheckbox = orientationContainer.append("td").append("input")
 	    				.attr("type", "checkbox")
 	    				.attr("id", "stagger")
 	    				.style("margin-right", "15px")
@@ -541,14 +539,23 @@
 		// inline global style declarations for SVG export
 		var styles = document.styleSheets;
 		for (i = 0; i < styles.length; i++) {
-			if (!styles[i].cssRules) {
+			if (!styles[i].cssRules && styles[i].rules) {
 				styles[i].cssRules = styles[i].rules;
 			}
+			// empty style declaration
+			if (!styles[i].cssRules) continue;
+			
 			for (var j = 0; j < styles[i].cssRules.length; j++) {
 				var rule = styles[i].cssRules[j];
 				d3.selectAll(rule.selectorText).each(function(){
 					for (var k = 0; k < rule.style.length; k++) {
-						d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+						var curStyle = this.style.getPropertyValue(rule.style[k]);
+						var curPrio = this.style.getPropertyPriority(rule.style[k]);
+						var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
+						//only overwrite style if not set or priority is overruled
+						if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
+							d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+						}
 					}
 				});
 			}
