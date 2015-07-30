@@ -1,11 +1,5 @@
 (pie_chart_namespace = function() {
 
-	// TODO: Correct width/height
-	// Remember options
-	// Dropdown for category column selection
-	// Dropdown for frequency column selection
-	// // Selections out
-
 	var pie = {};
 	var _representation, _value;
 	var layoutContainer;
