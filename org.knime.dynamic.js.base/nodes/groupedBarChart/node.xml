@@ -9,7 +9,8 @@
 	<shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
-			A grouped bar chart based on the NVD3 library.
+			<n:p>A grouped bar chart based on the NVD3 library.</n:p>
+			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
 		</intro>
 		<tab name="Options">
 			<options>

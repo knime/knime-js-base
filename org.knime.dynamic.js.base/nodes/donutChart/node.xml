@@ -10,13 +10,14 @@
     <shortDescription>A pie/donut chart based on the NVD3 library.</shortDescription>
     <fullDescription>
 	    <intro>
-    	    Generates a pie or donut chart based on the NVD3 library.
+	    	<n:p>A pie or donut chart based on the NVD3 library.</n:p>
+			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
     	</intro>
     	<tab name="Options">
 	    	<options>
 	   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
 	    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue">
-	    			Select the column that contains the category values.
+	    			Select the column that contains the category values. Please note that the values are assumed to be unique.
 	    		</columnSelectorOption>
 	    		<columnSelectorOption name="Frequency column" id="freq" 
 	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
