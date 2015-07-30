@@ -31,9 +31,9 @@
         
         var controlHeight;
         if (_representation.enableControls || true) {
-             var controlsContainer = body.append("div").style({position : "absolute", bottom : "0px",
+             var controlsContainer = body.append("div").style({position : "relative", bottom : "0px",
                          width : "100%", padding : "5px", "padding-left" : "60px",
-                          "border-top" : "1px solid black", "background-color" : "white"}).attr("id", "controlContainer");
+                          "border-top" : "1px solid black", "background-color" : "white", "box-sizing" : "border-box"}).attr("id", "controlContainer");
 
             createControls(controlsContainer);
             controlHeight = controlsContainer.node().getBoundingClientRect().height;
