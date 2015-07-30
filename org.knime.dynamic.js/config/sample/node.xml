@@ -3,7 +3,7 @@
 		xmlns="http://knime.org/dynamicnode/v2.12"
 		xmlns:n="http://knime.org/node/v2.12"
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
- 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../dynamicJSNode_v2.12.xsd" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd" 
  		jsNamespace="sample_namespace" nodeID="dynamic_sample_node" categoryPath="/labs/quickform/view"
  		icon="./sample.png" type="Other">
     <name>Sample Dynamic Node</name>
