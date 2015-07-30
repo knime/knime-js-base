@@ -5,7 +5,7 @@
 	targetNamespace="http://knime.org/dynamicnode/v2.12"
 	elementFormDefault="qualified" xmlns:pref="http://knime.org/node/v2.12">
 
-  <xs:import schemaLocation="../org.knime.core/src/eclipse/org/knime/core/node/Node_v2.12.xsd" namespace="http://knime.org/node/v2.12" />
+  <xs:import schemaLocation="http://knime.org/node/v2.12.xsd" namespace="http://knime.org/node/v2.12" />
 	
   <xs:element name="knimeNode" type="DynamicKnimeNode" />
 
