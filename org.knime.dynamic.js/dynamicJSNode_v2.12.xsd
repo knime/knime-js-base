@@ -5,7 +5,7 @@
 	targetNamespace="http://knime.org/dynamicjsnode/v2.12"
 	elementFormDefault="qualified">
 
-	<xs:import schemaLocation="../org.knime.dynamic.node.generation/dynamicNode_v2.12.xsd" namespace="http://knime.org/dynamicnode/v2.12" />
+	<xs:import schemaLocation="http://www.knime.org/node/dynamicNode_v2.12.xsd" namespace="http://knime.org/dynamicnode/v2.12" />
 	
 	<xs:element name="knimeNode" type="DynamicJSKnimeNode" />
 

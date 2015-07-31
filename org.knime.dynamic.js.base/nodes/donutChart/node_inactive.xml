@@ -3,22 +3,23 @@
 		xmlns="http://knime.org/dynamicnode/v2.12"
 		xmlns:n="http://knime.org/node/v2.12"
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
- 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd" 
+ 		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd" 
  		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/labs/quickform/view"
  		icon="../js.png" type="Visualizer">
     <name>Grouped Pie/Donut Chart</name>
     <shortDescription>A pie/donut chart based on the NVD3 library.</shortDescription>
     <fullDescription>
 	    <intro>
-    	    Generates a pie or donut chart based on the NVD3 library.
+	    	<n:p>A pie or donut chart based on the NVD3 library.</n:p>
+			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
     	</intro>
     	<tab name="Options">
 	    	<options>
-	   	   	    <columnSelectorOption name="Category Clumn" id="cat" inPortIndex="0" 
+	   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
 	    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue">
-	    			Select the column that contains the category values.
+	    			Select the column that contains the category values. Please note that the values are assumed to be unique.
 	    		</columnSelectorOption>
-	    		<columnSelectorOption name="Select frequency column" id="freq" 
+	    		<columnSelectorOption name="Frequency column" id="freq" 
 	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
 	    			filterClasses="org.knime.core.data.DoubleValue">
 	    			Select the column with the frequency for the chart.
@@ -27,7 +28,7 @@
     	</tab>
     	<tab name="General Plot Options">
 	    	<options>
-	    	    <stringOption name="Title" id="title" label="Title" optional="true" saveInView="true">
+	    	    <stringOption name="Title" id="title" label="Title" defaultValue="Pie Chart" optional="true" saveInView="true">
     				The chart title.
     			</stringOption>
     			<stringOption name="Subitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
@@ -69,37 +70,37 @@
 		<tab name="Control Options">
           <options>
               <checkBoxOption name="Enable view controls" id="enableViewControls"
-                   label="Enable view controls" defaultValue="false">
+                   label="Enable view controls" defaultValue="true">
                    Check to enable controls in the chart.
                </checkBoxOption>
                <checkBoxOption name="Enable title editing" id="enableTitleEdit"
-                   label="Enable title editing" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the title within the view.
                </checkBoxOption>
                <checkBoxOption name="Enable subtitle editing" id="enableSubtitleEdit"
-                   label="Enable subtitle editing" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the subtitle within the view.
                </checkBoxOption>
                <checkBoxOption name="Enable pie / donut toggle" id="enableDonutToggle"
-                   label="Enable pie / donut toggle" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable pie / donut toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the chart type.
                </checkBoxOption>
                <checkBoxOption name="Enable donut hole editing" id="enableHoleEdit"
-                   label="Enable donut hole editing" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable donut hole editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the donut hole ratio within the view.
                </checkBoxOption>
                <checkBoxOption name="Enable title inside donut editing" id="enableInsideTitleEdit"
-                   label="Enable title inside donut editing" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable title inside donut editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the title shown in the donut hole within the view.
                </checkBoxOption>
                <checkBoxOption name="Enable Frequency Column Chooser"
 					id="enableColumnChooser" label="Enable Frequency Column Chooser"
-					defaultValue="false" enableDependency="enableViewControls"
+					defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the interactive selection of a frequency column.
 				</checkBoxOption>
 				<checkBoxOption name="Enable label editing" id="enableLabelEdit"
-                   label="Enable label editing" defaultValue="false" enableDependency="enableViewControls" enableValue="true">
+                   label="Enable label editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the chart labels within the view.
                </checkBoxOption>
            </options>

@@ -2,14 +2,15 @@
 <js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
 	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
 	jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart"
 	categoryPath="/labs/quickform/view" icon="../js.png" type="Visualizer">
 	<name>Grouped Bar Chart</name>
 	<shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
-			A grouped bar chart based on the NVD3 library.
+			<n:p>A grouped bar chart based on the NVD3 library.</n:p>
+			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
 		</intro>
 		<tab name="Options">
 			<options>
@@ -27,7 +28,7 @@
 		</tab>
 		<tab name="General Plot Options">
 			<options>
-				<stringOption name="Title" id="title" label="Title" optional="true" saveInView="true">
+				<stringOption name="Title" id="title" label="Title" defaultValue="Bar Chart" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
@@ -80,29 +81,29 @@
 				</checkBoxOption>
 				<checkBoxOption name="Enable plot orientation change"
 					id="enableHorizontalToggle" label="Enable plot orientation change"
-					defaultValue="false" enableDependency="enableViewControls"
+					defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable interactive toggling between a horizontal or
 					vertical bar chart.
 				</checkBoxOption>
 				<checkBoxOption name="Enable stagger label change"
 					id="enableStaggerToggle" label="Enable stagger label change"
-					defaultValue="false" enableDependency="enableViewControls"
+					defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable editing whether or not the labels for the category axis are rendered staggered.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
-					label="Enable Title editing" defaultValue="false" enableDependency="enableViewControls"
+					label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the editing of the title within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
-					label="Enable Subtitle editing" defaultValue="false" enableDependency="enableViewControls"
+					label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the editing of the subtitle within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Axis title editing" id="enableAxisEdit"
-					label="Enable Axis title editing" defaultValue="false"
+					label="Enable Axis title editing" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the axis titles within the view.
 				</checkBoxOption>

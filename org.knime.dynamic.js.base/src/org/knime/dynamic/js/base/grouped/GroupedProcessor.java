@@ -38,7 +38,7 @@ public class GroupedProcessor implements DynamicJSProcessor {
 				StringCell cell = (StringCell)iterator.next().getCell(columnIndex);
 				String value = cell.getStringValue();
 				if (possibleValues.contains(value)) {
-					throw new IllegalArgumentException("Selected category column contains non unique values.");
+					throw new IllegalArgumentException("Selected category column contains non unique values. Please use a \"GroupBy\" node, or similar, to aggregate data first.");
 				} else {
 					possibleValues.add(value);
 				}

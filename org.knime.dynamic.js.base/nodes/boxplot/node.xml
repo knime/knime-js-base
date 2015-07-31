@@ -2,7 +2,7 @@
 <js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
 	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 ../../../org.knime.dynamic.js/dynamicJSNode_v2.12.xsd"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
 	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/labs/quickform/view"
 	icon="../js.png" type="Visualizer">
 
@@ -62,12 +62,12 @@
 		<tab name="General Plot Options">
 			<options>
 				<stringOption name="Title" id="title" label="Title"
-					defaultValue="Title of Graph" optional="true" saveInView="true">
+					defaultValue="Box Plot" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
 				
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
-                    defaultValue="Subtitle of Graph" optional="true" saveInView="true">
+                    defaultValue="" optional="true" saveInView="true">
                     The chart subtitle.
                 </stringOption>
 <!-- 
