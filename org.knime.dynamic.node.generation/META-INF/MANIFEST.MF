@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Dynamic Node Generation
 Bundle-SymbolicName: org.knime.dynamic.node.generation;singleton:=true
-Bundle-Version: 2.12.0.qualifier
-Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)"
-Bundle-Vendor: KNIME GmbH, Konstanz, Germany
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 3.0.0.qualifier
 Bundle-ClassPath: knime-dynamic-node-generation.jar,
  lib/schemas.jar
+Bundle-Vendor: KNIME GmbH, Konstanz, Germany
+Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
