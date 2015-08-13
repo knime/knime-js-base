@@ -42,7 +42,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform.input.molecule;
+package org.knime.ext.js.node.quickform.input.molecule;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class MoleculeStringInputQuickFormNodeModel
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.quickform.input.molecule";
+        return "org.knime.ext.js.node.quickform.input.molecule";
     }
 
     /** {@inheritDoc} */

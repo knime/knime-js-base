@@ -41,73 +41,64 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- *
- * History
- *   Oct 14, 2013 (Patrick Winter, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.quickform.input.molecule;
+package org.knime.ext.js.node.quickform.input.molecule;
 
-import javax.swing.JTextField;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.quickform.QuickFormDialogPanel;
-import org.knime.js.base.node.quickform.QuickFormNodeDialog;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 
 /**
- * The sub node dialog panel for the molecule string input quick form node.
+ * The factory for the molecule string input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
  */
-@SuppressWarnings("serial")
-public class MoleculeStringInputQuickFormDialogPanel extends QuickFormDialogPanel<MoleculeStringInputQuickFormValue> {
-
-    private JTextField m_component = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+public class MoleculeStringInputQuickFormNodeFactory
+        extends NodeFactory<MoleculeStringInputQuickFormNodeModel>
+        implements WizardNodeFactoryExtension
+        <MoleculeStringInputQuickFormNodeModel,
+        MoleculeStringInputQuickFormRepresentation,
+        MoleculeStringInputQuickFormValue> {
 
     /**
-     * @param representation The dialog representation
+     * {@inheritDoc}
      */
-    public MoleculeStringInputQuickFormDialogPanel(final MoleculeStringInputQuickFormRepresentation representation) {
-        super(representation.getDefaultValue());
-        m_component.setText(representation.getDefaultValue().getMoleculeString());
-        setComponent(m_component);
+    @Override
+    public MoleculeStringInputQuickFormNodeModel createNodeModel() {
+        return new MoleculeStringInputQuickFormNodeModel();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public MoleculeStringInputQuickFormValue createNodeValue() throws InvalidSettingsException {
-        MoleculeStringInputQuickFormValue value = new MoleculeStringInputQuickFormValue();
-        value.setMoleculeString(m_component.getText());
-        return value;
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final MoleculeStringInputQuickFormValue value) {
-        super.loadNodeValue(value);
-        if (value != null) {
-            m_component.setText(value.getMoleculeString());
-        }
+    public NodeView<MoleculeStringInputQuickFormNodeModel> createNodeView(final int viewIndex,
+            final MoleculeStringInputQuickFormNodeModel nodeModel) {
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setEnabled(final boolean enabled) {
-        super.setEnabled(enabled);
-        m_component.setEnabled(enabled);
+    protected boolean hasDialog() {
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void resetToDefault() {
-        m_component.setText(getDefaultValue().getMoleculeString());
+    protected NodeDialogPane createNodeDialogPane() {
+        return new MoleculeStringInputQuickFormNodeDialog();
     }
-
 }

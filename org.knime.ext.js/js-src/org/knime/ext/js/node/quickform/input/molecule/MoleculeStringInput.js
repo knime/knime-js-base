@@ -45,7 +45,7 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME.com AG, Zurich, Switzerland): created
  */
-org_knime_js_base_node_quickform_input_molecule = function() {
+org_knime_ext_js_node_quickform_input_molecule = function() {
 
 	var MIN_WIDTH = 300;
 	var MIN_HEIGHT = 300;

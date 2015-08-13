@@ -41,13 +41,26 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
+ *
+ * History
+ *   14.10.2013 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.quickform.input.molecule;
+package org.knime.ext.js.node.quickform.input.molecule;
+
+import javax.json.Json;
+import javax.json.JsonException;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,70 +68,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the molecule string input quick form node.
+ * The value for the molecule string input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class MoleculeStringInputQuickFormRepresentation extends
-        QuickFormRepresentationImpl<MoleculeStringInputQuickFormValue, MoleculeStringInputQuickFormConfig> {
+public class MoleculeStringInputQuickFormValue extends JSONViewContent implements DialogNodeValue {
+
+    private static final String CFG_STRING = "moleculeString";
+
+    private static final String DEFAULT_STRING = "";
+
+    private String m_moleculeString = DEFAULT_STRING;
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * {@inheritDoc}
      */
-    public MoleculeStringInputQuickFormRepresentation(final MoleculeStringInputQuickFormValue currentValue,
-        final MoleculeStringInputQuickFormConfig config) {
-        super(currentValue, config);
-        m_format = config.getFormat();
-        m_width = config.getWidth();
-        m_height = config.getHeight();
-    }
-
-    private final String m_format;
-    private String m_sketcherLocation;
-    private final int m_width;
-    private final int m_height;
-
-    /**
-     * @return the sketcherLocation
-     */
-    @JsonProperty("sketcherLocation")
-    public String getSketcherLocation() {
-        return m_sketcherLocation;
-    }
-
-    /**
-     * @param sketcherLocation the sketcherLocation to set
-     */
-    @JsonProperty("sketcherLocation")
-    public void setSketcherLocation(final String sketcherLocation) {
-        m_sketcherLocation = sketcherLocation;
-    }
-
-    /**
-     * @return the format
-     */
-    @JsonProperty("format")
-    public String getFormat() {
-        return m_format;
-    }
-
-    /**
-     * @return the width
-     */
-    @JsonProperty("width")
-    public int getWidth() {
-        return m_width;
-    }
-
-    /**
-     * @return the height
-     */
-    @JsonProperty("height")
-    public int getHeight() {
-        return m_height;
+    @Override
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_STRING, getMoleculeString());
     }
 
     /**
@@ -126,10 +96,33 @@ public class MoleculeStringInputQuickFormRepresentation extends
      */
     @Override
     @JsonIgnore
-    public DialogNodePanel<MoleculeStringInputQuickFormValue> createDialogPanel() {
-        MoleculeStringInputQuickFormDialogPanel panel = new MoleculeStringInputQuickFormDialogPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setMoleculeString(settings.getString(CFG_STRING));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
+        setMoleculeString(settings.getString(CFG_STRING, DEFAULT_STRING));
+    }
+
+    /**
+     * @return the moleculeString
+     */
+    @JsonProperty("moleculeString")
+    public String getMoleculeString() {
+        return m_moleculeString;
+    }
+
+    /**
+     * @param moleculeString the moleculeString to set
+     */
+    @JsonProperty("moleculeString")
+    public void setMoleculeString(final String moleculeString) {
+        m_moleculeString = moleculeString;
     }
 
     /**
@@ -138,16 +131,8 @@ public class MoleculeStringInputQuickFormRepresentation extends
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("format=");
-        sb.append(m_format);
-        sb.append(", ");
-        sb.append("width=");
-        sb.append(m_width);
-        sb.append(", ");
-        sb.append("height=");
-        sb.append(m_height);
+        sb.append("moleculeString=");
+        sb.append(m_moleculeString);
         return sb.toString();
     }
 
@@ -156,11 +141,8 @@ public class MoleculeStringInputQuickFormRepresentation extends
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_format)
-                .append(m_sketcherLocation)
-                .append(m_width)
-                .append(m_height)
+        return new HashCodeBuilder()
+                .append(m_moleculeString)
                 .toHashCode();
     }
 
@@ -178,13 +160,55 @@ public class MoleculeStringInputQuickFormRepresentation extends
         if (obj.getClass() != getClass()) {
             return false;
         }
-        MoleculeStringInputQuickFormRepresentation other = (MoleculeStringInputQuickFormRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_format, other.m_format)
-                .append(m_sketcherLocation, other.m_sketcherLocation)
-                .append(m_width, other.m_width)
-                .append(m_height, other.m_height)
+        MoleculeStringInputQuickFormValue other = (MoleculeStringInputQuickFormValue)obj;
+        return new EqualsBuilder()
+                .append(m_moleculeString, other.m_moleculeString)
                 .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
+        setMoleculeString(fromCmdLine);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromJson(final JsonValue json) throws JsonException {
+        if (json instanceof JsonString) {
+            loadFromString(((JsonString) json).getString());
+        } else if (json instanceof JsonObject) {
+            try {
+                JsonValue val = ((JsonObject) json).get(CFG_STRING);
+                if (JsonValue.NULL.equals(val)) {
+                    m_moleculeString = null;
+                } else {
+                    m_moleculeString = ((JsonObject) json).getString(CFG_STRING);
+                }
+            } catch (Exception e) {
+                throw new JsonException("Expected molecule string value for key '" + CFG_STRING + "'.", e);
+            }
+        } else {
+            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (m_moleculeString == null) {
+            builder.addNull(CFG_STRING);
+        } else {
+            builder.add(CFG_STRING, m_moleculeString);
+        }
+        return builder.build();
     }
 
 }

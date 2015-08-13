@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME GmbH, Konstanz, Germany
  *  Website: http://www.knime.org; Email: contact@knime.org
  *
@@ -41,143 +40,96 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 12, 2014 (winter): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform.input.molecule;
+package org.knime.ext.js.node.quickform.input.molecule;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
+import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The config for the molecule string input quick form node.
+ * The representation for the molecule string input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
  */
-public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableConfig<MoleculeStringInputQuickFormValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class MoleculeStringInputQuickFormRepresentation extends
+        QuickFormRepresentationImpl<MoleculeStringInputQuickFormValue, MoleculeStringInputQuickFormConfig> {
 
-    private static final String CFG_FORMAT = "format";
-    private static final String DEFAULT_FORMAT = MoleculeStringInputQuickFormNodeModel.DEFAULT_FORMATS[0];
-    private String m_format = DEFAULT_FORMAT;
-    private static final String CFG_GENERATE_IMAGE = "generateImage";
-    private static final boolean DEFAULT_GENERATE = true;
-    private boolean m_generateImage = DEFAULT_GENERATE;
+    /**
+     * @param currentValue The value currently used by the node
+     * @param config The config of the node
+     */
+    public MoleculeStringInputQuickFormRepresentation(final MoleculeStringInputQuickFormValue currentValue,
+        final MoleculeStringInputQuickFormConfig config) {
+        super(currentValue, config);
+        m_format = config.getFormat();
+        m_width = config.getWidth();
+        m_height = config.getHeight();
+    }
 
-    private static final String CFG_WIDTH = "width";
-    static final int DEFAULT_WIDTH = 830;
-    private int m_width = DEFAULT_WIDTH;
-    private static final String CFG_HEIGHT = "height";
-    static final int DEFAULT_HEIGHT = 500;
-    private int m_height = DEFAULT_HEIGHT;
+    private final String m_format;
+    private String m_sketcherLocation;
+    private final int m_width;
+    private final int m_height;
+
+    /**
+     * @return the sketcherLocation
+     */
+    @JsonProperty("sketcherLocation")
+    public String getSketcherLocation() {
+        return m_sketcherLocation;
+    }
+
+    /**
+     * @param sketcherLocation the sketcherLocation to set
+     */
+    @JsonProperty("sketcherLocation")
+    public void setSketcherLocation(final String sketcherLocation) {
+        m_sketcherLocation = sketcherLocation;
+    }
 
     /**
      * @return the format
      */
-    String getFormat() {
+    @JsonProperty("format")
+    public String getFormat() {
         return m_format;
-    }
-
-    /**
-     * @param format the format to set
-     */
-    void setFormat(final String format) {
-        m_format = format;
-    }
-
-    /**
-     * @return the generateImage
-     */
-    boolean getGenerateImage() {
-        return m_generateImage;
-    }
-
-    /**
-     * @param generateImage the generateImage to set
-     */
-    void setGenerateImage(final boolean generateImage) {
-        m_generateImage = generateImage;
     }
 
     /**
      * @return the width
      */
+    @JsonProperty("width")
     public int getWidth() {
         return m_width;
     }
 
     /**
-     * @param width the width to set
-     */
-    public void setWidth(final int width) {
-        m_width = width;
-    }
-
-    /**
      * @return the height
      */
+    @JsonProperty("height")
     public int getHeight() {
         return m_height;
     }
 
     /**
-     * @param height the height to set
-     */
-    public void setHeight(final int height) {
-        m_height = height;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        settings.addBoolean(CFG_GENERATE_IMAGE, m_generateImage);
-        settings.addString(CFG_FORMAT, m_format);
-        settings.addInt(CFG_WIDTH, m_width);
-        settings.addInt(CFG_HEIGHT, m_height);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_format = settings.getString(CFG_FORMAT);
-
-        //added with 2.12
-        m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE);
-        m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
-        m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_format = settings.getString(CFG_FORMAT, DEFAULT_FORMAT);
-
-        //added with 2.12
-        m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE);
-        m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
-        m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected MoleculeStringInputQuickFormValue createEmptyValue() {
-        return new MoleculeStringInputQuickFormValue();
+    @JsonIgnore
+    public DialogNodePanel<MoleculeStringInputQuickFormValue> createDialogPanel() {
+        MoleculeStringInputQuickFormDialogPanel panel = new MoleculeStringInputQuickFormDialogPanel(this);
+        fillDialogPanel(panel);
+        return panel;
     }
 
     /**
@@ -205,8 +157,8 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
     @Override
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_generateImage)
                 .append(m_format)
+                .append(m_sketcherLocation)
                 .append(m_width)
                 .append(m_height)
                 .toHashCode();
@@ -226,10 +178,10 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
         if (obj.getClass() != getClass()) {
             return false;
         }
-        MoleculeStringInputQuickFormConfig other = (MoleculeStringInputQuickFormConfig)obj;
+        MoleculeStringInputQuickFormRepresentation other = (MoleculeStringInputQuickFormRepresentation)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_generateImage, other.m_generateImage)
                 .append(m_format, other.m_format)
+                .append(m_sketcherLocation, other.m_sketcherLocation)
                 .append(m_width, other.m_width)
                 .append(m_height, other.m_height)
                 .isEquals();
