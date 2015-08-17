@@ -85,8 +85,8 @@ public class MoleculeStringInputQuickFormNodeModel
     static final String[] DEFAULT_FORMATS = {"SDF", "SMILES", "MOL", "SMARTS", "RXN"};
 
     /** Creates a new node model with no inports and a flow variable and SVG outport. */
-    protected MoleculeStringInputQuickFormNodeModel() {
-        super(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE, ImagePortObject.TYPE});
+    protected MoleculeStringInputQuickFormNodeModel(final String viewName) {
+        super(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE, ImagePortObject.TYPE}, viewName);
     }
 
     /**

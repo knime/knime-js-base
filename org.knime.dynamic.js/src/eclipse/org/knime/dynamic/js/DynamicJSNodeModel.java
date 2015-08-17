@@ -143,7 +143,6 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 
 	private DynamicJSKnimeNode m_node;
 	private DynamicJSConfig m_config;
-	private final String m_viewName;
 	private final String m_rootPath;
 	private final DynamicJSProcessor m_processor;
 
@@ -153,11 +152,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	 * @param viewName
 	 */
 	protected DynamicJSNodeModel(final DynamicJSKnimeNode nodeConfig, final String configRootPath,final String viewName) {
-		super(getPortTypeArray(nodeConfig, true), getPortTypeArray(nodeConfig, false));
+		super(getPortTypeArray(nodeConfig, true), getPortTypeArray(nodeConfig, false), viewName);
 		m_node = nodeConfig;
 		m_config = new DynamicJSConfig(nodeConfig);
 		m_rootPath = configRootPath;
-		m_viewName = viewName;
 		m_processor = initProcessor();
 	}
 
@@ -852,11 +850,6 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	@Override
 	protected void performReset() {
 		// nothing to do?
-	}
-
-	@Override
-	protected String getInteractiveViewName() {
-		return m_viewName;
 	}
 
 	@Override

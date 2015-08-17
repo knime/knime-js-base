@@ -66,7 +66,7 @@ public class MoleculeStringInputQuickFormNodeFactory
      */
     @Override
     public MoleculeStringInputQuickFormNodeModel createNodeModel() {
-        return new MoleculeStringInputQuickFormNodeModel();
+        return new MoleculeStringInputQuickFormNodeModel(getInteractiveViewName());
     }
 
     /**
