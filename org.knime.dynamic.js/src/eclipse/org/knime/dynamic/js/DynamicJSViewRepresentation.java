@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
@@ -401,5 +403,57 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		}
 		return map;
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        DynamicJSViewRepresentation other = (DynamicJSViewRepresentation)obj;
+        return new EqualsBuilder()
+                .append(m_jsNamespace, other.m_jsNamespace)
+                .append(m_jsCode, other.m_jsCode)
+                .append(m_cssCode, other.m_cssCode)
+                .append(m_jsDependencies, other.m_jsDependencies)
+                .append(m_cssDependencies, other.m_cssDependencies)
+                .append(m_inObjects, other.m_inObjects)
+                .append(m_flowVariables, other.m_flowVariables)
+                //TODO: deal with string arrays, all other types are fine
+                .append(m_options, other.m_options)
+                .append(m_binaryFiles, other.m_binaryFiles)
+                .append(m_new, other.m_new)
+                .append(m_runningInView, other.m_runningInView)
+                .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_jsNamespace)
+                .append(m_jsCode)
+                .append(m_cssCode)
+                .append(m_jsDependencies)
+                .append(m_cssDependencies)
+                .append(m_inObjects)
+                .append(m_flowVariables)
+                //TODO: deal with string arrays, all other types are fine
+                .append(m_options)
+                .append(m_binaryFiles)
+                .append(m_new)
+                .append(m_runningInView)
+                .toHashCode();
+    }
 
 }

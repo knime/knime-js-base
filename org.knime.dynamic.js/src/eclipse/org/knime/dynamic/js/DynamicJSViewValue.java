@@ -50,6 +50,8 @@ package org.knime.dynamic.js;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -156,5 +158,42 @@ public class DynamicJSViewValue extends JSONViewContent {
 	    m_outTables = (Map<String, JSONDataTable>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(OUT_TABLES));
 	    m_flowVariables = (Map<String, String>) DynamicJSViewRepresentation.loadMap(settings.getNodeSettings(DynamicJSViewRepresentation.FLOW_VARIABLES));
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        DynamicJSViewValue other = (DynamicJSViewValue)obj;
+        return new EqualsBuilder()
+                //TODO: deal with string arrays, all other types are fine
+                .append(m_options, other.m_options)
+                .append(m_outColumns, other.m_outColumns)
+                .append(m_outTables, other.m_outTables)
+                .append(m_flowVariables, other.m_flowVariables)
+                .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_options)
+                .append(m_outColumns)
+                .append(m_outTables)
+                .append(m_flowVariables)
+                .toHashCode();
+    }
 
 }

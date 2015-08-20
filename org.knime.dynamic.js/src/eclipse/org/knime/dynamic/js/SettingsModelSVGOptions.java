@@ -50,6 +50,8 @@ package org.knime.dynamic.js;
 
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -403,6 +405,40 @@ public class SettingsModelSVGOptions extends SettingsModel {
             options.setHeight(settings.getInt(HEIGHT));
             options.setFullscreen(settings.getBoolean(FULLSCREEN));
             return options;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            SettingsModelSVGOptions other = (SettingsModelSVGOptions)obj;
+            return new EqualsBuilder()
+                    .append(m_width, other.m_width)
+                    .append(m_height, other.m_height)
+                    .append(m_fullscreen, other.m_fullscreen)
+                    .isEquals();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder()
+                    .append(m_width)
+                    .append(m_height)
+                    .append(m_fullscreen)
+                    .toHashCode();
         }
 
     }

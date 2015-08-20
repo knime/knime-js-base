@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -193,6 +195,46 @@ public class DynamicJSDependency {
         m_exports = settings.getString(EXPORTS);
         setDependencies(settings.getStringArray(DEPENDENCIES));
         m_local = settings.getBoolean(LOCAL);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        DynamicJSDependency other = (DynamicJSDependency)obj;
+        return new EqualsBuilder()
+                .append(m_name, other.m_name)
+                .append(m_path, other.m_path)
+                .append(m_usesDefine, other.m_usesDefine)
+                .append(m_exports, other.m_exports)
+                .append(m_dependencies, other.m_dependencies)
+                .append(m_local, other.m_local)
+                .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_name)
+                .append(m_path)
+                .append(m_usesDefine)
+                .append(m_exports)
+                .append(m_dependencies)
+                .append(m_local)
+                .toHashCode();
     }
 
 }

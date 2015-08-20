@@ -47,6 +47,7 @@
 package org.knime.dynamic.js;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,9 +156,14 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
             iconPath = iconPath.substring("./".length());
         }
         if (!iconPath.startsWith("/")) {
-            iconPath = m_nodeDir.getAbsolutePath() + "/" + iconPath;
+            try {
+                iconPath = m_nodeDir.getCanonicalPath() + "/" + iconPath;
+            } catch (IOException e) {
+                iconPath = m_nodeDir.getAbsolutePath() + "/" + iconPath;
+            }
             Matcher m = ICON_PATH_PATTERN.matcher(iconPath);
             while (m.find()) {
+                //TODO this fails if there are folders that start with '.' in the path
                 iconPath = iconPath.replaceAll("[^./]+/\\.\\./", "");
                 m = ICON_PATH_PATTERN.matcher(iconPath);
             }
