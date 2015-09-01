@@ -321,6 +321,16 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
         return null;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setIsDeprecated(final boolean b) {
+        super.setIsDeprecated(b);
+        m_document.getKnimeNode().setDeprecated(b);
+    }
+
     /**
      * {@inheritDoc}
      */
