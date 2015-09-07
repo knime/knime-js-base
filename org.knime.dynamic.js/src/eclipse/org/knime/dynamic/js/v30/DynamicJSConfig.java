@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v30;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -71,30 +71,32 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
-import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
-import org.knime.dynamicnode.v212.CheckBoxOption;
-import org.knime.dynamicnode.v212.ColorOption;
-import org.knime.dynamicnode.v212.ColumnFilterOption;
-import org.knime.dynamicnode.v212.ColumnSelectorOption;
-import org.knime.dynamicnode.v212.DateOption;
-import org.knime.dynamicnode.v212.DoubleOption;
-import org.knime.dynamicnode.v212.DynamicInPort;
-import org.knime.dynamicnode.v212.DynamicOption;
-import org.knime.dynamicnode.v212.DynamicOptions;
-import org.knime.dynamicnode.v212.DynamicOutPort;
-import org.knime.dynamicnode.v212.DynamicTab;
-import org.knime.dynamicnode.v212.FileOption;
-import org.knime.dynamicnode.v212.FlowVariableSelectorOption;
-import org.knime.dynamicnode.v212.IntegerOption;
-import org.knime.dynamicnode.v212.PortType;
-import org.knime.dynamicnode.v212.RadioButtonOption;
-import org.knime.dynamicnode.v212.StringListOption;
-import org.knime.dynamicnode.v212.StringOption;
-import org.knime.dynamicnode.v212.SvgOption;
+import org.knime.dynamic.js.SettingsModelSVGOptions;
+import org.knime.dynamicjsnode.v30.DynamicJSKnimeNode;
+import org.knime.dynamicnode.v30.CheckBoxOption;
+import org.knime.dynamicnode.v30.ColorOption;
+import org.knime.dynamicnode.v30.ColumnFilterOption;
+import org.knime.dynamicnode.v30.ColumnSelectorOption;
+import org.knime.dynamicnode.v30.DateOption;
+import org.knime.dynamicnode.v30.DoubleOption;
+import org.knime.dynamicnode.v30.DynamicInPort;
+import org.knime.dynamicnode.v30.DynamicOption;
+import org.knime.dynamicnode.v30.DynamicOptions;
+import org.knime.dynamicnode.v30.DynamicOutPort;
+import org.knime.dynamicnode.v30.DynamicTab;
+import org.knime.dynamicnode.v30.FileOption;
+import org.knime.dynamicnode.v30.FlowVariableSelectorOption;
+import org.knime.dynamicnode.v30.IntegerOption;
+import org.knime.dynamicnode.v30.PortType;
+import org.knime.dynamicnode.v30.RadioButtonOption;
+import org.knime.dynamicnode.v30.StringListOption;
+import org.knime.dynamicnode.v30.StringOption;
+import org.knime.dynamicnode.v30.SvgOption;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 public class DynamicJSConfig {
 
@@ -170,6 +172,7 @@ public class DynamicJSConfig {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void fillOptions(final DynamicOptions options) {
         XmlObject[] oOptions = options.selectPath("$this/*");
         for (XmlObject option : oOptions) {
@@ -186,7 +189,6 @@ public class DynamicJSConfig {
                 SettingsModelColumnFilter2 cModel = null;
                 if (cO.isSetFilterClasses()) {
                     try {
-                        @SuppressWarnings("unchecked")
                         List<String> filterClasses = cO.getFilterClasses();
                         cModel = new SettingsModelColumnFilter2(cO.getId(), getFilterClasses(filterClasses));
                     } catch (ClassNotFoundException e) {
@@ -245,7 +247,6 @@ public class DynamicJSConfig {
             } else if (option instanceof StringListOption) {
                 StringListOption sO = (StringListOption)option;
                 SettingsModel sModel;
-                @SuppressWarnings("unchecked")
                 List<String> defaultValues = sO.getDefaultValues();
                 if (sO.getAllowMultipleSelection()) {
                     String[] defaultStrings = null;
@@ -325,7 +326,7 @@ public class DynamicJSConfig {
                     Vector<String> dependency = new Vector<String>();
                     dependency.add(gOption.getEnableDependency());
                     dependency.add(gOption.getId());
-                    dependency.add(gOption.getEnableValue().getStringValue());
+                    dependency.addAll(gOption.getEnableValue());
                     m_enableDependencies.add(dependency);
                 }
             }

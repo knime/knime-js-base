@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v30;
 
 import java.awt.Color;
 import java.util.Collection;
@@ -92,28 +92,31 @@ import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.DataValueColumnFilter;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
-import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
-import org.knime.dynamicnode.v212.CheckBoxOption;
-import org.knime.dynamicnode.v212.ColorOption;
-import org.knime.dynamicnode.v212.ColumnFilterOption;
-import org.knime.dynamicnode.v212.ColumnSelectorOption;
-import org.knime.dynamicnode.v212.DateOption;
-import org.knime.dynamicnode.v212.DynamicFullDescription;
-import org.knime.dynamicnode.v212.DynamicOptions;
-import org.knime.dynamicnode.v212.DynamicTab;
-import org.knime.dynamicnode.v212.FileOption;
-import org.knime.dynamicnode.v212.FlowVariableSelectorOption;
-import org.knime.dynamicnode.v212.FlowVariableType;
-import org.knime.dynamicnode.v212.FlowVariableType.Enum;
-import org.knime.dynamicnode.v212.NumberOption;
-import org.knime.dynamicnode.v212.RadioButtonOption;
-import org.knime.dynamicnode.v212.StringListOption;
-import org.knime.dynamicnode.v212.StringOption;
-import org.knime.dynamicnode.v212.SvgOption;
+import org.knime.dynamic.js.DialogComponentSVGOptions;
+import org.knime.dynamic.js.SettingsModelSVGOptions;
+import org.knime.dynamicjsnode.v30.DynamicJSKnimeNode;
+import org.knime.dynamicnode.v30.CheckBoxOption;
+import org.knime.dynamicnode.v30.ColorOption;
+import org.knime.dynamicnode.v30.ColumnFilterOption;
+import org.knime.dynamicnode.v30.ColumnSelectorOption;
+import org.knime.dynamicnode.v30.DateOption;
+import org.knime.dynamicnode.v30.DynamicFullDescription;
+import org.knime.dynamicnode.v30.DynamicOptions;
+import org.knime.dynamicnode.v30.DynamicTab;
+import org.knime.dynamicnode.v30.FileOption;
+import org.knime.dynamicnode.v30.FlowVariableSelectorOption;
+import org.knime.dynamicnode.v30.FlowVariableType;
+import org.knime.dynamicnode.v30.FlowVariableType.Enum;
+import org.knime.dynamicnode.v30.NumberOption;
+import org.knime.dynamicnode.v30.RadioButtonOption;
+import org.knime.dynamicnode.v30.StringListOption;
+import org.knime.dynamicnode.v30.StringOption;
+import org.knime.dynamicnode.v30.SvgOption;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 
@@ -322,19 +325,20 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	    closeCurrentGroup();
 	}
 
-    private void setEnabled(final SettingsModel source, final SettingsModel dest, final String value) {
-		if (value == null) {
+    private void setEnabled(final SettingsModel source, final SettingsModel dest, final List<String> value) {
+		if (value == null || value.size() < 1) {
             return;
         }
 	    if (source instanceof SettingsModelBoolean) {
 			SettingsModelBoolean bSource = (SettingsModelBoolean)source;
-			dest.setEnabled(bSource.getBooleanValue() == Boolean.parseBoolean(value));
+			// only take first value
+			dest.setEnabled(bSource.getBooleanValue() == Boolean.parseBoolean(value.get(0)));
 		} else if (source instanceof SettingsModelString) {
 			SettingsModelString sSource = (SettingsModelString)source;
-			dest.setEnabled(sSource.getStringValue().equals(value));
+			dest.setEnabled(value.contains(sSource.getStringValue()));
 		} else if (source instanceof SettingsModelColumnName) {
 		    SettingsModelColumnName cSource = (SettingsModelColumnName)source;
-		    dest.setEnabled(value.equals(cSource.getColumnName()));
+		    dest.setEnabled(value.contains(cSource.getColumnName()));
 		}
 	}
 
@@ -355,12 +359,13 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 		for (final Vector<String> dependency : m_config.getEnableDependencies()) {
 			DialogComponent cFrom = m_components.get(dependency.get(0));
 			final DialogComponent cTo = m_components.get(dependency.get(1));
-			setEnabled(cFrom.getModel(), cTo.getModel(), dependency.get(2));
+			final List<String> enableValues = dependency.subList(2, dependency.size());
+			setEnabled(cFrom.getModel(), cTo.getModel(), enableValues);
 			cFrom.getModel().addChangeListener(new ChangeListener() {
 
 				@Override
 				public void stateChanged(final ChangeEvent e) {
-					setEnabled((SettingsModel)e.getSource(), cTo.getModel(), dependency.get(2));
+					setEnabled((SettingsModel)e.getSource(), cTo.getModel(), enableValues);
 				}
 			});
 		}

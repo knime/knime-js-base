@@ -40,6 +40,7 @@
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
 
+		var optMethod = _representation.options["aggr"];
 		var optFreqCol = _representation.options["freq"];
 		var optCat = _representation.options["cat"];
 
@@ -155,6 +156,10 @@
 				colorScale = d3.scale.category20();
 			}
 		}
+		
+		if (optMethod == "Occurence\u00A0Count") {
+			optFreqCol = [knimeTable.getColumnNames()[1]];
+		}
 
 		// Get the frequency columns
 		var valCols = [];
@@ -186,6 +191,9 @@
 			for (var j = 0; j < retained.length; j++) {	
 
 				var key = retained[j];
+				if (optMethod == "Occurence\u00A0Count") {
+					key = "Occurence Count";
+				}
 				var values = [];
 
 				for (var i = 0; i < numDataPoints; i++) {

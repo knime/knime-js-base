@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v212;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +66,7 @@ import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.util.FileUtil;
+import org.knime.dynamic.js.DynamicJSNodeSetFactory;
 import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
 import org.knime.dynamicnode.v212.DynamicFullDescription;
 import org.osgi.framework.Bundle;
@@ -73,13 +74,13 @@ import org.osgi.framework.Bundle;
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel> implements
 		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue> {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeFactory.class);
 
-	static final String NODE_DIR_CONF = "nodeDir";
 	static final String NODE_PLUGIN = "nodePlugin";
 	static final String PLUGIN_FOLDER = "pluginFolder";
 
@@ -100,7 +101,7 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	@Override
 	public void loadAdditionalFactorySettings(final ConfigRO config)
 			throws InvalidSettingsException {
-	    String confString = config.getString(NODE_DIR_CONF);
+	    String confString = config.getString(DynamicJSNodeSetFactory.NODE_DIR_CONF);
         String[] confParts = confString.split(":");
 	    if (confParts.length != 3) {
 	        throw new InvalidSettingsException("Error reading factory settings. Expected pluginName:configFolder:nodeFolder, but was " + confString);
@@ -132,7 +133,7 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 
 	@Override
 	public void saveAdditionalFactorySettings(final ConfigWO config) {
-		config.addString(NODE_DIR_CONF, m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
+		config.addString(DynamicJSNodeSetFactory.NODE_DIR_CONF, m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
 		super.saveAdditionalFactorySettings(config);
 	}
 

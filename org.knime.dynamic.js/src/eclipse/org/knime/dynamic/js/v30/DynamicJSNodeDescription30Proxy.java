@@ -44,7 +44,7 @@
  *
  * Created on 05.05.2015 by Christian Albrecht
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v30;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,9 +62,9 @@ import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
-import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
-import org.knime.dynamicnode.v212.DynamicInPort;
-import org.knime.dynamicnode.v212.DynamicOutPort;
+import org.knime.dynamicjsnode.v30.KnimeNodeDocument;
+import org.knime.dynamicnode.v30.DynamicInPort;
+import org.knime.dynamicnode.v30.DynamicOutPort;
 import org.knime.node.v212.View;
 import org.knime.node.v212.Views;
 import org.w3c.dom.Document;
@@ -77,11 +77,12 @@ import org.w3c.dom.Element;
  * against the XML schema and reports errors via the logger.
  *
  * @author Christian Albrecht, KNIME.com, Zurich, Switzerland
+ * @since 3.0
  */
-public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
+public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
     private static final XmlOptions OPTIONS = new XmlOptions();
 
-    private static final NodeLogger logger = NodeLogger.getLogger(DynamicJSNodeDescription212Proxy.class);
+    private static final NodeLogger logger = NodeLogger.getLogger(DynamicJSNodeDescription30Proxy.class);
 
     static {
         Map<String, String> namespaceMap = new HashMap<String, String>(1);
@@ -100,7 +101,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
      * @param doc the XML document of the node description XML file
      * @throws XmlException if something goes wrong while analyzing the XML structure
      */
-    public DynamicJSNodeDescription212Proxy(final Document doc) throws XmlException {
+    public DynamicJSNodeDescription30Proxy(final Document doc) throws XmlException {
         m_document = KnimeNodeDocument.Factory.parse(doc.getDocumentElement(), OPTIONS);
         validate();
     }
@@ -113,7 +114,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
      * @param doc a knime node document
      * @param nodeDir the directory in which the node is configured
      */
-    public DynamicJSNodeDescription212Proxy(final KnimeNodeDocument doc, final File nodeDir) {
+    public DynamicJSNodeDescription30Proxy(final KnimeNodeDocument doc, final File nodeDir) {
         m_document = doc;
         m_nodeDir = nodeDir;
         if (KNIMEConstants.ASSERTIONS_ENABLED) {

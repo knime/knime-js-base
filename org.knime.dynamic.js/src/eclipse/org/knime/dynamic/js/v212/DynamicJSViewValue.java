@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v212;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,6 +65,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")

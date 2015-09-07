@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
-	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 ../../../org.knime.dynamic.js/dynamicJSNode_v3.0.xsd"
 	jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart"
 	categoryPath="/labs/quickform/view" icon="../js.png" type="Visualizer">
-	<name>Grouped Bar Chart</name>
-	<shortDescription>A grouped bar chart based on the NVD3 library.</shortDescription>
+	<name>Bar Chart</name>
+	<shortDescription>A bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
-			<n:p>A grouped bar chart based on the NVD3 library.</n:p>
-			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
+			<n:p>A bar chart based on the NVD3 library.</n:p>
 		</intro>
 		<tab name="Options">
 			<options>
@@ -19,11 +18,16 @@
 					Select the column that contains the category values. Please note that the values are assumed to be unique.
 				</columnSelectorOption>
 
+				<radioButtonOption name="Aggregation Method" id="aggr" 
+					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">
+					Select the aggregation method used on the selected frequency columns.
+				</radioButtonOption>
+
 				<columnFilterOption name="Select frequency columns"
-					id="freq" inPortIndex="0" label="Frequency Columns" filterClasses="org.knime.core.data.DoubleValue">
+					id="freq" inPortIndex="0" label="Frequency Columns" filterClasses="org.knime.core.data.DoubleValue"
+					enableDependency="aggr" enableValue="Sum Average">
 					Select the columns with frequencies for which you wish to plot bars.
 				</columnFilterOption>
-
 			</options>
 		</tab>
 		<tab name="General Plot Options">

@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v212;
 
 import java.awt.Color;
 import java.io.File;
@@ -109,6 +109,8 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.dynamic.js.DynamicJSDependency;
+import org.knime.dynamic.js.SettingsModelSVGOptions;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.dynamicjsnode.v212.DynamicJSKnimeNode;
 import org.knime.dynamicjsnode.v212.WebDependency;
@@ -135,7 +137,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
- * @since 2.12
+ * @since 3.0
  */
 public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
 

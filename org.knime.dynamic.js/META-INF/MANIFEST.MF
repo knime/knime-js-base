@@ -6,7 +6,9 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
  lib/schemas.jar
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
-Export-Package: org.knime.dynamic.js
+Export-Package: org.knime.dynamic.js,
+ org.knime.dynamic.js.v212,
+ org.knime.dynamic.js.v30
 Require-Bundle: org.knime.core;bundle-version="[3.0.0,4.0.0)",
  org.knime.dynamic.node.generation;bundle-version="[3.0.0,4.0.0)",
  org.knime.js.core;bundle-version="[3.0.0,4.0.0)",

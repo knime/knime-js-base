@@ -46,7 +46,7 @@
  * History
  *   Jun 2, 2015 (albrecht): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v30;
 
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObject;
@@ -56,6 +56,7 @@ import org.knime.core.node.port.PortObject;
  * node.
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 public interface DynamicJSProcessor {
 

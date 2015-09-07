@@ -48,6 +48,7 @@
 package org.knime.dynamic.js;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
@@ -57,6 +58,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.xmlbeans.XmlException;
 import org.eclipse.core.runtime.FileLocator;
@@ -70,8 +75,9 @@ import org.knime.core.node.NodeSetFactory;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.core.util.FileUtil;
-import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
 import org.osgi.framework.Bundle;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -85,7 +91,13 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 	private static final String DYNAMIC_FUNCTION = "js";
 	private static final String CONFIG_ID = "org.knime.dynamic.node.generation.dynamicNodes";
 
+	/** Config string used for factory creation.
+	 * @since 3.0*/
+	public static final String NODE_DIR_CONF = "nodeDir";
+
 	private List<File> m_configFolders = new ArrayList<File>();
+    private final Map<String, Class<? extends NodeFactory<? extends NodeModel>>> m_factories =
+        new HashMap<String, Class<? extends NodeFactory<? extends NodeModel>>>();
 	private final Map<String, String> m_paths = new HashMap<String, String>();
 	private final Map<String, String> m_afterIDs = new HashMap<String, String>();
 
@@ -113,17 +125,9 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
                             accept &= nodeConfig.exists();
                             if (accept) {
                                 try {
-                                    KnimeNodeDocument doc = KnimeNodeDocument.Factory
-                                            .parse(nodeConfig);
-                                    if (!doc.validate()) {
-                                        throw new XmlException(
-                                                "Node config XML did not validate against schema.");
-                                    }
-                                    String categoryPath = doc.getKnimeNode().getCategoryPath();
                                     String nodeID = pluginName + ":" + configFolderRelative + ":" + name;
-                                    m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
-                                    m_afterIDs.put(nodeID, doc.getKnimeNode().getAfterID());
-                                } catch (XmlException | IOException e) {
+                                    getFactoryClass(nodeConfig, nodeID);
+                                } catch (XmlException | IOException | ParserConfigurationException | SAXException e) {
                                     LOGGER.warn("Node config in folder " + configDir
                                             + " could not be read. " + e.getMessage()
                                             + " Skipping folder.", e);
@@ -146,9 +150,8 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 	}
 
 	@Override
-	public Class<? extends NodeFactory<? extends NodeModel>> getNodeFactory(
-			final String id) {
-		return DynamicJSNodeFactory.class;
+	public Class<? extends NodeFactory<? extends NodeModel>> getNodeFactory(final String id) {
+		return m_factories.get(id);
 	}
 
 	@Override
@@ -164,7 +167,42 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 	@Override
 	public ConfigRO getAdditionalSettings(final String id) {
 		NodeSettings s = new NodeSettings("root");
-		s.addString(DynamicJSNodeFactory.NODE_DIR_CONF, id);
+		s.addString(NODE_DIR_CONF, id);
 		return s;
+	}
+
+	private void getFactoryClass(final File nodeConfig, final String nodeID) throws ParserConfigurationException, SAXException, IOException, XmlException {
+	    DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+        fac.setNamespaceAware(true);
+        DocumentBuilder parser = fac.newDocumentBuilder();
+        Document doc;
+        synchronized (parser) {
+            doc = parser.parse(new FileInputStream(nodeConfig));
+        }
+
+        String namespaceUri = doc.getDocumentElement().getNamespaceURI();
+        if (namespaceUri != null) {
+            if (namespaceUri.equals(org.knime.dynamicjsnode.v212.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
+                org.knime.dynamicjsnode.v212.KnimeNodeDocument node = org.knime.dynamicjsnode.v212.KnimeNodeDocument.Factory.parse(nodeConfig);
+                String categoryPath = node.getKnimeNode().getCategoryPath();
+                if (!node.validate()) {
+                    throw new XmlException("Node config XML did not validate against Dynamic JavaScript Node v2.12 schema.");
+                }
+                m_factories.put(nodeID, org.knime.dynamic.js.v212.DynamicJSNodeFactory.class);
+                m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
+                m_afterIDs.put(nodeID, node.getKnimeNode().getAfterID());
+            } else if (namespaceUri.equals(org.knime.dynamicjsnode.v30.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
+                org.knime.dynamicjsnode.v30.KnimeNodeDocument node = org.knime.dynamicjsnode.v30.KnimeNodeDocument.Factory.parse(nodeConfig);
+                String categoryPath = node.getKnimeNode().getCategoryPath();
+                if (!node.validate()) {
+                    throw new XmlException("Node config XML did not validate against Dynamic JavaScript Node v3.0 schema.");
+                }
+                m_factories.put(nodeID, org.knime.dynamic.js.v30.DynamicJSNodeFactory.class);
+                m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
+                m_afterIDs.put(nodeID, node.getKnimeNode().getAfterID());
+            } else {
+                throw new XmlException("Unsupported namespace for node description in " + nodeConfig.getCanonicalPath() + ": " + namespaceUri);
+            }
+        }
 	}
 }

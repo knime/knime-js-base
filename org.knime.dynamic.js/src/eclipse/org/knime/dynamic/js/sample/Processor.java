@@ -2,8 +2,8 @@ package org.knime.dynamic.js.sample;
 
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObject;
-import org.knime.dynamic.js.DynamicJSConfig;
-import org.knime.dynamic.js.DynamicJSProcessor;
+import org.knime.dynamic.js.v212.DynamicJSConfig;
+import org.knime.dynamic.js.v212.DynamicJSProcessor;
 
 public class Processor implements DynamicJSProcessor {
     /**

@@ -45,7 +45,7 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js;
+package org.knime.dynamic.js.v212;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +61,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
@@ -77,6 +78,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @since 3.0
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
