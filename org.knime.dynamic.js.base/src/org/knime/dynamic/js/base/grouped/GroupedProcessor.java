@@ -1,11 +1,7 @@
 package org.knime.dynamic.js.base.grouped;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.knime.base.data.aggregation.AggregationMethod;
 import org.knime.base.data.aggregation.AggregationOperator;
 import org.knime.base.data.aggregation.ColumnAggregator;
 import org.knime.base.data.aggregation.GlobalSettings;
@@ -17,8 +13,6 @@ import org.knime.base.node.preproc.groupby.BigGroupByTable;
 import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
 import org.knime.base.node.preproc.groupby.GroupByTable;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.container.CloseableRowIterator;
-import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
