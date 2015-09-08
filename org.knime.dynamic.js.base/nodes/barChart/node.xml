@@ -15,7 +15,7 @@
 			<options>
 				<columnSelectorOption name="Category Column"
 					id="cat" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
-					Select the column that contains the category values. Please note that the values are assumed to be unique.
+					Select the column that contains the category values.
 				</columnSelectorOption>
 
 				<radioButtonOption name="Aggregation Method" id="aggr" 

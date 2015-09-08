@@ -6,22 +6,29 @@
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 ../../../org.knime.dynamic.js/dynamicJSNode_v3.0.xsd"
  		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/labs/quickform/view"
  		icon="../js.png" type="Visualizer">
-    <name>Grouped Pie/Donut Chart</name>
+    <name>Pie/Donut Chart</name>
     <shortDescription>A pie/donut chart based on the NVD3 library.</shortDescription>
     <fullDescription>
 	    <intro>
 	    	<n:p>A pie or donut chart based on the NVD3 library.</n:p>
-			<n:p>Use pre-aggregated data, e.g. by means of a &quot;GroupBy&quot; node, where desired category columns only contain unique values.</n:p>
     	</intro>
     	<tab name="Options">
 	    	<options>
 	   	   	    <columnSelectorOption name="Category Column" id="cat" inPortIndex="0" 
 	    	    	label="Category Column" filterClasses="org.knime.core.data.NominalValue">
-	    			Select the column that contains the category values. Please note that the values are assumed to be unique.
+	    			Select the column that contains the category values.
 	    		</columnSelectorOption>
+	    		
+	    		<radioButtonOption name="Aggregation Method" id="aggr" 
+					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">
+					Select the aggregation method used on the selected frequency column. In case of <n:i>Occurence Count</n:i> the occurence of the unique values
+					of the selected category columns are determined.
+				</radioButtonOption>
+	    		
 	    		<columnSelectorOption name="Frequency column" id="freq" 
 	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
-	    			filterClasses="org.knime.core.data.DoubleValue">
+	    			filterClasses="org.knime.core.data.DoubleValue"
+	    			enableDependency="aggr" enableValue="Sum Average">
 	    			Select the column with the frequency for the chart.
 	    		</columnSelectorOption>
 	    	</options>

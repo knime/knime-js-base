@@ -17,6 +17,7 @@
 	function drawChart(redraw) {
 		// Parse the options
 
+		var optMethod = _representation.options["aggr"];
 		var optCat = _representation.options["cat"];
 		var optFreqCol = _value.options["freq"];
 		var optTitle = _value.options["title"];
@@ -113,7 +114,12 @@
 			}
 		}
 
-		var valCol = knimeTable.getColumn(optFreqCol);
+		var valCol;
+		if (optMethod == "Occurence\u00A0Count") {
+			valCol = knimeTable.getColumn(1);
+		} else {
+			valCol = knimeTable.getColumn(optFreqCol);
+		}
 
 		var plot_data = [];
 
@@ -201,7 +207,12 @@
 	
 	function updateData(updateChart) {
 		var categories = knimeTable.getColumn(_representation.options["cat"]);
-		var valCol = knimeTable.getColumn(_value.options["freq"]);
+		var valCol;
+		if (_representation.options["aggr"] == "Occurence\u00A0Count") {
+			valCol = knimeTable.getColumn(1);
+		} else {
+			valCol = knimeTable.getColumn(_value.options["freq"]);
+		}
 
 		var plot_data = [];
 
