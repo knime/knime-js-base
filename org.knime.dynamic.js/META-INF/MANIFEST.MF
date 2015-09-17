@@ -2,8 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Dynamically Created JavaScript Nodes
 Bundle-SymbolicName: org.knime.dynamic.js;singleton:=true
-Bundle-Version: 2.12.0.qualifier
+Bundle-Version: 2.12.1.qualifier
+Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
+ lib/schemas.jar
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
+Export-Package: org.knime.dynamic.js
 Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)",
  org.knime.dynamic.node.generation;bundle-version="[2.12.0,3.0.0)",
  org.knime.js.core;bundle-version="[2.12.0,3.0.0)",
@@ -13,7 +16,4 @@ Require-Bundle: org.knime.core;bundle-version="[2.12.0,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.4.3,3.0.0)",
  org.apache.commons.codec;bundle-version="[1.6.0,2.0.0)",
  org.knime.ext.svg;bundle-version="[2.12.0,3.0.0)"
-Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
- lib/schemas.jar
-Export-Package: org.knime.dynamic.js
 Eclipse-BuddyPolicy: dependent
