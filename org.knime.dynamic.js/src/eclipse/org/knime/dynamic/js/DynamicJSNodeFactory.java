@@ -45,125 +45,75 @@
  * History
  *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
  */
-package org.knime.dynamic.js.v212;
+package org.knime.dynamic.js;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import org.apache.xmlbeans.XmlException;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.core.util.FileUtil;
-import org.knime.dynamic.js.DynamicJSNodeSetFactory;
-import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
-import org.knime.dynamicnode.v212.DynamicFullDescription;
-import org.osgi.framework.Bundle;
+import org.knime.dynamic.js.v212.DynamicJSNodeModel;
+import org.knime.dynamic.js.v212.DynamicJSViewRepresentation;
+import org.knime.dynamic.js.v212.DynamicJSViewValue;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
- * @since 3.0
+ * @since 2.12
  */
 public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel> implements
 		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue> {
 
-	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeFactory.class);
-
-	static final String NODE_PLUGIN = "nodePlugin";
-	static final String PLUGIN_FOLDER = "pluginFolder";
-
-	private File m_nodeDir;
-	private String m_pluginName;
-	private String m_configFolder;
-	private String m_nodeFolder;
-	private KnimeNodeDocument m_doc;
+    private org.knime.dynamic.js.v212.DynamicJSNodeFactory m_delegateFactory = new org.knime.dynamic.js.v212.DynamicJSNodeFactory();
 
 	@Override
-	public NodeDescription createNodeDescription() {
-	    if (m_doc != null) {
-	        return new DynamicJSNodeDescription212Proxy(m_doc, m_nodeDir);
-	    }
-		return new NoDescriptionProxy(getClass());
+	protected NodeDescription createNodeDescription() {
+	    return m_delegateFactory.createNodeDescription();
 	}
 
 	@Override
-	public void loadAdditionalFactorySettings(final ConfigRO config)
-			throws InvalidSettingsException {
-	    String confString = config.getString(DynamicJSNodeSetFactory.NODE_DIR_CONF);
-        String[] confParts = confString.split(":");
-	    if (confParts.length != 3) {
-	        throw new InvalidSettingsException("Error reading factory settings. Expected pluginName:configFolder:nodeFolder, but was " + confString);
-	    }
-	    m_pluginName = confParts[0];
-	    m_configFolder = confParts[1];
-	    m_nodeFolder = confParts[2];
-	    Bundle bundle = Platform.getBundle(m_pluginName);
-        URL configURL = bundle.getEntry(m_configFolder);
-        try {
-            File configFolder = FileUtil.resolveToPath(FileLocator.toFileURL(configURL)).toFile();
-            m_nodeDir = new File(configFolder, m_nodeFolder);
-            if (!configFolder.exists() || !m_nodeDir.exists()) {
-                throw new IOException("Node folder " + m_nodeDir.getAbsolutePath() + " does not exist.");
-            }
-        } catch (IOException | URISyntaxException e) {
-            LOGGER.error("Error retrieving node description folder for " + m_pluginName + ", " + m_configFolder);
-            throw new InvalidSettingsException(e);
-        }
-
-        try {
-			m_doc = KnimeNodeDocument.Factory.parse(new File(m_nodeDir, "node.xml"));
-		} catch (XmlException | IOException e) {
-			LOGGER.error("Error reading node config: " + e.getMessage(), e);
-			throw new InvalidSettingsException(e);
-		}
-		super.loadAdditionalFactorySettings(config);
+	public void loadAdditionalFactorySettings(final ConfigRO config) throws InvalidSettingsException {
+	    m_delegateFactory.loadAdditionalFactorySettings(config);
 	}
 
 	@Override
 	public void saveAdditionalFactorySettings(final ConfigWO config) {
-		config.addString(DynamicJSNodeSetFactory.NODE_DIR_CONF, m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
-		super.saveAdditionalFactorySettings(config);
+		m_delegateFactory.saveAdditionalFactorySettings(config);
 	}
 
+	/**
+     * @since 3.0
+     */
 	@Override
 	public DynamicJSNodeModel createNodeModel() {
-		return new DynamicJSNodeModel(m_doc.getKnimeNode(), m_nodeDir.getAbsolutePath(), getInteractiveViewName());
+		return m_delegateFactory.createNodeModel();
 	}
 
 	@Override
-	public int getNrNodeViews() {
-		return 0;
+	protected int getNrNodeViews() {
+		return m_delegateFactory.getNrNodeViews();
 	}
 
+	/**
+     * @since 3.0
+     */
 	@Override
 	public NodeView<DynamicJSNodeModel> createNodeView(final int viewIndex,
 			final DynamicJSNodeModel nodeModel) {
-		return null;
+		return m_delegateFactory.createNodeView(viewIndex, nodeModel);
 	}
 
 	@Override
-	public boolean hasDialog() {
-	    DynamicFullDescription desc = m_doc.getKnimeNode().getFullDescription();
-		boolean hasDialog = desc.getOptions() != null;
-		hasDialog |= desc.getTabList() != null && desc.getTabList().size() > 0;
-		return hasDialog;
+	protected boolean hasDialog() {
+	    return m_delegateFactory.hasDialog();
 	}
 
 	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new DynamicJSNodeDialog(m_doc.getKnimeNode());
+	protected NodeDialogPane createNodeDialogPane() {
+		return m_delegateFactory.createNodeDialogPane();
 	}
 
 }
