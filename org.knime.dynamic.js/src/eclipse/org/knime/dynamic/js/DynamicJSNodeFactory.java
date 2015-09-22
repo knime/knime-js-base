@@ -47,73 +47,13 @@
  */
 package org.knime.dynamic.js;
 
-import org.knime.core.node.DynamicNodeFactory;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeDescription;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.config.ConfigRO;
-import org.knime.core.node.config.ConfigWO;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.dynamic.js.v212.DynamicJSNodeModel;
-import org.knime.dynamic.js.v212.DynamicJSViewRepresentation;
-import org.knime.dynamic.js.v212.DynamicJSViewValue;
-
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  * @since 2.12
  */
-public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel> implements
-		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue> {
+public final class DynamicJSNodeFactory extends org.knime.dynamic.js.v212.DynamicJSNodeFactory {
 
-    private org.knime.dynamic.js.v212.DynamicJSNodeFactory m_delegateFactory = new org.knime.dynamic.js.v212.DynamicJSNodeFactory();
-
-	@Override
-	protected NodeDescription createNodeDescription() {
-	    return m_delegateFactory.createNodeDescription();
-	}
-
-	@Override
-	public void loadAdditionalFactorySettings(final ConfigRO config) throws InvalidSettingsException {
-	    m_delegateFactory.loadAdditionalFactorySettings(config);
-	}
-
-	@Override
-	public void saveAdditionalFactorySettings(final ConfigWO config) {
-		m_delegateFactory.saveAdditionalFactorySettings(config);
-	}
-
-	/**
-     * @since 3.0
-     */
-	@Override
-	public DynamicJSNodeModel createNodeModel() {
-		return m_delegateFactory.createNodeModel();
-	}
-
-	@Override
-	protected int getNrNodeViews() {
-		return m_delegateFactory.getNrNodeViews();
-	}
-
-	/**
-     * @since 3.0
-     */
-	@Override
-	public NodeView<DynamicJSNodeModel> createNodeView(final int viewIndex,
-			final DynamicJSNodeModel nodeModel) {
-		return m_delegateFactory.createNodeView(viewIndex, nodeModel);
-	}
-
-	@Override
-	protected boolean hasDialog() {
-	    return m_delegateFactory.hasDialog();
-	}
-
-	@Override
-	protected NodeDialogPane createNodeDialogPane() {
-		return m_delegateFactory.createNodeDialogPane();
-	}
+    //empty implementation for backward compatibility
 
 }
