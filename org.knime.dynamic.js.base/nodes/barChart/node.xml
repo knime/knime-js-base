@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 ../../../org.knime.dynamic.js/dynamicJSNode_v3.0.xsd"
 	jsNamespace="grouped_bar_chart_namespace" nodeID="dynamic_grouped_bar_chart"
-	categoryPath="/labs/quickform/view" icon="../js.png" type="Visualizer">
+	categoryPath="/flowcontrol/quickforms/view" icon="../js.png" type="Visualizer">
 	<name>Bar Chart</name>
 	<shortDescription>A bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
