@@ -4,7 +4,7 @@
    <extension
          point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/labs/quickform/input"
+            category-path="/flowcontrol/quickform/input"
             expert-flag="false"
             factory-class="org.knime.ext.js.node.quickform.input.molecule.MoleculeStringInputQuickFormNodeFactory"
             id="org.knime.ext.js.node.quickform.input.molecule.MoleculeStringInputQuickFormNodeFactory">
