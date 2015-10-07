@@ -162,6 +162,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             } catch (IOException e) {
                 iconPath = m_nodeDir.getAbsolutePath() + "/" + iconPath;
             }
+            iconPath = iconPath.replaceAll("\\\\", "/");
             Matcher m = ICON_PATH_PATTERN.matcher(iconPath);
             while (m.find()) {
                 //TODO this fails if there are folders that start with '.' in the path
