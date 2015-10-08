@@ -4,9 +4,9 @@
 		xmlns:n="http://knime.org/node/v2.12"
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 ../../../org.knime.dynamic.js/dynamicJSNode_v3.0.xsd"
- 		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/flowcontrol/quickforms/view"
+ 		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/labs/interactiveView"
  		icon="../js.png" type="Visualizer">
-    <name>Pie/Donut Chart</name>
+    <name>JavaScript Pie/Donut Chart</name>
     <shortDescription>A pie/donut chart based on the NVD3 library.</shortDescription>
     <fullDescription>
 	    <intro>
