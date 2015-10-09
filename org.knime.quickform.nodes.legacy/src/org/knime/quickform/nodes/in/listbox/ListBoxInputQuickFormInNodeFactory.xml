@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode icon="quickform_listbox.png" type="QuickForm">
-    <name>List Box Input (Comp.)</name>
+    <name>List Box Input (legacy)</name>
 
     <shortDescription>
       Outputs a data table with one column holding a list of strings.  

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode icon="quickform_multisel.png" type="QuickForm">
-    <name>Multi Selection QuickForm (Comp.)</name>
+    <name>Multi Selection QuickForm (legacy)</name>
 
     <shortDescription>
       Defines a list of options and allows to select multiple values,

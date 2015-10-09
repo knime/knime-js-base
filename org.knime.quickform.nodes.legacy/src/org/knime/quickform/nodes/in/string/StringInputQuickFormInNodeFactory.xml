@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode icon="quickform_string.png" type="QuickForm">
-    <name>String Input (Comp.)</name>
+    <name>String Input (legacy)</name>
 
     <shortDescription>
       Outputs a string flow variable with a given value.  

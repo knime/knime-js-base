@@ -120,7 +120,7 @@
       <category
             icon="icons/quickform_category.png"
             level-id="quickform-old"
-            name="Quick Form (compatibility)"
+            name="Quick Form (legacy)"
             path="/flowcontrol/quickforms">
       </category>
    </extension>
