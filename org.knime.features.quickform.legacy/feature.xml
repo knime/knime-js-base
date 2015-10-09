@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.knime.features.quickform"
-      label="KNIME Quick Forms (compatibility)"
+      id="org.knime.features.quickform.legacy"
+      label="KNIME Quick Forms (legacy)"
       version="3.0.0.qualifier"
       provider-name="KNIME.com, Zurich, Switzerland">
 
    <description url="http://www.knime.org/">
-      Contains nodes that contribute quick form elements. These elements can be used to abstract the controller of a workflow, e.g. by means of a web portal (part of the KNIME Enterprise Server).
+      Contains legacy nodes that contribute quick form elements. These elements
+can be used to abstract the controller of a workflow, e.g. by
+means of a web portal (part of the KNIME Enterprise Server).
    </description>
 
    <copyright>
@@ -728,7 +730,7 @@ propagated with or for interoperation with KNIME.
    </license>
 
    <plugin
-         id="org.knime.quickform.nodes"
+         id="org.knime.quickform.nodes.legacy"
          download-size="0"
          install-size="0"
          version="0.0.0"
