@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="quickform_image_out.png" type="QuickForm">
+    <name>Image Output (Comp.)</name>
+
+    <shortDescription>
+      Shows an image as (remote) quickform result.  
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+              Shows an image as (remote) quickform result. Some of the settings are only applied in the KNIME WebPortal.
+            </p>
+        </intro>
+        <option name="Label">
+          A descriptive label that will be shown in, for instance the web port.
+        </option>
+        <option name="Description">
+          Some lines of description that will be shown in the remote control 
+          form, for instance by means of a tooltip.
+        </option>
+        <option name="Enlarge on Click">
+          Whether a view with the full image should be shown on click.
+        </option>
+        <option name="Maximum Width">
+          If enabled the embedded image will not be larger than specified. Note, the aspect
+          ratio is maintained if the image gets scaled down (only one of maximum width/height is applied). 
+        </option>
+        <option name="Maximum Height">
+          If enabled the embedded image will not be larger than specified. 
+        </option>
+    </fullDescription>
+
+    <ports>
+        <inPort index="0" name="Image Input">
+          The image input in PNG format.
+        </inPort>
+    </ports>
+</knimeNode>

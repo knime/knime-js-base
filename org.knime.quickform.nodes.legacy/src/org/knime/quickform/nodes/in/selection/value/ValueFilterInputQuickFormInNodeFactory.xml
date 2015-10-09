@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="quickform_value_filter.png" type="QuickForm">
+    <name>Value Filter QuickForm (Comp.)</name>
+
+    <shortDescription>
+      Takes a data table and returns a table with one column containing the 
+      selected domain values.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+              Takes a data table and returns a table with one column containing
+              the selected domain values. The selection can also be controlled 
+              from a quickfrom (WebPortal).
+            </p>
+        </intro>
+        <option name="Label">
+          A descriptive label that will be shown in, for instance the web port.
+        </option>
+        <option name="Description">
+          Some lines of description that will be shown in the remote control 
+          form, for instance by means of a tooltip.
+        </option>
+        <option name="Weight">
+          A weight value that influences the position of the component in
+          the final layout. Lighter elements will be placed at the top, whereas
+          heavier items will be placed nearer the bottom. The value is relative
+          to the weights of the other components in the workflow (absolute 
+          value is not relevant, only the relative comparison to other
+          elements).
+        </option>
+        <option name="Variable Name">
+          Variable identifier.
+        </option>
+        <option name="Variable Value">
+          Variable value containing the select value names.
+        </option>
+        <option name="Column Filter">
+          Column Filter panel to select a column from.
+        </option>
+        <option name="Lock Column">
+          If selected the column is locked and cannot be selected in WebPortal wizard execution.
+        </option>
+        <option name="Value Filter">
+          Value Filter panel to select values from the selected column.
+        </option>
+    </fullDescription>
+
+    <ports>
+        <inPort index="0" name="Data table">
+            A table to filter values from.
+        </inPort>
+        <outPort index="0" name="Data table with one column">
+            A table with one column and selected values.
+        </outPort>
+    </ports>
+</knimeNode>

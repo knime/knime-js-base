@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="quickform_string.png" type="QuickForm">
+    <name>Dummy Input (Comp.)</name>
+
+    <shortDescription>
+      Placeholder quickform input node that allows the user to force a break in the
+      wizard execution.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+                Placeholder quickform input node that allows the user to force a break in the
+                wizard execution. This can be useful in the webportal execution when the user should first
+                see some intermediate output on one page without being required to enter additional settings.
+            </p>
+        </intro>
+    </fullDescription>
+
+    <ports>
+        <outPort index="0" name="Flow Variable Output">
+          Static output of the input/workflow variables.
+        </outPort>
+    </ports>
+</knimeNode>

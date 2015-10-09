@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="quickform_variable_out.png" type="QuickForm">
+    <name>TextArea Output (Comp.)</name>
+
+    <shortDescription>
+        Displays dynamic text in the KNIME WebPortal.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+	           Displays dynamic text in the KNIME WebPortal.
+            </p>
+        </intro>
+        <option name="Label">
+          A descriptive label that will be shown in, for instance the web port.
+        </option>
+        <option name="Description">
+          Some lines of description that will be shown in the remote control 
+          form, for instance by means of a tooltip.
+        </option>
+        <option name="Text format">
+          The format of the text. Can be plain text, pre-formatted (monospace text, retaining line breaks) or
+          simple html. 
+        </option>
+        <option name="Text">
+          The text. Double click the flow variables on the right to insert a placeholder, which
+          will be replaced by the actual variable value upon execution. 
+        </option>
+    </fullDescription>
+
+    <ports>
+        <inPort index="0" name="Flow Variable Input">
+          Variables, which can be used in the text expression.
+        </inPort>
+    </ports>
+</knimeNode>

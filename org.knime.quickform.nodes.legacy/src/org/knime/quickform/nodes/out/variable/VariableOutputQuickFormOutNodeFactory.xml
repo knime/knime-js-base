@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="quickform_variable_out.png" type="QuickForm">
+    <name>Variable Output (Comp.)</name>
+
+    <shortDescription>
+      Provides the value of a selected variable to a remote quick form.  
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+              Provides the value of a selected variable to a remote quick form.
+            </p>
+        </intro>
+        <option name="Label">
+          A descriptive label that will be shown in, for instance the web port.
+        </option>
+        <option name="Description">
+          Some lines of description that will be shown in the remote control 
+          form, for instance by means of a tooltip.
+        </option>
+        <option name="Variable Name">
+          Select the name of the variable whose value will be provided to the
+          result quick form.
+        </option>
+    </fullDescription>
+
+    <ports>
+        <inPort index="0" name="Flow Variable Input">
+          Variable input with the given variable defined.
+        </inPort>
+    </ports>
+</knimeNode>
