@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.knime.features.js.views"
-      label="KNIME JavaScript Views"
+      id="org.knime.features.js.quickforms"
+      label="KNIME Quick Forms"
       version="3.0.0.qualifier"
-      provider-name="KNIME GmbH, Konstanz, Germany"
-      plugin="org.knime.js.core"
+      provider-name="KNIME.com, Zurich, Switzerland"
+      plugin="org.knime.js.quickforms"
       image="icons/knime64.gif">
 
    <description url="http://www.knime.org/">
-      This features contains the core KNIME JavaScript library and nodes with JavaScript based implementation (web enabled).
+      Contains nodes that contribute quick form elements. These elements can be used to abstract the controller of a workflow, e.g. by means of a web portal (part of the KNIME Enterprise Server).
    </description>
 
    <copyright>
@@ -730,80 +730,13 @@ propagated with or for interoperation with KNIME.
    </license>
 
    <plugin
-         id="org.knime.js.core"
+         id="org.knime.js.quickforms"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="org.knime.js.views"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openqa.selenium"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.win32.x86"
-         os="win32"
-         arch="x86,x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.macosx.x86_64"
-         os="macosx"
-         arch="x86,x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.linux.x86"
-         os="linux"
-         arch="x86"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.linux.x86_64"
-         os="linux"
-         arch="x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.dynamic.node.generation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.knime.dynamic.js"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.knime.dynamic.js.base"
+         id="org.knime.ext.js"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

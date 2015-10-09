@@ -7,7 +7,7 @@ Bundle-Vendor: KNIME GmbH, Konstanz, Germany
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.js.core;bundle-version="[3.0.0,4.0.0)",
- org.knime.js.base;bundle-version="[3.0.0,4.0.0)",
+ org.knime.js.quickforms;bundle-version="[3.0.0,4.0.0)",
  org.apache.commons.lang;bundle-version="[2.6.0,3.0.0)",
  org.knime.ext.svg;bundle-version="[3.0.0,4.0.0)",
  org.openqa.selenium;bundle-version="[2.43.0,3.0.0)",
