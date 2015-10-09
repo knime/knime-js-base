@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: KNIME JavaScript Views
+Bundle-Name: KNIME JavaScript Base Views
 Bundle-SymbolicName: org.knime.js.views;singleton:=true
 Bundle-Version: 3.0.0.qualifier
 Bundle-ClassPath: js-views.jar
