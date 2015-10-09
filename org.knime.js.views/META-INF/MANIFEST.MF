@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: KNIME JavaScript Base Nodes
-Bundle-SymbolicName: org.knime.js.base;singleton:=true
+Bundle-Name: KNIME JavaScript Views
+Bundle-SymbolicName: org.knime.js.views;singleton:=true
 Bundle-Version: 3.0.0.qualifier
-Bundle-ClassPath: js-base.jar
+Bundle-ClassPath: js-views.jar
 Bundle-Vendor: KNIME.com, Zurich, Switzerland
 Export-Package: org.knime.js.base.node.quickform
 Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
