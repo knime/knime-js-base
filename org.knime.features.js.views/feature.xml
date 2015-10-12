@@ -729,66 +729,15 @@ license terms applicable to such Node, including when such Node is
 propagated with or for interoperation with KNIME.
    </license>
 
-   <plugin
-         id="org.knime.js.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.knime.features.js.quickforms" version="3.0.0.qualifier"/>
+   </requires>
 
    <plugin
          id="org.knime.js.views"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-
-   <plugin
-         id="org.openqa.selenium"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.win32.x86"
-         os="win32"
-         arch="x86,x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.macosx.x86_64"
-         os="macosx"
-         arch="x86,x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.linux.x86"
-         os="linux"
-         arch="x86"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.knime.ext.phantomjs.bin.linux.x86_64"
-         os="linux"
-         arch="x86_64"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
 
    <plugin
          id="org.knime.dynamic.node.generation"
