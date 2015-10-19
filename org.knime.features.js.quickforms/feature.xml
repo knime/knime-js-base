@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.js.quickforms"
       label="KNIME Quick Forms"
-      version="3.0.0.qualifier"
+      version="3.1.0.qualifier"
       provider-name="KNIME.com, Zurich, Switzerland"
       plugin="org.knime.js.quickforms"
       image="icons/knime64.gif">
@@ -752,7 +752,7 @@ propagated with or for interoperation with KNIME.
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-         
+
    <plugin
          id="org.knime.ext.phantomjs"
          download-size="0"

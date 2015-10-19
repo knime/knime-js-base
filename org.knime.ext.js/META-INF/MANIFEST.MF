@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Additional JavaScript libraries and nodes
 Bundle-SymbolicName: org.knime.ext.js;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.1.0.qualifier
+Bundle-ClassPath: ext-js.jar
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.js.core;bundle-version="[3.0.0,4.0.0)",
  org.knime.js.quickforms;bundle-version="[3.0.0,4.0.0)",
@@ -15,4 +15,4 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.4.3,3.0.0)"
-Bundle-ClassPath: ext-js.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
