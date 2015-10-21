@@ -65,7 +65,7 @@
             icon="icons/js.png"
             level-id="interactiveView"
             locked="true"
-            name="Interactive Views"
+            name="JavaScript Views"
             path="/labs">
       </category>
    </extension>
