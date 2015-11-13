@@ -73,7 +73,13 @@ public class ListBoxInputQuickFormRepresentation extends
         super(currentValue, config);
         m_regex = config.getRegex();
         m_errorMessage = config.getErrorMessage();
-        m_separator = config.getSeparator();
+        if (config.getSeparator() == null) {
+            m_separator = ListBoxInputQuickFormConfig.DEFAULT_SEPARATOR;
+        } else {
+            m_separator = config.getSeparator();
+        }
+        m_separateEachCharacter = config.getSeparateEachCharacter();
+        m_separatorRegex = config.getSeparatorRegex();
         m_omitEmpty = config.getOmitEmpty();
     }
 
@@ -83,7 +89,11 @@ public class ListBoxInputQuickFormRepresentation extends
 
     private final String m_separator;
 
+    private final boolean m_separateEachCharacter;
+
     private final boolean m_omitEmpty;
+
+    private final String m_separatorRegex;
 
     /**
      * @return the regex
@@ -110,38 +120,21 @@ public class ListBoxInputQuickFormRepresentation extends
     }
 
     /**
+     * @return separateEachCharacter
+     */
+    @JsonProperty("separateeachcharacter")
+    public boolean getSeparateEachCharacter() {
+        return m_separateEachCharacter;
+    }
+
+    /**
      * @return separatorRegex
      */
     @JsonProperty("separatorregex")
     public String getSeparatorRegex() {
-        if (m_separator == null || m_separator.isEmpty()) {
-            return m_separator;
-        }
-        StringBuilder sepString = new StringBuilder();
-        for (int i = 0; i < m_separator.length(); i++) {
-            if (i > 0) {
-                sepString.append('|');
-            }
-            char c = m_separator.charAt(i);
-            if (c == '|') {
-                sepString.append("\\|");
-            } else if (c == '\\') {
-                if (i + 1 < m_separator.length()) {
-                    if (m_separator.charAt(i + 1) == 'n') {
-                        sepString.append("\\n");
-                        i++;
-                    } else if (m_separator.charAt(i + 1) == 't') {
-                        sepString.append("\\t");
-                        i++;
-                    }
-                }
-            } else {
-                // a real, non-specific char
-                sepString.append("[" + c + "]");
-            }
-        }
-        return sepString.toString();
+        return m_separatorRegex;
     }
+
 
     /**
      * @return the omitEmpty
@@ -150,6 +143,8 @@ public class ListBoxInputQuickFormRepresentation extends
     public boolean getOmitEmpty() {
         return m_omitEmpty;
     }
+
+
 
     /**
      * {@inheritDoc}
@@ -179,6 +174,12 @@ public class ListBoxInputQuickFormRepresentation extends
         sb.append("separator=");
         sb.append(m_separator);
         sb.append(", ");
+        sb.append("separateEachCharacter=");
+        sb.append(m_separateEachCharacter);
+        sb.append(", ");
+        sb.append("separatorRegex=");
+        sb.append(m_separatorRegex);
+        sb.append(", ");
         sb.append("omitEmpty=");
         sb.append(m_omitEmpty);
         return sb.toString();
@@ -193,6 +194,8 @@ public class ListBoxInputQuickFormRepresentation extends
                 .append(m_regex)
                 .append(m_errorMessage)
                 .append(m_separator)
+                .append(m_separateEachCharacter)
+                .append(m_separatorRegex)
                 .append(m_omitEmpty)
                 .toHashCode();
     }
@@ -216,6 +219,8 @@ public class ListBoxInputQuickFormRepresentation extends
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)
                 .append(m_separator, other.m_separator)
+                .append(m_separateEachCharacter, other.m_separateEachCharacter)
+                .append(m_separatorRegex, m_separatorRegex)
                 .append(m_omitEmpty, other.m_omitEmpty)
                 .isEquals();
     }

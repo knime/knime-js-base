@@ -36,9 +36,10 @@
           String values, separated.
         </option>
         <option name="Separator">
-          An undelimited list of char separators including \n and \t; back slashes and/or quotes are not supported. 
-          All tokens are used as delimiters.
+          An undelimited list of char separators including \n and \t. All tokens are used as delimiters.
         </option>
+        <option name="Separate at each character">
+            If enabled the input value will be split into a list of characters, the separator will be ignored.</option>
     </fullDescription>
 
     <ports>

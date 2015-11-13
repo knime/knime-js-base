@@ -44,7 +44,10 @@
  */
 package org.knime.js.base.node.quickform.input.listbox;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
@@ -55,7 +58,9 @@ import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -86,6 +91,9 @@ public class ListBoxInputQuickFormNodeModel
      * Pushes the current value as flow variable.
      */
     private void createAndPushFlowVariable() {
+        if (getConfig().getSeparator() == null) {
+            setWarningMessage("Auto guessing separator.");
+        }
         final String variableName = getConfig().getFlowVariableName();
         final String value = getRelevantValue().getString();
         pushFlowVariableString(variableName, value);
@@ -120,23 +128,9 @@ public class ListBoxInputQuickFormNodeModel
      * @throws InvalidSettingsException If one of the values is invalid
      */
     private List<String> getValidatedValues() throws InvalidSettingsException {
-        boolean omitEmpty = getConfig().getOmitEmpty();
-        final String value = getRelevantValue().getString();
-        String separator = getConfig().getSeparator();
-        final ArrayList<String> values = new ArrayList<String>();
-        if (separator == null || separator.isEmpty()) {
-            if (!(omitEmpty && value.isEmpty())) {
-                values.add(value);
-            }
-        } else {
-            String[] splitValue = value.split(getConfig().getSeparatorRegex(), -1);
-            for (String val : splitValue) {
-                if (!(omitEmpty && val.isEmpty())) {
-                    values.add(val);
-                }
-            }
-        }
-        ValidationError error = validateViewValue(getRelevantValue());
+
+        final ArrayList<String> values = getSeparatedValues();
+        ValidationError error = validateViewValue(getRelevantValue(), values);
         if (error != null) {
             throw new InvalidSettingsException(error.getError());
         }
@@ -197,22 +191,11 @@ public class ListBoxInputQuickFormNodeModel
      */
     @Override
     public ValidationError validateViewValue(final ListBoxInputQuickFormValue viewContent) {
-        boolean omitEmpty = getConfig().getOmitEmpty();
-        final String value = viewContent.getString();
-        String separator = getConfig().getSeparator();
-        final ArrayList<String> values = new ArrayList<String>();
-        if (separator == null || separator.isEmpty()) {
-            if (!(omitEmpty && value.isEmpty())) {
-                values.add(value);
-            }
-        } else {
-            String[] splitValue = value.split(getConfig().getSeparatorRegex(), -1);
-            for (String val : splitValue) {
-                if (!(omitEmpty && val.isEmpty())) {
-                    values.add(val);
-                }
-            }
-        }
+        final ArrayList<String> values = getSeparatedValues();
+        return validateViewValue(viewContent, values);
+    }
+
+    private ValidationError validateViewValue(final ListBoxInputQuickFormValue viewContent, final ArrayList<String> values) {
         String regex = getConfig().getRegex();
         if (regex != null && !regex.isEmpty()) {
             for (int i = 0; i < values.size(); i++) {
@@ -226,4 +209,85 @@ public class ListBoxInputQuickFormNodeModel
         return super.validateViewValue(viewContent);
     }
 
+    /**
+     * @return List of separated values
+     */
+    private ArrayList<String> getSeparatedValues() {
+        boolean omitEmpty = getConfig().getOmitEmpty();
+        final String value = getRelevantValue().getString();
+        final String separatorRegexp = getSeparatorRegex();
+        final ArrayList<String> values = new ArrayList<String>();
+
+        if (getConfig().getSeparateEachCharacter()) {
+            if (!(omitEmpty && value.isEmpty())) {
+                values.addAll(Arrays.asList(value.split("")));
+            }
+        } else if (separatorRegexp.isEmpty()) {
+            if (!(omitEmpty && value.isEmpty())) {
+                values.add(value);
+            }
+        } else {
+            String[] splitValue = value.split(separatorRegexp, -1);
+            for (String val : splitValue) {
+                if (!(omitEmpty && val.isEmpty())) {
+                    values.add(val);
+                }
+            }
+        }
+        return values;
+    }
+
+    /**
+     * @return separator regex
+     */
+    private String getSeparatorRegex() {
+        String separator = getConfig().getSeparator();
+        if (getConfig().getSeparateEachCharacter() || separator == null || separator.isEmpty()) {
+            return "";
+        } else {
+            StringBuilder sepString = new StringBuilder();
+            for (int i = 0; i < separator.length(); i++) {
+                if (i > 0) {
+                    sepString.append('|');
+                }
+                char c = separator.charAt(i);
+                if (c == '\\') {
+                    if (i + 1 < separator.length()) {
+                        if (separator.charAt(i + 1) == 'n') {
+                            sepString.append("\\n");
+                            i++;
+                        } else if (separator.charAt(i + 1) == 't') {
+                            sepString.append("\\t");
+                            i++;
+                        } else {
+                            // not supported
+                            setWarningMessage("A back slash must not be followed by a char other than n or t; ignore the separator.");
+                            return "";
+                        }
+                    } else {
+                        sepString.append("\\\\");
+                    }
+                }
+                else if (c == '[' || c == '^') {
+                    // these symbols are not allowed in [] (see the else-block below)
+                    sepString.append("\\" + c);
+                }
+                else {
+                    // a real, non-specific char
+                    sepString.append("[" + c + "]");
+                }
+            }
+            return sepString.toString();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        super.loadInternals(nodeInternDir, exec);
+        getConfig().setSeparatorRegex(getSeparatorRegex());
+    }
 }

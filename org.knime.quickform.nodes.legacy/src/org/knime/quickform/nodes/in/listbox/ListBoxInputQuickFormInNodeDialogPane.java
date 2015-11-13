@@ -46,7 +46,10 @@
 package org.knime.quickform.nodes.in.listbox;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -66,13 +69,24 @@ final class ListBoxInputQuickFormInNodeDialogPane extends
 
     private final JTextArea m_valueField;
 
-    private final JTextField m_separtorField;
+    private final JTextField m_separatorField;
+
+    private final JCheckBox m_separateEachCharacter;
+
 
     /** Constructors, inits fields calls layout routines. */
     ListBoxInputQuickFormInNodeDialogPane() {
         m_valueField = new JTextArea(5, DEF_TEXTFIELD_WIDTH);
-        m_separtorField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_separatorField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_separateEachCharacter = new JCheckBox();
         createAndAddTab();
+        m_separateEachCharacter.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                m_separatorField.setEnabled(!m_separateEachCharacter.isSelected());
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -93,7 +107,8 @@ final class ListBoxInputQuickFormInNodeDialogPane extends
         gbc.gridwidth = 1;
         gbc.weighty = 1;
         gbc.fill = fill;
-        addPairToPanel("Separator: ", m_separtorField, panelWithGBLayout, gbc);
+        addPairToPanel("Separator: ", m_separatorField, panelWithGBLayout, gbc);
+        addPairToPanel("Separate at each character: ", m_separateEachCharacter, panelWithGBLayout, gbc);
     }
 
     /** {@inheritDoc} */
@@ -101,17 +116,12 @@ final class ListBoxInputQuickFormInNodeDialogPane extends
     protected void saveAdditionalSettings(
             final ListBoxInputQuickFormInConfiguration config)
             throws InvalidSettingsException {
-        // separator
-        String separator = new String(m_separtorField.getText());
-        separator = separator.replace("\\n", "");
-        separator = separator.replace("\\t", "");
-        if (separator.contains("\\") || separator.contains("\"")) {
-            throw new InvalidSettingsException("Separator must not contain back slashes and/or quotes.");
-        }
         // trim value
         String value = m_valueField.getText().trim();
-        config.setSeparator(m_separtorField.getText());
         config.getValueConfiguration().setValue(value);
+        config.setSeparator(m_separatorField.getText());
+        config.setSeparateEachCharacter(m_separateEachCharacter.isSelected());
+
     }
 
     /** {@inheritDoc} */
@@ -119,7 +129,8 @@ final class ListBoxInputQuickFormInNodeDialogPane extends
     protected void loadAdditionalSettings(
             final ListBoxInputQuickFormInConfiguration config) {
         final String separator = config.getSeparator();
-        m_separtorField.setText(separator);
+        m_separatorField.setText(separator);
+        m_separateEachCharacter.setSelected(config.getSeparateEachCharacter());
         String value = config.getValueConfiguration().getValue();
         m_valueField.setText(value);
     }

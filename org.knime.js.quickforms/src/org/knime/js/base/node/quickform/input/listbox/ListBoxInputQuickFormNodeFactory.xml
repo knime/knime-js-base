@@ -18,8 +18,9 @@
         </option>
 		<option name="Variable Name">Variable identifier and column name.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
-		<option name="Separator">An undelimited list of char separators including \n and \t; back slashes and/or quotes are not supported.
-			All tokens are used as delimiters.</option>
+		<option name="Separator">An undelimited list of char separators including \n and \t. All tokens are used as delimiters.</option>
+		<option name="Separate at each character">
+            If enabled the input value will be split into a list of characters, the separator will be ignored.</option>	
 		<option name="Omit Empty Values">
 			If enabled empty values will be omitted from the output table and do not have to pass the check for validation.</option>
 		<option name="Regular Expression">
@@ -35,7 +36,7 @@
           The value that is selected by default.
         </option>
 	</fullDescription>
-	<interactiveView name="Listbox input">
+	<interactiveView name="List Box Input">
     	Input a list of strings.
     </interactiveView>
 	<ports>

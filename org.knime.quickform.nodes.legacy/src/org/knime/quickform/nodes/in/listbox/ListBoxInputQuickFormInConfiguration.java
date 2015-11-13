@@ -61,6 +61,8 @@ final class ListBoxInputQuickFormInConfiguration
 
     private String m_separator = ",";
 
+    private boolean m_separateEachCharacter = false;
+
     /**
      * @return separator to split the value
      */
@@ -75,6 +77,20 @@ final class ListBoxInputQuickFormInConfiguration
         m_separator = separator;
     }
 
+    /**
+     * @return the separateEachCharacter
+     */
+    public boolean getSeparateEachCharacter() {
+        return m_separateEachCharacter;
+    }
+
+    /**
+     * @param separateEachCharacter the separateEachCharacter to set
+     */
+    public void setSeparateEachCharacter(final boolean separateEachCharacter) {
+        m_separateEachCharacter = separateEachCharacter;
+    }
+
     /** Save config to argument.
      * @param settings To save to.
      */
@@ -82,6 +98,7 @@ final class ListBoxInputQuickFormInConfiguration
     public void saveSettingsTo(final NodeSettingsWO settings) {
         super.saveSettingsTo(settings);
         settings.addString("separator", m_separator);
+        settings.addBoolean("separateEachCharacter", m_separateEachCharacter);
     }
 
     /** Load config in model.
@@ -97,6 +114,7 @@ final class ListBoxInputQuickFormInConfiguration
             // changed to string with 2.7
             m_separator = settings.getString("separator");
         }
+        m_separateEachCharacter = settings.getBoolean("separateEachCharacter", false);
     }
 
     /** Load settings in dialog, init defaults if that fails.
@@ -111,6 +129,7 @@ final class ListBoxInputQuickFormInConfiguration
             // changed to string with 2.7
             m_separator = settings.getString("separator", ",");
         }
+        m_separateEachCharacter = settings.getBoolean("separateEachCharacter", false);
     }
 
     /** {@inheritDoc} */

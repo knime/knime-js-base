@@ -45,6 +45,8 @@
 package org.knime.js.base.node.quickform.input.listbox;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -71,6 +73,8 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JTextField m_separatorField;
 
+    private final JCheckBox m_separateEachCharacterBox;
+
     private final JCheckBox m_omitEmptyField;
 
     private final RegexPanel m_regexField;
@@ -83,6 +87,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
     ListBoxInputQuickFormNodeDialog() {
         m_config = new ListBoxInputQuickFormConfig();
         m_separatorField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_separateEachCharacterBox = new JCheckBox();
         m_omitEmptyField = new JCheckBox();
         m_regexField = new RegexPanel();
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DEF_TEXTFIELD_WIDTH);
@@ -95,12 +100,20 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Separator: ", m_separatorField, panelWithGBLayout, gbc);
+        addPairToPanel("Separate at each character: ", m_separateEachCharacterBox, panelWithGBLayout, gbc);
         addPairToPanel("Omit Empty Values: ", m_omitEmptyField, panelWithGBLayout, gbc);
         addPairToPanel("Regular Expression: ", m_regexField.getRegexPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Validation Error Message: ", m_regexField.getErrorMessagePanel(), panelWithGBLayout, gbc);
         addPairToPanel("Common Regular Expressions: ",
                 m_regexField.getCommonRegexesPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
+        m_separateEachCharacterBox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                m_separatorField.setEnabled(!m_separateEachCharacterBox.isSelected());
+            }
+        });
     }
 
     /**
@@ -111,7 +124,12 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         super.loadSettingsFrom(m_config);
-        m_separatorField.setText(m_config.getSeparator());
+        String separatorString = m_config.getSeparator();
+        if (separatorString == null) {
+            separatorString = ListBoxInputQuickFormConfig.DEFAULT_SEPARATOR;
+        }
+        m_separatorField.setText(separatorString);
+        m_separateEachCharacterBox.setSelected(m_config.getSeparateEachCharacter());
         m_omitEmptyField.setSelected(m_config.getOmitEmpty());
         m_regexField.setRegex(m_config.getRegex());
         m_regexField.setErrorMessage(m_config.getErrorMessage());
@@ -125,6 +143,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         super.saveSettingsTo(m_config);
         m_config.setSeparator(m_separatorField.getText());
+        m_config.setSeparateEachCharacter(m_separateEachCharacterBox.isSelected());
         m_config.setOmitEmpty(m_omitEmptyField.isSelected());
         m_config.setRegex(m_regexField.getRegex());
         m_config.setErrorMessage(m_regexField.getErrorMessage());

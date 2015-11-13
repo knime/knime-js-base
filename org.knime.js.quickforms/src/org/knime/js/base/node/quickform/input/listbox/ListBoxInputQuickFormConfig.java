@@ -69,11 +69,17 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
     private static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
     private static final String CFG_SEPARATOR = "separator";
-    private static final String DEFAULT_SEPARATOR = "\\n";
-    private String m_separator = DEFAULT_SEPARATOR;
+    static final String DEFAULT_SEPARATOR = "\\n";
+    private String m_separator = null;
+    private static final String CFG_SEPARATE_EACH_CHARACTER = "separate_each_character";
+    private static final boolean DEFAULT_SEPARATE_EACH_CHARACTER = false;
+    private boolean m_separateEachCharacter = DEFAULT_SEPARATE_EACH_CHARACTER;
+    private static final String DEFAULT_SEPARATOR_REGEX = "";
+    private String m_separatorRegex = DEFAULT_SEPARATOR_REGEX;
     private static final String CFG_OMIT_EMPTY = "omit_empty";
     private static final boolean DEFAULT_OMIT_EMPTY = true;
     private boolean m_omitEmpty = DEFAULT_OMIT_EMPTY;
+
 
     /**
      * @return the regex
@@ -118,6 +124,34 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
     }
 
     /**
+     * @return the separateEachCharacter
+     */
+    boolean getSeparateEachCharacter() {
+        return m_separateEachCharacter;
+    }
+
+    /**
+     * @param separateEachCharacter the separateEachCharacter to set
+     */
+    void setSeparateEachCharacter(final boolean separateEachCharacter) {
+        m_separateEachCharacter = separateEachCharacter;
+    }
+
+    /**
+     * @return the separatorRegex
+     */
+    public String getSeparatorRegex() {
+        return m_separatorRegex;
+    }
+
+    /**
+     * @param separatorRegex the separatorRegex to set
+     */
+    public void setSeparatorRegex(final String separatorRegex) {
+        m_separatorRegex = separatorRegex;
+    }
+
+    /**
      * @return the omitEmpty
      */
     boolean getOmitEmpty() {
@@ -131,38 +165,6 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         m_omitEmpty = omitEmpty;
     }
 
-    /**
-     * @return separatorRegex
-     */
-    public String getSeparatorRegex() {
-        if (m_separator == null || m_separator.isEmpty()) {
-            return m_separator;
-        }
-        StringBuilder sepString = new StringBuilder();
-        for (int i = 0; i < m_separator.length(); i++) {
-            if (i > 0) {
-                sepString.append('|');
-            }
-            char c = m_separator.charAt(i);
-            if (c == '|') {
-                sepString.append("\\|");
-            } else if (c == '\\') {
-                if (i + 1 < m_separator.length()) {
-                    if (m_separator.charAt(i + 1) == 'n') {
-                        sepString.append("\\n");
-                        i++;
-                    } else if (m_separator.charAt(i + 1) == 't') {
-                        sepString.append("\\t");
-                        i++;
-                    }
-                }
-            } else {
-                // a real, non-specific char
-                sepString.append("[" + c + "]");
-            }
-        }
-        return sepString.toString();
-    }
 
     /**
      * {@inheritDoc}
@@ -173,6 +175,7 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         settings.addString(CFG_REGEX, m_regex);
         settings.addString(CFG_ERROR_MESSAGE, m_errorMessage);
         settings.addString(CFG_SEPARATOR, m_separator);
+        settings.addBoolean(CFG_SEPARATE_EACH_CHARACTER, m_separateEachCharacter);
         settings.addBoolean(CFG_OMIT_EMPTY, m_omitEmpty);
     }
 
@@ -186,6 +189,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE);
         m_separator = settings.getString(CFG_SEPARATOR);
         m_omitEmpty = settings.getBoolean(CFG_OMIT_EMPTY);
+
+        // added with 3.1
+        m_separateEachCharacter = settings.getBoolean(CFG_SEPARATE_EACH_CHARACTER, DEFAULT_SEPARATE_EACH_CHARACTER);
     }
 
     /**
@@ -198,6 +204,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE);
         m_separator = settings.getString(CFG_SEPARATOR, DEFAULT_SEPARATOR);
         m_omitEmpty = settings.getBoolean(CFG_OMIT_EMPTY, DEFAULT_OMIT_EMPTY);
+
+        // added with 3.1
+        m_separateEachCharacter = settings.getBoolean(CFG_SEPARATE_EACH_CHARACTER, DEFAULT_SEPARATE_EACH_CHARACTER);
     }
 
     /**
@@ -225,6 +234,12 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         sb.append("separator=");
         sb.append(m_separator);
         sb.append(", ");
+        sb.append("separateEachCharacter=");
+        sb.append(m_separateEachCharacter);
+        sb.append(", ");
+        sb.append("separatorRegex=");
+        sb.append(m_separatorRegex);
+        sb.append(", ");
         sb.append("omitEmpty=");
         sb.append(m_omitEmpty);
         return sb.toString();
@@ -239,6 +254,8 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
                 .append(m_regex)
                 .append(m_errorMessage)
                 .append(m_separator)
+                .append(m_separateEachCharacter)
+                .append(m_separatorRegex)
                 .append(m_omitEmpty)
                 .toHashCode();
     }
@@ -262,6 +279,8 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)
                 .append(m_separator, other.m_separator)
+                .append(m_separateEachCharacter, other.m_separateEachCharacter)
+                .append(m_separatorRegex, other.m_separatorRegex)
                 .append(m_omitEmpty, other.m_omitEmpty)
                 .isEquals();
     }

@@ -113,10 +113,34 @@ public class ListBoxInputQuickFormInNodeModel
         ListBoxInputQuickFormInConfiguration cfg = getConfiguration();
         final String variableName = cfg.getVariableName();
         final String value = cfg.getValueConfiguration().getValue();
-        String separator = cfg.getSeparator();
+        final String separatorRegexp = getSeparatorRegex();
         final ArrayList<String> values = new ArrayList<String>();
-        if (separator == null || separator.isEmpty()) {
-            values.add(value);
+
+        if (cfg.getSeparateEachCharacter()) {
+                values.addAll(Arrays.asList(value.split("")));
+        } else if (separatorRegexp.isEmpty()) {
+                values.add(value);
+        } else {
+            values.addAll(Arrays.asList(value.split(separatorRegexp, -1)));
+        }
+
+        DataTableSpec outSpec = createSpec(variableName);
+        BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
+        for (int i = 0; i < values.size(); i++) {
+            cont.addRowToTable(new DefaultRow(RowKey.createRowKey(i), new StringCell(values.get(i))));
+       }
+        cont.close();
+        createAndPushFlowVariable();
+        return new PortObject[]{cont.getTable()};
+    }
+
+    /**
+     * @return separator regex
+     */
+    private String getSeparatorRegex() {
+        String separator = getConfiguration().getSeparator();
+        if (getConfiguration().getSeparateEachCharacter() || separator == null || separator.isEmpty()) {
+            return "";
         } else {
             StringBuilder sepString = new StringBuilder();
             for (int i = 0; i < separator.length(); i++) {
@@ -124,9 +148,7 @@ public class ListBoxInputQuickFormInNodeModel
                     sepString.append('|');
                 }
                 char c = separator.charAt(i);
-                if (c == '|') {
-                    sepString.append("\\|");
-                } else if (c == '\\') {
+                if (c == '\\') {
                     if (i + 1 < separator.length()) {
                         if (separator.charAt(i + 1) == 'n') {
                             sepString.append("\\n");
@@ -136,29 +158,24 @@ public class ListBoxInputQuickFormInNodeModel
                             i++;
                         } else {
                             // not supported
-                            LOGGER.assertLog(false,
-                                "A back slash must not be followed by a char other than n or t; ignoring it.");
+                            setWarningMessage("A back slash must not be followed by a char other than n or t; ignore the separator.");
+                            return "";
                         }
                     } else {
-                        // not supported
-                        LOGGER.assertLog(false,
-                                "A back slash must be followed by either a n or t; ignoring it.");
+                        sepString.append("\\\\");
                     }
-                } else {
+                }
+                else if (c == '[' || c == '^') {
+                    // these symbols are not allowed in [] (see the else-block below)
+                    sepString.append("\\" + c);
+                }
+                else {
                     // a real, non-specific char
-                    sepString.append(c);
+                    sepString.append("[" + c + "]");
                 }
             }
-            values.addAll(Arrays.asList(value.split(sepString.toString())));
+            return sepString.toString();
         }
-        DataTableSpec outSpec = createSpec(variableName);
-        BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
-        for (int i = 0; i < values.size(); i++) {
-            cont.addRowToTable(new DefaultRow(RowKey.createRowKey(i), new StringCell(values.get(i))));
-       }
-        cont.close();
-        createAndPushFlowVariable();
-        return new PortObject[]{cont.getTable()};
     }
 
     private DataTableSpec createSpec(final String variableName) {
