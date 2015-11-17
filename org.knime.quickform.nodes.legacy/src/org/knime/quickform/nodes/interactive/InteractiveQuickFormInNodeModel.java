@@ -72,7 +72,6 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
-import org.knime.core.data.container.DataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -180,11 +179,9 @@ public class InteractiveQuickFormInNodeModel extends NodeModel {
         showInBrowser(jsonString);
 
         //back
-
-        JSONDataTable parsedTable = mapper.readValue(jsonString, JSONDataTable.class);
-
-        DataContainer newData = new DataContainer(spec);
 /*
+        JSONDataTable parsedTable = mapper.readValue(jsonString, JSONDataTable.class);
+        DataContainer newData = new DataContainer(spec);
         int i = 0;
         for (Object[] rowObjects : parsedTable.getData()) {
             i++;
