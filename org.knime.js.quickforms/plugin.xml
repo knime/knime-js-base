@@ -29,6 +29,11 @@
       </node>
       <node
             category-path="/flowcontrol/quickforms/input"
+            factory-class="org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormNodeFactory"
+            id="org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.listbox.ListBoxInputQuickFormNodeFactory"
             id="org.knime.js.base.node.quickform.input.listbox.ListBoxInputQuickFormNodeFactory">
       </node>
@@ -190,6 +195,23 @@
          </webResource>
          <importResource
                relativePath="org/knime/js/base/node/quickform/input/date/DateInput.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Credentials Input Quickform"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.quickform.input.credentials.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/quickform/input/credentials/"
+               relativePathTarget="org/knime/js/base/node/quickform/input/credentials/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/quickform/input/credentials/CredentialsInput.js"
                type="JAVASCRIPT">
          </importResource>
          <webDependency
@@ -523,6 +545,14 @@
             javascriptComponentID="org_knime_js_base_node_quickform_input_date"
             name="Date Input Quickform"
             namespace="org_knime_js_base_node_quickform_input_date">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.quickform.input.credentials.bundle"
+            init-method-name="init"
+            javascriptComponentID="org_knime_js_base_node_quickform_input_credentials"
+            name="Credentials Input Quickform"
+            namespace="org_knime_js_base_node_quickform_input_credentials">
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
