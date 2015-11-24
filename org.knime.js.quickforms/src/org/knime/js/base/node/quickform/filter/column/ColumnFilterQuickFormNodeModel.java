@@ -121,7 +121,7 @@ public class ColumnFilterQuickFormNodeModel
     /**
      * @param inSpec The input spec
      * @return The output spec for the given input spec and the current settings
-     * @throws InvalidSettingsException If the current settings can not be applied to the given input spec
+     * @throws InvalidSettingsException If the current settings cannot be applied to the given input spec
      */
     private DataTableSpec createSpec(final DataTableSpec inSpec) throws InvalidSettingsException {
         final String[] values = getRelevantValue().getColumns();
