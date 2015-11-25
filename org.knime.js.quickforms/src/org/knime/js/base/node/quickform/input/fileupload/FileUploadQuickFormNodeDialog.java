@@ -47,7 +47,10 @@ package org.knime.js.base.node.quickform.input.fileupload;
 import java.awt.GridBagConstraints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -69,6 +72,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final FilesHistoryPanel m_fileHistoryPanel;
     private final JTextField m_validExtensionsField;
+    private final JCheckBox m_disableOutputBox;
 
     private FileUploadQuickFormConfig m_config;
 
@@ -77,28 +81,25 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config = new FileUploadQuickFormConfig();
         m_fileHistoryPanel =
                 new FilesHistoryPanel("file_upload_quick_form", false);
-            m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
-            m_validExtensionsField.addFocusListener(new FocusListener() {
-                @Override
-                public void focusLost(final FocusEvent e) {
-                    String t = m_validExtensionsField.getText();
-                    if (t == null) {
-                        t = "";
-                    }
-                    try {
-                        m_fileHistoryPanel.setSuffixes(t.split(","));
-                    } catch (Exception exc) {
-                        NodeLogger.getLogger(
-                            FileUploadQuickFormNodeDialog.class).debug(
-                                        "Unable to update file suffixes", exc);
-                    }
+        m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_validExtensionsField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(final FocusEvent e) {
+                try {
+                    m_fileHistoryPanel.setSuffixes(getFileTypes());
+                } catch (Exception exc) {
+                    NodeLogger.getLogger(
+                        FileUploadQuickFormNodeDialog.class).debug(
+                                    "Unable to update file suffixes", exc);
                 }
+            }
 
-                @Override
-                public void focusGained(final FocusEvent e) {
-                    // nothing to do
-                }
-            });
+            @Override
+            public void focusGained(final FocusEvent e) {
+                // nothing to do
+            }
+        });
+        m_disableOutputBox = new JCheckBox();
         createAndAddTab();
     }
 
@@ -111,6 +112,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
             m_validExtensionsField, panelWithGBLayout, gbc);
         addPairToPanel("Default File:",
             m_fileHistoryPanel, panelWithGBLayout, gbc);
+        addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
     }
 
     /**
@@ -122,15 +124,28 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         String[] fileExtensions = m_config.getFileTypes();
-        if (fileExtensions == null) {
-            m_validExtensionsField.setText("");
+        String text;
+        if (fileExtensions == null || fileExtensions.length == 0) {
+            text = "";
         } else {
-            StringBuilder b = new StringBuilder();
-            for (String s : fileExtensions) {
-                b.append(b.length() > 0 ? "," : "").append(s);
+            if (fileExtensions.length > 1) {
+                // since 3.1 the first element should have a pattern "ext1|ext2|ext3..."
+                // need to support backward compatibility
+                if (fileExtensions[0].contains("|")) {
+                    // 3.1
+                    text = fileExtensions[0].replace('|', ',');
+                } else {
+                    // older version
+                    text = String.join(",", fileExtensions);
+                }
+            } else {
+                text = fileExtensions[0];
             }
-            m_validExtensionsField.setText(b.toString());
         }
+        m_validExtensionsField.setText(text);
+        m_fileHistoryPanel.setSelectedFile(m_config.getDefaultValue().getPath());
+        m_fileHistoryPanel.setSuffixes(getFileTypes());
+        m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
     /**
@@ -140,7 +155,8 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
-        m_config.setFileTypes(m_validExtensionsField.getText().split(","));
+        m_config.setFileTypes(getFileTypes());
+        m_config.setDisableOutput(m_disableOutputBox.isSelected());
         m_config.saveSettings(settings);
     }
 
@@ -152,5 +168,36 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         FileUploadQuickFormValue value = new FileUploadQuickFormValue();
         value.loadFromNodeSettings(settings);
         return value.getPath();
+    }
+
+    /**
+     * @return String[] file types
+     */
+    private String[] getFileTypes() {
+        String s = m_validExtensionsField.getText().trim();
+        if (s.isEmpty()) {
+            return new String[0];
+        }
+        String[] fileTypes = s.split(",");
+        List<String> filteredFileTypes = new ArrayList<String>();
+        for (String type : fileTypes) {
+            s = type.trim();
+            if (s.isEmpty()) {
+                continue;
+            }
+            if (s.startsWith(".")) {
+                filteredFileTypes.add(s);
+            } else {
+                filteredFileTypes.add("." + s);
+            }
+        }
+        if (filteredFileTypes.size() == 0) {
+            return new String[0];
+        } else if (filteredFileTypes.size() > 1) {
+            // first all the file types, then all of them separately
+            // use | because of FilesHistoryPanel behaviour
+            filteredFileTypes.add(0, String.join("|", filteredFileTypes));
+        }
+        return filteredFileTypes.toArray(new String[filteredFileTypes.size()]);
     }
 }

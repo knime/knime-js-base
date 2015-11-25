@@ -53,9 +53,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Vector;
 
+import org.apache.commons.io.FilenameUtils;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.dialog.ExternalNodeData;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
@@ -65,6 +75,7 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
  */
 public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel<FileUploadQuickFormRepresentation,
         FileUploadQuickFormValue, FileUploadQuickFormConfig> {
+
     /**
      * @param viewName
      */
@@ -88,6 +99,36 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         return "org_knime_js_base_node_quickform_input_fileupload";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        if (getConfig().getDisableOutput()) {
+            try {
+                getFileAndURL();
+            } catch (InvalidSettingsException e) {
+                setWarningMessage(e.getMessage());
+                return new PortObjectSpec[]{InactiveBranchPortObjectSpec.INSTANCE};
+            }
+        }
+        createAndPushFlowVariable();
+        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        if (getConfig().getDisableOutput()) {
+            try {
+                getFileAndURL();
+            } catch (InvalidSettingsException e) {
+                setWarningMessage(e.getMessage());
+                return new PortObject[]{InactiveBranchPortObject.INSTANCE};
+            }
+        }
+        createAndPushFlowVariable();
+        return new PortObject[]{FlowVariablePortObject.INSTANCE};
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -97,20 +138,23 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         if (error != null) {
             throw new InvalidSettingsException(error.getError());
         }
+        Vector<String> fileValues = getFileAndURL();
+        String varIdentifier = getConfig().getFlowVariableName();
+        pushFlowVariableString(varIdentifier, fileValues.get(0));
+        pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
+    }
+
+    private Vector<String> getFileAndURL() throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
-        if (path == null) {
-            path = "";
+        if (path == null || path.isEmpty()) {
+            throw new InvalidSettingsException("No file provided");
         }
 
         File f = new File(path);
         if (!f.exists()) {
             StringBuilder b = new StringBuilder("No such file: \"");
             b.append(f.getAbsolutePath()).append("\"");
-            if (f != null) {
-                b.append(" (file was set as part of quick form remote control");
-                b.append("\")");
-            }
-
+            throw new InvalidSettingsException(b.toString());
         }
 
         URL url;
@@ -122,9 +166,26 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
             b.append(" (file was set as part of quick form remote control)");
             throw new InvalidSettingsException(b.toString(), e);
         }
-        String varIdentifier = getConfig().getFlowVariableName();
-        pushFlowVariableString(varIdentifier, path);
-        pushFlowVariableString(varIdentifier + " (URL)", url.toString());
+        Vector<String> vector = new Vector<String>();
+        vector.add(path);
+        vector.add(url.toString());
+        return vector;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ValidationError validateViewValue(final FileUploadQuickFormValue viewContent) {
+        // check for a valid file extension
+        // no items in file types <=> any file type is valid
+        if (getConfig().getFileTypes().length > 0) {
+            String ext = "." + FilenameUtils.getExtension(viewContent.getPath());
+            if (!Arrays.asList(getConfig().getFileTypes()).contains(ext)) {
+                return new ValidationError("File extension " + ext + " is not valid");
+            }
+        }
+        return super.validateViewValue(viewContent);
     }
 
     /**

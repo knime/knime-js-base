@@ -67,6 +67,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
     private static final String CFG_ERROR_MESSAGE = "error_message";
     private static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
+    private static final String CFG_DISABLE_OUTPUT = "disable_output";
+    private static final boolean DEFAULT_DISABLE_OUTPUT = true;
+    private boolean m_disableOutput = DEFAULT_DISABLE_OUTPUT;
 
     /**
      * @return the fileTypes
@@ -97,6 +100,20 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
     }
 
     /**
+     * @return the disableOutput
+     */
+    public boolean getDisableOutput() {
+        return m_disableOutput;
+    }
+
+    /**
+     * @param disableOutput the disableOutput to set
+     */
+    public void setDisableOutput(final boolean disableOutput) {
+        m_disableOutput = disableOutput;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -112,6 +129,7 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         super.saveSettings(settings);
         settings.addStringArray(CFG_FILE_TYPES, m_fileTypes);
         settings.addString(CFG_ERROR_MESSAGE, m_errorMessage);
+        settings.addBoolean(CFG_DISABLE_OUTPUT, m_disableOutput);
     }
 
     /**
@@ -122,6 +140,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         super.loadSettings(settings);
         m_fileTypes = settings.getStringArray(CFG_FILE_TYPES);
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE);
+
+        // added with 3.1
+        m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
     }
 
     /**
@@ -132,6 +153,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         super.loadSettingsInDialog(settings);
         m_fileTypes = settings.getStringArray(CFG_FILE_TYPES, DEFAULT_FILE_TYPES);
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE);
+
+        // added with 3.1
+        m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
     }
 
     /**
@@ -147,6 +171,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         sb.append(", ");
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
+        sb.append(", ");
+        sb.append("disableOutput=");
+        sb.append(m_disableOutput);
         return sb.toString();
     }
 
@@ -158,6 +185,7 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_fileTypes)
                 .append(m_errorMessage)
+                .append(m_disableOutput)
                 .toHashCode();
     }
 
@@ -179,6 +207,7 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_fileTypes, other.m_fileTypes)
                 .append(m_errorMessage, other.m_errorMessage)
+                .append(m_disableOutput, other.m_disableOutput)
                 .isEquals();
     }
 

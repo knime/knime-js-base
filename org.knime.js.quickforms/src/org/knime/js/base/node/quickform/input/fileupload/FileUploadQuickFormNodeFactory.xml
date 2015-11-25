@@ -33,6 +33,9 @@
           The file that will be used during design time, i.e. when no file
           is uploaded by means of the, e.g. KNIME WebPortal.
         </option>
+        <option name="Disable output, if file does not exist">
+          If enabled, output port will be disabled, if the provided file does not exist.  
+        </option>
 	</fullDescription>
 	<interactiveView name="File Upload">View containing the file upload component.</interactiveView>
 	<ports>

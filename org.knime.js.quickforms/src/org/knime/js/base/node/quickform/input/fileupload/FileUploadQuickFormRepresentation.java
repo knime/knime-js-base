@@ -69,6 +69,7 @@ public class FileUploadQuickFormRepresentation extends
 
     private final String[] m_fileTypes;
     private final String m_errorMessage;
+    private final boolean m_disableOutput;
 
     /**
      * @param currentValue
@@ -79,6 +80,7 @@ public class FileUploadQuickFormRepresentation extends
         super(currentValue, config);
         m_fileTypes = config.getFileTypes();
         m_errorMessage = config.getErrorMessage();
+        m_disableOutput = config.getDisableOutput();
     }
 
     /**
@@ -95,6 +97,14 @@ public class FileUploadQuickFormRepresentation extends
     @JsonProperty("errormessage")
     public String getErrorMessage() {
         return m_errorMessage;
+    }
+
+    /**
+     * @return the disableOutput
+     */
+    @JsonProperty("disableoutput")
+    public boolean getDisableOutput() {
+        return m_disableOutput;
     }
 
     /**
@@ -121,6 +131,9 @@ public class FileUploadQuickFormRepresentation extends
         sb.append(", ");
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
+        sb.append(", ");
+        sb.append("disableOutput=");
+        sb.append(m_disableOutput);
         return sb.toString();
     }
 
@@ -129,8 +142,11 @@ public class FileUploadQuickFormRepresentation extends
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_fileTypes).append(m_errorMessage)
-            .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_fileTypes)
+                .append(m_errorMessage)
+                .append(m_disableOutput)
+                .toHashCode();
     }
 
     /**
@@ -148,8 +164,11 @@ public class FileUploadQuickFormRepresentation extends
             return false;
         }
         FileUploadQuickFormRepresentation other = (FileUploadQuickFormRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_fileTypes, other.m_fileTypes)
-            .append(m_errorMessage, other.m_errorMessage).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .append(m_fileTypes, other.m_fileTypes)
+                .append(m_errorMessage, other.m_errorMessage)
+                .append(m_disableOutput, other.m_disableOutput)
+                .isEquals();
     }
 
 }
