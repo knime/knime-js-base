@@ -91,7 +91,8 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
         addPairToPanel("Password: ", m_passwordField, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_promptUsernameChecker, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_savePasswordChecker, panelWithGBLayout, gbc);
-        addPairToPanel(" ", m_useServerLoginChecker, panelWithGBLayout, gbc);
+        // TODO currently disabled because it's not supported in the web portal/server
+//        addPairToPanel(" ", m_useServerLoginChecker, panelWithGBLayout, gbc);
     }
 
     /**
