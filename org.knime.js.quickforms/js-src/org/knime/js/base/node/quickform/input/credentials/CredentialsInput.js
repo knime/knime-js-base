@@ -64,35 +64,39 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		var body = $('body');
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
-		user_input = $('<input>');
-		user_input.attr('id', 'user_input');
-		user_input.attr("type", "text");
-		user_input.width(400);
-		var usernameValue = representation.currentValue.username;
-		user_input.val(usernameValue);
+		qfdiv.attr("title", representation.description);
+		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		
+		if (representation.promptUsername) {
+			var user_label = $('<label style="display:block;" for="user_input">');
+			user_label.append('User');
+			qfdiv.append(user_label);
+			user_input = $('<input id="user_input" type="text">');
+			user_input.css("margin-bottom", "5px");
+			user_input.width(400);
+			var usernameValue = representation.currentValue.username;
+			user_input.val(usernameValue);
+			qfdiv.append(user_input);
+			user_input.blur(callUpdate);
+		}
+		
 		password_input = $('<input>');
+		password_input.attr('id', 'pw_input');
 		password_input.attr("type", "password");
 		password_input.width(400);
 		var passwordValue = representation.currentValue.password;
 		password_input.val(passwordValue);
-		// TODO this is a mess
-		qfdiv.attr("title", representation.description);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
-		var user_label = $('<label style="display:inline-block; margin-right:10px;" for="user_input">');
-		user_label.append('user');
-		qfdiv.append(user_label);
-		qfdiv.append(user_input);
-		qfdiv.append($('<br>'));
-		qfdiv.append('password');
+		var password_label = $('<label style="display:block;" for="pw_input">');
+		password_label.append('Password');
+		qfdiv.append(password_label);
 		qfdiv.append(password_input);
-		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		
+		errorMessage = $('<div>');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');
 		errorMessage.css('font-size', '75%');
 		qfdiv.append(errorMessage);
-		user_input.blur(callUpdate);
 		password_input.blur(callUpdate);
 		resizeParent();
 		viewValid = true;
@@ -111,7 +115,7 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		}
 		if (message != null) {
 			errorMessage.text(message);
-			errorMessage.css('display', 'inline');
+			errorMessage.css('display', 'block');
 		} else {
 			errorMessage.text('');
 			errorMessage.css('display', 'none');
@@ -123,10 +127,11 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		if (!viewValid) {
 			return null;
 		}
-		var viewValue = new Object();
-		viewValue.username = user_input.val();
+		var viewValue = viewRepresentation.currentValue;
+		if (viewRepresentation.promptUsername) {
+			viewValue.username = user_input.val();
+		}
 		viewValue.password = password_input.val();
-		viewValue.isSavePassword = viewRepresentation.currentValue.isSavePassword;
 		return viewValue;
 	};
 	
