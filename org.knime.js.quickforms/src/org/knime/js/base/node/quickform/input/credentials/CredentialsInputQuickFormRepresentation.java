@@ -82,19 +82,19 @@ public class CredentialsInputQuickFormRepresentation extends
 
 
     /** @return the errorMessage */
-    @JsonProperty("errormessage")
+    @JsonProperty("errorMessage")
     public String getErrorMessage() {
         return m_errorMessage;
     }
 
     /** @return the promptUsername */
-    @JsonProperty("promptusername")
+    @JsonProperty("promptUsername")
     boolean isPromptUsername() {
         return m_promptUsername;
     }
 
     /** @return the useServerLoginCredentials */
-    @JsonProperty("useserverlogincredentials")
+    @JsonProperty("useServerLoginCredentials")
     boolean isUseServerLoginCredentials() {
         return m_useServerLoginCredentials;
     }
