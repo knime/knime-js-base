@@ -39,7 +39,7 @@ dynamicJSNode = function() {
 		
 		// Import JS dependencies and call JS code after loading
 		var libs = representation.jsDependencies;
-		if (parent != undefined && parent.KnimePageLoader != undefined) {
+		/*if (parent != undefined && parent.KnimePageLoader != undefined) {
 			for (var i = 0; i < libs.length; i++) {
 				if (libs[i].local) {
 					// Add Vaadin-specific prefix path for local dependencies
@@ -47,7 +47,7 @@ dynamicJSNode = function() {
 					libs[i].path = VAADIN_PREFIX + libs[i].path;
 				}
 			}
-		}
+		}*/
 
 		// Build config object for RequireJS
 		var depArray = [];

@@ -823,6 +823,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     DynamicJSDependency dep = new DynamicJSDependency();
                     dep.setName(dependencyID);
                     dep.setPath(dependencyID);
+                    dep.setLocal(true);
                     recDeps.add(dep);
                     lib.addDependencies(dependencyID);
                 }
