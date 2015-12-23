@@ -193,7 +193,7 @@ public class IntInputQuickFormValue extends JSONViewContent implements DialogNod
             try {
                 m_integer = ((JsonObject) json).getInt(CFG_INTEGER);
             } catch (Exception e) {
-                throw new JsonException("Expected double value for key '" + CFG_INTEGER + "'."  , e);
+                throw new JsonException("Expected int value for key '" + CFG_INTEGER + "'."  , e);
             }
         } else {
             throw new JsonException("Expected JSON object or JSON number, but got " + json.getValueType());
