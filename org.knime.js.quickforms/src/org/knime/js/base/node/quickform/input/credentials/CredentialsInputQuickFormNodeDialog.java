@@ -76,7 +76,7 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
     CredentialsInputQuickFormNodeDialog() {
         m_usernameField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_passwordField = new JPasswordField(DEF_TEXTFIELD_WIDTH);
-        m_promptUsernameChecker = new JCheckBox("Prompt user name in sub node dialog/wizard");
+        m_promptUsernameChecker = new JCheckBox("Prompt user name in wrapped metanode dialog/wizard");
         m_savePasswordChecker = new JCheckBox("Save password in configuration (weakly encrypted)");
         m_useServerLoginChecker = new JCheckBox("Use KNIME Server Login (when run on server)");
         createAndAddTab();
