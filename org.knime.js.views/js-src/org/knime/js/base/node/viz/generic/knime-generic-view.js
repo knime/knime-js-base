@@ -16,12 +16,14 @@ knime_generic_view = function() {
 			
 			// Import style dependencies
 			var head = document.getElementsByTagName('head')[0];
-			for ( var j = 0; j < representation.cssDependencies.length; j++) {
-				var styleDep = document.createElement('link');
-				styleDep.type = 'text/css';
-				styleDep.rel = 'stylesheet';
-				styleDep.href = representation.cssDependencies[j];
-				head.appendChild(styleDep);
+			if (representation.cssDependencies) {
+				for ( var j = 0; j < representation.cssDependencies.length; j++) {
+					var styleDep = document.createElement('link');
+					styleDep.type = 'text/css';
+					styleDep.rel = 'stylesheet';
+					styleDep.href = representation.cssDependencies[j];
+					head.appendChild(styleDep);
+				}
 			}
 			// Import own style declaration
 			var styleElement = document.createElement('style');
@@ -31,6 +33,9 @@ knime_generic_view = function() {
 			
 			// Import JS dependencies and call JS code after loading
 			var libs = representation.jsDependencies;
+			if (!libs) {
+				libs = [];
+			}
 			if (parent != undefined && parent.KnimePageLoader != undefined) {
 				for (var i = 0; i < libs.length; i++) {
 					libs[i] = "./VAADIN/src-js/" + libs[i];
