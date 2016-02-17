@@ -217,7 +217,13 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    ColorOption cO = (ColorOption)option;
 			    SettingsModelColor model = (SettingsModelColor)m_config.getModel(cO.getId());
 			    DialogComponentColorChooser cComp = new DialogComponentColorChooser(model, cO.getLabel(), true);
-			    cComp.setColor(new Color(cO.getDefaultR(), cO.getDefaultG(), cO.getDefaultB(), cO.getDefaultAlpha()));
+			    if (cO.isSetDefaultR() && cO.isSetDefaultG() && cO.isSetDefaultB()) {
+			        Color color = new Color(cO.getDefaultR(), cO.getDefaultG(), cO.getDefaultB());
+			        if (cO.isSetDefaultAlpha()) {
+			            color = new Color(cO.getDefaultR(), cO.getDefaultG(), cO.getDefaultB(), cO.getDefaultAlpha());
+			        }
+			        cComp.setColor(color);
+			    }
 			    cComp.setToolTipText(cO.getTooltip());
 			    m_components.put(cO.getId(), cComp);
 			    addDialogComponent(cComp);
@@ -288,7 +294,7 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			        }
 			    }
                 DialogComponentColumnNameSelection cComp =
-                    new DialogComponentColumnNameSelection(model, cO.getLabel(), cO.getInPortIndex(), cO.getOptional(),
+                    new DialogComponentColumnNameSelection(model, cO.getLabel(), cO.getInPortIndex(), !cO.getOptional(),
                        cO.getAllowNoneColumn(), filter);
                 cComp.setToolTipText(cO.getTooltip());
                 m_components.put(cO.getId(), cComp);

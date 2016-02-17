@@ -3,7 +3,7 @@ dynamicJSNode = function() {
 	var node = {}
 	var _innerNamespace;
 	var VAADIN_PREFIX = "./VAADIN/src-js/";
-	
+		
 	node.init = function(representation, value) {
 		if (!representation.jsNamespace) {
 			document.body.innerHTML = 'No data to display.';
@@ -101,19 +101,28 @@ dynamicJSNode = function() {
 	};
 	
 	node.validate = function() {
+		if (!window[_innerNamespace]) {
+			return false;
+		}
 		return window[_innerNamespace].validate();
 	}
 	
 	node.setValidationError = function(err) {
-		window[_innerNamespace].setValidationError(err);
+		if (window[_innerNamespace]) {
+			window[_innerNamespace].setValidationError(err);
+		}
 	}
 	
 	node.getComponentValue = function() {
-		return window[_innerNamespace].getComponentValue();
+		if (window[_innerNamespace]) {
+			return window[_innerNamespace].getComponentValue();
+		}
 	}
 	
 	node.getSVG = function() {
-		return window[_innerNamespace].getSVG();
+		if (window[_innerNamespace]) {
+			return window[_innerNamespace].getSVG();
+		}
 	}
 	
 	return node;
