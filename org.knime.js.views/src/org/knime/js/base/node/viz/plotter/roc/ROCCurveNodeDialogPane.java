@@ -58,8 +58,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -79,7 +77,6 @@ import javax.swing.event.ChangeListener;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DoubleValue;
 import org.knime.core.data.NominalValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
@@ -89,10 +86,8 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
 import org.knime.core.node.util.ColumnSelectionComboxBox;
-import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
-import org.knime.core.node.util.filter.column.DataTypeColumnFilter;
 
 /**
  *
@@ -509,21 +504,9 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         m_enableYAxisLabelEditCheckBox.setSelected(config.getEnableEditYAxisLabel());
         m_maxPoints.setValue(config.getRocSettings().getMaxPoints());
 
-        DataColumnSpecFilterConfiguration cfg = new DataColumnSpecFilterConfiguration("numColumns",
-            new DataTypeColumnFilter(DoubleValue.class));
+        DataColumnSpecFilterConfiguration cfg = config.getRocSettings().getNumericCols();
         cfg.loadConfigurationInDialog(settings, specs[0]);
         m_sortColumns.loadConfiguration(cfg, specs[0]);
-
-        List<String> incl = config.getRocSettings().getCurves();
-        ArrayList<String> excl = new ArrayList<>();
-
-        for (String s : specs[0].getColumnNames()) {
-            if (!incl.contains(s)) {
-               excl.add(s);
-            }
-        }
-
-        m_sortColumns.update(incl, excl, specs[0].getColumnNames());
     }
 
     /**
@@ -561,13 +544,9 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         config.getRocSettings().setClassColumn(m_classColumn.getSelectedColumn());
         config.getRocSettings()
                 .setPositiveClass((DataCell)m_positiveClass.getSelectedItem());
-        config.getRocSettings().getCurves().clear();
         config.getRocSettings().setMaxPoints((Integer) m_maxPoints.getValue());
 
-        NameFilterConfiguration cfg = new NameFilterConfiguration("numColumns");
-        m_sortColumns.saveConfiguration(cfg);
-        cfg.saveConfiguration(settings);
-        config.getRocSettings().getCurves().addAll(m_sortColumns.getIncludedNamesAsSet());
+        m_sortColumns.saveConfiguration(config.getRocSettings().getNumericCols());
 
         config.saveSettings(settings);
     }

@@ -52,7 +52,6 @@ package org.knime.js.base.node.viz.plotter.roc;
 
 import java.awt.Color;
 
-import org.knime.base.node.viz.roc.ROCSettings;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -597,11 +596,7 @@ public final class ROCCurveViewConfig {
             gridColor = getColorFromString(gridColorString);
         } catch (InvalidSettingsException e) { /* do nothing */ }
         setGridColor(gridColor);
-        try {
-            m_rocSettings.loadSettings(settings);
-        } catch (Exception e) {
-            m_rocSettings = new ROCSettings();
-        }
+        m_rocSettings.loadSettingsForDialog(settings, spec);
         m_title = settings.getString(ROCCurveViewConfig.TITLE, DEFAULT_TITLE);
         m_subtitle = settings.getString(ROCCurveViewConfig.SUBTITLE, "");
         m_xAxisTitle = settings.getString(ROCCurveViewConfig.X_AXIS_TITLE, DEFAULT_X_TITLE);

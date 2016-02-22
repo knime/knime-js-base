@@ -51,6 +51,7 @@
 package org.knime.js.base.node.viz.plotter.roc;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -79,6 +80,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
@@ -99,7 +101,7 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
      * Creates a new model instance.
      */
     ROCCurveNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE, BufferedDataTable.TYPE_OPTIONAL},
+        super(new PortType[]{BufferedDataTable.TYPE, new PortType(BufferedDataTable.class, true)},
             new PortType[]{ImagePortObject.TYPE, BufferedDataTable.TYPE}, viewName);
         m_config = new ROCCurveViewConfig();
     }
@@ -112,20 +114,14 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
 
         DataTableSpec tableSpec = (DataTableSpec)inSpecs[0];
 
-        if (m_config.getRocSettings().getCurves().size() == 0) {
-            throw new InvalidSettingsException("No curves defined");
-        }
-
         if (!tableSpec.containsName(m_config.getRocSettings().getClassColumn())) {
             throw new InvalidSettingsException("Class column '"
                     + m_config.getRocSettings().getClassColumn() + " ' does not exist");
         }
 
-        for (String c : m_config.getRocSettings().getCurves()) {
-            if (!tableSpec.containsName(c)) {
-                throw new InvalidSettingsException("Sort column '" + c
-                        + " ' does not exist");
-            }
+        FilterResult res = m_config.getRocSettings().getNumericCols().applyTo(tableSpec);
+        if (res.getIncludes().length == 0) {
+            throw new InvalidSettingsException("No curves included");
         }
 
         if (m_config.getRocSettings().getPositiveClass() == null) {
@@ -204,7 +200,11 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
 
             ROCCurveViewRepresentation representation = getViewRepresentation();
             if (representation.getCurves() == null) {
-                ROCCalculator calc = new ROCCalculator(m_config.getRocSettings().getCurves(),
+
+                // Fix for AP-5696: JS ROC Plot chokes if some of the previously selected cols are no longer available
+                FilterResult res = m_config.getRocSettings().getNumericCols().applyTo(table.getSpec());
+
+                ROCCalculator calc = new ROCCalculator(Arrays.asList(res.getIncludes()),
                     m_config.getRocSettings().getClassColumn(), m_config.getRocSettings().getMaxPoints(),
                     m_config.getRocSettings().getPositiveClass().toString());
 
@@ -355,9 +355,6 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
     protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         ROCCurveViewConfig cfg = new ROCCurveViewConfig();
         cfg.loadSettings(settings);
-        if (cfg.getRocSettings().getCurves() == null || cfg.getRocSettings().getCurves().size() == 0) {
-            throw new InvalidSettingsException("No curves defined");
-        }
     }
 
     /**
