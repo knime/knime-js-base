@@ -155,7 +155,7 @@ knime_scatter_plot_selection_appender = function() {
         xAxis.setTickLabelFont(new jsfc.Font("sans-serif", 11));
         xAxis.setGridLinesVisible(_representation.showGrid, false);
         xAxis.setAutoRange(_representation.autoRangeAxes, false);
-        if (_value.xAxisMin && _value.xAxisMax) {
+        if (_value.xAxisMin != null && _value.xAxisMax != null) {
         	xAxis.setBounds(_value.xAxisMin, _value.xAxisMax, false, false);
         }
         
@@ -165,7 +165,7 @@ knime_scatter_plot_selection_appender = function() {
         yAxis.setTickLabelFont(new jsfc.Font("sans-serif", 11));
         yAxis.setGridLinesVisible(_representation.showGrid, false);
         yAxis.setAutoRange(_representation.autoRangeAxes, false);
-        if (_value.yAxisMin && _value.yAxisMax) {
+        if (_value.yAxisMin != null && _value.yAxisMax != null) {
         	yAxis.setBounds(_value.yAxisMin, _value.yAxisMax, true, false);
         }
         if (_representation.gridColor) {
@@ -216,9 +216,9 @@ knime_scatter_plot_selection_appender = function() {
         chartManager = new jsfc.ChartManager(svg, chart, dragZoomEnabled, zoomEnabled, false);
         
         if (panEnabled) {
-        	var panModifier = new jsfc.Modifier(false, false, false, false);
+        	var panModifier = new jsfc.Modifier.createModifier(false, false, false, false);
         	if (dragZoomEnabled) {
-        		panModifier = new jsfc.Modifier(false, true, false, false);
+        		panModifier = new jsfc.Modifier.createModifier(false, true, false, false);
         	}
             var panHandler = new jsfc.PanHandler(chartManager, panModifier);
             chartManager.addLiveHandler(panHandler);
@@ -229,15 +229,19 @@ knime_scatter_plot_selection_appender = function() {
         var lasSelEnabled = _representation.enableLassoSelection;
         
         if (selectionEnabled) {
+        	var selectionModifier = new jsfc.Modifier.createModifier(true, false, false, true);
+        	var clickSelectionHandler = new jsfc.ClickSelectionHandler(chartManager, selectionModifier);
         	if (recSelEnabled) {
-        		var polygonSelectionModifier = new jsfc.Modifier(true, false, false, false);
-        		var polygonSelectionHandler = new jsfc.RectangleSelectionHandler(chartManager, polygonSelectionModifier);
-        		chartManager.addLiveHandler(polygonSelectionHandler);
+        		var rectangleSelectionHandler = new jsfc.RectangleSelectionHandler(chartManager, selectionModifier);
+        		var selectionHandler = new jsfc.DualHandler(chartManager, selectionModifier, clickSelectionHandler, rectangleSelectionHandler);
+        		chartManager.addLiveHandler(selectionHandler);
+        	} else {
+        		chartManager.addLiveHandler(clickSelectionHandler);
         	}
         	if (lasSelEnabled) {
-        		var selectionModifier = new jsfc.Modifier(true, true, false, false);
-        		var selectionHandler = new jsfc.PolygonSelectionHandler(chartManager, selectionModifier);
-        		chartManager.addLiveHandler(selectionHandler);
+        		var polygonSelectionModifier = new jsfc.Modifier.createModifier(true, true, false, true);
+        		var polygonSelectionHandler = new jsfc.PolygonSelectionHandler(chartManager, polygonSelectionModifier);
+        		chartManager.addLiveHandler(polygonSelectionHandler);
         	}
         }
         
