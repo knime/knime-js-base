@@ -87,6 +87,11 @@
             factory-class="org.knime.js.base.node.output.text.TextOutputNodeFactory"
             id="org.knime.js.base.node.output.image.TextOutputNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/quickforms/input"
+            factory-class="org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormNodeFactory"
+            id="org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -497,6 +502,26 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="File Chooser Quickform"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.quickform.input.filechooser.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/quickform/input/filechooser/"
+               relativePathTarget="org/knime/js/base/node/quickform/input/filechooser/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/quickform/input/filechooser/FileChooser.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="jsTree_3.3.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -652,6 +677,16 @@
             javascriptComponentID="org.knime.js.base.node.output.text"
             name="Text Output"
             namespace="org_knime_js_base_node_output_text"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.quickform.input.filechooser.bundle"
+            init-method-name="init"
+            javascriptComponentID="org_knime_js_base_node_quickform_input_filechooser"
+            name="File Chooser Quickform"
+            namespace="org_knime_js_base_node_quickform_input_filechooser"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

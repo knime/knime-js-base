@@ -215,6 +215,41 @@ public abstract class QuickFormNodeDialog
     }
 
     /**
+     * Adds a panel sub-component to the dialog containing two components and a label.
+     *
+     * @param label The label (left hand column)
+     * @param middle The component (middle column)
+     * @param right The component (right hand column)
+     * @param panelWithGBLayout Panel to add
+     * @param gbc constraints.
+     */
+    protected final void addTripelToPanel(final String label,
+            final JComponent middle, final JComponent right,
+            final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        int fill = gbc.fill;
+        Insets insets = gbc.insets;
+
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        panelWithGBLayout.add(new JLabel(label), gbc);
+
+        gbc.gridwidth = 1;
+        gbc.fill = fill;
+        gbc.weightx = 1;
+        panelWithGBLayout.add(middle, gbc);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = insets;
+        gbc.weightx = 0;
+        panelWithGBLayout.add(right, gbc);
+        gbc.weightx = 0;
+        gbc.fill = fill;
+    }
+
+    /**
      * @return The label
      */
     protected String getLabel() {
