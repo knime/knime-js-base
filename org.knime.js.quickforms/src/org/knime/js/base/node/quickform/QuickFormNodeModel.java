@@ -205,7 +205,7 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
     @Override
     public VAL getViewValue() {
         synchronized (m_lock) {
-            return m_viewValue;
+            return getRelevantValue();
         }
     }
 
@@ -228,8 +228,24 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
     @Override
     protected void reset() {
         synchronized (m_lock) {
+            resetViewHTML();
             m_viewValue = null;
         }
+    }
+
+    /**
+     * Resets the view HTML, attempts to delete file.
+     */
+    void resetViewHTML() {
+        if (m_viewPath != null) {
+            try {
+                File viewFile = new File(m_viewPath);
+                if (viewFile.exists()) {
+                    viewFile.delete();
+                }
+            } catch (Exception e) { /* do nothing */ }
+        }
+        m_viewPath = null;
     }
 
     /**
