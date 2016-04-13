@@ -61,7 +61,10 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		}
 		m_representation = representation;
 		m_value = representation.currentValue;
-		m_value.items = {};
+		// erase default selection when running on server
+		if (representation.runningOnServer) {
+			m_value.items = [];
+		}
 		
 		//define startsWith function on strings
 		if (!String.prototype.startsWith) {
