@@ -74,6 +74,27 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		$('body').append(qfdiv);
 		
+		qfdiv.attr("title", representation.description);
+		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		
+		if (!representation.tree || representation.tree.length < 1) {
+			var errorText = 'No items found for selection. ';
+			errorText += representation.runningOnServer ? 
+					'Check your settings.' : 
+					'View selection only possible on server.';
+			representation.tree = [{
+				'id': 'emptyTree',
+				'text': errorText,
+				'icon': null,
+				'state': {
+					'opened' : false,
+					'disabled' : true,
+					'selected' : false
+				},
+				'children': []
+			}]
+		}
+		
 		qfdiv.append('<div id="treeContainer">');
 		$('#treeContainer').jstree({
 				'core' : {
