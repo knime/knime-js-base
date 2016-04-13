@@ -89,7 +89,7 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		if (representation.separator==null || representation.separator.length==0) {
 			separator = null;
 		} else {
-			separator = new RegExp(representation.separatorregex);
+			separator = new RegExp(representation.separator);
 		}
 		omitEmpty = representation.omitempty;
 		input.blur(callUpdate);
@@ -102,9 +102,31 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 			return false;
 		}
 		
-		// we could validate if the regex matches on the individual strings here
-		// but since regexes behave differently in JS and Java, we do that check
-		// in the node model
+		var regex = input.attr("pattern");
+		if (regex != null && regex.length > 0) {
+			var values = [input.val()];
+			if (separator) {
+				values = input.val().split(separator);
+			}
+			listboxInput.setValidationErrorMessage(null);
+			for (var i = 0; i < values.length; i++) {
+				if (omitEmpty && values[i] == "") {
+					continue;
+				}
+				var valid = matchExact(regex, values[i]);
+				if (!valid) {
+					var errorMessage = "Value " + (i+1) + " is not valid. ";
+					errorMessage += viewRepresentation.errormessage.split('?').join(values[i]);
+					listboxInput.setValidationErrorMessage(errorMessage);
+					return false;
+				}
+			}
+			// all values match
+			return true;
+		} else {
+			return true;
+		}
+		
 		return true;
 	};
 

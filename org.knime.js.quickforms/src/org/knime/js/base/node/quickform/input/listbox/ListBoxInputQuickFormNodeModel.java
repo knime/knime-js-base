@@ -129,7 +129,7 @@ public class ListBoxInputQuickFormNodeModel
      */
     private List<String> getValidatedValues() throws InvalidSettingsException {
 
-        final ArrayList<String> values = getSeparatedValues();
+        final ArrayList<String> values = getSeparatedValues(null);
         ValidationError error = validateViewValue(getRelevantValue(), values);
         if (error != null) {
             throw new InvalidSettingsException(error.getError());
@@ -190,9 +190,9 @@ public class ListBoxInputQuickFormNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final ListBoxInputQuickFormValue viewContent) {
-        final ArrayList<String> values = getSeparatedValues();
-        return validateViewValue(viewContent, values);
+    public ValidationError validateViewValue(final ListBoxInputQuickFormValue value) {
+        final ArrayList<String> values = getSeparatedValues(value);
+        return validateViewValue(value, values);
     }
 
     private ValidationError validateViewValue(final ListBoxInputQuickFormValue viewContent, final ArrayList<String> values) {
@@ -212,9 +212,14 @@ public class ListBoxInputQuickFormNodeModel
     /**
      * @return List of separated values
      */
-    private ArrayList<String> getSeparatedValues() {
+    private ArrayList<String> getSeparatedValues(final ListBoxInputQuickFormValue optionalValue) {
         boolean omitEmpty = getConfig().getOmitEmpty();
-        final String value = getRelevantValue().getString();
+        String value;
+        if (optionalValue == null) {
+            value = getRelevantValue().getString();
+        } else {
+            value = optionalValue.getString();
+        }
         final String separatorRegexp = getSeparatorRegex();
         final ArrayList<String> values = new ArrayList<String>();
 
