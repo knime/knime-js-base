@@ -214,8 +214,15 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
 
     /** {@inheritDoc} */
     @Override
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Parsing credentials via commandline not supported");
+    public void loadFromString(final String fromCmdLine) {
+        int colonIndex = fromCmdLine.indexOf(':');
+        if (colonIndex < 0) {
+            m_username = fromCmdLine;
+            m_password = null;
+        } else {
+            m_username = fromCmdLine.substring(0, colonIndex);
+            m_password = fromCmdLine.substring(Math.min(colonIndex + 1, fromCmdLine.length()));
+        }
     }
 
     /** {@inheritDoc} */
