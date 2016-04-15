@@ -457,11 +457,16 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
      */
     @Override
     public void setInputData(final ExternalNodeData inputData) {
-        VAL dialogValue = validateAndLoadDialogValue(inputData);
+        VAL dialogValue;
+        try {
+            dialogValue = validateAndLoadDialogValue(inputData);
+        } catch (InvalidSettingsException e) {
+            throw new IllegalStateException("Value not validated before settings", e);
+        }
         setDialogValue(dialogValue);
     }
 
-    private VAL validateAndLoadDialogValue(final ExternalNodeData inputData) {
+    private VAL validateAndLoadDialogValue(final ExternalNodeData inputData) throws InvalidSettingsException {
         VAL dialogValue = createEmptyDialogValue();
         try {
             if (inputData.getJSONValue() != null) {
@@ -475,13 +480,12 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
             validateDialogValue(dialogValue);
             return dialogValue;
         } catch (JsonException e) {
-            throw new IllegalArgumentException("Invalid JSON parameter for node \"" + getParameterName()
+            throw new InvalidSettingsException("Invalid JSON parameter for node \"" + getParameterName()
                 + "\", cannot read provided JSON input: " + e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
-            throw new IllegalArgumentException(e.getMessage() + " for node \"" + getParameterName()
-                + "\".", e);
+            throw new InvalidSettingsException(e.getMessage() + " for node \"" + getParameterName() + "\".", e);
         } catch (InvalidSettingsException se) {
-            throw new IllegalArgumentException("Invalid parameter for node \"" + getParameterName()
+            throw new InvalidSettingsException("Invalid parameter for node \"" + getParameterName()
                 + "\", provided value does not pass node's validation method: " + se.getMessage(), se);
         }
     }
