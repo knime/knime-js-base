@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.knime.js.core.webResources">
+      <webResourceBundle
+            debug="true"
+            name="Test bundle"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.testing.webResourceBundle">
+         <webResource
+               relativePathSource="js-src/dummy.js">
+         </webResource>
+      </webResourceBundle>
+   </extension>
+
+</plugin>
