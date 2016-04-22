@@ -258,7 +258,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
         if (m_password == null) {
             builder.addNull(CFG_PASSWORD);
         } else {
-            builder.add(CFG_PASSWORD, m_password);
+            builder.add(CFG_PASSWORD, "******");
         }
         return builder.build();
     }
