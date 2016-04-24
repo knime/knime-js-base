@@ -1,5 +1,34 @@
 knime_scatter_plot_selection_appender = function() {
 	
+	// register helper methods
+	// detect Linux
+	if (!jsfc.Utils.isLinux) {
+		jsfc.Utils.isLinux = function() {
+			return navigator.appVersion.indexOf("Linux") != -1;
+		}
+	}
+	
+	// create modifier that works on Windows, Mac and Linux
+	if (!jsfc.Modifier.createModifierWML) {
+		jsfc.Modifier.createModifierWML = function(altKey, ctrlKey, shiftKey, shiftExtends) {
+			var m;
+			if (jsfc.Utils.isMacOS()) {
+				// Mac can't use ctrl key -> map to cmd key (meta key) 
+				m = new jsfc.Modifier(altKey, false, ctrlKey, shiftKey);
+			} else if (jsfc.Utils.isLinux()) { 
+				// Linux can't use alt key -> map to Windows key (meta key)
+				m = new jsfc.Modifier(false, ctrlKey, altKey, shiftKey);
+			} else {
+				// Windows, can't use the Windows key (meta key)
+				m = new jsfc.Modifier(altKey, ctrlKey, false, shiftKey);
+			}
+			if (shiftExtends) {
+				m.extension = new jsfc.Modifier(false, false, false, true);
+			}
+			return m;
+		}
+	}
+	
 	var view = {};
 	var _representation = null;
 	var _value = null;
@@ -229,7 +258,7 @@ knime_scatter_plot_selection_appender = function() {
         var lasSelEnabled = _representation.enableLassoSelection;
         
         if (selectionEnabled) {
-        	var selectionModifier = new jsfc.Modifier.createModifier(true, false, false, true);
+        	var selectionModifier = new jsfc.Modifier.createModifierWML(true, false, false, true);
         	var clickSelectionHandler = new jsfc.ClickSelectionHandler(chartManager, selectionModifier);
         	if (recSelEnabled) {
         		var rectangleSelectionHandler = new jsfc.RectangleSelectionHandler(chartManager, selectionModifier);
@@ -239,7 +268,7 @@ knime_scatter_plot_selection_appender = function() {
         		chartManager.addLiveHandler(clickSelectionHandler);
         	}
         	if (lasSelEnabled) {
-        		var polygonSelectionModifier = new jsfc.Modifier.createModifier(true, true, false, true);
+        		var polygonSelectionModifier = new jsfc.Modifier.createModifierWML(true, true, false, true);
         		var polygonSelectionHandler = new jsfc.PolygonSelectionHandler(chartManager, polygonSelectionModifier);
         		chartManager.addLiveHandler(polygonSelectionHandler);
         	}
