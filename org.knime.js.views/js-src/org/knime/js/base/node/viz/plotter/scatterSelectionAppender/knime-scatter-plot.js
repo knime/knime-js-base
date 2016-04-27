@@ -4,7 +4,7 @@ knime_scatter_plot_selection_appender = function() {
 	// detect Linux
 	if (!jsfc.Utils.isLinux) {
 		jsfc.Utils.isLinux = function() {
-			return navigator.appVersion.indexOf("Linux") != -1;
+			return navigator.appVersion.indexOf("X11") != -1 || navigator.appVersion.indexOf("Linux") != -1;
 		}
 	}
 	
@@ -28,6 +28,14 @@ knime_scatter_plot_selection_appender = function() {
 			return m;
 		}
 	}
+	
+	jsfc.Modifier.prototype.matchEvent = function(e) {
+		var metaKey = e.metaKey;
+		if (jsfc.Utils.isLinux()) {
+			metaKey = event.getModifierState("OS") || event.getModifierState("Super");
+		}
+	    return this.match(e.altKey, e.ctrlKey, metaKey, e.shiftKey);
+	};
 	
 	var view = {};
 	var _representation = null;
