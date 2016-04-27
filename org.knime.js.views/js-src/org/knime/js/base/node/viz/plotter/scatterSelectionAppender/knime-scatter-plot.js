@@ -254,7 +254,7 @@ knime_scatter_plot_selection_appender = function() {
 
         // override installMouseDownHandler for Linux mapping
         chartManager.installMouseDownHandler = function(element) {
-            var my = this;
+            var my = chartManager;
             element.onmousedown = function(event) {
                 if (my._liveMouseHandler !== null) {
                     my._liveMouseHandler.mouseDown(event);
