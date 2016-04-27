@@ -19,11 +19,11 @@ knime_scatter_plot_selection_appender = function() {
 				// Linux can't use alt key -> map to Windows key (meta key)
 				m = new jsfc.Modifier(false, ctrlKey, altKey, shiftKey);
 				m.matchEvent = function(e) {
-					var metaKey = e.getModifierState("OS") || e.getModifierState("Super");
+					var metaKey = e.metaKey || e.getModifierState("OS") || e.getModifierState("Super");
 				    return m.match(e.altKey, e.ctrlKey, metaKey, e.shiftKey);
 				}
 				m.matchEventWithExtension = function(e) {
-					var metaKey = e.getModifierState("OS") || e.getModifierState("Super");
+					var metaKey = e.metaKey || e.getModifierState("OS") || e.getModifierState("Super");
 					return m.matchWithExtension(e.altKey, e.ctrlKey, metaKey, e.shiftKey);
 				}
 			} else {
@@ -250,35 +250,36 @@ knime_scatter_plot_selection_appender = function() {
         var zoomEnabled = _representation.enableZooming;
         var dragZoomEnabled = _representation.enableDragZooming;
         var panEnabled = _representation.enablePanning;
-        chartManager = new jsfc.ChartManager(svg, chart, dragZoomEnabled, zoomEnabled, false);
-
-        // override installMouseDownHandler for Linux mapping
-        chartManager.installMouseDownHandler = function(element) {
-            var my = chartManager;
-            element.onmousedown = function(event) {
-                if (my._liveMouseHandler !== null) {
-                    my._liveMouseHandler.mouseDown(event);
-                } else {
-                    // choose one of the available mouse handlers to be "live"
-                	var metaKey = e.metaKey;
-					if (jsfc.Utils.isLinux()) {
-						metaKey = e.getModifierState("OS") || e.getModifierState("Super");
-					}
-                    var h = my._matchLiveHandler(event.altKey, event.ctrlKey, metaKey, event.shiftKey);
-                    if (h) {
-                        my._liveMouseHandler = h;
-                        my._liveMouseHandler.mouseDown(event);
-                    }
-                }
-            
-                // pass the event to the auxiliary mouse handlers
-                my._auxiliaryMouseHandlers.forEach(function(h) {
-                    h.mouseDown(event);
-                }); 
-                event.preventDefault();
-            };
+        
+        // override installMouseDownHandler for Linux mapping -- see AP-5737
+        jsfc.ChartManager.prototype.installMouseDownHandler = function(element) {
+        	var my = this;
+        	element.onmousedown = function(event) {
+        		if (my._liveMouseHandler !== null) {
+        			my._liveMouseHandler.mouseDown(event);
+        		} else {
+        			// choose one of the available mouse handlers to be "live"
+        			var metaKey = event.metaKey;
+        			if (jsfc.Utils.isLinux()) {
+        				metaKey = metaKey || event.getModifierState("OS") || event.getModifierState("Super");
+        			}
+        			var h = my._matchLiveHandler(event.altKey, event.ctrlKey, metaKey, event.shiftKey);
+        			if (h) {
+        				my._liveMouseHandler = h;
+        				my._liveMouseHandler.mouseDown(event);
+        			}
+        		}
+        		
+        		// pass the event to the auxiliary mouse handlers
+        		my._auxiliaryMouseHandlers.forEach(function(h) {
+        			h.mouseDown(event);
+        		}); 
+        		event.preventDefault();
+        	};
         };
         
+        chartManager = new jsfc.ChartManager(svg, chart, dragZoomEnabled, zoomEnabled, false);
+
         if (panEnabled) {
         	var panModifier = new jsfc.Modifier.createModifier(false, false, false, false);
         	if (dragZoomEnabled) {
