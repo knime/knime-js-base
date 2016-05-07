@@ -58,6 +58,11 @@
             factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory"
             id="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory">
       </node>
+      <node
+            category-path="/labs/interactiveView"
+            factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+            id="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -333,6 +338,30 @@
                webResourceBundleID="D3_3.2.8">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Paged Table"
+            usesDefine="false"
+            version="1.0"
+            webResourceBundleID="org.knime.js.base.node.viz.pagedTable.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/pagedTable/"
+               relativePathTarget="org/knime/js/base/node/viz/pagedTable/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="dataTables_1_10_11_bootstrap">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_2_13">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -438,6 +467,16 @@
             javascriptComponentID="org.knime.js.base.node.viz.plotter.lift"
             name="Lift Chart"
             namespace="knime_lift_chart"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.pagedTable.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.pagedTable"
+            name="Paged Table"
+            namespace="knime_paged_table"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>

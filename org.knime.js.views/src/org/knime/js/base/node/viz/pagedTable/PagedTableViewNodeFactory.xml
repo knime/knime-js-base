@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode icon="../js.png" type="Visualizer" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-    <name>JavaScript Simple Table View</name>
+<knimeNode icon="../js.png" type="Visualizer" xmlns="http://knime.org/node/v2.12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.12 http://knime.org/node/v2.12.xsd">
+    <name>JavaScript Paged Table View</name>
     <shortDescription>Displays data in a table view.</shortDescription>
     <fullDescription>
         <intro>
