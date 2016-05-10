@@ -261,7 +261,9 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
         //rearranger.keepOnly(filter.getIncludes());
         //BufferedDataTable filteredTable = exec.createColumnRearrangeTable(table, rearranger, exec.createSubExecutionContext(0.5));
         //TODO: feed filter result directly in JSONDataTable, as columnRearranger might not keep color information after filtering.
-        JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), filter.getExcludes(), exec);
+//        JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), filter.getExcludes(), exec);
+        // TODO -- Christian, enable the above line
+        JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), exec);
         if (m_config.getMaxRows() < table.size()) {
             setWarningMessage("Only the first "
                     + m_config.getMaxRows() + " rows are displayed.");
