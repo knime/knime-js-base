@@ -4,8 +4,7 @@
    <extension
          point="org.knime.workbench.repository.nodesets">
       <nodeset
-            factory-class="org.knime.dynamic.js.DynamicJSNodeSetFactory"
-            id="org.knime.dynamic.js.DynamicJSNodeSetFactory">
+            factory-class="org.knime.dynamic.js.DynamicJSNodeSetFactory">
       </nodeset>
    </extension>
    <extension
