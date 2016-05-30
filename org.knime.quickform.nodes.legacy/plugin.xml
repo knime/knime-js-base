@@ -6,113 +6,113 @@
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.string.StringInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.string.StringInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.dummy.DummyInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.dummy.DummyInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.fileupload.FileUploadQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.fileupload.FileUploadQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.variable.VariableOutputQuickFormOutNodeFactory"
-            id="org.knime.quickform.nodes.out.variable.VariableOutputQuickFormOutNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.textarea.TextAreaOutputQuickFormOutNodeFactory"
-            id="org.knime.quickform.nodes.out.textarea.TextAreaOutputQuickFormOutNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.filedownload.FileDownloadQuickFormOutNodeFactory"
-            id="org.knime.quickform.nodes.out.filedownload.FileDownloadQuickFormOutNodeFactory">
+            >
       </node>
       <node
             after="org.knime.quickform.nodes.out.filedownload.FileDownloadQuickFormOutNodeFactory"
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.image.ImageOutputQuickFormOutNodeFactory"
-            id="org.knime.quickform.nodes.out.image.ImageOutputQuickFormOutNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.date.DateStringInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.date.DateStringInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.sketcher.SketcherInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.ketcher.KetcherInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.dbl.DoubleInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.dbl.DoubleInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.integer.IntInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.integer.IntInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.bool.BooleanInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.bool.BooleanInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.stringselection.StringSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.stringselection.StringSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.listbox.ListBoxInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.listselection.ListBoxInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.column.ColumnFilterInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.column.ColumnFilterInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.column.ColumnSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.column.ColumnSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.value.ValueFilterInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.value.ValueFilterInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.value.ValueSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.value.ValueSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.multiselection.MultiSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.multiselection.MultiSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.single.SingleSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.single.SingleSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.multiple.MultipleSelectionInputQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.in.selection.multiple.MultipleSelectionInputQuickFormInNodeFactory">
+            >
       </node>
       <!-- <node
             category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.interactive.InteractiveQuickFormInNodeFactory"
-            id="org.knime.quickform.nodes.interactive.InteractiveQuickFormInNodeFactory">
+            >
       </node> -->     
    </extension>
    <extension
