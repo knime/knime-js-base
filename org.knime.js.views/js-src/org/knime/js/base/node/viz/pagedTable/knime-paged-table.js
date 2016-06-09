@@ -67,15 +67,23 @@ knime_paged_table = function() {
 				var colArray = [];
 				var colDefs = [];
 				if (representation.enableSelection) {
-					colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox" />'})
+					var all = _value.selectAll;
+					colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox"' + (all ? ' checked' : '')  + ' />'})
 					colDefs.push({
 						'targets': 0,
 						'searchable':false,
 						'orderable':false,
 						'className': 'dt-body-center',
 						'render': function (data, type, full, meta) {
+							var selected = selection[data] ? !all : all;
+							setTimeout(function(){
+								var el = $('#checkbox-select-all').get(0);
+								if (all && selection[data] && el && ('indeterminate' in el)) {
+									el.indeterminate = true;
+								}
+							}, 0);
 							return '<input type="checkbox" name="id[]"'
-								+ (selection[data] ? ' checked' : '')
+								+ (selected ? ' checked' : '')
 								+' value="' + $('<div/>').text(data).html() + '">';
 						}
 					});
@@ -172,7 +180,7 @@ knime_paged_table = function() {
 					// Handle click on checkbox to set state of "Select all" control
 					$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
 						var el = $('#checkbox-select-all').get(0);
-						var selected = (el.checked && !this.checked) || (!el.checked && this.checked);
+						var selected = el.checked ? !this.checked : this.checked;
 						// we could call delete _value.selection[this.value], but the call is very slow 
 						// and we can assume that a user doesn't click on a lot of checkboxes
 						selection[this.value] = selected;

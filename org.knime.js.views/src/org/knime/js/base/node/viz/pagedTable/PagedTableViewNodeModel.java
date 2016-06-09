@@ -243,9 +243,11 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
                 PagedTableViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
                 boolean selectAll = false;
-                if (viewValue != null && viewValue.getSelection() != null) {
-                    selectionList = Arrays.asList(viewValue.getSelection());
+                if (viewValue != null) {
                     selectAll = viewValue.getSelectAll();
+                    if (viewValue.getSelection() != null) {
+                        selectionList = Arrays.asList(viewValue.getSelection());
+                    }
                 }
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList, selectAll);
                 out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
