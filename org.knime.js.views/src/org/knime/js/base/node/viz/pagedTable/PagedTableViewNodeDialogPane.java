@@ -131,6 +131,13 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_displayRowColorsCheckBox = new JCheckBox("Display row colors");
         m_displayRowIdsCheckBox = new JCheckBox("Display row keys");
         m_displayColumnHeadersCheckBox = new JCheckBox("Display column headers");
+        m_displayColumnHeadersCheckBox.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enableColumnHeaderFields();
+            }
+        });
         m_displayRowIndexCheckBox = new JCheckBox("Dislay row indices");
         m_titleField = new JTextField(TEXT_FIELD_SIZE);
         m_subtitleField = new JTextField(TEXT_FIELD_SIZE);
@@ -350,6 +357,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         enablePagingFields();
         enableSelectionFields();
         enableFormatterFields();
+        enableColumnHeaderFields();
     }
 
     /**
@@ -429,6 +437,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private void enableFormatterFields() {
         boolean enableNumberFormat = m_enableGlobalNumberFormatCheckbox.isSelected();
         m_globalNumberFormatDecimalSpinner.setEnabled(enableNumberFormat);
+    }
+
+    private void enableColumnHeaderFields() {
+        boolean enableFields = m_displayColumnHeadersCheckBox.isSelected();
+        m_enableSortingCheckBox.setEnabled(enableFields);
     }
 
     /**

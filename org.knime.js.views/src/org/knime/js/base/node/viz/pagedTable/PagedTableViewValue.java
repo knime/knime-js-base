@@ -86,7 +86,7 @@ public class PagedTableViewValue extends JSONViewContent {
     private String[] m_columnFilterStrings;
 
     private static final String CFG_CURRENT_ORDER = "currentOrder";
-    private Object[][] m_currentOrder;
+    private Object[][] m_currentOrder = new Object[0][];
 
     /**
      * @return the selection

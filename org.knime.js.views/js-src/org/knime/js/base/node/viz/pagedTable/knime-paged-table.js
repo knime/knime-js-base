@@ -158,6 +158,10 @@ knime_paged_table = function() {
 					'processing': true,
 					'deferRender': !representation.enableSelection,
 					'data': getDataSlice(0, representation.initialPageSize),
+					'fnDrawCallback': function() {
+						if (!_representation.displayColumnHeaders)
+							$("#knimePagedTable thead").remove();
+					  	}
 				});
 				
 				$('#knimePagedTable_paginate').css('display', 'none');
