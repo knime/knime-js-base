@@ -44,8 +44,13 @@
  */
 package org.knime.js.base.node.quickform.filter.value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataRow;
@@ -102,9 +107,9 @@ public class ValueFilterQuickFormNodeModel
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
         updateValues((DataTableSpec)inSpecs[0]);
-        createAndPushFlowVariable();
+        Map<String, List<String>> value = createAndPushFlowVariable();
+        String column = value.entrySet().iterator().next().getKey();
         DataTableSpec inTable = (DataTableSpec)inSpecs[0];
-        String column = getRelevantValue().getColumn();
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getNumColumns(); colIndex++) {
             if (inTable.getColumnSpec(colIndex).getName()
@@ -123,12 +128,13 @@ public class ValueFilterQuickFormNodeModel
     protected PortObject[] execute(final PortObject[] inObjects,
             final ExecutionContext exec) throws Exception {
         getConfig().setFromSpec(((DataTable)inObjects[0]).getDataTableSpec());
-        createAndPushFlowVariable();
+        Map<String, List<String>> value = createAndPushFlowVariable();
+        Entry<String, List<String>> entry = value.entrySet().iterator().next();
+        String column = entry.getKey();
+        List<String> values = entry.getValue();
         BufferedDataTable inTable = (BufferedDataTable)inObjects[0];
         BufferedDataContainer container =
                 exec.createDataContainer(inTable.getDataTableSpec(), false);
-        String column = getRelevantValue().getColumn();
-        List<String> values = Arrays.asList(getRelevantValue().getValues());
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getDataTableSpec().getNumColumns(); colIndex++) {
             if (inTable.getDataTableSpec().getColumnSpec(colIndex).getName()
@@ -163,13 +169,14 @@ public class ValueFilterQuickFormNodeModel
      *
      * @throws InvalidSettingsException If the current value is not among the possible values
      */
-    private void createAndPushFlowVariable() throws InvalidSettingsException {
-        checkSelectedValues();
-        List<String> values = Arrays.asList(getRelevantValue().getValues());
-        pushFlowVariableString(getConfig().getFlowVariableName() + " (column)",
-            getRelevantValue().getColumn());
-        pushFlowVariableString(getConfig().getFlowVariableName(),
-                StringUtils.join(values, ","));
+    private Map<String, List<String>> createAndPushFlowVariable() throws InvalidSettingsException {
+        Map<String, List<String>> value = checkSelectedValues();
+        Entry<String, List<String>> entry = value.entrySet().iterator().next();
+        String column = entry.getKey();
+        List<String> values = entry.getValue();
+        pushFlowVariableString(getConfig().getFlowVariableName() + " (column)", column);
+        pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+        return value;
     }
 
     /**
@@ -177,18 +184,49 @@ public class ValueFilterQuickFormNodeModel
      *
      * @throws InvalidSettingsException If the value is not among the possible values
      */
-    private void checkSelectedValues() throws InvalidSettingsException {
-        String column = getRelevantValue().getColumn();
-        List<String> values = Arrays.asList(getRelevantValue().getValues());
-        List<String> possibleValues = getConfig().getPossibleValues().get(column);
-        for (String value : values) {
-            if (!possibleValues.contains(value)) {
-                throw new InvalidSettingsException("The selected value '"
-                        + value
-                        + "' is not among the possible values in the column '"
-                        + column + "'");
+    private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
+        ValueFilterQuickFormValue rValue = getRelevantValue();
+        String column = rValue.getColumn();
+        List<String> values = Arrays.asList(rValue.getValues());
+        Map<String, List<String>> possibleValues = getConfig().getPossibleValues();
+        if (possibleValues.size() < 1) {
+            throw new InvalidSettingsException("No column available for selection in input table.");
+        }
+        if (!possibleValues.containsKey(column)) {
+            String warning = "";
+            if (!StringUtils.isEmpty(column)) {
+                if (getConfig().getLockColumn()) {
+                    throw new InvalidSettingsException("Locked column '" + column + "' is not part of the table spec anymore.");
+                }
+                warning = "Column '" + column + "' is not part of the table spec anymore.\n";
+            }
+            warning += "Auto-guessing default column and value.";
+            column = possibleValues.keySet().toArray(new String[0])[0];
+            values = new ArrayList<String>();
+            setWarningMessage(warning);
+        }
+        List<String> columnValues = possibleValues.get(column);
+        if (columnValues == null || columnValues.isEmpty()) {
+            throw new InvalidSettingsException("No possible values found for column '" + column + "'");
+        }
+        List<String> errorList = new ArrayList<String>();
+        Iterator<String> it = values.iterator();
+        while (it.hasNext()) {
+            String value = it.next();
+            if (!columnValues.contains(value)) {
+                errorList.add(value);
+                it.remove();
             }
         }
+        if (errorList.size() > 0) {
+            String plural = errorList.size() > 1 ? "s" : "";
+            String verb = errorList.size() > 1 ? "' are " : "' is ";
+            setWarningMessage("The selected value" + plural + " '" + String.join(", ", errorList) + verb + "not among the possible values in the column '"
+                + column + "'. Omitting value" + plural + ".");
+        }
+        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        result.put(column, values);
+        return result;
     }
 
     /**

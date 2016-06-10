@@ -45,7 +45,9 @@
 package org.knime.js.base.node.quickform.selection.column;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
@@ -121,10 +123,20 @@ public class ColumnSelectionQuickFormNodeModel
     }
 
     private void createAndPushFlowVariable() throws InvalidSettingsException {
+        List<String> possibleColumns = Arrays.asList(getConfig().getPossibleColumns());
+        if (possibleColumns.size() < 1) {
+            throw new InvalidSettingsException("No column available for selection in input table.");
+        }
+
         String value = getRelevantValue().getColumn();
-        if (!Arrays.asList(getConfig().getPossibleColumns()).contains(value)) {
-            throw new InvalidSettingsException("The selected column '"
-                    + value + "' is not available");
+        if (!possibleColumns.contains(value)) {
+            String warning = "";
+            if (!StringUtils.isEmpty(value)) {
+                warning = "Column '" + value + "' is not part of the table spec anymore.\n";
+            }
+            warning += "Auto-guessing default column.";
+            value = possibleColumns.get(0);
+            setWarningMessage(warning);
         }
         pushFlowVariableString(getConfig().getFlowVariableName(), value);
     }
