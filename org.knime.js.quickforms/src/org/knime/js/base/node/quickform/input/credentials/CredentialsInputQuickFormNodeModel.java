@@ -47,10 +47,13 @@ package org.knime.js.base.node.quickform.input.credentials;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.Credentials;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.CredentialsStore.CredentialsNode;
+import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
@@ -84,7 +87,28 @@ public final class CredentialsInputQuickFormNodeModel extends
         String credentialsIdentifier = getConfig().getFlowVariableName();
         String username = value.getUsername();
         String password = value.getPassword();
-        pushCredentialsFlowVariable(credentialsIdentifier, username, password);
+        UserNameAndPasswordPair pair =
+                readFromCredentialsProviderIfBlank(getCredentialsProvider(), credentialsIdentifier, username, password);
+        pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
+    }
+
+    /** If the password is blank, read out a credentials from the credentials provider. Workaround for bug AP-5974:
+     * Credentials QF node to inherit password from workflow credentials, if present
+     */
+    private UserNameAndPasswordPair readFromCredentialsProviderIfBlank(final CredentialsProvider provider,
+        final String credentialsIdentifier, final String defaultUser, final String defaultPassword) {
+        if (StringUtils.isEmpty(defaultPassword)) {
+            if (provider != null) {
+                ICredentials wkfCreds;
+                try {
+                    wkfCreds = provider.get(credentialsIdentifier);
+                    return new UserNameAndPasswordPair(wkfCreds.getLogin(), wkfCreds.getPassword());
+                } catch (IllegalArgumentException e) {
+                    // credentials not defined - so leave password blank.
+                }
+            }
+        }
+        return new UserNameAndPasswordPair(defaultUser, defaultPassword);
     }
 
     /** {@inheritDoc} */
@@ -122,7 +146,8 @@ public final class CredentialsInputQuickFormNodeModel extends
 
     /** {@inheritDoc} */
     @Override
-    public void doAfterLoadFromDisc(final WorkflowLoadHelper loadHelper, final boolean isExecuted, final boolean isInactive) {
+    public void doAfterLoadFromDisc(final WorkflowLoadHelper loadHelper, final CredentialsProvider credProvider,
+        final boolean isExecuted, final boolean isInactive) {
         String credentialsIdentifier = getConfig().getFlowVariableName();
         final CredentialsInputQuickFormValue value = getRelevantValue();
         final String username = value != null ? value.getUsername() : null;
@@ -131,16 +156,40 @@ public final class CredentialsInputQuickFormNodeModel extends
             return;
         }
         String password = value.getPassword();
+        UserNameAndPasswordPair pair = new UserNameAndPasswordPair(username, password);
         if (!value.isSavePassword() && !isExecuted && !isInactive) {
-            Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
-            List<Credentials> loadCredentials = loadHelper.loadCredentials(Collections.singletonList(tempCredentials));
-            password = loadCredentials.iterator().next().getPassword();
-            value.setPassword(password);
-            if (password == null) {
-                setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
+            pair = readFromCredentialsProviderIfBlank(credProvider, credentialsIdentifier, username, password);
+            if (StringUtils.isEmpty(pair.getPassword())) {
+                Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
+                List<Credentials> loadCredentials = loadHelper.loadCredentials(Collections.singletonList(tempCredentials));
+                password = loadCredentials.iterator().next().getPassword();
+                value.setPassword(password);
+                if (password == null) {
+                    setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
+                }
+            } else {
+                getLogger().debugWithFormat("Inheriting credentials \"%s\" from workflow", credentialsIdentifier);
             }
         }
         pushCredentialsFlowVariable(credentialsIdentifier, username, password);
+    }
+
+    /** Username &amp; password pair ... just a pair. */
+    private static final class UserNameAndPasswordPair {
+        private final String m_username;
+        private final String m_password;
+
+        UserNameAndPasswordPair(final String username, final String password) {
+            m_username = username;
+            m_password = password;
+        }
+        String getPassword() {
+            return m_password;
+        }
+        public String getUsername() {
+            return m_username;
+        }
+
     }
 
 }
