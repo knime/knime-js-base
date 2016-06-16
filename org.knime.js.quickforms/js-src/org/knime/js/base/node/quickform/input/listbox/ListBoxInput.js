@@ -75,7 +75,8 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		input.attr('rows', '5');
 		input.attr('cols', '20');
 		input.attr("pattern", representation.regex);
-		input.width(400);
+		input.attr("class", "standard-sizing");
+		//input.width(400);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
 		qfdiv.append($('<br>'));

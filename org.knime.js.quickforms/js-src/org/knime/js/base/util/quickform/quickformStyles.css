@@ -31,9 +31,17 @@ dropdown {
 .label {
 	font-size: 14px;
 	font-weight: bold;
-	margin: 10px 0;
+	margin: 10px 0 2px 0;
 }
 .ui-widget {
 	font-family: inherit;
 	font-size: 1.0em;
+}
+
+.standard-sizing {
+	width: 100%;
+	min-width: 100px;
+	max-width: 400px;
+	box-sizing: border-box;
+	margin-bottom: 2px;
 }

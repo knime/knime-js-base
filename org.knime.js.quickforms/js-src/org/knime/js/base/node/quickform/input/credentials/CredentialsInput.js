@@ -73,7 +73,8 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 			qfdiv.append(user_label);
 			user_input = $('<input id="user_input" type="text">');
 			user_input.css("margin-bottom", "5px");
-			user_input.width(400);
+			user_input.attr("class", "standard-sizing");
+			//user_input.width(400);
 			var usernameValue = representation.currentValue.username;
 			user_input.val(usernameValue);
 			qfdiv.append(user_input);
@@ -83,7 +84,8 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		password_input = $('<input>');
 		password_input.attr('id', 'pw_input');
 		password_input.attr("type", "password");
-		password_input.width(400);
+		password_input.attr("class", "standard-sizing");
+		//password_input.width(400);
 		var passwordValue = representation.currentValue.password;
 		password_input.val(passwordValue);
 		var password_label = $('<label style="display:block;" for="pw_input">');

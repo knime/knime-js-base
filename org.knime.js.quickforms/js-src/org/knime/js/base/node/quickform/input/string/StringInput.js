@@ -66,7 +66,8 @@ org_knime_js_base_node_quickform_input_string = function() {
 		input = $('<input>');
 		input.attr("type", "text");
 		input.attr("pattern", representation.regex);
-		input.width(400);
+		input.attr("class", "standard-sizing");
+		//input.width(400);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
 		qfdiv.attr("title", representation.description);

@@ -105,6 +105,8 @@ org_knime_js_base_node_output_image = function() {
 				createViewbox(element, svgWidth, svgHeight, originalWidth, originalHeight);
 				element.style.overflow = "hidden";
 			}
+			element.style.width = svgWidth + "px";
+			element.style.height = svgHeight + "px";
 		} else {
 			var errorText = "Image format not supported: " + representation.imageFormat;
 			div.appendChild(document.createTextNode(errorText));
