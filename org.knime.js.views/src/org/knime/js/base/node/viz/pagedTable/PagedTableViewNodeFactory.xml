@@ -5,22 +5,82 @@
     <fullDescription>
         <intro>
             <p>Displays data in an HTML table view.</p>
-            <p>Note, this node is currently under development. Future versions of the node will have more functionality.</p> 
         </intro>
-        <option name="No. of rows to display">
-            Use this numerical value to restrict the number of rows used for this visualization.
-        </option>
-        <option name="Maximum table height in layout">
-        	Set the maximum height of the component when inside a layout. If the table is larger than this value, a scrollbar is displayed.
-        </option>
-        <option name="Extend frame to table height">
-        	Usually large tables are not fully displayed when inside a layout and require a scrollbar. Check this option to enlarge the frame to the full height of the table (ignores maximum table height).
-        </option>
-        <option name="Enable Number Formatter">If checked the options beneath will be applied to all columns of type <i>Number</i>.</option>
-        <option name="Decimal Places">If number formatter is enabled use this value to restrict the display of decimal places in the table view.</option>
+        <tab name="Options">
+        	<option name="Hide in wizard">
+        		If checked the view will be hidden in the wizard execution.
+        	</option>
+            <option name="No. of rows to display">
+    	        Use this numerical value to restrict the number of rows used for this visualization.
+        	</option>
+	        <option name="Title" optional="true">
+	        	An optional title to be displayed above the table. Leave blank if no title is desired.
+	        </option>
+	        <option name="Subtitle" optional="true">
+	        	An optional subtitle to be displayed above the table. Leave blank if no subtitle is desired.
+	        </option>
+	        <option name="Display row colors">
+	        	Enable or disable the display of row colors. Colors can be assigned e.g. with the Color Manager node and will be rendered as a colored square next to the row keys.
+	        </option>
+	        <option name="Display row keys">
+	        	Enable or disable the display of row keys. When enabled row keys will be rendered in a separate column.
+	        </option>
+	        <option name="Display row indices">
+	        	Enable or disable the display of row indices. When enabled row indices will be rendered in a separate column.
+	        </option>
+	        <option name="Display column headers">
+	        	Enable or disable the display of column headers. When disabled sorting on columns will not be functional.
+	        </option>
+	        <option name="Columns to display">
+	        	Select the columns to be included in the table view.
+	        </option>
+        </tab>
+        <tab name="Interactivity">
+        	<option name="Enable pagination">
+        		Enable or disable the pagination feature globally. When disabled the table is rendered whole on one page. When enabled use the options below to further refine the pagination settings.
+        	</option>
+        	<option name="Initial page size">
+        		Set the page size to be used on initial layout. A page size is defined as the number of rows the table displays on one page. If the page size change control is enabled the page length can be changed in the view.
+        	</option>
+        	<option name="Enable page size change control">
+        		Enable or disable the control to change the page size interactively in the view.
+        	</option>
+        	<option name="Selectable page sizes">
+        		Define a comma-separated list of allowed page sizes for the page size control.
+        	</option>
+        	<option name="Add 'All' option to sizes">
+        		When checked, an additional 'All' option will be available in the page size control.
+        	</option>
+        	<option name="Enable selection">
+        		If checked a separate column containing checkboxes is rendered in the view. The selection, when applied, will be represented in the output table as a new boolean column.
+        	</option>
+        	<option name="Selection column name">
+        		The name of the boolean column containing the selection.
+        	</option>
+        	<option name="Enable searching">
+        		Enable or disable the global search field.
+        	</option>
+        	<option name="Enable search for individual columns">
+        		Enable or disable search fields on each individual column.
+        	</option>
+        	<option name="Enable sorting on columns">
+        		Enable or disable the sorting functionality for each column.
+        	</option>
+        </tab>
+        <tab name="Formatters">
+        	<option name="Global date format">
+        		A global format, which is applied to all date/time cells. To format the string the framework Moment.js is used. For information on available format options and tokens please see the <a href="http://momentjs.com/docs/#/displaying/format/"> moment.js documentation</a>.
+        	</option>
+        	<option name="Enable global number format (double cells)">
+        		If checked the option beneath will be applied to all columns of type <i>Double</i>.
+        	</option>
+        	<option name="Decimal places">
+        		If number format is enabled use this value to restrict the display of decimal places for double columns in the table view.
+        	</option>
+        </tab>
     </fullDescription>
     <interactiveView name="JavaScript Table View">
-        Displays the data in a table view. The HTML table is drawn in chunks to free up processing time and allow for quick initial display of the data. 
+        Displays the data in a table view.
     </interactiveView>
     <ports>
         <inPort index="0" name="Input to display">
