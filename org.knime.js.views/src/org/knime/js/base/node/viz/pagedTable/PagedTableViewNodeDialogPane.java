@@ -156,7 +156,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalDateFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_DATE_FORMAT), "Global date format:", PREDEFINED_FORMATS, true);
-        m_enableGlobalNumberFormatCheckbox = new JCheckBox("Enable global number format");
+        m_enableGlobalNumberFormatCheckbox = new JCheckBox("Enable global number format (double cells)");
         m_enableGlobalNumberFormatCheckbox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {

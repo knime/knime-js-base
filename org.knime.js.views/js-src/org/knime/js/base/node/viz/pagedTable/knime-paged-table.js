@@ -125,11 +125,13 @@ knime_paged_table = function() {
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
-					colDef.render = function (data, type, full, meta) {
-						if (!$.isNumeric(data)) {
-							return data;
+					if (knimeTable.getKnimeColumnTypes()[i].indexOf('double') > -1) {
+						colDef.render = function(data, type, full, meta) {
+							if (!$.isNumeric(data)) {
+								return data;
+							}
+							return Number(data).toFixed(_representation.globalNumberFormatDecimals);
 						}
-						return Number(data).toFixed(_representation.globalNumberFormatDecimals);
 					}
 				}
 				if (colType == 'png') {
