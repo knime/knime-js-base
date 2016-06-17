@@ -35,13 +35,13 @@ knime_paged_table = function() {
 			knimeTable = new kt();
 			knimeTable.setDataTable(_representation.table);
 			
-			var wrapper = $('<div id="knimePagedTableContainer" style="margin: 10px">');
+			var wrapper = $('<div id="knimePagedTableContainer">');
 			body.append(wrapper);
 			if (_representation.title != null) {
-				wrapper.append('<h1 style="font: 24px sans-serif; margin: 0;">' + _representation.title + '</h1>')
+				wrapper.append('<h1>' + _representation.title + '</h1>')
 			}
 			if (_representation.subtitle != null) {
-				wrapper.append('<h2 style="font: 14px sans-serif; margin: 5px 0 15px 0;">' + _representation.subtitle + '</h2>')
+				wrapper.append('<h2>' + _representation.subtitle + '</h2>')
 			}
 			var table = $('<table id="knimePagedTable" class="table table-striped table-bordered" width="100%">');
 			wrapper.append(table);

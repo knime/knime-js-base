@@ -361,6 +361,10 @@
          <webDependency
                webResourceBundleID="moment_2_13">
          </webDependency>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.css"
+               type="CSS">
+         </importResource>
       </webResourceBundle>
    </extension>
    <extension

@@ -250,8 +250,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         gbcP.gridy++;
         gbcP.gridwidth = 2;
         pagingPanel.add(m_enableShowAllCheckBox, gbcP);
-        gbcP.gridy++;
-        pagingPanel.add(m_enableJumpToPageCheckBox, gbcP);
+        //gbcP.gridy++;
+        //pagingPanel.add(m_enableJumpToPageCheckBox, gbcP);
 
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBorder(new TitledBorder("Selection"));
