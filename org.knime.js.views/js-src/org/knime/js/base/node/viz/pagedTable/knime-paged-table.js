@@ -8,224 +8,234 @@ knime_paged_table = function() {
 	var selection = {};
 	
 	table_viewer.init = function(representation, value) {
-		$(document).ready(function() {
-			var body = $('body');
-			if (!representation.table) {
-				body.append("Error: No data available");
-				return;
+		if (!representation.table) {
+			body.append("Error: No data available");
+			return;
+		}
+		_representation = representation;
+		_value = value;
+
+		if (parent && parent.KnimePageLoader) {
+			drawTable();
+		} else {
+			$(document).ready(function() {
+				drawTable();
+			});
+		}
+	};
+	
+	drawTable = function() {
+		var body = $('body');
+		if (_representation.enableSelection && _value.selection) {
+			for (var i = 0; i < _value.selection.length; i++) {
+				selection[_value.selection[i]] = true;
 			}
-			_representation = representation;
-			_value = value;
-			if (representation.enableSelection && _value.selection) {
-				for (var i = 0; i < _value.selection.length; i++) {
-					selection[_value.selection[i]] = true;
-				}
+		}
+		try {
+			knimeTable = new kt();
+			knimeTable.setDataTable(_representation.table);
+			
+			var wrapper = $('<div id="knimePagedTableContainer" style="margin: 10px">');
+			body.append(wrapper);
+			if (_representation.title != null) {
+				wrapper.append('<h1>' + _representation.title + '</h1>')
 			}
-			try {
-				knimeTable = new kt();
-				knimeTable.setDataTable(representation.table);
-				
-				var wrapper = $('<div id="knimePagedTableContainer" style="margin: 10px">');
-				body.append(wrapper);
-				if (representation.title != null) {
-					wrapper.append('<h1>' + representation.title + '</h1>')
-				}
-				if (representation.subtitle != null) {
-					wrapper.append('<h2>' + representation.subtitle + '</h2>')
-				}
-				var table = $('<table id="knimePagedTable" class="table table-striped table-bordered" width="100%">');
-				wrapper.append(table);
-				if (representation.enableColumnSearching) {
-					$('#knimePagedTable').append('<tfoot><tr></tr></tfoot>');
-					var footerRow = $('#knimePagedTable tfoot tr');
-					if (_representation.enableSelection) {
-						footerRow.append('<th></th>');
-					}
-					if (_representation.displayRowIndex) {
-						footerRow.append('<th></th>');						
-					}
-					if (_representation.displayRowColors || _representation.displayRowIds) {
-						footerRow.append('<th></th>');
-					}
-					for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
-						if (isColumnSearchable(knimeTable.getColumnTypes()[i])) {
-							footerRow.append('<th>' + knimeTable.getColumnNames()[i] + '</th>')
-						} else {
-							footerRow.append('<th></th>');
-						}
-					}
-					
-					$('#knimePagedTable tfoot th').each(function() {
-				        var title = $(this).text();
-				        if (title == '') {
-				        	return;
-				        }
-				        $(this).html('<input type="text" placeholder="Search '+title+'" />' );
-				    });
-				}
-				
-				var colArray = [];
-				var colDefs = [];
-				if (representation.enableSelection) {
-					var all = _value.selectAll;
-					colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox"' + (all ? ' checked' : '')  + ' />'})
-					colDefs.push({
-						'targets': 0,
-						'searchable':false,
-						'orderable':false,
-						'className': 'dt-body-center',
-						'render': function (data, type, full, meta) {
-							var selected = selection[data] ? !all : all;
-							setTimeout(function(){
-								var el = $('#checkbox-select-all').get(0);
-								if (all && selection[data] && el && ('indeterminate' in el)) {
-									el.indeterminate = true;
-								}
-							}, 0);
-							return '<input type="checkbox" name="id[]"'
-								+ (selected ? ' checked' : '')
-								+' value="' + $('<div/>').text(data).html() + '">';
-						}
-					});
+			if (_representation.subtitle != null) {
+				wrapper.append('<h2>' + _representation.subtitle + '</h2>')
+			}
+			var table = $('<table id="knimePagedTable" class="table table-striped table-bordered" width="100%">');
+			wrapper.append(table);
+			if (_representation.enableColumnSearching) {
+				$('#knimePagedTable').append('<tfoot><tr></tr></tfoot>');
+				var footerRow = $('#knimePagedTable tfoot tr');
+				if (_representation.enableSelection) {
+					footerRow.append('<th></th>');
 				}
 				if (_representation.displayRowIndex) {
-					colArray.push({
-						'title': "Row Index",
-						'searchable': false
-					})
+					footerRow.append('<th></th>');						
 				}
-				if (representation.displayRowIds || representation.displayRowColors) {
-					var title = representation.displayRowIds ? 'RowID' : '';
-					var orderable = representation.displayRowIds;
-					colArray.push({
-						'title': title, 
-						'orderable' : orderable
-					});
+				if (_representation.displayRowColors || _representation.displayRowIds) {
+					footerRow.append('<th></th>');
 				}
 				for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
-					var colType = knimeTable.getColumnTypes()[i];
-					var colDef = {
-						'title': knimeTable.getColumnNames()[i],
-						'orderable' : isColumnSortable(colType),
-						'searchable': isColumnSearchable(colType)
+					if (isColumnSearchable(knimeTable.getColumnTypes()[i])) {
+						footerRow.append('<th>' + knimeTable.getColumnNames()[i] + '</th>')
+					} else {
+						footerRow.append('<th></th>');
 					}
-					if (colType == 'dateTime' && representation.globalDateFormat) {
-						colDef.render = function (data, type, full, meta) {
-							return moment(data).format(representation.globalDateFormat);
-						}
-					}
-					if (colType == 'number' && representation.enableGlobalNumberFormat) {
-						colDef.render = function (data, type, full, meta) {
-							if (!$.isNumeric(data)) {
-								return data;
-							}
-							return Number(data).toFixed(representation.globalNumberFormatDecimals);
-						}
-					}
-					if (colType == 'png') {
-						colDef.render = function (data, type, full, meta) {
-							return '<img src="data:image/png;base64,' + data + '" />';
-						}
-					}
-					colArray.push(colDef);
-					
 				}
-				var pageLength = representation.initialPageSize;
-				if (value.pageSize) {
-					pageLength = value.pageSize;
-				}
-				var pageLengths = representation.allowedPageSizes;
-				if (representation.pageSizeShowAll) {
-					var first = pageLengths.slice(0);
-					first.push(-1);
-					var second = pageLengths.slice(0);
-					second.push("All");
-					pageLengths = [first, second];
-				}
-				var order = [];
-				if (_value.currentOrder) {
-					order = _value.currentOrder;
-				}
-				dataTable = $('#knimePagedTable').DataTable( {
-					'columns': colArray,
-					'columnDefs': colDefs,
-					'order': order,
-					'paging': representation.enablePaging,
-					'pageLength': pageLength,
-					'lengthMenu': pageLengths,
-					'searching': representation.enableSearching,
-					'ordering': representation.enableSorting,
-					'processing': true,
-					'deferRender': !representation.enableSelection,
-					'data': getDataSlice(0, representation.initialPageSize),
-					'fnDrawCallback': function() {
-						if (!_representation.displayColumnHeaders)
-							$("#knimePagedTable thead").remove();
-					  	}
-				});
 				
-				$('#knimePagedTable_paginate').css('display', 'none');
-
-				$('#knimePagedTable_info').html(
-					'<strong>Loading data</strong> - Displaying '
-					+ 1 + ' to ' + Math.min(knimeTable.getNumRows(), representation.initialPageSize)
-					+ ' of ' + knimeTable.getNumRows() + ' entries.');
-				
-				if (representation.enableSelection) {
-					// Handle click on "Select all" control
-					$('#checkbox-select-all').on('click', function() {
-						// Check/uncheck all checkboxes in the table
-						var rows = dataTable.rows({ 'search': 'applied' }).nodes();
-						$('input[type="checkbox"]', rows).prop('checked', this.checked);
-						_value.selectAll = this.checked ? true : false;
-						selection = {};
-					});
-
-					// Handle click on checkbox to set state of "Select all" control
-					$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
-						var el = $('#checkbox-select-all').get(0);
-						var selected = el.checked ? !this.checked : this.checked;
-						// we could call delete _value.selection[this.value], but the call is very slow 
-						// and we can assume that a user doesn't click on a lot of checkboxes
-						selection[this.value] = selected;
-						// If checkbox is not checked
-						if(!this.checked){
-							// If "Select all" control is checked and has 'indeterminate' property
-							if(el && el.checked && ('indeterminate' in el)){
-								// Set visual state of "Select all" control 
-								// as 'indeterminate'
+				$('#knimePagedTable tfoot th').each(function() {
+			        var title = $(this).text();
+			        if (title == '') {
+			        	return;
+			        }
+			        $(this).html('<input type="text" placeholder="Search '+title+'" />' );
+			    });
+			}
+			
+			var colArray = [];
+			var colDefs = [];
+			if (_representation.enableSelection) {
+				var all = _value.selectAll;
+				colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox"' + (all ? ' checked' : '')  + ' />'})
+				colDefs.push({
+					'targets': 0,
+					'searchable':false,
+					'orderable':false,
+					'className': 'dt-body-center',
+					'render': function (data, type, full, meta) {
+						var selected = selection[data] ? !all : all;
+						setTimeout(function(){
+							var el = $('#checkbox-select-all').get(0);
+							if (all && selection[data] && el && ('indeterminate' in el)) {
 								el.indeterminate = true;
 							}
-						}
-					});
-				}
-				
-				if (representation.enableColumnSearching) {
-					dataTable.columns().every(function () {
-				        var that = this;
-				        $('input', this.footer()).on('keyup change', function () {
-				            if (that.search() !== this.value) {
-				                that.search(this.value).draw();
-				            }
-				        });
-				    });
-				}
-				
-				//load all data
-				setTimeout(function() {
-					var initialChunkSize = 100;
-					addDataToTable(representation.initialPageSize, initialChunkSize);
-				}, 0);
-
-			} catch (err) {
-				if (err.stack) {
-					alert(err.stack);
-				} else {
-					alert (err);
-				}
+						}, 0);
+						return '<input type="checkbox" name="id[]"'
+							+ (selected ? ' checked' : '')
+							+' value="' + $('<div/>').text(data).html() + '">';
+					}
+				});
 			}
-		});
-	};
+			if (_representation.displayRowIndex) {
+				colArray.push({
+					'title': "Row Index",
+					'searchable': false
+				})
+			}
+			if (_representation.displayRowIds || _representation.displayRowColors) {
+				var title = _representation.displayRowIds ? 'RowID' : '';
+				var orderable = _representation.displayRowIds;
+				colArray.push({
+					'title': title, 
+					'orderable' : orderable
+				});
+			}
+			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
+				var colType = knimeTable.getColumnTypes()[i];
+				var colDef = {
+					'title': knimeTable.getColumnNames()[i],
+					'orderable' : isColumnSortable(colType),
+					'searchable': isColumnSearchable(colType)
+				}
+				if (colType == 'dateTime' && _representation.globalDateFormat) {
+					colDef.render = function (data, type, full, meta) {
+						return moment(data).format(_representation.globalDateFormat);
+					}
+				}
+				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
+					colDef.render = function (data, type, full, meta) {
+						if (!$.isNumeric(data)) {
+							return data;
+						}
+						return Number(data).toFixed(_representation.globalNumberFormatDecimals);
+					}
+				}
+				if (colType == 'png') {
+					colDef.render = function (data, type, full, meta) {
+						return '<img src="data:image/png;base64,' + data + '" />';
+					}
+				}
+				colArray.push(colDef);
+				
+			}
+			var pageLength = _representation.initialPageSize;
+			if (_value.pageSize) {
+				pageLength = _value.pageSize;
+			}
+			var pageLengths = _representation.allowedPageSizes;
+			if (_representation.pageSizeShowAll) {
+				var first = pageLengths.slice(0);
+				first.push(-1);
+				var second = pageLengths.slice(0);
+				second.push("All");
+				pageLengths = [first, second];
+			}
+			var order = [];
+			if (_value.currentOrder) {
+				order = _value.currentOrder;
+			}
+			dataTable = $('#knimePagedTable').DataTable( {
+				'columns': colArray,
+				'columnDefs': colDefs,
+				'order': order,
+				'paging': _representation.enablePaging,
+				'pageLength': pageLength,
+				'lengthMenu': pageLengths,
+				'searching': _representation.enableSearching,
+				'ordering': _representation.enableSorting,
+				'processing': true,
+				'deferRender': !_representation.enableSelection,
+				'data': getDataSlice(0, _representation.initialPageSize),
+				'fnDrawCallback': function() {
+					if (!_representation.displayColumnHeaders)
+						$("#knimePagedTable thead").remove();
+				  	}
+			});
+			
+			$('#knimePagedTable_paginate').css('display', 'none');
+
+			$('#knimePagedTable_info').html(
+				'<strong>Loading data</strong> - Displaying '
+				+ 1 + ' to ' + Math.min(knimeTable.getNumRows(), _representation.initialPageSize)
+				+ ' of ' + knimeTable.getNumRows() + ' entries.');
+			
+			if (_representation.enableSelection) {
+				// Handle click on "Select all" control
+				$('#checkbox-select-all').on('click', function() {
+					// Check/uncheck all checkboxes in the table
+					var rows = dataTable.rows({ 'search': 'applied' }).nodes();
+					$('input[type="checkbox"]', rows).prop('checked', this.checked);
+					_value.selectAll = this.checked ? true : false;
+					selection = {};
+				});
+
+				// Handle click on checkbox to set state of "Select all" control
+				$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
+					var el = $('#checkbox-select-all').get(0);
+					var selected = el.checked ? !this.checked : this.checked;
+					// we could call delete _value.selection[this.value], but the call is very slow 
+					// and we can assume that a user doesn't click on a lot of checkboxes
+					selection[this.value] = selected;
+					// If checkbox is not checked
+					if(!this.checked){
+						// If "Select all" control is checked and has 'indeterminate' property
+						if(el && el.checked && ('indeterminate' in el)){
+							// Set visual state of "Select all" control 
+							// as 'indeterminate'
+							el.indeterminate = true;
+						}
+					}
+				});
+			}
+			
+			if (_representation.enableColumnSearching) {
+				dataTable.columns().every(function () {
+			        var that = this;
+			        $('input', this.footer()).on('keyup change', function () {
+			            if (that.search() !== this.value) {
+			                that.search(this.value).draw();
+			            }
+			        });
+			    });
+			}
+			
+			//load all data
+			setTimeout(function() {
+				var initialChunkSize = 100;
+				addDataToTable(_representation.initialPageSize, initialChunkSize);
+			}, 0);
+
+		} catch (err) {
+			if (err.stack) {
+				alert(err.stack);
+			} else {
+				alert (err);
+			}
+		}
+		
+	}
 	
 	addDataToTable = function(startIndex, chunkSize) {
 		var startTime = new Date().getTime();
@@ -328,6 +338,9 @@ knime_paged_table = function() {
 	};
 	
 	table_viewer.getComponentValue = function() {
+		if (!_value) {
+			return null;
+		}
 		_value.selection = [];
 		for (var id in selection) {
 			if (selection[id]) {
