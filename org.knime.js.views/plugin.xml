@@ -8,11 +8,6 @@
             >
       </node>
 -->
-      <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.table.WebTableViewNodeFactory"
-            >
-      </node>
       <!-- <node
             factory-class="org.knime.base.node.preproc.select.value.InteractiveValueSelectNodeFactory"
             >
