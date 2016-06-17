@@ -138,11 +138,13 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
             }
         });
 
-        m_outputTypeBox = new JCheckBox("Output selected type as flow variable");
+        m_outputTypeBox = new JCheckBox("Output selected item type");
         m_multipleselectCheckBox = new JCheckBox("Allow multiple selection");
         m_rootDirField = new JTextField(DEF_TEXTFIELD_WIDTH);
         FileChooserValidator dirVal = new FileChooserValidator(false, true, false, null);
-        m_rootDirChooserButton = createBrowseButton(m_rootDirField, dirVal, null);
+        String title = "Select directory";
+        String description = "Please select the root directory";
+        m_rootDirChooserButton = createBrowseButton(m_rootDirField, dirVal, null, title, description);
 
         m_useDefaultMountIdBox = new JCheckBox("Use default mount id of target");
         m_useDefaultMountIdBox.addChangeListener(new ChangeListener() {
@@ -157,7 +159,9 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
         m_defaultPathField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_validator = new FileChooserValidator(m_config.getSelectWorkflows(),
             m_config.getSelectDirectories(), m_config.getSelectDataFiles(), m_config.getFileTypes());
-        m_fileChooserButton = createBrowseButton(m_defaultPathField, m_validator, this);
+        title = "Select file";
+        description = "Please select the default file";
+        m_fileChooserButton = createBrowseButton(m_defaultPathField, m_validator, this, title, description);
 
         m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_validExtensionsField.addFocusListener(new FocusListener() {
@@ -211,7 +215,7 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
         addTripelToPanel("Default File:", m_defaultPathField, m_fileChooserButton, panelWithGBLayout, gbc);
     }
 
-    static JButton createBrowseButton(final JTextField textField, final FileChooserValidator validator, final FileStoreContainer fileStoreContainer) {
+    static JButton createBrowseButton(final JTextField textField, final FileChooserValidator validator, final FileStoreContainer fileStoreContainer, final String title, final String description) {
         final JButton browseButton = new JButton("Browse");
         browseButton.addActionListener(new ActionListener() {
             /**
@@ -247,8 +251,8 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
                                 new SpaceResourceSelectionDialog(Display
                                         .getDefault().getActiveShell(),
                                         mountIDs.toArray(new String[0]), initialSelection);
-                        dialog.setTitle("Select file");
-                        dialog.setDescription("Please select the default file.");
+                        dialog.setTitle(title);
+                        dialog.setDescription(description);
                         dialog.setValidator(validator);
 
                         if (Window.OK == dialog.open()) {

@@ -91,7 +91,9 @@ public class FileChooserQuickFormDialogPanel extends QuickFormDialogPanel<FileCh
         if (items != null && items.length > 0) {
             m_defaultPathField.setText(items[0].getPath());
         }
-        m_fileChooserButton = FileChooserQuickFormNodeDialog.createBrowseButton(m_defaultPathField, m_validator, this);
+        String title = "Select file";
+        String description = "Please select the file to override the default";
+        m_fileChooserButton = FileChooserQuickFormNodeDialog.createBrowseButton(m_defaultPathField, m_validator, this, title, description);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 0, 0, 0);

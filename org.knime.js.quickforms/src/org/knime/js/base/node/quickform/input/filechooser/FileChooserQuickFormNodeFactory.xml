@@ -2,45 +2,67 @@
 <knimeNode icon="./quickform_file.png" type="QuickForm" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
 	<name>File Chooser</name>
 	<shortDescription>
-	   Quick Form node that allows choosing a file or directory from a local or remote mountpoint and exposing that file using a flow variable.
+	   Quickform node that allows choosing single or multiple files, workflows or directories from a remote mountpoint.
 	</shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
-                Quick Form node that allows uploading a file and exposing 
-                that uploaded file using a flow variable. The value can also be
-                controlled from a quick form (web port).
+                Quickform node that allows choosing single or multiple files, workflows or directories from a remote mountpoint and exposing those items in a data table. The first selected item is exposed as a flow variable as well.
             </p>
 		</intro>
-		<option name="Label">A descriptive label that will be shown in, for instance the web port.</option>
-		<option name="Description">Some lines of description that will be shown in the remote control
-			form, for instance by means of a tooltip.</option>
+		<option name="Label">
+			A descriptive label that will be shown in, for instance the WebPortal.
+		</option>
+		<option name="Description">
+			Some lines of description that will be shown in the remote control
+			form, for instance by means of a tooltip.
+		</option>
         <option name="Hide in Wizard">
-          If the setting should be hidden in the wizard execution.
+         	If the setting should be hidden in the wizard execution.
         </option>
         <option name="Hide in Dialog">
-          If the setting should be hidden in the sub node dialog.
+        	If the setting should be hidden in the wrapped metanode dialog.
         </option>
-		<option name="Variable Name">Variable identifier.</option>
-		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
+		<option name="Variable Name">
+			Variable and table column identifier.
+		</option>
+		<option name="Parameter Name">
+			Parameter identifier for external parameterization (e.g. batch execution).
+		</option>
+		<option name="Selection Types">
+			Set the items that are going to be available for selection.
+		</option>
+		<option name="Output selected item type">
+			Enabling this option will append a second column to the output table containing the type of the selected items. Also a second flow variable containing the type of the first selected item is created. Possible values are DATA, WORKFLOW and DIRECTORY.
+		</option>
 		<option name="Valid File Extensions">
           A list of file extensions that is used as filter in the 
           file browser (not only the one in the "Default File" option but also
           in a remote file browser), e.g. ".csv,.csv.gz" will filter for
           files ending with ".csv" or ".csv.gz". Leave empty to accept any file.
         </option>
-        <option name="Default File">
-          The file that will be used during design time, i.e. when no file
-          is uploaded by means of the, e.g. KNIME WebPortal.
+        <option name="Allow multiple selection">
+        	Option to enable or disable the selection of multiple items. If unchecked only one item can be selected.
         </option>
-        <option name="Disable output, if file does not exist">
-          If enabled, output port will be disabled, if the provided file does not exist.  
+        <option name="Use default mount id of target">
+        	Setting this option will query the mount id of the server the node is running on for creating absolute paths to the selected items. If unchecked a custom mount id can be provided.
+        </option>
+        <option name="Custom mount id">
+        	A custom mount id to be included in the absolute paths to the selected items.
+        </option>
+        <option name="Root Path">
+        	An optional root path to only make items contained within this given directory available for selection.
+        </option>
+        <option name="Default File">
+        	The default file to be output during configure and design time. If the path to the default file is present remotely as well, the file will be preselected in the view.
         </option>
 	</fullDescription>
-	<interactiveView name="File Upload">View containing the file upload component.</interactiveView>
+	<interactiveView name="File Chooser">
+		View containing the file chooser component. View selection is only possible remotely.
+	</interactiveView>
 	<ports>
-		<outPort index="0" name="Flow Variable Output">
-          Variable output the file path represented as variable.
+		<outPort index="0" name="Selected Files">
+          	Data table containing the selected files and types.
         </outPort>
 	</ports>
 </knimeNode>
