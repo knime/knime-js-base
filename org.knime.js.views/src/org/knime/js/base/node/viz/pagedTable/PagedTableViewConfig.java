@@ -76,6 +76,10 @@ public class PagedTableViewConfig {
     private final static int DEFAULT_INITIAL_PAGE_SIZE = 10;
     private int m_initialPageSize = DEFAULT_INITIAL_PAGE_SIZE;
 
+    final static String CFG_ENABLE_PAGE_SIZE_CHANGE = "enablePageSizeChange";
+    private final static boolean DEFAULT_ENABLE_PAGE_SIZE_CHANGE = true;
+    private boolean m_enablePageSizeChange = DEFAULT_ENABLE_PAGE_SIZE_CHANGE;
+
     final static String CFG_PAGE_SIZES = "allowedPageSizes";
     private final static int[] DEFAULT_PAGE_SIZES = new int[]{10, 25, 50, 100};
     private int[] m_allowedPageSizes = DEFAULT_PAGE_SIZES;
@@ -203,6 +207,20 @@ public class PagedTableViewConfig {
      */
     public void setIntialPageSize(final int intialPageSize) {
         m_initialPageSize = intialPageSize;
+    }
+
+    /**
+     * @return the enablePageSizeChange
+     */
+    public boolean getEnablePageSizeChange() {
+        return m_enablePageSizeChange;
+    }
+
+    /**
+     * @param enablePageSizeChange the enablePageSizeChange to set
+     */
+    public void setEnablePageSizeChange(final boolean enablePageSizeChange) {
+        m_enablePageSizeChange = enablePageSizeChange;
     }
 
     /**
@@ -465,6 +483,7 @@ public class PagedTableViewConfig {
         settings.addInt(CFG_MAX_ROWS, m_maxRows);
         settings.addBoolean(CFG_ENABLE_PAGING, m_enablePaging);
         settings.addInt(CFG_INITIAL_PAGE_SIZE, m_initialPageSize);
+        settings.addBoolean(CFG_ENABLE_PAGE_SIZE_CHANGE, m_enablePageSizeChange);
         settings.addIntArray(CFG_PAGE_SIZES, m_allowedPageSizes);
         settings.addBoolean(CFG_PAGE_SIZE_SHOW_ALL, m_pageSizeShowAll);
         settings.addBoolean(CFG_ENABLE_JUMP_TO_PAGE, m_enableJumpToPage);
@@ -494,6 +513,7 @@ public class PagedTableViewConfig {
         m_maxRows = settings.getInt(CFG_MAX_ROWS);
         m_enablePaging = settings.getBoolean(CFG_ENABLE_PAGING);
         m_initialPageSize = settings.getInt(CFG_INITIAL_PAGE_SIZE);
+        m_enablePageSizeChange = settings.getBoolean(CFG_ENABLE_PAGE_SIZE_CHANGE);
         m_allowedPageSizes = settings.getIntArray(CFG_PAGE_SIZES);
         m_pageSizeShowAll = settings.getBoolean(CFG_PAGE_SIZE_SHOW_ALL);
         m_enableJumpToPage = settings.getBoolean(CFG_ENABLE_JUMP_TO_PAGE);
@@ -523,6 +543,7 @@ public class PagedTableViewConfig {
         m_maxRows = settings.getInt(CFG_MAX_ROWS, DEFAULT_MAX_ROWS);
         m_enablePaging = settings.getBoolean(CFG_ENABLE_PAGING, DEFAULT_ENABLE_PAGING);
         m_initialPageSize = settings.getInt(CFG_INITIAL_PAGE_SIZE, DEFAULT_INITIAL_PAGE_SIZE);
+        m_enablePageSizeChange = settings.getBoolean(CFG_ENABLE_PAGE_SIZE_CHANGE, DEFAULT_ENABLE_PAGE_SIZE_CHANGE);
         m_allowedPageSizes = settings.getIntArray(CFG_PAGE_SIZES, DEFAULT_PAGE_SIZES);
         m_pageSizeShowAll = settings.getBoolean(CFG_PAGE_SIZE_SHOW_ALL, DEFAULT_PAGE_SIZE_SHOW_ALL);
         m_enableJumpToPage = settings.getBoolean(CFG_ENABLE_JUMP_TO_PAGE, DEFAULT_ENABLE_JUMP_TO_PAGE);

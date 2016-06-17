@@ -71,6 +71,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private JSONDataTable m_table;
     private boolean m_enablePaging;
     private int m_initialPageSize;
+    private boolean m_enablePageSizeChange;
     private int[] m_allowedPageSizes;
     private boolean m_pageSizeShowAll;
     private boolean m_enableJumpToPage;
@@ -140,6 +141,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
      */
     public void setInitialPageSize(final int initialPageSize) {
         m_initialPageSize = initialPageSize;
+    }
+
+    /**
+     * @return the enablePageSizeChange
+     */
+    public boolean getEnablePageSizeChange() {
+        return m_enablePageSizeChange;
+    }
+
+    /**
+     * @param enablePageSizeChange the enablePageSizeChange to set
+     */
+    public void setEnablePageSizeChange(final boolean enablePageSizeChange) {
+        m_enablePageSizeChange = enablePageSizeChange;
     }
 
     /**
@@ -375,6 +390,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         // save everything but table
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_PAGING, m_enablePaging);
         settings.addInt(PagedTableViewConfig.CFG_INITIAL_PAGE_SIZE, m_initialPageSize);
+        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_PAGE_SIZE_CHANGE, m_enablePageSizeChange);
         settings.addIntArray(PagedTableViewConfig.CFG_PAGE_SIZES, m_allowedPageSizes);
         settings.addBoolean(PagedTableViewConfig.CFG_PAGE_SIZE_SHOW_ALL, m_pageSizeShowAll);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_JUMP_TO_PAGE, m_enableJumpToPage);
@@ -402,6 +418,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         // load everything but table
         m_enablePaging = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_PAGING);
         m_initialPageSize = settings.getInt(PagedTableViewConfig.CFG_INITIAL_PAGE_SIZE);
+        m_enablePageSizeChange = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_PAGE_SIZE_CHANGE);
         m_allowedPageSizes = settings.getIntArray(PagedTableViewConfig.CFG_PAGE_SIZES);
         m_pageSizeShowAll = settings.getBoolean(PagedTableViewConfig.CFG_PAGE_SIZE_SHOW_ALL);
         m_enableJumpToPage = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_JUMP_TO_PAGE);
@@ -439,6 +456,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_table, other.m_table)
                 .append(m_enablePaging, other.m_enablePaging)
                 .append(m_initialPageSize, other.m_initialPageSize)
+                .append(m_enablePageSizeChange, other.m_enablePageSizeChange)
                 .append(m_allowedPageSizes, other.m_allowedPageSizes)
                 .append(m_pageSizeShowAll, other.m_pageSizeShowAll)
                 .append(m_enableJumpToPage, other.m_enableJumpToPage)
@@ -467,6 +485,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_table)
                 .append(m_enablePaging)
                 .append(m_initialPageSize)
+                .append(m_enablePageSizeChange)
                 .append(m_allowedPageSizes)
                 .append(m_pageSizeShowAll)
                 .append(m_enableJumpToPage)

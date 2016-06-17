@@ -95,6 +95,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JSpinner m_maxRowsSpinner;
     private final JCheckBox m_enablePagingCheckBox;
     private final JSpinner m_initialPageSizeSpinner;
+    private final JCheckBox m_enablePageSizeChangeCheckBox;
     private final JTextField m_allowedPageSizesField;
     private final JCheckBox m_enableShowAllCheckBox;
     private final JCheckBox m_enableJumpToPageCheckBox;
@@ -125,6 +126,14 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
             }
         });
         m_initialPageSizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
+        m_enablePageSizeChangeCheckBox = new JCheckBox("Enable page size change control");
+        m_enablePageSizeChangeCheckBox.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enablePagingFields();
+            }
+        });
         m_allowedPageSizesField = new JTextField(20);
         m_enableShowAllCheckBox = new JCheckBox("Add \"All\" option to page sizes");
         m_enableJumpToPageCheckBox = new JCheckBox("Display field to jump to a page directly");
@@ -243,6 +252,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         pagingPanel.add(m_initialPageSizeSpinner, gbcP);
         gbcP.gridx = 0;
         gbcP.gridy++;
+        pagingPanel.add(m_enablePageSizeChangeCheckBox, gbcP);
+        gbcP.gridx = 0;
+        gbcP.gridy++;
         pagingPanel.add(new JLabel("Selectable page sizes: "), gbcP);
         gbcP.gridx++;
         pagingPanel.add(m_allowedPageSizesField, gbcP);
@@ -336,6 +348,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_maxRowsSpinner.setValue(config.getMaxRows());
         m_enablePagingCheckBox.setSelected(config.getEnablePaging());
         m_initialPageSizeSpinner.setValue(config.getIntialPageSize());
+        m_enablePageSizeChangeCheckBox.setSelected(config.getEnablePageSizeChange());
         m_allowedPageSizesField.setText(getAllowedPageSizesString(config.getAllowedPageSizes()));
         m_enableShowAllCheckBox.setSelected(config.getPageSizeShowAll());
         m_enableJumpToPageCheckBox.setSelected(config.getEnableJumpToPage());
@@ -370,6 +383,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
         config.setEnablePaging(m_enablePagingCheckBox.isSelected());
         config.setIntialPageSize((Integer)m_initialPageSizeSpinner.getValue());
+        config.setEnablePageSizeChange(m_enablePageSizeChangeCheckBox.isSelected());
         config.setAllowedPageSizes(getAllowedPageSizes());
         config.setPageSizeShowAll(m_enableShowAllCheckBox.isSelected());
         config.setEnableJumpToPage(m_enableJumpToPageCheckBox.isSelected());
@@ -422,11 +436,13 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     }
 
     private void enablePagingFields() {
-        boolean enable = m_enablePagingCheckBox.isSelected();
-        m_initialPageSizeSpinner.setEnabled(enable);
-        m_allowedPageSizesField.setEnabled(enable);
-        m_enableShowAllCheckBox.setEnabled(enable);
-        m_enableJumpToPageCheckBox.setEnabled(enable);
+        boolean enableGlobal = m_enablePagingCheckBox.isSelected();
+        boolean enableSizeChange = m_enablePageSizeChangeCheckBox.isSelected();
+        m_initialPageSizeSpinner.setEnabled(enableGlobal);
+        m_allowedPageSizesField.setEnabled(enableGlobal && enableSizeChange);
+        m_enableShowAllCheckBox.setEnabled(enableGlobal && enableSizeChange);
+        m_enableJumpToPageCheckBox.setEnabled(enableGlobal);
+
     }
 
     private void enableSelectionFields() {

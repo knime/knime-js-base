@@ -276,6 +276,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
             viewRepresentation.setEnablePaging(m_config.getEnablePaging());
             viewRepresentation.setInitialPageSize(m_config.getIntialPageSize());
+            viewRepresentation.setEnablePageSizeChange(m_config.getEnablePageSizeChange());
             viewRepresentation.setAllowedPageSizes(m_config.getAllowedPageSizes());
             viewRepresentation.setPageSizeShowAll(m_config.getPageSizeShowAll());
             viewRepresentation.setEnableJumpToPage(m_config.getEnableJumpToPage());

@@ -165,6 +165,7 @@ knime_paged_table = function() {
 				'paging': _representation.enablePaging,
 				'pageLength': pageLength,
 				'lengthMenu': pageLengths,
+				'lengthChange': _representation.enablePageSizeChange,
 				'searching': _representation.enableSearching,
 				'ordering': _representation.enableSorting,
 				'processing': true,
