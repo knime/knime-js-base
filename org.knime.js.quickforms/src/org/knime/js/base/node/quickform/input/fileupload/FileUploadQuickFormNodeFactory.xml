@@ -8,20 +8,20 @@
 		<intro>
 			<p>
                 Quick Form node that allows uploading a file and exposing 
-                that uploaded file using a flow variable. The value can also be
-                controlled from a quick form (web port).
+                that uploaded file using a flow variable. The node view is available in the KNIME WebPortal.
             </p>
 		</intro>
-		<option name="Label">A descriptive label that will be shown in, for instance the web port.</option>
+		<option name="Label">A descriptive label that will be shown in, for instance the WebPortal.</option>
 		<option name="Description">Some lines of description that will be shown in the remote control
 			form, for instance by means of a tooltip.</option>
         <option name="Hide in Wizard">
-          If the setting should be hidden in the wizard execution.
+          If the setting should be hidden in the wizard and WebPortal execution.
         </option>
         <option name="Hide in Dialog">
-          If the setting should be hidden in the sub node dialog.
+          If the setting should be hidden in a surrounding wrapped metanode dialog.
         </option>
-		<option name="Variable Name">Variable identifier.</option>
+		<option name="Variable Name">Variable identifier. By default two variables are created, one with the file path and one with the file URL.<br/>
+			If the default file is defined by a URL only the URL variable will be created.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
 		<option name="Valid File Extensions">
           A list of file extensions that is used as filter in the 
@@ -31,10 +31,13 @@
         </option>
         <option name="Default File">
           The file that will be used during design time, i.e. when no file
-          is uploaded by means of the, e.g. KNIME WebPortal.
+          is uploaded by means of the, e.g. KNIME WebPortal.<br/>
+          It is possible to enter a URL here. This can be useful if a default file is to be addressed with 
+          the knime:// protocol or if the file is present on a remote server.
         </option>
         <option name="Disable output, if file does not exist">
-          If enabled, output port will be disabled, if the provided file does not exist.  
+          If enabled, output port will be disabled, if the provided file does not exist or cannot be accessed.<br/>
+          This option is helpful in the wizard (WebPortal) execution to keep this and subsequent nodes from failing during execution.
         </option>
 	</fullDescription>
 	<interactiveView name="File Upload">View containing the file upload component.</interactiveView>
