@@ -49,6 +49,7 @@
 package org.knime.js.base.node.quickform.input.fileupload;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -67,6 +68,7 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.util.FileUtil;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
 /**
@@ -102,30 +104,33 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     /** {@inheritDoc} */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        if (getConfig().getDisableOutput()) {
-            try {
-                getFileAndURL();
-            } catch (InvalidSettingsException e) {
+        try {
+            createAndPushFlowVariable(false);
+        } catch (InvalidSettingsException e) {
+            if (getConfig().getDisableOutput()) {
                 setWarningMessage(e.getMessage());
                 return new PortObjectSpec[]{InactiveBranchPortObjectSpec.INSTANCE};
+            } else {
+                throw e;
             }
         }
-        createAndPushFlowVariable();
         return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
     }
 
     /** {@inheritDoc} */
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        if (getConfig().getDisableOutput()) {
-            try {
-                getFileAndURL();
-            } catch (InvalidSettingsException e) {
+        try {
+            createAndPushFlowVariable();
+        } catch (InvalidSettingsException e) {
+            getRelevantValue().setPathValid(false);
+            if (getConfig().getDisableOutput()) {
                 setWarningMessage(e.getMessage());
                 return new PortObject[]{InactiveBranchPortObject.INSTANCE};
+            } else {
+                throw e;
             }
         }
-        createAndPushFlowVariable();
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
 
@@ -134,41 +139,63 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      */
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
+        createAndPushFlowVariable(true);
+    }
+
+    private void createAndPushFlowVariable(final boolean openStream) throws InvalidSettingsException {
         ValidationError error = validateViewValue(getRelevantValue());
         if (error != null) {
             throw new InvalidSettingsException(error.getError());
         }
-        Vector<String> fileValues = getFileAndURL();
+        Vector<String> fileValues = getFileAndURL(openStream);
         String varIdentifier = getConfig().getFlowVariableName();
-        pushFlowVariableString(varIdentifier, fileValues.get(0));
+        if (fileValues.get(0) != null) {
+            pushFlowVariableString(varIdentifier, fileValues.get(0));
+        }
         pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
     }
 
-    private Vector<String> getFileAndURL() throws InvalidSettingsException {
+    private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
         if (path == null || path.isEmpty()) {
-            throw new InvalidSettingsException("No file provided");
+            throw new InvalidSettingsException("No file or URL provided");
         }
 
-        File f = new File(path);
-        if (!f.exists()) {
-            StringBuilder b = new StringBuilder("No such file: \"");
-            b.append(f.getAbsolutePath()).append("\"");
-            throw new InvalidSettingsException(b.toString());
-        }
-
-        URL url;
-        try {
-            url = f.toURI().toURL();
-        } catch (MalformedURLException e) {
-            StringBuilder b = new StringBuilder("Unable to derive URL from ");
-            b.append("file: \"").append(f.getAbsolutePath()).append("\"");
-            b.append(" (file was set as part of quick form remote control)");
-            throw new InvalidSettingsException(b.toString(), e);
-        }
         Vector<String> vector = new Vector<String>();
-        vector.add(path);
-        vector.add(url.toString());
+        try {
+            URL url = new URL(path);
+            if (openStream) {
+                try (InputStream stream = FileUtil.openStreamWithTimeout(url)) {
+                    /* just testing if connection can be achieved */
+                } catch (Exception e) {
+                    StringBuilder b = new StringBuilder("Connection to given URL: \"");
+                    b.append(url.toString());
+                    b.append("\" could not be achieved. ");
+                    b.append(e.getMessage());
+                    throw new InvalidSettingsException(b.toString(), e);
+                }
+            }
+            vector.add(null);
+            vector.add(url.toString());
+        } catch (MalformedURLException ex) {
+            File f = new File(path);
+            if (!f.exists()) {
+                StringBuilder b = new StringBuilder("No such file: \"");
+                b.append(f.getAbsolutePath()).append("\"");
+                throw new InvalidSettingsException(b.toString());
+            }
+            URL url;
+            try {
+                url = f.toURI().toURL();
+            } catch (MalformedURLException e) {
+                StringBuilder b = new StringBuilder("Unable to derive URL from ");
+                b.append("file: \"").append(f.getAbsolutePath()).append("\"");
+                b.append(" (file was set as part of quick form remote control)");
+                throw new InvalidSettingsException(b.toString(), e);
+            }
+            vector.add(path);
+            vector.add(url.toString());
+        }
         return vector;
     }
 
@@ -176,16 +203,16 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final FileUploadQuickFormValue viewContent) {
+    public ValidationError validateViewValue(final FileUploadQuickFormValue viewValue) {
         // check for a valid file extension
         // no items in file types <=> any file type is valid
         if (getConfig().getFileTypes().length > 0) {
-            String ext = "." + FilenameUtils.getExtension(viewContent.getPath());
+            String ext = "." + FilenameUtils.getExtension(viewValue.getPath());
             if (!Arrays.asList(getConfig().getFileTypes()).contains(ext)) {
                 return new ValidationError("File extension " + ext + " is not valid");
             }
         }
-        return super.validateViewValue(viewContent);
+        return super.validateViewValue(viewValue);
     }
 
     /**

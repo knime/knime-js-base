@@ -109,7 +109,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		if (m_component) {
 			// get label component to check if uploaded file exists
 			var uLabel = m_component.getElementsByClassName('knime-upload-label')[0];
-			if (uLabel && uLabel.textContent.indexOf('Uploaded file') == 0) {
+			if (uLabel && uLabel.textContent.indexOf('<no file selected>') == -1) {
 				fileUpload.setValidationErrorMessage(null);
 				return true;
 			}

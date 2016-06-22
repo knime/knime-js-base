@@ -77,10 +77,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class FileUploadQuickFormValue extends JSONViewContent implements DialogNodeValue {
 
     private static final String CFG_PATH = "path";
-
     private static final String DEFAULT_PATH = "";
-
     private String m_path = DEFAULT_PATH;
+
+    private static final String CFG_PATH_VALID = "pathValid";
+    private static final boolean DEFAULT_PATH_VALID = true;
+    private boolean m_pathValid = DEFAULT_PATH_VALID;
 
     /**
      * @return the path
@@ -99,12 +101,29 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     }
 
     /**
+     * @return the pathValid
+     */
+    @JsonProperty("pathValid")
+    public boolean getPathValid() {
+        return m_pathValid;
+    }
+
+    /**
+     * @param pathValid the pathValid to set
+     */
+    @JsonProperty("pathValid")
+    public void setPathValid(final boolean pathValid) {
+        m_pathValid = pathValid;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_PATH, getPath());
+        settings.addBoolean(CFG_PATH_VALID, m_pathValid);
     }
 
     /**
@@ -114,6 +133,9 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         setPath(settings.getString(CFG_PATH));
+
+        //added with 3.2
+        setPathValid(settings.getBoolean(CFG_PATH_VALID, DEFAULT_PATH_VALID));
     }
 
     /**
@@ -123,6 +145,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setPath(settings.getString(CFG_PATH, DEFAULT_PATH));
+        setPathValid(settings.getBoolean(CFG_PATH, DEFAULT_PATH_VALID));
     }
 
     /**
@@ -143,6 +166,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(m_path)
+                .append(m_pathValid)
                 .toHashCode();
     }
 
@@ -163,6 +187,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
         FileUploadQuickFormValue other = (FileUploadQuickFormValue)obj;
         return new EqualsBuilder()
                 .append(m_path, other.m_path)
+                .append(m_pathValid, other.m_pathValid)
                 .isEquals();
     }
 
