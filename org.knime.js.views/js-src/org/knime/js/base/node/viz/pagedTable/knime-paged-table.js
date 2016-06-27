@@ -7,6 +7,19 @@ knime_paged_table = function() {
 	var dataTable = null;
 	var selection = {};
 	
+	//register neutral ordering method for clear selection button
+	$.fn.dataTable.Api.register( 'order.neutral()', function () {
+	    return this.iterator( 'table', function ( s ) {
+	        s.aaSorting.length = 0;
+	        s.aiDisplay.sort( function (a,b) {
+	            return a-b;
+	        } );
+	        s.aiDisplayMaster.sort( function (a,b) {
+	            return a-b;
+	        } );
+	    } );
+	});
+	
 	table_viewer.init = function(representation, value) {
 		if (!representation.table) {
 			body.append("Error: No data available");
@@ -158,6 +171,19 @@ knime_paged_table = function() {
 			if (_value.currentOrder) {
 				order = _value.currentOrder;
 			}
+			var buttons = [];
+			if (_representation.enableSorting && _representation.enableClearSortButton) {
+				var unsortButton = {
+						'text': "Clear Sorting",
+						'action': function (e, dt, node, config) {
+							dt.order.neutral();
+							dt.draw();
+						},
+						'enabled': (order.length > 0)
+				}
+				buttons.push(unsortButton);
+			}
+
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
 				'columnDefs': colDefs,
@@ -171,11 +197,22 @@ knime_paged_table = function() {
 				'processing': true,
 				'deferRender': !_representation.enableSelection,
 				'data': getDataSlice(0, _representation.initialPageSize),
+				'buttons': buttons,
 				'fnDrawCallback': function() {
 					if (!_representation.displayColumnHeaders)
 						$("#knimePagedTable thead").remove();
 				  	}
 			});
+			
+			//Clear sorting button placement and enable/disable on order change
+			if (_representation.enableSorting && _representation.enableClearSortButton) {
+				dataTable.buttons().container().appendTo('#knimePagedTable_wrapper .col-sm-6:eq(0)');
+				$('#knimePagedTable_length').css({'display': 'inline-block', 'margin-right': '10px'});
+				dataTable.on('order.dt', function () {
+					var order = dataTable.order();
+					dataTable.button(0).enable(order.length > 0);
+				});
+			}
 			
 			$('#knimePagedTable_paginate').css('display', 'none');
 

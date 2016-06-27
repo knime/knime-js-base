@@ -108,6 +108,10 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_DISPLAY_ROW_INDEX = false;
     private boolean m_displayRowIndex = DEFAULT_DISPLAY_ROW_INDEX;
 
+    final static String CFG_FIXED_HEADERS = "fixedHeaders";
+    private final static boolean DEFAULT_FIXED_HEADERS = false;
+    private boolean m_fixedHeaders = DEFAULT_FIXED_HEADERS;
+
     final static String CFG_TITLE = "title";
     private final static String DEFAULT_TITLE = "";
     private String m_title = DEFAULT_TITLE;
@@ -124,10 +128,6 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_ENABLE_SELECTION = false;
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
 
-    final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
-    final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Paged Table View)";
-    private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
-
     final static String CFG_ENABLE_SEARCHING = "enableSearching";
     private final static boolean DEFAULT_ENABLE_SEARCHING = true;
     private boolean m_enableSearching = DEFAULT_ENABLE_SEARCHING;
@@ -139,6 +139,14 @@ public class PagedTableViewConfig {
     final static String CFG_ENABLE_SORTING = "enableSorting";
     private final static boolean DEFAULT_ENABLE_SORTING = true;
     private boolean m_enableSorting = DEFAULT_ENABLE_SORTING;
+
+    final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
+    final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Paged Table View)";
+    private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
+
+    final static String CFG_ENABLE_CLEAR_SORT_BUTTON = "enableClearSortButton";
+    private final static boolean DEFAULT_ENABLE_CLEAR_SORT_BUTTON = false;
+    private boolean m_enableClearSortButton = DEFAULT_ENABLE_CLEAR_SORT_BUTTON;
 
     final static String CFG_GLOBAL_DATE_FORMAT = "globalDateFormat";
     final static String DEFAULT_GLOBAL_DATE_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_FORMATS.iterator().next();
@@ -322,6 +330,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the fixedHeaders
+     */
+    public boolean getFixedHeaders() {
+        return m_fixedHeaders;
+    }
+
+    /**
+     * @param fixedHeaders the fixedHeaders to set
+     */
+    public void setFixedHeaders(final boolean fixedHeaders) {
+        m_fixedHeaders = fixedHeaders;
+    }
+
+    /**
      * @return the title
      */
     public String getTitle() {
@@ -434,6 +456,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the enableClearSortButton
+     */
+    public boolean getEnableClearSortButton() {
+        return m_enableClearSortButton;
+    }
+
+    /**
+     * @param enableClearSortButton the enableClearSortButton to set
+     */
+    public void setEnableClearSortButton(final boolean enableClearSortButton) {
+        m_enableClearSortButton = enableClearSortButton;
+    }
+
+    /**
      * @return the globalDateFormat
      */
     public String getGlobalDateFormat() {
@@ -491,6 +527,7 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_DISPLAY_ROW_IDS, m_displayRowIds);
         settings.addBoolean(CFG_DISPLAY_COLUMN_HEADERS, m_displayColumnHeaders);
         settings.addBoolean(CFG_DISPLAY_ROW_INDEX, m_displayRowIndex);
+        settings.addBoolean(CFG_FIXED_HEADERS, m_fixedHeaders);
         settings.addString(CFG_TITLE, m_title);
         settings.addString(CFG_SUBTITLE, m_subtitle);
         m_columnFilterConfig.saveConfiguration(settings);
@@ -499,6 +536,7 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_ENABLE_SEARCHING, m_enableSearching);
         settings.addBoolean(CFG_ENABLE_COLUMN_SEARCHING, m_enableColumnSearching);
         settings.addBoolean(CFG_ENABLE_SORTING, m_enableSorting);
+        settings.addBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
         settings.addString(CFG_GLOBAL_DATE_FORMAT, m_globalDateFormat);
         settings.addBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
@@ -521,6 +559,7 @@ public class PagedTableViewConfig {
         m_displayRowIds = settings.getBoolean(CFG_DISPLAY_ROW_IDS);
         m_displayColumnHeaders = settings.getBoolean(CFG_DISPLAY_COLUMN_HEADERS);
         m_displayRowIndex = settings.getBoolean(CFG_DISPLAY_ROW_INDEX);
+        m_fixedHeaders = settings.getBoolean(CFG_FIXED_HEADERS);
         m_title = settings.getString(CFG_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInModel(settings);
@@ -529,6 +568,7 @@ public class PagedTableViewConfig {
         m_enableSearching = settings.getBoolean(CFG_ENABLE_SEARCHING);
         m_enableColumnSearching = settings.getBoolean(CFG_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(CFG_ENABLE_SORTING);
+        m_enableClearSortButton = settings.getBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON);
         m_globalDateFormat = settings.getString(CFG_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
@@ -551,6 +591,7 @@ public class PagedTableViewConfig {
         m_displayRowIds = settings.getBoolean(CFG_DISPLAY_ROW_IDS, DEFAULT_DISPLAY_ROW_IDS);
         m_displayColumnHeaders = settings.getBoolean(CFG_DISPLAY_COLUMN_HEADERS, DEFAULT_DISPLAY_COLUMN_HEADERS);
         m_displayRowIndex = settings.getBoolean(CFG_DISPLAY_ROW_INDEX, DEFAULT_DISPLAY_ROW_INDEX);
+        m_fixedHeaders = settings.getBoolean(CFG_FIXED_HEADERS, DEFAULT_FIXED_HEADERS);
         m_title = settings.getString(CFG_TITLE, DEFAULT_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInDialog(settings, spec);
@@ -559,6 +600,7 @@ public class PagedTableViewConfig {
         m_enableSearching = settings.getBoolean(CFG_ENABLE_SEARCHING, DEFAULT_ENABLE_SEARCHING);
         m_enableColumnSearching = settings.getBoolean(CFG_ENABLE_COLUMN_SEARCHING, DEFAULT_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(CFG_ENABLE_SORTING, DEFAULT_ENABLE_SORTING);
+        m_enableClearSortButton = settings.getBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON, DEFAULT_ENABLE_CLEAR_SORT_BUTTON);
         m_globalDateFormat = settings.getString(CFG_GLOBAL_DATE_FORMAT, DEFAULT_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, DEFAULT_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, DEFAULT_GLOBAL_NUMBER_FORMAT_DECIMALS);

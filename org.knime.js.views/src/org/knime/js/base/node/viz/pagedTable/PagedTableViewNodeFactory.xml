@@ -66,6 +66,9 @@
         	<option name="Enable sorting on columns">
         		Enable or disable the sorting functionality for each column.
         	</option>
+        	<option name="Enable 'Clear Sorting' button">
+        		When checked, a button is displayed above the table, to clear any sorting that is applied to the table and restore the row order to the initial state.
+        	</option>
         </tab>
         <tab name="Formatters">
         	<option name="Global date format">

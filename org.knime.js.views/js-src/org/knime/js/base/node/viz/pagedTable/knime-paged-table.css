@@ -119,3 +119,7 @@ h2 {
 #knimePagedTableContainer .row {
 	margin: 0;
 }
+
+#knimePagedTable_wrapper .dt-buttons.btn-group {
+	width: auto;
+}

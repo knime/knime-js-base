@@ -284,12 +284,14 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewRepresentation.setDisplayRowIds(m_config.getDisplayRowIds());
             viewRepresentation.setDisplayColumnHeaders(m_config.getDisplayColumnHeaders());
             viewRepresentation.setDisplayRowIndex(m_config.getDisplayRowIndex());
+            viewRepresentation.setFixedHeaders(m_config.getFixedHeaders());
             viewRepresentation.setTitle(m_config.getTitle());
             viewRepresentation.setSubtitle(m_config.getSubtitle());
             viewRepresentation.setEnableSelection(m_config.getEnableSelection());
             viewRepresentation.setEnableSearching(m_config.getEnableSearching());
             viewRepresentation.setEnableColumnSearching(m_config.getEnableColumnSearching());
             viewRepresentation.setEnableSorting(m_config.getEnableSorting());
+            viewRepresentation.setEnableClearSortButton(m_config.getEnableClearSortButton());
             viewRepresentation.setGlobalDateFormat(m_config.getGlobalDateFormat());
             viewRepresentation.setEnableGlobalNumberFormat(m_config.getEnableGlobalNumberFormat());
             viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());

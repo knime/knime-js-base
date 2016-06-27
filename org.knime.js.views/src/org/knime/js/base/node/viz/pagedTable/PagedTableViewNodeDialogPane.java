@@ -111,6 +111,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableSearchCheckbox;
     private final JCheckBox m_enableColumnSearchCheckbox;
     private final JCheckBox m_enableSortingCheckBox;
+    private final JCheckBox m_enableClearSortButtonCheckBox;
     private final DialogComponentStringSelection m_globalDateFormatChooser;
     private final JCheckBox m_enableGlobalNumberFormatCheckbox;
     private final JSpinner m_globalNumberFormatDecimalSpinner;
@@ -144,7 +145,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
             @Override
             public void stateChanged(final ChangeEvent e) {
-                enableColumnHeaderFields();
+                enableSortingFields();
             }
         });
         m_displayRowIndexCheckBox = new JCheckBox("Dislay row indices");
@@ -162,6 +163,14 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_enableSearchCheckbox = new JCheckBox("Enable searching");
         m_enableColumnSearchCheckbox = new JCheckBox("Enable search for individual columns");
         m_enableSortingCheckBox = new JCheckBox("Enable sorting on columns");
+        m_enableSortingCheckBox.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enableSortingFields();
+            }
+        });
+        m_enableClearSortButtonCheckBox = new JCheckBox("Enable 'Clear Sorting' button");
         m_globalDateFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_DATE_FORMAT), "Global date format:", PREDEFINED_FORMATS, true);
@@ -287,6 +296,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         sortingPanel.setBorder(new TitledBorder("Sorting"));
         GridBagConstraints gbcSo = createConfiguredGridBagConstraints();
         sortingPanel.add(m_enableSortingCheckBox, gbcSo);
+        gbcSo.gridy++;
+        sortingPanel.add(m_enableClearSortButtonCheckBox, gbcSo);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
@@ -364,13 +375,14 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_enableSearchCheckbox.setSelected(config.getEnableSearching());
         m_enableColumnSearchCheckbox.setSelected(config.getEnableColumnSearching());
         m_enableSortingCheckBox.setSelected(config.getEnableSorting());
+        m_enableClearSortButtonCheckBox.setSelected(config.getEnableClearSortButton());
         m_globalDateFormatChooser.replaceListItems(createPredefinedFormats(), config.getGlobalDateFormat());
         m_enableGlobalNumberFormatCheckbox.setSelected(config.getEnableGlobalNumberFormat());
         m_globalNumberFormatDecimalSpinner.setValue(config.getGlobalNumberFormatDecimals());
         enablePagingFields();
         enableSelectionFields();
         enableFormatterFields();
-        enableColumnHeaderFields();
+        enableSortingFields();
     }
 
     /**
@@ -399,6 +411,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         config.setSelectionColumnName(m_selectionColumnNameField.getText());
         config.setEnableSorting(m_enableSortingCheckBox.isSelected());
+        config.setEnableClearSortButton(m_enableClearSortButtonCheckBox.isSelected());
         config.setEnableSearching(m_enableSearchCheckbox.isSelected());
         config.setEnableColumnSearching(m_enableColumnSearchCheckbox.isSelected());
         config.setGlobalDateFormat(((SettingsModelString)m_globalDateFormatChooser.getModel()).getStringValue());
@@ -455,9 +468,10 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalNumberFormatDecimalSpinner.setEnabled(enableNumberFormat);
     }
 
-    private void enableColumnHeaderFields() {
+    private void enableSortingFields() {
         boolean enableFields = m_displayColumnHeadersCheckBox.isSelected();
         m_enableSortingCheckBox.setEnabled(enableFields);
+        m_enableClearSortButtonCheckBox.setEnabled(enableFields && m_enableSortingCheckBox.isSelected());
     }
 
     /**

@@ -79,12 +79,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_displayRowIds;
     private boolean m_displayColumnHeaders;
     private boolean m_displayRowIndex;
+    private boolean m_fixedHeaders;
     private String m_title;
     private String m_subtitle;
     private boolean m_enableSelection;
     private boolean m_enableSearching;
     private boolean m_enableColumnSearching;
     private boolean m_enableSorting;
+    private boolean m_enableClearSortButton;
     private String m_globalDateFormat;
     private boolean m_enableGlobalNumberFormat;
     private int m_globalNumberFormatDecimals;
@@ -256,6 +258,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the fixedHeaders
+     */
+    public boolean getFixedHeaders() {
+        return m_fixedHeaders;
+    }
+
+    /**
+     * @param fixedHeaders the fixedHeaders to set
+     */
+    public void setFixedHeaders(final boolean fixedHeaders) {
+        m_fixedHeaders = fixedHeaders;
+    }
+
+    /**
      * @return the title
      */
     public String getTitle() {
@@ -340,6 +356,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the enableClearSortButton
+     */
+    public boolean getEnableClearSortButton() {
+        return m_enableClearSortButton;
+    }
+
+    /**
+     * @param enableClearSortButton the enableClearSortButton to set
+     */
+    public void setEnableClearSortButton(final boolean enableClearSortButton) {
+        m_enableClearSortButton = enableClearSortButton;
+    }
+
+    /**
      * @return the globalDateFormat
      */
     public String getGlobalDateFormat() {
@@ -398,12 +428,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_IDS, m_displayRowIds);
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_COLUMN_HEADERS, m_displayColumnHeaders);
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_INDEX, m_displayRowIndex);
+        settings.addBoolean(PagedTableViewConfig.CFG_FIXED_HEADERS, m_fixedHeaders);
         settings.addString(PagedTableViewConfig.CFG_TITLE, m_title);
         settings.addString(PagedTableViewConfig.CFG_SUBTITLE, m_subtitle);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SELECTION, m_enableSelection);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SEARCHING, m_enableSearching);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING, m_enableColumnSearching);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING, m_enableSorting);
+        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT, m_globalDateFormat);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
@@ -426,12 +458,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         m_displayRowIds = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_IDS);
         m_displayColumnHeaders = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_COLUMN_HEADERS);
         m_displayRowIndex = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_INDEX);
+        m_fixedHeaders = settings.getBoolean(PagedTableViewConfig.CFG_FIXED_HEADERS);
         m_title = settings.getString(PagedTableViewConfig.CFG_TITLE);
         m_subtitle = settings.getString(PagedTableViewConfig.CFG_SUBTITLE);
         m_enableSelection = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SELECTION);
         m_enableSearching = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SEARCHING);
         m_enableColumnSearching = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING);
+        m_enableClearSortButton = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON);
         m_globalDateFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
@@ -464,12 +498,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_displayRowIds, other.m_displayRowIds)
                 .append(m_displayColumnHeaders, other.m_displayColumnHeaders)
                 .append(m_displayRowIndex, other.m_displayRowIndex)
+                .append(m_fixedHeaders, other.m_fixedHeaders)
                 .append(m_title, other.m_title)
                 .append(m_subtitle, other.m_subtitle)
                 .append(m_enableSelection, other.m_enableSelection)
                 .append(m_enableSearching, other.m_enableSearching)
                 .append(m_enableColumnSearching, other.m_enableColumnSearching)
                 .append(m_enableSorting, other.m_enableSorting)
+                .append(m_enableClearSortButton, other.m_enableClearSortButton)
                 .append(m_globalDateFormat, other.m_globalDateFormat)
                 .append(m_enableGlobalNumberFormat, other.m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals, other.m_globalNumberFormatDecimals)
@@ -493,12 +529,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_displayRowIds)
                 .append(m_displayColumnHeaders)
                 .append(m_displayRowIndex)
+                .append(m_fixedHeaders)
                 .append(m_title)
                 .append(m_subtitle)
                 .append(m_enableSelection)
                 .append(m_enableSearching)
                 .append(m_enableColumnSearching)
                 .append(m_enableSorting)
+                .append(m_enableClearSortButton)
                 .append(m_globalDateFormat)
                 .append(m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals)
