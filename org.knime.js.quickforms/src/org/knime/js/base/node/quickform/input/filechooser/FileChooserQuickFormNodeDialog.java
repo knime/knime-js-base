@@ -64,7 +64,9 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
@@ -144,7 +146,7 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
         FileChooserValidator dirVal = new FileChooserValidator(false, true, false, null);
         String title = "Select directory";
         String description = "Please select the root directory";
-        m_rootDirChooserButton = createBrowseButton(m_rootDirField, dirVal, null, title, description);
+        m_rootDirChooserButton = createBrowseButton(m_rootDirField, dirVal, null, title, description, true);
 
         m_useDefaultMountIdBox = new JCheckBox("Use default mount id of target");
         m_useDefaultMountIdBox.addChangeListener(new ChangeListener() {
@@ -161,7 +163,7 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
             m_config.getSelectDirectories(), m_config.getSelectDataFiles(), m_config.getFileTypes());
         title = "Select file";
         description = "Please select the default file";
-        m_fileChooserButton = createBrowseButton(m_defaultPathField, m_validator, this, title, description);
+        m_fileChooserButton = createBrowseButton(m_defaultPathField, m_validator, this, title, description, false);
 
         m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_validExtensionsField.addFocusListener(new FocusListener() {
@@ -215,7 +217,8 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
         addTripelToPanel("Default File:", m_defaultPathField, m_fileChooserButton, panelWithGBLayout, gbc);
     }
 
-    static JButton createBrowseButton(final JTextField textField, final FileChooserValidator validator, final FileStoreContainer fileStoreContainer, final String title, final String description) {
+    static JButton createBrowseButton(final JTextField textField, final FileChooserValidator validator,
+            final FileStoreContainer fileStoreContainer, final String title, final String description, final boolean remoteOnly) {
         final JButton browseButton = new JButton("Browse");
         browseButton.addActionListener(new ActionListener() {
             /**
@@ -233,10 +236,16 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
                                 .getMountedContent().entrySet()) {
                             String mountID = entry.getKey();
                             AbstractContentProvider acp = entry.getValue();
-                            if (acp.canHostDataFiles()) {
+                            if (remoteOnly ? acp.isRemote() && acp.canHostDataFiles() : acp.canHostDataFiles()) {
                                 mountIDs.add(mountID);
                             }
-
+                        }
+                        if (mountIDs.isEmpty()) {
+                            MessageBox box = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
+                            box.setText("No item for selection");
+                            box.setMessage("No server mountpoint was found for selection of root path. Please log into a server you want to use for browsing.");
+                            box.open();
+                            return;
                         }
                         ContentObject initialSelection = null;
                         AbstractExplorerFileStore selectedFileStore = null;
