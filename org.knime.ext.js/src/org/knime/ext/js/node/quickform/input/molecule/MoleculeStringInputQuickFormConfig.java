@@ -75,6 +75,10 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
     private static final String CFG_HEIGHT = "height";
     static final int DEFAULT_HEIGHT = 500;
     private int m_height = DEFAULT_HEIGHT;
+    
+    private static final String CFG_SKETCHER_PATH = "sketcherPath";
+    private static final String DEFAULT_SKETCHER_PATH = "";
+    private String m_sketcherPath = DEFAULT_SKETCHER_PATH;
 
     /**
      * @return the format
@@ -131,6 +135,14 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
     public void setHeight(final int height) {
         m_height = height;
     }
+    
+    public String getSketcherPath() {
+		return m_sketcherPath;
+	}
+    
+    public void setSketcherPath(String sketcherPath) {
+		m_sketcherPath = sketcherPath;
+	}
 
     /**
      * {@inheritDoc}
@@ -142,6 +154,7 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
         settings.addString(CFG_FORMAT, m_format);
         settings.addInt(CFG_WIDTH, m_width);
         settings.addInt(CFG_HEIGHT, m_height);
+        settings.addString(CFG_SKETCHER_PATH, m_sketcherPath);
     }
 
     /**
@@ -156,6 +169,9 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE);
         m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
         m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
+        
+        //added with 3.2
+        m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
     }
 
     /**
@@ -170,6 +186,9 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE);
         m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
         m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
+        
+        //added with 3.2
+        m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
     }
 
     /**
@@ -209,6 +228,7 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
                 .append(m_format)
                 .append(m_width)
                 .append(m_height)
+                .append(m_sketcherPath)
                 .toHashCode();
     }
 
@@ -232,6 +252,7 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
                 .append(m_format, other.m_format)
                 .append(m_width, other.m_width)
                 .append(m_height, other.m_height)
+                .append(m_sketcherPath, other.m_sketcherPath)
                 .isEquals();
     }
 

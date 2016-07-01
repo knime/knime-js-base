@@ -74,15 +74,17 @@ public class MoleculeStringInputQuickFormRepresentation extends
         m_format = config.getFormat();
         m_width = config.getWidth();
         m_height = config.getHeight();
+        m_sketcherPath = config.getSketcherPath();
     }
 
     private final String m_format;
     private String m_sketcherLocation;
     private final int m_width;
     private final int m_height;
+    private final String m_sketcherPath;
 
     /**
-     * @return the sketcherLocation
+     * @return the sketcherLocation (injected by server)
      */
     @JsonProperty("sketcherLocation")
     public String getSketcherLocation() {
@@ -90,13 +92,13 @@ public class MoleculeStringInputQuickFormRepresentation extends
     }
 
     /**
-     * @param sketcherLocation the sketcherLocation to set
+     * @param sketcherLocation the sketcherLocation to set (injected by server)
      */
     @JsonProperty("sketcherLocation")
     public void setSketcherLocation(final String sketcherLocation) {
         m_sketcherLocation = sketcherLocation;
     }
-
+    
     /**
      * @return the format
      */
@@ -104,6 +106,14 @@ public class MoleculeStringInputQuickFormRepresentation extends
     public String getFormat() {
         return m_format;
     }
+    
+    /**
+     * @return the optional sketcher location defined in node config
+     */
+    @JsonProperty("sketcherPath")
+    public String getSketcherPath() {
+		return m_sketcherPath;
+	}
 
     /**
      * @return the width
@@ -159,6 +169,7 @@ public class MoleculeStringInputQuickFormRepresentation extends
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_format)
                 .append(m_sketcherLocation)
+                .append(m_sketcherPath)
                 .append(m_width)
                 .append(m_height)
                 .toHashCode();
@@ -182,6 +193,7 @@ public class MoleculeStringInputQuickFormRepresentation extends
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_format, other.m_format)
                 .append(m_sketcherLocation, other.m_sketcherLocation)
+                .append(m_sketcherPath, other.m_sketcherPath)
                 .append(m_width, other.m_width)
                 .append(m_height, other.m_height)
                 .isEquals();

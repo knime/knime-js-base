@@ -888,7 +888,11 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 		}
 		currentMolecule = representation.currentValue.moleculeString;
 		format = representation.format;
-		customSketcher = (inLayout && representation.sketcherLocation);
+		var sketcherPath = representation.sketcherPath;
+		if (!sketcherPath) {
+			sketcherPath = representation.sketcherLocation;
+		}
+		customSketcher = (inLayout && sketcherPath);
 
 		var body = jQuery('body');
 		var qfdiv = jQuery('<div class="quickformcontainer">');
@@ -915,7 +919,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 			var loc = "./VAADIN/src-js/js-lib/ketcher/ketcher.html";
 			sketcherFrame.attr("name", currentMolecule);
 			if (customSketcher) {
-				loc = representation.sketcherLocation;
+				loc = sketcherPath;
 			}
 			sketcherFrame.attr("src", loc);
 			sketcherFrame.load(function() {
