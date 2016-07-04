@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode icon="../js.png" type="Visualizer" xmlns="http://knime.org/node/v2.12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.12 http://knime.org/node/v2.12.xsd">
+<knimeNode icon="../js.png" type="Visualizer" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
     <name>JavaScript Table View</name>
     <shortDescription>Displays data in a table view.</shortDescription>
     <fullDescription>
         <intro>
-            <p>Displays data in an HTML table view.</p>
+            <p>Displays data in an HTML table view. The view offers several interactive features, as well as the possibility to select rows.</p>
         </intro>
         <tab name="Options">
+        	<description>
+        		<p>General view and display options.</p>
+        	</description>
         	<option name="Hide in wizard">
         		If checked the view will be hidden in the wizard execution.
         	</option>
@@ -36,6 +39,9 @@
 	        </option>
         </tab>
         <tab name="Interactivity">
+        	<description>
+        		<p>The JavaScript Table View allows for several ways of interactivity. Please use the options below to configure which features will be activated on the view and further configuration of interactive properties.</p>
+        	</description>
         	<option name="Enable pagination">
         		Enable or disable the pagination feature globally. When disabled the table is rendered whole on one page. When enabled use the options below to further refine the pagination settings.
         	</option>
@@ -71,6 +77,19 @@
         	</option>
         </tab>
         <tab name="Formatters">
+        	<description>
+        		<p>The JavaScript Table View maps the KNIME table data types to types in JavaScript. The types that can be displayed are:</p>
+        		<ul>
+        			<li>Boolean</li>
+        			<li>Number (double, integer, etc.)</li>
+        			<li>String</li>
+        			<li>Date and Time</li>
+        			<li>PNG</li>
+        			<li>SVG</li>
+        		</ul>
+        		<p>All other data types will be treated as UNKNOWN types. These are tried to be displayed by extracting their respective standard string representation.</p>
+        		<p>If you wish to customize the format for certain data types you can use the following options. For unknown types the formatting has to be applied in preceding nodes.</p>
+        	</description>
         	<option name="Global date format">
         		A global format, which is applied to all date/time cells. To format the string the framework Moment.js is used. For information on available format options and tokens please see the <a href="http://momentjs.com/docs/#/displaying/format/"> moment.js documentation</a>.
         	</option>
