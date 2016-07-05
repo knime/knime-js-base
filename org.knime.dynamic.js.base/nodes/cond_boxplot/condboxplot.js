@@ -162,6 +162,7 @@
     function drawChart(resizing) {
         _data = _representation.inObjects[0][_value.options.numCol];
         maxY = Number.NEGATIVE_INFINITY;
+        minY = Number.POSITIVE_INFINITY;
         for (var key in _data) {
             maxY = Math.max(_data[key].max, maxY);
             minY = Math.min(_data[key].min, minY);
@@ -211,7 +212,9 @@
             .attr("transform", "translate(0," + (h + 5) + ")")
             .call(xAxis);
             
-        d3XAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
+        d3XAxis.selectAll("line,path").attr("fill", "none")
+        	.attr("stroke", "black")
+        	.attr("shape-rendering", "crispEdges"); 
     
         // Add the Y Axis
         var d3YAxis = plotG.append("g")
