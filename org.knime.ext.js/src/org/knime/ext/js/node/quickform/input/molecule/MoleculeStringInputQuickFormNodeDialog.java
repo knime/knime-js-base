@@ -78,8 +78,7 @@ public class MoleculeStringInputQuickFormNodeDialog extends QuickFormNodeDialog 
     private final JTextArea m_defaultArea;
     private final JSpinner m_widthSpinner;
     private final JSpinner m_heightSpinner;
-    private final JTextField m_sketcherPathField;
-
+    
     private MoleculeStringInputQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -89,7 +88,6 @@ public class MoleculeStringInputQuickFormNodeDialog extends QuickFormNodeDialog 
         m_generateImageBox = new JCheckBox((Icon)null, false);
         m_formatBox = new JComboBox(MoleculeStringInputQuickFormNodeModel.DEFAULT_FORMATS);
         m_formatBox.setEditable(true);
-        m_sketcherPathField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DEF_TEXTFIELD_WIDTH);
         m_widthSpinner =
             new JSpinner(new SpinnerNumberModel(MoleculeStringInputQuickFormConfig.DEFAULT_WIDTH, 300,
@@ -108,7 +106,6 @@ public class MoleculeStringInputQuickFormNodeDialog extends QuickFormNodeDialog 
         addPairToPanel("Generate Image", m_generateImageBox, panelWithGBLayout, gbc);
         addPairToPanel("Width", m_widthSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Height", m_heightSpinner, panelWithGBLayout, gbc);
-        addPairToPanel("Sketcher path on server (optional)", m_sketcherPathField, panelWithGBLayout, gbc);
         addPairToPanel("Format: ", m_formatBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
     }
@@ -124,7 +121,6 @@ public class MoleculeStringInputQuickFormNodeDialog extends QuickFormNodeDialog 
         m_generateImageBox.setSelected(m_config.getGenerateImage());
         m_widthSpinner.setValue(m_config.getWidth());
         m_heightSpinner.setValue(m_config.getHeight());
-        m_sketcherPathField.setText(m_config.getSketcherPath());
         m_defaultArea.setText(m_config.getDefaultValue().getMoleculeString());
         m_formatBox.setSelectedItem(m_config.getFormat());
     }
@@ -139,7 +135,6 @@ public class MoleculeStringInputQuickFormNodeDialog extends QuickFormNodeDialog 
         m_config.setWidth((int)m_widthSpinner.getValue());
         m_config.setHeight((int)m_heightSpinner.getValue());
         m_config.setFormat(m_formatBox.getSelectedItem().toString());
-        m_config.setSketcherPath(m_sketcherPathField.getText());
         m_config.getDefaultValue().setMoleculeString(m_defaultArea.getText());
         m_config.saveSettings(settings);
     }

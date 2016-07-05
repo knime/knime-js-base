@@ -150,7 +150,7 @@ public class MoleculeStringInputQuickFormNodeModel
 
             PhantomJSImageGenerator generator = null;
             try {
-                generator = new PhantomJSImageGenerator(this, 500L, exec.createSubExecutionContext(0.75));
+                generator = new PhantomJSImageGenerator(this, 2000L, exec.createSubExecutionContext(0.75));
             } catch (IOException ex) {
                 throw ex;
             } catch (Exception e) {

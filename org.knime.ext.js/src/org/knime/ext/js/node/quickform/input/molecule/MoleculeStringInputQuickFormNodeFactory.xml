@@ -21,7 +21,6 @@
 		<option name="Variable Name">Variable identifier.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
 		<option name="Format">The format of the molecule string. Please note that not all molecule sketchers support all formats.</option>
-		<option name="Sketcher path on server (optional)" optional="true">An optional path to the sketcher location on the server. When set this option overwrites the sketcher location set in the server configuration.</option>
         <option name="Default Value">
           The value that is selected by default.
         </option>
