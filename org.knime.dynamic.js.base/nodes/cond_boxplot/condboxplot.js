@@ -3,7 +3,7 @@
     var _data = {};
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
-    var maxY = 0;
+    var maxY = 0, minY = 0;
     var _representation, _value;
     
     input.init = function(representation, value) { 
@@ -164,6 +164,7 @@
         maxY = Number.NEGATIVE_INFINITY;
         for (var key in _data) {
             maxY = Math.max(_data[key].max, maxY);
+            minY = Math.min(_data[key].min, minY);
         }
         
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
@@ -194,7 +195,7 @@
         d3svg.select("#bgr").attr({width : w + margin.left + margin.right, height : h + margin.top + margin.bottom});
         
         var x = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0,w], 0.75, 0.5);
-        var y = d3.scale.linear().domain([0, maxY]).range([h, 0]).nice();
+        var y = d3.scale.linear().domain([minY, maxY]).range([h, 0]).nice();
         
         var xAxis = d3.svg.axis().scale(x)
                 .orient("bottom");

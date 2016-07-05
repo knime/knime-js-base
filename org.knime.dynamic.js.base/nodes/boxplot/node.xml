@@ -105,14 +105,14 @@
 				 -->
 				 
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
-                    format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
                     
                     <colorOption name="Data area color" id="daColor" label="Data area color"
-                    format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
 
 				<!-- Use a color selector to choose bar colors? -->
 				<colorOption name="Box color" id="boxColor" label="Box color"
-					format="HexString" defaultR="255" defaultG="255" defaultB="255"></colorOption>
+					format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
 			</options>
 		</tab>
 		

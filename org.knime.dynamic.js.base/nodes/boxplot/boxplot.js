@@ -3,30 +3,34 @@
     var _data = {};
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
-    var maxY = 0;
+    var maxY = 0, minY = 0;
     var _representation, _value;
     
-    input.init = function(representation, value) {  
+    input.init = function(representation, value) {
+    	// Store value and representation for later
         _value = value;
         _representation = representation;
         
-        if (!_value.options.numCol) {
-            _value.options.numCol = _representation.options.columns[0];
-        }
-        
+        // No numeric columns available?
         if (_representation.options.columns.length == 0) {
             alert("No numeric columns selected");
             return;
         }
-
-        d3.select("html").style("width", "100%").style("height", "100%")
-        d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
-
+        
+        // If no column to show is selected yet, we take the first from all candidates
+        if (!_value.options.numCol) {
+            _value.options.numCol = _representation.options.columns[0];
+        }
+        
         var body = d3.select("body");
+
+        // Create container for our content
+        layoutContainer = body.append("div")
+        					.attr("id", "layoutContainer")
+                			.style("min-width", MIN_WIDTH + "px")
+                			.style("min-height", MIN_HEIGHT + "px");
         
-        layoutContainer = body.append("div").attr("id", "layoutContainer")
-                .style("min-width", MIN_WIDTH + "px");
-        
+        // Size layout container based on sizing settings
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
             layoutContainer.style("width", "100%")
             .style("height", "100%");
@@ -35,56 +39,50 @@
             .style("height", _representation.options.svg.height + "px");
         }
         
+        // Add container for user controls at the bottom if they are enabled and we are running in a view
         var controlHeight;
         if (_representation.options.enableViewControls && _representation.runningInView) {
-             var controlsContainer = body.append("div").style({
-            	 position : "relative", 
-            	 bottom : "0px",
-                 width : "100%", 
-                 padding : "5px", 
-                 "padding-left" : "60px",
-                 "border-top" : "1px solid black", 
-                 "background-color" : "white",
-                 "box-sizing": "border-box"}).attr("id", "controlContainer");
-
-            createControls(controlsContainer);
-            controlHeight = controlsContainer.node().getBoundingClientRect().height;
+             var controlsContainer = body.append("div")
+             							.attr("id", "controlContainer");
+             // Fill container
+             createControls(controlsContainer);
+             controlHeight = controlsContainer.node().getBoundingClientRect().height;
         } else {
             controlHeight = 0;
         }
-
-        if (_representation.options.svg.fullscreen && _representation.runningInView) {
-            layoutContainer.style({
-                "height" : "calc(100% - " + controlHeight + "px)",
-                "min-height" :  (MIN_HEIGHT + controlHeight) + "px"
-            });
+        
+        // Adjust plot height for control height
+        if (_representation.options.svg.fullscreen && _representation.runningInView && controlHeight) {
+            layoutContainer.style("height", "calc(100% - " + controlHeight + "px)");
         }
-        
-        var div = layoutContainer.append("div")
-            .attr("id", "svgContainer")
-            .style("min-width", MIN_WIDTH + "px")
-            .style("min-height", MIN_HEIGHT + "px")
-            .style("box-sizing", "border-box")
-            .style("display", "inline-block")
-            .style("overflow", "hidden")
-            .style("margin", "0");
-        
+
+        // Add SVG element
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        div[0][0].appendChild(svg1);
+        layoutContainer[0][0].appendChild(svg1);
         
-        var d3svg = d3.select("svg").style("font-family", "sans-serif");
-        d3svg.append("rect").attr("id", "bgr").attr("fill", _representation.options.backgroundColor);
+        var d3svg = d3.select("svg")
+        			.style("font-family", "sans-serif");
+        // Add rectangle for background color
+        d3svg.append("rect")
+        		.attr("id", "bgr")
+        		.attr("fill", _representation.options.backgroundColor);
         
-        var plotG = d3svg.append("g").attr("id", "plotG");
-        plotG.append("rect").attr("id", "da").attr("fill", _representation.options.daColor);
+        // Append a group for the plot and add a rectangle for the data area background
+        d3svg.append("g")
+				.attr("id", "plotG")
+				.append("rect")
+					.attr("id", "da")
+					.attr("fill", _representation.options.daColor);
         
+        // Title
         d3svg.append("text")
             .attr("id", "title")
             .attr("font-size", 24)
             .attr("x", 20)
             .attr("y", 30)
             .text(_value.options.title);
-
+        
+        // Subtitle
         d3svg.append("text")
             .attr("id", "subtitle")
             .attr("font-size", 12)
@@ -157,8 +155,10 @@
         }
     }
 
+    // Draws the chart. If resizing is true, there are no animations.
     function drawChart(resizing) {
-                 
+        
+    	// Select the data to show
         if (_representation.options.multi) {
             _data = _representation.inObjects[0];
         } else {
@@ -166,122 +166,154 @@
             _data[_value.options.numCol] = _representation.inObjects[0][_value.options.numCol];
         }
         
+        // Find the maximum y-value for the axis
         maxY = Number.NEGATIVE_INFINITY;
+        minY = Number.POSITIVE_INFINITY;
         for (var key in _data) {
             maxY = Math.max(_data[key].max, maxY);
+            minY = Math.min(_data[key].min, minY);
         }
         
+        // Calculate the correct chart width
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
         var ch = Math.max(MIN_HEIGHT, _representation.options.svg.height);
-        var chartWidth = cw + "px;"
-        var chartHeight = ch + "px";
         
+        var chartWidth, chartHeight;
+        // If we are fullscreen, we set the chart width to 100%
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
             chartWidth = "100%";
             chartHeight = "100%";
+        } else {
+        	chartWidth = cw + "px;"
+            chartHeight = ch + "px";
         }
         
-        var div = d3.select("#svgContainer")
-            .style("height", chartHeight)
-            .style("width", chartWidth);
+        // The margins for the plot area
+        var margin = {
+    		top : (_value.options.subtitle || _value.options.title) ? 60 : 10,
+			left : 40,
+			bottom : 40,
+			right : 10
+    	};
 
-        var margin = {top : (_value.options.subtitle || _value.options.title) ? 60 : 10, left : 40, bottom : 40, right : 10};
-
-        var d3svg = d3.select("svg").attr({width : cw, height : ch}).style({width : chartWidth, height : chartHeight});
+        var d3svg = d3.select("svg")
+        			.attr({width : cw, height : ch})
+        			.style({width : chartWidth, height : chartHeight});
         
+        // Position the plot group based on the margins
         var plotG = d3svg.select("#plotG")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
+        // Calculate size of the plot area (without axes)
         var w = Math.max(50, parseInt(d3svg.style('width')) - margin.left - margin.right);
         var h = Math.max(50, parseInt(d3svg.style('height')) - margin.top - margin.bottom);
         
-        plotG.select("#da").attr({width : w, height : h + 5});
-        d3svg.select("#bgr").attr({width : w + margin.left + margin.right, height : h + margin.top + margin.bottom});
+        // Resize background rectangles
+        plotG.select("#da").attr({
+        	width : w,
+        	height : h + 5}
+        );
+        d3svg.select("#bgr").attr({
+        	width : w + margin.left + margin.right,
+        	height : h + margin.top + margin.bottom
+        });
         
-        var x = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0,w], 0.75, 0.5);
-        console.log(x.rangeBand());
-        var y = d3.scale.linear().domain([0, maxY]).range([h, 0]).nice();
+        // Scales for mapping input to screen
+        var x = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0, w], 0.75, 0.5);
+        var y = d3.scale.linear().domain([minY, maxY]).range([h, 0]).nice();
         
+        // d3 axes
         var xAxis = d3.svg.axis().scale(x)
                 .orient("bottom");
-            
         var yAxis = d3.svg.axis().scale(y)
                 .orient("left").ticks(5);
         
-        // Redraw axis
+        // Remove axes so they are redrawn
         d3.selectAll(".axis").remove();
-             
+        
+        // Append and style x-axis
         var d3XAxis = plotG.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + (h + 5) + ")")
             .call(xAxis);
-            
-        d3XAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
+        d3XAxis.selectAll("line,path")
+        	.attr("fill", "none")
+        	.attr("stroke", "black")
+        	.attr("shape-rendering", "crispEdges"); 
     
-        // Add the Y Axis
+        // Append and style y-axis
         var d3YAxis = plotG.append("g")
             .attr("class", "y axis")
             .call(yAxis);
-            
-       d3YAxis.selectAll("line,path").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispEdges"); 
+        d3YAxis.selectAll("line,path")
+       		.attr("fill", "none")
+       		.attr("stroke", "black")
+       		.attr("shape-rendering", "crispEdges"); 
         
-        var range = x.range();
-        var duration = _representation.runningInView ? 500 : 0;
+        var range = x.range(); // The width for each box
         
+        // Animate only when running in view and not resizing
+        var duration = (_representation.runningInView && !resizing) ? 500 : 0;
+        
+        // Create a selection for each box with data that we created at the beginning
         var boxG = plotG.selectAll("g.box")
-        .data(d3.entries(_data), function(d) {
-            return (_representation.options.multi) ? d.key : "__dummy__";
-        });
+	        .data(d3.entries(_data), function(d) {
+	            return (_representation.options.multi) ? d.key : "__dummy__";
+	        });
         
+        // Remove boxes that are not in the data anymore
         boxG.exit().remove();
-
-        var bge = boxG.enter();
         
-        var box = bge.append("g")
+        // Append a group element for each new box and shift it according to the class
+        var box = boxG.enter().append("g")
             .attr("class", "box")
             .attr("transform", function(d) { return "translate(" + x(d.key) + ",0)"; });
         
-        d3.selectAll(".box").transition().duration(resizing ? 0 : duration)
+        // Transition all boxes to their position
+        d3.selectAll(".box").transition().duration(duration)
             .attr("transform", function(d) { return "translate(" + x(d.key) + ",0)"; });
-            
+        
+        // The main rectangle for the box
         box.append("rect")
             .attr("class", "boxrect")
             .attr("stroke", "black")
             .attr("fill", _representation.options.boxColor || "none");
-       
+        
+        // Update the box according to the data
         boxG.selectAll(".boxrect")
                 .data(function(d) { return [d]; } )
-                .transition().duration(resizing ? 0 : duration)
+                .transition().duration(duration)
                 .attr("y", function(d) { return y(d.value.upperQuartile); })
                 .attr("height", function(d) { return y(d.value.lowerQuartile) - y(d.value.upperQuartile); })
                 .attr("width", x.rangeBand());
         
+        // The middle of the box on the x-axis
         var middle = x.rangeBand() / 2;
         
+        // Text for the upper quartile
         box.append("text")
             .attr("x", -5)
             .attr("text-anchor", "end")
             .attr("class", "uqText");
-            
         boxG.selectAll(".uqText")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("y", function(d) { return y(d.value.upperQuartile) + 3; })
             .text(function(d) { return Math.round(d.value.upperQuartile * 100) / 100; });
-            
+        
+        // Text for the lower quartile
         box.append("text")
             .attr("x", -5)
             .attr("text-anchor", "end")
             .attr("class", "lqText");
-            
-       boxG.selectAll(".lqText")
+        boxG.selectAll(".lqText")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("y", function(d) { return y(d.value.lowerQuartile) + 3; })
             .text(function(d) { return Math.round(d.value.lowerQuartile * 100) / 100; });
         
 
-        // median
+        // Median
         box.append("line")
             .attr("stroke", "black")
             .attr("stroke-width", 3)
@@ -290,7 +322,7 @@
             
         boxG.selectAll(".median")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x2", x.rangeBand())
             .attr("y1", function(d) { return y(d.value.median); })
             .attr("y2", function(d) { return y(d.value.median); });
@@ -300,7 +332,7 @@
             
         boxG.selectAll(".medianText")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x", x.rangeBand() + 5)
             .attr("y", function(d) { return y(d.value.median) + 3; })
             .text(function(d) { return Math.round(d.value.median * 100) / 100; });
@@ -312,7 +344,7 @@
             
         boxG.selectAll(".uwL1")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x1", middle)
             .attr("x2", middle)
             .attr("stroke-dasharray", "5,5")
@@ -327,7 +359,7 @@
             
         boxG.selectAll(".uwL2")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x2", x.rangeBand())
             .attr("y1", function(d) { return y(d.value.upperWhisker); })
             .attr("y2", function(d) { return y(d.value.upperWhisker); });
@@ -337,7 +369,7 @@
             
         boxG.selectAll(".uwText")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x", x.rangeBand() + 5)
             .attr("y", function(d) { return y(d.value.upperWhisker) + 10; })
             .text(function(d) { return Math.round(d.value.upperWhisker * 100) / 100; });
@@ -349,7 +381,7 @@
             
        boxG.selectAll(".ulL1")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x1", middle)
             .attr("x2", middle)
             .attr("stroke-dasharray", "5,5")
@@ -363,7 +395,7 @@
             
        boxG.selectAll(".ulL2")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x2", x.rangeBand())
             .attr("y1", function(d) { return y(d.value.lowerWhisker); })
             .attr("y2", function(d) { return y(d.value.lowerWhisker); });
@@ -373,56 +405,57 @@
             
        boxG.selectAll(".ulText")
             .data(function(d) { return [d]; } )
-            .transition().duration(resizing ? 0 : duration)
+            .transition().duration(duration)
             .attr("x", x.rangeBand() + 5)
             .attr("y", function(d) { return y(d.value.lowerWhisker) - 3; })
             .text(function(d) { return Math.round(d.value.lowerWhisker * 100) / 100; });
 
-        // Mild outlier
-
+        // Mild outliers
        var outl = boxG.selectAll("circle.mo")
                  .data(function(d) { return d.value.mildOutliers; } );    
        
        outl.enter().append("circle")
-        .attr("class", "mo")
-        .attr("r", 5)
-        .attr("fill", _representation.options.daColor)
-        .attr("stroke", "black")
-        .attr("cx", middle)
-        .attr("cy", function(d) { return y(d.value); })
-        .append("title").text(function(d) { return d.rowKey; });
+       		.attr("class", "mo")
+       		.attr("r", 5)
+       		.attr("fill", _representation.options.daColor)
+       		.attr("stroke", "black")
+       		.attr("cx", middle)
+       		.attr("cy", function(d) { return y(d.value); })
+       		.append("title").text(function(d) { return d.rowKey; });
        
-       outl.transition().duration(resizing ? 0 : duration)
-       .attr("cx", middle)
-       .attr("cy", function(d) { return y(d.value); });
+       outl.transition().duration(duration)
+       		.attr("cx", middle)
+       		.attr("cy", function(d) { return y(d.value); });
        
-       //outl.exit().remove();
        outl.exit().transition().style("opacity", 0).each("end", function() { d3.select(this).remove(); });
        
-       // Extreme outlier
-       
+       // Extreme outliers
        var exoutl = boxG.selectAll("g.eo")
                  .data(function(d) { return d.value.extremeOutliers; } );    
        
        var enterG = exoutl.enter().append("g")
-         .attr("class", "eo")
-         .attr("transform", function(d) { return "translate(" + middle + "," + y(d.value) + ")"; });
+       		.attr("class", "eo")
+       		.attr("transform", function(d) { return "translate(" + middle + "," + y(d.value) + ")"; });
          
-         var crossSize = 4;
-         enterG.append("line").attr({x1 : -crossSize, y1 : -crossSize, x2 : crossSize, y2 : crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
-        .append("title").text(function(d) { return d.rowKey; });
-         enterG.append("line").attr({x1 : -crossSize, y1 : crossSize, x2 : crossSize, y2 : -crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
-        .append("title").text(function(d) { return d.rowKey; });
+       var crossSize = 4;
        
-       exoutl.transition().duration(resizing ? 0 : duration)
-       .attr("transform", function(d) { return "translate(" + middle + "," + y(d.value) + ")"; });
+       enterG.append("line").attr({x1 : -crossSize, y1 : -crossSize, x2 : crossSize, y2 : crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
+       		.append("title").text(function(d) { return d.rowKey; });
        
+       enterG.append("line").attr({x1 : -crossSize, y1 : crossSize, x2 : crossSize, y2 : -crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
+        	.append("title").text(function(d) { return d.rowKey; });
+       
+       exoutl.transition().duration(duration)
+       		.attr("transform", function(d) { return "translate(" + middle + "," + y(d.value) + ")"; });
+       
+       // Fade out outliers
        exoutl.exit().transition().style("opacity", 0).each("end", function() { d3.select(this).remove(); });
-
-        if (_representation.options.svg.fullscreen) {
-            var win = document.defaultView || document.parentWindow;
-            win.onresize = resize;
-        }  
+       
+       // Set resize handler
+       if (_representation.options.svg.fullscreen) {
+           var win = document.defaultView || document.parentWindow;
+           win.onresize = resize;
+       }  
     }
     
     input.getSVG = function() {
