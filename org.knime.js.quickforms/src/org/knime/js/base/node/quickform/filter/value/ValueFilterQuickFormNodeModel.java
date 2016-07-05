@@ -112,8 +112,7 @@ public class ValueFilterQuickFormNodeModel
         DataTableSpec inTable = (DataTableSpec)inSpecs[0];
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getNumColumns(); colIndex++) {
-            if (inTable.getColumnSpec(colIndex).getName()
-                    .equals(column)) {
+            if (inTable.getColumnSpec(colIndex).getName().equals(column)) {
                 break;
             }
         }
@@ -137,8 +136,7 @@ public class ValueFilterQuickFormNodeModel
                 exec.createDataContainer(inTable.getDataTableSpec(), false);
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getDataTableSpec().getNumColumns(); colIndex++) {
-            if (inTable.getDataTableSpec().getColumnSpec(colIndex).getName()
-                    .equals(column)) {
+            if (inTable.getDataTableSpec().getColumnSpec(colIndex).getName().equals(column)) {
                 break;
             }
         }

@@ -65,17 +65,26 @@ org_knime_js_base_node_quickform_filter_value = function() {
 		qfdiv.attr('title', representation.description);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		viewRepresentation = representation;
-		if (representation.possibleValues == null) {
+		if (viewRepresentation.possibleValues == null) {
 			qfdiv.append("Error: No data available");
 		} else {
-			var columnSelection = representation.currentValue.column;
-			if (!representation.lockColumn) {
+			var columnSelection = viewRepresentation.currentValue.column;
+			if (!viewRepresentation.possibleValues[columnSelection]) {
+				// get first column from possibleValues if spec changed
+				for(var col in viewRepresentation.possibleValues) break;
+				columnSelection = col;
+			}
+			if (!columnSelection) {
+				qfdiv.append("Error: No column available for selection.");
+				return;
+			}
+			if (!viewRepresentation.lockColumn) {
 				colselection = $('<select>');
 				colselection.addClass('dropdown');
 				colselection.css('margin', '0px 0px 5px 0px');
 				qfdiv.append(colselection);
 				qfdiv.append($('<br>'));
-				for ( var key in representation.possibleValues) {
+				for ( var key in viewRepresentation.possibleValues) {
 					var option = $('<option>' + key + '</option>');
 					option.appendTo(colselection);
 					if (key == columnSelection) {
@@ -96,7 +105,7 @@ org_knime_js_base_node_quickform_filter_value = function() {
 			}
 			qfdiv.append(selector.getComponent());
 			selector.setChoices(viewRepresentation.possibleValues[columnSelection]);
-			selector.setSelections(representation.currentValue.values);
+			selector.setSelections(viewRepresentation.currentValue.values);
 			selector.addValueChangedListener(callUpdate);
 		}
 		resizeParent();
