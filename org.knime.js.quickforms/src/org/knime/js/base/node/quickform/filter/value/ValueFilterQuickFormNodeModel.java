@@ -187,7 +187,7 @@ public class ValueFilterQuickFormNodeModel
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
         ValueFilterQuickFormValue rValue = getRelevantValue();
         String column = rValue.getColumn();
-        List<String> values = Arrays.asList(rValue.getValues());
+        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getValues()));
         Map<String, List<String>> possibleValues = getConfig().getPossibleValues();
         if (possibleValues.size() < 1) {
             throw new InvalidSettingsException("No column available for selection in input table.");
