@@ -76,20 +76,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ValueFilterQuickFormConfig extends QuickFormFlowVariableConfig<ValueFilterQuickFormValue> {
 
     private static final String CFG_LOCK_COLUMN = "lockColumn";
-
     private static final boolean DEFAULT_LOCK_COLUMN = false;
-
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
     private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
-
     private Map<String, List<String>> m_possibleValues = new TreeMap<String, List<String>>();
 
     private static final String CFG_TYPE = "type";
-
     private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
-
     private String m_type = DEFAULT_TYPE;
+
+    private static final String CFG_COL = "colValues";
 
     /**
      * @return the lockColumn
@@ -142,9 +139,10 @@ public class ValueFilterQuickFormConfig extends QuickFormFlowVariableConfig<Valu
         settings.addBoolean(CFG_LOCK_COLUMN, m_lockColumn);
         settings.addStringArray(CFG_POSSIBLE_COLUMNS,
                 m_possibleValues.keySet().toArray(new String[m_possibleValues.keySet().size()]));
+        NodeSettingsWO colSettings = settings.addNodeSettings(CFG_COL);
         for (String key : m_possibleValues.keySet()) {
             List<String> values = m_possibleValues.get(key);
-            settings.addStringArray(key, values.toArray(new String[values.size()]));
+            colSettings.addStringArray(key, values.toArray(new String[values.size()]));
         }
         settings.addString(CFG_TYPE, m_type);
     }
@@ -158,8 +156,14 @@ public class ValueFilterQuickFormConfig extends QuickFormFlowVariableConfig<Valu
         m_lockColumn = settings.getBoolean(CFG_LOCK_COLUMN);
         m_possibleValues = new TreeMap<String, List<String>>();
         String[] columns = settings.getStringArray(CFG_POSSIBLE_COLUMNS);
+
+        // For backward compatibility, see AP-5289 and AP-5960, CFG_COL was added
+        NodeSettingsRO colSettings = settings;
+        if (settings.containsKey(CFG_COL)) {
+            colSettings = settings.getNodeSettings(CFG_COL);
+        }
         for (String column : columns) {
-            m_possibleValues.put(column, Arrays.asList(settings.getStringArray(column)));
+            m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column)));
         }
         m_type = settings.getString(CFG_TYPE);
     }
@@ -173,8 +177,16 @@ public class ValueFilterQuickFormConfig extends QuickFormFlowVariableConfig<Valu
         m_lockColumn = settings.getBoolean(CFG_LOCK_COLUMN, DEFAULT_LOCK_COLUMN);
         m_possibleValues = new TreeMap<String, List<String>>();
         String[] columns = settings.getStringArray(CFG_POSSIBLE_COLUMNS, new String[0]);
+
+        // For backward compatibility, see AP-5289 and AP-5960, CFG_COL was added
+        NodeSettingsRO colSettings = settings;
+        if (settings.containsKey(CFG_COL)) {
+            try {
+                colSettings = settings.getNodeSettings(CFG_COL);
+            } catch (InvalidSettingsException e) { /* do nothing */ }
+        }
         for (String column : columns) {
-            m_possibleValues.put(column, Arrays.asList(settings.getStringArray(column, new String[0])));
+            m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
         }
         m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
     }
