@@ -8,7 +8,7 @@
         </intro>
         <tab name="Options">
         	<description>
-        		<p>General view and display options.</p>
+        		General view and display options.
         	</description>
         	<option name="Hide in wizard">
         		If checked the view will be hidden in the wizard execution.
