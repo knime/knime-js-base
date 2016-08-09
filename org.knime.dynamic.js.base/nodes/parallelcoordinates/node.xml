@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
+	jsNamespace="parallelcoords_namespace" nodeID="parallelcoordsJS" categoryPath="/labs/interactiveView"
+	icon="../js.png" type="Visualizer">
+
+	<name>JavaScript Parallel Coordinates Plot</name>
+	<shortDescription>This node provides a view with a Parallel Coordinates Plot implemented with D3.js.</shortDescription>
+	<fullDescription>
+		<intro>
+		      <n:p>
+		      	A parallel coordinates plot displays multidimensional data as a polyline over multiple,
+		      	parallel and evenly spaced axes.
+		      	More information is available on <n:a href="https://en.wikipedia.org/wiki/Parallel_coordinates">Wikipedia</n:a>.
+		      </n:p>
+		      <n:p>
+		        Rows that contain missing values are filtered and not displayed in the view.
+		      </n:p>
+		</intro>
+		<tab name="Options">
+			<options>
+				<columnFilterOption name="Included columns"
+					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DataValue">
+					Select the columns you wish to plot.
+				</columnFilterOption>
+				
+				<checkBoxOption name="Use colors from spec" id="useColors"
+                   label="Use colors from spec" defaultValue="true">
+                   Check to use colors from the data table spec in the visualization.
+                </checkBoxOption>
+				
+				<columnSelectorOption name="Color column" saveInView="false" allowNoneColumn="true" optional="true"
+				    enableDependency="useColors" enableValue="false"
+                    id="catCol" inPortIndex="0" label="Color Column" filterClasses="org.knime.core.data.StringValue">
+                    Select the column that contains categorical values that will be used for coloring.
+                    If this is not set, the visualization takes the color from the data table spec.
+                </columnSelectorOption>
+			</options>
+		</tab>
+		<tab name="General Plot Options">
+			<options>
+				<stringOption name="Title" id="title" label="Title"
+					defaultValue="Parallel Coordinates Plot" optional="true" saveInView="true">
+					The chart title.
+				</stringOption>
+				
+				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
+                    defaultValue="" optional="true" saveInView="true">
+                    The chart subtitle.
+                </stringOption>
+                
+				<checkBoxOption name="Show legend" id="showLegend" enableDependency="useColors" enableValue="false"
+                   label="Show legend" defaultValue="true">
+                   Check to enable the legend.
+               </checkBoxOption>
+               
+				<svgOption name="Create image at outport" additionalWait="500"
+				id="svg" portIndex="0" label="Create image at output port"></svgOption>
+	
+				<colorOption name="Background color" id="backgroundColor" label="Background color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    The background color of the whole plot, excluding the data area, but including the axes, the title and the legend.
+                    </colorOption>
+                    
+                    <colorOption name="Data area color" id="daColor" label="Data area color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    The color of the area within the axes, where the parallel coordinate lines are drawn.
+                    </colorOption>
+			</options>
+		</tab>
+		
+		<tab name="Control Options">
+          <options>
+              <checkBoxOption name="Enable view controls" id="enableViewControls"
+                   label="Enable view controls" defaultValue="true">
+                   Check to enable controls in the chart.
+               </checkBoxOption>
+               <checkBoxOption name="Enable Title editing" id="enableTitleEdit"
+                   label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+                   Check to enable the editing of the title within the view.
+               </checkBoxOption>
+               <checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
+                   label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+                   Check to enable the editing of the subtitle within the view.
+               </checkBoxOption>
+           </options>
+        </tab>
+
+	</fullDescription>
+	<outputOptions>
+		<dataOutputOption outPortIndex="0" id="chartImage" />
+	</outputOptions>
+	<interactiveView name="D3 Parallel Coordinates Plot">
+		A D3.js implementation of a Parallel Coordinates Plot.
+	</interactiveView>
+	<ports>
+		<inPort portType="Data" name="Input Data" index="0">
+			Data table containing the data to be plotted.
+		</inPort>
+
+		<outPort portType="Image" name="Parallel Coordinates Plot image" index="0">
+			SVG image of the Parallel Coordinates plot.
+		</outPort>
+	</ports>
+	<js:resources>
+		<js:resource type="js" path="parallelcoords.js" />
+		<js:resource type="css" path="styles.css" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="D3" path="D3_3.2.8" type="local" />
+	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.base.parallelcoords.ParallelCoordsProcessor"/>
+</js:knimeNode>

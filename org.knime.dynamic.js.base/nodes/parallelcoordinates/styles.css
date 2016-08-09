@@ -1,0 +1,12 @@
+body {
+  font: 12px sans-serif;
+}
+
+g.pale .row {
+	stroke-opacity: 0.2;
+}
+
+g.pale .row:hover {
+	stroke-opacity: 1;
+	stroke-width: 3;
+}
