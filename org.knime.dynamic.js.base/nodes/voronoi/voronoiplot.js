@@ -270,11 +270,10 @@
 		
 		path.order();
 		
-		var circles = plotG.selectAll("circle.center");
+		var circles = plotG.selectAll("circle.center").data(vertices.slice(1));
 		circles.attr("transform", function(d) { return "translate(" + d + ")"; })
 		
-		circles.data(vertices.slice(1))
-		  .enter().append("circle").attr("class", "center")
+		circles.enter().append("circle").attr("class", "center")
 		    .attr("transform", function(d) { return "translate(" + d + ")"; })
 		    .attr("r", 1.5);
 	    
