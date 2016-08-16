@@ -22,7 +22,7 @@
 		<tab name="Options">
 			<options>
 				<columnFilterOption name="Included columns"
-					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DataValue">
+					id="columns" inPortIndex="0" label="Included columns">
 					Select the columns you wish to plot.
 				</columnFilterOption>
 				
