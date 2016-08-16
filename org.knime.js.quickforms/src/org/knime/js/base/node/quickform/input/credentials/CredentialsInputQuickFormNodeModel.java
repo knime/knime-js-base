@@ -44,8 +44,10 @@
  */
 package org.knime.js.base.node.quickform.input.credentials;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
@@ -172,6 +174,27 @@ public final class CredentialsInputQuickFormNodeModel extends
             }
         }
         pushCredentialsFlowVariable(credentialsIdentifier, username, password);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onWorkfowCredentialsChanged(final Collection<Credentials> workflowCredentials) {
+        String credentialsIdentifier = getConfig().getFlowVariableName();
+        final CredentialsInputQuickFormValue value = getRelevantValue();
+        final String username = value != null ? value.getUsername() : null;
+        if (credentialsIdentifier == null || username == null) {
+            // no configuration, nothing to fix
+            return;
+        }
+
+        if (!value.isSavePassword()) {
+            Optional<Credentials> wkfCredOptional =
+                    workflowCredentials.stream().filter(c -> credentialsIdentifier.equals(c.getName())).findFirst();
+            wkfCredOptional.ifPresent(c -> {
+                value.setUsername(c.getLogin());
+                value.setPassword(c.getPassword());
+            });
+        }
     }
 
     /** Username &amp; password pair ... just a pair. */
