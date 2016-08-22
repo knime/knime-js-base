@@ -224,6 +224,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
     protected void performExecuteCreateView(final PortObject[] inData, final ExecutionContext exec) throws Exception {
         synchronized (getLock()) {
             BufferedDataTable table = (BufferedDataTable)inData[0];
+            String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
             LiftChartViewRepresentation representation = getViewRepresentation();
 
             // don't use staggered rendering and resizing for image creation
@@ -252,6 +253,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
                     response[counter] = ((DoubleValue)row.getCell(0)).getDoubleValue();
                     counter++;
                 }
+                representation.setId(tableId);
                 representation.setResponse(response);
                 representation.setCumulativeLift(cumLift);
                 representation.setLiftValues(lift);

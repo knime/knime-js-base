@@ -57,6 +57,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -80,6 +81,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     private static final String DATA_AREA_COLOR = "dataAreaColor";
     private static final String SHOW_AREA = "showArea";
 
+    private String m_id;
     private JSONROCCurve[] m_curves;
     private String[] m_colors;
 
@@ -344,6 +346,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(JSONDataTable.TABLE_ID, m_id);
         NodeSettingsWO curveSettings = settings.addNodeSettings("curveSettings");
         for (JSONROCCurve c : m_curves) {
             NodeSettingsWO s = curveSettings.addNodeSettings(c.getName());
@@ -374,6 +377,10 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+
+        //id added with 3.3
+        m_id = settings.getString(JSONDataTable.TABLE_ID, null);
+
         NodeSettingsRO curveSettings = settings.getNodeSettings("curveSettings");
         m_curves = new JSONROCCurve[curveSettings.keySet().size()];
         int count = 0;
@@ -400,6 +407,20 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         m_enableEditSubtitle = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_SUBTITLE);
         m_enableEditXAxisLabel = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_X_AXIS_LABEL);
         m_enableEditYAxisLabel = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_Y_AXIS_LABEL);
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return m_id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(final String id) {
+        m_id = id;
     }
 
     /**
@@ -433,6 +454,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         }
         ROCCurveViewRepresentation other = (ROCCurveViewRepresentation)obj;
         return new EqualsBuilder()
+                .append(m_id, other.m_id)
                 .append(m_curves, other.m_curves)
                 .append(m_colors, other.m_colors)
                 .append(m_showGrid, other.m_showGrid)
@@ -460,6 +482,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_id)
                 .append(m_curves)
                 .append(m_colors)
                 .append(m_showGrid)

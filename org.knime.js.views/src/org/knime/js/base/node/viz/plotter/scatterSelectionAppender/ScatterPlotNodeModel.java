@@ -314,7 +314,8 @@ public class ScatterPlotNodeModel extends
                 + rowID + " of " + rowValues.length + ".");
         }
 
-        JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(tableSpec.getColNames(), rowValues);
+        String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
+        JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(tableId, tableSpec.getColNames(), rowValues);
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
             if (tableSpec.getColTypes()[col].equals(JSTypes.STRING.getName())
                 && tableSpec.getPossibleValues().get(col) != null) {

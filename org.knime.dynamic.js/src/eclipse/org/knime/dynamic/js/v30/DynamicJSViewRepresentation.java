@@ -93,7 +93,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	private static final String JS_DEPENDENCIES = "jsDependencies";
     private static final String CSS_DEPENDENCIES = "cssDependencies";
     private static final String BINARY_FILES = "binaryFiles";
-    static final String IN_OBJECTS = "inObjects";
+    private static final String IN_OBJECTS = "inObjects";
+    private static final String TABLE_IDS = "tableIds";
     static final String FLOW_VARIABLES = "variables";
     static final String OPTIONS = "options";
     static final String CLASS_NAME = "className";
@@ -107,6 +108,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private DynamicJSDependency[] m_jsDependencies = new DynamicJSDependency[0];
     private List<String> m_cssDependencies = new ArrayList<String>();
     private Object[] m_inObjects = new Object[0];
+    private String[] m_tableIds = new String[0];
     private Map<String, String> m_flowVariables = new HashMap<String, String>();
     private Map<String, Object> m_options = new HashMap<String, Object>();
     private Map<String, String> m_binaryFiles = new HashMap<String, String>();
@@ -179,6 +181,22 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		m_inObjects = inObjects;
 	}
 
+    /**
+     * @since 3.3
+     */
+    @JsonProperty("tableIds")
+    public String[] getTableIds() {
+        return m_tableIds;
+    }
+
+    /**
+     * @since 3.3
+     */
+    @JsonProperty("tableIds")
+    public void setTableIds(final String[] tableIds) {
+        m_tableIds = tableIds;
+    }
+
     @JsonProperty("flowVariables")
     public Map<String, String> getFlowVariables() {
 		return m_flowVariables;
@@ -246,6 +264,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         settings.addStringArray(CSS_DEPENDENCIES, m_cssDependencies.toArray(new String[0]));
         settings.addBoolean(NEW, m_new);
         settings.addBoolean(IN_VIEW, m_runningInView);
+        settings.addStringArray(TABLE_IDS, m_tableIds);
         saveMap(settings.addNodeSettings(FLOW_VARIABLES), m_flowVariables, false);
         saveMap(settings.addNodeSettings(BINARY_FILES), m_binaryFiles, false);
         saveMap(settings.addNodeSettings(OPTIONS), m_options, true);
@@ -332,6 +351,10 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         m_cssDependencies = Arrays.asList(settings.getStringArray(CSS_DEPENDENCIES));
         m_new = settings.getBoolean(NEW);
         m_runningInView = settings.getBoolean(IN_VIEW);
+
+        // ids added with 3.3
+        m_tableIds = settings.getStringArray(TABLE_IDS, new String[0]);
+
         m_flowVariables = (Map<String, String>) loadMap(settings.getNodeSettings(FLOW_VARIABLES));
         m_binaryFiles = (Map<String, String>) loadMap(settings.getNodeSettings(BINARY_FILES));
         m_options = (Map<String, Object>) loadMap(settings.getNodeSettings(OPTIONS));
@@ -427,6 +450,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 .append(m_cssCode, other.m_cssCode)
                 .append(m_jsDependencies, other.m_jsDependencies)
                 .append(m_cssDependencies, other.m_cssDependencies)
+                .append(m_tableIds, other.m_tableIds)
                 .append(m_inObjects, other.m_inObjects)
                 .append(m_flowVariables, other.m_flowVariables)
                 //TODO: deal with string arrays, all other types are fine
@@ -448,6 +472,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 .append(m_cssCode)
                 .append(m_jsDependencies)
                 .append(m_cssDependencies)
+                .append(m_tableIds)
                 .append(m_inObjects)
                 .append(m_flowVariables)
                 //TODO: deal with string arrays, all other types are fine

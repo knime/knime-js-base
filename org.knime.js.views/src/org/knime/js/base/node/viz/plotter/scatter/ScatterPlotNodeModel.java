@@ -179,8 +179,9 @@ final class ScatterPlotNodeModel extends NodeModel implements
                         "Creating dataset, processing row " + rowID + " of " + rowValues.length + ".");
                 }
 
+                String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
                 JSONKeyedValues2DDataset dataset =
-                    new JSONKeyedValues2DDataset(tableSpec.getColNames(), rowValues);
+                    new JSONKeyedValues2DDataset(tableId, tableSpec.getColNames(), rowValues);
                 for (int col = 0; col < tableSpec.getNumColumns(); col++) {
                     if (tableSpec.getColTypes()[col] == "string"
                         && tableSpec.getPossibleValues().get(col) != null) {

@@ -454,16 +454,19 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 }
 
                 List<Object> viewInObjects = new ArrayList<Object>();
+                String[] tableIdsForProcessed = new String[processedInputs.length];
                 double remainingProgress = 1d - exec.getProgressMonitor().getProgress();
                 double subProgress = remainingProgress / inObjects.length;
-                for (Object processedObject : processedInputs) {
+                for (int i = 0; i < processedInputs.length; i++) {
+                    Object processedObject = processedInputs[i];
+                    String tableId = Integer.toString(getInHiLiteHandler(i).hashCode());
                     // unprocessed inObjects
                     if (processedObject instanceof PortObject) {
                         // only data in ports supported atm
                         if (processedObject instanceof BufferedDataTable) {
                             viewInObjects.add(createJSONTableFromBufferedDataTable(
                                 exec.createSubExecutionContext(subProgress),
-                                (BufferedDataTable)processedObject));
+                                (BufferedDataTable)processedObject, tableId));
                         } else {
                             // add null for all other unprocessed in port types
                             viewInObjects.addAll(null);
@@ -472,9 +475,13 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     } else {
                         // processed inObjects, assume they are directly serializable to JSON
                         viewInObjects.add(processedObject);
+                        if (inObjects[i] instanceof BufferedDataTable) {
+                            tableIdsForProcessed[i] = tableId;
+                        }
                     }
                 }
                 viewRepresentation.setInObjects(viewInObjects.toArray(new Object[0]));
+                viewRepresentation.setTableIds(tableIdsForProcessed);
 
                 Map<String, String> vStringMap = new HashMap<String, String>();
                 for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
@@ -781,8 +788,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return deps;
 	}
 
-	private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable) throws CanceledExecutionException {
-        JSONDataTable table = new JSONDataTable(inTable, 1, m_config.getMaxRows(), exec);
+	private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable, final String tableId) throws CanceledExecutionException {
+        JSONDataTable table = new JSONDataTable(inTable, 1, m_config.getMaxRows(), tableId, exec);
         if (m_config.getMaxRows() < inTable.getRowCount()) {
             setWarningMessage("Only the first "
                     + m_config.getMaxRows() + " rows are displayed.");

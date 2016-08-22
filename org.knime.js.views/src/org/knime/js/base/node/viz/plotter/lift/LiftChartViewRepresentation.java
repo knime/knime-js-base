@@ -55,6 +55,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -73,6 +74,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     private static final String CUMULATIVE_LIFT = "cumLift";
     private static final String RESPONSE_VALUES = "responseValues";
 
+    private String m_id;
     private boolean m_showGrid;
     private boolean m_resizeToWindow;
     private int m_lineWidth;
@@ -98,6 +100,20 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     private boolean m_enableSmoothingEdit = true;
 
     private boolean m_enableStaggeredRendering = true;
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return m_id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(final String id) {
+        m_id = id;
+    }
 
     /**
      * @return the enableSmoothingEdit
@@ -412,6 +428,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(JSONDataTable.TABLE_ID, getId());
         settings.addBoolean(LiftChartViewConfig.SHOW_GRID, getShowGrid());
         settings.addBoolean(LiftChartViewConfig.RESIZE_TO_WINDOW, getResizeToWindow());
 
@@ -442,6 +459,10 @@ public class LiftChartViewRepresentation extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+
+        //id added with 3.3
+        setId(settings.getString(JSONDataTable.TABLE_ID, null));
+
         setShowGrid(settings.getBoolean(LiftChartViewConfig.SHOW_GRID));
         setResizeToWindow(settings.getBoolean(LiftChartViewConfig.RESIZE_TO_WINDOW));
 
@@ -482,6 +503,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         }
         LiftChartViewRepresentation other = (LiftChartViewRepresentation)obj;
         return new EqualsBuilder()
+                .append(m_id, other.m_id)
                 .append(m_showGrid, other.m_showGrid)
                 .append(m_resizeToWindow, other.m_resizeToWindow)
                 .append(m_lineWidth, other.m_lineWidth)
@@ -513,6 +535,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_id)
                 .append(m_showGrid)
                 .append(m_resizeToWindow)
                 .append(m_lineWidth)
