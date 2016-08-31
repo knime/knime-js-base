@@ -117,7 +117,7 @@ knime_scatter_plot_selection_appender = function() {
 			var layoutContainer = "layoutContainer";
 			d3.select("body").attr("id", "body").append("div").attr("id", layoutContainer)
 				.style("width", "100%").style("height", "100%")
-				.style("min-width", minWidth + "px").style("min-height", (minHeight + getControlHeight()) + "px");
+				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 			
 			drawChart(layoutContainer);
 			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
@@ -163,14 +163,14 @@ knime_scatter_plot_selection_appender = function() {
 		var yAxisLabel = _value.yAxisLabel ? _value.yAxisLabel : _value.yColumn;
 		
 		var dataset = buildXYDataset();
-
+		
 		//console.time("Building chart");
 		
 		var chartWidth = _representation.imageWidth + "px;"
 		var chartHeight = _representation.imageHeight + "px";
 		if (_representation.resizeToWindow) {
 			chartWidth = "100%";
-			chartHeight = "calc(100% - " + getControlHeight() + "px)";
+			chartHeight = "100%";
 		}
 		d3.select("#"+layoutContainer).append("div")
 			.attr("id", containerID)
@@ -325,6 +325,21 @@ knime_scatter_plot_selection_appender = function() {
         var win = document.defaultView || document.parentWindow;
         win.onresize = resize;
         
+        // TODO: publish and subscribe to selection and filter events with knimeService
+        /*if (parent && parent.KnimePageLoader) {
+        	chartManager.getChart().getPlot().addListener(function() {
+        		var sel = getSelection();
+        		if (!sel) {
+        			sel = [];
+        		}
+        		var s = {
+        			selectAll: false,
+        			selection: getSelection()
+        		};
+        		parent.KnimePageLoader.publish("selectionChanged", s);
+        	});
+		}*/
+        
 		initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
 	};
 	
@@ -370,49 +385,60 @@ knime_scatter_plot_selection_appender = function() {
 	};
 	
 	updateTitle = function() {
+		var oldTitle = _value.chartTitle;
 		_value.chartTitle = document.getElementById("chartTitleText").value;
-		chartManager.getChart().setTitle(_value.chartTitle, _value.chartSubtitle, chartManager.getChart().getTitleAnchor());
+		if (_value.chartTitle !== oldTitle) {
+			var chart = chartManager.getChart();
+			chart.updateTitle(_value.chartTitle);
+			chart.notifyListeners();
+		}
 	};
 	
 	updateSubtitle = function() {
+		var oldTitle = _value.chartSubtitle;
 		_value.chartSubtitle = document.getElementById("chartSubtitleText").value;
-		chartManager.getChart().setTitle(_value.chartTitle, _value.chartSubtitle, chartManager.getChart().getTitleAnchor());
+		if (_value.chartSubtitle !== oldTitle) {
+			var chart = chartManager.getChart();
+			chart.updateSubtitle(_value.chartSubtitle);
+			chart.notifyListeners();
+		}
 	};
 	
 	updateXAxisLabel = function() {
+		var oldLabel = _value.xAxisLabel;
 		_value.xAxisLabel = document.getElementById("xAxisText").value;
-		var newAxisLabel = _value.xAxisLabel;
-		if (!_value.xAxisLabel) {
-			newAxisLabel = _value.xColumn;
+		if (_value.xAxisLabel !== oldLabel) {
+			var newAxisLabel = _value.xAxisLabel;
+			if (!_value.xAxisLabel) {
+				newAxisLabel = _value.xColumn;
+			}
+			chartManager.getChart().getPlot().getXAxis().setLabel(newAxisLabel);
 		}
-		chartManager.getChart().getPlot().getXAxis().setLabel(newAxisLabel);
 	};
 	
 	updateYAxisLabel = function() {
+		var oldLabel = _value.yAxisLabel;
 		_value.yAxisLabel = document.getElementById("yAxisText").value;
-		var newAxisLabel = _value.yAxisLabel;
-		if (!_value.xAxisLabel) {
-			newAxisLabel = _value.yColumn;
+		if (_value.yAxisLabel !== oldLabel) {
+			var newAxisLabel = _value.yAxisLabel;
+			if (!_value.xAxisLabel) {
+				newAxisLabel = _value.yColumn;
+			}
+			chartManager.getChart().getPlot().getYAxis().setLabel(newAxisLabel);
 		}
-		chartManager.getChart().getPlot().getYAxis().setLabel(newAxisLabel);
 	};
 	
 	drawControls = function(layoutContainer) {
 		
-	    var controlContainer = d3.select("#"+layoutContainer).insert("table", "#" + containerID + " ~ *")
-	    	.attr("id", "scatterControls")
-	    	/*.style("width", "100%")*/
-	    	.style("padding", "10px")
-	    	.style("margin", "0 auto")
-	    	.style("box-sizing", "border-box")
-	    	.style("font-family", defaultFont)
-	    	.style("font-size", defaultFontSize+"px")
-	    	.style("border-spacing", 0)
-	    	.style("border-collapse", "collapse");
-	    
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		knimeService.allowFullscreen();
+		
 	    if (_representation.showZoomResetButton) {
-	    	var resetButtonContainer = controlContainer.append("tr").append("td").attr("colspan", "4").style("text-align", "center");
-	    	resetButtonContainer.append("button").text("Reset Zoom").on("click", function() {
+	    	knimeService.addButton('scatter-zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
 	    		var plot = chartManager.getChart().getPlot();
 	    		plot.getXAxis().setAutoRange(true);
 	    		plot.getYAxis().setAutoRange(true);
@@ -422,134 +448,63 @@ knime_scatter_plot_selection_appender = function() {
 	    if (!_representation.enableViewConfiguration) return;
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
-	    	var titleEditContainer = controlContainer.append("tr");
 	    	if (_representation.enableTitleChange) {
-	    		titleEditContainer.append("td").append("label").attr("for", "chartTitleText").text("Chart Title:").style("margin-right", "5px");
-	    		var chartTitleText = titleEditContainer.append("td").append("input")
-	    			.attr("type", "text")
-	    			.attr("id", "chartTitleText")
-	    			.attr("name", "chartTitleText")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px")
-	    		.on("blur", function() {
-	    			updateTitle();
-	    		})
-	    		.on("keypress", function() {
-	    			if ( d3.event.keyCode == 13 ) {
-	    				updateTitle();
-	    			}
-	    		});
-	    		if (_representation.enableYAxisLabelEdit) {
-	    			chartTitleText.style("margin-right", "10px");
-	    		}
-	    		document.getElementById("chartTitleText").value = _value.chartTitle;
+	    		var chartTitleText = createMenuTextField('chartTitleText', _value.chartTitle, updateTitle);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
 	    	}
 	    	if (_representation.enableSubtitleChange) {
-	    		titleEditContainer.append("td").append("label").attr("for", "chartSubtitleText").text("Chart Subtitle:").style("margin-right", "5px");
-	    		titleEditContainer.append("td").append("input")
-	    			.attr("type", "text")
-	    			.attr("id", "chartSubtitleText")
-	    			.attr("name", "chartSubtitleText")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px")
-	    		.on("blur", function() {
-	    			updateSubtitle();
-	    		})
-	    		.on("keypress", function() {
-	    			if ( d3.event.keyCode == 13 ) {
-	    				updateSubtitle();
-	    			}
-	    		});
-	    		document.getElementById("chartSubtitleText").value = _value.chartSubtitle;
+	    		var chartSubtitleText = createMenuTextField('chartSubtitleText', _value.chartSubtitle, updateSubtitle);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText);
+	    		var icon = mi.getElementsByTagName('i')[0];
+	    		icon.style.fontSize = '10px';
+	    		icon.style.position = 'relative';
+	    		icon.style.top = '-2px';
+	    		icon.style.left = '2px';
+	    	}
+	    	if (_representation.enableXColumnChange || _representation.enableYColumnChange ||
+	    			_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit ||
+	    			_representation.enableDotSizeChange) {
+	    		knimeService.addMenuDivider();
 	    	}
 	    }
 	    
 	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {
-	    	var columnChangeContainer = controlContainer.append("tr")/*.style("margin", "5px auto").style("display", "table")*/;
 	    	if (_representation.enableXColumnChange) {
-	    		columnChangeContainer.append("td").append("label").attr("for", "xColumnSelect").text("X Column:").style("margin-right", "5px");
-	    		var xSelect = columnChangeContainer.append("td").append("select")
-	    			.attr("id", "xColumnSelect")
-	    			.attr("name", "xColumnSelect")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px");
-	    		var columnKeys = _keyedDataset.columnKeys();
-	    		for (var colID = 0; colID < columnKeys.length; colID++) {
-	    			xSelect.append("option").attr("value", columnKeys[colID]).text(columnKeys[colID]);
-	    		}
-	    		document.getElementById("xColumnSelect").value = _value.xColumn;
-	    		xSelect.on("change", function() {
-	    			_value.xColumn = document.getElementById("xColumnSelect").value;
+	    		var xSelect = createMenuSelect('xColumnSelect', _value.xColumn, _keyedDataset.columnKeys(), function() {
+	    			_value.xColumn = this.value;
 	    			if (!_value.xAxisLabel) {
 	    				chartManager.getChart().getPlot().getXAxis().setLabel(_value.xColumn, false);
 	    			}
 	    			updateChart();
 	    		});
-	    		if (_representation.enableYColumnChange) {
-	    			xSelect.style("margin-right", "10px");
-	    		}
+	    		knimeService.addMenuItem('X Column:', 'long-arrow-right', xSelect);
+	    		
 	    	}
 	    	if (_representation.enableYColumnChange) {
-	    		columnChangeContainer.append("td").append("label").attr("for", "yColumnSelect").text("Y Column:").style("margin-right", "5px");
-	    		var ySelect = columnChangeContainer.append("td").append("select")
-	    			.attr("id", "yColumnSelect")
-	    			.attr("name", "yColumnSelect")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px");
-	    		var columnKeys = _keyedDataset.columnKeys();
-	    		for (var colID = 0; colID < columnKeys.length; colID++) {
-	    			ySelect.append("option").attr("value", columnKeys[colID]).text(columnKeys[colID]);
-	    		}
-	    		document.getElementById("yColumnSelect").value = _value.yColumn;
-	    		ySelect.on("change", function() {
-	    			_value.yColumn = document.getElementById("yColumnSelect").value;
+	    		var ySelect = createMenuSelect('yColumnSelect', _value.yColumn, _keyedDataset.columnKeys(), function() {
+	    			_value.yColumn = this.value;
 	    			if (!_value.yAxisLabel) {
 	    				chartManager.getChart().getPlot().getYAxis().setLabel(_value.yColumn, false);
 	    			}
 	    			updateChart();
 	    		});
+	    		knimeService.addMenuItem('Y Column:', 'long-arrow-up', ySelect);
+	    	}
+	    	if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit || _representation.enableDotSizeChange) {
+	    		knimeService.addMenuDivider();
 	    	}
 	    }
 	    if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit) {
-	    	var axisLabelContainer = controlContainer.append("tr")/*.style("margin", "5px auto").style("display", "table")*/;
 	    	if (_representation.enableXAxisLabelEdit) {
-	    		axisLabelContainer.append("td").append("label").attr("for", "xAxisText").text("X Axis Label:").style("margin-right", "5px");
-	    		var xAxisText = axisLabelContainer.append("td").append("input")
-	    			.attr("type", "text")
-	    			.attr("id", "xAxisText")
-	    			.attr("name", "xAxisText")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px")
-	    		.on("blur", function() {
-	    			updateXAxisLabel();
-	    		})
-	    		.on("keypress", function() {
-	    			if ( d3.event.keyCode == 13 ) {
-	    				updateXAxisLabel();
-	    			}
-	    		});
-	    		if (_representation.enableYAxisLabelEdit) {
-	    			xAxisText.style("margin-right", "10px");
-	    		}
-	    		document.getElementById("xAxisText").value = _value.xAxisLabel;
+	    		var xAxisText = createMenuTextField('xAxisText', _value.xAxisLabel, updateXAxisLabel);
+	    		knimeService.addMenuItem('X Axis Label:', 'ellipsis-h', xAxisText);
 	    	}
 	    	if (_representation.enableYAxisLabelEdit) {
-	    		axisLabelContainer.append("td").append("label").attr("for", "yAxisText").text("Y Axis Label:").style("margin-right", "5px");
-	    		axisLabelContainer.append("td").append("input")
-	    			.attr("type", "text")
-	    			.attr("id", "yAxisText")
-	    			.attr("name", "yAxisText")
-	    			.style("font-family", defaultFont)
-	    			.style("font-size", defaultFontSize+"px")
-	    		.on("blur", function() {
-	    			updateYAxisLabel();
-	    		})
-	    		.on("keypress", function() {
-	    			if ( d3.event.keyCode == 13 ) {
-	    				updateYAxisLabel();
-	    			}
-	    		});
-	    		document.getElementById("yAxisText").value = _value.yAxisLabel;
+	    		var yAxisText = createMenuTextField('yAxisText', _value.yAxisLabel, updateYAxisLabel);
+	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
+	    	}
+	    	if (_representation.enableDotSizeChange) {
+	    		knimeService.addMenuDivider();
 	    	}
 	    }
 	    if (_representation.enableDotSizeChange) {
@@ -565,21 +520,44 @@ knime_scatter_plot_selection_appender = function() {
 	    }
 	};
 	
-	getControlHeight = function() {
-		var rows = 0;
-		var sizeFactor = 25;
-		var padding = 10;
-		if (_representation.showZoomResetButton) rows++;
-		if (_representation.enableViewConfiguration) {
-			if (_representation.enableTitleChange || _representation.enableSubtitleChange) rows++;
-			if (_representation.enableXColumnChange || _representation.enableYColumnChange) rows++;
-			if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit) rows++;
-			if (_representation.enableDotSizeChange) rows++;
+	createMenuTextField = function(id, initialValue, callback) {
+		var textField = document.createElement('input');
+		textField.setAttribute('type', 'text');
+		setFieldDefaults(textField, id, '150px');
+		textField.addEventListener('blur', callback);
+		textField.addEventListener("keypress", function(event) {
+			if ( event.keyCode == 13 ) {
+				callback();
+			}
+		});
+		textField.value = initialValue;
+		return textField;
+	}
+	
+	createMenuSelect = function(id, initialValue, options, callback) {
+		var select = document.createElement('select');
+		setFieldDefaults(select, id, '150px');
+		for (var oId = 0; oId < options.length; oId++) {
+			var option = document.createElement('option');
+			option.setAttribute('value', options[oId]);
+			option.appendChild(document.createTextNode(options[oId]));
+			select.appendChild(option);
 		}
-		var height = rows * sizeFactor;
-		if (height > 0) height += padding;
-		return height;
-	};
+		select.value = initialValue;
+		select.addEventListener('change', callback);
+		return select;
+	}
+	
+	setFieldDefaults = function(field, id, width) {
+		field.setAttribute('id', id);
+		field.setAttribute('name', id);
+		field.style.fontFamily = defaultFont;
+		field.style.fontSize = defaultFontSize + 'px';
+		if (width) {
+			field.style.width = width;
+		}
+		return field;
+	}
 	
 	getSelection = function() {
 		var selections = chartManager.getChart().getPlot().getDataset().selections;

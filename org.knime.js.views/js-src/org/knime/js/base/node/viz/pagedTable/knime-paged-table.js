@@ -30,6 +30,20 @@ knime_paged_table = function() {
 
 		if (parent && parent.KnimePageLoader) {
 			drawTable();
+			//TODO: publish and subscribe to selection and filter events with knimeService
+			/*parent.KnimePageLoader.subscribe("selectionChanged", function(data) {
+				_value.selectAll = data.selectAll;
+				selection = {};
+				var rows = dataTable.rows().nodes();
+				$('input[type="checkbox"]', rows).prop('checked', false);
+				if (data.selection) {
+					var selArray = [];
+					for (var i = 0; i < data.selection.length; i++) {
+						selection[data.selection[i]] = true;
+						$('input[type="checkbox"][value="' + data.selection[i] + '"]', rows).prop('checked', true);
+					}
+				}
+			})*/;
 		} else {
 			$(document).ready(function() {
 				drawTable();
@@ -50,10 +64,10 @@ knime_paged_table = function() {
 			
 			var wrapper = $('<div id="knimePagedTableContainer">');
 			body.append(wrapper);
-			if (_representation.title != null) {
+			if (_representation.title != null && _representation.title != '') {
 				wrapper.append('<h1>' + _representation.title + '</h1>')
 			}
-			if (_representation.subtitle != null) {
+			if (_representation.subtitle != null && _representation.subtitle != '') {
 				wrapper.append('<h2>' + _representation.subtitle + '</h2>')
 			}
 			var table = $('<table id="knimePagedTable" class="table table-striped table-bordered" width="100%">');
@@ -183,6 +197,8 @@ knime_paged_table = function() {
 				}
 				buttons.push(unsortButton);
 			}
+			
+			var firstChunk = getDataSlice(0, _representation.initialPageSize);
 
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
@@ -196,7 +212,7 @@ knime_paged_table = function() {
 				'ordering': _representation.enableSorting,
 				'processing': true,
 				'deferRender': !_representation.enableSelection,
-				'data': getDataSlice(0, _representation.initialPageSize),
+				'data': firstChunk,
 				'buttons': buttons,
 				'fnDrawCallback': function() {
 					if (!_representation.displayColumnHeaders)
@@ -259,6 +275,13 @@ knime_paged_table = function() {
 			            }
 			        });
 			    });
+			}
+			
+			if (knimeService) {
+				if (_representation.enableSearching && !_representation.title) {
+					knimeService.noFloatingHeader();
+				}
+				knimeService.allowFullscreen();
 			}
 			
 			//load all data
