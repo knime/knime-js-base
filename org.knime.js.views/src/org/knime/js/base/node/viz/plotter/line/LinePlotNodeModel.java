@@ -326,8 +326,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                 + rowID + " of " + rowValues.length + ".");
         }
 
-        String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
-        JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(tableId, tableSpec.getColNames(), rowValues);
+        JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
             String colColor = getColorForColumn(tableSpec.getColNames()[col], jsonColorTable);
             if (colColor != null) {

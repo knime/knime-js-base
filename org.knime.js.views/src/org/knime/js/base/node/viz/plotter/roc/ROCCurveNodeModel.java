@@ -196,7 +196,6 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
     protected void performExecuteCreateView(final PortObject[] inData, final ExecutionContext exec) throws Exception {
         synchronized (getLock()) {
             BufferedDataTable table = (BufferedDataTable)inData[0];
-            String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
             BufferedDataTable colorTable = (BufferedDataTable)inData[1];
 
             ROCCurveViewRepresentation representation = getViewRepresentation();
@@ -239,7 +238,7 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
                 copyConfigToView();
 
                 // don't use staggered rendering and resizing for image creation
-                representation.setId(tableId);
+                representation.setId(getTableId(0));
                 representation.setEnableStaggeredRendering(false);
                 representation.setResizeToWindow(false);
             }

@@ -122,8 +122,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
                 if (m_config.getMaxRows() < table.getRowCount()) {
                     setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
                 }
-                String tableId = Integer.toString(getInHiLiteHandler(0).hashCode());
-                JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), tableId, exec);
+                JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), getTableId(0), exec);
                 representation.setTable(jsonTable);
             }
 

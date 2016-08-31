@@ -459,7 +459,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 double subProgress = remainingProgress / inObjects.length;
                 for (int i = 0; i < processedInputs.length; i++) {
                     Object processedObject = processedInputs[i];
-                    String tableId = Integer.toString(getInHiLiteHandler(i).hashCode());
+                    String tableId = getTableId(i);
                     // unprocessed inObjects
                     if (processedObject instanceof PortObject) {
                         // only data in ports supported atm
