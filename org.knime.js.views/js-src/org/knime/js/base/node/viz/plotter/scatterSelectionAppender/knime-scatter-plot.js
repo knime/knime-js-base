@@ -120,9 +120,8 @@ knime_scatter_plot_selection_appender = function() {
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 			
 			drawChart(layoutContainer);
-			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
-				drawControls(layoutContainer);
-			}
+			drawControls(layoutContainer);
+			
 			//console.timeEnd("Total init time");
 		} catch(err) {
 			if (err.stack) {
@@ -325,20 +324,11 @@ knime_scatter_plot_selection_appender = function() {
         var win = document.defaultView || document.parentWindow;
         win.onresize = resize;
         
-        // TODO: publish and subscribe to selection and filter events with knimeService
-        /*if (parent && parent.KnimePageLoader) {
+        if (knimeService && knimeService.isInteractivityAvailable()) {
         	chartManager.getChart().getPlot().addListener(function() {
-        		var sel = getSelection();
-        		if (!sel) {
-        			sel = [];
-        		}
-        		var s = {
-        			selectAll: false,
-        			selection: getSelection()
-        		};
-        		parent.KnimePageLoader.publish("selectionChanged", s);
+        		knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection());
         	});
-		}*/
+		}
         
 		initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
 	};
