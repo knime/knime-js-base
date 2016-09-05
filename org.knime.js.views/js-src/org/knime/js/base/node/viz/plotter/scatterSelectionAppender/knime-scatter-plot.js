@@ -377,22 +377,26 @@ knime_scatter_plot_selection_appender = function() {
 	updateTitle = function() {
 		var oldTitle = _value.chartTitle;
 		_value.chartTitle = document.getElementById("chartTitleText").value;
-		if (_value.chartTitle !== oldTitle) {
-			var chart = chartManager.getChart();
-			chart.updateTitle(_value.chartTitle);
-			chart.notifyListeners();
+		if (_value.chartTitle !== oldTitle || typeof _value.chartTitle !== typeof oldTitle) {
+			setTitles();
 		}
 	};
 	
 	updateSubtitle = function() {
 		var oldTitle = _value.chartSubtitle;
 		_value.chartSubtitle = document.getElementById("chartSubtitleText").value;
-		if (_value.chartSubtitle !== oldTitle) {
-			var chart = chartManager.getChart();
-			chart.updateSubtitle(_value.chartSubtitle);
-			chart.notifyListeners();
+		if (_value.chartSubtitle !== oldTitle || typeof _value.chartTitle !== typeof oldTitle) {
+			setTitles();
 		}
 	};
+	
+	setTitles = function() {
+		var chart = chartManager.getChart();
+		chart.setTitle(_value.chartTitle, _value.chartSubtitle, chart.getTitleAnchor(), false);
+		chart.updateTitle(null, new jsfc.Font("sans-serif", 24, false, false));
+		chart.updateSubtitle(null, new jsfc.Font("sans-serif", 12, false, false));
+		chart.notifyListeners();
+	}
 	
 	updateXAxisLabel = function() {
 		var oldLabel = _value.xAxisLabel;
@@ -498,7 +502,8 @@ knime_scatter_plot_selection_appender = function() {
 	    	}
 	    }
 	    if (_representation.enableDotSizeChange) {
-	    	var dotSizeContainer = controlContainer.append("tr")/*.style("margin", "5px auto").style("display", "table")*/;
+	    	// TODO enable once implemented
+	    	/*var dotSizeContainer = controlContainer.append("tr").style("margin", "5px auto").style("display", "table");
 	    	dotSizeContainer.append("td").append("label").attr("for", "dotSizeInput").text("Dot Size:").style("margin-right", "5px");
 	    	dotSizeContainer.append("td").append("input")
 	    		.attr("type", "number")
@@ -506,7 +511,7 @@ knime_scatter_plot_selection_appender = function() {
 	    		.attr("name", "dotSizeInput")
 	    		.attr("value", _value.dotSize)
 	    		.style("font-family", defaultFont)
-	    		.style("font-size", defaultFontSize+"px");
+	    		.style("font-size", defaultFontSize+"px");*/
 	    }
 	};
 	
