@@ -30,7 +30,33 @@ knime_paged_table = function() {
 
 		if (parent && parent.KnimePageLoader) {
 			drawTable();
-			//TODO: publish and subscribe to selection and filter events with knimeService
+		} else {
+			$(document).ready(function() {
+				drawTable();
+			});
+		}
+		if (knimeService && knimeService.isInteractivityAvailable()) {
+			//TODO: make subscription configurable
+			knimeService.subscribeToSelection(_representation.table.id, function(data) {
+				// clear current selection
+				selection = {};
+				var rows = dataTable.rows().nodes();
+				$('input[type="checkbox"]', rows).prop('checked', false);
+				if (!data.elements) {
+					return;
+				}
+				for (var elId = 0; elId < data.elements.length; elId++) {
+					var element = data.elements[elId];
+					if (!element.rows) {
+						continue;
+					}
+					for (var rId = 0; rId < element.rows.length; rId++) {
+						var rowId = element.rows[rId];
+						selection[rowId] = true;
+						$('input[type="checkbox"][value="' + rowId + '"]', rows).prop('checked', true);
+					}
+				}
+			});
 			/*parent.KnimePageLoader.subscribe("selectionChanged", function(data) {
 				_value.selectAll = data.selectAll;
 				selection = {};
@@ -44,10 +70,6 @@ knime_paged_table = function() {
 					}
 				}
 			})*/;
-		} else {
-			$(document).ready(function() {
-				drawTable();
-			});
 		}
 	};
 	
