@@ -184,7 +184,8 @@ knime_scatter_plot_selection_appender = function() {
 		//chart.build(container);
 				
 		var plot = new jsfc.XYPlot(dataset);
-		plot.setStaggerRendering(_representation.enableStaggeredRendering);
+		//TODO: how to handle this best?
+		//plot.setStaggerRendering(_representation.enableStaggeredRendering);
 		var xAxis = plot.getXAxis();
         xAxis.setLabel(xAxisLabel);
         xAxis.setLabelFont(new jsfc.Font(defaultFont, defaultFontSize, true));
