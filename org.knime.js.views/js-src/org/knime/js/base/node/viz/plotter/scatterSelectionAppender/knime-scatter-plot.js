@@ -551,6 +551,7 @@ knime_scatter_plot_selection_appender = function() {
 		if (width) {
 			field.style.width = width;
 		}
+		field.style.margin = '0';
 		return field;
 	}
 	
