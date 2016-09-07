@@ -6,6 +6,7 @@ knime_paged_table = function() {
 	var knimeTable = null;
 	var dataTable = null;
 	var selection = {};
+	var hideUnselected = false;
 	
 	//register neutral ordering method for clear selection button
 	$.fn.dataTable.Api.register( 'order.neutral()', function () {
@@ -35,6 +36,23 @@ knime_paged_table = function() {
 				drawTable();
 			});
 		}
+		if (knimeService) {
+			var checkbox = $('<input type="checkbox" value="Show selected">');
+			checkbox.change(function() {
+				var prev = hideUnselected;
+				hideUnselected = this.checked;
+				if (prev !== hideUnselected) {
+					dataTable.draw();
+				}
+			});
+			knimeService.addMenuItem('Show selected rows only', 'filter', checkbox.get(0));
+			$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
+				if (hideUnselected) {
+					return selection.hasOwnProperty(rowData[0]);
+				}
+				return true;
+			});
+		}
 		if (knimeService && knimeService.isInteractivityAvailable()) {
 			//TODO: make subscription configurable
 			knimeService.subscribeToSelection(_representation.table.id, function(data) {
@@ -55,6 +73,9 @@ knime_paged_table = function() {
 						selection[rowId] = true;
 						$('input[type="checkbox"][value="' + rowId + '"]', rows).prop('checked', true);
 					}
+				}
+				if (hideUnselected) {
+					dataTable.draw();
 				}
 			});
 			/*parent.KnimePageLoader.subscribe("selectionChanged", function(data) {
