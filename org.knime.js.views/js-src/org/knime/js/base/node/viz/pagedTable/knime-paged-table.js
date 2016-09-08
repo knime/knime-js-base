@@ -9,12 +9,12 @@ knime_paged_table = function() {
 	var hideUnselected = false;
 	
 	//register neutral ordering method for clear selection button
-	$.fn.dataTable.Api.register( 'order.neutral()', function () {
-	    return this.iterator( 'table', function ( s ) {
+	$.fn.dataTable.Api.register('order.neutral()', function () {
+	    return this.iterator('table', function (s) {
 	        s.aaSorting.length = 0;
 	        s.aiDisplay.sort( function (a,b) {
 	            return a-b;
-	        } );
+	        });
 	        s.aiDisplayMaster.sort( function (a,b) {
 	            return a-b;
 	        } );
@@ -37,60 +37,49 @@ knime_paged_table = function() {
 			});
 		}
 		if (knimeService) {
-			var checkbox = $('<input type="checkbox" value="Show selected">');
-			checkbox.change(function() {
-				var prev = hideUnselected;
-				hideUnselected = this.checked;
-				if (prev !== hideUnselected) {
-					dataTable.draw();
-				}
-			});
-			knimeService.addMenuItem('Show selected rows only', 'filter', checkbox.get(0));
-			$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
-				if (hideUnselected) {
-					return selection.hasOwnProperty(rowData[0]);
-				}
-				return true;
-			});
-		}
-		if (knimeService && knimeService.isInteractivityAvailable()) {
-			//TODO: make subscription configurable
-			knimeService.subscribeToSelection(_representation.table.id, function(data) {
-				// clear current selection
-				selection = {};
-				var rows = dataTable.rows().nodes();
-				$('input[type="checkbox"]', rows).prop('checked', false);
-				if (!data.elements) {
-					return;
-				}
-				for (var elId = 0; elId < data.elements.length; elId++) {
-					var element = data.elements[elId];
-					if (!element.rows) {
-						continue;
+			if (_representation.enableSelection) {
+				var checkbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', false /* use config setting */, function() {
+					var prev = hideUnselected;
+					hideUnselected = this.checked;
+					if (prev !== hideUnselected) {
+						dataTable.draw();
 					}
-					for (var rId = 0; rId < element.rows.length; rId++) {
-						var rowId = element.rows[rId];
-						selection[rowId] = true;
-						$('input[type="checkbox"][value="' + rowId + '"]', rows).prop('checked', true);
+				});
+				knimeService.addMenuItem('Show selected rows only', 'filter', checkbox);
+				$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
+					if (hideUnselected) {
+						return selection[rowData[0]];
 					}
+					return true;
+				});
+				if (knimeService.isInteractivityAvailable()) {
+					//TODO: make subscription configurable
+					knimeService.subscribeToSelection(_representation.table.id, function(data) {
+						// clear current selection
+						selection = {};
+						// construct new selection object
+						if (data.elements) {
+							for (var elId = 0; elId < data.elements.length; elId++) {
+								var element = data.elements[elId];
+								if (!element.rows) {
+									continue;
+								}
+								for (var rId = 0; rId < element.rows.length; rId++) {
+									selection[element.rows[rId]] = true;
+								}
+							}
+						}
+						// set checked status on checkboxes
+						var nodes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
+						nodes.each(function() {
+							this.checked = selection[this.getAttribute('value')];
+						});
+						if (hideUnselected) {
+							dataTable.draw();
+						}
+					});
 				}
-				if (hideUnselected) {
-					dataTable.draw();
-				}
-			});
-			/*parent.KnimePageLoader.subscribe("selectionChanged", function(data) {
-				_value.selectAll = data.selectAll;
-				selection = {};
-				var rows = dataTable.rows().nodes();
-				$('input[type="checkbox"]', rows).prop('checked', false);
-				if (data.selection) {
-					var selArray = [];
-					for (var i = 0; i < data.selection.length; i++) {
-						selection[data.selection[i]] = true;
-						$('input[type="checkbox"][value="' + data.selection[i] + '"]', rows).prop('checked', true);
-					}
-				}
-			})*/;
+			}
 		}
 	};
 	
