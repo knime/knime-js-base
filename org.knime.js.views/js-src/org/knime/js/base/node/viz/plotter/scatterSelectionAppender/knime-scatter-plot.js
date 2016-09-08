@@ -444,17 +444,12 @@ knime_scatter_plot_selection_appender = function() {
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
 	    	if (_representation.enableTitleChange) {
-	    		var chartTitleText = createMenuTextField('chartTitleText', _value.chartTitle, updateTitle);
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.chartTitle, updateTitle, false);
 	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
 	    	}
 	    	if (_representation.enableSubtitleChange) {
-	    		var chartSubtitleText = createMenuTextField('chartSubtitleText', _value.chartSubtitle, updateSubtitle);
-	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText);
-	    		var icon = mi.getElementsByTagName('i')[0];
-	    		icon.style.fontSize = '10px';
-	    		icon.style.position = 'relative';
-	    		icon.style.top = '-2px';
-	    		icon.style.left = '2px';
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.chartSubtitle, updateSubtitle, false);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 	    	}
 	    	if (_representation.enableXColumnChange || _representation.enableYColumnChange ||
 	    			_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit ||
@@ -465,7 +460,7 @@ knime_scatter_plot_selection_appender = function() {
 	    
 	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {
 	    	if (_representation.enableXColumnChange) {
-	    		var xSelect = createMenuSelect('xColumnSelect', _value.xColumn, _keyedDataset.columnKeys(), function() {
+	    		var xSelect = knimeService.createMenuSelect('xColumnSelect', _value.xColumn, _keyedDataset.columnKeys(), function() {
 	    			_value.xColumn = this.value;
 	    			if (!_value.xAxisLabel) {
 	    				chartManager.getChart().getPlot().getXAxis().setLabel(_value.xColumn, false);
@@ -476,7 +471,7 @@ knime_scatter_plot_selection_appender = function() {
 	    		
 	    	}
 	    	if (_representation.enableYColumnChange) {
-	    		var ySelect = createMenuSelect('yColumnSelect', _value.yColumn, _keyedDataset.columnKeys(), function() {
+	    		var ySelect = knimeService.createMenuSelect('yColumnSelect', _value.yColumn, _keyedDataset.columnKeys(), function() {
 	    			_value.yColumn = this.value;
 	    			if (!_value.yAxisLabel) {
 	    				chartManager.getChart().getPlot().getYAxis().setLabel(_value.yColumn, false);
@@ -491,11 +486,11 @@ knime_scatter_plot_selection_appender = function() {
 	    }
 	    if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit) {
 	    	if (_representation.enableXAxisLabelEdit) {
-	    		var xAxisText = createMenuTextField('xAxisText', _value.xAxisLabel, updateXAxisLabel);
+	    		var xAxisText = knimeService.createMenuTextField('xAxisText', _value.xAxisLabel, updateXAxisLabel, false);
 	    		knimeService.addMenuItem('X Axis Label:', 'ellipsis-h', xAxisText);
 	    	}
 	    	if (_representation.enableYAxisLabelEdit) {
-	    		var yAxisText = createMenuTextField('yAxisText', _value.yAxisLabel, updateYAxisLabel);
+	    		var yAxisText = knimeService.createMenuTextField('yAxisText', _value.yAxisLabel, updateYAxisLabel);
 	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
 	    	}
 	    	if (_representation.enableDotSizeChange) {
@@ -515,46 +510,6 @@ knime_scatter_plot_selection_appender = function() {
 	    		.style("font-size", defaultFontSize+"px");*/
 	    }
 	};
-	
-	createMenuTextField = function(id, initialValue, callback) {
-		var textField = document.createElement('input');
-		textField.setAttribute('type', 'text');
-		setFieldDefaults(textField, id, '150px');
-		textField.addEventListener('blur', callback);
-		textField.addEventListener("keypress", function(event) {
-			if ( event.keyCode == 13 ) {
-				callback();
-			}
-		});
-		textField.value = initialValue;
-		return textField;
-	}
-	
-	createMenuSelect = function(id, initialValue, options, callback) {
-		var select = document.createElement('select');
-		setFieldDefaults(select, id, '150px');
-		for (var oId = 0; oId < options.length; oId++) {
-			var option = document.createElement('option');
-			option.setAttribute('value', options[oId]);
-			option.appendChild(document.createTextNode(options[oId]));
-			select.appendChild(option);
-		}
-		select.value = initialValue;
-		select.addEventListener('change', callback);
-		return select;
-	}
-	
-	setFieldDefaults = function(field, id, width) {
-		field.setAttribute('id', id);
-		field.setAttribute('name', id);
-		field.style.fontFamily = defaultFont;
-		field.style.fontSize = defaultFontSize + 'px';
-		if (width) {
-			field.style.width = width;
-		}
-		field.style.margin = '0';
-		return field;
-	}
 	
 	getSelection = function() {
 		var selections = chartManager.getChart().getPlot().getDataset().selections;
