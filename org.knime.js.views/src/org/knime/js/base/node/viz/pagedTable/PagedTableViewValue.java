@@ -73,6 +73,10 @@ public class PagedTableViewValue extends JSONViewContent {
     private static final String CFG_SELECT_ALL = "selectAll";
     private boolean m_selectAll;
 
+    private static final String CFG_SELECT_ALL_INDETERMINATE = "selectAllIndeterminate";
+    private static final boolean DEFAULT_SELECT_ALL_INDETERMINATE = false;
+    private boolean m_selectAllIndeterminate;
+
     private static final String CFG_PAGE_SIZE = "pageSize";
     private int m_pageSize;
 
@@ -87,6 +91,15 @@ public class PagedTableViewValue extends JSONViewContent {
 
     private static final String CFG_CURRENT_ORDER = "currentOrder";
     private Object[][] m_currentOrder = new Object[0][];
+
+    private static final String CFG_HIDE_UNSELECTED = "hideUnselected";
+    private static final boolean DEFAULT_HIDE_UNSELECTED = false;
+    private boolean m_hideUnselected;
+
+    private boolean m_publishSelection;
+    private boolean m_subscribeSelection;
+    private boolean m_publishFilter;
+    private boolean m_subscribeFilter;
 
     /**
      * @return the selection
@@ -114,6 +127,20 @@ public class PagedTableViewValue extends JSONViewContent {
      */
     public void setSelectAll(final boolean selectAll) {
         m_selectAll = selectAll;
+    }
+
+    /**
+     * @return the selectAllIndeterminate
+     */
+    public boolean getSelectAllIndeterminate() {
+        return m_selectAllIndeterminate;
+    }
+
+    /**
+     * @param selectAllIndeterminate the selectAllIndeterminate to set
+     */
+    public void setSelectAllIndeterminate(final boolean selectAllIndeterminate) {
+        m_selectAllIndeterminate = selectAllIndeterminate;
     }
 
     /**
@@ -187,6 +214,76 @@ public class PagedTableViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the hideUnselected
+     */
+    public boolean getHideUnselected() {
+        return m_hideUnselected;
+    }
+
+    /**
+     * @param hideUnselected the hideUnselected to set
+     */
+    public void setHideUnselected(final boolean hideUnselected) {
+        m_hideUnselected = hideUnselected;
+    }
+
+    /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
+     * @return the publishFilter
+     */
+    public boolean getPublishFilter() {
+        return m_publishFilter;
+    }
+
+    /**
+     * @param publishFilter the publishFilter to set
+     */
+    public void setPublishFilter(final boolean publishFilter) {
+        m_publishFilter = publishFilter;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -205,6 +302,14 @@ public class PagedTableViewValue extends JSONViewContent {
             sO.addInt("col", (Integer)m_currentOrder[i][0]);
             sO.addString("dir", (String)m_currentOrder[i][1]);
         }
+
+        //added with 3.3
+        settings.addBoolean(CFG_SELECT_ALL_INDETERMINATE, m_selectAllIndeterminate);
+        settings.addBoolean(CFG_HIDE_UNSELECTED, m_hideUnselected);
+        settings.addBoolean(PagedTableViewConfig.CFG_PUBLISH_SELECTION, m_publishSelection);
+        settings.addBoolean(PagedTableViewConfig.CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
+        settings.addBoolean(PagedTableViewConfig.CFG_PUBLISH_FILTER, m_publishFilter);
+        settings.addBoolean(PagedTableViewConfig.CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
     }
 
     /**
@@ -228,6 +333,14 @@ public class PagedTableViewValue extends JSONViewContent {
             String dir = sO.getString("dir");
             m_currentOrder[i] = new Object[]{col, dir};
         }
+
+        //added with 3.3
+        m_selectAllIndeterminate = settings.getBoolean(CFG_SELECT_ALL_INDETERMINATE, DEFAULT_SELECT_ALL_INDETERMINATE);
+        m_hideUnselected = settings.getBoolean(CFG_HIDE_UNSELECTED, DEFAULT_HIDE_UNSELECTED);
+        m_publishSelection = settings.getBoolean(PagedTableViewConfig.CFG_PUBLISH_SELECTION, PagedTableViewConfig.DEFAULT_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(PagedTableViewConfig.CFG_SUBSCRIBE_SELECTION, PagedTableViewConfig.DEFAULT_SUBSCRIBE_SELECTION);
+        m_publishFilter = settings.getBoolean(PagedTableViewConfig.CFG_PUBLISH_FILTER, PagedTableViewConfig.DEFAULT_PUBLISH_FILTER);
+        m_subscribeFilter = settings.getBoolean(PagedTableViewConfig.CFG_SUBSCRIBE_FILTER, PagedTableViewConfig.DEFAULT_SUBSCRIBE_FILTER);
     }
 
     /**
@@ -248,11 +361,17 @@ public class PagedTableViewValue extends JSONViewContent {
         return new EqualsBuilder()
                 .append(m_selection, other.m_selection)
                 .append(m_selectAll, other.m_selectAll)
+                .append(m_selectAllIndeterminate, other.m_selectAllIndeterminate)
                 .append(m_pageSize, other.m_pageSize)
                 .append(m_currentPage, other.m_currentPage)
                 .append(m_filterString, other.m_filterString)
                 .append(m_columnFilterStrings, other.m_columnFilterStrings)
                 .append(m_currentOrder, other.m_currentOrder)
+                .append(m_hideUnselected, other.m_hideUnselected)
+                .append(m_publishSelection, other.m_publishSelection)
+                .append(m_subscribeSelection, other.m_subscribeSelection)
+                .append(m_publishFilter, other.m_publishFilter)
+                .append(m_subscribeFilter, other.m_subscribeFilter)
                 .isEquals();
     }
 
@@ -264,11 +383,17 @@ public class PagedTableViewValue extends JSONViewContent {
         return new HashCodeBuilder()
                 .append(m_selection)
                 .append(m_selectAll)
+                .append(m_selectAllIndeterminate)
                 .append(m_pageSize)
                 .append(m_currentPage)
                 .append(m_filterString)
                 .append(m_columnFilterStrings)
                 .append(m_currentOrder)
+                .append(m_hideUnselected)
+                .append(m_publishSelection)
+                .append(m_subscribeSelection)
+                .append(m_publishFilter)
+                .append(m_subscribeFilter)
                 .toHashCode();
     }
 

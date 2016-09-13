@@ -103,13 +103,19 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_displayRowIdsCheckBox;
     private final JCheckBox m_displayColumnHeadersCheckBox;
     private final JCheckBox m_displayRowIndexCheckBox;
+    private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JTextField m_titleField;
     private final JTextField m_subtitleField;
     private final DataColumnSpecFilterPanel m_columnFilterPanel;
     private final JCheckBox m_enableSelectionCheckbox;
     private final JTextField m_selectionColumnNameField;
+    private final JCheckBox m_publishSelectionCheckBox;
+    private final JCheckBox m_subscribeSelectionCheckBox;
+    private final JCheckBox m_enableHideUnselectedCheckbox;
     private final JCheckBox m_enableSearchCheckbox;
     private final JCheckBox m_enableColumnSearchCheckbox;
+    private final JCheckBox m_publishFilterCheckBox;
+    private final JCheckBox m_subscribeFilterCheckBox;
     private final JCheckBox m_enableSortingCheckBox;
     private final JCheckBox m_enableClearSortButtonCheckBox;
     private final DialogComponentStringSelection m_globalDateFormatChooser;
@@ -148,7 +154,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
                 enableSortingFields();
             }
         });
-        m_displayRowIndexCheckBox = new JCheckBox("Dislay row indices");
+        m_displayRowIndexCheckBox = new JCheckBox("Display row indices");
+        m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_titleField = new JTextField(TEXT_FIELD_SIZE);
         m_subtitleField = new JTextField(TEXT_FIELD_SIZE);
         m_columnFilterPanel = new DataColumnSpecFilterPanel();
@@ -160,8 +167,25 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
             }
         });
         m_selectionColumnNameField = new JTextField(TEXT_FIELD_SIZE);
+        m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
+        m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
+        m_enableHideUnselectedCheckbox = new JCheckBox("Enable 'Show selected rows only' option");
         m_enableSearchCheckbox = new JCheckBox("Enable searching");
+        m_enableSearchCheckbox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enableSearchFields();
+            }
+        });
         m_enableColumnSearchCheckbox = new JCheckBox("Enable search for individual columns");
+        m_enableColumnSearchCheckbox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enableSearchFields();
+            }
+        });
+        m_publishFilterCheckBox = new JCheckBox("Publish filter events");
+        m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
         m_enableSortingCheckBox = new JCheckBox("Enable sorting on columns");
         m_enableSortingCheckBox.addChangeListener(new ChangeListener() {
 
@@ -224,6 +248,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         displayPanel.add(m_displayRowColorsCheckBox, gbcD);
         gbcD.gridx++;
         displayPanel.add(m_displayRowIdsCheckBox, gbcD);
+        gbcD.gridx++;
+        displayPanel.add(m_displayFullscreenButtonCheckBox, gbcD);
         gbcD.gridx = 0;
         gbcD.gridy++;
         displayPanel.add(m_displayRowIndexCheckBox, gbcD);
@@ -233,7 +259,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridy++;
         displayPanel.add(new JLabel("Columns to display: "), gbcD);
         gbcD.gridy++;
-        gbcD.gridwidth = 4;
+        gbcD.gridwidth = 3;
         displayPanel.add(m_columnFilterPanel, gbcD);
 
         JPanel panel = new JPanel(new GridBagLayout());
@@ -277,10 +303,16 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBorder(new TitledBorder("Selection"));
         GridBagConstraints gbcS = createConfiguredGridBagConstraints();
-        gbcS.gridwidth = 2;
         selectionPanel.add(m_enableSelectionCheckbox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_enableHideUnselectedCheckbox, gbcS);
+        gbcS.gridx = 0;
         gbcS.gridy++;
-        gbcS.gridwidth = 1;
+        selectionPanel.add(m_publishSelectionCheckBox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_subscribeSelectionCheckBox, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
         selectionPanel.add(new JLabel("Selection column name: "), gbcS);
         gbcS.gridx++;
         selectionPanel.add(m_selectionColumnNameField, gbcS);
@@ -289,14 +321,19 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         searchPanel.setBorder(new TitledBorder("Searching"));
         GridBagConstraints gbcSe = createConfiguredGridBagConstraints();
         searchPanel.add(m_enableSearchCheckbox, gbcSe);
-        gbcSe.gridy++;
+        gbcSe.gridx++;
         searchPanel.add(m_enableColumnSearchCheckbox, gbcSe);
+        gbcSe.gridx = 0;
+        gbcSe.gridy++;
+        searchPanel.add(m_publishFilterCheckBox, gbcSe);
+        gbcSe.gridx++;
+        searchPanel.add(m_subscribeFilterCheckBox, gbcSe);
 
         JPanel sortingPanel = new JPanel(new GridBagLayout());
         sortingPanel.setBorder(new TitledBorder("Sorting"));
         GridBagConstraints gbcSo = createConfiguredGridBagConstraints();
         sortingPanel.add(m_enableSortingCheckBox, gbcSo);
-        gbcSo.gridy++;
+        gbcSo.gridx++;
         sortingPanel.add(m_enableClearSortButtonCheckBox, gbcSo);
 
         JPanel panel = new JPanel(new GridBagLayout());
@@ -367,13 +404,19 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_displayRowIdsCheckBox.setSelected(config.getDisplayRowIds());
         m_displayColumnHeadersCheckBox.setSelected(config.getDisplayColumnHeaders());
         m_displayRowIndexCheckBox.setSelected(config.getDisplayRowIndex());
+        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_titleField.setText(config.getTitle());
         m_subtitleField.setText(config.getSubtitle());
         m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), (DataTableSpec)specs[0]);
         m_enableSelectionCheckbox.setSelected(config.getEnableSelection());
         m_selectionColumnNameField.setText(config.getSelectionColumnName());
+        m_enableHideUnselectedCheckbox.setSelected(config.getEnableHideUnselected());
+        m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
+        m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
         m_enableSearchCheckbox.setSelected(config.getEnableSearching());
         m_enableColumnSearchCheckbox.setSelected(config.getEnableColumnSearching());
+        m_publishFilterCheckBox.setSelected(config.getPublishFilter());
+        m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
         m_enableSortingCheckBox.setSelected(config.getEnableSorting());
         m_enableClearSortButtonCheckBox.setSelected(config.getEnableClearSortButton());
         m_globalDateFormatChooser.replaceListItems(createPredefinedFormats(), config.getGlobalDateFormat());
@@ -381,6 +424,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalNumberFormatDecimalSpinner.setValue(config.getGlobalNumberFormatDecimals());
         enablePagingFields();
         enableSelectionFields();
+        enableSearchFields();
         enableFormatterFields();
         enableSortingFields();
     }
@@ -403,6 +447,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setDisplayRowIds(m_displayRowIdsCheckBox.isSelected());
         config.setDisplayColumnHeaders(m_displayColumnHeadersCheckBox.isSelected());
         config.setDisplayRowIndex(m_displayRowIndexCheckBox.isSelected());
+        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
         config.setTitle(m_titleField.getText());
         config.setSubtitle(m_subtitleField.getText());
         DataColumnSpecFilterConfiguration filterConfig = new DataColumnSpecFilterConfiguration(PagedTableViewConfig.CFG_COLUMN_FILTER);
@@ -410,10 +455,15 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setColumnFilterConfig(filterConfig);
         config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         config.setSelectionColumnName(m_selectionColumnNameField.getText());
+        config.setEnableHideUnselected(m_enableHideUnselectedCheckbox.isSelected());
+        config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
+        config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
         config.setEnableSorting(m_enableSortingCheckBox.isSelected());
         config.setEnableClearSortButton(m_enableClearSortButtonCheckBox.isSelected());
         config.setEnableSearching(m_enableSearchCheckbox.isSelected());
         config.setEnableColumnSearching(m_enableColumnSearchCheckbox.isSelected());
+        config.setPublishFilter(m_publishFilterCheckBox.isSelected());
+        config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
         config.setGlobalDateFormat(((SettingsModelString)m_globalDateFormatChooser.getModel()).getStringValue());
         config.setEnableGlobalNumberFormat(m_enableGlobalNumberFormatCheckbox.isSelected());
         config.setGlobalNumberFormatDecimals((Integer)m_globalNumberFormatDecimalSpinner.getValue());
@@ -452,15 +502,23 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         boolean enableGlobal = m_enablePagingCheckBox.isSelected();
         boolean enableSizeChange = m_enablePageSizeChangeCheckBox.isSelected();
         m_initialPageSizeSpinner.setEnabled(enableGlobal);
+        m_enablePageSizeChangeCheckBox.setEnabled(enableGlobal);
         m_allowedPageSizesField.setEnabled(enableGlobal && enableSizeChange);
         m_enableShowAllCheckBox.setEnabled(enableGlobal && enableSizeChange);
         m_enableJumpToPageCheckBox.setEnabled(enableGlobal);
-
     }
 
     private void enableSelectionFields() {
         boolean enable = m_enableSelectionCheckbox.isSelected();
         m_selectionColumnNameField.setEnabled(enable);
+        m_enableHideUnselectedCheckbox.setEnabled(enable);
+        m_publishSelectionCheckBox.setEnabled(enable);
+        m_subscribeSelectionCheckBox.setEnabled(enable);
+    }
+
+    private void enableSearchFields() {
+        boolean enable = m_enableSearchCheckbox.isSelected() || m_enableColumnSearchCheckbox.isSelected();
+        m_publishFilterCheckBox.setEnabled(enable);
     }
 
     private void enableFormatterFields() {

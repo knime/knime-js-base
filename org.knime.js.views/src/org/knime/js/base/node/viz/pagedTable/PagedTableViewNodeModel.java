@@ -273,6 +273,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     private void copyConfigToRepresentation() {
         synchronized(getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
+            PagedTableViewValue viewValue = getViewValue();
             viewRepresentation.setEnablePaging(m_config.getEnablePaging());
             viewRepresentation.setInitialPageSize(m_config.getIntialPageSize());
             viewRepresentation.setEnablePageSizeChange(m_config.getEnablePageSizeChange());
@@ -294,6 +295,14 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewRepresentation.setGlobalDateFormat(m_config.getGlobalDateFormat());
             viewRepresentation.setEnableGlobalNumberFormat(m_config.getEnableGlobalNumberFormat());
             viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());
+
+            //added with 3.3
+            viewRepresentation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+            viewRepresentation.setEnableHideUnselected(m_config.getEnableHideUnselected());
+            viewValue.setPublishSelection(m_config.getPublishSelection());
+            viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
+            viewValue.setPublishFilter(m_config.getPublishFilter());
+            viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
         }
     }
 
@@ -310,8 +319,11 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
-
+        PagedTableViewValue viewValue = getViewValue();
+        m_config.setPublishSelection(viewValue.getPublishSelection());
+        m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
+        m_config.setPublishFilter(viewValue.getPublishFilter());
+        m_config.setSubscribeFilter(viewValue.getSubscribeFilter());
     }
 
     /**

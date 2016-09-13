@@ -1,5 +1,6 @@
 #knimePagedTableContainer {
 	margin: 10px;
+	overflow: auto;
 }
 
 h1 {
@@ -122,4 +123,12 @@ h2 {
 
 #knimePagedTable_wrapper .dt-buttons.btn-group {
 	width: auto;
+}
+
+#knimePagedTable td.no-break {
+	white-space: nowrap;
+}
+
+#knimePagedTable td.no-break .rowKey {
+	white-space: normal;
 }

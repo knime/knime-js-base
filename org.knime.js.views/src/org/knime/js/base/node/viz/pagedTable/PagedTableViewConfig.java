@@ -108,6 +108,10 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_DISPLAY_ROW_INDEX = false;
     private boolean m_displayRowIndex = DEFAULT_DISPLAY_ROW_INDEX;
 
+    final static String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
+    final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
+
     final static String CFG_FIXED_HEADERS = "fixedHeaders";
     private final static boolean DEFAULT_FIXED_HEADERS = false;
     private boolean m_fixedHeaders = DEFAULT_FIXED_HEADERS;
@@ -125,8 +129,16 @@ public class PagedTableViewConfig {
         new DataColumnSpecFilterConfiguration(CFG_COLUMN_FILTER);
 
     final static String CFG_ENABLE_SELECTION = "enableSelection";
-    private final static boolean DEFAULT_ENABLE_SELECTION = false;
+    final static boolean DEFAULT_ENABLE_SELECTION = false;
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
+
+    final static String CFG_PUBLISH_SELECTION = "publishSelection";
+    final static boolean DEFAULT_PUBLISH_SELECTION = true;
+    private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
+
+    final static String CFG_SUBSCRIBE_SELECTION = "subscribeSelection";
+    final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
+    private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
 
     final static String CFG_ENABLE_SEARCHING = "enableSearching";
     private final static boolean DEFAULT_ENABLE_SEARCHING = true;
@@ -136,9 +148,21 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_ENABLE_COLUMN_SEARCHING = false;
     private boolean m_enableColumnSearching = DEFAULT_ENABLE_COLUMN_SEARCHING;
 
+    final static String CFG_ENABLE_HIDE_UNSELECTED = "enableHideUnselected";
+    final static boolean DEFAULT_ENABLE_HIDE_UNSELECTED = true;
+    private boolean m_enableHideUnselected = DEFAULT_ENABLE_HIDE_UNSELECTED;
+
     final static String CFG_ENABLE_SORTING = "enableSorting";
     private final static boolean DEFAULT_ENABLE_SORTING = true;
     private boolean m_enableSorting = DEFAULT_ENABLE_SORTING;
+
+    final static String CFG_PUBLISH_FILTER = "publishFilter";
+    final static boolean DEFAULT_PUBLISH_FILTER = true;
+    private boolean m_publishFilter = DEFAULT_PUBLISH_FILTER;
+
+    final static String CFG_SUBSCRIBE_FILTER = "subscribeFilter";
+    final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
+    private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
 
     final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
     final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Paged Table View)";
@@ -330,6 +354,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
      * @return the fixedHeaders
      */
     public boolean getFixedHeaders() {
@@ -414,6 +452,48 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the enableHideUnselected
+     */
+    public boolean getEnableHideUnselected() {
+        return m_enableHideUnselected;
+    }
+
+    /**
+     * @param enableHideUnselected the enableHideUnselected to set
+     */
+    public void setEnableHideUnselected(final boolean enableHideUnselected) {
+        m_enableHideUnselected = enableHideUnselected;
+    }
+
+    /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
      * @return the enableSearching
      */
     public boolean getEnableSearching() {
@@ -439,6 +519,34 @@ public class PagedTableViewConfig {
      */
     public void setEnableColumnSearching(final boolean enableColumnSearching) {
         m_enableColumnSearching = enableColumnSearching;
+    }
+
+    /**
+     * @return the publishFilter
+     */
+    public boolean getPublishFilter() {
+        return m_publishFilter;
+    }
+
+    /**
+     * @param publishFilter the publishFilter to set
+     */
+    public void setPublishFilter(final boolean publishFilter) {
+        m_publishFilter = publishFilter;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
     }
 
     /**
@@ -540,6 +648,14 @@ public class PagedTableViewConfig {
         settings.addString(CFG_GLOBAL_DATE_FORMAT, m_globalDateFormat);
         settings.addBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
+
+        //added with 3.3
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        settings.addBoolean(CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
+        settings.addBoolean(CFG_PUBLISH_SELECTION, m_publishSelection);
+        settings.addBoolean(CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
+        settings.addBoolean(CFG_PUBLISH_FILTER, m_publishFilter);
+        settings.addBoolean(CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
     }
 
     /** Loads parameters in NodeModel.
@@ -572,6 +688,14 @@ public class PagedTableViewConfig {
         m_globalDateFormat = settings.getString(CFG_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
+
+        //added with 3.3
+        m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        m_enableHideUnselected = settings.getBoolean(CFG_ENABLE_HIDE_UNSELECTED, DEFAULT_ENABLE_HIDE_UNSELECTED);
+        m_publishSelection = settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION);
+        m_publishFilter = settings.getBoolean(CFG_PUBLISH_FILTER, DEFAULT_PUBLISH_FILTER);
+        m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
     }
 
     /** Loads parameters in Dialog.
@@ -604,6 +728,14 @@ public class PagedTableViewConfig {
         m_globalDateFormat = settings.getString(CFG_GLOBAL_DATE_FORMAT, DEFAULT_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, DEFAULT_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, DEFAULT_GLOBAL_NUMBER_FORMAT_DECIMALS);
+
+        //added with 3.3
+        m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        m_enableHideUnselected = settings.getBoolean(CFG_ENABLE_HIDE_UNSELECTED, DEFAULT_ENABLE_HIDE_UNSELECTED);
+        m_publishSelection = settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION);
+        m_publishFilter = settings.getBoolean(CFG_PUBLISH_FILTER, DEFAULT_PUBLISH_FILTER);
+        m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
     }
 
 }

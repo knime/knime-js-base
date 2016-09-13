@@ -79,12 +79,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_displayRowIds;
     private boolean m_displayColumnHeaders;
     private boolean m_displayRowIndex;
+    private boolean m_displayFullscreenButton;
     private boolean m_fixedHeaders;
     private String m_title;
     private String m_subtitle;
     private boolean m_enableSelection;
     private boolean m_enableSearching;
     private boolean m_enableColumnSearching;
+    private boolean m_enableHideUnselected;
     private boolean m_enableSorting;
     private boolean m_enableClearSortButton;
     private String m_globalDateFormat;
@@ -258,6 +260,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
      * @return the fixedHeaders
      */
     public boolean getFixedHeaders() {
@@ -339,6 +355,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
      */
     public void setEnableColumnSearching(final boolean enableColumnSearching) {
         m_enableColumnSearching = enableColumnSearching;
+    }
+
+    /**
+     * @return the enableHideUnselected
+     */
+    public boolean getEnableHideUnselected() {
+        return m_enableHideUnselected;
+    }
+
+    /**
+     * @param enableHideUnselected the enableHideUnselected to set
+     */
+    public void setEnableHideUnselected(final boolean enableHideUnselected) {
+        m_enableHideUnselected = enableHideUnselected;
     }
 
     /**
@@ -439,6 +469,10 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT, m_globalDateFormat);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
+
+        //added with 3.3
+        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
+        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
     }
 
     /**
@@ -469,6 +503,10 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         m_globalDateFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
+
+        //added with 3.3
+        m_enableHideUnselected = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, PagedTableViewConfig.DEFAULT_ENABLE_HIDE_UNSELECTED);
+        m_displayFullscreenButton = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, PagedTableViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
     }
 
     /**
@@ -498,12 +536,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_displayRowIds, other.m_displayRowIds)
                 .append(m_displayColumnHeaders, other.m_displayColumnHeaders)
                 .append(m_displayRowIndex, other.m_displayRowIndex)
+                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_fixedHeaders, other.m_fixedHeaders)
                 .append(m_title, other.m_title)
                 .append(m_subtitle, other.m_subtitle)
                 .append(m_enableSelection, other.m_enableSelection)
                 .append(m_enableSearching, other.m_enableSearching)
                 .append(m_enableColumnSearching, other.m_enableColumnSearching)
+                .append(m_enableHideUnselected, other.m_enableHideUnselected)
                 .append(m_enableSorting, other.m_enableSorting)
                 .append(m_enableClearSortButton, other.m_enableClearSortButton)
                 .append(m_globalDateFormat, other.m_globalDateFormat)
@@ -529,12 +569,14 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_displayRowIds)
                 .append(m_displayColumnHeaders)
                 .append(m_displayRowIndex)
+                .append(m_displayFullscreenButton)
                 .append(m_fixedHeaders)
                 .append(m_title)
                 .append(m_subtitle)
                 .append(m_enableSelection)
                 .append(m_enableSearching)
                 .append(m_enableColumnSearching)
+                .append(m_enableHideUnselected)
                 .append(m_enableSorting)
                 .append(m_enableClearSortButton)
                 .append(m_globalDateFormat)

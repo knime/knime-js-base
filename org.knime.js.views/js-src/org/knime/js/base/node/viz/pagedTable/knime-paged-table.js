@@ -7,6 +7,8 @@ knime_paged_table = function() {
 	var dataTable = null;
 	var selection = {};
 	var hideUnselected = false;
+	var allCheckboxes = [];
+	var initialized = false;
 	
 	//register neutral ordering method for clear selection button
 	$.fn.dataTable.Api.register('order.neutral()', function () {
@@ -22,8 +24,8 @@ knime_paged_table = function() {
 	});
 	
 	table_viewer.init = function(representation, value) {
-		if (!representation.table) {
-			body.append("Error: No data available");
+		if (!representation || !representation.table) {
+			$('body').append("Error: No data available");
 			return;
 		}
 		_representation = representation;
@@ -35,51 +37,6 @@ knime_paged_table = function() {
 			$(document).ready(function() {
 				drawTable();
 			});
-		}
-		if (knimeService) {
-			if (_representation.enableSelection) {
-				var checkbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', false /* use config setting */, function() {
-					var prev = hideUnselected;
-					hideUnselected = this.checked;
-					if (prev !== hideUnselected) {
-						dataTable.draw();
-					}
-				});
-				knimeService.addMenuItem('Show selected rows only', 'filter', checkbox);
-				$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
-					if (hideUnselected) {
-						return selection[rowData[0]];
-					}
-					return true;
-				});
-				if (knimeService.isInteractivityAvailable()) {
-					//TODO: make subscription configurable
-					knimeService.subscribeToSelection(_representation.table.id, function(data) {
-						// clear current selection
-						selection = {};
-						// construct new selection object
-						if (data.elements) {
-							for (var elId = 0; elId < data.elements.length; elId++) {
-								var element = data.elements[elId];
-								if (!element.rows) {
-									continue;
-								}
-								for (var rId = 0; rId < element.rows.length; rId++) {
-									selection[element.rows[rId]] = true;
-								}
-							}
-						}
-						// set checked status on checkboxes
-						var nodes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
-						nodes.each(function() {
-							this.checked = selection[this.getAttribute('value')];
-						});
-						if (hideUnselected) {
-							dataTable.draw();
-						}
-					});
-				}
-			}
 		}
 	};
 	
@@ -144,15 +101,15 @@ knime_paged_table = function() {
 					'orderable':false,
 					'className': 'dt-body-center',
 					'render': function (data, type, full, meta) {
-						var selected = selection[data] ? !all : all;
+						//var selected = selection[data] ? !all : all;
 						setTimeout(function(){
 							var el = $('#checkbox-select-all').get(0);
-							if (all && selection[data] && el && ('indeterminate' in el)) {
+							/*if (all && selection[data] && el && ('indeterminate' in el)) {
 								el.indeterminate = true;
-							}
+							}*/
 						}, 0);
 						return '<input type="checkbox" name="id[]"'
-							+ (selected ? ' checked' : '')
+							+ (selection[data] ? ' checked' : '')
 							+' value="' + $('<div/>').text(data).html() + '">';
 					}
 				});
@@ -168,7 +125,8 @@ knime_paged_table = function() {
 				var orderable = _representation.displayRowIds;
 				colArray.push({
 					'title': title, 
-					'orderable' : orderable
+					'orderable': orderable,
+					'className': 'no-break'
 				});
 			}
 			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
@@ -231,6 +189,7 @@ knime_paged_table = function() {
 			}
 			
 			var firstChunk = getDataSlice(0, _representation.initialPageSize);
+			var searchEnabled = _representation.enableSearching || (knimeService && knimeService.isInteractivityAvailable());
 
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
@@ -240,16 +199,20 @@ knime_paged_table = function() {
 				'pageLength': pageLength,
 				'lengthMenu': pageLengths,
 				'lengthChange': _representation.enablePageSizeChange,
-				'searching': _representation.enableSearching,
+				'searching': searchEnabled,
 				'ordering': _representation.enableSorting,
 				'processing': true,
 				'deferRender': !_representation.enableSelection,
 				'data': firstChunk,
 				'buttons': buttons,
 				'fnDrawCallback': function() {
-					if (!_representation.displayColumnHeaders)
+					if (!_representation.displayColumnHeaders) {
 						$("#knimePagedTable thead").remove();
 				  	}
+					if (searchEnabled && !_representation.enableSearching) {
+						$('#knimePagedTable_filter').remove();
+					}
+				}
 			});
 			
 			//Clear sorting button placement and enable/disable on order change
@@ -269,30 +232,129 @@ knime_paged_table = function() {
 				+ 1 + ' to ' + Math.min(knimeTable.getNumRows(), _representation.initialPageSize)
 				+ ' of ' + knimeTable.getNumRows() + ' entries.');
 			
+			if (knimeService) {
+				if (_representation.enableSearching && !_representation.title) {
+					knimeService.noFloatingHeader();
+				}
+				if (_representation.displayFullscreenButton) {
+					knimeService.allowFullscreen();
+				}
+				if (_representation.enableSelection) {
+					if (_representation.enableHideUnselected) {
+						hideUnselected = _value.hideUnselected;
+						var hideUnselectedCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', hideUnselected, function() {
+							var prev = hideUnselected;
+							hideUnselected = this.checked;
+							if (prev !== hideUnselected) {
+								dataTable.draw();
+							}
+						});
+						knimeService.addMenuItem('Show selected rows only', 'filter', hideUnselectedCheckbox);
+						$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
+							if (hideUnselected) {
+								return selection[rowData[0]];
+							}
+							return true;
+						});
+						if (knimeService.isInteractivityAvailable()) {
+							knimeService.addMenuDivider();
+						}
+					}
+					if (knimeService.isInteractivityAvailable()) {
+						/*var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+						var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.publishSelection, function() {
+							if (this.checked) {
+								//publishSelection = true;
+							} else {
+								//publishSelection = false;
+							}
+						});
+						knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
+						if (_value.publishSelection) {
+							//TODO
+						}*/
+						var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+						var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
+							if (this.checked) {
+								knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
+							} else {
+								knimeService.unsubscribeSelection(_representation.table.id, selectionChanged);
+							}
+						});
+						knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
+						if (_value.subscribeSelection) {
+							knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
+						}
+						
+						/*knimeService.addMenuDivider();
+						
+						var pubFilIcon = knimeService.createStackedIcon('filter', 'angle-right', 'faded left sm', 'right bold');
+						var pubFilCheckbox = knimeService.createMenuCheckbox('publishFilterCheckbox', _value.publishFilter, function() {
+							if (this.checked) {
+								//publishFilter = true;
+							} else {
+								//publishFilter = false;
+							}
+						});
+						knimeService.addMenuItem('Publish filter', pubFilIcon, pubFilCheckbox);
+						if (_value.publishFilter) {
+							//TODO
+						}
+						var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+						var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
+							if (this.checked) {
+								//knimeService.subscribe
+							} else {
+								//knimeService.unsubscribe
+							}
+						});
+						knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);*/
+					}
+				}
+			}
+			
 			if (_representation.enableSelection) {
 				// Handle click on "Select all" control
-				$('#checkbox-select-all').on('click', function() {
+				var selectAllCheckbox = $('#checkbox-select-all').get(0);
+				if (selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)) {
+					selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
+				}
+				selectAllCheckbox.addEventListener('click', function() {
 					// Check/uncheck all checkboxes in the table
-					var rows = dataTable.rows({ 'search': 'applied' }).nodes();
-					$('input[type="checkbox"]', rows).prop('checked', this.checked);
-					_value.selectAll = this.checked ? true : false;
+					// TODO: select only rows with current filter applied (but not hideUnselected)
+					var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
 					selection = {};
+					_value.selectAllIndeterminate = false;
+					var cB = $('input[type="checkbox"]', rows);
+					cB.prop('checked', this.checked);
+					if (this.checked) {
+						cB.each(function() {
+							selection[this.value] = true;
+						});
+					}
+					_value.selectAll = this.checked ? true : false;
+					if (hideUnselected) {
+						dataTable.draw();
+					}
 				});
 
 				// Handle click on checkbox to set state of "Select all" control
 				$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
-					var el = $('#checkbox-select-all').get(0);
-					var selected = el.checked ? !this.checked : this.checked;
+					//var el = $('#checkbox-select-all').get(0);
+					//var selected = el.checked ? !this.checked : this.checked;
 					// we could call delete _value.selection[this.value], but the call is very slow 
 					// and we can assume that a user doesn't click on a lot of checkboxes
-					selection[this.value] = selected;
+					selection[this.value] = this.checked;
 					// If checkbox is not checked
 					if(!this.checked){
 						// If "Select all" control is checked and has 'indeterminate' property
-						if(el && el.checked && ('indeterminate' in el)){
-							// Set visual state of "Select all" control 
-							// as 'indeterminate'
-							el.indeterminate = true;
+						if(selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)){
+							// Set visual state of "Select all" control as 'indeterminate'
+							selectAllCheckbox.indeterminate = true;
+							_value.selectAllIndeterminate = true;
+						}
+						if (hideUnselected) {
+							dataTable.draw('full-hold');
 						}
 					}
 				});
@@ -309,13 +371,6 @@ knime_paged_table = function() {
 			    });
 			}
 			
-			if (knimeService) {
-				if (_representation.enableSearching && !_representation.title) {
-					knimeService.noFloatingHeader();
-				}
-				knimeService.allowFullscreen();
-			}
-			
 			//load all data
 			setTimeout(function() {
 				var initialChunkSize = 100;
@@ -329,7 +384,6 @@ knime_paged_table = function() {
 				alert (err);
 			}
 		}
-		
 	}
 	
 	addDataToTable = function(startIndex, chunkSize) {
@@ -361,6 +415,7 @@ knime_paged_table = function() {
 			$('#knimePagedTable_paginate').css('display', 'block');
 			applyViewValue();
 			dataTable.draw();
+			finishInit();
 		}
 	}
 	
@@ -387,7 +442,7 @@ knime_paged_table = function() {
 							+ 'display: inline-block; margin-right: 5px; vertical-align: text-bottom;"></div>'
 				}
 				if (_representation.displayRowIds) {
-					string += row.rowKey;
+					string += '<span class="rowKey">' + row.rowKey + '</span>';
 				}
 				dataRow.push(string);
 			}
@@ -415,6 +470,42 @@ knime_paged_table = function() {
 			setTimeout(function() {
 				dataTable.page(_value.currentPage).draw('page');
 			}, 0);
+		}
+	}
+	
+	finishInit = function() {
+		allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
+		initialized = true;
+	}
+	
+	selectionChanged = function(data) {
+		// cannot apply selection changed event before all data is loaded
+		if (!initialized) {
+			setTimeout(function() {
+				selectionChanged(data)
+			}, 500);
+		}
+		
+		// clear current selection
+		selection = {};
+		// construct new selection object
+		if (data.elements) {
+			for (var elId = 0; elId < data.elements.length; elId++) {
+				var element = data.elements[elId];
+				if (!element.rows) {
+					continue;
+				}
+				for (var rId = 0; rId < element.rows.length; rId++) {
+					selection[element.rows[rId]] = true;
+				}
+			}
+		}
+		// set checked status on checkboxes
+		allCheckboxes.each(function() {
+			this.checked = selection[this.getAttribute('value')];
+		});
+		if (hideUnselected) {
+			dataTable.draw();
 		}
 	}
 	
@@ -477,6 +568,14 @@ knime_paged_table = function() {
 			if (!filtered) {
 				_value.columnFilterStrings = null;
 			}
+		}
+		var hideUnselected = document.getElementById('showSelectedOnlyCheckbox');
+		if (hideUnselected) {
+			_value.hideUnselected = hideUnselected.checked;
+		}
+		var selSub = document.getElementById('subscribeSelectionCheckbox');
+		if (selSub) {
+			_value.subscribeSelection = selSub.checked;
 		}
 		return _value;
 	};
