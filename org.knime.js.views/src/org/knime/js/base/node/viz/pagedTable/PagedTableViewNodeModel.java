@@ -110,13 +110,13 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         DataTableSpec tableSpec = (DataTableSpec)inSpecs[0];
         if (m_config.getEnableSelection()) {
-            ColumnRearranger rearranger = createColumnAppender(tableSpec, null, false);
+            ColumnRearranger rearranger = createColumnAppender(tableSpec, null);
             tableSpec = rearranger.createSpec();
         }
         return new PortObjectSpec[]{tableSpec};
     }
 
-    private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList, final boolean selectAll) {
+    private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList) {
         String newColName = m_config.getSelectionColumnName();
         if (newColName == null || newColName.trim().isEmpty()) {
             newColName = PagedTableViewConfig.DEFAULT_SELECTION_COLUMN_NAME;
@@ -136,10 +136,14 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
                 }
                 if (selectionList != null) {
                     if (selectionList.contains(row.getKey().toString())) {
-                            return selectAll ? BooleanCell.FALSE : BooleanCell.TRUE;
+                            /*return selectAll ? BooleanCell.FALSE : BooleanCell.TRUE;*/
+                        return BooleanCell.TRUE;
+                    } else {
+                        return BooleanCell.FALSE;
                     }
                 }
-                return selectAll ? BooleanCell.TRUE : BooleanCell.FALSE;
+                /*return selectAll ? BooleanCell.TRUE : BooleanCell.FALSE;*/
+                return BooleanCell.FALSE;
             }
         };
         rearranger.append(fac);
@@ -242,14 +246,12 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             if (m_config.getEnableSelection()) {
                 PagedTableViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
-                boolean selectAll = false;
                 if (viewValue != null) {
-                    selectAll = viewValue.getSelectAll();
                     if (viewValue.getSelection() != null) {
                         selectionList = Arrays.asList(viewValue.getSelection());
                     }
                 }
-                ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList, selectAll);
+                ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
                 out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
             }
         }
