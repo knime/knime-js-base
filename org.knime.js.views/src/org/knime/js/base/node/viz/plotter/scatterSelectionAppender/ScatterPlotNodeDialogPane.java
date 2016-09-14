@@ -94,6 +94,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showLegendCheckBox;
+    private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JCheckBox m_autoRangeAxisCheckBox;
     private final JCheckBox m_useDomainInformationCheckBox;
     private final JCheckBox m_showGridCheckBox;
@@ -115,6 +116,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableSelectionCheckBox;
     private final JCheckBox m_allowRectangleSelectionCheckBox;
     private final JCheckBox m_allowLassoSelectionCheckBox;
+    private final JCheckBox m_publishSelectionCheckBox;
+    private final JCheckBox m_subscribeSelectionCheckBox;
+    private final JCheckBox m_subscribeFilterCheckBox;
 
     private final JSpinner m_maxRowsSpinner;
     private final JTextField m_appendedColumnName;
@@ -139,6 +143,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
+        m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
         m_useDomainInformationCheckBox = new JCheckBox("Use domain information");
         m_showGridCheckBox = new JCheckBox("Show grid");
@@ -160,6 +165,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_enableSelectionCheckBox = new JCheckBox("Enable selection");
         m_allowRectangleSelectionCheckBox = new JCheckBox("Enable rectangular selection");
         m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
+        m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
+        m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
+        m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
@@ -370,8 +378,10 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         sizesPanel.add(m_imageHeightSpinner, cc);
         cc.gridx = 0;
         cc.gridy++;
-        cc.anchor = GridBagConstraints.CENTER;
+//        cc.anchor = GridBagConstraints.CENTER;
         sizesPanel.add(m_resizeViewToWindow, cc);
+        cc.gridx++;
+        sizesPanel.add(m_displayFullscreenButtonCheckBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -455,8 +465,15 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         selectionControlPanel.add(m_enableSelectionCheckBox, cc);
         cc.gridx++;
         selectionControlPanel.add(m_allowRectangleSelectionCheckBox, cc);
-        cc.gridx += 2;
+        cc.gridx++;
         selectionControlPanel.add(m_allowLassoSelectionCheckBox, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        selectionControlPanel.add(m_publishSelectionCheckBox, cc);
+        cc.gridx++;
+        selectionControlPanel.add(m_subscribeSelectionCheckBox, cc);
+        cc.gridx++;
+        selectionControlPanel.add(m_subscribeFilterCheckBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -497,6 +514,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         boolean enable = m_enableSelectionCheckBox.isSelected();
         m_allowRectangleSelectionCheckBox.setEnabled(enable);
         m_allowLassoSelectionCheckBox.setEnabled(enable);
+        m_publishSelectionCheckBox.setEnabled(enable);
+        m_subscribeSelectionCheckBox.setEnabled(enable);
     }
 
     private void enableCrosshairControls() {
@@ -516,6 +535,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showLegendCheckBox.setSelected(config.getShowLegend());
+        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_autoRangeAxisCheckBox.setSelected(config.getAutoRangeAxes());
         m_useDomainInformationCheckBox.setSelected(config.getUseDomainInfo());
         m_showGridCheckBox.setSelected(config.getShowGrid());
@@ -539,6 +559,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
         m_allowRectangleSelectionCheckBox.setSelected(config.getEnableRectangleSelection());
         m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());
+        m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
+        m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
+        m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
 
         m_chartTitleTextField.setText(config.getChartTitle());
         m_chartSubtitleTextField.setText(config.getChartSubtitle());
@@ -583,6 +606,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setShowLegend(m_showLegendCheckBox.isSelected());
+        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
         config.setAutoRangeAxes(m_autoRangeAxisCheckBox.isSelected());
         config.setUseDomainInfo(m_useDomainInformationCheckBox.isSelected());
         config.setShowGrid(m_showGridCheckBox.isSelected());
@@ -606,6 +630,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
         config.setEnableRectangleSelection(m_allowRectangleSelectionCheckBox.isSelected());
         config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
+        config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
+        config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
+        config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
 
         config.setChartTitle(m_chartTitleTextField.getText());
         config.setChartSubtitle(m_chartSubtitleTextField.getText());

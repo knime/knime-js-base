@@ -81,6 +81,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize;
+    private boolean m_publishSelection;
+    private boolean m_subscribeSelection;
+    private boolean m_subscribeFilter;
     private String[] m_selection;
 
     /**
@@ -238,6 +241,48 @@ public class ScatterPlotViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
+    }
+
+    /**
      * @return the selection
      */
     public String[] getSelection() {
@@ -268,6 +313,11 @@ public class ScatterPlotViewValue extends JSONViewContent {
         settings.addString(ScatterPlotViewConfig.Y_AXIS_MAX, getyAxisMax() == null ? null : getyAxisMax().toString());
         settings.addString(ScatterPlotViewConfig.DOT_SIZE, getDotSize() == null ? null : getDotSize().toString());
         settings.addStringArray(ScatterPlotViewValue.SELECTED_KEYS, m_selection);
+
+        // added with 3.3
+        settings.addBoolean(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, getPublishSelection());
+        settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
+        settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
     }
 
     /**
@@ -292,6 +342,11 @@ public class ScatterPlotViewValue extends JSONViewContent {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
         setSelection(settings.getStringArray(ScatterPlotViewValue.SELECTED_KEYS));
+
+        // added with 3.3
+        setPublishSelection(settings.getBoolean(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, ScatterPlotViewConfig.DEFAULT_PUBLISH_SELECTION));
+        setSubscribeSelection(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_SELECTION));
+        setSubscribeFilter(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_FILTER));
     }
 
     /**
@@ -321,6 +376,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_yAxisMin, other.m_yAxisMin)
                 .append(m_yAxisMax, other.m_yAxisMax)
                 .append(m_dotSize, other.m_dotSize)
+                .append(m_publishSelection, other.m_publishSelection)
+                .append(m_subscribeSelection, other.m_subscribeSelection)
+                .append(m_subscribeFilter, other.m_subscribeFilter)
                 .append(m_selection, other.m_selection)
                 .isEquals();
     }
@@ -342,6 +400,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_yAxisMin)
                 .append(m_yAxisMax)
                 .append(m_dotSize)
+                .append(m_publishSelection)
+                .append(m_subscribeSelection)
+                .append(m_subscribeFilter)
                 .append(m_selection)
                 .toHashCode();
     }

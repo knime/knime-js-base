@@ -44,6 +44,7 @@ knime_scatter_plot_selection_appender = function() {
 	var chartManager = null;
 	var containerID = "scatterContainer";
 	var initialAxisBounds;
+	var publishSelection = false;
 	
 	var minWidth = 400;
 	var minHeight = 300;
@@ -327,7 +328,9 @@ knime_scatter_plot_selection_appender = function() {
         
         if (knimeService && knimeService.isInteractivityAvailable()) {
         	chartManager.getChart().getPlot().addListener(function() {
-        		knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection());
+        		if (_value.publishSelection) {
+        			knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection());
+        		}
         	});
 		}
         
@@ -430,7 +433,9 @@ knime_scatter_plot_selection_appender = function() {
 			return;
 		}
 		
-		knimeService.allowFullscreen();
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}
 		
 	    if (_representation.showZoomResetButton) {
 	    	knimeService.addButton('scatter-zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
@@ -441,8 +446,10 @@ knime_scatter_plot_selection_appender = function() {
 	    }
 	    
 	    if (!_representation.enableViewConfiguration) return;
+	    var pre = false;
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
+	    	pre = true;
 	    	if (_representation.enableTitleChange) {
 	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.chartTitle, updateTitle, false);
 	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
@@ -451,14 +458,12 @@ knime_scatter_plot_selection_appender = function() {
 	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.chartSubtitle, updateSubtitle, false);
 	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 	    	}
-	    	if (_representation.enableXColumnChange || _representation.enableYColumnChange ||
-	    			_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit ||
-	    			_representation.enableDotSizeChange) {
-	    		knimeService.addMenuDivider();
-	    	}
 	    }
 	    
 	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
 	    	if (_representation.enableXColumnChange) {
 	    		var xSelect = knimeService.createMenuSelect('xColumnSelect', _value.xColumn, _keyedDataset.columnKeys(), function() {
 	    			_value.xColumn = this.value;
@@ -480,11 +485,11 @@ knime_scatter_plot_selection_appender = function() {
 	    		});
 	    		knimeService.addMenuItem('Y Column:', 'long-arrow-up', ySelect);
 	    	}
-	    	if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit || _representation.enableDotSizeChange) {
-	    		knimeService.addMenuDivider();
-	    	}
 	    }
 	    if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
 	    	if (_representation.enableXAxisLabelEdit) {
 	    		var xAxisText = knimeService.createMenuTextField('xAxisText', _value.xAxisLabel, updateXAxisLabel, false);
 	    		knimeService.addMenuItem('X Axis Label:', 'ellipsis-h', xAxisText);
@@ -492,9 +497,6 @@ knime_scatter_plot_selection_appender = function() {
 	    	if (_representation.enableYAxisLabelEdit) {
 	    		var yAxisText = knimeService.createMenuTextField('yAxisText', _value.yAxisLabel, updateYAxisLabel);
 	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
-	    	}
-	    	if (_representation.enableDotSizeChange) {
-	    		knimeService.addMenuDivider();
 	    	}
 	    }
 	    if (_representation.enableDotSizeChange) {
@@ -509,7 +511,50 @@ knime_scatter_plot_selection_appender = function() {
 	    		.style("font-family", defaultFont)
 	    		.style("font-size", defaultFontSize+"px");*/
 	    }
+	    if (knimeService.isInteractivityAvailable()) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    	if (_representation.enableSelection) {
+	    		var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+				var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.publishSelection, function() {
+					if (this.checked) {
+						_value.publishSelection = true;
+						knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection());
+					} else {
+						_value.publishSelection = false;
+					}
+				});
+				knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
+				
+				/*var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+				var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
+					if (this.checked) {
+						knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+					} else {
+						knimeService.unsubscribeSelection(_representation.keyedDataset.id, selectionChanged);
+					}
+				});
+				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
+				if (_value.subscribeSelection) {
+					knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+				}*/
+	    	}
+	    	/*var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+			var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
+				if (this.checked) {
+					//knimeService.subscribeFilter
+				} else {
+					//knimeService.unsubscribeFilter
+				}
+			});
+			knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);*/
+	    }
 	};
+	
+	selectionChanged = function(data) {
+		//TODO: implement
+	}
 	
 	getSelection = function() {
 		var selections = chartManager.getChart().getPlot().getDataset().selections;

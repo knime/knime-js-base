@@ -72,6 +72,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private JSONKeyedValues2DDataset m_keyedDataset;
 
     private boolean m_showLegend;
+    private boolean m_displayFullscreenButton;
     private boolean m_autoRangeAxes;
     private boolean m_useDomainInformation;
     private boolean m_showGrid;
@@ -132,6 +133,20 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
      */
     public void setShowLegend(final boolean showLegend) {
         m_showLegend = showLegend;
+    }
+
+    /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
     }
 
     /**
@@ -569,6 +584,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
             NodeSettingsWO datasetSettings = settings.addNodeSettings("dataset");
             m_keyedDataset.saveToNodeSettings(datasetSettings);
         }
+
+        // added with 3.3
+        settings.addBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
     }
 
     /**
@@ -616,6 +634,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
             m_keyedDataset = new JSONKeyedValues2DDataset();
             m_keyedDataset.loadFromNodeSettings(datasetSettings);
         }
+
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, ScatterPlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
     }
 
     /**
@@ -636,6 +657,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         return new EqualsBuilder()
                 .append(m_keyedDataset, other.m_keyedDataset)
                 .append(m_showLegend, other.m_showLegend)
+                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_autoRangeAxes, other.m_autoRangeAxes)
                 .append(m_useDomainInformation, other.m_useDomainInformation)
                 .append(m_showGrid, other.m_showGrid)
@@ -675,6 +697,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         return new HashCodeBuilder()
                 .append(m_keyedDataset)
                 .append(m_showLegend)
+                .append(m_displayFullscreenButton)
                 .append(m_autoRangeAxes)
                 .append(m_useDomainInformation)
                 .append(m_showGrid)

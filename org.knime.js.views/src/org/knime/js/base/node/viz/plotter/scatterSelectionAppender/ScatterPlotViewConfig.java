@@ -73,10 +73,15 @@ final class ScatterPlotViewConfig {
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    final static boolean DEFAULT_PUBLISH_SELECTION = true;
+    final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
+    final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
     static final String SHOW_LEGEND = "showLegend";
+    final static String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String AUTO_RANGE_AXES = "autoRange";
     static final String USE_DOMAIN_INFO = "useDomainInformation";
     static final String SHOW_GRID = "showGrid";
@@ -98,6 +103,9 @@ final class ScatterPlotViewConfig {
     static final String ENABLE_SELECTION = "enableSelection";
     static final String ENABLE_RECTANGLE_SELECTION = "enableRectangleSelection";
     static final String ENABLE_LASSO_SELECTION = "enableLassoSelection";
+    final static String CFG_PUBLISH_SELECTION = "publishSelection";
+    final static String CFG_SUBSCRIBE_SELECTION = "subscribeSelection";
+    final static String CFG_SUBSCRIBE_FILTER = "subscribeFilter";
     static final String CHART_TITLE = "chartTitle";
     static final String CHART_SUBTITLE = "chartSubtitle";
     static final String X_COL = "xCol";
@@ -121,6 +129,7 @@ final class ScatterPlotViewConfig {
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
     private boolean m_showLegend = false;
+    private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_autoRangeAxes = true;
     private boolean m_useDomainInfo = false;
     private boolean m_showGrid = true;
@@ -142,6 +151,9 @@ final class ScatterPlotViewConfig {
     private boolean m_enableSelection = true;
     private boolean m_enableRectangleSelection = false;
     private boolean m_enableLassoSelection = false;
+    private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
+    private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
+    private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
     private int m_maxRows = DEFAULT_MAX_ROWS;
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
     private String m_chartTitle;
@@ -202,6 +214,20 @@ final class ScatterPlotViewConfig {
      */
     public void setShowLegend(final boolean showLegend) {
         m_showLegend = showLegend;
+    }
+
+    /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
     }
 
     /**
@@ -314,6 +340,48 @@ final class ScatterPlotViewConfig {
      */
     public void setEnableLassoSelection(final boolean enableLassoSelection) {
         m_enableLassoSelection = enableLassoSelection;
+    }
+
+    /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
     }
 
     /**
@@ -836,6 +904,12 @@ final class ScatterPlotViewConfig {
         settings.addString(BACKGROUND_COLOR, getBackgroundColorString());
         settings.addString(DATA_AREA_COLOR, getDataAreaColorString());
         settings.addString(GRID_COLOR, getGridColorString());
+
+        //added with 3.3
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
+        settings.addBoolean(CFG_PUBLISH_SELECTION, getPublishSelection());
+        settings.addBoolean(CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
+        settings.addBoolean(CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
     }
 
     /** Loads parameters in NodeModel.
@@ -899,6 +973,12 @@ final class ScatterPlotViewConfig {
         setDataAreaColor(LinePlotViewConfig.getColorFromString(dataColorString));
         String gridColorString = settings.getString(GRID_COLOR);
         setGridColor(LinePlotViewConfig.getColorFromString(gridColorString));
+
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+        setPublishSelection(settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION));
+        setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
+        setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
     }
 
     /** Loads parameters in Dialog.
@@ -974,5 +1054,11 @@ final class ScatterPlotViewConfig {
             gridColor = LinePlotViewConfig.getColorFromString(gridColorString);
         } catch (InvalidSettingsException e) { /* do nothing */ }
         setGridColor(gridColor);
+
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+        setPublishSelection(settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION));
+        setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
+        setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
     }
 }

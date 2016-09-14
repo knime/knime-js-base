@@ -495,6 +495,12 @@ public class ScatterPlotNodeModel extends
         }
 
         viewValue.setDotSize(m_config.getDotSize());
+
+        // added with 3.3
+        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        viewValue.setPublishSelection(m_config.getPublishSelection());
+        viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
+        viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
     }
 
     private void copyValueToConfig() {
@@ -510,6 +516,11 @@ public class ScatterPlotNodeModel extends
         m_config.setyAxisMin(viewValue.getyAxisMin());
         m_config.setyAxisMax(viewValue.getyAxisMax());
         m_config.setDotSize(viewValue.getDotSize());
+
+        // added with 3.3
+        m_config.setPublishSelection(viewValue.getPublishSelection());
+        m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
+        m_config.setSubscribeFilter(viewValue.getSubscribeFilter());
     }
 
     /**
