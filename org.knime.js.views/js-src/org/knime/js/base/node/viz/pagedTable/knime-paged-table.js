@@ -261,18 +261,16 @@ knime_paged_table = function() {
 						}
 					}
 					if (knimeService.isInteractivityAvailable()) {
-						/*var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+						var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
 						var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.publishSelection, function() {
 							if (this.checked) {
-								//publishSelection = true;
+								_value.publishSelection = true;
+								publishCurrentSelection();
 							} else {
-								//publishSelection = false;
+								_value.publishSelection = false;
 							}
 						});
 						knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
-						if (_value.publishSelection) {
-							//TODO
-						}*/
 						var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
 						var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
 							if (this.checked) {
@@ -320,22 +318,7 @@ knime_paged_table = function() {
 					selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
 				}
 				selectAllCheckbox.addEventListener('click', function() {
-					// Check/uncheck all checkboxes in the table
-					// TODO: select only rows with current filter applied (but not hideUnselected)
-					var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
-					selection = {};
-					_value.selectAllIndeterminate = false;
-					var cB = $('input[type="checkbox"]', rows);
-					cB.prop('checked', this.checked);
-					if (this.checked) {
-						cB.each(function() {
-							selection[this.value] = true;
-						});
-					}
-					_value.selectAll = this.checked ? true : false;
-					if (hideUnselected) {
-						dataTable.draw();
-					}
+					selectAll(this.checked);
 				});
 
 				// Handle click on checkbox to set state of "Select all" control
@@ -345,8 +328,12 @@ knime_paged_table = function() {
 					// we could call delete _value.selection[this.value], but the call is very slow 
 					// and we can assume that a user doesn't click on a lot of checkboxes
 					selection[this.value] = this.checked;
-					// If checkbox is not checked
-					if(!this.checked){
+					
+					if (this.checked) {
+						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+							knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
+						}
+					} else {
 						// If "Select all" control is checked and has 'indeterminate' property
 						if(selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)){
 							// Set visual state of "Select all" control as 'indeterminate'
@@ -355,6 +342,9 @@ knime_paged_table = function() {
 						}
 						if (hideUnselected) {
 							dataTable.draw('full-hold');
+						}
+						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+							knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
 						}
 					}
 				});
@@ -478,11 +468,50 @@ knime_paged_table = function() {
 		initialized = true;
 	}
 	
+	selectAll = function(all) {
+		// cannot select all rows before all data is loaded
+		if (!initialized) {
+			setTimeout(function() {
+				selectAll(all);
+			}, 500);
+		}
+		
+		// Check/uncheck all checkboxes in the table
+		// TODO: select only rows with current filter applied (but not hideUnselected), search: applied takes both into account
+		//var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
+		selection = {};
+		_value.selectAllIndeterminate = false;
+		allCheckboxes.prop('checked', all);
+		if (all) {
+			allCheckboxes.each(function() {
+				selection[this.value] = true;
+			});
+		}
+		_value.selectAll = all ? true : false;
+		if (hideUnselected) {
+			dataTable.draw();
+		}
+		publishCurrentSelection();
+	}
+	
+	publishCurrentSelection = function() {
+		if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+			var selArray = [];
+			for (var rowKey in selection) {
+				if (!selection.hasOwnProperty(rowKey)) {
+			        continue;
+			    }
+				selArray.push(rowKey);
+			}
+			knimeService.setSelectedRows(_representation.table.id, selArray, selectionChanged);
+		}
+	}
+	
 	selectionChanged = function(data) {
 		// cannot apply selection changed event before all data is loaded
 		if (!initialized) {
 			setTimeout(function() {
-				selectionChanged(data)
+				selectionChanged(data);
 			}, 500);
 		}
 		
