@@ -234,7 +234,7 @@ knime_paged_table = function() {
 			
 			if (knimeService) {
 				if (_representation.enableSearching && !_representation.title) {
-					knimeService.noFloatingHeader();
+					knimeService.floatingHeader(false);
 				}
 				if (_representation.displayFullscreenButton) {
 					knimeService.allowFullscreen();
