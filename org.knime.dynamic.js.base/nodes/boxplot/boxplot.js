@@ -4,6 +4,8 @@
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var maxY = 0, minY = 0;
+    var defaultFont = "sans-serif";
+	var defaultFontSize = 12;
     var _representation, _value;
     
     input.init = function(representation, value) {
@@ -33,27 +35,10 @@
         // Size layout container based on sizing settings
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
             layoutContainer.style("width", "100%")
-            .style("height", "100%");
+            				.style("height", "100%");
         } else {
             layoutContainer.style("width", _representation.options.svg.width + "px")
-            .style("height", _representation.options.svg.height + "px");
-        }
-        
-        // Add container for user controls at the bottom if they are enabled and we are running in a view
-        var controlHeight;
-        if (_representation.options.enableViewControls && _representation.runningInView) {
-             var controlsContainer = body.append("div")
-             							.attr("id", "controlContainer");
-             // Fill container
-             createControls(controlsContainer);
-             controlHeight = controlsContainer.node().getBoundingClientRect().height;
-        } else {
-            controlHeight = 0;
-        }
-        
-        // Adjust plot height for control height
-        if (_representation.options.svg.fullscreen && _representation.runningInView && controlHeight) {
-            layoutContainer.style("height", "calc(100% - " + controlHeight + "px)");
+            				.style("height", _representation.options.svg.height + "px");
         }
 
         // Add SVG element
@@ -61,6 +46,7 @@
         layoutContainer[0][0].appendChild(svg1);
         
         var d3svg = d3.select("svg")
+        			.style("display", "block")
         			.style("font-family", "sans-serif");
         // Add rectangle for background color
         d3svg.append("rect")
@@ -78,7 +64,7 @@
         d3svg.append("text")
             .attr("id", "title")
             .attr("font-size", 24)
-            .attr("x", 20)
+            .attr("x", 20) 
             .attr("y", 30)
             .text(_value.options.title);
         
@@ -86,16 +72,55 @@
         d3svg.append("text")
             .attr("id", "subtitle")
             .attr("font-size", 12)
-            .attr("x", 20)
-            .attr("y", 46)
+            .attr("x", 20)            
             .text(_value.options.subtitle);
+        // y attr is set in drawChart
         
         drawChart();
+        if (_representation.options.enableViewControls) {
+			drawControls();
+		}
         
         if (parent != undefined && parent.KnimePageLoader != undefined) {
             parent.KnimePageLoader.autoResize(window.frameElement.id);
         }
     }
+    
+    drawControls = function() {		
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		if (_representation.options.displayFullscreen) {
+			knimeService.allowFullscreen();
+		}
+		
+	    if (!_representation.options.enableViewControls) return;
+	    	    
+	    if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) {
+	    	if (_representation.options.enableTitleEdit) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, updateTitle, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (_representation.options.enableSubtitleEdit) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, updateSubtitle, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}
+	    	
+	    	if (!_representation.options.multi && _representation.options.enableColumnSelection) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+    	
+    	if (!_representation.options.multi && _representation.options.enableColumnSelection) {
+    		var colSelect = knimeService.createMenuSelect('columnSelect', _value.options.numCol, _representation.options.columns, function() {
+    			_value.options.numCol = this.value;
+                drawChart();
+    		});
+    		knimeService.addMenuItem('Selected column:', 'long-arrow-up', colSelect);
+        }
+	};
     
     function createControls(controlsContainer) {
         if (_representation.options.enableViewControls) {
@@ -153,11 +178,33 @@
                 });
             }
         }
-    }
+    }    
+    
+    updateTitle = function() {
+    	var hadTitle = (_value.options.title.length > 0);
+        _value.options.title = document.getElementById("chartTitleText").value;
+        var hasTitle = (_value.options.title.length > 0);        
+        if (hasTitle != hadTitle) {
+        	// if the title appeared or disappeared, we need to resize the chart
+            drawChart(true);
+        }
+        d3.select("#title").text(_value.options.title);
+	};
+	
+	updateSubtitle = function() {
+		var hadTitle = (_value.options.subtitle.length > 0);
+        _value.options.subtitle = document.getElementById("chartSubtitleText").value;
+        var hasTitle = (_value.options.subtitle.length > 0);
+        if (hasTitle != hadTitle) {
+        	// if the subtitle appeared or disappeared, we need to resize the chart
+            drawChart(true);
+        }
+        d3.select("#subtitle").text(_value.options.subtitle);
+	};
 
     // Draws the chart. If resizing is true, there are no animations.
     function drawChart(resizing) {
-        
+    	
     	// Select the data to show
         if (_representation.options.multi) {
             _data = _representation.inObjects[0];
@@ -189,13 +236,24 @@
         }
         
         // The margins for the plot area
+        var topMargin = 10;
+        if (_value.options.title && _value.options.subtitle) {
+        	topMargin += 50;        	
+        } else if (_value.options.title) {
+        	topMargin += 36;
+        } else if (_value.options.subtitle) {
+        	topMargin += 26;        	        	
+        }
+        
         var margin = {
-    		top : (_value.options.subtitle || _value.options.title) ? 60 : 10,
+    		top : topMargin,
 			left : 40,
 			bottom : 40,
 			right : 10
     	};
-
+        
+        d3.select("#subtitle").attr("y", topMargin - 14);
+        
         var d3svg = d3.select("svg")
         			.attr({width : cw, height : ch})
         			.style({width : chartWidth, height : chartHeight});
@@ -211,8 +269,8 @@
         // Resize background rectangles
         plotG.select("#da").attr({
         	width : w,
-        	height : h + 5}
-        );
+        	height : h + 5
+    	});
         d3svg.select("#bgr").attr({
         	width : w + margin.left + margin.right,
         	height : h + margin.top + margin.bottom
@@ -456,7 +514,7 @@
            var win = document.defaultView || document.parentWindow;
            win.onresize = resize;
        }  
-    }
+    }    
     
     input.getSVG = function() {
         var svg = d3.select("svg")[0][0];
