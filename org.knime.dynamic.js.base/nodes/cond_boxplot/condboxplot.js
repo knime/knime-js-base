@@ -109,7 +109,9 @@
 			return;
 		}
 		
-		knimeService.allowFullscreen();
+		if (_representation.options.displayFullscreen) {
+			knimeService.allowFullscreen();
+		}
 		
 	    if (!_representation.options.enableViewControls) return;
 	    	    
@@ -134,7 +136,7 @@
     			_value.options.numCol = this.value;
                 drawChart();
     		});
-    		knimeService.addMenuItem('Selected column:', 'long-arrow-up', colSelect);
+    		knimeService.addMenuItem('Selected column:', 'minus-square fa-rotate-90', colSelect);
         }
 	};
     
