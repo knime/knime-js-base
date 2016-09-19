@@ -9,8 +9,13 @@
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
-		_representation = representation;
+		_representation = representation;		
+				
+		if (_representation.options.enableViewControls) {
+			drawControls();
+		}
 		drawChart();
+		
 		if (parent != undefined && parent.KnimePageLoader != undefined) {
 			parent.KnimePageLoader.autoResize(window.frameElement.id);
 		}
@@ -27,12 +32,12 @@
 		var optHeight = _representation.options["height"];
 
 		var optTitle = _value.options["title"];
+		var optSubtitle = _value.options["subtitle"];
 		var optCatLabel = _value.options["catLabel"];
 		var optFreqLabel = _value.options["freqLabel"];
-
+		
 		var optStaggerLabels = _representation.options["staggerLabels"];
-		var optLegend = _representation.options["legend"];
-		var optControls = _representation.options["enableStackedEdit"] && viewControls;
+		var optLegend = _representation.options["legend"];		
 
 		var optOrientation = _value.options["orientation"];	
 
@@ -43,13 +48,16 @@
 		var optMethod = _representation.options["aggr"];
 		var optFreqCol = _representation.options["freq"];
 		var optCat = _representation.options["cat"];
+		
+		var isTitle = optTitle || optSubtitle;
 
 		var body = d3.select("body");
 
 		var width = optWidth + "px";
 		var height = optHeight + "px";
 		if (optFullscreen) {
-			width = height = "100%";
+			width = "100%";
+			height = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";
 		}
 		
 		var div;
@@ -57,36 +65,18 @@
 			d3.select("svg").remove();
 			div = d3.select("#svgContainer");
 		} else {
-			layoutContainer = body.append("div").attr("id", "layoutContainer")
-				.style("width", width).style("height", height)
-				.style("min-width", MIN_WIDTH + "px");
-
-			var controlHeight;
-			if (_representation.options.enableViewControls) {
-				var controlsContainer = body.append("div")
-					.style({bottom : "0px",
-							width : "100%", 
-							padding : "5px", 
-							"padding-left" : "60px",
-							"border-top" : "1px solid black", 
-							"background-color" : "white", 
-							"box-sizing": "border-box"})
-							.attr("id", "controlContainer");
-
-				createControls(controlsContainer);
-				controlHeight = controlsContainer.node().getBoundingClientRect().height;
-				layoutContainer.style("min-height", (MIN_HEIGHT + controlHeight) + "px");
-				if (optFullscreen) {
-					layoutContainer.style("height", "calc(100% - " + controlHeight + "px)");
-				}
-			} else {
-				controlHeight = 0;
-			}
+			layoutContainer = body.append("div")
+				.attr("id", "layoutContainer")
+				.style('display', 'block')
+				.style("width", width)
+				.style("height", height)
+				.style("min-width", MIN_WIDTH + "px")
+				.style("min-height", MIN_HEIGHT + "px");
 			
 			div = layoutContainer.append("div")
 				.attr("id", "svgContainer")
 				.style("min-width", MIN_WIDTH + "px")
-				.style("min-height", "calc(" + MIN_HEIGHT + "px - " + controlHeight + "px")
+				.style("min-height", MIN_HEIGHT + "px")
 				.style("box-sizing", "border-box")
 				.style("overflow", "hidden")
 				.style("margin", "0");
@@ -96,9 +86,10 @@
 		var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		div[0][0].appendChild(svg1);
 
-		svg = d3.select("svg");
-		svg.style("font-family", "sans-serif");
-		svg.classed("colored", true);
+		svg = d3.select("svg")
+			.style("font-family", "sans-serif")
+			.style("display", "block")
+			.classed("colored", true);
 
 		if (!optFullscreen) {
 			if (optWidth > 0) {
@@ -118,7 +109,7 @@
 		} else {
 			// Set full screen height/width
 			div.style("width", "100%");
-			div.style("height", "100%");
+			div.style("height", height);
 
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
@@ -252,6 +243,8 @@
 				chart.reduceXTicks(false);
 			}
 			
+			chart.stacked(_value.options.chartType == 'Stacked');
+			
 			var colorRange = customColors ? colorScale : colorScale.range();
 			
 			chart
@@ -262,7 +255,7 @@
 			
 			updateTitles(false);
 
-	        chart.showControls(_representation.runningInView && optControls);
+	        chart.showControls(false);  // all the controls moved to Settings menu
 			chart.showLegend(optLegend);
 
 			updateAxisLabels(false);
@@ -273,7 +266,7 @@
 			nv.utils.windowResize(chart.update);
 			
 			return chart;
-		});	
+		})	
 	}
 	
 	function updateTitles(updateChart) {
@@ -318,8 +311,19 @@
 			topMargin += _value.options.title ? 10 : 0;
 			topMargin += _value.options.subtitle ? 8 : 0;
 			chart.legend.margin({top: topMargin, bottom: topMargin});
-			chart.controls.margin({top: topMargin, bottom: topMargin});
+			
+			var isTitle = _value.options.title || _value.options.subtitle;
+			knimeService.floatingHeader(isTitle);
+			
 			if (updateChart && chartNeedsUpdating) {
+				if (_representation.options.svg.fullscreen && _representation.runningInView ) {
+					var height = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";
+					layoutContainer.style("height", height)
+						// two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE
+						.style('display', 'none')
+						.style('display', 'block');
+					d3.select("#svgContainer").style("height", height); 
+				}
 				chart.update();
 			}
 		}
@@ -377,11 +381,117 @@
 			}
 		}
 	}
+	
+	function updateChartType() {
+		if (this.value != _value.options.chartType) {
+			_value.options.chartType = this.value;			
+			chart.stacked(this.value == 'Stacked');
+			chart.update();
+		}		
+	}
+	
+	drawControls = function() {		
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}
+		
+	    if (!_representation.options.enableViewControls) return;
+	    
+	    var titleEdit = _representation.options.enableTitleEdit;
+	    var subtitleEdit = _representation.options.enableSubtitleEdit;
+	    var axisEdit = _representation.options.enableAxisEdit;
+	    var chartTypeEdit =  _representation.options.enableStackedEdit;
+	    var orientationEdit = _representation.options.enableHorizontalToggle;
+		var staggerLabels = _representation.options.enableStaggerToggle;
+		
+	    
+	    if (titleEdit || subtitleEdit) {	    	    
+	    	if (titleEdit) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, function() {
+	    			if (_value.options.title != this.value) {
+						_value.options.title = this.value;
+						updateTitles(true);
+					}
+	    		}, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (subtitleEdit) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, function() {
+	    			if (_value.options.subtitle != this.value) {
+						_value.options.subtitle = this.value;
+						updateTitles(true);
+					}
+	    		}, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}	
+	    	if (axisEdit || orientationEdit || staggerLabels) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+	    
+	    if (axisEdit) {
+	    	var catAxisText = knimeService.createMenuTextField('catAxisText', _value.options.catLabel, function() {
+	    		_value.options.catLabel = this.value;
+				updateAxisLabels(true);
+	    	}, true);
+    		knimeService.addMenuItem('Category axis label:', 'ellipsis-h', catAxisText);
+    		
+    		var freqAxisText = knimeService.createMenuTextField('freqAxisText', _value.options.freqLabel, function() {
+    			_value.options.freqLabel = this.value;
+				updateAxisLabels(true);
+    		}, true);    		
+    		knimeService.addMenuItem('Frequency axis label:', 'ellipsis-v', freqAxisText);
+    		
+    		if (orientationEdit || staggerLabels || chartTypeEdit) {
+    			knimeService.addMenuDivider();
+    		}
+    	}
+	    
+	    if (chartTypeEdit) {
+	    	var groupedRadio = knimeService.createMenuRadioButton('groupedRadio', 'chartType', 'Grouped', updateChartType);	    	
+	    	groupedRadio.checked = (_value.options.chartType == groupedRadio.value);
+	    	knimeService.addMenuItem('Grouped:', 'align-left fa-rotate-270', groupedRadio);	    	
+	    	
+	    	var stackedRadio = knimeService.createMenuRadioButton('stackedRadio', 'chartType', 'Stacked', updateChartType);
+	    	stackedRadio.checked = (_value.options.chartType == stackedRadio.value);
+	    	knimeService.addMenuItem('Stacked:', 'tasks fa-rotate-270', stackedRadio);
+	    	
+	    	if (orientationEdit || staggerLabels) {
+    			knimeService.addMenuDivider();
+    		}
+	    }
+	    
+	    if (orientationEdit) {
+	    	var orientationCbx = knimeService.createMenuCheckbox('orientationCbx', _value.options.orientation, function () {
+	    		if (_value.options.orientation != this.checked) {
+					_value.options.orientation = this.checked;
+					d3.select("#staggerCbx").property("disabled", this.checked);
+					drawChart(true);
+				}
+	    	});
+	    	knimeService.addMenuItem('Plot horizontal bar chart:', 'align-left', orientationCbx);
+	    }
+	    
+	    if (staggerLabels) {
+	    	var staggerCbx = knimeService.createMenuCheckbox('staggerCbx', _value.options.staggerLabels, function () {
+    			if (_value.options.staggerLabels != this.checked) {
+					_value.options.staggerLabels = this.checked;
+					drawChart(true);
+				}
+	    	});
+	    	staggerCbx.disabled = _value.options.orientation;
+	    	knimeService.addMenuItem('Stagger labels:', 'map-o', staggerCbx);
+	    }
+	};
 
-	function createControls(controlsContainer) {
+	/*function createControls(controlsContainer) {
 		if (_representation.options.enableViewControls) {
 			
-			/*.style("width", "100%")*/
 			var controlTable = controlsContainer.append("table")
 	    		.attr("id", "barControls")
 	    		.style("padding", "10px")
@@ -428,33 +538,7 @@
 	    					}
 	    				});
 				}
-				/*if (categoryEdit) {
-					orientationContainer.append("td").append("label").attr("for", "cat").text("Category Column:").style("margin", "0 5px");
-					var categoryBox = orientationContainer.append("td").append("select")
-						.attr("id", "cat")
-						.style("width", "150px")
-						.style("margin-right", "15px");
-					var COLUMNS = _representation.inObjects[0].spec.colNames;
-					var COLTYPES = _representation.inObjects[0].spec.colTypes;
-					for (var i = 0; i < COLUMNS.length; i++) {
-						if (COLTYPES[i] == "string") {
-							var interp = COLUMNS[i];
-							var o = categoryBox.append("option").text(interp).attr("value", interp);
-							if (interp === _representation.options.cat) {
-								o.property("selected", true);
-							}
-						}
-					}
-					categoryBox.on("change", function() {
-						var orig = _value.options.cat;
-						_value.options.cat = categoryBox.property("value");
-						var res = drawChart(true);
-						if (res == "missing") {
-							_representation.options.cat = orig;
-							drawChart(true);
-						}
-					});
-				}*/
+				
 			}
 			
 			var titleEdit = _representation.options.enableTitleEdit;
@@ -503,7 +587,7 @@
 			if (_representation.options.enableAxisEdit) {
 				var axisContainer = controlTable.append("tr");
 				
-				axisContainer.append("td").append("label").attr("for", "catAxisLabel").text("Category axis label:").style("margin", "0 5px");
+				axisContainer.append("td").append("label").attr("for", "catAxisLabel").text("fre:").style("margin", "0 5px");
 				var categoryBox = axisContainer.append("td").append("input")
 					.attr("id", "catAxisLabel")
 					.attr("type", "text")
@@ -533,7 +617,7 @@
 				controlContainer.remove();
 			}
 		}
-	}
+	}*/
 
 	barchart.validate = function() {
 		return true;
@@ -554,18 +638,22 @@
 			if (!styles[i].cssRules) continue;
 			
 			for (var j = 0; j < styles[i].cssRules.length; j++) {
-				var rule = styles[i].cssRules[j];
-				d3.selectAll(rule.selectorText).each(function(){
-					for (var k = 0; k < rule.style.length; k++) {
-						var curStyle = this.style.getPropertyValue(rule.style[k]);
-						var curPrio = this.style.getPropertyPriority(rule.style[k]);
-						var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
-						//only overwrite style if not set or priority is overruled
-						if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
-							d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+				try {
+					var rule = styles[i].cssRules[j];
+					d3.selectAll(rule.selectorText).each(function(){
+						for (var k = 0; k < rule.style.length; k++) {
+							var curStyle = this.style.getPropertyValue(rule.style[k]);
+							var curPrio = this.style.getPropertyPriority(rule.style[k]);
+							var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
+							//only overwrite style if not set or priority is overruled
+							if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
+								d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+							}
 						}
-					}
-				});
+					});
+				} catch(exception) {
+					continue;
+				}
 			}
 		}
 		var svgElement = d3.select("svg")[0][0];
