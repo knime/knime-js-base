@@ -103,6 +103,7 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
 
     private final JCheckBox m_showGridCheckBox;
     private final JCheckBox m_resizeViewToWindow;
+    private final JCheckBox m_displayFullscreenButtonCheckBox;
 
     private final JSpinner m_imageWidthSpinner;
     private final JSpinner m_lineWidthSpinner;
@@ -153,6 +154,7 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         m_showArea = new JCheckBox("Show area under curve");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_resizeViewToWindow = new JCheckBox("Resize view to fill window");
+        m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
 
         m_imageWidthSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
         m_imageHeightSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
@@ -415,6 +417,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         cc.anchor = GridBagConstraints.CENTER;
         sizesPanel.add(m_resizeViewToWindow, cc);
         c.gridy++;
+        cc.gridx++;
+        sizesPanel.add(m_displayFullscreenButtonCheckBox, cc);
 
         JPanel backgroundPanel = new JPanel(new GridBagLayout());
         backgroundPanel.setBorder(BorderFactory.createTitledBorder("Background"));
@@ -478,6 +482,7 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         m_showArea.setSelected(config.getShowArea());
         m_showGridCheckBox.setSelected(config.getShowGrid());
         m_resizeViewToWindow.setSelected(config.getResizeToWindow());
+        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
 
         m_lineWidthSpinner.setValue(config.getLineWidth());
         m_imageWidthSpinner.setValue(config.getImageWidth());
@@ -521,6 +526,7 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         config.setShowArea(m_showArea.isSelected());
         config.setShowGrid(m_showGridCheckBox.isSelected());
         config.setResizeToWindow(m_resizeViewToWindow.isSelected());
+        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
 
         config.setLineWidth((Integer)m_lineWidthSpinner.getValue());
         config.setImageWidth((Integer)m_imageWidthSpinner.getValue());

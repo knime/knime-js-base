@@ -74,6 +74,7 @@ public final class ROCCurveViewConfig {
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
 
     static final String TITLE = "title";
     static final String SUBTITLE = "subtitle";
@@ -86,6 +87,7 @@ public final class ROCCurveViewConfig {
     static final String USE_DOMAIN_INFO = "useDomainInformation";
     static final String SHOW_GRID = "showGrid";
     static final String RESIZE_TO_WINDOW = "resizeToWindow";
+    static final String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String ENABLE_CONFIG = "enableViewConfiguration";
     static final String X_COL = "xCol";
     static final String Y_COLS = "yCols";
@@ -110,6 +112,7 @@ public final class ROCCurveViewConfig {
     private boolean m_showArea = true;
     private boolean m_showLegend = true;
     private boolean m_resizeToWindow = true;
+    private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private int m_imageWidth = DEFAULT_WIDTH;
     private int m_imageHeight = DEFAULT_HEIGHT;
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
@@ -392,6 +395,20 @@ public final class ROCCurveViewConfig {
     }
 
     /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
      * @return the backgroundColor
      */
     public Color getBackgroundColor() {
@@ -508,6 +525,8 @@ public final class ROCCurveViewConfig {
         settings.addBoolean(SHOW_AREA, getShowArea());
         settings.addBoolean(SHOW_GRID, getShowGrid());
         settings.addBoolean(RESIZE_TO_WINDOW, getResizeToWindow());
+        //added with 3.3
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
 
         settings.addInt(IMAGE_WIDTH, getImageWidth());
         settings.addInt(IMAGE_HEIGHT, getImageHeight());
@@ -525,6 +544,7 @@ public final class ROCCurveViewConfig {
         settings.addBoolean(ENABLE_EDIT_SUBTITLE, m_enableEditSubtitle);
         settings.addBoolean(ENABLE_EDIT_X_AXIS_LABEL, m_enableEditXAxisLabel);
         settings.addBoolean(ENABLE_EDIT_Y_AXIS_LABEL, m_enableEditYAxisLabel);
+
         m_rocSettings.saveSettings(settings);
     }
 
@@ -539,6 +559,8 @@ public final class ROCCurveViewConfig {
         setShowArea(settings.getBoolean(SHOW_AREA));
         setShowGrid(settings.getBoolean(SHOW_GRID));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW));
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setImageWidth(settings.getInt(IMAGE_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT));
@@ -573,6 +595,8 @@ public final class ROCCurveViewConfig {
         setShowArea(settings.getBoolean(SHOW_AREA, true));
         setShowGrid(settings.getBoolean(SHOW_GRID, true));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW, true));
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setLineWidth(settings.getInt(LINE_WIDTH, DEFAULT_LINE_WIDTH));
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));

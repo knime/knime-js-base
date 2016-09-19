@@ -88,6 +88,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     private boolean m_showGrid;
     private boolean m_showArea;
     private boolean m_resizeToWindow;
+    private boolean m_displayFullscreenButton;
     private boolean m_enableStaggeredRendering = true;
     private int m_imageWidth;
     private int m_imageHeight;
@@ -314,6 +315,20 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
      * @return the enableStaggeredRendering
      */
     public boolean getEnableStaggeredRendering() {
@@ -354,6 +369,8 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         }
         settings.addBoolean("enableStaggeredRendering", m_enableStaggeredRendering);
         settings.addBoolean("resizeToWindow", m_resizeToWindow);
+        // added with 3.3
+        settings.addBoolean(ROCCurveViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
 
         settings.addString(DATA_AREA_COLOR, m_dataAreaColor);
         settings.addString(BACKGROUND_COLOR, m_backgroundColor);
@@ -391,6 +408,8 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         }
         m_enableStaggeredRendering = settings.getBoolean("enableStaggeredRendering");
         m_resizeToWindow = settings.getBoolean("resizeToWindow");
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(ROCCurveViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, ROCCurveViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         m_dataAreaColor = settings.getString(DATA_AREA_COLOR);
         m_backgroundColor = settings.getString(BACKGROUND_COLOR);
@@ -460,6 +479,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_showGrid, other.m_showGrid)
                 .append(m_showArea, other.m_showArea)
                 .append(m_resizeToWindow, other.m_resizeToWindow)
+                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_imageWidth, other.m_imageWidth)
                 .append(m_imageHeight, other.m_imageHeight)
@@ -488,6 +508,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_showGrid)
                 .append(m_showArea)
                 .append(m_resizeToWindow)
+                .append(m_displayFullscreenButton)
                 .append(m_enableStaggeredRendering)
                 .append(m_imageWidth)
                 .append(m_imageHeight)

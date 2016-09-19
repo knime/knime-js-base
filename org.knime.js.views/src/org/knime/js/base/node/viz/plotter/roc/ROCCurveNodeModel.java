@@ -257,6 +257,8 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
         representation.setDataAreaColor(m_config.getDataAreaColor());
         representation.setShowArea(m_config.getShowArea());
         representation.setShowLegend(m_config.getShowLegend());
+        // added with 3.3
+        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
 
         representation.setEnableControls(m_config.getEnableControls());
         representation.setEnableEditSubtitle(m_config.getEnableEditSubtitle());

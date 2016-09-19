@@ -21,33 +21,12 @@ knime_roc_curve = function() {
 
         var body = d3.select("body").attr("id", "body");
         
-        var layoutContainer = body.append("div").attr("id", layoutContainerID)
-                .style("width", "100%").style("height", "calc(100% - 50px)")
-                .style("min-width", minWidth + "px");
-        
-        var controlHeight;
-        if (_representation.enableControls) {
-             var controlsContainer = body.append("div").style({
-            	 position : "relative", 
-            	 bottom : "0px",
-            	 width : "100%", 
-            	 padding : "5px", 
-            	 "padding-left" : "60px", 
-            	 "font-family" : "sans-serif",
-            	 "border-top" : "1px solid black", 
-            	 "background-color" : "white",
-            	 "box-sizing": "border-box"}).attr("id", "controlContainer");
-
-            createControls(controlsContainer);
-            controlHeight = controlsContainer.node().getBoundingClientRect().height;
-        } else {
-            controlHeight = 0;
-        }
-
-        layoutContainer.style({
-            "height" : "calc(100% - " + controlHeight + "px)",
-            "min-height" :  (minHeight + controlHeight) + "px"
-        });
+        var layoutContainer = body.append("div")
+        	.attr("id", layoutContainerID)
+            .style("width", "100%")
+            .style("height", "100%")
+            .style("min-width", minWidth + "px")
+            .style("min-height", minHeight + "px");
         
         //var colors = ["red", "green", "blue", "yellow", "brown", "lime", "orange"];
         var catCol = d3.scale.category10();
@@ -73,14 +52,57 @@ knime_roc_curve = function() {
             }
         }
         xy.random = {data : [{x : 0, y : 0}, {x : 1, y : 1}], color : "black"};
-            
+        
+        if (_representation.enableControls) {
+        	drawControls();
+        }
         drawChart();
+        
+        
         if (parent != undefined && parent.KnimePageLoader != undefined) {
             parent.KnimePageLoader.autoResize(window.frameElement.id);
         }
 	};
 	
-	function createControls(controlsContainer) {
+	drawControls = function() {		
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}		    
+	    
+	    if (!_representation.enableControls) return;
+	    
+	    if (_representation.enableEditTitle || _representation.enableEditSubtitle) {
+	    	if (_representation.enableEditTitle) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.title, updateTitle, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (_representation.enableEditSubtitle) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.subtitle, updateSubtitle, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}
+	    	if (_representation.enableEditXAxisLabel || _representation.enableEditYAxisLabel) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }	    
+	    
+	    if (_representation.enableEditXAxisLabel || _representation.enableEditYAxisLabel) {
+	    	if (_representation.enableEditXAxisLabel) {
+	    		var xAxisText = knimeService.createMenuTextField('xAxisText', _value.xAxisTitle, updateXAxisTitle, true);
+	    		knimeService.addMenuItem('X Axis Label:', 'ellipsis-h', xAxisText);
+	    	}
+	    	if (_representation.enableEditYAxisLabel) {
+	    		var yAxisText = knimeService.createMenuTextField('yAxisText', _value.yAxisTitle, updateYAxisTitle, true);
+	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
+	    	}
+	    }
+	};
+	
+	/*function createControls(controlsContainer) {
 	    var titleDiv;
         
         if (_representation.enableEditTitle || _representation.enableEditSubtitle) {
@@ -141,20 +163,102 @@ knime_roc_curve = function() {
                 d3.select("#ytitle").text(this.value);
             });
         }
-	}
+	}*/
+	
+	updateTitle = function() {
+    	var hadTitle = (_value.title.length > 0);
+        _value.title = document.getElementById("chartTitleText").value;
+        var hasTitle = (_value.title.length > 0);        
+        if (hasTitle != hadTitle) {
+        	// if the title appeared or disappeared, we need to resize the chart
+            drawChart();            
+        }
+        d3.select("#title").text(_value.title);
+	};
+	
+	updateSubtitle = function() {
+		var hadTitle = (_value.subtitle.length > 0);
+        _value.subtitle = document.getElementById("chartSubtitleText").value;
+        var hasTitle = (_value.subtitle.length > 0);
+        if (hasTitle != hadTitle) {
+        	// if the subtitle appeared or disappeared, we need to resize the chart
+            drawChart();
+        }
+        d3.select("#subtitle").text(_value.subtitle);
+	};
+	
+	updateXAxisTitle = function() {
+		var hadTitle = (_value.xAxisTitle.length > 0);
+        _value.xAxisTitle = document.getElementById("xAxisText").value;
+        var hasTitle = (_value.xAxisTitle.length > 0);        
+        if (hasTitle != hadTitle) {
+        	// if the title appeared or disappeared, we need to resize the chart
+            drawChart();
+        }
+        d3.select("#xtitle").text(_value.xAxisTitle);
+	};
+	
+	updateYAxisTitle = function() {
+		var hadTitle = (_value.yAxisTitle.length > 0);
+        _value.yAxisTitle = document.getElementById("yAxisText").value;
+        var hasTitle = (_value.yAxisTitle.length > 0);        
+        if (hasTitle != hadTitle) {
+        	// if the title appeared or disappeared, we need to resize the chart
+            drawChart();
+        }
+        d3.select("#ytitle").text(_value.yAxisTitle);
+	};
 	
 	function drawChart() {
-	    var cw = Math.max(minWidth, _representation.imageWidth);
+		// Calculate margin of the chart
+        var mTop = 10;
+        var isTitle = true;        
+        if (_value.title && _value.subtitle) {
+        	mTop += 50;        	
+        } else if (_value.title) {
+        	mTop += 36;
+        } else if (_value.subtitle) {
+        	mTop += 26;      	
+        } else {
+        	isTitle = false;        	        	
+        }
+        knimeService.floatingHeader(isTitle);        
+        var mBottom = 0;
+        if (legendHeight > 0) {
+        	if (_value.xAxisTitle) {
+        		mBottom = legendHeight + 10;
+        	} else {
+        		mBottom = legendHeight - 10;
+        	}
+        } else {
+        	if (_value.xAxisTitle) {
+        		mBottom = 60;
+        	} else {
+        		mBottom = 34;
+        	}
+        }
+        var margin = {
+    		top : mTop,
+    		left : (_value.yAxisTitle) ? 70 : 40,
+    		bottom : mBottom,
+    		right : 20
+		};
+        
+        var cw = Math.max(minWidth, _representation.imageWidth);
 	    var ch = Math.max(minHeight, _representation.imageHeight);
 	    var chartWidth = cw + "px;"
         var chartHeight = ch + "px";
 
         if (_representation.resizeToWindow) {
             chartWidth = "100%";
-            chartHeight = "100%";
-        }
-
-        var lc = d3.select("#"+layoutContainerID);
+            chartHeight = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";            
+        }        
+        
+        var lc = d3.select("#"+layoutContainerID)
+        	.style("height", chartHeight)
+        	// two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE  
+        	.style('display', 'none')
+        	.style('display', 'block');
         
         // Clear the container
         lc.selectAll("*").remove();
@@ -165,18 +269,12 @@ knime_roc_curve = function() {
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
             .style("box-sizing", "border-box")
-            .style("display", "inline-block")
+            .style("display", "block")
             .style("overflow", "hidden")
             .style("margin", "0")
             .style("height", chartHeight)
-            .style("width", chartWidth);
+            .style("width", chartWidth);        
         
-        // Calculate margin of the chart
-        var mTop = 10;
-        if (_value.title || _value.subtitle) {
-            mTop += 55;
-        }
-        var margin = {top : mTop, left : 70, bottom : (legendHeight > 0 ? legendHeight + 10 : 60), right : 20};
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         document.getElementById(containerID).appendChild(svg1);
         
@@ -200,8 +298,19 @@ knime_roc_curve = function() {
         
         // Draw titles
         var titleG = d3svg.append("g").attr("transform", "translate(" + margin.left + ",0)");
-        var title = titleG.append("text").text(_value.title).attr({"y" : 30, "id" : "title"}).attr("font-size", 24);
-        var subtitle = titleG.append("text").text(_value.subtitle).attr({"y" : mTop - 15, "id" : "subtitle"});
+        if (_value.title) {
+        	titleG.append("text")
+	        	.text(_value.title)
+	        	.attr("id", "title")
+	        	.attr("y", 30)
+	        	.attr("font-size", 24);
+        }
+        if (_value.subtitle) {
+        	titleG.append("text")        
+	        	.text(_value.subtitle)
+	        	.attr("id", "subtitle")
+	        	.attr("y", mTop - 14);
+        }
                 
         var x = d3.scale.linear().range([0, w]);
         var y = d3.scale.linear().range([h, 0]);
@@ -245,22 +354,26 @@ knime_roc_curve = function() {
             d3YAxis.attr("class", "y axis")
             .call(yAxis);
         
-        svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", w - 10)
-            .attr("y", h + 45)
-            .attr("id", "xtitle")
-            .text(_value.xAxisTitle);
-            
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("y", -55)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .attr("id", "ytitle")
-            .text(_value.yAxisTitle);
+        // Axis titles
+        if (_value.xAxisTitle) {
+	        svg.append("text")
+	            .attr("class", "x label")
+	            .attr("text-anchor", "end")
+	            .attr("x", w - 10)
+	            .attr("y", h + 45)
+	            .attr("id", "xtitle")
+	            .text(_value.xAxisTitle);
+        }
+        if (_value.yAxisTitle) {
+	        svg.append("text")
+	            .attr("class", "y label")
+	            .attr("text-anchor", "end")
+	            .attr("y", -55)
+	            .attr("dy", ".75em")
+	            .attr("transform", "rotate(-90)")
+	            .attr("id", "ytitle")
+	            .text(_value.yAxisTitle);
+        }
             
         var gridColor = parseColor(_representation.gridColor);
         
@@ -272,7 +385,7 @@ knime_roc_curve = function() {
         d3XAxis.selectAll("path").attr({"stroke" : stroke, "stroke-width" : 1, "fill" : "none"});
         
         var xPos = 0;
-        var yPos = 70;
+        var yPos = (_value.xAxisTitle) ? 70 : 50;
         var areaG = svg.append("g");
         var areaCount = 0;
         var maxWidth = 0;
