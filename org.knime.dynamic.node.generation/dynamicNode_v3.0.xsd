@@ -123,6 +123,7 @@
 		<xs:attribute name="enableDependency" type="xs:IDREF" />
 		<xs:attribute name="enableValue" type="StringList" />
 		<xs:attribute name="saveInView" type="xs:boolean" default="false" />
+		<xs:attribute name="loadDefaults" type="xs:boolean" default="false" />
 	  </xs:extension>
     </xs:complexContent>
   </xs:complexType>

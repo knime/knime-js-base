@@ -50,9 +50,11 @@ package org.knime.dynamic.js.v30;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.xmlbeans.XmlObject;
@@ -122,6 +124,7 @@ public class DynamicJSConfig {
     private final DynamicJSKnimeNode m_nodeConfig;
 
     private Map<String, SettingsModel> m_models = new HashMap<String, SettingsModel>();
+    private Set<String> m_defaultModelIds = new HashSet<String>();
 
     private List<Vector<String>> m_enableDependencies = new ArrayList<Vector<String>>();
 
@@ -322,6 +325,9 @@ public class DynamicJSConfig {
 
             if (option instanceof DynamicOption) {
                 DynamicOption gOption = (DynamicOption)option;
+                if (gOption.getLoadDefaults()) {
+                    m_defaultModelIds.add(gOption.getId());
+                }
                 if (gOption.isSetEnableDependency() && gOption.isSetEnableValue()) {
                     Vector<String> dependency = new Vector<String>();
                     dependency.add(gOption.getEnableDependency());
@@ -502,7 +508,13 @@ public class DynamicJSConfig {
      */
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         for (Entry<String, SettingsModel> entry : m_models.entrySet()) {
-            entry.getValue().loadSettingsFrom(settings);
+            try {
+                entry.getValue().loadSettingsFrom(settings);
+            } catch (InvalidSettingsException e) {
+                if (!m_defaultModelIds.contains(entry.getKey())) {
+                    throw e;
+                }
+            }
         }
         loadAdditionalNodeSettings(settings);
     }
