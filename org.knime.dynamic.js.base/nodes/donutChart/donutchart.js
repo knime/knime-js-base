@@ -11,10 +11,13 @@
 		_representation = representation;
 		_value = value;
 
+		if (_representation.options.enableViewControls) {
+			drawControls();
+		}
 		drawChart(false);
 	}
 
-	function drawChart(redraw) {
+	function drawChart(redraw) {		
 		// Parse the options
 
 		var optMethod = _representation.options["aggr"];
@@ -37,6 +40,8 @@
 		var optFullscreen = _representation.options["svg"]["fullscreen"] && _representation.runningInView;
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
+		
+		var isTitle = optTitle || optSubtitle;
 
 		/*
 		 * Setup interactive controls
@@ -50,49 +55,30 @@
 		var width = optWidth + "px";
 		var height = optHeight + "px";
 		if (optFullscreen) {
-			width = height = "100%";
+			width = "100%";
+			height = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";
 		}
 		
+		var div;
 		if (redraw) {
 			d3.select("svg").remove();
 			div = d3.select("#svgContainer");
 		} else {
-
-			layoutContainer = body.append("div").attr("id", "layoutContainer")
-				.style("width", width).style("height", height).style(
-						"min-width", MIN_WIDTH + "px");
-
-			var controlHeight;
-			if (_representation.options.enableViewControls) {
-			var controlsContainer = body.append("div").style({
-				bottom : "0px",
-				width : "100%",
-				padding : "5px",
-				"padding-left" : "60px",
-				"border-top" : "1px solid black",
-				"background-color" : "white",
-				"box-sizing" : "border-box"
-			}).attr("id", "controlContainer");
-
-			createControls(controlsContainer);
-			controlHeight = controlsContainer.node().getBoundingClientRect().height;
-			layoutContainer.style("min-height", (MIN_HEIGHT + controlHeight)
-					+ "px");
-			if (optFullscreen) {
-				layoutContainer.style("height", "calc(100% - " + controlHeight
-						+ "px)");
-			}
-		} else {
-			controlHeight = 0;
-		}
-		
-		var div = layoutContainer.append("div")
-			.attr("id", "svgContainer")
-			.style("min-width", MIN_WIDTH + "px")
-			.style("min-height", "calc(" + MIN_HEIGHT + "px - " + controlHeight + "px")
-			.style("box-sizing", "border-box")
-			.style("overflow", "hidden")
-			.style("margin", "0");
+			layoutContainer = body.append("div")
+				.attr("id", "layoutContainer")
+				.style('display', 'block')
+				.style("width", width)
+				.style("height", height)
+				.style("min-width", MIN_WIDTH + "px")
+				.style("min-height", MIN_HEIGHT + "px");		
+			
+			div = layoutContainer.append("div")
+				.attr("id", "svgContainer")
+				.style("min-width", MIN_WIDTH + "px")
+				.style("min-height", MIN_HEIGHT + "px")
+				.style("box-sizing", "border-box")
+				.style("overflow", "hidden")
+				.style("margin", "0");
 		}
 
 		/*
@@ -149,8 +135,9 @@
 				.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		div[0][0].appendChild(svg1);
 
-		svg = d3.select("svg");
-		svg.style("font-family", "sans-serif");
+		svg = d3.select("svg")
+			.style("font-family", "sans-serif")
+			.style("display", "block");
 
 		if (!optFullscreen) {
 			if (optWidth > 0) {
@@ -164,7 +151,7 @@
 		} else {
 			// Set full screen height/width
 			div.style("width", "100%");
-			div.style("height", "100%");
+			div.style("height", height);
 
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
@@ -276,217 +263,161 @@
 			topMargin += _value.options.subtitle ? 8 : 0;
 			chart.legend.margin({top: topMargin, bottom: topMargin});
 			chart.margin({top: topMargin, bottom: topMargin});
+			
+			var isTitle = _value.options.title || _value.options.subtitle;
+			knimeService.floatingHeader(isTitle);			
+		
+			
 			if (updateChart && chartNeedsUpdating) {
+				if (_representation.options.svg.fullscreen && _representation.runningInView ) {
+					var height = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";
+					layoutContainer.style("height", height)
+						// two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE
+						.style('display', 'none')
+						.style('display', 'block');
+					d3.select("#svgContainer").style("height", height); 
+				}
 				chart.update();
 			}
 		}
 	}
-
-	function createControls(controlsContainer) {
+	
+	drawControls = function() {		
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
 		
-		var titleEdit = _representation.options.enableTitleEdit;
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}
+		
+	    if (!_representation.options.enableViewControls) return;
+	    
+	    var titleEdit = _representation.options.enableTitleEdit;
 		var subtitleEdit = _representation.options.enableSubtitleEdit;
 		var donutToggle = _representation.options.enableDonutToggle;
 		var holeEdit = _representation.options.enableHoleEdit;
-		var insideTitleEdit = _representation.options.enableInsideTitleEdit;
-		var colChooser = _representation.options.enableColumnChooser;
+		//var insideTitleEdit = _representation.options.enableInsideTitleEdit;
+		//var colChooser = _representation.options.enableColumnChooser;
 		var labelEdit = _representation.options.enableLabelEdit;
-		
-		if (_representation.options.enableViewControls) {
-			
-			var controlTable = controlsContainer.append("table")
-    			.attr("id", "pieControls")
-    			.style("padding", "10px")
-    			.style("margin", "0 auto")
-    			.style("box-sizing", "border-box")
-    			.style("font-family", "sans-serif")
-    			.style("font-size", "12px")
-    			.style("border-spacing", 0)
-    			.style("border-collapse", "collapse");
-			
-			if (titleEdit || subtitleEdit) {
-				var titleEditContainer = controlTable.append("tr");
-		    	if (titleEdit) {
-		    		titleEditContainer.append("td").append("label").attr("for", "chartTitleText").text("Chart Title:").style("margin", "0 5px");
-		    		var chartTitleText = titleEditContainer.append("td").append("input")
-	    				.attr("type", "text")
-	    				.attr("id", "chartTitleText")
-	    				.attr("name", "chartTitleText")
-	    				.attr("value", _value.options.title)
-	    				.style("font-family", "sans-serif")
-	    				.style("font-size", "12px")
-	    				.style("width", "150px")
-	    				.style("margin-right", "15px")
-	    				.on("keyup", function() {
-	    					if (_value.options.title != this.value) {
-	    						_value.options.title = this.value;
-	    						updateTitles(true);
-	    					}
-	    			});
-		    	}
-		    	if (subtitleEdit) {
-		    		titleEditContainer.append("td").append("label").attr("for", "chartSubtitleText").text("Chart Subtitle:").style("margin", "0 5px");
-		    		var chartSubtitleText = titleEditContainer.append("td").append("input")
-	    				.attr("type", "text")
-	    				.attr("id", "chartSubtitleText")
-	    				.attr("name", "chartSubtitleText")
-	    				.attr("value", _value.options.subtitle)
-	    				.style("font-family", "sans-serif")
-	    				.style("font-size", "12px")
-	    				.style("width", "150px")
-	    				.style("margin-right", "15px")
-	    				.on("keyup", function() {
-	    					if (_value.options.subtitle != this.value) {
-	    						_value.options.subtitle = this.value;
-	    						updateTitles(true);
-	    					}
-	    			});
-		    	}
-			}
-			
-			if (donutToggle || holeEdit) {
-				var donutEditContainer = controlTable.append("tr");
-		    	if (donutToggle) {
-		    		donutEditContainer.append("td").append("label").attr("for", "donutCheckbox").text("Render donut chart:").style("margin", "0 5px");
-		    		var donutCheckbox = donutEditContainer.append("td").append("input")
-	    				.attr("type", "checkbox")
-	    				.attr("id", "donutCheckbox")
-	    				.style("margin-right", "15px")
-	    				.property("checked", _value.options.togglePie)
-	    				.on("change", function() {
-	    					if (_value.options.togglePie != this.checked) {
-	    						_value.options.togglePie = this.checked;
-	    						chart.donut(this.checked);
-	    						d3.selectAll("#insideTitle, #donutHole").property("disabled", !_value.options.togglePie);
-	    						chart.update();
-	    					}
-	    				});
-		    	}
-		    	if (holeEdit) {
-		    		donutEditContainer.append("td").append("label").attr("for", "donutHole").text("Donut hole ratio:").style("margin", "0 5px");
-		    		var holeEdit = donutEditContainer.append("td").append("input")
-		    			.attr("type", "number")
-		    			.attr("id", "donutHole")
-		    			.attr("min", 0).attr("max", 1).attr("step", 0.1)
-		    			.attr("value", _value.options.holeSize)
-		    			.style("width", "150px")
-		    			.style("margin-right", "15px")
-		    			.property("disabled", !_value.options.togglePie)
-		    			.on("change", function() {
-		    				if (this.value < 0) {
-		    					this.value = 0;
-		    				} else if (this.value > 1) {
-		    					this.value = 1;
-		    				}
-		    				chart.donutRatio(this.value);
-		    				chart.update();
-		    			})
-		    			.on("keyup", function() {
-		    				if (this.value < 0) {
-		    					this.value = 0;
-		    				} else if (this.value > 1) {
-		    					this.value = 1;
-		    				}
-		    				chart.donutRatio(this.value);
-		    				chart.update();
-		    			});
-		    	}
-			}
-			
-			if (insideTitleEdit || colChooser) {
-				var freqColContainer = controlTable.append("tr");
-		    	if (insideTitleEdit) {
-		    		freqColContainer.append("td").append("label").attr("for", "insideTitle").text("Title inside:").style("margin", "0 5px");
-		    		var chartSubtitleText = freqColContainer.append("td").append("input")
-	    				.attr("type", "text")
-	    				.attr("id", "insideTitle")
-	    				.attr("name", "insideTitle")
-	    				.attr("value", _value.options.insideTitle)
-	    				.style("font-family", "sans-serif")
-	    				.style("font-size", "12px")
-	    				.style("width", "150px")
-	    				.style("margin-right", "15px")
-	    				.property("disabled", !_value.options.togglePie)
-	    				.on("keyup", function() {
-	    					if (_value.options.insideTitle != this.value) {
-	    						_value.options.insideTitle = this.value;
-	    						chart.title(this.value);
-	    						chart.update();
-	    					}
-	    			});
-		    	}
-		    	if (colChooser) {
-		    		freqColContainer.append("td").append("label").attr("for", "freq").text("Column:").style("margin", "0 5px");
-		    		var colSelect = freqColContainer.append("td").append("select")
-		    			.attr("id", "freq")
-		    			.style("font-family", "sans-serif")
-	    				.style("font-size", "12px")
-	    				.style("width", "150px")
-	    				.style("margin-right", "15px");
-		    		var COLUMNS = _representation.inObjects[0].spec.colNames;
-					var COLTYPES = _representation.inObjects[0].spec.colTypes;
-					for (var i = 0; i < COLUMNS.length; i++) {
-						if (COLTYPES[i] == "number") {
-							var interp = COLUMNS[i];
-							var o = colSelect.append("option").text(interp).attr(
-									"value", interp);
-							if (interp === _value.options.freq) {
-								o.property("selected", true);
-							}
-						}
+	    
+	    if (titleEdit || subtitleEdit) {	    	    
+	    	if (titleEdit) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, function() {
+	    			if (_value.options.title != this.value) {
+						_value.options.title = this.value;
+						updateTitles(true);
 					}
-					colSelect.on("change", function() {
-						_value.options.freq = colSelect.property("value");
-						updateData(true);
-					});
-		    	}
+	    		}, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (subtitleEdit) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, function() {
+	    			if (_value.options.subtitle != this.value) {
+						_value.options.subtitle = this.value;
+						updateTitles(true);
+					}
+	    		}, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}	
+	    	if (/*colChooser ||*/ labelEdit || donutToggle || holeEdit /*|| insideTitleEdit*/) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+	    
+	    /*if (colChooser) {
+	    	// filter out non number columns
+	    	var colNames = _representation.inObjects[0].spec.colNames;
+			var colTypes = _representation.inObjects[0].spec.colTypes;
+			var numberColumns = [];
+			for (var i = 0; i < colNames.length; i++) {
+				if (colTypes[i] == "number") {
+					numberColumns.push(colNames[i]);					
+				}
 			}
-			
-			if (labelEdit) {
-				var labelEditContainer = controlTable.append("tr");
-				labelEditContainer.append("td").append("label").attr("for", "labelCheckbox").text("Show labels:").style("margin", "0 5px");
-	    		var donutCheckbox = labelEditContainer.append("td").append("input")
-	   				.attr("type", "checkbox")
-	   				.attr("id", "labelCheckbox")
-	   				.style("margin-right", "15px")
-	    			.property("checked", _value.options.showLabels)
-	    			.on("change", function() {
-	    				if (_value.options.showLabels != this.checked) {
-    						_value.options.showLabels = this.checked;
-	   						chart.showLabels(this.checked);
-	   						d3.selectAll("#labelType input").property("disabled", !_value.options.showLabels);
-	   						//workaround for nvd3 bug, remove labels manually
-	   						if (!this.checked) {
-	   							d3.selectAll(".nv-pieLabels *").remove();
-	   						}
-	   						chart.update();
-	   					}
-	    			});
-	    		
-	    		labelEditContainer.append("td").append("label")/*.attr("for", "labelType")*/.text("Label type:").style("margin", "0 5px");
-	    		var labelTypeBox = labelEditContainer.append("td").attr("id", "labelType");
-	    		var type = _value.options.labelType.toLowerCase();
-	    		labelTypeBox.append("input").attr("type", "radio").attr("id", "typeKey").attr("name", "labelRadio").attr("value", "key").property("checked", type == "key").property("disabled", !_value.options.showLabels);
-	    		labelTypeBox.append("label").attr("for", "typeKey").text("Key").style("margin-right", "5px");
-	    		labelTypeBox.append("input").attr("type", "radio").attr("id", "typeValue").attr("name", "labelRadio").attr("value", "value").property("checked", type == "value").property("disabled", !_value.options.showLabels);
-	    		labelTypeBox.append("label").attr("for", "typeValue").text("Value").style("margin-right", "5px");
-	    		labelTypeBox.append("input").attr("type", "radio").attr("id", "typePercent").attr("name", "labelRadio").attr("value", "percent").property("checked", type == "percent").property("disabled", !_value.options.showLabels);
-	    		labelTypeBox.append("label").attr("for", "typePercent").text("Percent").style("margin-right", "15px");
-	    		d3.selectAll("#labelType input").on("click", function() {
-	    			var newValue = d3.select("#labelType input[name=labelRadio]:checked").attr("value");
-	    			if (newValue != _value.options.labelType) {
-	    				_value.options.labelType = newValue;
-	    				chart.labelType(newValue);
-	    				chart.update();
-	    			}
-	    		});
-		    }
-			
-			if (d3.selectAll("#controlContainer table *").empty()) {
-				controlContainer.remove();
-			}
-		}
-	}
+    		var colSelect = knimeService.createMenuSelect('columnSelect', _value.options.freq, numberColumns, function() {
+    			_value.options.freq = this.value;
+				updateData(true);
+    		});
+    		knimeService.addMenuItem('Column:', 'minus-square fa-rotate-90', colSelect);
+    		
+    		if (labelEdit || donutToggle || holeEdit || insideTitleEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+        }*/
+	    
+	    if (labelEdit) {
+	    	var labelCbx = knimeService.createMenuCheckbox('labelCbx', _value.options.showLabels, function () {
+	    		if (_value.options.showLabels != this.checked) {
+					_value.options.showLabels = this.checked;
+					chart.showLabels(this.checked);
+					d3.selectAll("#labelType input").property("disabled", !_value.options.showLabels);
+					//workaround for nvd3 bug, remove labels manually
+					if (!this.checked) {
+						d3.selectAll(".nv-pieLabels *").remove();
+					}
+					chart.update();
+				}
+	    	});
+	    	knimeService.addMenuItem('Show labels:', 'comment-o', labelCbx);
+	    	
+	    	var labelTypeRadio = knimeService.createInlineMenuRadioButtons('labelType', 'labelType', 'Value', ['Key', 'Value', 'Percent'], function() {
+	    		_value.options.labelType = this.value;
+				chart.labelType(this.value.toLowerCase());
+				chart.update();
+	    	});
+	    	knimeService.addMenuItem('Label type:', 'commenting-o', labelTypeRadio);
+	    	
+		    if (donutToggle || holeEdit || insideTitleEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+	    
+	    if (donutToggle || holeEdit /*|| insideTitleEdit*/) {
+	    	if (donutToggle) {
+		    	var donutCbx = knimeService.createMenuCheckbox('donutCbx', _value.options.togglePie, function () {
+		    		if (_value.options.togglePie != this.checked) {
+						_value.options.togglePie = this.checked;
+						chart.donut(this.checked);
+						d3.selectAll("#insideTitleText, #holeRatioText").property("disabled", !_value.options.togglePie);
+						chart.update();
+					}
+		    	});
+		    	knimeService.addMenuItem('Render donut chart:', knimeService.createStackedIcon('gear', 'circle-o'), donutCbx);
+	    	}
+	    	
+	    	if (holeEdit) {
+	    		var holeRatioText = knimeService.createMenuTextField('holeRatioText', _value.options.holeSize, function() {
+	    			if (this.value < 0) {
+    					this.value = 0;
+    				} else if (this.value > 1) {
+    					this.value = 1;
+    				}
+    				chart.donutRatio(this.value);
+    				chart.update();
+	    		}, true);
+	    		holeRatioText.setAttribute("type", "number");
+	    		holeRatioText.setAttribute("min", 0);
+	    		holeRatioText.setAttribute("max", 1);
+	    		holeRatioText.setAttribute("step", 0.1);
+	    		holeRatioText.disabled = !_value.options.togglePie;
+	    		knimeService.addMenuItem('Donut hole ratio:', 'adjust', holeRatioText);
+	    	}
+	    	
+	    	/*if (insideTitleEdit) {
+	    		var insideTitleText = knimeService.createMenuTextField('insideTitleText', _value.options.insideTitle, function() {
+	    			if (_value.options.insideTitle != this.value) {
+						_value.options.insideTitle = this.value;
+						chart.title(this.value);
+						chart.update();
+					}
+	    		}, true);
+	    		insideTitleText.disabled = !_value.options.togglePie;
+	    		knimeService.addMenuItem('Title inside:', 'header', insideTitleText, null, knimeService.SMALL_ICON);
+	    	}*/
+    	}
+	};
 
 	pie.validate = function() {
 		return true;
@@ -507,18 +438,22 @@
 			if (!styles[i].cssRules) continue;
 			
 			for (var j = 0; j < styles[i].cssRules.length; j++) {
-				var rule = styles[i].cssRules[j];
-				d3.selectAll(rule.selectorText).each(function(){
-					for (var k = 0; k < rule.style.length; k++) {
-						var curStyle = this.style.getPropertyValue(rule.style[k]);
-						var curPrio = this.style.getPropertyPriority(rule.style[k]);
-						var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
-						//only overwrite style if not set or priority is overruled
-						if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
-							d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+				try {
+					var rule = styles[i].cssRules[j];
+					d3.selectAll(rule.selectorText).each(function(){
+						for (var k = 0; k < rule.style.length; k++) {
+							var curStyle = this.style.getPropertyValue(rule.style[k]);
+							var curPrio = this.style.getPropertyPriority(rule.style[k]);
+							var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
+							//only overwrite style if not set or priority is overruled
+							if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
+								d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+							}
 						}
-					}
-				});
+					});
+				} catch(exception) {
+					continue;
+				}
 			}
 		}
 		// correct faulty rect elements
