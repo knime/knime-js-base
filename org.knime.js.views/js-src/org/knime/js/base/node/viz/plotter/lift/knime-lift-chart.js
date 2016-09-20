@@ -32,35 +32,21 @@ knime_lift_chart = function() {
         var body = d3.select("body").attr("id", "body");
         
         // Container for the chart. Height is calculated after the view controls have been inserted.
-        var layoutContainer = body.append("div").attr("id", layoutContainerID)
-                .style("width", "100%").style("height", "calc(100% - 50px)")
-                .style("min-width", minWidth + "px");
+        var layoutContainer = body.append("div")
+        	.attr("id", layoutContainerID)
+        	.style("width", "100%")
+        	.style("height", minWidth + "px")
+        	.style("min-width", minWidth + "px");        
         
-        
-        var controlHeight;
+       
         if (_representation.enableControls) {
-            // Container for the view controls
-            var controlsContainer = body.append("div")
-                .style({position : "relative",
-                        bottom : "0px",
-                        "font-family" : "sans-serif",
-                        padding : "5px",
-                        "background-color" : "white",
-                        "padding-left" : "60px",
-                        width : "100%",
-                        "border-top" : "1px solid black",
-                        "box-sizing": "border-box"})
-               .attr("id", "controlContainer");
-            createControls(controlsContainer);
-            controlHeight = controlsContainer.node().getBoundingClientRect().height;
-        } else {
-            controlHeight = 0;
+        	drawControls();            
         }
 
         // Now set height of the chart container
         layoutContainer.style({
-            "height" : "calc(100% - " + controlHeight + "px)",
-            "min-height" :  (minHeight + controlHeight) + "px"
+            "height" : "100%",
+            "min-height" :  minHeight + "px"
         });
         
         // Build data structures for the two charts
@@ -124,13 +110,140 @@ knime_lift_chart = function() {
     
     function viewToggled() {
         _value.showGainChart = !_value.showGainChart;
-        d3.select("#titleIn").property("value", _value.showGainChart ? _value.titleGain : _value.titleLift);
-        d3.select("#subtitleIn").property("value", _value.showGainChart ? _value.subtitleGain : _value.subtitleLift);
-        d3.select("#xTitleIn").property("value", _value.showGainChart ? _value.xAxisTitleGain : _value.xAxisTitleLift);
-        d3.select("#yTitleIn").property("value", _value.showGainChart ? _value.yAxisTitleGain : _value.yAxisTitleLift);
+
+        d3.select("#chartTitleText").property("value", _value.showGainChart ? _value.titleGain : _value.titleLift);
+        d3.select("#chartSubtitleText").property("value", _value.showGainChart ? _value.subtitleGain : _value.subtitleLift);
+        d3.select("#xAxisText").property("value", _value.showGainChart ? _value.xAxisTitleGain : _value.xAxisTitleLift);
+        d3.select("#yAxisText").property("value", _value.showGainChart ? _value.yAxisTitleGain : _value.yAxisTitleLift);
         
         drawChart();
     }
+    
+    drawControls = function() {		
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		knimeService.allowFullscreen();			    
+	    
+	    if (!_representation.enableControls) return;
+	    
+	    if (_representation.enableViewToggle) {
+    		var liftChartRadio = knimeService.createMenuRadioButton('liftChartRadio', 'chartType', '', viewToggled);
+    		liftChartRadio.checked = !_value.showGainChart;
+	    	knimeService.addMenuItem('Lift chart:', 'line-chart fa-flip-vertical', liftChartRadio);
+	    	
+	    	var gainChartRadio = knimeService.createMenuRadioButton('gainChartRadio', 'chartType', '', viewToggled);	
+	    	gainChartRadio.checked = _value.showGainChart;
+	    	knimeService.addMenuItem('Cumulative Gains Chart:', 'line-chart', gainChartRadio);
+	    	
+            if (_representation.enableEditTitle || _representation.enableEditSubtitle || _representation.enableEditXAxisLabel || _representation.enableEditYAxisLabel || enableSmoothingEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+        }
+	    
+	    if (_representation.enableEditTitle || _representation.enableEditSubtitle) {
+	    	if (_representation.enableEditTitle) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', (_value.showGainChart ? _value.titleGain : _value.titleLift), function() {
+	    			var hadTitle, hasTitle;
+	                
+	                if (_value.showGainChart) {
+	                    hadTitle = (_value.titleGain.length > 0);
+	                    _value.titleGain = this.value;
+	                    hasTitle = (_value.titleGain.length > 0);
+	                } else {
+	                    hadTitle = (_value.titleLift.length > 0);
+	                    _value.titleLift = this.value;
+	                    hasTitles = (_value.titleLift.length > 0);
+	                }
+	                d3.select("#title").text(this.value);
+	                if (hadTitle != hasTitle) {
+	                    drawChart();
+	                }
+	    		}, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	
+	    	if (_representation.enableEditSubtitle) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', (_value.showGainChart ? _value.subtitleGain : _value.subtitleLift), function() {
+	    			var hadTitle, hasTitle;
+	                if (_value.showGainChart) {
+	                    hadTitle = (_value.subtitleGain.length > 0);
+	                    _value.subtitleGain = this.value;
+	                    hasTitle = (_value.subtitleGain.length > 0);
+	                } else {
+	                    hadTitle = (_value.subtitleLift.length > 0);
+	                    _value.subtitleLift = this.value;
+	                    hasTitles = (_value.subtitleLift.length > 0);
+	                }
+	                d3.select("#subtitle").text(this.value);
+	                if (hadTitle != hasTitle) {
+	                    drawChart();
+	                }
+	    		}, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}
+	    	
+	    	if (_representation.enableEditXAxisLabel || _representation.enableEditYAxisLabel || enableSmoothingEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }	    
+	    
+	    if (_representation.enableEditXAxisLabel || _representation.enableEditYAxisLabel) {
+	    	if (_representation.enableEditXAxisLabel) {
+	    		var xAxisText = knimeService.createMenuTextField('xAxisText', (_value.showGainChart ? _value.xAxisTitleGain : _value.xAxisTitleLift), function() {
+	    			var hadTitle, hasTitle;
+	    			if (_value.showGainChart) {
+	                    hadTitle = (_value.xAxisTitleGain.length > 0);
+	    				_value.xAxisTitleGain = this.value;
+	    				hasTitle = (_value.xAxisTitleGain.length > 0);
+	                } else {
+	                	hadTitle = (_value.xAxisTitleLift.length > 0);
+	                    _value.xAxisTitleLift = this.value;
+	                    hasTitle = (_value.xAxisTitleLift.length > 0);
+	                }
+	                d3.select("#xtitle").text(this.value);
+	                if (hadTitle != hasTitle) {
+	                	drawChart();
+	                }
+	    		}, true);
+	    		knimeService.addMenuItem('X Axis Label:', 'ellipsis-h', xAxisText);
+	    	}
+	    	
+	    	if (_representation.enableEditYAxisLabel) {
+	    		var yAxisText = knimeService.createMenuTextField('yAxisText', (_value.showGainChart ? _value.yAxisTitleGain : _value.yAxisTitleLift), function() {
+	    			var hadTitle, hasTitle;
+	    			if (_value.showGainChart) {
+	                    hadTitle = (_value.yAxisTitleGain.length > 0);
+	    				_value.yAxisTitleGain = this.value;
+	    				hasTitle = (_value.yAxisTitleGain.length > 0);
+	                } else {
+	                	hadTitle = (_value.yAxisTitleLift.length > 0);
+	                    _value.yAxisTitleLift = this.value;
+	                    hasTitle = (_value.yAxisTitleLift.length > 0);
+	                }
+	                d3.select("#ytitle").text(this.value);
+	                if (hadTitle != hasTitle) {
+	                	drawChart();
+	                }
+	    		}, true);	    		
+	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
+	    	}
+	    	
+	    	if (_representation.enableSmoothingEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+	    
+	    if (_representation.enableSmoothingEdit) {	    	
+	    	var smoothSelect = knimeService.createMenuSelect('smoothSelect', _value.smoothing, Object.keys(smoothingMap), function() {
+	    		_value.smoothing = smoothingMap[this.value];
+                drawChart();
+    		});
+	    	knimeService.addMenuItem('Smoothing:', 'usd fa-rotate-90', smoothSelect);
+	    }
+	};
     
     function createControls(controlsContainer) {
         if (_representation.enableViewToggle) {
@@ -251,6 +364,40 @@ knime_lift_chart = function() {
         var xAxisTitle = _value.showGainChart ? _value.xAxisTitleGain : _value.xAxisTitleLift;
         var yAxisTitle = _value.showGainChart ? _value.yAxisTitleGain : _value.yAxisTitleLift;
         
+        // Calculate margin of the chart
+        var mTop = 10;
+        var isTitle = true;        
+        if (title && subtitle) {
+        	mTop += 50;        	
+        } else if (title) {
+        	mTop += 36;
+        } else if (subtitle) {
+        	mTop += 26;      	
+        } else {
+        	isTitle = false;        	        	
+        }
+        knimeService.floatingHeader(isTitle);        
+        var mBottom = 0;
+        if (legendHeight > 0) {
+        	if (xAxisTitle) {
+        		mBottom = legendHeight + 10;
+        	} else {
+        		mBottom = legendHeight - 10;
+        	}
+        } else {
+        	if (xAxisTitle) {
+        		mBottom = 60;
+        	} else {
+        		mBottom = 34;
+        	}
+        }
+        var margin = {
+    		top : mTop,
+    		left : (yAxisTitle) ? 70 : 40,
+    		bottom : mBottom,
+    		right : 20
+		};
+        
         var cw = Math.max(minWidth, _representation.imageWidth);
         var ch = Math.max(minHeight, _representation.imageHeight);
         var chartWidth = cw + "px;"
@@ -258,28 +405,35 @@ knime_lift_chart = function() {
 
         if (_representation.resizeToWindow) {
             chartWidth = "100%";
-            chartHeight = "calc(100% - " + getControlHeight() + "px)";
+            chartHeight = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";            
         }
 
-        var lc = d3.select("#"+layoutContainerID);
+        var lc = d3.select("#"+layoutContainerID)
+        	.style("height", chartHeight)
+        	// two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE  
+        	.style('display', 'none')
+        	.style('display', 'block');
+        
+        // Clear the container
         lc.selectAll("*").remove();
         
+        // The container for the chart
         var div = lc.append("div")
             .attr("id", containerID)
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
             .style("box-sizing", "border-box")
-            .style("display", "inline-block")
+            .style("display", "block")
             .style("overflow", "hidden")
             .style("margin", "0")
             .style("height", chartHeight)
             .style("width", chartWidth);
             
-        var mTop = 10;
+        /*var mTop = 10;
         if (_value.titleLift || _value.subtitleLift) {
             mTop += 55;
         }
-        var margin = {top : mTop, left : 70, bottom : (legendHeight > 0 ? legendHeight + 10 : 60), right : 20};
+        var margin = {top : mTop, left : 70, bottom : (legendHeight > 0 ? legendHeight + 10 : 60), right : 20};*/
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         document.getElementById(containerID).appendChild(svg1);
         
@@ -302,8 +456,17 @@ knime_lift_chart = function() {
         
         // Add title            
         var titleG = d3svg.append("g").attr("transform", "translate(" + margin.left + ",0)");
-        var title = titleG.append("text").text(title).attr({"y" : 30, "id" : "title"}).attr("font-size", 24);
-        var subtitle = titleG.append("text").text(subtitle).attr({"y" : mTop - 15, "id" : "subtitle"});
+        if (title) {
+    		titleG.append("text")
+    			.text(title)
+    			.attr({"y" : 30, "id" : "title"})
+    			.attr("font-size", 24);
+        }
+        if (subtitle) {
+        	titleG.append("text")
+        		.text(subtitle)
+    			.attr({"y" : mTop - 14, "id" : "subtitle"});
+        }
         
         // Scales for the plot     
         var x = d3.scale.linear().domain([0, 100]).range([0, w]);
@@ -353,22 +516,27 @@ knime_lift_chart = function() {
             d3YAxis.attr("class", "y axis")
             .call(yAxis);
         
-        svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", w - 10)
-            .attr("y", h + 45)
-            .attr("id", "xtitle")
-            .text(xAxisTitle);
+        // Axis titles
+        if (xAxisTitle) {    
+	        svg.append("text")
+	            .attr("class", "x label")
+	            .attr("text-anchor", "end")
+	            .attr("x", w - 10)
+	            .attr("y", h + 45)
+	            .attr("id", "xtitle")
+	            .text(xAxisTitle);
+        }
             
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("y", -55)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .attr("id", "ytitle")
-            .text(yAxisTitle);
+        if (yAxisTitle) {
+	        svg.append("text")
+	            .attr("class", "y label")
+	            .attr("text-anchor", "end")
+	            .attr("y", -55)
+	            .attr("dy", ".75em")
+	            .attr("transform", "rotate(-90)")
+	            .attr("id", "ytitle")
+	            .text(yAxisTitle);
+        }
         
         var gridColor = parseColor(_representation.gridColor);
         var stroke = _representation.showGrid ? gridColor.rgb : "#000";
@@ -380,7 +548,7 @@ knime_lift_chart = function() {
         
         // Helper variables for drawing the legend and the area under the curve
         var xPos = 0;
-        var yPos = 70;
+        var yPos = (xAxisTitle) ? 70 : 50;
         var areaG = svg.append("g");
         var areaCount = 0;
         var maxWidth = 0;
