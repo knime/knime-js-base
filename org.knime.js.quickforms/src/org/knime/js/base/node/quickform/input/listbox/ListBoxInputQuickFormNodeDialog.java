@@ -106,7 +106,11 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
         addPairToPanel("Validation Error Message: ", m_regexField.getErrorMessagePanel(), panelWithGBLayout, gbc);
         addPairToPanel("Common Regular Expressions: ",
                 m_regexField.getCommonRegexesPanel(), panelWithGBLayout, gbc);
+        gbc.weighty = 3;
+        int fill = gbc.fill;
+        gbc.fill = GridBagConstraints.BOTH;
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
+        gbc.fill = fill;
         m_separateEachCharacterBox.addItemListener(new ItemListener() {
 
             @Override
