@@ -31,7 +31,7 @@ knime_roc_curve = function() {
         //var colors = ["red", "green", "blue", "yellow", "brown", "lime", "orange"];
         var catCol = d3.scale.category10();
         if (_representation.curves.length > 10) {
-            d3.scale.category20();
+            catCol = d3.scale.category20();
         }
         // Build data set for the graph
         for (var i = 0; i < _representation.curves.length; i++) {
