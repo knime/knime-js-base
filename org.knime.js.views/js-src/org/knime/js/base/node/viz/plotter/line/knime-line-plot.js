@@ -549,9 +549,10 @@ knime_line_plot = function() {
 			return null;
 		}
 		var svg = chartManager.getElement();
-		d3.select(svg).selectAll("circle").each(function() {
-			this.removeAttributeNS("http://www.jfree.org", "ref");
-		});
+		/*d3.select(svg).selectAll("circle").each(function() {
+			this.removeAttribute("ref");
+			this.removeAttribute("xmlns");
+		});*/
 		return (new XMLSerializer()).serializeToString(svg);
 	};
 	

@@ -585,7 +585,8 @@ knime_scatter_plot_selection_appender = function() {
 		}
 		var svg = chartManager.getElement();
 		d3.select(svg).selectAll("circle").each(function() {
-			this.removeAttributeNS("http://www.jfree.org", "ref");
+			this.removeAttribute("ref");
+			this.removeAttribute("xmlns");
 		});
 		return (new XMLSerializer()).serializeToString(svg);
 	};
