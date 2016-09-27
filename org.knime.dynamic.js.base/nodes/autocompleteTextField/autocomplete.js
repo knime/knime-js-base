@@ -12,7 +12,7 @@
 		
 		var optionCol = _representation.options["autoSelect"];
 		var knimeTable = new kt();
-		knimeTable.setDataTable(_representation.dataTables[0]);
+		knimeTable.setDataTable(_representation.inObjects[0]);
 		var valCol = knimeTable.getColumn(optionCol);
 		var valSet = {};
 		for (var i = 0; i < valCol.length; i++) {
@@ -27,7 +27,8 @@
 		textField = $('<input>');
 		textField.attr("type", "text");
 		textField.attr("id", "textfield");
-		textField.width(400);
+		textField.attr("class", "standard-sizing");
+		//textField.width(400);
 		var stringValue = _value.options["string_input"];
 		textField.val(stringValue);
 		qfdiv.attr("title", _representation.options["description"]);

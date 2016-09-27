@@ -50,7 +50,6 @@
 		<!-- <js:ressource type="css" path="sample.css" /> -->
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
-		<js:dependency name="jQueryUI" path="jQueryUi_1.10.4" type="local" />
+		<js:dependency name="QuickformUtils" path="KnimeQuickformUtils_1.0.0" type="local" />
 	</js:dependencies>
 </js:knimeNode>
