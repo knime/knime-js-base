@@ -180,7 +180,7 @@ public class DoubleInputQuickFormRepresentation extends
         DoubleInputQuickFormRepresentation other = (DoubleInputQuickFormRepresentation)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_useMin, other.m_useMin)
-                .append(m_useMax, m_useMax)
+                .append(m_useMax, other.m_useMax)
                 .append(m_min, other.m_min)
                 .append(m_max, other.m_max)
                 .isEquals();
