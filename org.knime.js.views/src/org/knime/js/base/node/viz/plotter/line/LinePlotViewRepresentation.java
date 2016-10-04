@@ -78,6 +78,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private boolean m_showCrosshair;
     private boolean m_snapToPoints;
     private boolean m_resizeToWindow;
+    private boolean m_displayFullscreenButton;
 
     private boolean m_enableViewConfiguration;
     private boolean m_enableTitleChange;
@@ -215,6 +216,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
      */
     public void setResizeToWindow(final boolean resizeToWindow) {
         m_resizeToWindow = resizeToWindow;
+    }
+
+    /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
     }
 
     /**
@@ -537,6 +552,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.SHOW_CROSSHAIR, getShowCrosshair());
         settings.addBoolean(LinePlotViewConfig.SNAP_TO_POINTS, getSnapToPoints());
         settings.addBoolean(LinePlotViewConfig.RESIZE_TO_WINDOW, getResizeToWindow());
+        // added with 3.3
+        settings.addBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
+
 
         settings.addBoolean(LinePlotViewConfig.ENABLE_CONFIG, getEnableViewConfiguration());
         settings.addBoolean(LinePlotViewConfig.ENABLE_TTILE_CHANGE, getEnableTitleChange());
@@ -582,6 +600,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setShowCrosshair(settings.getBoolean(LinePlotViewConfig.SHOW_CROSSHAIR));
         setSnapToPoints(settings.getBoolean(LinePlotViewConfig.SNAP_TO_POINTS));
         setResizeToWindow(settings.getBoolean(LinePlotViewConfig.RESIZE_TO_WINDOW));
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, LinePlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(LinePlotViewConfig.ENABLE_CONFIG));
         setEnableTitleChange(settings.getBoolean(LinePlotViewConfig.ENABLE_TTILE_CHANGE));
@@ -641,6 +661,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_showCrosshair, other.m_showCrosshair)
                 .append(m_snapToPoints, other.m_snapToPoints)
                 .append(m_resizeToWindow, other.m_resizeToWindow)
+                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_enableViewConfiguration, other.m_enableViewConfiguration)
                 .append(m_enableTitleChange, other.m_enableTitleChange)
                 .append(m_enableSubtitleChange, other.m_enableSubtitleChange)
@@ -680,6 +701,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_showCrosshair)
                 .append(m_snapToPoints)
                 .append(m_resizeToWindow)
+                .append(m_displayFullscreenButton)
                 .append(m_enableViewConfiguration)
                 .append(m_enableTitleChange)
                 .append(m_enableSubtitleChange)

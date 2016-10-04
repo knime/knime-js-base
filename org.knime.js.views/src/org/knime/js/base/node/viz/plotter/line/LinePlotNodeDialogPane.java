@@ -110,6 +110,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_showCrosshairCheckBox;
     private final JCheckBox m_snapToPointsCheckBox;
     private final JCheckBox m_resizeViewToWindow;
+    private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JCheckBox m_enableViewConfigCheckBox;
     private final JCheckBox m_enableTitleChangeCheckBox;
     private final JCheckBox m_enableSubtitleChangeCheckBox;
@@ -155,6 +156,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_showCrosshairCheckBox = new JCheckBox("Enable mouse crosshair");
         m_snapToPointsCheckBox = new JCheckBox("Snap to data pionts");
         m_resizeViewToWindow = new JCheckBox("Resize view to fill window");
+        m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_enableViewConfigCheckBox = new JCheckBox("Enable view edit controls");
         m_enableTitleChangeCheckBox = new JCheckBox("Enable title edit controls");
         m_enableSubtitleChangeCheckBox = new JCheckBox("Enable subtitle edit controls");
@@ -376,6 +378,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         cc.gridy++;
         cc.anchor = GridBagConstraints.CENTER;
         sizesPanel.add(m_resizeViewToWindow, cc);
+        cc.gridx++;
+        sizesPanel.add(m_displayFullscreenButtonCheckBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -526,6 +530,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_showCrosshairCheckBox.setSelected(config.getShowCrosshair());
         m_snapToPointsCheckBox.setSelected(config.getSnapToPoints());
         m_resizeViewToWindow.setSelected(config.getResizeToWindow());
+        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
 
         m_appendedColumnName.setText(config.getSelectionColumnName());
         m_enableViewConfigCheckBox.setSelected(config.getEnableViewConfiguration());
@@ -583,6 +588,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setShowCrosshair(m_showCrosshairCheckBox.isSelected());
         config.setSnapToPoints(m_snapToPointsCheckBox.isSelected());
         config.setResizeToWindow(m_resizeViewToWindow.isSelected());
+        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
 
         config.setSelectionColumnName(m_appendedColumnName.getText());
         config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());

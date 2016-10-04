@@ -480,6 +480,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
 
+        // added with 3.3
+        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());
         viewValue.setChartSubtitle(m_config.getChartSubtitle());

@@ -79,6 +79,7 @@ public final class LinePlotViewConfig {
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
@@ -89,6 +90,7 @@ public final class LinePlotViewConfig {
     static final String SHOW_CROSSHAIR = "showCrosshair";
     static final String SNAP_TO_POINTS = "snapToPoints";
     static final String RESIZE_TO_WINDOW = "resizeToWindow";
+    static final String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String ENABLE_CONFIG = "enableViewConfiguration";
     static final String ENABLE_TTILE_CHANGE = "enableTitleChange";
     static final String ENABLE_SUBTTILE_CHANGE = "enableSubtitleChange";
@@ -133,6 +135,7 @@ public final class LinePlotViewConfig {
     private boolean m_showCrosshair = false;
     private boolean m_snapToPoints = false;
     private boolean m_resizeToWindow = true;
+    private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_enableViewConfiguration = false;
     private boolean m_enableTitleChange = false;
     private boolean m_enableSubtitleChange = false;
@@ -362,6 +365,20 @@ public final class LinePlotViewConfig {
      */
     public void setResizeToWindow(final boolean resizeToWindow) {
         m_resizeToWindow = resizeToWindow;
+    }
+
+    /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
     }
 
     /**
@@ -872,6 +889,8 @@ public final class LinePlotViewConfig {
         settings.addBoolean(SHOW_CROSSHAIR, getShowCrosshair());
         settings.addBoolean(SNAP_TO_POINTS, getSnapToPoints());
         settings.addBoolean(RESIZE_TO_WINDOW, getResizeToWindow());
+        //added with 3.3
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
 
         settings.addBoolean(ENABLE_CONFIG, getEnableViewConfiguration());
         settings.addBoolean(ENABLE_TTILE_CHANGE, getEnableTitleChange());
@@ -926,6 +945,8 @@ public final class LinePlotViewConfig {
         setShowCrosshair(settings.getBoolean(SHOW_CROSSHAIR));
         setSnapToPoints(settings.getBoolean(SNAP_TO_POINTS));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW));
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(ENABLE_CONFIG));
         setEnableTitleChange(settings.getBoolean(ENABLE_TTILE_CHANGE));
@@ -989,6 +1010,8 @@ public final class LinePlotViewConfig {
         setShowCrosshair(settings.getBoolean(SHOW_CROSSHAIR, false));
         setSnapToPoints(settings.getBoolean(SNAP_TO_POINTS, false));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW, true));
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(ENABLE_CONFIG, false));
         setEnableTitleChange(settings.getBoolean(ENABLE_TTILE_CHANGE, false));
