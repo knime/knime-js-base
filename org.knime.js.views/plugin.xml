@@ -221,15 +221,35 @@
       </webResourceBundle>
       <webResourceBundle
             debug="true"
-            name="Generic JavaScript View"
+            name="Generic JavaScript View v1"
             version="1.0.0"
             webResourceBundleID="GenericJSView_1_0_0">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/viz/generic/"
-               relativePathTarget="org/knime/js/base/node/viz/generic/">
+               relativePathSource="js-src/org/knime/js/base/node/viz/generic/knime-generic-view.js"
+               relativePathTarget="org/knime/js/base/node/viz/generic/knime-generic-view.js">
          </webResource>
          <importResource
                relativePath="org/knime/js/base/node/viz/generic/knime-generic-view.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="RequireJS_2.1.8">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Generic JavaScript View v3"
+            version="3.0.0"
+            webResourceBundleID="GenericJSView_3_0_0">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/generic/knime-generic-view-v3.js"
+               relativePathTarget="org/knime/js/base/node/viz/generic/knime-generic-view-v3.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/generic/knime-generic-view-v3.js"
                type="JAVASCRIPT">
          </importResource>
          <webDependency
@@ -417,8 +437,18 @@
             implementationBundleID="GenericJSView_1_0_0"
             init-method-name="init"
             javascriptComponentID="knime_generic_view"
-            name="Generic JavaScript View"
+            name="Generic JavaScript View v1"
             namespace="knime_generic_view"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="GenericJSView_3_0_0"
+            init-method-name="init"
+            javascriptComponentID="knime_generic_view_v3"
+            name="Generic JavaScript View v3"
+            namespace="knime_generic_view"
+            setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent

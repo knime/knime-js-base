@@ -48,6 +48,8 @@
 package org.knime.js.base.node.viz.generic3;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
@@ -71,6 +73,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.base.node.viz.generic3.GenericJSViewValue.FlowVariableValue;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
@@ -148,8 +151,27 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     }
 
     private void pushFlowVariables() {
-        // TODO analyze and push variables
-
+        GenericJSViewValue viewValue = getViewValue();
+        if (viewValue.getFlowVariables() != null && viewValue.getFlowVariables().size() > 0) {
+            Iterator<Entry<String, FlowVariableValue>> entries = viewValue.getFlowVariables().entrySet().iterator();
+            while (entries.hasNext()) {
+                Entry<String, FlowVariableValue> entry = entries.next();
+                String key = entry.getKey();
+                FlowVariableValue value = entry.getValue();
+                if (key != null && value != null) {
+                    switch (value.getType()) {
+                        case INTEGER:
+                            pushFlowVariableInt(key, value.getIntValue());
+                            break;
+                        case DOUBLE:
+                            pushFlowVariableDouble(key, value.getDoubleValue());
+                            break;
+                        default:
+                            pushFlowVariableString(key, value.getStringValue());
+                    }
+                }
+            }
+        }
     }
 
     private String parseTextAndReplaceVariables() throws InvalidSettingsException {
@@ -242,7 +264,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      */
     @Override
     public String getJavascriptObjectID() {
-        return "knime_generic_view";
+        return "knime_generic_view_v3";
     }
 
     /**
