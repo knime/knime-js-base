@@ -152,7 +152,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
 
     private void pushFlowVariables() {
         GenericJSViewValue viewValue = getViewValue();
-        if (viewValue.getFlowVariables() != null && viewValue.getFlowVariables().size() > 0) {
+        if (viewValue != null && viewValue.getFlowVariables() != null && viewValue.getFlowVariables().size() > 0) {
             Iterator<Entry<String, FlowVariableValue>> entries = viewValue.getFlowVariables().entrySet().iterator();
             while (entries.hasNext()) {
                 Entry<String, FlowVariableValue> entry = entries.next();

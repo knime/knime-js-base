@@ -94,8 +94,12 @@ knime_generic_view = function() {
 	}
 	
 	view.getComponentValue = function() {
-		_value.settings = JSON.stringify(SETTINGS);
-		_value.flowVariables = FLOW_VARIABLES;
+		if (SETTINGS) {
+			_value.settings = JSON.stringify(SETTINGS);
+		}
+		if (FLOW_VARIABLES) {
+			_value.flowVariables = FLOW_VARIABLES;
+		}
 		return _value;
 	};
 	
