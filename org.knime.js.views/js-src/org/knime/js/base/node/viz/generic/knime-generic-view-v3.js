@@ -94,14 +94,18 @@ knime_generic_view = function() {
 	}
 	
 	view.getComponentValue = function() {
-		if (SETTINGS) {
+		if (!isObjectEmpty(SETTINGS)) {
 			_value.settings = JSON.stringify(SETTINGS);
 		}
-		if (FLOW_VARIABLES) {
+		if (!isObjectEmpty(FLOW_VARIABLES)) {
 			_value.flowVariables = FLOW_VARIABLES;
 		}
 		return _value;
 	};
+	
+	isObjectEmpty = function(obj) {
+		return Object.keys(obj).length === 0 && obj.constructor === Object;
+	} 
 	
 	view.getSVG = function() {
 		try {
