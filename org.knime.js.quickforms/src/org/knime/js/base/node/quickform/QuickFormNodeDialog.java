@@ -77,6 +77,7 @@ import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.ValueControlledDialogPane;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.core.settings.DialogUtil;
 
 /**
  * Dialog to node.
@@ -87,7 +88,7 @@ public abstract class QuickFormNodeDialog
         extends NodeDialogPane implements ValueControlledDialogPane {
 
     /** Default width (#columns) of text field elements. */
-    public static final int DEF_TEXTFIELD_WIDTH = 20;
+    public static final int DEF_TEXTFIELD_WIDTH = DialogUtil.DEF_TEXTFIELD_WIDTH;
 
     private final JTextField m_labelField;
 
@@ -197,21 +198,7 @@ public abstract class QuickFormNodeDialog
      */
     protected final void addPairToPanel(final String label, final JComponent c, final JPanel panelWithGBLayout,
             final GridBagConstraints gbc) {
-        int fill = gbc.fill;
-        Insets insets = gbc.insets;
-
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        panelWithGBLayout.add(new JLabel(label), gbc);
-
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = fill;
-        gbc.insets = insets;
-        gbc.weightx = 1;
-        panelWithGBLayout.add(c, gbc);
-        gbc.weightx = 0;
+        DialogUtil.addPairToPanel(label, c, panelWithGBLayout, gbc);
     }
 
     /**
@@ -226,27 +213,7 @@ public abstract class QuickFormNodeDialog
     protected final void addTripelToPanel(final String label,
             final JComponent middle, final JComponent right,
             final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
-        int fill = gbc.fill;
-        Insets insets = gbc.insets;
-
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        panelWithGBLayout.add(new JLabel(label), gbc);
-
-        gbc.gridwidth = 1;
-        gbc.fill = fill;
-        gbc.weightx = 1;
-        panelWithGBLayout.add(middle, gbc);
-
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = insets;
-        gbc.weightx = 0;
-        panelWithGBLayout.add(right, gbc);
-        gbc.weightx = 0;
-        gbc.fill = fill;
+        DialogUtil.addTripelToPanel(label, middle, right, panelWithGBLayout, gbc);
     }
 
     /**
