@@ -138,7 +138,7 @@ knime_paged_table = function() {
 				}
 				if (colType == 'dateTime' && _representation.globalDateFormat) {
 					colDef.render = function (data, type, full, meta) {
-						return moment(data).format(_representation.globalDateFormat);
+						return moment(data).utc().format(_representation.globalDateFormat);
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
