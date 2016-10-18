@@ -76,8 +76,8 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.quickform.QuickFormNodeDialog;
+import org.knime.js.core.settings.numberFormat.NumberFormatNodeDialogUI;
 import org.knime.js.core.settings.numberFormat.NumberFormatSettings;
-import org.knime.js.core.settings.numberFormat.NumberFormatSettingsPanel;
 import org.knime.js.core.settings.slider.SliderPipsSettings;
 import org.knime.js.core.settings.slider.SliderPipsSettings.PipMode;
 import org.knime.js.core.settings.slider.SliderSettings;
@@ -111,7 +111,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
     private final JRadioButton m_directionRTLButton;
     private final JCheckBox m_tooltipsCheckbox;
     private final JCheckBox m_tooltipsFormatCheckbox;
-    private final NumberFormatSettingsPanel m_tooltipsFormat;
+    private final NumberFormatNodeDialogUI m_tooltipsFormat;
     private final JPanel m_tooltipsFormatPanel;
 
     /*Pip panel*/
@@ -120,7 +120,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
     private final JSpinner m_pipsDensitySpinner;
     private final JTextField m_pipsValuesTextField;
     private final JCheckBox m_pipsSteppedCheckbox;
-    private final NumberFormatSettingsPanel m_pipsFormat;
+    private final NumberFormatNodeDialogUI m_pipsFormat;
     private final JPanel m_pipsFormatPanel;
 
     /** Constructors, inits fields calls layout routines. */
@@ -213,7 +213,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
                 enableTooltipFields();
             }
         });
-        m_tooltipsFormat = new NumberFormatSettingsPanel();
+        m_tooltipsFormat = new NumberFormatNodeDialogUI();
         m_tooltipsFormatPanel = m_tooltipsFormat.createPanel();
 
         /*Pips panel*/
@@ -234,7 +234,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_pipsDensitySpinner = new JSpinner(new SpinnerNumberModel(3, 1, Integer.MAX_VALUE, 1));
         m_pipsValuesTextField = new JTextField();
         m_pipsSteppedCheckbox = new JCheckBox("Stepped");
-        m_pipsFormat = new NumberFormatSettingsPanel();
+        m_pipsFormat = new NumberFormatNodeDialogUI();
         m_pipsFormatPanel = m_pipsFormat.createPanel();
 
         createAndAddTab();
@@ -596,6 +596,8 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
                 tooltip = m_tooltipsFormat.saveSettingsTo();
             }
             sSettings.setTooltips(new Object[]{tooltip});
+        } else {
+            sSettings.setTooltips(null);
         }
         if (m_pipsEnableCheckbox.isSelected()) {
             SliderPipsSettings pipsSettings = new SliderPipsSettings();
