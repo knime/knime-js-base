@@ -60,7 +60,8 @@ org_knime_js_base_node_quickform_selection_multiple = function() {
 		var body = $('body');
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
-		qfdiv.attr('title', representation.description);
+		qfdiv.attr('title', representation.description);	
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		if (representation.possibleChoices.length > 0) {
 			if (representation.type == 'Check boxes (vertical)') {
@@ -72,6 +73,8 @@ org_knime_js_base_node_quickform_selection_multiple = function() {
 			} else {
 				selector = new twinlistMultipleSelections();
 			}
+			selector.getComponent().attr("aria-label", representation.label);
+			selector.getComponent().attr("tabindex", 0);
 			qfdiv.append(selector.getComponent());
 			selector.setChoices(representation.possibleChoices);
 			var selections = representation.currentValue.value;

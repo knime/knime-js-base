@@ -61,7 +61,9 @@ org_knime_js_base_node_quickform_input_bool = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		input = $('<input>');
+		input.attr("aria-label", representation.label);
 		qfdiv.attr("title", representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		qfdiv.append(input);
 		input.attr("type", "checkbox");

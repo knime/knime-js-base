@@ -64,7 +64,9 @@ org_knime_js_base_node_quickform_input_dbl = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		input = $('<input>');
-		qfdiv.attr("title", representation.description);
+		input.attr("aria-label", representation.label);
+		qfdiv.attr("title", representation.description);	
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		qfdiv.append(input);
 		input.spinner({
@@ -85,6 +87,7 @@ org_knime_js_base_node_quickform_input_dbl = function() {
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');
 		errorMessage.css('font-size', '75%');
+		errorMessage.attr("role", "alert");
 		qfdiv.append(errorMessage);
 		input.blur(callUpdate);
 		resizeParent();

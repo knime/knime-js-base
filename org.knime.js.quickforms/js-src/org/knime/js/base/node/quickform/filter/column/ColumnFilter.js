@@ -61,6 +61,7 @@ org_knime_js_base_node_quickform_filter_column = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		qfdiv.attr('title', representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		if (representation.possibleColumns == null) {
 			qfdiv.append("Error: No data available");
@@ -74,6 +75,8 @@ org_knime_js_base_node_quickform_filter_column = function() {
 			} else {
 				selector = new twinlistMultipleSelections();
 			}
+			selector.getComponent().attr("aria-label", representation.label);
+			selector.getComponent().attr("tabindex", 0);
 			qfdiv.append(selector.getComponent());
 			selector.setChoices(representation.possibleColumns);
 			var selections = representation.currentValue.columns;

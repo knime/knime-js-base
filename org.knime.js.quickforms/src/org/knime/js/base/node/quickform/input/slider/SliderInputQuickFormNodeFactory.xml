@@ -132,13 +132,11 @@
 	<ports>
 		<inPort index="0" name="Table Input with applicable domain values"
 			optional="true">Input table which contains at least one double
-			column with
-			domain values set, which can be used to control the
-			minimum and
-			maximum values of the slider.
+			column with	domain values set, which can be used to control the
+			minimum and	maximum values of the slider.
 		</inPort>
-		<outPort index="0" name="Flow Variable Output">Variable output with the given
-			variable defined.
+		<outPort index="0" name="Flow Variable Output">
+			Variable output with the given variable defined.
 		</outPort>
 	</ports>
 </knimeNode>

@@ -61,6 +61,7 @@ org_knime_js_base_node_quickform_selection_single = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		qfdiv.attr('title', representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		if (representation.possibleChoices.length > 0) {
 			if (representation.type == 'Radio buttons (vertical)') {
@@ -72,6 +73,8 @@ org_knime_js_base_node_quickform_selection_single = function() {
 			} else {
 				selector = new dropdownSingleSelection();
 			}
+			selector.getComponent().attr("aria-label", representation.label);
+			selector.getComponent().attr("tabindex", 0);
 			qfdiv.append(selector.getComponent());
 			selector.setChoices(representation.possibleChoices);
 			var selection = representation.currentValue.value;

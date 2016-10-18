@@ -66,7 +66,9 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		input = $('<textarea>');
+		input.attr("aria-label", representation.label);
 		qfdiv.attr("title", representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		qfdiv.append(input);
 		input.css('white-space', 'pre');
@@ -86,6 +88,7 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		errorMessages.css('color', 'red');
 		errorMessages.css('font-style', 'italic');
 		errorMessages.css('font-size', '75%');
+		errorMessages.attr('role', 'alert');
 		qfdiv.append(errorMessageLine);
 		if (representation.separator==null || representation.separator.length==0) {
 			separator = null;

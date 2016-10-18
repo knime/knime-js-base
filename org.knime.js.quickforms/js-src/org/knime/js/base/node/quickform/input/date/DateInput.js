@@ -77,7 +77,9 @@ org_knime_js_base_node_quickform_input_date = function() {
 		
 		dateElement.append('Date: ');
 		dateInput = $('<input>');
+		dateInput.attr("aria-label", representation.label + " - date field");
 		qfdiv.attr("title", representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		dateElement.append(dateInput);
 		dateInput.datepicker({
@@ -104,6 +106,7 @@ org_knime_js_base_node_quickform_input_date = function() {
 		
 		timeElement.append('Time: ');
 		hourInput = $('<input>');
+		hourInput.attr("aria-label", "Hours");
 		timeElement.append(hourInput);
 		hourInput.spinner({
 			spin: function(event, ui) {
@@ -115,6 +118,7 @@ org_knime_js_base_node_quickform_input_date = function() {
 
 		timeElement.append(' <b>:</b> ');
 		minInput = $('<input>');
+		minInput.attr("aria-label", "Minutes");
 		timeElement.append(minInput);
 		minInput.spinner({
 			spin: function(event, ui) {
@@ -134,6 +138,7 @@ org_knime_js_base_node_quickform_input_date = function() {
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');
 		errorMessage.css('font-size', '75%');
+		errorMessage.attr("role", "alert");
 		qfdiv.append(errorMessage);
 		
 		var allInputs = $('input');

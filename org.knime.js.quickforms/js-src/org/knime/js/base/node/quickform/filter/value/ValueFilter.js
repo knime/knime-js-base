@@ -63,6 +63,7 @@ org_knime_js_base_node_quickform_filter_value = function() {
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
 		qfdiv.attr('title', representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		viewRepresentation = representation;
 		if (viewRepresentation.possibleValues == null) {
@@ -103,7 +104,9 @@ org_knime_js_base_node_quickform_filter_value = function() {
 			} else {
 				selector = new twinlistMultipleSelections();
 			}
-			qfdiv.append(selector.getComponent());
+			selector.getComponent().attr("aria-label", representation.label);
+			selector.getComponent().attr("tabindex", 0);
+			qfdiv.append(selector.getComponent());			
 			selector.setChoices(viewRepresentation.possibleValues[columnSelection]);
 			selector.setSelections(viewRepresentation.currentValue.values);
 			selector.addValueChangedListener(callUpdate);

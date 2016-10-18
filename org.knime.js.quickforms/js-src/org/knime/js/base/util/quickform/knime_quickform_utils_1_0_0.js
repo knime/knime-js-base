@@ -94,6 +94,8 @@ insertNativeComponent = function(representation, messageNotFound, messageNotStan
 	label.appendChild(document.createTextNode(representation.label));
 	div.appendChild(label);
 	div.setAttribute("title", representation.description);
+	div.setAttribute("aria-label", representation.label);
+	div.setAttribute("tabindex", 0);
 	var placeHolder = null;
 	// check if parent frame present
 	if (parent && window.frameElement) {

@@ -78,6 +78,7 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		$('body').append(qfdiv);
 		
 		qfdiv.attr("title", representation.description);
+		qfdiv.attr("aria-label", representation.label);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
 		
 		if (!representation.tree || representation.tree.length < 1) {
@@ -98,7 +99,7 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 			}]
 		}
 		
-		qfdiv.append('<div id="treeContainer">');
+		qfdiv.append('<div id="treeContainer" aria-label="' + representation.label + '">');
 		$('#treeContainer').jstree({
 				'core' : {
 					'data' : representation.tree,
@@ -126,6 +127,7 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		m_errorMessage.css('color', 'red');
 		m_errorMessage.css('font-style', 'italic');
 		m_errorMessage.css('font-size', '75%');
+		m_errorMessage.attr("role", "alert");
 		qfdiv.append(m_errorMessage);
 		
 		resizeParent();

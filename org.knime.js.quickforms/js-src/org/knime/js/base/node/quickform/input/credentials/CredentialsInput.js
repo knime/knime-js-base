@@ -66,6 +66,7 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		body.append(qfdiv);
 		qfdiv.attr("title", representation.description);
 		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.attr("aria-label", representation.label);
 		
 		if (representation.promptUsername) {
 			var user_label = $('<label style="display:block;" for="user_input">');
@@ -74,6 +75,7 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 			user_input = $('<input id="user_input" type="text">');
 			user_input.css("margin-bottom", "5px");
 			user_input.attr("class", "standard-sizing");
+			user_input.attr("aria-label", 'User');
 			//user_input.width(400);
 			var usernameValue = representation.currentValue.username;
 			user_input.val(usernameValue);
@@ -85,6 +87,7 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		password_input.attr('id', 'pw_input');
 		password_input.attr("type", "password");
 		password_input.attr("class", "standard-sizing");
+		password_input.attr("aria-label", 'Password');
 		//password_input.width(400);
 		var passwordValue = representation.currentValue.password;
 		password_input.val(passwordValue);
@@ -98,6 +101,7 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');
 		errorMessage.css('font-size', '75%');
+		errorMessage.attr("role", "alert");
 		qfdiv.append(errorMessage);
 		password_input.blur(callUpdate);
 		resizeParent();
