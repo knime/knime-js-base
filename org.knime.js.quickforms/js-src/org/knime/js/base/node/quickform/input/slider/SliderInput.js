@@ -84,6 +84,7 @@ org_knime_js_base_node_quickform_input_slider = function() {
 				var tipPad = parseFloat(tip.css('padding-left'));
 				sliderContainer.css('padding-left', -tip.position().left + tipPad + 'px');
 			} else {
+				//TODO: calculate based on tooltip height?
 				sliderContainer.css('padding-top', '38px');
 			}
 		}
@@ -117,11 +118,23 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		if (settings.tooltips) {
 			for (var i = 0; i < settings.tooltips.length; i++) {
 				if (typeof settings.tooltips[i] == 'object') {
+					for (var key in settings.tooltips[i]) {
+						if (typeof settings.tooltips[i][key] === 'string') {
+							// replace all whitespace characters with no breaking space
+							settings.tooltips[i][key] = settings.tooltips[i][key].replace(/\s/g,"&nbsp;");
+						}
+					}
 					settings.tooltips[i] = wNumb(settings.tooltips[i]);
 				}
 			}
 		}
 		if (settings.pips && settings.pips.format) {
+			for (var key in settings.pips.format) {
+				if (typeof settings.pips.format[key] === 'string') {
+					// replace all whitespace characters with no breaking space
+					settings.pips.format[key] = settings.pips.format[key].replace(/\s/g,"&nbsp;");
+				}
+			}
 			settings.pips.format = wNumb(settings.pips.format);
 		}
 	}
