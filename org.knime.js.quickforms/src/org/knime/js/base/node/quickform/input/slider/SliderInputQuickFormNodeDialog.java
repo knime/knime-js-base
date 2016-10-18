@@ -434,7 +434,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private double[] getPipValues() throws InvalidSettingsException{
         String vString = m_pipsValuesTextField.getText();
-        if (!m_pipsValuesTextField.isEnabled() || vString == null || vString == "") {
+        if (!m_pipsValuesTextField.isEnabled() || vString == null || "".equals(vString)) {
             return null;
         }
         String[] splitted = vString.split(",");
@@ -443,7 +443,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
             try {
                 values[i] = Double.parseDouble(splitted[i].trim());
             } catch (NumberFormatException e) {
-                throw new InvalidSettingsException(e);
+                throw new InvalidSettingsException("The entered values are not valid. " + splitted[i].trim() + " could not be parsed as double value.", e);
             }
         }
         return values;
