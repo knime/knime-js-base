@@ -97,7 +97,7 @@ org_knime_js_base_node_quickform_input_slider = function() {
 				if (settings.direction == 'rtl') {
 					testElem = $('.noUi-value').last();
 				}
-				var padSide = -testElem.position().left + 'px';
+				var padSide = Math.max(20, -testElem.position().left) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
 		}
