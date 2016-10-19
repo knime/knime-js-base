@@ -86,7 +86,7 @@ org_knime_js_base_node_quickform_input_slider = function() {
 			} else {
 				//TODO: calculate based on tooltip height?
 				sliderContainer.css('padding-top', '38px');
-				var padSide = Math.max(Number.parseFloat(sliderContainer.css('padding-left')), tip.outerWidth()/2) + 'px';
+				var padSide = Math.max(parseFloat(sliderContainer.css('padding-left')), tip.outerWidth()/2) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
 		}
@@ -99,7 +99,7 @@ org_knime_js_base_node_quickform_input_slider = function() {
 				if (settings.direction == 'rtl') {
 					testElem = $('.noUi-value').last();
 				}
-				var padSide = Math.max(Number.parseFloat(sliderContainer.css('padding-left')), -testElem.position().left) + 'px';
+				var padSide = Math.max(parseFloat(sliderContainer.css('padding-left')), -testElem.position().left) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
 		}
