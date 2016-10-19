@@ -15,8 +15,10 @@
 		knimeTable.setDataTable(_representation.inObjects[0]);
 		var valCol = knimeTable.getColumn(optionCol);
 		var valSet = {};
-		for (var i = 0; i < valCol.length; i++) {
-			valSet[valCol[i]] = true;
+		if (valCol) {
+			for (var i = 0; i < valCol.length; i++) {
+				valSet[valCol[i]] = true;
+			}
 		}
 		for(var key in valSet){
 			autocompleteOptions.push(key);
@@ -55,6 +57,9 @@
 			$("#textfield").autocomplete({
 		    	source: autocompleteOptions
 			});
+			if (autocompleteOptions.length < 1) {
+				$('#textfield').attr('placeholder', 'No options available, please check your settings.');
+			}
 			if (interval) {
 				clearInterval(interval);
 			}
@@ -95,7 +100,9 @@
 	
 	input.getComponentValue = function() {
 		var curValue = textField.val();
-		_value.flowVariables["string_input"] = curValue;
+		if (curValue != '') {
+			_value.flowVariables["string_input"] = curValue;
+		}
 		_value.options["string_input"] = curValue;
 		return _value;
 	}
