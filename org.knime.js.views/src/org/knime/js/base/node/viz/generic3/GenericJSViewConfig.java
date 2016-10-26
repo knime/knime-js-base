@@ -55,6 +55,11 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.dialog.field.FieldCollection;
+import org.knime.core.node.util.dialog.field.FieldList.InColumnList;
+import org.knime.core.node.util.dialog.field.FieldList.InFlowVariableList;
+import org.knime.core.node.util.dialog.field.FieldList.OutColumnList;
+import org.knime.core.node.util.dialog.field.FieldList.OutFlowVariableList;
 
 /**
  *
@@ -81,6 +86,7 @@ final class GenericJSViewConfig {
     private static final String CSS_CODE = "cssCode";
     private static final String DEPENDENCIES = "dependencies";
     private static final String WAIT_TIME = "waitTime";
+    private static final String OUT_VARS = "outputVariables";
     //private static final String VIEW_NAME = "viewName";
 
     private boolean m_hideInWizard = false;
@@ -91,6 +97,7 @@ final class GenericJSViewConfig {
     private String m_cssCode;
     private String[] m_dependencies;
     private int m_waitTime;
+    private OutFlowVariableList m_outVarList;
 
     //private String m_viewName;
 
@@ -99,6 +106,7 @@ final class GenericJSViewConfig {
      */
     public GenericJSViewConfig() {
         m_dependencies = new String[0];
+        m_outVarList = new OutFlowVariableList(true);
     }
 
     /**
@@ -214,6 +222,34 @@ final class GenericJSViewConfig {
     }
 
     /**
+     * @return the outVarList
+     */
+    public OutFlowVariableList getOutVarList() {
+        return m_outVarList;
+    }
+
+    /**
+     * @param outVarList the outVarList to set
+     */
+    public void setOutVarList(final OutFlowVariableList outVarList) {
+        m_outVarList = outVarList;
+    }
+
+    /**
+     * @return a {@link FieldCollection} object. Only the output flow variable is filled, all other elements are empty lists
+     */
+    public FieldCollection getFieldCollection() {
+        return new FieldCollection(new InColumnList(), new InFlowVariableList(), new OutColumnList(), m_outVarList);
+    }
+
+    /**
+     * @param fields sets a {@link FieldCollection} object. Only the output flow variable list is imported.
+     */
+    public void setFieldCollection(final FieldCollection fields) {
+        m_outVarList = fields.getOutFlowVariableList();
+    }
+
+    /**
      * @return the viewName
      */
     /*public String getViewName() {
@@ -239,6 +275,7 @@ final class GenericJSViewConfig {
         settings.addString(CSS_CODE, m_cssCode);
         settings.addStringArray(DEPENDENCIES, m_dependencies);
         settings.addInt(WAIT_TIME, getWaitTime());
+        m_outVarList.saveSettings(settings.addConfig(OUT_VARS));
         //settings.addString(VIEW_NAME, m_viewName);
     }
 
@@ -255,6 +292,7 @@ final class GenericJSViewConfig {
         m_cssCode = settings.getString(CSS_CODE);
         m_dependencies = settings.getStringArray(DEPENDENCIES);
         setWaitTime(settings.getInt(WAIT_TIME));
+        m_outVarList.loadSettings(settings.getConfig(OUT_VARS));
         //m_viewName = settings.getString(VIEW_NAME);
     }
 
@@ -286,6 +324,11 @@ final class GenericJSViewConfig {
         }
         m_dependencies = settings.getStringArray(DEPENDENCIES, new String[0]);
         setWaitTime(settings.getInt(WAIT_TIME, 0));
+        try {
+            m_outVarList.loadSettingsForDialog(settings.getConfig(OUT_VARS));
+        } catch (InvalidSettingsException e) {
+           m_outVarList = new OutFlowVariableList(true);
+        }
         //m_viewName = settings.getString(VIEW_NAME, "");
     }
 }

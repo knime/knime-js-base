@@ -81,6 +81,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -88,6 +89,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
+import org.knime.core.node.util.ViewUtils;
+import org.knime.core.node.util.dialog.OutFieldsTable;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
@@ -99,7 +102,7 @@ import com.google.common.collect.HashBiMap;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
@@ -122,6 +125,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private final JSSnippetTextArea m_jsSVGTextArea;
     private final CSSSnippetTextArea m_cssTextArea;
     private final JSpinner m_WaitTimeSpinner;
+    private final OutFieldsTable m_outFieldsTable;
 
     private Border m_noBorder = BorderFactory.createEmptyBorder();
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
@@ -188,6 +192,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_dependenciesTable.getColumnModel().getColumn(0).setMaxWidth(30);
         //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_dependenciesTable.setTableHeader(null);
+        m_outFieldsTable = new OutFieldsTable(true, true);
         addTab("JavaScript View", initViewLayout());
         addTab("Image Generation", initImageGenerationLayout());
     }
@@ -257,6 +262,9 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         p.add(splitPane, BorderLayout.CENTER);
         wrapperPanel.add(p, BorderLayout.CENTER);
 
+        m_outFieldsTable.setMaximumSize(new Dimension(m_outFieldsTable.getWidth(), 50));
+        wrapperPanel.add(m_outFieldsTable, BorderLayout.SOUTH);
+
         return wrapperPanel;
     }
 
@@ -292,10 +300,23 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-        throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+        PortObjectSpec[] s = new PortObjectSpec[specs.length];
+        for (int i = 0; i < specs.length; i++) {
+            s[i] = specs[i] == null ? new DataTableSpec() : specs[i];
+        }
+        ViewUtils.invokeAndWaitInEDT(new Runnable() {
+            @Override
+            public void run() {
+                loadSettingsFromInternal(settings, s);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadSettingsFromInternal(final NodeSettingsRO settings, final PortObjectSpec[] specs)  {
         @SuppressWarnings("rawtypes")
         DefaultListModel listModel = (DefaultListModel)m_flowVarList.getModel();
         listModel.removeAllElements();
@@ -330,6 +351,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_jsSVGTextArea.setText(config.getJsSVGCode());
         m_cssTextArea.setText(config.getCssCode());
         m_WaitTimeSpinner.setValue(config.getWaitTime());
+        DataTableSpec spec = specs[0] == null ? new DataTableSpec() : (DataTableSpec)specs[0];
+        m_outFieldsTable.updateData(config.getFieldCollection(), spec, getAvailableFlowVariables());
     }
 
     private BiMap<String, String> getAvailableLibraries() {
@@ -395,6 +418,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         config.setCssCode(m_cssTextArea.getText());
         config.setDependencies(dependencies.toArray(new String[0]));
         config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
+        config.setOutVarList(m_outFieldsTable.getOutVarFields());
         config.saveSettings(settings);
     }
 
