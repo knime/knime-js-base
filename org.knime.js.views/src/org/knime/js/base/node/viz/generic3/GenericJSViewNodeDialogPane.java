@@ -91,6 +91,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.util.ViewUtils;
 import org.knime.core.node.util.dialog.FieldsTableModel;
+import org.knime.core.node.util.dialog.FieldsTableModel.Column;
 import org.knime.core.node.util.dialog.OutFieldsTable;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
@@ -194,6 +195,24 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_dependenciesTable.setTableHeader(null);
         m_outFieldsTable = new OutFieldsTable(true, true);
+        m_outFieldsTable.getTable().addMouseListener(new MouseAdapter() {
+            /** {@inheritDoc} */
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    JTable table = m_outFieldsTable.getTable();
+                    FieldsTableModel model = (FieldsTableModel)table.getModel();
+                    int col = table.getSelectedColumn();
+                    if (col == model.getIndex(Column.TARGET_FIELD)) {
+                        int row = table.getSelectedRow();
+                        String fieldName = (String)model.getValueAt(row, col);
+                        m_jsTextArea.replaceSelection(fieldName);
+                        table.clearSelection();
+                        m_jsTextArea.requestFocus();
+                    }
+                }
+            }
+        });
         addTab("JavaScript View", initViewLayout());
         addTab("Image Generation", initImageGenerationLayout());
     }
