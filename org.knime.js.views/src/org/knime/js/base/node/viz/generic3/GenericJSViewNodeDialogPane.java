@@ -90,6 +90,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.util.ViewUtils;
+import org.knime.core.node.util.dialog.FieldsTableModel;
 import org.knime.core.node.util.dialog.OutFieldsTable;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
@@ -418,6 +419,10 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         config.setCssCode(m_cssTextArea.getText());
         config.setDependencies(dependencies.toArray(new String[0]));
         config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
+        FieldsTableModel outFieldsModel = (FieldsTableModel)m_outFieldsTable.getTable().getModel();
+        if (!outFieldsModel.validateValues()) {
+            throw new IllegalArgumentException("The variable fields table has errors.");
+        }
         config.setOutVarList(m_outFieldsTable.getOutVarFields());
         config.saveSettings(settings);
     }
