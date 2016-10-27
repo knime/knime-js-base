@@ -50,6 +50,8 @@ package org.knime.js.base.node.viz.generic3;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -93,6 +95,7 @@ import org.knime.core.node.util.ViewUtils;
 import org.knime.core.node.util.dialog.FieldsTableModel;
 import org.knime.core.node.util.dialog.FieldsTableModel.Column;
 import org.knime.core.node.util.dialog.OutFieldsTable;
+import org.knime.core.node.util.dialog.OutFieldsTableModel;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
@@ -194,7 +197,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_dependenciesTable.getColumnModel().getColumn(0).setMaxWidth(30);
         //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_dependenciesTable.setTableHeader(null);
-        m_outFieldsTable = new OutFieldsTable(true, true);
+        m_outFieldsTable = createOutVariableTable();
         m_outFieldsTable.getTable().addMouseListener(new MouseAdapter() {
             /** {@inheritDoc} */
             @Override
@@ -218,7 +221,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     }
 
     private JPanel initViewLayout() {
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
+        JPanel wrapperPanel = new JPanel(new GridBagLayout());
         wrapperPanel.setBorder(m_paddingBorder);
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
@@ -233,7 +236,11 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         topPanel.add(m_maxRowsSpinner);
         topPanel.add(Box.createHorizontalStrut(10));
 
-        wrapperPanel.add(topPanel, BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = gbc.gridy = 0;
+        wrapperPanel.add(topPanel, gbc);
 
         JPanel p = new JPanel(new BorderLayout());
 
@@ -280,12 +287,33 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         splitPane.setRightComponent(rightPane);
 
         p.add(splitPane, BorderLayout.CENTER);
-        wrapperPanel.add(p, BorderLayout.CENTER);
 
-        m_outFieldsTable.setMaximumSize(new Dimension(m_outFieldsTable.getWidth(), 50));
-        wrapperPanel.add(m_outFieldsTable, BorderLayout.SOUTH);
+        JSplitPane outFieldsPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+        outFieldsPane.setBorder(m_noBorder);
+        outFieldsPane.setTopComponent(p);
+        //m_outFieldsTable.getTable().setMaximumSize(new Dimension(m_outFieldsTable.getWidth(), 50));
+        m_outFieldsTable.setBorder(BorderFactory.createTitledBorder("Output Flow Variables"));
+        m_outFieldsTable.setPreferredSize(m_outFieldsTable.getMinimumSize());
+        outFieldsPane.setBottomComponent(m_outFieldsTable);
+        outFieldsPane.setDividerLocation(0.8);
+        outFieldsPane.setResizeWeight(0.7);
+
+
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy++;
+        wrapperPanel.add(outFieldsPane, gbc);
 
         return wrapperPanel;
+    }
+
+    private OutFieldsTable createOutVariableTable() {
+        OutFieldsTable table = new OutFieldsTable(true, true);
+        OutFieldsTableModel model = (OutFieldsTableModel)table.getTable().getModel();
+        table.getTable().getColumnModel().getColumn(model.getIndex(
+            Column.REPLACE_EXISTING)).setPreferredWidth(10);
+        table.getTable().getColumnModel().getColumn(model.getIndex(
+            Column.DATA_TYPE)).setPreferredWidth(20);
+        return table;
     }
 
     private JPanel initImageGenerationLayout() {
