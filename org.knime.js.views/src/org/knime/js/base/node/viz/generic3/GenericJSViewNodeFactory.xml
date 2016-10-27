@@ -71,11 +71,14 @@ for (var rowID = 0; rowID &lt; knimeDataTable.getNumRows(); rowID++) {
 		<p><b>View settings</b></p>
 		<p>To save view settings you can use the automatically created <i>SETTINGS</i> object. This object can be stored temporarily and will be restored, when the view is opened again. Settings will be lost, when the node is reset.<br/>For example:</p>
 		<pre>SETTINGS.mySetting = 4;</pre>
-		<p><b>Defining flow variables</b></p>
-		<p>It is possible to define flow variables in JavaScript. To do so use the automatically created <i>FLOW_VARIABLES</i> object.</p>
-		<p>To define a variable you need to provide an object containing a type (one of <i>INTEGER</i>, <i>DOUBLE</i> or <i>STRING</i>) and a value, depending on the type. Currently supported is <i>intValue</i>, <i>doubleValue</i> and <i>stringValue</i>.<br/>For example:</p>
-		<pre>FLOW_VARIABLES["new integer"] = {"type": "INTEGER", "intValue": 4};</pre>
-		<p>Flow variables are only created when the view is opened and the settings are applied. In the WebPortal this happens implicitly when a page is displayed and a user clicks the 'Next' button.<br/>They are restored, when a view is closed and opened again, but are discarded on reset of the node.</p>
+		</option>
+		<option name="Output Flow Variables">
+			<p>Define flow variables to output. The flow variables have to provide a default value, which is available after CONFIGURE and EXECUTE of the node.</p>
+			<p>It is possible to use and define flow variable values in JavaScript. To do so use the automatically created <i>FLOW_VARIABLES</i> object. The appropriate object field is also automatically inserted in the JavaScript when double-clicking the <i>Script Field</i> cell in the table.</p>
+			<p>It is important to assign values ccording to the specified flow variable type. For example:</p>
+			<pre>FLOW_VARIABLES["new integer"] = 4;
+FLOW_VARIABLES["new string"] = "sample";</pre>
+			<p>Flow variables are only updated when the view is opened and the settings are applied. In the WebPortal this happens implicitly when a page is displayed and a user clicks the 'Next' button.<br/>They are restored, when a view is closed and opened again, but are reset to the default value on reset of the node.</p>
 		</option>
 		</tab>
 		<tab name="Image Generation">
