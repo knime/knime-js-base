@@ -50,6 +50,8 @@ package org.knime.js.base.node.viz.generic3;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -88,6 +91,11 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
+import org.knime.core.node.util.ViewUtils;
+import org.knime.core.node.util.dialog.FieldsTableModel;
+import org.knime.core.node.util.dialog.FieldsTableModel.Column;
+import org.knime.core.node.util.dialog.OutFieldsTable;
+import org.knime.core.node.util.dialog.OutFieldsTableModel;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
@@ -99,7 +107,7 @@ import com.google.common.collect.HashBiMap;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
@@ -122,6 +130,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private final JSSnippetTextArea m_jsSVGTextArea;
     private final CSSSnippetTextArea m_cssTextArea;
     private final JSpinner m_WaitTimeSpinner;
+    private final OutFieldsTable m_outFieldsTable;
 
     private Border m_noBorder = BorderFactory.createEmptyBorder();
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
@@ -188,12 +197,31 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_dependenciesTable.getColumnModel().getColumn(0).setMaxWidth(30);
         //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_dependenciesTable.setTableHeader(null);
+        m_outFieldsTable = createOutVariableTable();
+        m_outFieldsTable.getTable().addMouseListener(new MouseAdapter() {
+            /** {@inheritDoc} */
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    JTable table = m_outFieldsTable.getTable();
+                    FieldsTableModel model = (FieldsTableModel)table.getModel();
+                    int col = table.getSelectedColumn();
+                    if (col == model.getIndex(Column.TARGET_FIELD)) {
+                        int row = table.getSelectedRow();
+                        String fieldName = (String)model.getValueAt(row, col);
+                        m_jsTextArea.replaceSelection(fieldName);
+                        table.clearSelection();
+                        m_jsTextArea.requestFocus();
+                    }
+                }
+            }
+        });
         addTab("JavaScript View", initViewLayout());
         addTab("Image Generation", initImageGenerationLayout());
     }
 
     private JPanel initViewLayout() {
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
+        JPanel wrapperPanel = new JPanel(new GridBagLayout());
         wrapperPanel.setBorder(m_paddingBorder);
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
@@ -208,7 +236,11 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         topPanel.add(m_maxRowsSpinner);
         topPanel.add(Box.createHorizontalStrut(10));
 
-        wrapperPanel.add(topPanel, BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = gbc.gridy = 0;
+        wrapperPanel.add(topPanel, gbc);
 
         JPanel p = new JPanel(new BorderLayout());
 
@@ -255,9 +287,33 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         splitPane.setRightComponent(rightPane);
 
         p.add(splitPane, BorderLayout.CENTER);
-        wrapperPanel.add(p, BorderLayout.CENTER);
+
+        JSplitPane outFieldsPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+        outFieldsPane.setBorder(m_noBorder);
+        outFieldsPane.setTopComponent(p);
+        //m_outFieldsTable.getTable().setMaximumSize(new Dimension(m_outFieldsTable.getWidth(), 50));
+        m_outFieldsTable.setBorder(BorderFactory.createTitledBorder("Output Flow Variables"));
+        m_outFieldsTable.setPreferredSize(m_outFieldsTable.getMinimumSize());
+        outFieldsPane.setBottomComponent(m_outFieldsTable);
+        outFieldsPane.setDividerLocation(0.8);
+        outFieldsPane.setResizeWeight(0.7);
+
+
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy++;
+        wrapperPanel.add(outFieldsPane, gbc);
 
         return wrapperPanel;
+    }
+
+    private OutFieldsTable createOutVariableTable() {
+        OutFieldsTable table = new OutFieldsTable(true, true);
+        OutFieldsTableModel model = (OutFieldsTableModel)table.getTable().getModel();
+        table.getTable().getColumnModel().getColumn(model.getIndex(
+            Column.REPLACE_EXISTING)).setPreferredWidth(10);
+        table.getTable().getColumnModel().getColumn(model.getIndex(
+            Column.DATA_TYPE)).setPreferredWidth(20);
+        return table;
     }
 
     private JPanel initImageGenerationLayout() {
@@ -292,10 +348,23 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-        throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+        PortObjectSpec[] s = new PortObjectSpec[specs.length];
+        for (int i = 0; i < specs.length; i++) {
+            s[i] = specs[i] == null ? new DataTableSpec() : specs[i];
+        }
+        ViewUtils.invokeAndWaitInEDT(new Runnable() {
+            @Override
+            public void run() {
+                loadSettingsFromInternal(settings, s);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadSettingsFromInternal(final NodeSettingsRO settings, final PortObjectSpec[] specs)  {
         @SuppressWarnings("rawtypes")
         DefaultListModel listModel = (DefaultListModel)m_flowVarList.getModel();
         listModel.removeAllElements();
@@ -330,6 +399,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_jsSVGTextArea.setText(config.getJsSVGCode());
         m_cssTextArea.setText(config.getCssCode());
         m_WaitTimeSpinner.setValue(config.getWaitTime());
+        DataTableSpec spec = specs[0] == null ? new DataTableSpec() : (DataTableSpec)specs[0];
+        m_outFieldsTable.updateData(config.getFieldCollection(), spec, getAvailableFlowVariables());
     }
 
     private BiMap<String, String> getAvailableLibraries() {
@@ -395,6 +466,11 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         config.setCssCode(m_cssTextArea.getText());
         config.setDependencies(dependencies.toArray(new String[0]));
         config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
+        FieldsTableModel outFieldsModel = (FieldsTableModel)m_outFieldsTable.getTable().getModel();
+        if (!outFieldsModel.validateValues()) {
+            throw new IllegalArgumentException("The variable fields table has errors.");
+        }
+        config.setOutVarList(m_outFieldsTable.getOutVarFields());
         config.saveSettings(settings);
     }
 

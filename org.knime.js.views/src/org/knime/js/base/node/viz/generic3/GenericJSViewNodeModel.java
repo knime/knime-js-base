@@ -48,8 +48,8 @@
 package org.knime.js.base.node.viz.generic3;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,7 +72,10 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.node.util.dialog.field.DefaultOutFlowVariableField;
+import org.knime.core.node.util.dialog.field.OutFlowVariableField;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.js.base.node.viz.generic3.GenericJSViewValue.FlowVariableValue;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
@@ -137,6 +140,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
             representation.setCssCode(m_config.getCssCode());
             setPathsFromLibNames(m_config.getDependencies());
             setOptionalViewWaitTime((long)m_config.getWaitTime());
+            setFlowVariablesInView();
         }
     }
 
@@ -151,27 +155,34 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     }
 
     private void pushFlowVariables() {
-        GenericJSViewValue viewValue = getViewValue();
-        if (viewValue != null && viewValue.getFlowVariables() != null && viewValue.getFlowVariables().size() > 0) {
-            Iterator<Entry<String, FlowVariableValue>> entries = viewValue.getFlowVariables().entrySet().iterator();
-            while (entries.hasNext()) {
-                Entry<String, FlowVariableValue> entry = entries.next();
-                String key = entry.getKey();
-                FlowVariableValue value = entry.getValue();
-                if (key != null && value != null) {
-                    switch (value.getType()) {
-                        case INTEGER:
-                            pushFlowVariableInt(key, value.getIntValue());
-                            break;
-                        case DOUBLE:
-                            pushFlowVariableDouble(key, value.getDoubleValue());
-                            break;
-                        default:
-                            pushFlowVariableString(key, value.getStringValue());
-                    }
-                }
+        for (OutFlowVariableField vF : m_config.getOutVarList()) {
+            DefaultOutFlowVariableField variableField = (DefaultOutFlowVariableField)vF;
+            FlowVariableValue varViewValue = getVariableFromValue(variableField.getKnimeName(), variableField.getKnimeType());
+            switch (variableField.getKnimeType()) {
+                case INTEGER:
+                    int defaultInt = varViewValue == null ? variableField.getDefaultValueInt() : varViewValue.getIntValue();
+                    pushFlowVariableInt(variableField.getKnimeName(), defaultInt);
+                    break;
+                case DOUBLE:
+                    double defaultDouble = varViewValue == null ? variableField.getDefaultValueDouble() : varViewValue.getDoubleValue();
+                    pushFlowVariableDouble(variableField.getKnimeName(), defaultDouble);
+                    break;
+                default:
+                    String defaultString = varViewValue == null ? variableField.getDefaultValueString() : varViewValue.getStringValue();
+                    pushFlowVariableString(variableField.getKnimeName(), defaultString);
             }
         }
+    }
+
+    private FlowVariableValue getVariableFromValue(final String varName, final Type varType) {
+        GenericJSViewValue viewValue = getViewValue();
+        if (viewValue != null && viewValue.getFlowVariables() != null && viewValue.getFlowVariables().size() > 0) {
+            FlowVariableValue varValue = viewValue.getFlowVariables().get(varName);
+            if (varValue != null && varValue.getType().equals(varType)) {
+                return varValue;
+            }
+        }
+        return null;
     }
 
     private String parseTextAndReplaceVariables() throws InvalidSettingsException {
@@ -233,6 +244,35 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
             }
         }
         return null;
+    }
+
+    private void setFlowVariablesInView() {
+        Map<String, FlowVariableValue> variableMap = new HashMap<String, FlowVariableValue>();
+        for (OutFlowVariableField vF : m_config.getOutVarList()) {
+            // check if variable value is already defined
+            FlowVariableValue oldValue = getVariableFromValue(vF.getKnimeName(), vF.getKnimeType());
+            if (oldValue != null) {
+                variableMap.put(vF.getKnimeName(), oldValue);
+                continue;
+            }
+
+            // create new variable value
+            DefaultOutFlowVariableField variableField = (DefaultOutFlowVariableField)vF;
+            FlowVariableValue newVar =  new FlowVariableValue();
+            newVar.setType(variableField.getKnimeType());
+            switch (variableField.getKnimeType()) {
+                case INTEGER:
+                    newVar.setIntValue(variableField.getDefaultValueInt());
+                    break;
+                case DOUBLE:
+                    newVar.setDoubleValue(variableField.getDefaultValueDouble());
+                    break;
+                default:
+                    newVar.setStringValue(variableField.getDefaultValueString());
+            }
+            variableMap.put(variableField.getKnimeName(), newVar);
+        }
+        getViewValue().setFlowVariables(variableMap);
     }
 
     /**

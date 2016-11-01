@@ -361,7 +361,11 @@ knime_scatter_plot_selection_appender = function() {
 	
 	updateChart = function() {
 		var plot = chartManager.getChart().getPlot();
-		plot.setDataset(buildXYDataset());
+		var oldSelections = plot.getDataset().selections;
+		var dataset = buildXYDataset();
+		plot.setDataset(dataset);
+		dataset.selections = oldSelections;
+		dataset.notifyListeners();		
 		if (_value.xColumn) {
 			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
