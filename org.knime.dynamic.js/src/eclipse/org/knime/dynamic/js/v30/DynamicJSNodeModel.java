@@ -655,7 +655,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	        } else if (model instanceof SettingsModelInteger) {
 	            ((SettingsModelInteger)model).setIntValue((int)entry.getValue());
 	        } else if (model instanceof SettingsModelDouble) {
-	            ((SettingsModelDouble)model).setDoubleValue((double)entry.getValue());
+	            ((SettingsModelDouble)model).setDoubleValue(((Number)entry.getValue()).doubleValue());
 	        } else if (model instanceof SettingsModelDate) {
 	            ((SettingsModelDate)model).setTimeInMillis((long)entry.getValue());
 	        } else if (model instanceof SettingsModelColor) {
