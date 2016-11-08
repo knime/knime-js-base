@@ -8,6 +8,7 @@ knime_paged_table = function() {
 	var selection = {};
 	var hideUnselected = false;
 	var allCheckboxes = [];
+	var currentFilter = null;
 	var initialized = false;
 	
 	//register neutral ordering method for clear selection button
@@ -260,7 +261,11 @@ knime_paged_table = function() {
 							knimeService.addMenuDivider();
 						}
 					}
-					if (knimeService.isInteractivityAvailable()) {
+					
+				}
+				
+				if (knimeService.isInteractivityAvailable()) {
+					if (_representation.enableSelection) {
 						var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
 						var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.publishSelection, function() {
 							if (this.checked) {
@@ -283,10 +288,13 @@ knime_paged_table = function() {
 						if (_value.subscribeSelection) {
 							knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
 						}
-						
-						/*knimeService.addMenuDivider();
-						
-						var pubFilIcon = knimeService.createStackedIcon('filter', 'angle-right', 'faded left sm', 'right bold');
+					}
+					if (_representation.subscriptionFilterIds && _representation.subscriptionFilterIds.length > 0) {
+						if (_representation.enableSelection) {
+							knimeService.addMenuDivider();
+						}
+
+						/*var pubFilIcon = knimeService.createStackedIcon('filter', 'angle-right', 'faded left sm', 'right bold');
 						var pubFilCheckbox = knimeService.createMenuCheckbox('publishFilterCheckbox', _value.publishFilter, function() {
 							if (this.checked) {
 								//publishFilter = true;
@@ -297,16 +305,25 @@ knime_paged_table = function() {
 						knimeService.addMenuItem('Publish filter', pubFilIcon, pubFilCheckbox);
 						if (_value.publishFilter) {
 							//TODO
-						}
+						}*/
+						$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
+							if (currentFilter) {
+								return knimeTable.isRowIncludedInFilter(index, currentFilter);
+							}
+							return true;
+						});
 						var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
 						var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
 							if (this.checked) {
-								//knimeService.subscribe
+								knimeService.subscribeToFilter(_representation.table.id, filterChanged, _representation.subscriptionFilterIds);
 							} else {
-								//knimeService.unsubscribe
+								knimeService.unsubscribeFilter(_representation.table.id, filterChanged);
 							}
 						});
-						knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);*/
+						knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
+						if (_value.subscribeFilter) {
+							knimeService.subscribeToFilter(_representation.table.id, filterChanged, _representation.subscriptionFilterIds);
+						}
 					}
 				}
 			}
@@ -536,6 +553,17 @@ knime_paged_table = function() {
 		if (hideUnselected) {
 			dataTable.draw();
 		}
+	}
+	
+	filterChanged = function(data) {
+		// cannot apply selection changed event before all data is loaded
+		if (!initialized) {
+			setTimeout(function() {
+				filterChanged(data);
+			}, 500);
+		}
+		currentFilter = data;
+		dataTable.draw();
 	}
 	
 	isColumnSortable = function (colType) {

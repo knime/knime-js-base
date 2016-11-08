@@ -93,6 +93,11 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_enableGlobalNumberFormat;
     private int m_globalNumberFormatDecimals;
 
+    private static final String CFG_PUBLISH_FILTER_ID = "publishFilterId";
+    private String m_publishFilterId;
+    private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
+    private String[] m_subscriptionFilterIds;
+
     /** Serialization constructor. Don't use. */
     public PagedTableViewRepresentation() { }
 
@@ -442,6 +447,34 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the publishFilterId
+     */
+    public String getPublishFilterId() {
+        return m_publishFilterId;
+    }
+
+    /**
+     * @param publishFilterId the publishFilterId to set
+     */
+    public void setPublishFilterId(final String publishFilterId) {
+        m_publishFilterId = publishFilterId;
+    }
+
+    /**
+     * @return the subscriptionFilterIds
+     */
+    public String[] getSubscriptionFilterIds() {
+        return m_subscriptionFilterIds;
+    }
+
+    /**
+     * @param subscriptionFilterIds the subscriptionFilterIds to set
+     */
+    public void setSubscriptionFilterIds(final String[] subscriptionFilterIds) {
+        m_subscriptionFilterIds = subscriptionFilterIds;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -473,6 +506,8 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         //added with 3.3
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
+        settings.addString(CFG_PUBLISH_FILTER_ID, m_publishFilterId);
+        settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
     }
 
     /**
@@ -507,6 +542,8 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         //added with 3.3
         m_enableHideUnselected = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, PagedTableViewConfig.DEFAULT_ENABLE_HIDE_UNSELECTED);
         m_displayFullscreenButton = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, PagedTableViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        m_publishFilterId = settings.getString(CFG_PUBLISH_FILTER_ID, null);
+        m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
     }
 
     /**
@@ -549,6 +586,8 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_globalDateFormat, other.m_globalDateFormat)
                 .append(m_enableGlobalNumberFormat, other.m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals, other.m_globalNumberFormatDecimals)
+                .append(m_publishFilterId, other.m_publishFilterId)
+                .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .isEquals();
     }
 
@@ -582,6 +621,8 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_globalDateFormat)
                 .append(m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals)
+                .append(m_publishFilterId)
+                .append(m_subscriptionFilterIds)
                 .toHashCode();
     }
 
