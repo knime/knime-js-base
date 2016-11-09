@@ -318,15 +318,15 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         selectionPanel.add(m_selectionColumnNameField, gbcS);
 
         JPanel searchPanel = new JPanel(new GridBagLayout());
-        searchPanel.setBorder(new TitledBorder("Searching"));
+        searchPanel.setBorder(new TitledBorder("Searching / Filtering"));
         GridBagConstraints gbcSe = createConfiguredGridBagConstraints();
         searchPanel.add(m_enableSearchCheckbox, gbcSe);
         gbcSe.gridx++;
         searchPanel.add(m_enableColumnSearchCheckbox, gbcSe);
         gbcSe.gridx = 0;
         gbcSe.gridy++;
-        searchPanel.add(m_publishFilterCheckBox, gbcSe);
-        gbcSe.gridx++;
+        /*searchPanel.add(m_publishFilterCheckBox, gbcSe);
+        gbcSe.gridx++;*/
         searchPanel.add(m_subscribeFilterCheckBox, gbcSe);
 
         JPanel sortingPanel = new JPanel(new GridBagLayout());
