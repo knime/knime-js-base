@@ -529,7 +529,8 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
                 m_pipsModeComboBox.setSelectedItem(pips.getMode());
                 m_pipsDensitySpinner.setValue(pips.getDensity());
                 m_pipsValuesTextField.setText(formatPipValues(pips.getValues()));
-                m_pipsSteppedCheckbox.setSelected(pips.getStepped());
+                boolean stepped = pips.getStepped() == null ? false : pips.getStepped();
+                m_pipsSteppedCheckbox.setSelected(stepped);
                 m_pipsFormat.loadSettingsFrom(pips.getFormat());
             } else {
                 m_pipsEnableCheckbox.setSelected(false);
@@ -542,6 +543,7 @@ public class SliderInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_max.setEnabled(m_useMax.isSelected());
 
         enableTooltipFields();
+        m_stepSpinner.setEnabled(m_useStepCheckbox.isSelected());
         enablePipFields(false);
         setDomainValues(false);
     }

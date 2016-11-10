@@ -70,7 +70,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class RangeSliderFilterValue extends JSONViewContent {
 
     private static final String CFG_FILTER = "filter";
-    private RangeSelection m_filter = new RangeSelection();
+    private RangeSelection m_filter;
 
     /**
      * {@inheritDoc}
@@ -79,7 +79,7 @@ public class RangeSliderFilterValue extends JSONViewContent {
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         NodeSettingsWO filterSettings = settings.addNodeSettings(CFG_FILTER);
-        //TODO
+        m_filter.saveToNodeSettings(filterSettings);
     }
 
     /**
@@ -89,7 +89,8 @@ public class RangeSliderFilterValue extends JSONViewContent {
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         NodeSettingsRO filterSettings = settings.getNodeSettings(CFG_FILTER);
-        //TODO
+        m_filter = new RangeSelection();
+        m_filter.loadFromNodeSettings(filterSettings);
     }
 
     /**

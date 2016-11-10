@@ -53,6 +53,7 @@ import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.settings.slider.SliderSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -65,13 +66,33 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class RangeSliderFilterRepresentation extends JSONViewContent {
 
-    private final SliderSettings m_sliderSettings;
+    private SliderSettings m_sliderSettings;
+    private String m_columnName;
+
+    private static final String CFG_TABLE_ID = "tableID";
+    private String m_tableId;
+
+    private static final String CFG_FILTER_ID = "filterID";
+    private String m_filterId;
+
+    private static final String CFG_DISABLED = "disabled";
+    private boolean m_disabled;
 
     /**
      * @param config The configuration of the node
      */
     public RangeSliderFilterRepresentation(final RangeSliderFilterConfig config) {
+        setConfig(config);
+    }
+
+    /**
+     * Sets the config settings on this representation object
+     * @param config the config to set
+     */
+    @JsonIgnore
+    public void setConfig(final RangeSliderFilterConfig config) {
         m_sliderSettings = config.getSliderSettings();
+        m_columnName = config.getDomainColumn().getStringValue();
     }
 
     /**
@@ -83,13 +104,71 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the columnName
+     */
+    public String getColumnName() {
+        return m_columnName;
+    }
+
+    /**
+     * @return the tableId
+     */
+    public String getTableId() {
+        return m_tableId;
+    }
+
+    /**
+     * @param tableId the tableId to set
+     */
+    public void setTableId(final String tableId) {
+        m_tableId = tableId;
+    }
+
+    /**
+     * @return the filterId
+     */
+    public String getFilterId() {
+        return m_filterId;
+    }
+
+    /**
+     * @param filterId the filterId to set
+     */
+    public void setFilterId(final String filterId) {
+        m_filterId = filterId;
+    }
+
+    /**
+     * @return the disabled
+     */
+    public boolean getDisabled() {
+        return m_disabled;
+    }
+
+    /**
+     * @param disabled the disabled to set
+     */
+    public void setDisabled(final boolean disabled) {
+        m_disabled = disabled;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("sliderSettings=");
+        sb.append("column=");
+        sb.append(m_columnName);
+        if (m_filterId != null) {
+            sb.append(", id=");
+            sb.append(m_filterId);
+        }
+        sb.append(", sliderSettings=");
         sb.append(m_sliderSettings);
+        if (m_disabled) {
+            sb.append(", disabled");
+        }
         return sb.toString();
     }
 
@@ -99,7 +178,11 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_tableId)
+                .append(m_filterId)
+                .append(m_columnName)
                 .append(m_sliderSettings)
+                .append(m_disabled)
                 .toHashCode();
     }
 
@@ -119,7 +202,11 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
         }
         RangeSliderFilterRepresentation other = (RangeSliderFilterRepresentation)obj;
         return new EqualsBuilder()
+                .append(m_tableId, other.m_tableId)
+                .append(m_filterId, other.m_filterId)
+                .append(m_columnName, other.m_columnName)
                 .append(m_sliderSettings, other.m_sliderSettings)
+                .append(m_disabled, other.m_disabled)
                 .isEquals();
     }
 
@@ -128,7 +215,9 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        // not needed
+        settings.addString(CFG_TABLE_ID, m_tableId);
+        settings.addString(CFG_FILTER_ID, m_filterId);
+        settings.addBoolean(CFG_DISABLED, m_disabled);
     }
 
     /**
@@ -136,7 +225,9 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // not needed
+        m_tableId = settings.getString(CFG_TABLE_ID);
+        m_filterId = settings.getString(CFG_FILTER_ID);
+        m_disabled = settings.getBoolean(CFG_DISABLED);
     }
 
 }

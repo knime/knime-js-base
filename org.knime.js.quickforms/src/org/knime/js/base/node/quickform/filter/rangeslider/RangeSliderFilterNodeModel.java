@@ -44,7 +44,16 @@
  */
 package org.knime.js.base.node.quickform.filter.rangeslider;
 
+import javax.naming.OperationNotSupportedException;
+
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DoubleValue;
+import org.knime.core.data.property.filter.FilterHandler;
+import org.knime.core.data.property.filter.FilterModel;
+import org.knime.core.data.property.filter.FilterModelRange;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -55,6 +64,11 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.selections.json.AbstractColumnRangeSelection;
+import org.knime.js.core.selections.json.NumericColumnRangeSelection;
+import org.knime.js.core.selections.json.RangeSelection;
+import org.knime.js.core.settings.slider.SliderNodeDialogUI;
+import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
  * Model for the range slider filter node.
@@ -63,8 +77,6 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
  */
 public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSliderFilterRepresentation, RangeSliderFilterValue> {
 
-    private DataTableSpec m_spec = new DataTableSpec();
-    private BufferedDataTable m_inTable = null;
     private final RangeSliderFilterConfig m_config;
 
     /** Creates a new range slider filter node model.
@@ -80,7 +92,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org_knime_js_base_node_quickform_filter_column";
+        return "org_knime_js_base_node_quickform_filter_slider";
     }
 
     /**
@@ -88,7 +100,10 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        return new PortObjectSpec[]{inSpecs[0] /*TODO add filter model spec*/};
+        DataTableSpec spec = (DataTableSpec)inSpecs[0];
+        setDomainRange(spec);
+        DataTableSpec outSpec = setFilter(spec);
+        return new PortObjectSpec[]{outSpec /*TODO add filter model spec*/};
     }
 
     /**
@@ -96,8 +111,154 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        // TODO Auto-generated method stub
-        return new PortObject[]{inObjects[0] /*TODO add filter model port*/};
+        BufferedDataTable in = (BufferedDataTable)inObjects[0];
+        DataTableSpec inSpec = in.getDataTableSpec();
+        synchronized (getLock()) {
+            setDomainRange(inSpec);
+            DataTableSpec outSpec = setFilter(inSpec);
+            BufferedDataTable changedSpecTable = exec.createSpecReplacerTable(in, outSpec);
+            setFilterOnValue();
+            return new PortObject[]{changedSpecTable /*TODO add filter model port*/};
+        }
+    }
+
+    private void setDomainRange(final DataTableSpec spec) {
+        if (m_config.getSliderSettings() == null) {
+            return;
+        }
+        String colName = m_config.getDomainColumn().getStringValue();
+        if (colName != null) {
+            if (!m_config.getCustomMin() || !m_config.getCustomMax()) {
+                DataColumnSpec colSpec = spec.getColumnSpec(colName);
+                if (colSpec == null) {
+                    setWarningMessage("Configured range column " + colName + " is not available anymore. Slider will be disabled.");
+                    disableSlider(true);
+                    return;
+                }
+                disableSlider(false);
+                boolean minFailed = false;
+                boolean maxFailed = false;
+                if (!m_config.getCustomMin()) {
+                    DataCell min = colSpec.getDomain().getLowerBound();
+                    if (min == null || !min.getType().isCompatible(DoubleValue.class)) {
+                        minFailed = true;
+                    } else {
+                        m_config.getSliderSettings().setRangeMinValue(((DoubleValue)min).getDoubleValue());
+                    }
+                }
+                if (!m_config.getCustomMax()) {
+                    DataCell max = colSpec.getDomain().getUpperBound();
+                    if (max == null || !max.getType().isCompatible(DoubleValue.class)) {
+                        maxFailed = true;
+                    } else {
+                        m_config.getSliderSettings().setRangeMaxValue(((DoubleValue)max).getDoubleValue());
+                    }
+                }
+                if (minFailed || maxFailed) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("Selected range column ");
+                    builder.append(colName);
+                    builder.append(" has no ");
+                    if (minFailed) {
+                        builder.append("minimum ");
+                        if (maxFailed) {
+                            builder.append("or ");
+                        }
+                    }
+                    if (maxFailed) {
+                        builder.append("maximum ");
+                    }
+                    builder.append("domain values set. Using previously configured ranage values.");
+                    setWarningMessage(builder.toString());
+                }
+            }
+            for (int i = 0; i < m_config.getUseDomainExtends().length; i++) {
+                SliderSettings sliderSettings = m_config.getSliderSettings();
+                double min = sliderSettings.getRangeMinValue();
+                double max = sliderSettings.getRangeMaxValue();
+                int numHandles = sliderSettings.getStart().length;
+                // recalculate start values
+                if (m_config.getUseDomainExtends()[i]) {
+                    sliderSettings.getStart()[i] = SliderNodeDialogUI.calculateDomainExtendsStartValue(min, max, numHandles, i);
+                }
+            }
+        }
+    }
+
+    private void disableSlider(final boolean disable) {
+        RangeSliderFilterRepresentation rep = getViewRepresentation();
+        if (rep != null) {
+            rep.setDisabled(disable);
+        }
+    }
+
+    private DataTableSpec setFilter(final DataTableSpec spec) throws InvalidSettingsException {
+        String columnName = m_config.getDomainColumn().getStringValue();
+        if (columnName == null) {
+            throw new InvalidSettingsException("No domain column set");
+        }
+        RangeSliderFilterValue value = getViewValue();
+        FilterModelRange model;
+        if (value != null && value.getFilter() != null) {
+            try {
+                model = (FilterModelRange)value.getFilter().createFilterModel();
+            } catch (OperationNotSupportedException e) {
+                throw new InvalidSettingsException(e);
+            }
+        } else {
+            if (m_config.getSliderSettings() == null || m_config.getSliderSettings().getStart() == null) {
+                setWarningMessage("No filter defined. Please configure the node.");
+                return spec;
+            }
+            double[] filterValues = m_config.getSliderSettings().getStart();
+            if (filterValues.length != 2) {
+                throw new InvalidSettingsException("The filter settings for minimum and maximum are not in a correct format.");
+            }
+            model = FilterModel.newRangeModel(filterValues[0], filterValues[1], true, true);
+        }
+        RangeSliderFilterRepresentation rep = getViewRepresentation();
+        if (rep != null) {
+            rep.setConfig(m_config);
+            rep.setTableId(getTableId(0));
+            rep.setFilterId(model.getFilterUUID().toString());
+        }
+        return getOutSpec(spec, columnName, FilterHandler.from(model));
+
+    }
+
+    private DataTableSpec getOutSpec(final DataTableSpec inSpec, final String columnName, final FilterHandler filter) {
+        if (!inSpec.containsName(columnName)) {
+            setWarningMessage("The defined filter column " + columnName + " is not part of the spec anymore. No filter definition appended. Slider will be disabled.");
+        }
+        DataColumnSpec[] cspecs = new DataColumnSpec[inSpec.getNumColumns()];
+        for (int i = 0; i < cspecs.length; i++) {
+            DataColumnSpec cspec = inSpec.getColumnSpec(i);
+            DataColumnSpecCreator cr = new DataColumnSpecCreator(cspec);
+            if (cspec.getName().equals(columnName)) {
+                // set new filter
+                cr.setFilterHandler(filter);
+            } else if (m_config.getDeleteOtherFilters()){
+                // delete previously defined filters on demand
+                cr.setFilterHandler(null);
+            }
+            cspecs[i] = cr.createSpec();
+        }
+        DataTableSpec outSpec = new DataTableSpec(cspecs);
+        return outSpec;
+    }
+
+    private void setFilterOnValue() {
+        RangeSliderFilterValue value = getViewValue();
+        if (value != null && value.getFilter() == null && m_config.getSliderSettings() != null) {
+            RangeSelection filter = new RangeSelection();
+            filter.setId(getViewRepresentation().getFilterId());
+            NumericColumnRangeSelection range = new NumericColumnRangeSelection();
+            range.setColumnName(m_config.getDomainColumn().getStringValue());
+            range.setMinimum(m_config.getSliderSettings().getStart()[0]);
+            range.setMaximum(m_config.getSliderSettings().getStart()[1]);
+            filter.setColumns(new AbstractColumnRangeSelection[]{range});
+            value.setFilter(filter);
+        }
     }
 
     /**
@@ -114,14 +275,6 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
     @Override
     public RangeSliderFilterValue createEmptyViewValue() {
         return new RangeSliderFilterValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RangeSliderFilterRepresentation getViewRepresentation() {
-        return new RangeSliderFilterRepresentation(m_config);
     }
 
     /**
@@ -163,8 +316,16 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
-
+        RangeSliderFilterValue value = getViewValue();
+        if (value != null && value.getFilter() != null && m_config.getSliderSettings() != null) {
+            AbstractColumnRangeSelection[] columns = value.getFilter().getColumns();
+            if (columns != null && columns.length > 0 && columns[0] instanceof NumericColumnRangeSelection) {
+                NumericColumnRangeSelection filter = (NumericColumnRangeSelection)columns[0];
+                double[] startValues = new double[]{filter.getMinimum(), filter.getMaximum()};
+                m_config.setUseDomainExtends(new boolean[]{false, false});
+                m_config.getSliderSettings().setStart(startValues);
+            }
+        }
     }
 
     /**

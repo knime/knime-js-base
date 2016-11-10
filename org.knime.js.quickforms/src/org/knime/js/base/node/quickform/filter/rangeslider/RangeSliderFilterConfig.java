@@ -55,6 +55,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.js.core.settings.slider.SliderNodeDialogUI;
 import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
@@ -72,8 +73,7 @@ public class RangeSliderFilterConfig {
     private static final String CFG_SLIDER_EXISTS = "sliderExists";
     private SliderSettings m_sliderSettings = null;
 
-    private static final String CFG_DOMAIN_COLUMN = "domainColumn";
-    private SettingsModelString m_domainColumn = new SettingsModelString(CFG_DOMAIN_COLUMN, null);
+    private SettingsModelString m_domainColumn = new SettingsModelString(SliderNodeDialogUI.CFG_DOMAIN_COLUMN, null);
 
     private static final String CFG_CUSTOM_MIN = "customMin";
     private static final boolean DEFAULT_CUSTOM_MIN = false;
@@ -82,6 +82,14 @@ public class RangeSliderFilterConfig {
     private static final String CFG_CUSTOM_MAX = "customMax";
     private static final boolean DEFAULT_CUSTOM_MAX = false;
     private boolean m_customMax = DEFAULT_CUSTOM_MAX;
+
+    private static final String CFG_USE_DOMAIN_EXTENDS = "domainExtends";
+    private static final boolean[] DEFAULT_USE_DOMAIN_EXTENDS = new boolean[]{true, true};
+    private boolean[] m_useDomainExtends = DEFAULT_USE_DOMAIN_EXTENDS;
+
+    private static final String CFG_DELETE_OTHER_FILTERS = "deleteOtherFilters";
+    private static final boolean DEFAULT_DELETE_OTHER_FILTERS = false;
+    private boolean m_deleteOtherFilters = DEFAULT_DELETE_OTHER_FILTERS;
 
     /**
      * @return the hideInWizard
@@ -153,6 +161,38 @@ public class RangeSliderFilterConfig {
         m_customMax = customMax;
     }
 
+    /**
+     * @return the m_useDomainExtends
+     */
+    public boolean[] getUseDomainExtends() {
+        return m_useDomainExtends;
+    }
+
+    /**
+     * @param useDomainExtends the useDomainExtends to set
+     */
+    public void setUseDomainExtends(final boolean[] useDomainExtends) {
+        m_useDomainExtends = useDomainExtends;
+    }
+
+    /**
+     * @return the deleteOtherFilters
+     */
+    public boolean getDeleteOtherFilters() {
+        return m_deleteOtherFilters;
+    }
+
+    /**
+     * @param deleteOtherFilters the deleteOtherFilters to set
+     */
+    public void setDeleteOtherFilters(final boolean deleteOtherFilters) {
+        m_deleteOtherFilters = deleteOtherFilters;
+    }
+
+    /**
+     * Save the current config to a given settings object
+     * @param settings the settings to save to
+     */
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addBoolean(CFG_HIDE_WIZARD, m_hideInWizard);
         NodeSettingsWO sliderSettings = settings.addNodeSettings(CFG_SLIDER);
@@ -164,8 +204,15 @@ public class RangeSliderFilterConfig {
         m_domainColumn.saveSettingsTo(settings);
         settings.addBoolean(CFG_CUSTOM_MIN, m_customMin);
         settings.addBoolean(CFG_CUSTOM_MAX, m_customMax);
+        settings.addBooleanArray(CFG_USE_DOMAIN_EXTENDS, m_useDomainExtends);
+        settings.addBoolean(CFG_DELETE_OTHER_FILTERS, m_deleteOtherFilters);
     }
 
+    /**
+     * Load setting from a given settings object
+     * @param settings the settings to load from
+     * @throws InvalidSettingsException on load error
+     */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_WIZARD);
         NodeSettingsRO sliderSettings = settings.getNodeSettings(CFG_SLIDER);
@@ -177,8 +224,14 @@ public class RangeSliderFilterConfig {
         m_domainColumn.loadSettingsFrom(settings);
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX);
+        m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS);
+        m_deleteOtherFilters = settings.getBoolean(CFG_DELETE_OTHER_FILTERS);
     }
 
+    /**
+     * Load settings for a dialog (assuming defaults) from a given settings object
+     * @param settings the settings to load from
+     */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_WIZARD, DEFAULT_HIDE_WIZARD);
         try {
@@ -191,6 +244,8 @@ public class RangeSliderFilterConfig {
         }
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN, DEFAULT_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX, DEFAULT_CUSTOM_MAX);
+        m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS, DEFAULT_USE_DOMAIN_EXTENDS);
+        m_deleteOtherFilters = settings.getBoolean(CFG_DELETE_OTHER_FILTERS, DEFAULT_DELETE_OTHER_FILTERS);
     }
 
     /**
@@ -208,6 +263,8 @@ public class RangeSliderFilterConfig {
             sb.append(", domainColumn=");
             sb.append(m_domainColumn);
         }
+        sb.append(", deleteOtherFilters");
+        sb.append(m_deleteOtherFilters);
         return sb.toString();
     }
 
@@ -222,6 +279,8 @@ public class RangeSliderFilterConfig {
                 .append(m_domainColumn)
                 .append(m_customMin)
                 .append(m_customMax)
+                .append(m_useDomainExtends)
+                .append(m_deleteOtherFilters)
                 .toHashCode();
     }
 
@@ -246,6 +305,8 @@ public class RangeSliderFilterConfig {
                 .append(m_domainColumn, other.m_domainColumn)
                 .append(m_customMin, other.m_customMin)
                 .append(m_customMax, other.m_customMax)
+                .append(m_useDomainExtends, other.m_useDomainExtends)
+                .append(m_deleteOtherFilters, other.m_deleteOtherFilters)
                 .isEquals();
     }
 

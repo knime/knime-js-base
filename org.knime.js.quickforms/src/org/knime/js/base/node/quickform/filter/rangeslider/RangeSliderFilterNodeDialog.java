@@ -44,12 +44,23 @@
  */
 package org.knime.js.base.node.quickform.filter.rangeslider;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.core.settings.slider.SliderNodeDialogUI;
+import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
  * Dialog for the range slider filter node.
@@ -59,10 +70,44 @@ import org.knime.core.node.port.PortObjectSpec;
 public class RangeSliderFilterNodeDialog extends NodeDialogPane {
 
     private RangeSliderFilterConfig m_config;
+    private SliderNodeDialogUI m_sliderUI;
+
+    private final JCheckBox m_hideInWizardCheckbox;
+    private final JCheckBox m_deleteOtherFiltersCheckbox;
 
     /** Constructors, inits fields calls layout routines. */
     RangeSliderFilterNodeDialog() {
         m_config = new RangeSliderFilterConfig();
+        m_sliderUI = new SliderNodeDialogUI(2, false, true);
+        m_hideInWizardCheckbox = new JCheckBox("Hide In Wizard");
+        m_deleteOtherFiltersCheckbox = new JCheckBox("Delete Existing Filter Definitions");
+
+        addTab("Options", createOptions());
+        addTab("Slider", m_sliderUI.createSliderPanel());
+        addTab("Labels", m_sliderUI.createTicksPanel());
+    }
+
+    private JPanel createOptions() {
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = gbc.gridy = 0;
+        gbc.weightx = gbc.weighty = 0;
+
+        panel.add(m_hideInWizardCheckbox, gbc);
+        gbc.gridx++;
+        panel.add(m_deleteOtherFiltersCheckbox, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(m_sliderUI.createRangePanel(), gbc);
+        gbc.gridy++;
+        panel.add(m_sliderUI.createStartValuePanel(), gbc);
+
+        return panel;
     }
 
     /**
@@ -72,6 +117,20 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
+        m_hideInWizardCheckbox.setSelected(m_config.getHideInWizard());
+        m_deleteOtherFiltersCheckbox.setSelected(m_config.getDeleteOtherFilters());
+        m_sliderUI.getDomainColumnSelection().loadSettingsFrom(settings, specs);
+        m_sliderUI.getCustomMinCheckbox().setSelected(m_config.getCustomMin());
+        m_sliderUI.getCustomMaxCheckbox().setSelected(m_config.getCustomMax());
+        JCheckBox[] domainExtendCheckboxes = m_sliderUI.getStartDomainExtendsCheckboxes();
+        if (domainExtendCheckboxes.length != m_config.getUseDomainExtends().length) {
+            throw new NotConfigurableException("Length of use domain extends differs in config and slider UI settings.");
+        }
+        for (int i = 0; i < domainExtendCheckboxes.length; i++) {
+            domainExtendCheckboxes[i].setSelected(m_config.getUseDomainExtends()[i]);
+        }
+        SliderSettings sSettings = m_config.getSliderSettings();
+        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
     }
 
     /**
@@ -79,6 +138,21 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        m_config.setHideInWizard(m_hideInWizardCheckbox.isSelected());
+        m_config.setDeleteOtherFilters(m_deleteOtherFiltersCheckbox.isSelected());
+        m_config.setDomainColumn((SettingsModelString)m_sliderUI.getDomainColumnSelection().getModel());
+        m_config.setCustomMin(m_sliderUI.getCustomMinCheckbox().isSelected());
+        m_config.setCustomMax(m_sliderUI.getCustomMaxCheckbox().isSelected());
+        JCheckBox[] domainExtendCheckboxes = m_sliderUI.getStartDomainExtendsCheckboxes();
+        boolean[] useDomainExtends = new boolean[domainExtendCheckboxes.length];
+        for (int i = 0; i < domainExtendCheckboxes.length; i++) {
+            useDomainExtends[i] = domainExtendCheckboxes[i].isSelected();
+        }
+        m_config.setUseDomainExtends(useDomainExtends);
+        SliderSettings sSettings = new SliderSettings();
+        m_sliderUI.saveSettings(sSettings);
+        sSettings.validateSettings();
+        m_config.setSliderSettings(sSettings);
         m_config.saveSettings(settings);
     }
 
