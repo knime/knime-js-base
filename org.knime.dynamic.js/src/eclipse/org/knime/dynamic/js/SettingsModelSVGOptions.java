@@ -119,6 +119,9 @@ public class SettingsModelSVGOptions extends SettingsModel {
             throw new IllegalArgumentException("The configName must be a " + "non-empty string");
         }
         m_configName = configName;
+        m_width = defaultWidth;
+        m_height = defaultHeight;
+        m_fullscreen = defaultFullscreen;
     }
 
     /**

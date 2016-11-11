@@ -70,13 +70,16 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
-final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewRepresentation, LiftChartPlotViewValue> {
+final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewRepresentation, LiftChartPlotViewValue> implements LayoutTemplateProvider {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LiftChartNodeModel.class);
 
@@ -376,5 +379,19 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
 
        m_config.setShowGainChart(val.getShowGainChart());
        m_config.setSmoothing(val.getSmoothing());
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public JSONLayoutViewContent getLayoutTemplate() {
+       JSONLayoutViewContent template = new JSONLayoutViewContent();
+       if (m_config.getResizeToWindow()) {
+           template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+       } else {
+           template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT_IE_MAX);
+       }
+       return template;
    }
 }

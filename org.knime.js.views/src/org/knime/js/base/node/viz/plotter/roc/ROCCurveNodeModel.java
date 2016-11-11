@@ -83,13 +83,16 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
-final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRepresentation, ROCCurveViewValue> {
+final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRepresentation, ROCCurveViewValue> implements LayoutTemplateProvider {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ROCCurveNodeModel.class);
 
@@ -431,6 +434,20 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
             return maximum;
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent template = new JSONLayoutViewContent();
+        if (m_config.getResizeToWindow()) {
+            template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+        } else {
+            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT_IE_MAX);
+        }
+        return template;
     }
 
 }

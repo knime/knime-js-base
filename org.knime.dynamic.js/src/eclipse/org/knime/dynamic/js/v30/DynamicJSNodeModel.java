@@ -132,6 +132,9 @@ import org.knime.dynamicnode.v30.FlowVariableType;
 import org.knime.dynamicnode.v30.PortType.Enum;
 import org.knime.js.core.CSSUtils;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
@@ -139,7 +142,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
  * @since 3.0
  */
-public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> {
+public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> implements LayoutTemplateProvider {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeModel.class);
 
@@ -885,5 +888,27 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
     @Override
     protected boolean generateImage() {
         return m_config.getHasSvgImageOutport() & m_config.getGenerateImage();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent template = new JSONLayoutViewContent();
+        boolean adaptToWindow = false;
+        for (Entry<String, SettingsModel> entry : m_config.getModels().entrySet()) {
+            if (entry.getValue() instanceof SettingsModelSVGOptions) {
+                adaptToWindow = ((SettingsModelSVGOptions)entry.getValue()).getAllowFullscreen();
+                break;
+            }
+        }
+        if (adaptToWindow) {
+            template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+        } else {
+            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT_IE_MAX);
+        }
+        return template;
     }
 }

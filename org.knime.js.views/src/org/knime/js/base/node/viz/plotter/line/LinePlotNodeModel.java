@@ -93,13 +93,16 @@ import org.knime.js.core.JSONDataTableSpec;
 import org.knime.js.core.JSONDataTableSpec.JSTypes;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.datasets.JSONKeyedValuesRow;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
-final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRepresentation, LinePlotViewValue> {
+final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRepresentation, LinePlotViewValue> implements LayoutTemplateProvider {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LinePlotNodeModel.class);
 
@@ -580,6 +583,20 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             return maximum;
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent template = new JSONLayoutViewContent();
+        if (m_config.getResizeToWindow()) {
+            template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+        } else {
+            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT_IE_MAX);
+        }
+        return template;
     }
 
 }
