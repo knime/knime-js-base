@@ -45,7 +45,7 @@
         <option name="Limit number of visible options">
           By default the filter component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them.</option>
         <option name="Number of visible options">
-            A number of options visible in the filter component without a vertical scroll bar. Changing this value will also affect the component's height.
+            A number of options visible in the filter component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that the height cannot be less than the overall height of the control buttons in the middle.
         </option>
     </fullDescription>
 	<interactiveView name="Column filter">

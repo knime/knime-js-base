@@ -91,4 +91,5 @@ function listSingleSelection() {
 	};
 	select = $('<select>');
 	select.attr('size', 0);
+	select.attr('data-iframe-height', '');
 }

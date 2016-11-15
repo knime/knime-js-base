@@ -95,7 +95,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_omitEmptyField = new JCheckBox();
         m_regexField = new RegexPanel();
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DEF_TEXTFIELD_WIDTH);
-        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(5, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 

@@ -91,4 +91,5 @@ function listMultipleSelections() {
 	};
 	select = $('<select>');
 	select.prop('multiple', true);
+	select.attr('data-iframe-height', '');
 }

@@ -140,7 +140,7 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
             }
         });
         m_limitNumberVisOptionsBox = new JCheckBox();
-        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
