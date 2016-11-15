@@ -59,13 +59,16 @@ function listSingleSelection() {
 	this.getComponent = function() {
 		return select;
 	};
-	this.setChoices = function(choices) {
+	this.setChoices = function(choices, sizeLimit) {
+		if (sizeLimit === undefined) {
+			sizeLimit = Number.MAX_VALUE;
+		}
 		select.empty();
 		var size = choices.length;
 		if (size < 2) {
 			size = 2;
 		}
-		select.attr('size', size);
+		select.attr('size', size < sizeLimit ? size : sizeLimit);
 		for ( var i in choices) {
 			var choice = choices[i];
 			var option = $('<option>' + choice + '</option>');

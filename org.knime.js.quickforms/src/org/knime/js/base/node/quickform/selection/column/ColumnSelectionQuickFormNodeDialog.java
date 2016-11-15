@@ -45,11 +45,18 @@
 package org.knime.js.base.node.quickform.selection.column;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
@@ -77,6 +84,9 @@ public class ColumnSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private String[] m_possibleColumns;
 
+    private final JCheckBox m_limitNumberVisOptionsBox;
+    private final JSpinner m_numberVisOptionSpinner;
+
     private ColumnSelectionQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -84,6 +94,8 @@ public class ColumnSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config = new ColumnSelectionQuickFormConfig();
         m_type = new JComboBox<String>(SingleSelectionComponentFactory.listSingleSelectionComponents());
         m_defaultField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
+        m_limitNumberVisOptionsBox = new JCheckBox();
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -94,6 +106,23 @@ public class ColumnSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
+
+        m_type.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                boolean enabled = SingleSelectionComponentFactory.LIST.equals(m_type.getSelectedItem());
+                m_limitNumberVisOptionsBox.setEnabled(enabled);
+                m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**
@@ -116,6 +145,8 @@ public class ColumnSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         }
         m_defaultField.setSelectedColumn(selectedDefault);
         m_type.setSelectedItem(m_config.getType());
+        m_limitNumberVisOptionsBox.setSelected(m_config.getLimitNumberVisOptions());
+        m_numberVisOptionSpinner.setValue(m_config.getNumberVisOptions());
     }
 
     /**
@@ -127,6 +158,8 @@ public class ColumnSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.getDefaultValue().setColumn(m_defaultField.getSelectedColumn());
         m_config.setType((String)m_type.getSelectedItem());
         m_config.setPossibleColumns(m_possibleColumns);
+        m_config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
+        m_config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
 

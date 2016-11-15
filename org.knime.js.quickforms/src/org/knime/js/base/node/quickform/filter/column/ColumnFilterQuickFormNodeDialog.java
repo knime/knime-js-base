@@ -46,8 +46,11 @@ package org.knime.js.base.node.quickform.filter.column;
 
 import java.awt.GridBagConstraints;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTableSpec;
@@ -75,6 +78,9 @@ public class ColumnFilterQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private String[] m_possibleColumns;
 
+    private final JCheckBox m_limitNumberVisOptionsBox;
+    private final JSpinner m_numberVisOptionSpinner;
+
     private ColumnFilterQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -82,6 +88,8 @@ public class ColumnFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config = new ColumnFilterQuickFormConfig();
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_defaultField = new DataColumnSpecFilterPanel(false);
+        m_limitNumberVisOptionsBox = new JCheckBox();
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -94,6 +102,8 @@ public class ColumnFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         // e.g. if the regex filter from the DataColumnSpecFilterPanel is used we have no equivalent with check boxes
         // addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
+        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**
@@ -114,6 +124,8 @@ public class ColumnFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         filterConfig.loadConfigurationInDialog(filterSettings, (DataTableSpec)specs[0]);
         m_defaultField.loadConfiguration(filterConfig, (DataTableSpec)specs[0]);
         m_type.setSelectedItem(m_config.getType());
+        m_limitNumberVisOptionsBox.setSelected(m_config.getLimitNumberVisOptions());
+        m_numberVisOptionSpinner.setValue(m_config.getNumberVisOptions());
     }
 
     /**
@@ -129,6 +141,8 @@ public class ColumnFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.getDefaultValue().setSettings(filterSettings);
         m_config.setType((String)m_type.getSelectedItem());
         m_config.setPossibleColumns(m_possibleColumns);
+        m_config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
+        m_config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
 

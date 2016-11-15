@@ -51,8 +51,10 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -81,6 +83,8 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JTextArea m_defaultArea;
 
+    private final JSpinner m_numberVisOptionSpinner;
+
     private ListBoxInputQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -91,6 +95,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_omitEmptyField = new JCheckBox();
         m_regexField = new RegexPanel();
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DEF_TEXTFIELD_WIDTH);
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -118,6 +123,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
                 m_separatorField.setEnabled(!m_separateEachCharacterBox.isSelected());
             }
         });
+        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**
@@ -138,6 +144,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_regexField.setRegex(m_config.getRegex());
         m_regexField.setErrorMessage(m_config.getErrorMessage());
         m_defaultArea.setText(m_config.getDefaultValue().getString());
+        m_numberVisOptionSpinner.setValue(m_config.getNumberVisOptions());
     }
 
     /**
@@ -152,6 +159,7 @@ public class ListBoxInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.setRegex(m_regexField.getRegex());
         m_config.setErrorMessage(m_regexField.getErrorMessage());
         m_config.getDefaultValue().setString(m_defaultArea.getText());
+        m_config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
 

@@ -35,6 +35,9 @@
         <option name="Default Value">
           The value that is selected by default.
         </option>
+        <option name="Number of visible options">
+            A number of options visible in the List Box component without a vertical scroll bar. Changing this value will also affect the component's height.
+        </option>
 	</fullDescription>
 	<interactiveView name="List Box Input">
     	Input a list of strings.

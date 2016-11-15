@@ -81,6 +81,7 @@ public class ListBoxInputQuickFormRepresentation extends
         m_separateEachCharacter = config.getSeparateEachCharacter();
         m_separatorRegex = config.getSeparatorRegex();
         m_omitEmpty = config.getOmitEmpty();
+        m_numberVisOptions = config.getNumberVisOptions();
     }
 
     private final String m_regex;
@@ -94,6 +95,8 @@ public class ListBoxInputQuickFormRepresentation extends
     private final boolean m_omitEmpty;
 
     private final String m_separatorRegex;
+
+    private final Integer m_numberVisOptions;
 
     /**
      * @return the regex
@@ -144,6 +147,13 @@ public class ListBoxInputQuickFormRepresentation extends
         return m_omitEmpty;
     }
 
+    /**
+     * @return the numberVisOptions
+     */
+    @JsonProperty("numberVisOptions")
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
 
 
     /**
@@ -182,6 +192,9 @@ public class ListBoxInputQuickFormRepresentation extends
         sb.append(", ");
         sb.append("omitEmpty=");
         sb.append(m_omitEmpty);
+        sb.append(", ");
+        sb.append("numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -197,6 +210,7 @@ public class ListBoxInputQuickFormRepresentation extends
                 .append(m_separateEachCharacter)
                 .append(m_separatorRegex)
                 .append(m_omitEmpty)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -222,6 +236,7 @@ public class ListBoxInputQuickFormRepresentation extends
                 .append(m_separateEachCharacter, other.m_separateEachCharacter)
                 .append(m_separatorRegex, m_separatorRegex)
                 .append(m_omitEmpty, other.m_omitEmpty)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

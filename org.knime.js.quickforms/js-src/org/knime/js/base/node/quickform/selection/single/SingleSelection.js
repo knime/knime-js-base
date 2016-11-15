@@ -76,7 +76,11 @@ org_knime_js_base_node_quickform_selection_single = function() {
 			selector.getComponent().attr("aria-label", representation.label);
 			selector.getComponent().attr("tabindex", 0);
 			qfdiv.append(selector.getComponent());
-			selector.setChoices(representation.possibleChoices);
+			if (representation.type == 'List' && representation.limitNumberVisOptions) {
+				selector.setChoices(representation.possibleChoices, representation.numberVisOptions);				
+			} else {
+				selector.setChoices(representation.possibleChoices);
+			}
 			var selection = representation.currentValue.value;
 			selector.setSelection(selection);
 			selector.addValueChangedListener(callUpdate);

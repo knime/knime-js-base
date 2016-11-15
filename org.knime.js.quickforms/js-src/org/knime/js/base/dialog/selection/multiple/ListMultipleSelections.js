@@ -59,7 +59,10 @@ function listMultipleSelections() {
 	this.getComponent = function() {
 		return select;
 	};
-	this.setChoices = function(choices) {
+	this.setChoices = function(choices, sizeLimit) {
+		if (sizeLimit === undefined) {
+			sizeLimit = Number.MAX_VALUE;
+		}
 		select.empty();
 		for ( var i in choices) {
 			var choice = choices[i];
@@ -67,7 +70,7 @@ function listMultipleSelections() {
 			option.appendTo(select);
 			option.blur(notifyListeners());
 		}
-		select.attr('size', choices.length);
+		select.attr('size', choices.length < sizeLimit ? choices.length : sizeLimit);
 	};
 	this.getSelections = function() {
 		var selections = [];

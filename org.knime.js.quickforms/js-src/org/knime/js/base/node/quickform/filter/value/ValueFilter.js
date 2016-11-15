@@ -104,10 +104,12 @@ org_knime_js_base_node_quickform_filter_value = function() {
 			} else {
 				selector = new twinlistMultipleSelections();
 			}
-			selector.getComponent().attr("aria-label", representation.label);
-			selector.getComponent().attr("tabindex", 0);
-			qfdiv.append(selector.getComponent());			
-			selector.setChoices(viewRepresentation.possibleValues[columnSelection]);
+			qfdiv.append(selector.getComponent());
+			if ((representation.type == 'List' || representation.type == 'Twinlist') && representation.limitNumberVisOptions) {
+				selector.setChoices(viewRepresentation.possibleValues[columnSelection], representation.numberVisOptions);				
+			} else {
+				selector.setChoices(viewRepresentation.possibleValues[columnSelection]);
+			}
 			selector.setSelections(viewRepresentation.currentValue.values);
 			selector.addValueChangedListener(callUpdate);
 		}

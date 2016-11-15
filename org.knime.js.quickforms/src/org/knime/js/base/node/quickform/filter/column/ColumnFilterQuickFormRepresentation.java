@@ -78,6 +78,8 @@ public class ColumnFilterQuickFormRepresentation extends
         m_possibleColumns = config.getPossibleColumns();
         m_type = config.getType();
         m_spec = spec;
+        m_limitNumberVisOptions = config.getLimitNumberVisOptions();
+        m_numberVisOptions = config.getNumberVisOptions();
     }
 
     private final String[] m_possibleColumns;
@@ -85,6 +87,9 @@ public class ColumnFilterQuickFormRepresentation extends
     private final String m_type;
 
     private final DataTableSpec m_spec;
+
+    private final boolean m_limitNumberVisOptions;
+    private final Integer m_numberVisOptions;
 
     /**
      * {@inheritDoc}
@@ -122,6 +127,22 @@ public class ColumnFilterQuickFormRepresentation extends
     }
 
     /**
+     * @return the limitNumberVisOptions
+     */
+    @JsonProperty("limitNumberVisOptions")
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
+    }
+
+    /**
+     * @return the numberVisOptions
+     */
+    @JsonProperty("numberVisOptions")
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -134,6 +155,12 @@ public class ColumnFilterQuickFormRepresentation extends
         sb.append(", ");
         sb.append("type=");
         sb.append(m_type);
+        sb.append(", ");
+        sb.append("limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -145,6 +172,8 @@ public class ColumnFilterQuickFormRepresentation extends
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_possibleColumns)
                 .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -166,6 +195,8 @@ public class ColumnFilterQuickFormRepresentation extends
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_possibleColumns, other.m_possibleColumns)
                 .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

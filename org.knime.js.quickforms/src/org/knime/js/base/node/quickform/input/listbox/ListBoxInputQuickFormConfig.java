@@ -80,6 +80,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
     private static final boolean DEFAULT_OMIT_EMPTY = true;
     private boolean m_omitEmpty = DEFAULT_OMIT_EMPTY;
 
+    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
      * @return the regex
@@ -165,6 +168,20 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         m_omitEmpty = omitEmpty;
     }
 
+    /**
+     * @return the numberVisOptions
+     */
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
+
+    /**
+     * @param numberVisOptions the numberVisOptions to set
+     */
+    public void setNumberVisOptions(final Integer numberVisOptions) {
+        m_numberVisOptions = numberVisOptions;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -177,6 +194,7 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         settings.addString(CFG_SEPARATOR, m_separator);
         settings.addBoolean(CFG_SEPARATE_EACH_CHARACTER, m_separateEachCharacter);
         settings.addBoolean(CFG_OMIT_EMPTY, m_omitEmpty);
+        settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -192,6 +210,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
 
         // added with 3.1
         m_separateEachCharacter = settings.getBoolean(CFG_SEPARATE_EACH_CHARACTER, DEFAULT_SEPARATE_EACH_CHARACTER);
+
+        // added with 3.3
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -207,6 +228,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
 
         // added with 3.1
         m_separateEachCharacter = settings.getBoolean(CFG_SEPARATE_EACH_CHARACTER, DEFAULT_SEPARATE_EACH_CHARACTER);
+
+        // added with 3.3
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -242,6 +266,9 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
         sb.append(", ");
         sb.append("omitEmpty=");
         sb.append(m_omitEmpty);
+        sb.append(", ");
+        sb.append("m_numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -257,6 +284,7 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
                 .append(m_separateEachCharacter)
                 .append(m_separatorRegex)
                 .append(m_omitEmpty)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -282,6 +310,7 @@ public class ListBoxInputQuickFormConfig extends QuickFormFlowVariableConfig<Lis
                 .append(m_separateEachCharacter, other.m_separateEachCharacter)
                 .append(m_separatorRegex, other.m_separatorRegex)
                 .append(m_omitEmpty, other.m_omitEmpty)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

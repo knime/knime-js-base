@@ -72,6 +72,13 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
     private static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
     private String m_type = DEFAULT_TYPE;
 
+    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
+    private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
+
     /**
      * @return the possibleChoices
      */
@@ -101,6 +108,34 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
     }
 
     /**
+     * @return the limitNumberVisOptions
+     */
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
+    }
+
+    /**
+     * @param limitNumberVisOptions the limitNumberVisOptions to set
+     */
+    public void setLimitNumberVisOptions(final boolean limitNumberVisOptions) {
+        m_limitNumberVisOptions = limitNumberVisOptions;
+    }
+
+    /**
+     * @return the numberVisOptions
+     */
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
+
+    /**
+     * @param numberVisOptions the numberVisOptions to set
+     */
+    public void setNumberVisOptions(final Integer numberVisOptions) {
+        m_numberVisOptions = numberVisOptions;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -108,6 +143,8 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         super.saveSettings(settings);
         settings.addStringArray(CFG_POSSIBLE_CHOICES, m_possibleChoices);
         settings.addString(CFG_TYPE, m_type);
+        settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
+        settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -118,6 +155,10 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         super.loadSettings(settings);
         m_possibleChoices = settings.getStringArray(CFG_POSSIBLE_CHOICES);
         m_type = settings.getString(CFG_TYPE);
+
+        // added with 3.3
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -128,6 +169,10 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         super.loadSettingsInDialog(settings);
         m_possibleChoices = settings.getStringArray(CFG_POSSIBLE_CHOICES, DEFAULT_POSSIBLE_CHOICES);
         m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
+
+        // added with 3.3
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -151,6 +196,12 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         sb.append(", ");
         sb.append("type=");
         sb.append(m_type);
+        sb.append(", ");
+        sb.append("m_limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("m_numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -162,6 +213,8 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_possibleChoices)
                 .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -183,6 +236,8 @@ public class SingleSelectionQuickFormConfig extends QuickFormFlowVariableConfig<
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_possibleChoices, other.m_possibleChoices)
                 .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

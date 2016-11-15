@@ -78,6 +78,8 @@ public class ValueSelectionQuickFormRepresentation extends
         m_lockColumn = config.getLockColumn();
         m_possibleValues = config.getPossibleValues();
         m_type = config.getType();
+        m_limitNumberVisOptions = config.getLimitNumberVisOptions();
+        m_numberVisOptions = config.getNumberVisOptions();
     }
 
     private final ColumnType m_columnType;
@@ -87,6 +89,9 @@ public class ValueSelectionQuickFormRepresentation extends
     private final Map<String, List<String>> m_possibleValues;
 
     private final String m_type;
+
+    private final boolean m_limitNumberVisOptions;
+    private final Integer m_numberVisOptions;
 
     /**
      * {@inheritDoc}
@@ -140,6 +145,22 @@ public class ValueSelectionQuickFormRepresentation extends
     }
 
     /**
+     * @return the limitNumberVisOptions
+     */
+    @JsonProperty("limitNumberVisOptions")
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
+    }
+
+    /**
+     * @return the numberVisOptions
+     */
+    @JsonProperty("numberVisOptions")
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -160,6 +181,12 @@ public class ValueSelectionQuickFormRepresentation extends
         sb.append(", ");
         sb.append("type=");
         sb.append(m_type);
+        sb.append(", ");
+        sb.append("limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -173,6 +200,8 @@ public class ValueSelectionQuickFormRepresentation extends
                 .append(m_lockColumn)
                 .append(m_possibleValues)
                 .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -196,6 +225,8 @@ public class ValueSelectionQuickFormRepresentation extends
                 .append(m_lockColumn, other.m_lockColumn)
                 .append(m_possibleValues, other.m_possibleValues)
                 .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

@@ -53,8 +53,8 @@ function twinlistMultipleSelections() {
 	this.getComponent = function() {
 		return list.getElement();
 	};
-	this.setChoices = function(choices) {
-		list.setAvailableValues(choices);
+	this.setChoices = function(choices, sizeLimit) {
+		list.setAvailableValues(choices, sizeLimit);
 	};
 	this.getSelections = function() {
 		return list.getIncludes();

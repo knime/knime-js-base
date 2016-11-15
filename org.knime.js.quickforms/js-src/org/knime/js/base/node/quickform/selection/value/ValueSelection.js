@@ -105,7 +105,11 @@ org_knime_js_base_node_quickform_selection_value = function() {
 			selector.getComponent().attr("tabindex", 0);
 			qfdiv.append(selector.getComponent());
 			var choices = viewRepresentation.possibleValues[columnSelection];
-			selector.setChoices(choices);
+			if (representation.type == 'List' && representation.limitNumberVisOptions) {
+				selector.setChoices(choices, representation.numberVisOptions);				
+			} else {
+				selector.setChoices(choices);
+			}
 			var valueSelection = representation.currentValue.value;
 			if (valueSelection == "" || !$.inArray(valueSelection, choices)) {
 				valueSelection = viewRepresentation.possibleValues[columnSelection][0];

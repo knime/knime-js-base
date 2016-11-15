@@ -55,6 +55,8 @@ import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -94,6 +96,9 @@ public class ValueFilterQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JComboBox<String> m_type;
 
+    private final JCheckBox m_limitNumberVisOptionsBox;
+    private final JSpinner m_numberVisOptionSpinner;
+
     private ValueFilterQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -122,6 +127,8 @@ public class ValueFilterQuickFormNodeDialog extends QuickFormNodeDialog {
                 m_defaultColumnField.setEnabled(!m_lockColumn.isSelected());
             }
         });
+        m_limitNumberVisOptionsBox = new JCheckBox();
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -159,6 +166,23 @@ public class ValueFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         addPairToPanel("Lock Column: ", m_lockColumn, panelWithGBLayout, gbc);
         addPairToPanel("Default Column: ", m_defaultColumnField, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
+
+        m_type.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                boolean enabled = MultipleSelectionsComponentFactory.LIST.equals(m_type.getSelectedItem()) || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem());
+                m_limitNumberVisOptionsBox.setEnabled(enabled);
+                m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**
@@ -201,6 +225,8 @@ public class ValueFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         m_defaultField.update(defaultIncludes, defaultExcludes, m_possibleValues);
         m_lockColumn.setSelected(m_config.getLockColumn());
         m_type.setSelectedItem(m_config.getType());
+        m_limitNumberVisOptionsBox.setSelected(m_config.getLimitNumberVisOptions());
+        m_numberVisOptionSpinner.setValue(m_config.getNumberVisOptions());
     }
 
     /**
@@ -215,6 +241,8 @@ public class ValueFilterQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.getDefaultValue().setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
         m_config.setFromSpec(m_spec);
         m_config.setType((String)m_type.getSelectedItem());
+        m_config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
+        m_config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
 

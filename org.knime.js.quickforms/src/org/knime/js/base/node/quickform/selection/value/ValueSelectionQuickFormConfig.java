@@ -95,6 +95,13 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
 
     private static final String CFG_COL = "colValues";
 
+    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
+    private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
+
     /**
      * @return the columnType
      */
@@ -152,6 +159,34 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
     }
 
     /**
+     * @return the limitNumberVisOptions
+     */
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
+    }
+
+    /**
+     * @param limitNumberVisOptions the limitNumberVisOptions to set
+     */
+    public void setLimitNumberVisOptions(final boolean limitNumberVisOptions) {
+        m_limitNumberVisOptions = limitNumberVisOptions;
+    }
+
+    /**
+     * @return the numberVisOptions
+     */
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
+    }
+
+    /**
+     * @param numberVisOptions the numberVisOptions to set
+     */
+    public void setNumberVisOptions(final Integer numberVisOptions) {
+        m_numberVisOptions = numberVisOptions;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -167,6 +202,8 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
             colSettings.addStringArray(key, values.toArray(new String[values.size()]));
         }
         settings.addString(CFG_TYPE, m_type);
+        settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
+        settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -189,6 +226,10 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
             m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column)));
         }
         m_type = settings.getString(CFG_TYPE);
+
+        // added with 3.3
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -213,6 +254,10 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
             m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
         }
         m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
+
+        // added with 3.3
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -294,6 +339,12 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
         sb.append(", ");
         sb.append("type=");
         sb.append(m_type);
+        sb.append(", ");
+        sb.append("m_limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("m_numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -307,6 +358,8 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
                 .append(m_lockColumn)
                 .append(m_possibleValues)
                 .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -330,6 +383,8 @@ public class ValueSelectionQuickFormConfig extends QuickFormFlowVariableConfig<V
                 .append(m_lockColumn, other.m_lockColumn)
                 .append(m_possibleValues, other.m_possibleValues)
                 .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

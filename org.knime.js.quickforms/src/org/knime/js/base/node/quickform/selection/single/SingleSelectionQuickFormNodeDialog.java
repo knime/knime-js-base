@@ -46,13 +46,20 @@ package org.knime.js.base.node.quickform.selection.single;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -79,6 +86,9 @@ public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JComboBox m_type;
 
+    private final JCheckBox m_limitNumberVisOptionsBox;
+    private final JSpinner m_numberVisOptionSpinner;
+
     private SingleSelectionQuickFormConfig m_config;
 
     /**
@@ -104,6 +114,8 @@ public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
             }
         });
         m_type = new JComboBox(SingleSelectionComponentFactory.listSingleSelectionComponents());
+        m_limitNumberVisOptionsBox = new JCheckBox();
+        m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -123,6 +135,23 @@ public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         JScrollPane defaultPane = new JScrollPane(m_defaultField);
         defaultPane.setPreferredSize(prefSize);
         addPairToPanel("Default Value: ", defaultPane, panelWithGBLayout, gbc2);
+
+        m_type.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                boolean enabled = SingleSelectionComponentFactory.LIST.equals(m_type.getSelectedItem());
+                m_limitNumberVisOptionsBox.setEnabled(enabled);
+                m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
+            }
+        });
+        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
 
@@ -160,6 +189,8 @@ public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         m_possibleChoicesField.setText(StringUtils.join(m_config.getPossibleChoices(), "\n"));
         m_type.setSelectedItem(m_config.getType());
         m_defaultField.setSelectedValue(m_config.getDefaultValue().getVariableValue(), true);
+        m_limitNumberVisOptionsBox.setSelected(m_config.getLimitNumberVisOptions());
+        m_numberVisOptionSpinner.setValue(m_config.getNumberVisOptions());
     }
 
     /**
@@ -172,6 +203,8 @@ public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
         String possibleChoices = m_possibleChoicesField.getText();
         m_config.setPossibleChoices(possibleChoices.isEmpty() ? new String[0] : possibleChoices.split("\n"));
         m_config.setType((String)m_type.getItemAt(m_type.getSelectedIndex()));
+        m_config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
+        m_config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
 

@@ -74,7 +74,7 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		input.css('white-space', 'pre');
 		input.css('overflow', 'auto');
 		input.attr('wrap', 'off');
-		input.attr('rows', '5');
+		input.attr('rows', representation.numberVisOptions);
 		input.attr('cols', '20');
 		input.attr("pattern", representation.regex);
 		input.attr("class", "standard-sizing");
