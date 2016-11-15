@@ -102,15 +102,6 @@ knime_scatter_plot_selection_appender = function() {
 					_keyedDataset.setColumnProperty(columnKey, "date", dateTimeFormat);
 				}
 			}
-			
-			if (_value.selection) {
-				for (var selection = 0; selection < _value.selection.length; selection++) {
-					for (var col = 0; col < _representation.keyedDataset.columnKeys.length; col++) {
-						// Select all cols of selected row
-						_keyedDataset.select("selection", _value.selection[selection],  _representation.keyedDataset.columnKeys[col]);
-					}
-				}
-			}
 			//console.timeEnd("Parse and build 2DDataset");
 
 			d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
@@ -163,6 +154,16 @@ knime_scatter_plot_selection_appender = function() {
 		var yAxisLabel = _value.yAxisLabel ? _value.yAxisLabel : _value.yColumn;
 		
 		var dataset = buildXYDataset();
+		
+		// Assign selection in _keyedDataset is lost when building XYDataset, therefore we need to assing selection directly to XYDataset.
+		// Since their structure model is different, we need to do a conversion
+		if (_value.selection) {
+			for (var rowKeyInd = 0; rowKeyInd < _value.selection.length; rowKeyInd++) {
+				// "series 1" is a default name for series
+				// the last argument is taking row index from its key. For some internal reason, the row index must be converted to a string 
+				dataset.select("selection", "series 1", String(_keyedDataset.rowIndex(_value.selection[rowKeyInd])));
+			}
+		}
 		
 		//console.time("Building chart");
 		
