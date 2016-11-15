@@ -235,6 +235,9 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             DataColumnSpec cspec = inSpec.getColumnSpec(i);
             DataColumnSpecCreator cr = new DataColumnSpecCreator(cspec);
             if (cspec.getName().equals(columnName)) {
+                if (cspec.getFilterHandler().isPresent()) {
+                    setWarningMessage("A filter handler on column " + columnName + " already exists. Overwriting previous definition.");
+                }
                 // set new filter
                 cr.setFilterHandler(filter);
             } else if (m_config.getDeleteOtherFilters()){
