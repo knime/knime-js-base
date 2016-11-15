@@ -376,6 +376,21 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         return panel;
     }
 
+    private void setNumberOfFilters(final DataTableSpec spec) {
+        int numFilters = 0;
+        for (int i = 0; i < spec.getNumColumns(); i++) {
+            if (spec.getColumnSpec(i).getFilterHandler().isPresent()) {
+                numFilters++;
+            }
+        }
+        StringBuilder builder = new StringBuilder("Subscribe to filter events");
+        builder.append(" (");
+        builder.append(numFilters == 0 ? "no" : numFilters);
+        builder.append(numFilters == 1 ? " filter" : " filters");
+        builder.append(" available)");
+        m_subscribeFilterCheckBox.setText(builder.toString());
+    }
+
     private GridBagConstraints createConfiguredGridBagConstraints() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -391,7 +406,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
         PagedTableViewConfig config = new PagedTableViewConfig();
-        config.loadSettingsForDialog(settings, (DataTableSpec)specs[0]);
+        DataTableSpec inSpec = (DataTableSpec)specs[0];
+        config.loadSettingsForDialog(settings, inSpec);
         m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_maxRowsSpinner.setValue(config.getMaxRows());
         m_enablePagingCheckBox.setSelected(config.getEnablePaging());
@@ -407,7 +423,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_titleField.setText(config.getTitle());
         m_subtitleField.setText(config.getSubtitle());
-        m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), (DataTableSpec)specs[0]);
+        m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(config.getEnableSelection());
         m_selectionColumnNameField.setText(config.getSelectionColumnName());
         m_enableHideUnselectedCheckbox.setSelected(config.getEnableHideUnselected());
@@ -427,6 +443,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         enableSearchFields();
         enableFormatterFields();
         enableSortingFields();
+        setNumberOfFilters(inSpec);
     }
 
     /**
