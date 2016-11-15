@@ -1,3 +1,22 @@
+html, body, div {
+	margin: 0;
+	padding: 0;
+}
+
+.label {
+	font-family: sans-serif;
+    font-size: 14px;
+	font-weight: normal;
+	margin: 2px 6px;
+	color: #999;
+	text-align: center;
+}
+
+.label.vertical {
+	transform: rotate(-90deg);
+	transform-origin: left top 0;
+}
+
 .slidercontainer {
 	padding: 6px 20px;
 	overflow: hidden;

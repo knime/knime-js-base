@@ -14,6 +14,9 @@
         	<option name="Delete Existing Filter Definitions">
         		Check this setting to delete any pre-existing filter definitions on the table. If set only this node's filter definition is present on the output table.
         	</option>
+        	<option name="Show Label">
+        		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define an arbitrary label.
+        	</option>
 			<option name="Range Column">
 				Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider. 
 			</option>

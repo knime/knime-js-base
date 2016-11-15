@@ -68,6 +68,7 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
 
     private SliderSettings m_sliderSettings;
     private String m_columnName;
+    private String m_label;
 
     private static final String CFG_TABLE_ID = "tableID";
     private String m_tableId;
@@ -93,6 +94,11 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
     public void setConfig(final RangeSliderFilterConfig config) {
         m_sliderSettings = config.getSliderSettings();
         m_columnName = config.getDomainColumn().getStringValue();
+        if (config.getUseLabel()) {
+            m_label = config.getLabel();
+        } else {
+            m_label = null;
+        }
     }
 
     /**
@@ -108,6 +114,20 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
      */
     public String getColumnName() {
         return m_columnName;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return m_label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(final String label) {
+        m_label = label;
     }
 
     /**
@@ -158,6 +178,11 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        if (m_label != null) {
+            sb.append("label=");
+            sb.append(m_label);
+            sb.append(", ");
+        }
         sb.append("column=");
         sb.append(m_columnName);
         if (m_filterId != null) {
@@ -181,6 +206,7 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
                 .append(m_tableId)
                 .append(m_filterId)
                 .append(m_columnName)
+                .append(m_label)
                 .append(m_sliderSettings)
                 .append(m_disabled)
                 .toHashCode();
@@ -205,6 +231,7 @@ public class RangeSliderFilterRepresentation extends JSONViewContent {
                 .append(m_tableId, other.m_tableId)
                 .append(m_filterId, other.m_filterId)
                 .append(m_columnName, other.m_columnName)
+                .append(m_label, other.m_label)
                 .append(m_sliderSettings, other.m_sliderSettings)
                 .append(m_disabled, other.m_disabled)
                 .isEquals();

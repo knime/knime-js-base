@@ -50,6 +50,9 @@ import java.awt.Insets;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
@@ -74,6 +77,9 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
 
     private final JCheckBox m_hideInWizardCheckbox;
     private final JCheckBox m_deleteOtherFiltersCheckbox;
+    private final JCheckBox m_useLabelCheckbox;
+    private final JCheckBox m_customLabelCheckbox;
+    private final JTextField m_labelTextfield;
 
     /** Constructors, inits fields calls layout routines. */
     RangeSliderFilterNodeDialog() {
@@ -81,6 +87,13 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_sliderUI = new SliderNodeDialogUI(2, false, true);
         m_hideInWizardCheckbox = new JCheckBox("Hide In Wizard");
         m_deleteOtherFiltersCheckbox = new JCheckBox("Delete Existing Filter Definitions");
+        m_useLabelCheckbox = new JCheckBox("Show label");
+        m_customLabelCheckbox = new JCheckBox("Custom");
+        m_labelTextfield = new JTextField(20);
+
+        m_useLabelCheckbox.addChangeListener(getLabelChangeListener());
+        m_customLabelCheckbox.addChangeListener(getLabelChangeListener());
+        m_sliderUI.getDomainColumnSelection().getModel().addChangeListener(getLabelChangeListener());
 
         addTab("Options", createOptions());
         addTab("Slider", m_sliderUI.createSliderPanel());
@@ -99,15 +112,51 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
 
         panel.add(m_hideInWizardCheckbox, gbc);
         gbc.gridx++;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
         panel.add(m_deleteOtherFiltersCheckbox, gbc);
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        panel.add(m_useLabelCheckbox, gbc);
+        gbc.gridx++;
+        panel.add(m_customLabelCheckbox, gbc);
+        gbc.gridx++;
+        gbc.weightx = 1;
+        panel.add(m_labelTextfield, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0;
+        gbc.gridwidth = 3;
         panel.add(m_sliderUI.createRangePanel(), gbc);
         gbc.gridy++;
         panel.add(m_sliderUI.createStartValuePanel(), gbc);
 
         return panel;
+    }
+
+    private ChangeListener getLabelChangeListener() {
+        return new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                updateLabel();
+            }
+        };
+    }
+
+    private void updateLabel() {
+        boolean enableAll = m_useLabelCheckbox.isSelected();
+        boolean enableText = m_customLabelCheckbox.isSelected();
+        m_customLabelCheckbox.setEnabled(enableAll);
+        m_labelTextfield.setEnabled(enableAll && enableText);
+        if (!enableAll) {
+            m_labelTextfield.setText(null);
+        }
+        if (enableAll && !enableText) {
+            String columnName = m_sliderUI.getDomainColumnSelection().getSelected();
+            m_labelTextfield.setText(columnName);
+        }
     }
 
     /**
@@ -119,6 +168,9 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_config.loadSettingsInDialog(settings);
         m_hideInWizardCheckbox.setSelected(m_config.getHideInWizard());
         m_deleteOtherFiltersCheckbox.setSelected(m_config.getDeleteOtherFilters());
+        m_useLabelCheckbox.setSelected(m_config.getUseLabel());
+        m_customLabelCheckbox.setSelected(m_config.getCustomLabel());
+        m_labelTextfield.setText(m_config.getLabel());
         m_sliderUI.getDomainColumnSelection().loadSettingsFrom(settings, specs);
         m_sliderUI.getCustomMinCheckbox().setSelected(m_config.getCustomMin());
         m_sliderUI.getCustomMaxCheckbox().setSelected(m_config.getCustomMax());
@@ -131,6 +183,8 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         }
         SliderSettings sSettings = m_config.getSliderSettings();
         m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
+
+        updateLabel();
     }
 
     /**
@@ -141,6 +195,9 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_config.setHideInWizard(m_hideInWizardCheckbox.isSelected());
         m_config.setDeleteOtherFilters(m_deleteOtherFiltersCheckbox.isSelected());
         m_config.setDomainColumn((SettingsModelString)m_sliderUI.getDomainColumnSelection().getModel());
+        m_config.setUseLabel(m_useLabelCheckbox.isSelected());
+        m_config.setCustomLabel(m_customLabelCheckbox.isSelected());
+        m_config.setLabel(m_labelTextfield.getText());
         m_config.setCustomMin(m_sliderUI.getCustomMinCheckbox().isSelected());
         m_config.setCustomMax(m_sliderUI.getCustomMaxCheckbox().isSelected());
         JCheckBox[] domainExtendCheckboxes = m_sliderUI.getStartDomainExtendsCheckboxes();

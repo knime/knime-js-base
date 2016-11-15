@@ -75,6 +75,17 @@ public class RangeSliderFilterConfig {
 
     private SettingsModelString m_domainColumn = new SettingsModelString(SliderNodeDialogUI.CFG_DOMAIN_COLUMN, null);
 
+    private static final String CFG_USE_LABEL = "useLabel";
+    private static final boolean DEFAULT_USE_LABEL = false;
+    private boolean m_useLabel;
+
+    private static final String CFG_LABEL = "label";
+    private String m_label;
+
+    private static final String CFG_CUSTOM_LABEL = "customLabel";
+    private static final boolean DEFAULT_CUSTOM_LABEL = false;
+    private boolean m_customLabel;
+
     private static final String CFG_CUSTOM_MIN = "customMin";
     private static final boolean DEFAULT_CUSTOM_MIN = false;
     private boolean m_customMin = DEFAULT_CUSTOM_MIN;
@@ -131,6 +142,48 @@ public class RangeSliderFilterConfig {
      */
     public void setDomainColumn(final SettingsModelString domainColumn) {
         m_domainColumn = domainColumn;
+    }
+
+    /**
+     * @return the useLabel
+     */
+    public boolean getUseLabel() {
+        return m_useLabel;
+    }
+
+    /**
+     * @param useLabel the useLabel to set
+     */
+    public void setUseLabel(final boolean useLabel) {
+        m_useLabel = useLabel;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return m_label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(final String label) {
+        m_label = label;
+    }
+
+    /**
+     * @return the customLabel
+     */
+    public boolean getCustomLabel() {
+        return m_customLabel;
+    }
+
+    /**
+     * @param customLabel the customLabel to set
+     */
+    public void setCustomLabel(final boolean customLabel) {
+        m_customLabel = customLabel;
     }
 
     /**
@@ -202,6 +255,9 @@ public class RangeSliderFilterConfig {
             m_sliderSettings.saveToNodeSettings(sliderSettings);
         }
         m_domainColumn.saveSettingsTo(settings);
+        settings.addBoolean(CFG_USE_LABEL, m_useLabel);
+        settings.addString(CFG_LABEL, m_label);
+        settings.addBoolean(CFG_CUSTOM_LABEL, m_customLabel);
         settings.addBoolean(CFG_CUSTOM_MIN, m_customMin);
         settings.addBoolean(CFG_CUSTOM_MAX, m_customMax);
         settings.addBooleanArray(CFG_USE_DOMAIN_EXTENDS, m_useDomainExtends);
@@ -222,6 +278,9 @@ public class RangeSliderFilterConfig {
             m_sliderSettings.loadFromNodeSettings(sliderSettings);
         }
         m_domainColumn.loadSettingsFrom(settings);
+        m_useLabel = settings.getBoolean(CFG_USE_LABEL);
+        m_label = settings.getString(CFG_LABEL);
+        m_customLabel = settings.getBoolean(CFG_CUSTOM_LABEL);
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX);
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS);
@@ -242,6 +301,9 @@ public class RangeSliderFilterConfig {
             m_sliderSettings = new SliderSettings();
             m_sliderSettings.loadFromNodeSettingsInDialog(new NodeSettings(null));
         }
+        m_useLabel = settings.getBoolean(CFG_USE_LABEL, DEFAULT_USE_LABEL);
+        m_label = settings.getString(CFG_LABEL, null);
+        m_customLabel = settings.getBoolean(CFG_CUSTOM_LABEL, DEFAULT_CUSTOM_LABEL);
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN, DEFAULT_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX, DEFAULT_CUSTOM_MAX);
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS, DEFAULT_USE_DOMAIN_EXTENDS);

@@ -61,10 +61,12 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		_value = value;
 		var settings = representation.sliderSettings;
 		
+		var body = document.getElementsByTagName('body')[0];
+		
 		var sliderContainer = document.createElement('div');
 		sliderContainer.setAttribute('class', 'slidercontainer');
 		
-		document.getElementsByTagName('body')[0].appendChild(sliderContainer);
+		body.appendChild(sliderContainer);
 		slider = document.createElement('div');
 		sliderContainer.appendChild(slider);
 		setNumberFormatOptions(settings);
@@ -75,10 +77,10 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 			var pad = document.getElementsByClassName('noUi-handle')[0].offsetHeight / 2 + 'px';
 			sliderContainer.style.paddingTop = sliderContainer.style.paddingBottom = pad;
 		}
+		var maxTipWidth = 0;
+		var maxTipHeight = 0;
 		if (settings.tooltips && settings.tooltips.length > 0) {
 			var tips = document.getElementsByClassName('noUi-tooltip');
-			var maxTipWidth = 0;
-			var maxTipHeight = 0;
 			for (var i = 0; i < tips.length; i++) {
 				var tipStyle = getComputedStyle(tips[i]);
 				var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
@@ -96,16 +98,17 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 				sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
 			}
 		}
+		var maxLabelWidth = 0;
 		if (settings.pips && settings.pips.mode) {
+			var testElem = [document.getElementsByClassName('noUi-value')[0]];
+			testElem.push(Array.prototype.slice.call(document.getElementsByClassName('noUi-value'), -1)[0]);
+			maxLabelWidth = Math.max(testElem[0].offsetWidth, testElem[1].offsetWidth);
 			if (settings.orientation == 'vertical') {
 				//TODO: right-padding?
 			} else {
-				sliderContainer.style.paddingBottom = "50px";
+				sliderContainer.style.paddingBottom = "40px";
 				//select first element
-				var testElem = [document.getElementsByClassName('noUi-value')[0]];
-				testElem.push(Array.prototype.slice.call(document.getElementsByClassName('noUi-value'), -1)[0]);
-				var testElemWidth = Math.max(testElem[0].offsetWidth, testElem[1].offsetWidth);
-				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), testElemWidth/2) + 'px';
+				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxLabelWidth / 2) + 'px';
 				sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
 			}
 		}
@@ -126,6 +129,29 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 					knimeService.addToFilter(representation.tableId, _value.filter)
 				});
 			}
+		}
+		
+		if (typeof representation.label == 'string' && '' != representation.label) {
+			var label = document.createElement('div');
+			label.setAttribute('class', 'label');
+			if (settings.orientation == 'vertical') {
+				label.setAttribute('class', label.getAttribute('class') + ' vertical');
+				label.style.width = '500px';
+				var sliderStyle = getComputedStyle(sliderContainer);
+				var sliderPadding = parseFloat(sliderStyle.paddingLeft);
+				var connectWidth = getComputedStyle(document.getElementsByClassName('noUi-target')[0]).width;
+				var pipsWidth = 0;
+				if (settings.pips && settings.pips.mode) {
+					var pipsStyle = getComputedStyle(document.getElementsByClassName('noUi-pips')[0]);
+					pipsWidth = parseFloat(pipsStyle.paddingLeft) + parseFloat(pipsStyle.paddingRight);
+				}
+				var sliderWidth = sliderPadding + parseFloat(connectWidth) + pipsWidth + maxLabelWidth;
+				label.style.marginLeft = sliderWidth + 'px';
+				label.style.paddingLeft = sliderStyle.paddingTop;
+				label.style.paddingRight = sliderStyle.paddingBottom;
+			}
+			label.appendChild(document.createTextNode(representation.label));
+			body.appendChild(label);
 		}
 	};
 	
