@@ -14,5 +14,11 @@
          </webResource>
       </webResourceBundle>
    </extension>
+   <extension
+         point="org.knime.testing.TestcaseCollector">
+      <TestcaseCollector
+            TestcaseCollector="org.knime.js.testing.JSTestcaseCollector">
+      </TestcaseCollector>
+   </extension>
 
 </plugin>
