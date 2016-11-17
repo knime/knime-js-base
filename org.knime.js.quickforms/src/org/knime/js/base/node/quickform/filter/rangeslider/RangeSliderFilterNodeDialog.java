@@ -63,6 +63,8 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.core.settings.slider.SliderNodeDialogUI;
+import org.knime.js.core.settings.slider.SliderPipsSettings;
+import org.knime.js.core.settings.slider.SliderPipsSettings.PipMode;
 import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
@@ -171,6 +173,15 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_useLabelCheckbox.setSelected(m_config.getUseLabel());
         m_customLabelCheckbox.setSelected(m_config.getCustomLabel());
         m_labelTextfield.setText(m_config.getLabel());
+        SliderSettings sSettings = m_config.getSliderSettings();
+        if (m_config.getDomainColumn().getStringValue() == null) {
+            sSettings.setTooltips(new Object[]{true, true});
+            SliderPipsSettings defaultPips = new SliderPipsSettings();
+            defaultPips.setMode(PipMode.RANGE);
+            defaultPips.setDensity(3);
+            sSettings.setPips(defaultPips);
+        }
+        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
         m_sliderUI.getDomainColumnSelection().loadSettingsFrom(settings, specs);
         m_sliderUI.getCustomMinCheckbox().setSelected(m_config.getCustomMin());
         m_sliderUI.getCustomMaxCheckbox().setSelected(m_config.getCustomMax());
@@ -181,8 +192,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         for (int i = 0; i < domainExtendCheckboxes.length; i++) {
             domainExtendCheckboxes[i].setSelected(m_config.getUseDomainExtends()[i]);
         }
-        SliderSettings sSettings = m_config.getSliderSettings();
-        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
 
         updateLabel();
     }
@@ -208,6 +217,7 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_config.setUseDomainExtends(useDomainExtends);
         SliderSettings sSettings = new SliderSettings();
         m_sliderUI.saveSettings(sSettings);
+        sSettings.setBehaviour("drag-tap");
         sSettings.validateSettings();
         m_config.setSliderSettings(sSettings);
         m_config.saveSettings(settings);
