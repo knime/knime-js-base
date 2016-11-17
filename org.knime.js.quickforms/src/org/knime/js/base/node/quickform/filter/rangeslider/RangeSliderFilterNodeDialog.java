@@ -173,15 +173,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_useLabelCheckbox.setSelected(m_config.getUseLabel());
         m_customLabelCheckbox.setSelected(m_config.getCustomLabel());
         m_labelTextfield.setText(m_config.getLabel());
-        SliderSettings sSettings = m_config.getSliderSettings();
-        if (m_config.getDomainColumn().getStringValue() == null) {
-            sSettings.setTooltips(new Object[]{true, true});
-            SliderPipsSettings defaultPips = new SliderPipsSettings();
-            defaultPips.setMode(PipMode.RANGE);
-            defaultPips.setDensity(3);
-            sSettings.setPips(defaultPips);
-        }
-        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
         m_sliderUI.getDomainColumnSelection().loadSettingsFrom(settings, specs);
         m_sliderUI.getCustomMinCheckbox().setSelected(m_config.getCustomMin());
         m_sliderUI.getCustomMaxCheckbox().setSelected(m_config.getCustomMax());
@@ -192,6 +183,15 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         for (int i = 0; i < domainExtendCheckboxes.length; i++) {
             domainExtendCheckboxes[i].setSelected(m_config.getUseDomainExtends()[i]);
         }
+        SliderSettings sSettings = m_config.getSliderSettings();
+        if (m_config.getDomainColumn().getStringValue() == null) {
+            sSettings.setTooltips(new Object[]{true, true});
+            SliderPipsSettings defaultPips = new SliderPipsSettings();
+            defaultPips.setMode(PipMode.RANGE);
+            defaultPips.setDensity(3);
+            sSettings.setPips(defaultPips);
+        }
+        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
 
         updateLabel();
     }
