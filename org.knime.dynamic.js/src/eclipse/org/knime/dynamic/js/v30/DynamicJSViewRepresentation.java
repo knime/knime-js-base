@@ -292,7 +292,6 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         }
 	}
 
-	@SuppressWarnings("unchecked")
     static void saveMap(final NodeSettingsWO settings, final Map<String, ?> map, final boolean objectMap) {
 		settings.addInt(NUM_SETTINGS, map.size());
 		String mapClass = objectMap ? "object" : "string";
@@ -300,41 +299,54 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		int i = 0;
 		for (Entry<String, ?> entry : map.entrySet()) {
 			settings.addString("key_" + i, entry.getKey());
-			Object value = entry.getValue();
-			String valueKey = "value_" + i;
-			if (value == null) {
-			    settings.addString("class_" + i, String.class.getName());
-			    settings.addString(valueKey, null);
-			    continue;
-			}
-			settings.addString("class_" + i, value.getClass().getName());
-			//TODO: add possible other types
-			if (value instanceof Boolean) {
-				settings.addBoolean(valueKey, (Boolean)value);
-			} else if (value instanceof Integer) {
-				settings.addInt(valueKey, (Integer)value);
-			} else if (value instanceof Double) {
-				settings.addDouble(valueKey, (Double)value);
-			} else if (value instanceof String){
-				settings.addString(valueKey, (String)value);
-			} else if (value instanceof String[]) {
-			    settings.addStringArray(valueKey, (String[])value);
-			} else if (value instanceof Date) {
-			    settings.addLong(valueKey, ((Date)value).getTime());
-			} else if (value instanceof JSONDataTable) {
-			    ((JSONDataTable)value).saveJSONToNodeSettings(settings.addNodeSettings(valueKey));
-			} else if (value instanceof JSONSVGOptions) {
-			    ((JSONSVGOptions)value).saveToNodeSettings(settings.addNodeSettings(valueKey));
-			} else if (value instanceof Map<?,?>) {
-			    saveMap(settings.addNodeSettings(valueKey), (Map<String, ?>)value, true);
-			} else {
-				settings.addString(valueKey, value.toString());
-			}
+			saveCollectionValue(settings, entry.getValue(), i);
 			i++;
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+    static void saveList(final NodeSettingsWO settings, final List<?> list) {
+        settings.addInt(NUM_SETTINGS, list.size());
+        for (int i = 0; i < list.size(); i++) {
+            saveCollectionValue(settings, list.get(i), i);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void saveCollectionValue(final NodeSettingsWO settings, final Object value, final Integer index) {
+        String valueKey = "value_" + index;
+        if (value == null) {
+            settings.addString("class_" + index, String.class.getName());
+            settings.addString(valueKey, null);
+            return;
+        }
+        settings.addString("class_" + index, value.getClass().getName());
+        //TODO: add possible other types
+        if (value instanceof Boolean) {
+            settings.addBoolean(valueKey, (Boolean)value);
+        } else if (value instanceof Integer) {
+            settings.addInt(valueKey, (Integer)value);
+        } else if (value instanceof Double) {
+            settings.addDouble(valueKey, (Double)value);
+        } else if (value instanceof String){
+            settings.addString(valueKey, (String)value);
+        } else if (value instanceof String[]) {
+            settings.addStringArray(valueKey, (String[])value);
+        } else if (value instanceof Date) {
+            settings.addLong(valueKey, ((Date)value).getTime());
+        } else if (value instanceof JSONDataTable) {
+            ((JSONDataTable)value).saveJSONToNodeSettings(settings.addNodeSettings(valueKey));
+        } else if (value instanceof JSONSVGOptions) {
+            ((JSONSVGOptions)value).saveToNodeSettings(settings.addNodeSettings(valueKey));
+        } else if (value instanceof List<?>) {
+            saveList(settings.addNodeSettings(valueKey), (List<?>)value);
+        } else if (value instanceof Map<?,?>) {
+            saveMap(settings.addNodeSettings(valueKey), (Map<String, ?>)value, true);
+        } else {
+            settings.addString(valueKey, value.toString());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
 	@Override
 	public void loadFromNodeSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
@@ -398,35 +410,60 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		}
 		for (int i = 0; i < numSettings; i++) {
 			String key = settings.getString("key_" + i);
-			String clazz = settings.getString("class_" + i);
-			Object value;
-			String valueKey = "value_" + i;
-			if (Boolean.class.getName().equals(clazz)) {
-				value = settings.getBoolean(valueKey);
-			} else if (Integer.class.getName().equals(clazz)) {
-				value = settings.getInt(valueKey);
-			} else if (Double.class.getName().equals(clazz)) {
-				value = settings.getDouble(valueKey);
-			} else if (String.class.getName().equals(clazz)) {
-				value = settings.getString(valueKey);
-			} else if (String[].class.getName().equals(clazz)) {
-			    value = settings.getStringArray(valueKey);
-			} else if (Date.class.getName().equals(clazz)) {
-			    Date d = new Date();
-			    d.setTime(settings.getLong(valueKey));
-			    value = d;
-			} else if (JSONDataTable.class.getName().equals(clazz)) {
-			    value = JSONDataTable.loadFromNodeSettings(settings.getNodeSettings(valueKey));
-			} else if (JSONSVGOptions.class.getName().equals(clazz)) {
-			    value = JSONSVGOptions.loadFromNodeSettings(settings.getNodeSettings(valueKey));
-			} else if (Map.class.getName().equals(clazz)) {
-			    value = loadMap(settings.getNodeSettings(valueKey));
-			} else {
-				throw new InvalidSettingsException("Unsupported map type: " + clazz);
-			}
+			Object value = loadCollectionValue(settings, i);
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+    static ArrayList<?> loadList(final NodeSettingsRO settings) throws InvalidSettingsException {
+	    int numSettings = settings.getInt(NUM_SETTINGS);
+        ArrayList list = new ArrayList();
+        for (int i = 0; i < numSettings; i++) {
+            Object value = loadCollectionValue(settings, i);
+            list.add(value);
+        }
+        return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+    static Object loadCollectionValue(final NodeSettingsRO settings, final int index) throws InvalidSettingsException {
+	    Object value = null;
+	    String classString = settings.getString("class_" + index);
+	    Class clazz;
+        try {
+            clazz = Class.forName(classString);
+        } catch (ClassNotFoundException e) {
+            throw new InvalidSettingsException("Could not find class for name: " + classString);
+        }
+        String valueKey = "value_" + index;
+        if (Boolean.class.equals(clazz)) {
+            value = settings.getBoolean(valueKey);
+        } else if (Integer.class.equals(clazz)) {
+            value = settings.getInt(valueKey);
+        } else if (Double.class.equals(clazz)) {
+            value = settings.getDouble(valueKey);
+        } else if (String.class.equals(clazz)) {
+            value = settings.getString(valueKey);
+        } else if (String[].class.equals(clazz)) {
+            value = settings.getStringArray(valueKey);
+        } else if (Date.class.equals(clazz)) {
+            Date d = new Date();
+            d.setTime(settings.getLong(valueKey));
+            value = d;
+        } else if (JSONDataTable.class.equals(clazz)) {
+            value = JSONDataTable.loadFromNodeSettings(settings.getNodeSettings(valueKey));
+        } else if (JSONSVGOptions.class.equals(clazz)) {
+            value = JSONSVGOptions.loadFromNodeSettings(settings.getNodeSettings(valueKey));
+        } else if (List.class.isAssignableFrom(clazz)) {
+            value = loadList(settings.getNodeSettings(valueKey));
+	    } else if (Map.class.isAssignableFrom(clazz)) {
+            value = loadMap(settings.getNodeSettings(valueKey));
+        } else {
+            throw new InvalidSettingsException("Unsupported map type: " + clazz);
+        }
+        return value;
 	}
 
     /**
