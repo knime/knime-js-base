@@ -550,6 +550,9 @@ knime_paged_table = function() {
 		allCheckboxes.each(function() {
 			this.checked = selection[this.getAttribute('value')];
 		});
+		_value.selectAllIndeterminate = false;
+		_value.selectAll = false;
+		$('#checkbox-select-all').get(0).checked = false;
 		if (hideUnselected) {
 			dataTable.draw();
 		}
