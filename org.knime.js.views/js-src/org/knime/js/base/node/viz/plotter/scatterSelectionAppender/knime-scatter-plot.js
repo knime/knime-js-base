@@ -44,7 +44,6 @@ knime_scatter_plot_selection_appender = function() {
 	var chartManager = null;
 	var containerID = "scatterContainer";
 	var initialAxisBounds;
-	var publishSelection = false;
 	
 	var minWidth = 400;
 	var minHeight = 300;
@@ -159,9 +158,7 @@ knime_scatter_plot_selection_appender = function() {
 		// Since their structure model is different, we need to do a conversion
 		if (_value.selection) {
 			for (var rowKeyInd = 0; rowKeyInd < _value.selection.length; rowKeyInd++) {
-				// "series 1" is a default name for series
-				// the last argument is taking row index from its key. For some internal reason, the row index must be converted to a string 
-				dataset.select("selection", "series 1", String(_keyedDataset.rowIndex(_value.selection[rowKeyInd])));
+				select(dataset, getRowIndex(_value.selection[rowKeyInd]));
 			}
 		}
 		
@@ -328,11 +325,7 @@ knime_scatter_plot_selection_appender = function() {
         win.onresize = resize;
         
         if (knimeService && knimeService.isInteractivityAvailable()) {
-        	chartManager.getChart().getPlot().addListener(function() {
-        		if (_value.publishSelection) {
-        			knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection());
-        		}
-        	});
+        	chartManager.getChart().getPlot().addListener(publishSelection);        	
 		}
         
 		initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
@@ -532,7 +525,7 @@ knime_scatter_plot_selection_appender = function() {
 				});
 				knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
 				
-				/*var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+				var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
 				var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
 					if (this.checked) {
 						knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
@@ -543,7 +536,7 @@ knime_scatter_plot_selection_appender = function() {
 				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
 				if (_value.subscribeSelection) {
 					knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
-				}*/
+				}
 	    	}
 	    	/*var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
 			var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
@@ -558,8 +551,106 @@ knime_scatter_plot_selection_appender = function() {
 	};
 	
 	selectionChanged = function(data) {
-		//TODO: implement
+		var dataset = chartManager.getChart().getPlot().getDataset();
+		var removedIds = [];  // ids of the points which were unselected (removed from selection)
+		var addedIds = [];    // ids of the points which were selected (added to selection)
+
+		if (data.changeSet) {
+			// if changeSet is presented, we do only an incremental update
+			if (data.changeSet.removed) {
+				for (var i = 0; i < data.changeSet.removed.length; i++) {
+					var removedId = getRowIndex(data.changeSet.removed[i]);
+					unselect(dataset, removedId);
+					removedIds.push(removedId);
+				}
+			}
+			if (data.changeSet.added) {
+				for (var i = 0; i < data.changeSet.added.length; i++) {
+					var addedId = getRowIndex(data.changeSet.added[i]);
+					select(dataset, addedId);
+					addedIds.push(addedId);
+				}
+			}
+		} else {
+			// if no changeSet is presented, we will need to compare the old and the new selections and 
+			// extract added and removed points from this comparison	
+			// Old selection comes from dataset. New selection comes from data. Their structure is different.
+			
+			var newSelection = []; // row indices from the new selection
+			if (data.elements) {
+				// iterate over the new selected points and add them to newSelection
+				for (var elId = 0; elId < data.elements.length; elId++) {
+					var element = data.elements[elId];
+					if (!element.rows) {
+						continue;
+					}
+					for (var rId = 0; rId < element.rows.length; rId++) {
+						newSelection.push(getRowIndex(element.rows[rId]));						
+					}
+				}				
+			}
+			
+			var oldSelectionObject = dataset.selections;
+			var oldSelectionItems = []; // selected items from the old selection
+			var oldSelection = []; // row indices from the old selection == item keys of the selected items
+			if (oldSelectionObject) {
+				// search for the correct selection (with id == "selection) and getting its items
+				for (var i = 0; i < oldSelectionObject.length; i++) {
+					if (oldSelectionObject[i] && "selection" == oldSelectionObject[i].id && oldSelectionObject[i].items) {
+						oldSelectionItems = oldSelectionObject[i].items;
+						break;
+					}
+				}		
+				// for each item we need to have its key, so we fill it here
+				for (var i = 0; i < oldSelectionItems.length; i++) {
+					oldSelection.push(oldSelectionItems[i].itemKey);	
+					// at the same time, if an item from the oldSelection is not presented in the newSelection, then it was unselected => removed
+					if (newSelection.indexOf(oldSelectionItems[i].itemKey) == -1) {
+						removedIds.push(oldSelectionItems[i].itemKey);
+					}					
+				}
+			}			
+			
+			// clear current selection
+			dataset.clearSelection("selection", false);
+			
+			// select everything from the newSelection
+			for (var i = 0; i < newSelection.length; i++) {
+				select(dataset, newSelection[i]);
+				// at the same time, if an item from the newSelection is not presented in the oldSelection, then it was selected => added
+				if (oldSelection.indexOf(newSelection[i]) == -1) {
+					addedIds.push(newSelection[i]);
+				}
+			}
+		}
+		
+		// Iterating over all the circles (they represent the points),
+		// checking, if they were added or removed (by constructing "ref" attribute), 
+		// and if so we change their outlook:
+		//   - for removed we reduce the radius by 2
+		//   - for added we double the radius
+		// all of this simulates the correct selection outlook without a total plot redraw
+		var circles = d3.selectAll('circle')
+			.each(function() {
+				var refStr = this.getAttribute('ref');
+				for (var i = 0; i < removedIds.length; i++) {
+					if (refStr == '["series 1","' + removedIds[i] + '"]') {
+						this.setAttribute('r', this.getAttribute('r') / 2);						
+					}				
+				}
+				for (var i = 0; i < addedIds.length; i++) {
+					if (refStr == '["series 1","' + addedIds[i] + '"]') {
+						this.setAttribute('r', this.getAttribute('r') * 2);						
+					}				
+				}
+			});
 	}
+	
+	publishSelection = function() {
+		if (_value.publishSelection) {
+			knimeService.setSelectedRows(_representation.keyedDataset.id, getSelection(), selectionChanged);
+		}
+	};
 	
 	getSelection = function() {
 		var selections = chartManager.getChart().getPlot().getDataset().selections;
@@ -579,6 +670,45 @@ knime_scatter_plot_selection_appender = function() {
 		}
 		return selectionIDs;
 	};
+	
+	/**
+	 * Select the point by its row index in the given dataset without notifying the listeners,
+	 * which means the point is only added to the selection object, but not visually redrawn
+	 * 
+	 * @param {jsfc.XYDataset} dataset  the dataset in which to select the point
+	 * @param {!string} rowIndex  the row index
+	 * @returns {undefined}
+	 */
+	select = function(dataset, rowIndex) {		
+		// "selection" is a default id for the selection
+		// "series 1" is a default name for series		 
+		dataset.select("selection", "series 1", rowIndex, false);
+	}
+	
+	/**
+	 * Unselect the point by its row index in the given dataset without notifying the listeners,
+	 * which means the point is only removed from the selection object, but not visually redrawn
+	 * 
+	 * @param {jsfc.XYDataset} dataset  the dataset in which to unselect the point
+	 * @param {!string} rowIndex  the row index
+	 * @returns {undefined}
+	 */
+	unselect = function(dataset, rowIndex) {		
+		// "selection" is a default id for the selection
+		// "series 1" is a default name for series		 
+		dataset.unselect("selection", "series 1", rowIndex, false);
+	}
+	
+	/**
+	 * Getting the row index in dataset based on the provided row key.
+	 * For some internal reason, the row index must be converted to a string
+	 * 
+	 * @param {!string} rowKey  the row key
+	 * @returns {!string} the row index
+	 */
+	getRowIndex = function(rowKey) {
+		return String(_keyedDataset.rowIndex(rowKey));
+	}
 	
 	view.validate = function() {
 		return true;
