@@ -65,7 +65,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		var messageNotFound = 'File upload not available. Native component not found.';
 		var messageNotStandalone = 'File upload not available in standalone mode.';
 		m_component = insertNativeComponent(representation, messageNotFound, messageNotStandalone);
-		m_component.attr("aria-label", representation.label);
+		m_component.setAttribute("aria-label", representation.label);
 		
 		//add error field
 		m_errorDiv = document.createElement('div');
@@ -74,7 +74,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		m_errorDiv.style.fontStyle = 'italic';
 		m_errorDiv.style.fontSize = '75%';
 		m_errorDiv.style.marginTop = '1em';
-		m_errorDiv.attr("role", "alert");
+		m_errorDiv.setAttribute("role", "alert");
 		m_errorDiv.appendChild(document.createTextNode(''));
 		document.getElementsByTagName('body')[0].appendChild(m_errorDiv);
 
