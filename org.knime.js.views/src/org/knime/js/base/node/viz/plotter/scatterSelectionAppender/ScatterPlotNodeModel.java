@@ -318,11 +318,11 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
         JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
-            if (tableSpec.getColTypes()[col].equals(JSTypes.STRING.getName())
+            if (tableSpec.getColTypes()[col].equals(JSTypes.STRING)
                 && tableSpec.getPossibleValues().get(col) != null) {
                 dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
             }
-            if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME.getName())) {
+            if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
                 dataset.setDateTimeFormat(m_config.getDateFormat(), col);
             }
         }

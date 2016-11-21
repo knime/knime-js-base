@@ -335,11 +335,11 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             if (colColor != null) {
                 dataset.setColumnColor(colColor, col);
             }
-            if (tableSpec.getColTypes()[col].equals(JSTypes.STRING.getName())
+            if (tableSpec.getColTypes()[col].equals(JSTypes.STRING)
                 && tableSpec.getPossibleValues().get(col) != null) {
                 dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
             }
-            if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME.getName())) {
+            if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
                 dataset.setDateTimeFormat(m_config.getDateFormat(), col);
             }
         }

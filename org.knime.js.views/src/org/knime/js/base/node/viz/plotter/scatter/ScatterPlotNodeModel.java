@@ -84,6 +84,7 @@ import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.JSONDataTableRow;
 import org.knime.js.core.JSONDataTableSpec;
+import org.knime.js.core.JSONDataTableSpec.JSTypes;
 import org.knime.js.core.JavaScriptViewCreator;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.datasets.JSONKeyedValuesRow;
@@ -183,7 +184,7 @@ final class ScatterPlotNodeModel extends NodeModel implements
                 JSONKeyedValues2DDataset dataset =
                     new JSONKeyedValues2DDataset(tableId, tableSpec.getColNames(), rowValues);
                 for (int col = 0; col < tableSpec.getNumColumns(); col++) {
-                    if (tableSpec.getColTypes()[col] == "string"
+                    if (tableSpec.getColTypes()[col].equals(JSTypes.STRING)
                         && tableSpec.getPossibleValues().get(col) != null) {
                         dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
                     }
