@@ -71,7 +71,7 @@ org_knime_js_base_node_output_filedownload = function() {
 			var href = link.getAttribute('href');
 			link.onclick = function(){
 				var xhr = new XMLHttpRequest();
-				xhr.open('GET', 'blob:' + href, true);
+				xhr.open('GET', href, true);
 				xhr.responseType = 'blob';
 				xhr.onload = function(e) {
 				  if (this.status == 200) {
