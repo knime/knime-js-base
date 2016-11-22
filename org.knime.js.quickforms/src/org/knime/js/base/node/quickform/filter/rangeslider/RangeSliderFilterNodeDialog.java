@@ -184,14 +184,15 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
             domainExtendCheckboxes[i].setSelected(m_config.getUseDomainExtends()[i]);
         }
         SliderSettings sSettings = m_config.getSliderSettings();
-        if (m_config.getDomainColumn().getStringValue() == null) {
+        boolean unconfigured = m_config.getDomainColumn().getStringValue() == null;
+        if (unconfigured) {
             sSettings.setTooltips(new Object[]{true, true});
             SliderPipsSettings defaultPips = new SliderPipsSettings();
             defaultPips.setMode(PipMode.RANGE);
             defaultPips.setDensity(3);
             sSettings.setPips(defaultPips);
         }
-        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0]);
+        m_sliderUI.loadSettingsFrom(sSettings, (DataTableSpec)specs[0], unconfigured);
 
         updateLabel();
     }

@@ -301,6 +301,7 @@ public class RangeSliderFilterConfig {
             m_sliderSettings = new SliderSettings();
             m_sliderSettings.loadFromNodeSettingsInDialog(new NodeSettings(null));
         }
+        m_domainColumn.setStringValue(settings.getString(SliderNodeDialogUI.CFG_DOMAIN_COLUMN, null));
         m_useLabel = settings.getBoolean(CFG_USE_LABEL, DEFAULT_USE_LABEL);
         m_label = settings.getString(CFG_LABEL, null);
         m_customLabel = settings.getBoolean(CFG_CUSTOM_LABEL, DEFAULT_CUSTOM_LABEL);
