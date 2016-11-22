@@ -73,7 +73,8 @@ public class FileDownloadConfig extends LabeledViewConfig {
     private String m_flowVariable = DEFAULT_FLOW_VARIABLE;
 
     private static final String CFG_RESOURCE_NAME = "resourceName";
-    private String m_resourceName = "";
+    private static final String DEFAULT_RESOURCE_NAME = "file-download";
+    private String m_resourceName = DEFAULT_RESOURCE_NAME;
 
     /**
      * @return the linkTitle
@@ -110,9 +111,9 @@ public class FileDownloadConfig extends LabeledViewConfig {
      * @throws InvalidSettingsException if the name in invalid
      */
     public void setResourceName(final String name) throws InvalidSettingsException {
-        CheckUtils.checkSetting(StringUtils.isNotEmpty(name), "parameter name must not be null or empty");
+        CheckUtils.checkSetting(StringUtils.isNotEmpty(name), "resource name must not be null or empty");
         CheckUtils.checkSetting(DialogNode.PARAMETER_NAME_PATTERN.matcher(name).matches(),
-            "Parameter doesn't match pattern - must start with character, followed by other characters, digits, "
+            "Resource parameter doesn't match pattern - must start with character, followed by other characters, digits, "
             + "or single dashes or underscores:\n  Input: %s\n  Pattern: %s",
             name, DialogNode.PARAMETER_NAME_PATTERN.pattern());
         m_resourceName = name;
@@ -147,7 +148,7 @@ public class FileDownloadConfig extends LabeledViewConfig {
         m_linkTitle = settings.getString(CFG_LINK_TITLE);
         m_flowVariable = settings.getString(CFG_FLOW_VARIABLE);
         // new in 2.12
-        m_resourceName = settings.getString(CFG_RESOURCE_NAME, "file-download");
+        m_resourceName = settings.getString(CFG_RESOURCE_NAME, DEFAULT_RESOURCE_NAME);
     }
 
     /**
@@ -158,7 +159,7 @@ public class FileDownloadConfig extends LabeledViewConfig {
         super.loadSettingsInDialog(settings);
         m_linkTitle = settings.getString(CFG_LINK_TITLE, DEFAULT_LINK_TITLE);
         m_flowVariable = settings.getString(CFG_FLOW_VARIABLE, DEFAULT_FLOW_VARIABLE);
-        m_resourceName = settings.getString(CFG_RESOURCE_NAME, "");
+        m_resourceName = settings.getString(CFG_RESOURCE_NAME, DEFAULT_RESOURCE_NAME);
     }
 
     /**

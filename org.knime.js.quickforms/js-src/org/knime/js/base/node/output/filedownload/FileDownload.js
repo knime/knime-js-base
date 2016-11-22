@@ -66,23 +66,12 @@ org_knime_js_base_node_output_filedownload = function() {
 		//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
 		link.setAttribute('download', '');
 		
-		// IE10+ : (has Blob, but not a[download] or URL), forcing download in IE < 10 does not work
-		if (navigator.msSaveBlob) { 
-			var href = link.getAttribute('href');
-			link.onclick = function(){
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', href, true);
-				xhr.responseType = 'blob';
-				xhr.onload = function(e) {
-				  if (this.status == 200) {
-					  var fileName = href.substring(href.lastIndexOf('/') + 1);
-					  navigator.msSaveBlob(this.response, fileName);
-				  }
-				};
-				xhr.send();
-		        return false;
-		    };
-		}
+		// for IE just open in new tab
+		var ua = window.navigator.userAgent;
+	    var msie = ua.indexOf("MSIE ");
+	    if (msie > -1 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+	    	link.setAttribute("target", "_blank");
+	    }
 		
 		resizeParent();
 		viewValid = true;
