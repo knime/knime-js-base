@@ -325,7 +325,8 @@ knime_scatter_plot_selection_appender = function() {
         win.onresize = resize;
         
         if (knimeService && knimeService.isInteractivityAvailable()) {
-        	chartManager.getChart().getPlot().addListener(publishSelection);        	
+        	plot.addListener(publishSelection);        
+        	plot.addListener(applyFilter);
 		}
         
 		initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
@@ -555,15 +556,26 @@ knime_scatter_plot_selection_appender = function() {
 					knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
 				}
 	    	}
-	    	/*var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
-			var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
-				if (this.checked) {
-					//knimeService.subscribeFilter
-				} else {
-					//knimeService.unsubscribeFilter
+	    	
+	    	if (_representation.subscriptionFilterIds && _representation.subscriptionFilterIds.length > 0) {
+				if (_representation.enableSelection) {
+					knimeService.addMenuDivider();
+				}				
+				var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+				var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
+					if (this.checked) {
+						knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
+					} else {
+						knimeService.unsubscribeFilter(_representation.keyedDataset.id, filterChanged);
+					}
+				});
+				knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
+				if (_value.subscribeFilter) {
+					knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
 				}
-			});
-			knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);*/
+			}
+	    	
+	    	pre = true;
 	    }
 	};
 	
@@ -607,7 +619,6 @@ knime_scatter_plot_selection_appender = function() {
 				}				
 			}
 			
-			var oldSelectionObject = dataset.selections;
 			var oldSelectionItems = []; // selected items from the old selection
 			var oldSelection = []; // row indices from the old selection == item keys of the selected items
 			if (oldSelectionObject) {
@@ -652,12 +663,14 @@ knime_scatter_plot_selection_appender = function() {
 				var refStr = this.getAttribute('ref');
 				for (var i = 0; i < removedIds.length; i++) {
 					if (refStr == '["series 1","' + removedIds[i] + '"]') {
-						this.setAttribute('r', this.getAttribute('r') / 2);						
+						this.setAttribute('r', this.getAttribute('r') / 2);	
+						return;
 					}				
 				}
 				for (var i = 0; i < addedIds.length; i++) {
 					if (refStr == '["series 1","' + addedIds[i] + '"]') {
-						this.setAttribute('r', this.getAttribute('r') * 2);						
+						this.setAttribute('r', this.getAttribute('r') * 2);
+						return;
 					}				
 				}
 			});
@@ -725,6 +738,127 @@ knime_scatter_plot_selection_appender = function() {
 	 */
 	getRowIndex = function(rowKey) {
 		return String(_keyedDataset.rowIndex(rowKey));
+	}
+	
+	filterChanged = function(data) {
+		var filter = data;
+		var rows = _keyedDataset.data.rows;
+		var dataset = chartManager.getChart().getPlot().getDataset();
+		var showIds = [];
+		var hideIds = [];
+		
+		dataset.clearSelection("filtered", false);
+		
+		for (var i = 0; i < rows.length; i++) {
+			if (isRowIncludedInFilter(rows[i], filter)) {
+				// displaying the point
+				dataset.unselect("filtered", "series 1", String(i), false);
+				showIds.push(i);
+			} else {				
+				// hiding the point
+				dataset.select("filtered", "series 1", String(i), false);
+				hideIds.push(i);
+			}
+		}
+		
+		var circles = d3.selectAll('circle')
+			.classed('filtered', function() {
+				var refStr = this.getAttribute('ref');
+				for (var i = 0; i < showIds.length; i++) {
+					if (refStr == '["series 1","' + showIds[i] + '"]') {						
+						return false;						
+					}				
+				}
+				for (var i = 0; i < hideIds.length; i++) {
+					if (refStr == '["series 1","' + hideIds[i] + '"]') {
+						return true;						
+					}				
+				}
+				return false;
+			});
+	}
+	
+	isRowIncludedInFilter = function(row, filter) {
+		if (filter && filter.elements) {
+			var included = true;
+			//var row = _keyedDataset.data.rows[rowIndex];
+			for (var i = 0; i < filter.elements.length; i++) {
+				var filterElement = filter.elements[i];
+				if (filterElement.type == "range" && filterElement.columns) {
+					for (var col = 0; col < filterElement.columns.length; col++) {
+						var column = filterElement.columns[col];
+						var columnIndex = _keyedDataset.data.columnKeys.indexOf(column.columnName);
+						if (columnIndex > -1) {
+							var rowValue = row.values[columnIndex];
+							if (column.type = "numeric") {
+								if (column.minimumInclusive) {
+									included &= (rowValue >= column.minimum);
+								} else {
+									included &= (rowValue > column.minimum);
+								}
+								if (column.maximumInclusive) {
+									included &= (rowValue <= column.maximum);
+								} else {
+									included &= (rowValue < column.maximum);
+								}
+							} else if (column.type = "nominal") {
+								included &= (column.values.indexOf(rowValue) >= 0);
+							}
+						}
+					}
+				} else {
+					// TODO row filter - currently not possible
+				}
+			}
+			return included;
+		}
+		return true;
+	}
+	
+	applyFilter = function() {
+		var dataset = chartManager.getChart().getPlot().getDataset();
+		var selections = dataset.selections;
+		var filteredItems;
+		var selectedItems;
+		
+		for (var i = 0; i < selections.length; i++) {
+			if (selections[i] && "filtered" == selections[i].id && selections[i].items) {
+				filteredItems = selections[i].items;				
+			} else if (selections[i] && "selection" == selections[i].id && selections[i].items) {
+				selectedItems = selections[i].items;				
+			}
+		}		
+		
+		var circles = d3.selectAll('circle')
+			.classed('filtered', function() {
+				if (!filteredItems || filteredItems.length == 0) {
+					return false;
+				}
+				
+				var refStr = this.getAttribute('ref');
+				for (var i = 0; i < filteredItems.length; i++) {
+					if (refStr == '["series 1","' + filteredItems[i].itemKey + '"]') {						
+						return true;
+					}				
+				}
+				return false;
+			})
+			.classed('hidden', function() {
+				if (!_value.showSelectedOnly) {
+					return false;
+				}
+				if (!selectedItems || selectedItems.length == 0) {
+					return true;
+				}
+				
+				var refStr = this.getAttribute('ref');
+				for (var i = 0; i < selectedItems.length; i++) {
+					if (refStr == '["series 1","' + selectedItems[i].itemKey + '"]') {						
+						return false;
+					}				
+				}
+				return true;	
+			});
 	}
 	
 	view.validate = function() {
