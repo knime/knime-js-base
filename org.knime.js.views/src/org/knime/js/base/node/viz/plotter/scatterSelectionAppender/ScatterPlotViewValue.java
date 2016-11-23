@@ -70,6 +70,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
 
     static final String SELECTED_KEYS = "selectedKeys";
 
+    private static final String CFG_SHOW_SELECTED_ONLY = "showSelectedOnly";
+    private static final boolean DEFAULT_SHOW_SELECTED_ONLY = false;
+
     private String m_chartTitle;
     private String m_chartSubtitle;
     private String m_xAxisLabel;
@@ -83,6 +86,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
     private Integer m_dotSize;
     private boolean m_publishSelection;
     private boolean m_subscribeSelection;
+    private boolean m_showSelectedOnly;
     private boolean m_subscribeFilter;
     private String[] m_selection;
 
@@ -297,6 +301,20 @@ public class ScatterPlotViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the showSelectedOnly
+     */
+    public boolean getShowSelectedOnly() {
+        return m_showSelectedOnly;
+    }
+
+    /**
+     * @param showSelectedOnly the showSelectedOnly to set
+     */
+    public void setShowSelectedOnly(final boolean showSelectedOnly) {
+        m_showSelectedOnly = showSelectedOnly;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -317,6 +335,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
         // added with 3.3
         settings.addBoolean(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, getPublishSelection());
         settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
+        settings.addBoolean(CFG_SHOW_SELECTED_ONLY, getShowSelectedOnly());
         settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
     }
 
@@ -346,6 +365,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
         // added with 3.3
         setPublishSelection(settings.getBoolean(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, ScatterPlotViewConfig.DEFAULT_PUBLISH_SELECTION));
         setSubscribeSelection(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_SELECTION));
+        setShowSelectedOnly(settings.getBoolean(CFG_SHOW_SELECTED_ONLY, DEFAULT_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_FILTER));
     }
 
@@ -378,6 +398,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_dotSize, other.m_dotSize)
                 .append(m_publishSelection, other.m_publishSelection)
                 .append(m_subscribeSelection, other.m_subscribeSelection)
+                .append(m_showSelectedOnly, other.m_showSelectedOnly)
                 .append(m_subscribeFilter, other.m_subscribeFilter)
                 .append(m_selection, other.m_selection)
                 .isEquals();
@@ -402,6 +423,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_dotSize)
                 .append(m_publishSelection)
                 .append(m_subscribeSelection)
+                .append(m_showSelectedOnly)
                 .append(m_subscribeFilter)
                 .append(m_selection)
                 .toHashCode();

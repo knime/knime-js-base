@@ -48,12 +48,14 @@
  */
 package org.knime.js.base.node.viz.plotter.scatterSelectionAppender;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.base.data.xml.SvgCell;
@@ -69,6 +71,7 @@ import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.property.filter.FilterHandler;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -249,6 +252,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 copyConfigToView(m_table.getDataTableSpec());
                 representation.setKeyedDataset(createKeyedDataset(exec));
             }
+            setSubscriptionFilterIds(m_table.getDataTableSpec());
         }
     }
 
@@ -274,9 +278,24 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
                 out = exec.createColumnRearrangeTable(m_table, rearranger, exec);
             }
+            setSubscriptionFilterIds(m_table.getDataTableSpec());
         }
         exec.setProgress(1);
         return new PortObject[]{svgImageFromView, out};
+    }
+
+    private void setSubscriptionFilterIds(final DataTableSpec spec) {
+        ScatterPlotViewRepresentation viewRepresentation = getViewRepresentation();
+        if (viewRepresentation != null) {
+            List<String> idList = new ArrayList<String>();
+            for (int i = 0; i < spec.getNumColumns(); i++) {
+                Optional<FilterHandler> filterHandler = spec.getColumnSpec(i).getFilterHandler();
+                if (filterHandler.isPresent()) {
+                    idList.add(filterHandler.get().getModel().getFilterUUID().toString());
+                }
+            }
+            viewRepresentation.setSubscriptionFilterIds(idList.toArray(new String[0]));
+        }
     }
 
     private JSONKeyedValues2DDataset createKeyedDataset(final ExecutionContext exec) throws CanceledExecutionException {
@@ -500,6 +519,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
         // added with 3.3
         representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
         viewValue.setPublishSelection(m_config.getPublishSelection());
         viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
         viewValue.setSubscribeFilter(m_config.getSubscribeFilter());

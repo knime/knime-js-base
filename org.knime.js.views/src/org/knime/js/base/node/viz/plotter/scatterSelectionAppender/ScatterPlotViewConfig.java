@@ -75,6 +75,7 @@ final class ScatterPlotViewConfig {
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
+    final static boolean DEFAULT_ENABLE_SHOW_SELECTED_ONLY = true;
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
 
@@ -104,6 +105,7 @@ final class ScatterPlotViewConfig {
     static final String ENABLE_RECTANGLE_SELECTION = "enableRectangleSelection";
     static final String ENABLE_LASSO_SELECTION = "enableLassoSelection";
     final static String CFG_PUBLISH_SELECTION = "publishSelection";
+    final static String CFG_ENABLE_SHOW_SELECTED_ONLY = "enableShowSelectedOnly";
     final static String CFG_SUBSCRIBE_SELECTION = "subscribeSelection";
     final static String CFG_SUBSCRIBE_FILTER = "subscribeFilter";
     static final String CHART_TITLE = "chartTitle";
@@ -153,6 +155,7 @@ final class ScatterPlotViewConfig {
     private boolean m_enableLassoSelection = false;
     private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
     private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
+    private boolean m_enableShowSelectedOnly = DEFAULT_ENABLE_SHOW_SELECTED_ONLY;
     private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
     private int m_maxRows = DEFAULT_MAX_ROWS;
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
@@ -355,6 +358,21 @@ final class ScatterPlotViewConfig {
     public void setPublishSelection(final boolean publishSelection) {
         m_publishSelection = publishSelection;
     }
+
+    /**
+     * @return the enableShowSelectedOnly
+     */
+    public boolean getEnableShowSelectedOnly() {
+        return m_enableShowSelectedOnly;
+    }
+
+    /**
+     * @param enableShowSelectedOnly the enableShowSelectedOnly to set
+     */
+    public void setEnableShowSelectedOnly(final boolean enableShowSelectedOnly) {
+        m_enableShowSelectedOnly = enableShowSelectedOnly;
+    }
+
 
     /**
      * @return the subscribeSelection
@@ -909,6 +927,7 @@ final class ScatterPlotViewConfig {
         settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
         settings.addBoolean(CFG_PUBLISH_SELECTION, getPublishSelection());
         settings.addBoolean(CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
+        settings.addBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, getEnableShowSelectedOnly());
         settings.addBoolean(CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
     }
 
@@ -978,6 +997,7 @@ final class ScatterPlotViewConfig {
         setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
         setPublishSelection(settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION));
         setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
+        setEnableShowSelectedOnly(settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
     }
 
@@ -1059,6 +1079,7 @@ final class ScatterPlotViewConfig {
         setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
         setPublishSelection(settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION));
         setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
+        setEnableShowSelectedOnly(settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
     }
 }

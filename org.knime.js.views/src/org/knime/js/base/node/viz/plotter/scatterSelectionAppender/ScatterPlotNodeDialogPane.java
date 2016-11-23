@@ -117,6 +117,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_allowRectangleSelectionCheckBox;
     private final JCheckBox m_allowLassoSelectionCheckBox;
     private final JCheckBox m_publishSelectionCheckBox;
+    private final JCheckBox m_enableShowSelectedOnlyCheckBox;
     private final JCheckBox m_subscribeSelectionCheckBox;
     private final JCheckBox m_subscribeFilterCheckBox;
 
@@ -167,6 +168,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
         m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
         m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
+        m_enableShowSelectedOnlyCheckBox = new JCheckBox("Enable 'Show selected points only' option");
         m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
 
         m_maxRowsSpinner = new JSpinner();
@@ -473,7 +475,16 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         cc.gridx++;
         selectionControlPanel.add(m_subscribeSelectionCheckBox, cc);
         cc.gridx++;
-        selectionControlPanel.add(m_subscribeFilterCheckBox, cc);
+        selectionControlPanel.add(m_enableShowSelectedOnlyCheckBox, cc);
+
+        c.gridx = 0;
+        c.gridy++;
+        JPanel filterPanel = new JPanel(new GridBagLayout());
+        filterPanel.setBorder(BorderFactory.createTitledBorder("Filtering"));
+        panel.add(filterPanel, c);
+        cc.gridx = 0;
+        cc.gridy = 0;
+        filterPanel.add(m_subscribeFilterCheckBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -499,6 +510,21 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         return panel;
     }
 
+    private void setNumberOfFilters(final DataTableSpec spec) {
+        int numFilters = 0;
+        for (int i = 0; i < spec.getNumColumns(); i++) {
+            if (spec.getColumnSpec(i).getFilterHandler().isPresent()) {
+                numFilters++;
+            }
+        }
+        StringBuilder builder = new StringBuilder("Subscribe to filter events");
+        builder.append(" (");
+        builder.append(numFilters == 0 ? "no" : numFilters);
+        builder.append(numFilters == 1 ? " filter" : " filters");
+        builder.append(" available)");
+        m_subscribeFilterCheckBox.setText(builder.toString());
+    }
+
     private void enableViewControls() {
         boolean enable = m_enableViewConfigCheckBox.isSelected();
         m_enableTitleChangeCheckBox.setEnabled(enable);
@@ -516,6 +542,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_allowLassoSelectionCheckBox.setEnabled(enable);
         m_publishSelectionCheckBox.setEnabled(enable);
         m_subscribeSelectionCheckBox.setEnabled(enable);
+        m_enableShowSelectedOnlyCheckBox.setEnabled(enable);
     }
 
     private void enableCrosshairControls() {
@@ -561,6 +588,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());
         m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
         m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
+        m_enableShowSelectedOnlyCheckBox.setSelected(config.getEnableShowSelectedOnly());
         m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
 
         m_chartTitleTextField.setText(config.getChartTitle());
@@ -594,6 +622,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         enableViewControls();
         enableCrosshairControls();
         enableSelectionControls();
+        setNumberOfFilters(specs[0]);
     }
 
     /**
@@ -632,6 +661,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
         config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
         config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
+        config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
         config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
 
         config.setChartTitle(m_chartTitleTextField.getText());

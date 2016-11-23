@@ -312,6 +312,10 @@
                relativePath="org/knime/js/base/node/viz/plotter/scatterSelectionAppender/knime-scatter-plot.js"
                type="JAVASCRIPT">
          </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/plotter/scatterSelectionAppender/knime-scatter-plot.css"
+               type="CSS">
+         </importResource>
          <webDependency
                webResourceBundleID="jsFreeChart_0.5">
          </webDependency>

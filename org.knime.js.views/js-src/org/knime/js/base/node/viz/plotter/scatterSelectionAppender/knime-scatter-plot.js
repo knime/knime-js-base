@@ -471,7 +471,6 @@ knime_scatter_plot_selection_appender = function() {
 	    			updateChart();
 	    		});
 	    		knimeService.addMenuItem('X Column:', 'long-arrow-right', xSelect);
-	    		
 	    	}
 	    	if (_representation.enableYColumnChange) {
 	    		var ySelect = knimeService.createMenuSelect('yColumnSelect', _value.yColumn, _keyedDataset.columnKeys(), function() {
@@ -483,6 +482,7 @@ knime_scatter_plot_selection_appender = function() {
 	    		});
 	    		knimeService.addMenuItem('Y Column:', 'long-arrow-up', ySelect);
 	    	}
+	    	pre = true;
 	    }
 	    if (_representation.enableXAxisLabelEdit || _representation.enableYAxisLabelEdit) {
 	    	if (pre) {
@@ -496,6 +496,7 @@ knime_scatter_plot_selection_appender = function() {
 	    		var yAxisText = knimeService.createMenuTextField('yAxisText', _value.yAxisLabel, updateYAxisLabel);
 	    		knimeService.addMenuItem('Y Axis Label:', 'ellipsis-v', yAxisText);
 	    	}
+	    	pre = true;
 	    }
 	    if (_representation.enableDotSizeChange) {
 	    	// TODO enable once implemented
@@ -509,6 +510,22 @@ knime_scatter_plot_selection_appender = function() {
 	    		.style("font-family", defaultFont)
 	    		.style("font-size", defaultFontSize+"px");*/
 	    }
+	    if (_representation.enableSelection) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+			if (_representation.enableShowSelectedOnly) {				
+				var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
+					_value.showSelectedOnly = this.checked;
+					applyFilter();
+				});
+				knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
+				if (_value.showSelectedOnly) {
+					applyFilter();
+				}
+			}
+			pre = true;			
+		}
 	    if (knimeService.isInteractivityAvailable()) {
 	    	if (pre) {
 	    		knimeService.addMenuDivider();

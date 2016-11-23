@@ -96,6 +96,10 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_enableSelection;
     private boolean m_enableRectangleSelection;
     private boolean m_enableLassoSelection;
+    private boolean m_enableShowSelectedOnly;
+
+    private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
+    private String[] m_subscriptionFilterIds;
 
     private int m_imageWidth;
     private int m_imageHeight;
@@ -444,6 +448,34 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the enableShowSelectedOnly
+     */
+    public boolean getEnableShowSelectedOnly() {
+        return m_enableShowSelectedOnly;
+    }
+
+    /**
+     * @param enableShowSelectedOnly the enableShowSelectedOnly to set
+     */
+    public void setEnableShowSelectedOnly(final boolean enableShowSelectedOnly) {
+        m_enableShowSelectedOnly = enableShowSelectedOnly;
+    }
+
+    /**
+     * @return the subscriptionFilterIds
+     */
+    public String[] getSubscriptionFilterIds() {
+        return m_subscriptionFilterIds;
+    }
+
+    /**
+     * @param subscriptionFilterIds the subscriptionFilterIds to set
+     */
+    public void setSubscriptionFilterIds(final String[] subscriptionFilterIds) {
+        m_subscriptionFilterIds = subscriptionFilterIds;
+    }
+
+    /**
      * @return the imageWidth
      */
     public int getImageWidth() {
@@ -587,6 +619,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         // added with 3.3
         settings.addBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
+        settings.addBoolean(ScatterPlotViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, getEnableShowSelectedOnly());
+        settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
     }
 
     /**
@@ -637,6 +671,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         //added with 3.3
         setDisplayFullscreenButton(settings.getBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, ScatterPlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+        setEnableShowSelectedOnly(settings.getBoolean(ScatterPlotViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, ScatterPlotViewConfig.DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
+        m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
     }
 
     /**
@@ -679,6 +715,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableSelection, other.m_enableSelection)
                 .append(m_enableRectangleSelection, other.m_enableRectangleSelection)
                 .append(m_enableLassoSelection, other.m_enableLassoSelection)
+                .append(m_enableShowSelectedOnly, other.m_enableShowSelectedOnly)
+                .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .append(m_imageWidth, other.m_imageWidth)
                 .append(m_imageHeight, other.m_imageHeight)
                 .append(m_dateTimeFormat, other.m_dateTimeFormat)
@@ -719,6 +757,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableSelection)
                 .append(m_enableRectangleSelection)
                 .append(m_enableLassoSelection)
+                .append(m_enableShowSelectedOnly)
+                .append(m_subscriptionFilterIds)
                 .append(m_imageWidth)
                 .append(m_imageHeight)
                 .append(m_dateTimeFormat)
