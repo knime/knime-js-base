@@ -82,7 +82,7 @@ public class MoleculeStringInputQuickFormNodeModel
     /**
      * The default formats shown in the molecule quickform input.
      */
-    static final String[] DEFAULT_FORMATS = {"SDF", "SMILES", "MOL", "SMARTS", "RXN"};
+    static final String[] DEFAULT_FORMATS = {"SDF", "SMILES", "MOL", "SMARTS", "RXN", "HELM"};
 
     /** Creates a new node model with no inports and a flow variable and SVG outport. */
     protected MoleculeStringInputQuickFormNodeModel(final String viewName) {
