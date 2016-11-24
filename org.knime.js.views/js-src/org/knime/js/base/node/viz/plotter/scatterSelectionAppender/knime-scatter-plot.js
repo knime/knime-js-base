@@ -341,6 +341,7 @@ knime_scatter_plot_selection_appender = function() {
 	resize = function(event) {
 		setChartDimensions();
         chartManager.refreshDisplay();
+        applyFilter();
 	};
 	
 	setChartDimensions = function() {
