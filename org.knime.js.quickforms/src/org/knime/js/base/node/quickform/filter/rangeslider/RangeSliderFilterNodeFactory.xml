@@ -11,8 +11,11 @@
         	<option name="Hide in Wizard">
           		If the slider should be hidden in the wizard execution.
         	</option>
-        	<option name="Delete Existing Filter Definitions">
-        		Check this setting to delete any pre-existing filter definitions on the table. If set only this node's filter definition is present on the output table.
+        	<option name="Merge With Existing Filter Definitions (Table)">
+        		Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.
+        	</option>
+        	<option name="Merge With Existing Filter Definitions (Model Port)">
+        		Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.
         	</option>
         	<option name="Show Label">
         		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define an arbitrary label.
