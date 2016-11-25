@@ -98,9 +98,13 @@ public class RangeSliderFilterConfig {
     private static final boolean[] DEFAULT_USE_DOMAIN_EXTENDS = new boolean[]{true, true};
     private boolean[] m_useDomainExtends = DEFAULT_USE_DOMAIN_EXTENDS;
 
-    private static final String CFG_DELETE_OTHER_FILTERS = "deleteOtherFilters";
-    private static final boolean DEFAULT_DELETE_OTHER_FILTERS = false;
-    private boolean m_deleteOtherFilters = DEFAULT_DELETE_OTHER_FILTERS;
+    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_TABLE = "mergeWithExistingFiltersTable";
+    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE = true;
+    private boolean m_mergeWithExistingFiltersTable = DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
+
+    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_MODEL = "mergeWithExistingFiltersModel";
+    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
+    private boolean m_mergeWithExistingFiltersModel = DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
 
     /**
      * @return the hideInWizard
@@ -229,17 +233,31 @@ public class RangeSliderFilterConfig {
     }
 
     /**
-     * @return the deleteOtherFilters
+     * @return the mergeWithExistingFiltersTable
      */
-    public boolean getDeleteOtherFilters() {
-        return m_deleteOtherFilters;
+    public boolean getMergeWithExistingFiltersTable() {
+        return m_mergeWithExistingFiltersTable;
     }
 
     /**
-     * @param deleteOtherFilters the deleteOtherFilters to set
+     * @param mergeWithExistingFiltersModel the mergeWithExistingFiltersModel to set
      */
-    public void setDeleteOtherFilters(final boolean deleteOtherFilters) {
-        m_deleteOtherFilters = deleteOtherFilters;
+    public void setMergeWithExistingFiltersModel(final boolean mergeWithExistingFiltersModel) {
+        m_mergeWithExistingFiltersModel = mergeWithExistingFiltersModel;
+    }
+
+    /**
+     * @return the mergeWithExistingFiltersModel
+     */
+    public boolean getMergeWithExistingFiltersModel() {
+        return m_mergeWithExistingFiltersModel;
+    }
+
+    /**
+     * @param mergeWithExistingFiltersTable the mergeWithExistingFiltersTable to set
+     */
+    public void setMergeWithExistingFiltersTable(final boolean mergeWithExistingFiltersTable) {
+        m_mergeWithExistingFiltersTable = mergeWithExistingFiltersTable;
     }
 
     /**
@@ -261,7 +279,8 @@ public class RangeSliderFilterConfig {
         settings.addBoolean(CFG_CUSTOM_MIN, m_customMin);
         settings.addBoolean(CFG_CUSTOM_MAX, m_customMax);
         settings.addBooleanArray(CFG_USE_DOMAIN_EXTENDS, m_useDomainExtends);
-        settings.addBoolean(CFG_DELETE_OTHER_FILTERS, m_deleteOtherFilters);
+        settings.addBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE, m_mergeWithExistingFiltersTable);
+        settings.addBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL, m_mergeWithExistingFiltersModel);
     }
 
     /**
@@ -284,7 +303,8 @@ public class RangeSliderFilterConfig {
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX);
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS);
-        m_deleteOtherFilters = settings.getBoolean(CFG_DELETE_OTHER_FILTERS);
+        m_mergeWithExistingFiltersTable = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE);
+        m_mergeWithExistingFiltersModel = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL);
     }
 
     /**
@@ -308,7 +328,8 @@ public class RangeSliderFilterConfig {
         m_customMin = settings.getBoolean(CFG_CUSTOM_MIN, DEFAULT_CUSTOM_MIN);
         m_customMax = settings.getBoolean(CFG_CUSTOM_MAX, DEFAULT_CUSTOM_MAX);
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS, DEFAULT_USE_DOMAIN_EXTENDS);
-        m_deleteOtherFilters = settings.getBoolean(CFG_DELETE_OTHER_FILTERS, DEFAULT_DELETE_OTHER_FILTERS);
+        m_mergeWithExistingFiltersTable = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE, DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE);
+        m_mergeWithExistingFiltersModel = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL, DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL);
     }
 
     /**
@@ -326,8 +347,10 @@ public class RangeSliderFilterConfig {
             sb.append(", domainColumn=");
             sb.append(m_domainColumn);
         }
-        sb.append(", deleteOtherFilters");
-        sb.append(m_deleteOtherFilters);
+        sb.append(", mergeWithExistingFiltersTable");
+        sb.append(m_mergeWithExistingFiltersTable);
+        sb.append(", mergeWithExistingFiltersModel");
+        sb.append(m_mergeWithExistingFiltersModel);
         return sb.toString();
     }
 
@@ -343,7 +366,8 @@ public class RangeSliderFilterConfig {
                 .append(m_customMin)
                 .append(m_customMax)
                 .append(m_useDomainExtends)
-                .append(m_deleteOtherFilters)
+                .append(m_mergeWithExistingFiltersTable)
+                .append(m_mergeWithExistingFiltersModel)
                 .toHashCode();
     }
 
@@ -369,7 +393,8 @@ public class RangeSliderFilterConfig {
                 .append(m_customMin, other.m_customMin)
                 .append(m_customMax, other.m_customMax)
                 .append(m_useDomainExtends, other.m_useDomainExtends)
-                .append(m_deleteOtherFilters, other.m_deleteOtherFilters)
+                .append(m_mergeWithExistingFiltersTable, other.m_mergeWithExistingFiltersTable)
+                .append(m_mergeWithExistingFiltersModel, other.m_mergeWithExistingFiltersModel)
                 .isEquals();
     }
 

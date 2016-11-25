@@ -78,7 +78,8 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     private SliderNodeDialogUI m_sliderUI;
 
     private final JCheckBox m_hideInWizardCheckbox;
-    private final JCheckBox m_deleteOtherFiltersCheckbox;
+    private final JCheckBox m_mergeWithExistingFiltersTable;
+    private final JCheckBox m_mergeWithExistingFiltersModel;
     private final JCheckBox m_useLabelCheckbox;
     private final JCheckBox m_customLabelCheckbox;
     private final JTextField m_labelTextfield;
@@ -88,8 +89,9 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         m_config = new RangeSliderFilterConfig();
         m_sliderUI = new SliderNodeDialogUI(2, false, true);
         m_hideInWizardCheckbox = new JCheckBox("Hide In Wizard");
-        m_deleteOtherFiltersCheckbox = new JCheckBox("Delete Existing Filter Definitions");
-        m_useLabelCheckbox = new JCheckBox("Show label");
+        m_mergeWithExistingFiltersTable = new JCheckBox("Merge With Existing Filter Definitions (Table)");
+        m_mergeWithExistingFiltersModel = new JCheckBox("Merge With Existing Filter Definitions (Model Port)");
+        m_useLabelCheckbox = new JCheckBox("Show Label");
         m_customLabelCheckbox = new JCheckBox("Custom");
         m_labelTextfield = new JTextField(20);
 
@@ -113,10 +115,12 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         gbc.weightx = gbc.weighty = 0;
 
         panel.add(m_hideInWizardCheckbox, gbc);
-        gbc.gridx++;
+        gbc.gridy++;
         gbc.gridwidth = 2;
         gbc.weightx = 1;
-        panel.add(m_deleteOtherFiltersCheckbox, gbc);
+        panel.add(m_mergeWithExistingFiltersTable, gbc);
+        gbc.gridy++;
+        panel.add(m_mergeWithExistingFiltersModel, gbc);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -169,7 +173,8 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         m_hideInWizardCheckbox.setSelected(m_config.getHideInWizard());
-        m_deleteOtherFiltersCheckbox.setSelected(m_config.getDeleteOtherFilters());
+        m_mergeWithExistingFiltersTable.setSelected(m_config.getMergeWithExistingFiltersTable());
+        m_mergeWithExistingFiltersModel.setSelected(m_config.getMergeWithExistingFiltersModel());
         m_useLabelCheckbox.setSelected(m_config.getUseLabel());
         m_customLabelCheckbox.setSelected(m_config.getCustomLabel());
         m_labelTextfield.setText(m_config.getLabel());
@@ -203,7 +208,8 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         m_config.setHideInWizard(m_hideInWizardCheckbox.isSelected());
-        m_config.setDeleteOtherFilters(m_deleteOtherFiltersCheckbox.isSelected());
+        m_config.setMergeWithExistingFiltersTable(m_mergeWithExistingFiltersTable.isSelected());
+        m_config.setMergeWithExistingFiltersModel(m_mergeWithExistingFiltersModel.isSelected());
         m_config.setDomainColumn((SettingsModelString)m_sliderUI.getDomainColumnSelection().getModel());
         m_config.setUseLabel(m_useLabelCheckbox.isSelected());
         m_config.setCustomLabel(m_customLabelCheckbox.isSelected());

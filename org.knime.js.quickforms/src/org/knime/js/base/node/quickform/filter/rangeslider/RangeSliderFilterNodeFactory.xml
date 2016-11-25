@@ -97,5 +97,6 @@
 	<ports>
 		<inPort index="0" name="Input Table">Input table which contains at least one double column with domain values set, which can be used to control the minimum and maximum values of the slider.</inPort>
 		<outPort index="0" name="Table with Filter Definition">Input table with filter definition appended to one column.</outPort>
+		<outPort index="1" name="Filter Definition">Filter definition applied to the input column.</outPort>
 	</ports>
 </knimeNode>
