@@ -183,8 +183,12 @@ knime_scatter_plot_selection_appender = function() {
 		//chart.build(container);
 				
 		var plot = new jsfc.XYPlot(dataset);
-		//TODO: how to handle this best?
-		//plot.setStaggerRendering(_representation.enableStaggeredRendering);
+		var stagger = _representation.enableStaggeredRendering;
+		if (knimeService && knimeService.isInteractivityAvailable()) {
+			// always disable if interactivity available
+			stagger = false;
+		}
+		plot.setStaggerRendering(stagger);
 		var xAxis = plot.getXAxis();
         xAxis.setLabel(xAxisLabel);
         xAxis.setLabelFont(new jsfc.Font(defaultFont, defaultFontSize, true));
@@ -246,9 +250,6 @@ knime_scatter_plot_selection_appender = function() {
 			chartHeight = "100%";
 		}
 		d3.select(svg).attr("id", "chart_svg").style("width", chartWidth).style("height", chartHeight);
-        var zoomEnabled = _representation.enableZooming;
-        var dragZoomEnabled = _representation.enableDragZooming;
-        var panEnabled = _representation.enablePanning;
         
         // override installMouseDownHandler for Linux mapping -- see AP-5737
         jsfc.ChartManager.prototype.installMouseDownHandler = function(element) {
@@ -277,9 +278,12 @@ knime_scatter_plot_selection_appender = function() {
         	};
         };
         
-        chartManager = new jsfc.ChartManager(svg, chart, dragZoomEnabled, zoomEnabled, false);
+        var zoomEnabled = _representation.enableZooming;
+        
+        chartManager = new jsfc.ChartManager(svg, chart, false, zoomEnabled, false);
+        
 
-        if (panEnabled) {
+        /*if (panEnabled) {
         	var panModifier = new jsfc.Modifier.createModifier(false, false, false, false);
         	if (dragZoomEnabled) {
         		panModifier = new jsfc.Modifier.createModifier(false, true, false, false);
@@ -307,7 +311,7 @@ knime_scatter_plot_selection_appender = function() {
         		var polygonSelectionHandler = new jsfc.PolygonSelectionHandler(chartManager, polygonSelectionModifier);
         		chartManager.addLiveHandler(polygonSelectionHandler);
         	}
-        }
+        }*/
         
         if (_representation.showCrosshair) {
         	var crosshairHandler = new jsfc.XYCrosshairHandler(chartManager);
@@ -433,18 +437,81 @@ knime_scatter_plot_selection_appender = function() {
 			return;
 		}
 		
+		// -- Buttons --
 		if (_representation.displayFullscreenButton) {
 			knimeService.allowFullscreen();
 		}
 		
-	    if (_representation.showZoomResetButton) {
+		var dragZoomEnabled = _representation.enableDragZooming;
+		var zoomResetEnabled = _representation.showZoomResetButton;
+        var panEnabled = _representation.enablePanning;
+        var selectionEnabled = _representation.enableSelection;
+        var recSelEnabled = _representation.enableRectangleSelection;
+        var lasSelEnabled = _representation.enableLassoSelection;
+        
+        if (panEnabled || dragZoomEnabled || selectionEnabled || zoomResetEnabled) {
+        	knimeService.addNavSpacer();
+        }
+        
+        if (zoomResetEnabled) {
 	    	knimeService.addButton('scatter-zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
 	    		var plot = chartManager.getChart().getPlot();
 	    		plot.getXAxis().setAutoRange(true);
 	    		plot.getYAxis().setAutoRange(true);
 	    	});
+	    	if (panEnabled || dragZoomEnabled || selectionEnabled) {
+	    		knimeService.addNavSpacer();
+	    	}
 	    }
-	    
+        
+        if (dragZoomEnabled) {
+        	var zoomButtonClicked = function() {
+        		d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "scatter-mouse-mode-zoom" == this.getAttribute('id')});
+        		chartManager._availableLiveMouseHandlers = [];
+        		chartManager.addLiveHandler(new jsfc.ZoomHandler(chartManager));
+        	}
+        	knimeService.addButton('scatter-mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', zoomButtonClicked);
+        	if (!selectionEnabled && !panEnabled) {
+        		zoomButtonClicked();
+        	}
+        }
+        
+        if (selectionEnabled) {
+        	var selectionButtonClicked = function() {
+        		d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "scatter-mouse-mode-select" == this.getAttribute('id')});
+        		chartManager._availableLiveMouseHandlers = [];
+        		var selectionModifier = new jsfc.Modifier.createModifierWML(false, false, false, true);
+        		var clickSelectionHandler = new jsfc.ClickSelectionHandler(chartManager, selectionModifier);
+        		if (recSelEnabled) {
+               		var rectangleSelectionHandler = new jsfc.RectangleSelectionHandler(chartManager, selectionModifier);
+                	var selectionHandler = new jsfc.DualHandler(chartManager, selectionModifier, clickSelectionHandler, rectangleSelectionHandler);
+                	chartManager.addLiveHandler(selectionHandler);
+        		} else {
+        			chartManager.addLiveHandler(clickSelectionHandler);        				
+        		}
+        		if (lasSelEnabled) {
+                	var polygonSelectionModifier = new jsfc.Modifier.createModifierWML(false, true, false, true);
+                	var polygonSelectionHandler = new jsfc.PolygonSelectionHandler(chartManager, polygonSelectionModifier);
+                	chartManager.addLiveHandler(polygonSelectionHandler);
+                }
+        	}
+        	knimeService.addButton('scatter-mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', selectionButtonClicked);
+        	if (!panEnabled) {
+        		selectionButtonClicked();
+        	}
+        }
+        	
+        if (panEnabled) {
+        	var panButtonClicked = function() {
+        		d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "scatter-mouse-mode-pan" == this.getAttribute('id')});
+        		chartManager._availableLiveMouseHandlers = [];
+        		chartManager.addLiveHandler(new jsfc.PanHandler(chartManager));
+        	}
+        	knimeService.addButton('scatter-mouse-mode-pan', 'arrows', 'Mouse Mode "Pan"', panButtonClicked);
+        	panButtonClicked();
+        }
+		
+        // -- Menu Items --
 	    if (!_representation.enableViewConfiguration) return;
 	    var pre = false;
 	    
