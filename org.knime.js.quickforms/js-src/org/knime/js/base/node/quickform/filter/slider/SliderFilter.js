@@ -70,6 +70,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		slider = document.createElement('div');
 		sliderContainer.appendChild(slider);
 		setNumberFormatOptions(settings);
+		setStartValuesToRange(settings);
 		noUiSlider.create(slider, settings);
 		if (settings.orientation == 'vertical') {
 			//TODO: make configurable
@@ -125,8 +126,9 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		} else {
 			if (knimeService && knimeService.isInteractivityAvailable()) {
 				slider.noUiSlider.on('set', function() {
-					setFilterOnValue();
-					knimeService.addToFilter(representation.tableId, _value.filter)
+					if (setFilterOnValue()) {
+						knimeService.addToFilter(representation.tableId, _value.filter);
+					}
 				});
 			}
 		}
@@ -168,14 +170,30 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		}
 	}
 	
+	setStartValuesToRange = function(settings) {
+		if (settings.tooltips && settings.tooltips.length > 0) {
+			if (settings.tooltips[0]) {
+				settings.start[0] = settings.range.min;
+			}
+			if (settings.tooltips.length > 1 && settings.tooltips[1]) {
+				settings.start[1] = settings.range.max;
+			}
+		}
+	}
+	
 	setFilterOnValue = function() {
+		var changed = true;
 		if (!_value.filter) {
 			_value.filter = {"id": _representation.filterId, "columns": []}
 			_value.filter.columns.push({"minimum": null, "maximum": null});
 		}
 		var sliderValues = slider.noUiSlider.get();
+		if (_value.filter.columns[0].minimum == sliderValues[0] && _value.filter.columns[0].maximum == sliderValues[1]) {
+			changed = false;
+		}
 		_value.filter.columns[0].minimum = sliderValues[0];
 		_value.filter.columns[0].maximum = sliderValues[1];
+		return changed;
 	}
 	
 	sliderFilter.validate = function() {
