@@ -480,7 +480,7 @@ knime_scatter_plot_selection_appender = function() {
         	var selectionButtonClicked = function() {
         		d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "scatter-mouse-mode-select" == this.getAttribute('id')});
         		chartManager._availableLiveMouseHandlers = [];
-        		var selectionModifier = new jsfc.Modifier.createModifierWML(false, false, false, true);
+        		var selectionModifier = new jsfc.Modifier.createModifier(false, false, false, true);
         		var clickSelectionHandler = new jsfc.ClickSelectionHandler(chartManager, selectionModifier);
         		if (recSelEnabled) {
                		var rectangleSelectionHandler = new jsfc.RectangleSelectionHandler(chartManager, selectionModifier);
@@ -490,7 +490,7 @@ knime_scatter_plot_selection_appender = function() {
         			chartManager.addLiveHandler(clickSelectionHandler);        				
         		}
         		if (lasSelEnabled) {
-                	var polygonSelectionModifier = new jsfc.Modifier.createModifierWML(false, true, false, true);
+                	var polygonSelectionModifier = new jsfc.Modifier.createModifier(false, true, false, true);
                 	var polygonSelectionHandler = new jsfc.PolygonSelectionHandler(chartManager, polygonSelectionModifier);
                 	chartManager.addLiveHandler(polygonSelectionHandler);
                 }
