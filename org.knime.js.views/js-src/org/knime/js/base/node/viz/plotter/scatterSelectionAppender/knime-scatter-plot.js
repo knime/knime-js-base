@@ -13,6 +13,11 @@ knime_scatter_plot_selection_appender = function() {
 	var defaultFont = "sans-serif";
 	var defaultFontSize = 12;
 	
+	var SELECTION_ID = "selection";
+	var FILTERED_ID = "filtered";
+	
+	var hiddenItemKeys = [];
+	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
 			d3.select("body").text("Error: No data available");
@@ -263,10 +268,11 @@ knime_scatter_plot_selection_appender = function() {
         var win = document.defaultView || document.parentWindow;
         win.onresize = resize;
         
+        plot.addListener(unselectHiddenOrFilteredPoints);
         if (knimeService && knimeService.isInteractivityAvailable()) {
-        	plot.addListener(publishSelection);        
-        	plot.addListener(applyFilter);
+        	plot.addListener(publishSelection);
 		}
+        plot.addListener(applyFilter);
         
 		initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
 	};
@@ -298,23 +304,21 @@ knime_scatter_plot_selection_appender = function() {
 		var plot = chartManager.getChart().getPlot();
 		var oldSelections = plot.getDataset().selections;
 		var dataset = buildXYDataset();
-		plot.setDataset(dataset);
-		dataset.selections = oldSelections;
-		dataset.notifyListeners();		
+		plot.setDataset(dataset, false);
+		dataset.selections = oldSelections;				
 		if (_value.xColumn) {
 			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
-				plot.getXAxis().setTickLabelFormatOverride(new jsfc.DateFormat(dateProp));
+				plot.getXAxis().setTickLabelFormatOverride(new jsfc.DateFormat(dateProp), false);
 			} else {
-				plot.getXAxis().setTickLabelFormatOverride(null);
+				plot.getXAxis().setTickLabelFormatOverride(null, false);
 			}
 		}
 		if (_representation.autoRangeAxes) {
-			plot.getXAxis().setAutoRange(true);
-			plot.getYAxis().setAutoRange(true);
+			plot.getXAxis().setAutoRange(true, false);
+			plot.getYAxis().setAutoRange(true, false);
 		}
-		//chartManager.refreshDisplay();
-		//plot.update(chart);
+		dataset.notifyListeners();
 	};
 	
 	updateTitle = function() {
@@ -622,16 +626,9 @@ knime_scatter_plot_selection_appender = function() {
 				}				
 			}
 			
-			var oldSelectionItems = []; // selected items from the old selection
 			var oldSelection = []; // row indices from the old selection == item keys of the selected items
-			if (oldSelectionObject) {
-				// search for the correct selection (with id == "selection) and getting its items
-				for (var i = 0; i < oldSelectionObject.length; i++) {
-					if (oldSelectionObject[i] && "selection" == oldSelectionObject[i].id && oldSelectionObject[i].items) {
-						oldSelectionItems = oldSelectionObject[i].items;
-						break;
-					}
-				}		
+			var oldSelectionItems = getSelectionItemsById(dataset, SELECTION_ID); // selected items from the old selection
+			if (oldSelectionItems) {		
 				// for each item we need to have its key, so we fill it here
 				for (var i = 0; i < oldSelectionItems.length; i++) {
 					oldSelection.push(oldSelectionItems[i].itemKey);	
@@ -643,7 +640,7 @@ knime_scatter_plot_selection_appender = function() {
 			}			
 			
 			// clear current selection
-			dataset.clearSelection("selection", false);
+			dataset.clearSelection(SELECTION_ID, false);
 			
 			// select everything from the newSelection
 			for (var i = 0; i < newSelection.length; i++) {
@@ -663,20 +660,42 @@ knime_scatter_plot_selection_appender = function() {
 		// all of this simulates the correct selection outlook without a total plot redraw
 		var circles = d3.selectAll('circle')
 			.each(function() {
-				var refStr = this.getAttribute('ref');
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
 				for (var i = 0; i < removedIds.length; i++) {
-					if (refStr == '["series 1","' + removedIds[i] + '"]') {
-						this.setAttribute('r', this.getAttribute('r') / 2);	
+					if (itemKey == removedIds[i]) {
+						this.setAttribute('r', this.getAttribute('r') / 2);
 						return;
 					}				
 				}
 				for (var i = 0; i < addedIds.length; i++) {
-					if (refStr == '["series 1","' + addedIds[i] + '"]') {
+					if (itemKey == addedIds[i]) {
 						this.setAttribute('r', this.getAttribute('r') * 2);
 						return;
 					}				
 				}
-			});
+			})
+			.classed('hidden', function() {
+				if (!_value.showSelectedOnly) {
+					return false;
+				}
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
+				for (var i = 0; i < removedIds.length; i++) {
+					if (itemKey == removedIds[i]) {		
+						hiddenItemKeys.push(itemKey);
+						return true;
+					}				
+				}
+				for (var i = 0; i < addedIds.length; i++) {
+					if (itemKey == addedIds[i]) {
+						var ind = hiddenItemKeys.indexOf(itemKey);
+						if (ind != -1) {
+							hiddenItemKeys.splice(ind, 1);
+						}
+						return false;
+					}				
+				}
+				return d3.select(this).classed('hidden');
+			});	
 	}
 	
 	publishSelection = function() {
@@ -689,7 +708,7 @@ knime_scatter_plot_selection_appender = function() {
 		var selections = chartManager.getChart().getPlot().getDataset().selections;
 		var selectionsArray = [];
 		for (var i = 0; i < selections.length; i++) {
-			if (selections[i].id === "selection") {
+			if (selections[i].id === SELECTION_ID) {
 				selectionsArray = selections[i].items;
 				break;
 			}
@@ -715,7 +734,7 @@ knime_scatter_plot_selection_appender = function() {
 	select = function(dataset, rowIndex) {		
 		// "selection" is a default id for the selection
 		// "series 1" is a default name for series		 
-		dataset.select("selection", "series 1", rowIndex, false);
+		dataset.select(SELECTION_ID, "series 1", rowIndex, false);
 	}
 	
 	/**
@@ -729,7 +748,7 @@ knime_scatter_plot_selection_appender = function() {
 	unselect = function(dataset, rowIndex) {		
 		// "selection" is a default id for the selection
 		// "series 1" is a default name for series		 
-		dataset.unselect("selection", "series 1", rowIndex, false);
+		dataset.unselect(SELECTION_ID, "series 1", rowIndex, false);
 	}
 	
 	/**
@@ -750,30 +769,30 @@ knime_scatter_plot_selection_appender = function() {
 		var showIds = [];
 		var hideIds = [];
 		
-		dataset.clearSelection("filtered", false);
+		dataset.clearSelection(FILTERED_ID, false);
 		
 		for (var i = 0; i < rows.length; i++) {
 			if (isRowIncludedInFilter(rows[i], filter)) {
 				// displaying the point
-				dataset.unselect("filtered", "series 1", String(i), false);
+				dataset.unselect(FILTERED_ID, "series 1", String(i), false);
 				showIds.push(i);
 			} else {				
 				// hiding the point
-				dataset.select("filtered", "series 1", String(i), false);
+				dataset.select(FILTERED_ID, "series 1", String(i), false);
 				hideIds.push(i);
 			}
 		}
 		
 		var circles = d3.selectAll('circle')
 			.classed('filtered', function() {
-				var refStr = this.getAttribute('ref');
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
 				for (var i = 0; i < showIds.length; i++) {
-					if (refStr == '["series 1","' + showIds[i] + '"]') {						
+					if (itemKey == showIds[i]) {						
 						return false;						
 					}				
 				}
 				for (var i = 0; i < hideIds.length; i++) {
-					if (refStr == '["series 1","' + hideIds[i] + '"]') {
+					if (itemKey == hideIds[i]) {
 						return true;						
 					}				
 				}
@@ -820,17 +839,8 @@ knime_scatter_plot_selection_appender = function() {
 	
 	applyFilter = function() {
 		var dataset = chartManager.getChart().getPlot().getDataset();
-		var selections = dataset.selections;
-		var filteredItems;
-		var selectedItems;
-		
-		for (var i = 0; i < selections.length; i++) {
-			if (selections[i] && "filtered" == selections[i].id && selections[i].items) {
-				filteredItems = selections[i].items;				
-			} else if (selections[i] && "selection" == selections[i].id && selections[i].items) {
-				selectedItems = selections[i].items;				
-			}
-		}		
+		var filteredItems = getSelectionItemsById(dataset, FILTERED_ID);
+		var selectedItems = getSelectionItemsById(dataset, SELECTION_ID);
 		
 		var circles = d3.selectAll('circle')
 			.classed('filtered', function() {
@@ -838,11 +848,11 @@ knime_scatter_plot_selection_appender = function() {
 					return false;
 				}
 				
-				var refStr = this.getAttribute('ref');
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
 				for (var i = 0; i < filteredItems.length; i++) {
-					if (refStr == '["series 1","' + filteredItems[i].itemKey + '"]') {						
+					if (itemKey == filteredItems[i].itemKey) {						
 						return true;
-					}				
+					}
 				}
 				return false;
 			})
@@ -850,18 +860,58 @@ knime_scatter_plot_selection_appender = function() {
 				if (!_value.showSelectedOnly) {
 					return false;
 				}
-				if (!selectedItems || selectedItems.length == 0) {
-					return true;
-				}
 				
-				var refStr = this.getAttribute('ref');
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
+				
+				if (!selectedItems || selectedItems.length == 0) {
+					hiddenItemKeys.push(itemKey);
+					return true;
+				}				
+				
 				for (var i = 0; i < selectedItems.length; i++) {
-					if (refStr == '["series 1","' + selectedItems[i].itemKey + '"]') {						
+					if (itemKey == selectedItems[i].itemKey) {
+						var ind = hiddenItemKeys.indexOf(itemKey);
+						if (ind != -1) {
+							hiddenItemKeys.splice(ind, 1);
+						}
 						return false;
 					}				
 				}
+				hiddenItemKeys.push(itemKey);
 				return true;	
 			});
+		if (!_value.showSelectedOnly) {
+			hiddenItemKeys = [];
+		}
+	}
+	
+	getSelectionItemsById = function(dataset, id) {		
+		var selectArr = dataset.selections;
+		if (selectArr) {		
+			for (var i = 0; i < selectArr.length; i++) {
+				if (selectArr[i] && id == selectArr[i].id && selectArr[i].items) {
+					return selectArr[i].items;				
+				}
+			}
+		}
+		return undefined;
+	}
+	
+	unselectHiddenOrFilteredPoints = function() {
+		var dataset = chartManager.getChart().getPlot().getDataset();
+		var circles = d3.selectAll('circle')
+			.each(function() {
+				var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));				
+				if (dataset.isSelected(SELECTION_ID, "series 1", itemKey) && 
+						(hiddenItemKeys.indexOf(itemKey) != -1 || dataset.isSelected(FILTERED_ID, "series 1", itemKey))) {
+					this.setAttribute('r', this.getAttribute('r') / 2);
+					unselect(dataset, itemKey);
+				}				
+			});
+	}
+	
+	extractItemKeyFromRefString = function(refStr) {
+		return refStr.match(/,"\d+/)[0].substring(2);
 	}
 	
 	view.validate = function() {
