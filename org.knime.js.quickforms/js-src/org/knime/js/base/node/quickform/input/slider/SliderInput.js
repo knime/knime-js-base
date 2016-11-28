@@ -74,32 +74,49 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		if (settings.orientation == 'vertical') {
 			//TODO: make configurable
 			slider.style.height = '500px';
-			var pad = $('.noUi-handle').height()/2 + 'px';
+			var pad = document.getElementsByClassName('noUi-handle')[0].offsetHeight / 2 + 'px';
 			sliderContainer.css({'padding-top': pad, 'padding-bottom': pad});
 		}
-		if (settings.tooltips && settings.tooltips[0]) {
-			var tip = $('.noUi-tooltip');
-			var tipBWidth = parseFloat(tip.css('border-width'));
+		var maxTipWidth = 0;
+		var maxTipHeight = 0;
+		if (settings.tooltips && settings.tooltips.length > 0) {
+			var tip = document.getElementsByClassName('noUi-tooltip')[0];
+			// assume that the maximum length of the tooltip is either at the minimum or maximum
+			slider.noUiSlider.set([settings.range.min]);
+			var tipStyle = getComputedStyle(tip);
+			var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
+			var tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
+			maxTipWidth = Math.max(maxTipWidth, tip.offsetWidth + tipBorderHor);
+			maxTipHeight = Math.max(maxTipHeight, tip.offsetHeight + tipBorderVer);
+			
+			slider.noUiSlider.set([settings.range.max]);
+			tipStyle = getComputedStyle(tip);
+			tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
+			tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
+			maxTipWidth = Math.max(maxTipWidth, tip.offsetWidth + tipBorderHor);
+			maxTipHeight = Math.max(maxTipHeight, tip.offsetHeight + tipBorderVer);
+
 			if (settings.orientation == 'vertical') {
-				var tipPad = parseFloat(tip.css('padding-left'));
-				sliderContainer.css('padding-left', -tip.position().left + tipPad + 'px');
+				//account for 120% right
+				sliderContainer.css('padding-left', (1.2 * maxTipWidth) + 'px');
 			} else {
 				//TODO: calculate based on tooltip height?
 				sliderContainer.css('padding-top', '38px');
-				var padSide = Math.max(parseFloat(sliderContainer.css('padding-left')), tip.outerWidth()/2) + 'px';
+				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer.get(0)).paddingLeft), maxTipWidth/2) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
 		}
+		var maxLabelWidth = 0;
 		if (settings.pips && settings.pips.mode) {
+			var testElem = [document.getElementsByClassName('noUi-value')[0]];
+			testElem.push(Array.prototype.slice.call(document.getElementsByClassName('noUi-value'), -1)[0]);
+			maxLabelWidth = Math.max(testElem[0].offsetWidth, testElem[1].offsetWidth);
 			if (settings.orientation == 'vertical') {
 				//TODO: right-padding?
 			} else {
-				sliderContainer.css("padding-bottom", "50px");
-				var testElem = $('.noUi-value').first();
-				if (settings.direction == 'rtl') {
-					testElem = $('.noUi-value').last();
-				}
-				var padSide = Math.max(parseFloat(sliderContainer.css('padding-left')), -testElem.position().left) + 'px';
+				sliderContainer.css('padding-bottom', '40px');
+				//select first element
+				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer.get(0)).paddingLeft), maxLabelWidth / 2) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
 		}

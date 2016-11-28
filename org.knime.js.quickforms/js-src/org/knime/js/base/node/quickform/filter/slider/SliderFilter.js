@@ -82,12 +82,23 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		var maxTipHeight = 0;
 		if (settings.tooltips && settings.tooltips.length > 0) {
 			var tips = document.getElementsByClassName('noUi-tooltip');
+			if (tips.length == 1) {
+				slider.noUiSlider.set([settings.range.min, settings.range.min]);
+			}
 			for (var i = 0; i < tips.length; i++) {
 				var tipStyle = getComputedStyle(tips[i]);
 				var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
 				var tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
 				maxTipWidth = Math.max(maxTipWidth, tips[i].offsetWidth + tipBorderHor);
 				maxTipHeight = Math.max(maxTipHeight, tips[i].offsetHeight + tipBorderVer);
+			}
+			if (tips.length == 1) {
+				slider.noUiSlider.set([settings.range.max, settings.range.max]);
+				var tipStyle = getComputedStyle(tips[0]);
+				var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
+				var tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
+				maxTipWidth = Math.max(maxTipWidth, tips[0].offsetWidth + tipBorderHor);
+				maxTipHeight = Math.max(maxTipHeight, tips[0].offsetHeight + tipBorderVer);
 			}
 			if (settings.orientation == 'vertical') {
 				//account for 120% right
