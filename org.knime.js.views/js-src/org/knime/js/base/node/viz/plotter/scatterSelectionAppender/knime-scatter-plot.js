@@ -2,14 +2,14 @@ knime_scatter_plot_selection_appender = function() {
 	
 	// register helper methods
 	// detect Linux
-	if (!jsfc.Utils.isLinux) {
+	/*if (!jsfc.Utils.isLinux) {
 		jsfc.Utils.isLinux = function() {
 			return navigator.appVersion.indexOf("X11") != -1 || navigator.appVersion.indexOf("Linux") != -1;
 		}
-	}
+	}*/
 	
 	// create modifier that works on Windows, Mac and Linux
-	if (!jsfc.Modifier.createModifierWML) {
+	/*if (!jsfc.Modifier.createModifierWML) {
 		jsfc.Modifier.createModifierWML = function(altKey, ctrlKey, shiftKey, shiftExtends) {
 			var m;
 			if (jsfc.Utils.isMacOS()) {
@@ -35,7 +35,7 @@ knime_scatter_plot_selection_appender = function() {
 			}
 			return m;
 		}
-	}
+	}*/
 	
 	var view = {};
 	var _representation = null;
@@ -252,7 +252,7 @@ knime_scatter_plot_selection_appender = function() {
 		d3.select(svg).attr("id", "chart_svg").style("width", chartWidth).style("height", chartHeight);
         
         // override installMouseDownHandler for Linux mapping -- see AP-5737
-        jsfc.ChartManager.prototype.installMouseDownHandler = function(element) {
+        /*jsfc.ChartManager.prototype.installMouseDownHandler = function(element) {
         	var my = this;
         	element.onmousedown = function(event) {
         		if (my._liveMouseHandler !== null) {
@@ -276,7 +276,7 @@ knime_scatter_plot_selection_appender = function() {
         		}); 
         		event.preventDefault();
         	};
-        };
+        };*/
         
         var zoomEnabled = _representation.enableZooming;
         
