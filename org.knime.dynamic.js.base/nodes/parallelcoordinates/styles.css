@@ -2,11 +2,35 @@ body {
   font: 12px sans-serif;
 }
 
-g.pale .row {
-	stroke-opacity: 0.2;
+.row.selected {
+	stroke-opacity: 0.9;
 }
 
-g.pale .row:hover {
+.row.unselected {
+	stroke-opacity: 0.1;
+}
+
+.row.addSelection:hover {
+	cursor: copy;
+}
+
+.row.removeSelection:hover {
+	cursor: alias;
+}
+
+.xAxis line,.xAxis path {
+  fill: none;
+  stroke: lightgrey;
+  stroke-opacity: 0.5;
+}
+
+.xAxis text {
+				opacity: 0;
+			}
+
+			
+.row:hover {
 	stroke-opacity: 1;
 	stroke-width: 3;
+
 }
