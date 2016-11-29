@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="../../js.png" type="Visualizer" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>JavaScript Decision Tree View</name>
+	
+	<shortDescription>
+	    A JavaScript based plot of the provided decision tree.
+	</shortDescription>
+		
+	<fullDescription>
+		<intro>		
+    	    <p>A plot of the provided decision tree using a JavaScript based library. The view can be accessed either via
+            the "interactive view" action on the executed node or in KNIME Server web portal page. 
+	       	</p>
+            <p>The configuration of the node lets you choose the size of a sample to display and to enable certain 
+            controls, which are then available in the view. This includes the ability to choose different columns
+            for x and y or the possibility to set a title. Enabling or disabling these controls via the configuration
+            dialog might not seem useful at first glance but has benefits when used in a web portal/wizard execution 
+            where the end user has no access to the workflow itself.
+            </p>
+            <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
+            <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
+		</intro>
+		<tab name="Scatter Plot Options">
+		    <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>
+		   <!-- <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
+		    <option name="Maximum number of rows">Use this numerical value to restrict the number of rows used for this visualization.</option>
+		    <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not.</option>
+		-->
+		</tab>
+		<tab name="General Plot Options">
+            <option name="Chart title" optional="true">The title of the graph shown above the generated image. If left blank, no title will be shown.</option>
+            <option name="Chart subtitle" optional="true">The subtitle of the graph shown above the generated image. If left blank, no subtitle will be shown.</option>
+            <!-- <option name="Width of image (in px)">The width of the generated SVG image.</option>
+            <option name="Height of image (in px)">The height of the generated SVG image.</option>
+            <option name="Resize view to fill window">Setting this option resizes the view to the available area of the window. If disabled the view size is static according to the set width and height.</option>
+            <option name="Background color">The color of the background of the image.</option>
+            <option name="Data area color">The background color of the data area, within the axes.</option>
+            -->
+		</tab>
+		<tab name="View Controls">
+		    <option name="Enable view edit controls">If checked all edit controls selected below will be rendered in the view. Unchecking this option disables all edit controls.</option>
+            <option name="Enable title edit controls">Renders a text box to change the chart title in the view.</option>
+            <option name="Enable subtitle edit controls">Renders a text box to change the chart subtitle in the view.</option>
+           <!--  <option name="Enable selection">Enables or disables the selection feature. When enabled data points can be selected in the scatter plot by holding down the Alt-key (Meta-Key on Linux) and clicking. Extending the selection is possible by holding down the Alt and Shift-Key (Meta and Shift-Key on Linux) and clicking. The selection is propagated in an appended column of the data table.</option>
+            <option name="Enable panning">Enable panning on the plot. To start panning click and drag the mouse. Note if panning and drag zooming is enabled, 
+                panning can be achieved by holding the Ctrl key (Cmd key on Mac) and dragging the mouse.</option>
+            <option name="Enable mouse wheel zooming">Enable zooming on the plot using the mouse wheel.</option>
+            <option name="Show zoom reset button">Renders a button to resize the plot to it's extends.</option>
+             -->
+		</tab>
+	</fullDescription>
+	
+	<interactiveView name="Decision Tree View">
+		Displays a tree plot of the provided decision tree.
+	</interactiveView>
+	<ports>
+		<inPort index="0" name="Decision Tree">Decision tree to display.</inPort>
+		<inPort index="1" name="Selection Data">Data which should be run through the decision tree.</inPort>
+		<outPort index="0" name="Image">SVG image rendered by the JavaScript implementation of the decision tree plot.</outPort>
+		<outPort index="1" name="Input data and view selection">Data table containing the input data appended with a column, that represents the selection made in the decision tree view.</outPort>
+	</ports>	
+</knimeNode>

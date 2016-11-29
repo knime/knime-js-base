@@ -58,6 +58,11 @@
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
             >
       </node>
+      <node
+            category-path="/labs/interactiveView"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -385,6 +390,45 @@
                type="CSS">
          </importResource>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="decTreeDrawer"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="decTreeDrawer">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/util/decisionTree/"
+               relativePathTarget="src/org/knime/js/base/util/decisionTree/">
+         </webResource>
+         <importResource
+               relativePath="src/org/knime/js/base/util/decisionTree/decTreeDrawer.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="d3-flextree_1.0.3_debug">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Decision Tree"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.viz.decisiontree.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/decisiontree/"
+               relativePathTarget="src/org/knime/js/base/node/viz/decisiontree/">
+         </webResource>
+         <importResource
+               relativePath="src/org/knime/js/base/node/viz/decisiontree/decisiontree.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="decTreeDrawer">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="wNumb">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -510,6 +554,16 @@
             javascriptComponentID="org.knime.js.base.node.viz.pagedTable"
             name="Paged Table"
             namespace="knime_paged_table"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.decisiontree.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.decisiontree"
+            name="Decision Tree View"
+            namespace="knime_decision_tree"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>

@@ -20,6 +20,8 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  com.fifesoft.rstaui;bundle-version="[2.5.7,3.0.0)",
  com.fifesoft.rsyntaxtextarea;bundle-version="[2.5.7,3.0.0)",
  com.fifesoft.spellchecker;bundle-version="[2.5.7,3.0.0)",
- say.swing.jfontchooser;bundle-version="[1.0.5,2.0.0)"
+ say.swing.jfontchooser;bundle-version="[1.0.5,2.0.0)",
+ org.knime.core.pmml;bundle-version="3.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Export-Package: org.knime.js.base.node.viz.decisiontree.classification
