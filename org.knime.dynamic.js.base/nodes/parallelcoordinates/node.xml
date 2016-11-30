@@ -16,7 +16,7 @@
 		      	More information is available on <n:a href="https://en.wikipedia.org/wiki/Parallel_coordinates">Wikipedia</n:a>.
 		      </n:p>
 		      <n:p>
-		        Rows that contain missing values are filtered and not displayed in the view.
+		        Rows that contain missing values are treated in accordance with the chosen in the dialog option.
 		      </n:p>
 		</intro>
 		<tab name="Options">
@@ -91,6 +91,10 @@
                    label="Enable view controls" defaultValue="true">
                    Enables controls in the chart.
                </checkBoxOption>
+               <checkBoxOption name="Display full screen button" id="displayFullscreenButton"
+                   label="Display full screen button" defaultValue="true">
+                   Displays a button enabling full screen mode.
+               </checkBoxOption>
                <checkBoxOption name="Enable title editing" id="enableTitleEdit"
                    label="Enable title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Enables the editing of the title in the interactive view.
@@ -118,7 +122,7 @@
            </options>
         </tab>
         
-        <tab name="Selection">
+        <tab name="Selection and Filter">
           <options>
            <checkBoxOption name="Enable selection" id="enableSelection"
                label="Enable selection" defaultValue="true">
@@ -130,6 +134,10 @@
                Enables a range of rows selection within the view. Clicking and dragging along an axis specifies a range of the rows for that dimension to be displayed.
                Please note that this will deactivate the selection previously selected by the row selection, if applicable. 
            </checkBoxOption>
+           <checkBoxOption name="Display clear selection button" id="displayClearSelectionButton"
+               label="Display clear selection button" defaultValue="true" enableDependency="enableSelection" enableValue="true">
+               Displays a button to clear the current selection.
+           </checkBoxOption>
            <checkBoxOption name="Publish selection events" id="publishSelection"
                label="Publish selection events" defaultValue="true" enableDependency="enableSelection" enableValue="true" saveInView="true">
                Makes information on the rows selected interactively in the view available for the subsequent node.
@@ -138,13 +146,12 @@
                label="Subscribe to selection events" defaultValue="true" enableDependency="enableSelection" enableValue="true" saveInView="true">
                Enables receiving information on the data rows selected in the previous node.
            </checkBoxOption>
-           <checkBoxOption name="Subscribe to filter events" id="enableFiltering"
-               label="Subscribe to filter events" defaultValue="true" enableDependency="enableSelection" enableValue="true" saveInView="true">
+           <checkBoxOption name="Subscribe to filter events" id="subscribeFilter" label="Subscribe to filter events" defaultValue="true" saveInView="true">
            </checkBoxOption>
  		</options>
         </tab>
 	</fullDescription>
-	<outputOptions>
+	<outputOptions> 
 		<dataOutputOption outPortIndex="1" id="selection" additionalColumnName="Parallel Coordinates Selection" additionalColumnType="BOOLEAN" inPortIndex="0" />
 	</outputOptions>
 	<interactiveView name="D3 Parallel Coordinates Plot">

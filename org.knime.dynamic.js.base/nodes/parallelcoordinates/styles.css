@@ -2,20 +2,23 @@ body {
   font: 12px sans-serif;
 }
 
+.row:hover {
+	stroke-opacity: 1;
+	stroke-width: 3;
+
+}
+
 .row.selected {
 	stroke-opacity: 0.9;
+	stroke-width: 2;
 }
 
 .row.unselected {
 	stroke-opacity: 0.1;
 }
 
-.row.addSelection:hover {
-	cursor: copy;
-}
-
-.row.removeSelection:hover {
-	cursor: alias;
+.row.filtered {
+	display: none;
 }
 
 .xAxis line,.xAxis path {
@@ -25,12 +28,5 @@ body {
 }
 
 .xAxis text {
-				opacity: 0;
-			}
-
-			
-.row:hover {
-	stroke-opacity: 1;
-	stroke-width: 3;
-
+	opacity: 0;
 }

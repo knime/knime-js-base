@@ -4,6 +4,8 @@
     var _data;
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+    var MISSING_VALUE_MODE = "Show\u00A0missing\u00A0values";
+    
     var _representation, _value;
     var mzd, w, h, plotG, bottomBar, scales;
     var scaleCols, extents;
@@ -16,6 +18,8 @@
     var colors;
     var sortedCols = [];
     var oldHeight,oldWidth, ordinalScale, xBrushScale;
+    var filterIds = [];
+    var currentFilter = null;
     
     input.init = function(representation, value) {  
         _value = value;
@@ -94,7 +98,7 @@
         if (_representation.options.enableSelection && _value.options.selectedrows){
         	selectRows();
         }
-        
+        checkClearSelectionButton();
         saveSelected();
     };
     
@@ -109,10 +113,32 @@
 		}
 		return array;
 	};
+	
+	function filterColumns(cols){
+		var includedColumns = [];
+		for (var col = 0; col < cols.length; col++){
+			var idx = getDataColumnID(cols[col], _representation.inObjects[0]);
+			if (_representation.inObjects[0].spec.colTypes[idx] === "string" || _representation.inObjects[0].spec.colTypes[idx] === "number" 
+				|| _representation.inObjects[0].spec.colTypes[idx] === "dateTime"){
+				includedColumns.push(cols[col]);
+			}
+		}
+		return includedColumns;
+	}
 
     function createData(representation) {
     	var data = { objects : [], colNames : [], colTypes : {}, domains : {}, minmax : {} };
     	var table = representation.inObjects[0];
+    	
+    	filterIds = [];
+        for (var i = 0; i < table.spec.filterIds.length; i++) {
+          if (table.spec.filterIds[i]) {
+            filterIds.push(table.spec.filterIds[i]);
+          }
+        }
+        if (filterIds.length < 1) {
+          filterIds = null;
+        }
 
     	var catColIdx = getDataColumnID(_representation.options.catCol, table);
     	var indices = {};
@@ -134,18 +160,10 @@
     			sortedCols =_value.options.sortedCols;
     		}*/
     	} else {
-    		columnNames = _value.options.columns;
-    	}
+    		columnNames = filterColumns(_value.options.columns);	
+    	};
     	
-
-    	/*var sortedCols = {};
-    	sortedCols[_value.options.sortedCols.length] = _value.options.sortedCols;
-    	if (_value.options.sortedCols.length < _value.options.columns.length){
-    		columnNames = sortArray(sortedCols[_value.options.sortedCols.length], _value.options.columns);
-    	}
-*/
-    	
-    	for (var col = 0; col < _value.options.columns.length; col++) {
+    	for (var col = 0; col < columnNames.length; col++) {
     		var columnName;
         	columnName = columnNames[col];
     		data.colNames.push(columnName);
@@ -222,9 +240,19 @@
 			return;
 		}
 		
-		if (_representation.displayFullscreenButton) {
+		if (_representation.options.displayFullscreenButton) {
 			knimeService.allowFullscreen();
 		}
+		
+		if (_representation.options.displayClearSelectionButton &&  _representation.options.enableSelection) {
+			knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
+				d3.selectAll(".row").classed({"selected": false, "unselected": false });
+				clearBrushes();
+				publishCurrentSelection();
+			});
+			d3.select("#clearSelectionButton").classed("inactive", true);
+		}
+		
 		
         if (_representation.options.enableViewControls) {
             if (_representation.options.enableTitleEdit) {
@@ -252,99 +280,89 @@
     	    	knimeService.addMenuItem('Plot Subtitle:', 'header', plotSubtitleText, null, knimeService.SMALL_ICON);
             }
             if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit 
-            		|| _representation.options.enableMValuesHandling) {
+            		|| _representation.options.enableMValuesHandling && containMissing()) {
 	    		knimeService.addMenuDivider();
 	    	}
-            if (_representation.options.enableMValuesHandling) {
-            	var skipRowRadio = knimeService.createMenuRadioButton('skipRowRadio', 'mValues', 'Skip\u00A0rows\u00A0with\u00A0missing\u00A0values', function() {
-    	    		_value.options.mValues = this.value;
-    	    		if (_representation.options.enableSelection && _representation.options.enableBrushing 
-    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) { //&& !containsMissingOnly()
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-    	    				&& !d3.selectAll(".row.selected").empty()) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-    	    				getExtents();
-    	    		};
-    	        	drawChart();
-    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-    	        		drawBrushes();
-        	        	brush();
-    	        	};
-    	        	//extraRows();
-    	    	});
+            if (_representation.options.enableMValuesHandling && containMissing()) {
             	
-            	skipRowRadio.checked = (_value.options.mValues == skipRowRadio.value);
-    	    	knimeService.addMenuItem('Skip rows with missing values', 'ellipsis-h', skipRowRadio);
-    	    	//credit-card-alt
             	
-            	var skipCellRadio = knimeService.createMenuRadioButton('skipCellRadio', 'mValues', 'Skip\u00A0missing\u00A0values', function() {
-    	    		_value.options.mValues = this.value;
-    	    		if (_representation.options.enableSelection && _representation.options.enableBrushing 
-    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {//&& !containsMissingOnly()
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-    	    				&& !d3.selectAll(".row.selected").empty()) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-    	    				getExtents();
-    	    		};
-    	        	drawChart();
-    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-    	        		drawBrushes();
-        	        	brush();
-    	        	};
-    	        	extraRows();
-    	    	});	   	
-            	skipCellRadio.checked = (_value.options.mValues == skipCellRadio.value);
-    	    	knimeService.addMenuItem('Skip missing values', 'braille', skipCellRadio);	
-    	    	//tasks
-
-    	   	
-    	    	var showMissingRadio = knimeService.createMenuRadioButton('showMissingRadio', 'mValues', 'Show\u00A0missing\u00A0values', function() {
-    	    		_value.options.mValues = this.value;
-    	    		if (_representation.options.enableSelection && _representation.options.enableBrushing 
-    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty()) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		
-    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-    	    				&& !d3.selectAll(".row.selected").empty()) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		
-    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-    	    				getExtents();
-    	    		};
-    	        	drawChart();
-    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-    	        		drawBrushes();
-        	        	brush();
-    	        	};
-    	        	extraRows();
-    	    	});
-    	    	showMissingRadio.checked = (_value.options.mValues == showMissingRadio.value);
-    	    	knimeService.addMenuItem('Show missing values', 'window-minimize', showMissingRadio);
-    	    	//window-minimize
-    	    	//server
+            	var missingMenuSelect = knimeService.createMenuSelect('missingMenuSelect','Skip\u00A0rows\u00A0with\u00A0missing\u00A0values', ['Skip\u00A0rows\u00A0with\u00A0missing\u00A0values','Skip\u00A0missing\u00A0values',MISSING_VALUE_MODE], function() {
+            		_value.options.mValues = this.value;
+	    			if (this.value == 'Skip\u00A0rows\u00A0with\u00A0missing\u00A0values'){
+	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
+	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+	    	    				&& !d3.selectAll(".row.selected").empty()) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+	    	    				getExtents();
+	    	    		};
+	    	        	drawChart();
+	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+	    	        		drawBrushes();
+	        	        	brush();
+	    	        	};
+	    			}
+	    			if (this.value == 'Skip\u00A0missing\u00A0values'){
+	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
+	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+	    	    				&& !d3.selectAll(".row.selected").empty()) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+	    	    				getExtents();
+	    	    		};
+	    	        	drawChart();
+	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+	    	        		drawBrushes();
+	        	        	brush();
+	    	        	};
+	    	        	extraRows();
+	    			}
+	    			if (this.value == MISSING_VALUE_MODE){
+	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
+	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty()) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		
+	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+	    	    				&& !d3.selectAll(".row.selected").empty()) {
+	    	    			saveSelectedRows();
+	    	    		}
+	    	    		
+	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+	    	    				getExtents();
+	    	    		};
+	    	        	drawChart();
+	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+	    	        		drawBrushes();
+	        	        	brush();
+	    	        	};
+	    	        	extraRows();
+	    			}
+	    			
+	    			
+	    		});
+	    		knimeService.addMenuItem('Missing values:', 'braille', missingMenuSelect);
             }
             
-            if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit 
-            		|| _representation.options.enableMValuesHandling || _representation.options.enableLineChange) {
-	    		knimeService.addMenuDivider();
-	    	}
+            if ((_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) 
+            		&& _representation.options.enableMValuesHandling && containMissing()) {
+            	knimeService.addMenuDivider();
+            }
             
             if (_representation.options.enableLineChange) {
             	var lineTypeRadio = knimeService.createInlineMenuRadioButtons('lineType', 'lineType', 
             		_value.options.lType, ["Straight", "Curved"], function() {
     	    		_value.options.lType = this.value;
     	    		if (_representation.options.enableSelection && _representation.options.enableBrushing 
-    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {//&& !containsMissingOnly()
+    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
     	    			saveSelectedRows();
     	    		}
     	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
@@ -390,8 +408,8 @@
 		    	var ySelect = new twinlistMultipleSelections();	
 		    	var ySelectComponent = ySelect.getComponent().get(0);
 		    	columnChangeContainer.append("td").attr("colspan", "3").node().appendChild(ySelectComponent);
-		    	ySelect.setChoices(_value.options.columns);
-		    	ySelect.setSelections(_value.options.columns);
+		    	ySelect.setChoices(filterColumns(_value.options.columns));
+		    	ySelect.setSelections(filterColumns(_value.options.columns));
 		    	ySelect.addValueChangedListener(function() {
 		    		_value.options.columns = ySelect.getSelections();
 		    		saveSettingsToValue();
@@ -446,7 +464,40 @@
 				}
 			}
         }
+        
+        if (filterIds) {//.length > 0
+			if (_representation.enableSelection) {
+				knimeService.addMenuDivider();
+			}
+			var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+			var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.options.subscribeFilter, function() {
+				if (this.checked) {
+					knimeService.subscribeToFilter(_representation.inObjects[0].id, filterChanged, filterIds);
+				} else {
+					knimeService.unsubscribeFilter(_representation.inObjects[0].id, filterChanged);
+				}
+			});
+			knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
+			if (_value.options.subscribeFilter) {
+				knimeService.subscribeToFilter(_representation.inObjects[0].id, filterChanged, filterIds);
+			}
+		}
     };
+    
+    function filterChanged(data){
+    	currentFilter = data;
+    	applyFilter();
+    };
+    
+    function applyFilter(){
+    	if (currentFilter){
+    		d3.selectAll(".row").each(function(d){
+    			d3.select(this).classed("filtered", !isRowIncludedInFilter(d.id));
+    		});
+    		clearBrushes();
+    	};
+    };
+    
     
     publishCurrentSelection = function() {
 		if (knimeService && knimeService.isInteractivityAvailable() && _value.options.publishSelection) {
@@ -457,21 +508,36 @@
 	    	});
 			knimeService.setSelectedRows(_representation.inObjects[0].id, selArray, selectionChanged);
 		}
+		checkClearSelectionButton();
 	};
 	
+	function checkClearSelectionButton(){
+		var button = d3.select("#clearSelectionButton");
+		if (!button.empty()){
+			button.classed("inactive", function(){return d3.select(".row.selected").empty()});
+		}
+	}
+	
 	selectionChanged = function(data) {
+		clearBrushes();
 		if (data.changeSet) {
 			// if changeSet is presented, we do only an incremental update
 			if (data.changeSet.removed) {
 				for (var i = 0; i < data.changeSet.removed.length; i++) {
 					var removedId = getRowIndex(data.changeSet.removed[i]);
-					d3.select("#"+ removedId).classed({"unselected": true, "selected": false});
+					var row = d3.select("#"+ removedId);
+					if (!row.classed("filtered")) {
+						row.classed({"unselected": true, "selected": false});
+					}
 				}
 			}
 			if (data.changeSet.added) {
 				for (var i = 0; i < data.changeSet.added.length; i++) {
 					var addedId = getRowIndex(data.changeSet.added[i]);
-					d3.select("#"+ addedId).classed({"selected": true, "unselected": false});
+					var row = d3.select("#"+ addedId);
+					if (!row.classed("filtered")) {
+						row.classed({"selected": true, "unselected": false});
+					}
 				}
 			}
 		} else {
@@ -494,6 +560,7 @@
 			}
 			selectRows(newSelection);
 		}
+		checkClearSelectionButton();
 	};
 
     function drawChart() {
@@ -538,7 +605,7 @@
         }
         
         var bottomMargin;
-        _value.options.mValues == "Show\u00A0missing\u00A0values" ? bottomMargin = 60 : bottomMargin = 30;
+        _value.options.mValues == MISSING_VALUE_MODE && containMissing() ? bottomMargin = 60 : bottomMargin = 30;
 
         var margin = {top : mTop, left : 40, bottom : bottomMargin, right : 10 + maxLength};
 
@@ -558,7 +625,7 @@
         for (var c = 0; c < _data.colNames.length; c++) {
         	var colName = _data.colNames[c];
         	var scale;
-        	if (_data.colTypes[colName] === "number") {
+        	if (_data.colTypes[colName] === "number" || _data.colTypes[colName] === "dateTime") {
         		scale = d3.scale.linear().range([h, 0]).domain(_data.minmax[colName]).nice();
         	} else {
         		scale = d3.scale.ordinal().domain(_data.domains[colName].values()).rangePoints([h, 0], 1.0);
@@ -574,8 +641,8 @@
        if (_representation.options.enableMValuesHandling 
         		&& _representation.options.enableViewControls 
         		&& _representation.runningInView) {
-        	if (_value.options.mValues == "Show\u00A0missing\u00A0values" && _representation.options.enableSelection 
-        			&& _representation.options.enableBrushing){
+        	if (_value.options.mValues == MISSING_VALUE_MODE && _representation.options.enableSelection 
+        			&& _representation.options.enableBrushing && containMissing()){
         		createXAxis();
 	        };
         };   
@@ -583,7 +650,7 @@
         var g;
         g = plotG.selectAll("g.axis")
         .data(_data.colNames, function(d) { return d; })
-        .enter().append("g").attr("class", "axis").style("font-weight", "bold")
+        .enter().append("g").attr("class", "axis").attr("id", function(d){return d;}).style("font-weight", "bold")
         .attr("transform", function(d) { return "translate(" + scaleCols(d) + ",0)"; })
     	.each(function(d) {
         	var scale = scales[d];
@@ -622,10 +689,12 @@
 	          draggingNow = false;
 	          transition(d3.select(this)).attr("transform", "translate(" + scaleCols(d) + ")");
 	          transition(d3.selectAll(".row")).attr("d", path); 
-	          if (_value.options.mValues == "Show\u00A0missing\u00A0values" && !xBrush.empty()){
-	        		xBrush.extent(xBrush.extent());
-	        		d3.select(".xBrush").call(xBrush);
-	        		brush();
+	          if (_value.options.mValues == MISSING_VALUE_MODE && containMissing()){
+	        	  if (!xBrush.empty()) {
+		        		xBrush.extent(xBrush.extent());
+		        		d3.select(".xBrush").call(xBrush);
+		        		brush();
+	        	  }
 	        	};
 	        }));
 	        d3.selectAll(".label").style("cursor", "move");
@@ -641,7 +710,7 @@
         g.append("g")
 	      .attr("class", "brush")
 	      .each(function(d,i) { 
-	    	  d3.select(this).call(brushes[d] = d3.svg.brush().y(scales[d]).on("brush", brush).on("brushend", publishCurrentSelection).on("brushstart", function(){rowsSelected = false;})); 
+	    	  d3.select(this).call(brushes[d] = d3.svg.brush().y(scales[d]).on("brush", brush).on("brushend", publishCurrentSelection).on("brushstart", brushstart)); 
 	    	  d3.select(this).attr("id", i);
 	    	  })
 	      .selectAll("rect")
@@ -663,8 +732,8 @@
         //representation.options.enableViewControls
 		//&& _representation.runningInView_
 
-        if (_representation.options.enableMValuesHandling) {
-        	bottomBar = (_value.options.mValues == "Show\u00A0missing\u00A0values");
+        if (_representation.options.enableMValuesHandling && containMissing()) {
+        	bottomBar = (_value.options.mValues == MISSING_VALUE_MODE);
         }
 
 	    if (bottomBar) {
@@ -743,7 +812,7 @@
     
     function drawElements(data){
      var rows = plotG.selectAll("path.row").data(data).enter()
-            .append("path").attr("class", "row")
+            .insert("path", ".axis").attr("class", "row")
             .attr("id", function(d) { return d.id; })
             .attr("d", getLine )
             .attr("stroke", function(d) {
@@ -803,23 +872,8 @@
         				rowsSelected = false;
         			}
         		};
-        		if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes){
-    				d3.selectAll(".brush").each(function(d,i){
-    					d3.select(this).call(brushes[_data.colNames[i]].clear());
-    					if (extents){
-	    					if (d3.entries(extents).length > 0){
-	    						extents = {};
-	    					}
-    					}
-    				});
-
-    				if (_representation.options.enableSelection && _representation.options.enableBrushing && _value.options.mValues == "Show\u00A0missing\u00A0values" && xBrush){
-    					d3.select(".xBrush").call(xBrush.clear());
-    					if (xExtent){
-    					xExtent = [];
-    					}
-    				};
-    			};
+        		clearBrushes();
+        		checkClearSelectionButton();
         		d3.event.stopPropagation();
          }).on("mouseover", function(d,i) {
     		 var selected = d3.select(this).classed("selected"); // returns true if selected
@@ -875,10 +929,32 @@
 	      .attr("shape-rendering","crispEdges");
     };
     
+    function clearBrushes(){
+    	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes){
+			d3.selectAll(".brush").each(function(d,i){
+				d3.select(this).call(brushes[_data.colNames[i]].clear());
+				if (extents){
+					if (d3.entries(extents).length > 0){
+						extents = {};
+					}
+				}
+			});
+
+			if (_representation.options.enableSelection && _representation.options.enableBrushing 
+					&& _value.options.mValues == MISSING_VALUE_MODE && xBrush && containMissing()){
+				d3.select(".xBrush").call(xBrush.clear());
+				if (xExtent){
+				xExtent = [];
+				}
+			};
+		};
+    }
+    
     function brush(axis, start, end, par){
     	par = par || false;
     	var data = _data;
     	extents = _data.colNames.map(function(p) { return brushes[p].extent(); });
+    	var missingSelected = xBrush && !xBrush.empty() && _value.options.mValues == MISSING_VALUE_MODE;
     	if (xBrush){
     		var xExtent = xBrush.extent();
     	}
@@ -886,7 +962,7 @@
     	for (var i = 0; i < _data.colNames.length; i++) {
     		nothingSelected &= brushes[_data.colNames[i]].empty();
     	};
-    	if (_value.options.mValues == "Show\u00A0missing\u00A0values" && xBrush){
+    	if (_value.options.mValues == MISSING_VALUE_MODE && xBrush && containMissing()){
     		nothingSelected &= xBrush.empty();
     	}
     	if (nothingSelected) {
@@ -894,10 +970,14 @@
     		return;
     	};
     	d3.selectAll(".row").each(function(dp) {
+    		var row = d3.select(this);
+    		if (row.classed('filtered')) {
+    			return;
+    		};
     		var selected = _data.colNames.every(function(p,i){
     			var extentEmpty = brushes[p].empty();
     			if (xBrush){
-	    			if (extentEmpty && xBrush.empty()){
+	    			if (extentEmpty && !missingSelected){
 	    				return true;
 	    			};
     			} else {
@@ -906,18 +986,16 @@
     				}
     			}
     			var missValueSelected = false;
-    			if (xBrush){
-	    			if (!xBrush.empty()){
-	    				var xScale = scaleCols(_data.colNames[i]);
-	    				if (par){
-	    					missValueSelected = xBrushScale(xExtent[0]) <= xScale && xScale <= xBrushScale(xExtent[1]);
-	    				} else {
-	    					missValueSelected = xExtent[0] <= xScale && xScale <= xExtent[1];
-	    				};
-	    				if (extentEmpty && !missValueSelected){
-	    					return true;
-	    				};
-	    			};
+    			if (missingSelected){
+    				var xScale = scaleCols(_data.colNames[i]);
+    				if (par){
+    					missValueSelected = xBrushScale(xExtent[0]) <= xScale && xScale <= xBrushScale(xExtent[1]);
+    				} else {
+    					missValueSelected = xExtent[0] <= xScale && xScale <= xExtent[1];
+    				};
+    				if (extentEmpty && !missValueSelected){
+    					return true;
+    				};
     			};
     			if (dp[p] == null){
     				return missValueSelected;
@@ -935,11 +1013,11 @@
     	    		return extents[i][0] <= dp[p] && dp[p] <= extents[i][1];
     	    	};
     		});
-    		d3.select(this).classed({"selected": selected, "unselected": !selected});
+    		row.classed({"selected": selected, "unselected": !selected});
     	});
     };
     
-    function getExtents(){	
+    function getExtents(){
     	extents = {};
     	d3.entries(brushes).forEach(function(brush) {
     		if(!brush.value.empty()) {
@@ -947,7 +1025,7 @@
     		};
     	});
     	xExtent = [];
-    	if (_value.options.mValues == "Show\u00A0missing\u00A0values" && xBrush){
+    	if (_value.options.mValues == MISSING_VALUE_MODE && xBrush && containMissing()){
     		if (!xBrush.empty()){
     			xExtent = xBrush.extent();
     		};
@@ -956,9 +1034,17 @@
     
     function drawSavedBrushes(){
     	if (_value.options.selections) {
-    		 d3.keys(brushes).forEach(function(b) {
+    		var yScale;
+    		if (d3.entries(_data.domains).length > 0){
+    			yScale = d3.scale.linear().domain([_value.options.oldHeight, 0]).range([h, 0]);
+    		};
+    		d3.keys(brushes).forEach(function(b) {
     	        	if(_value.options.selections.extents[b]) {
-    	        		brushes[b].extent(_value.options.selections.extents[b]);
+    	        		if (_data.colTypes[b] == "string" && _value.options.oldHeight){
+    	        			brushes[b].extent([yScale(_value.options.selections.extents[b][0]), yScale(_value.options.selections.extents[b][1])]);
+    	        		} else {
+    	        			brushes[b].extent(_value.options.selections.extents[b]);
+    	        		}
     	        	};
     	        });
     	        d3.selectAll(".brush").each(function(d) {
@@ -966,7 +1052,12 @@
     	   	  	});
     	        // draw xBrush
     	        if (_value.options.selections.xBrush){
-    	        	xBrush.extent(_value.options.selections.xBrush);
+    	        	if (_value.options.oldWidth){
+    	        		var xScale = d3.scale.linear().domain([0, _value.options.oldWidth]).range([0, w]);
+    	        		xBrush.extent([xScale(_value.options.selections.xBrush[0]), xScale(_value.options.selections.xBrush[1])]);
+    	        	} else {
+    	        		xBrush.extent(_value.options.selections.xBrush);
+    	        	};
     	        	d3.select(".xBrush").call(xBrush);
     	        }
     	      brush();
@@ -983,7 +1074,10 @@
    				unselected = !selected;
    				
    			}
-   			d3.select(this).classed({"selected": selected, "unselected": unselected});
+   			var row = d3.select(this);
+   			if (!row.classed("filtered")) {
+   				d3.select(this).classed({"selected": selected, "unselected": unselected});
+   			}
    		});
    		if (selection && selection.length > 0) {
    			rowsSelected = true;
@@ -993,6 +1087,11 @@
    			rowsSelected = false;
    		}
     };
+    
+    function brushstart() {
+		rowsSelected = false;
+	  d3.event.sourceEvent.stopPropagation();
+	};
     
     function drawBrushes(par){
     	par = par || false;
@@ -1009,7 +1108,7 @@
 	    	  d3.select(this).call(brushes[d]); 
    	  	});
         // draw xBrush
-        if (_value.options.mValues == "Show\u00A0missing\u00A0values" && xExtent){
+        if (_value.options.mValues == MISSING_VALUE_MODE && xExtent && containMissing()){
         	if (par){
         		xBrush.extent([xBrushScale(xExtent[0]),xBrushScale(xExtent[1])]);
         	} else {
@@ -1036,12 +1135,13 @@
     	drawChart();
     	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected) {
     		ordinalScale = d3.scale.linear().domain([oldHeight, 0]).range([h, 0]);
-    		if (_value.options.mValues == "Show\u00A0missing\u00A0values" && xExtent){
+    		if (_value.options.mValues == MISSING_VALUE_MODE && xExtent && containMissing()){
     			xBrushScale = d3.scale.linear().domain([0, oldWidth]).range([0, w]);
     		}
 	    	drawBrushes(true);
 	    	brush(null, null, null, true);
     	};
+    	applyFilter();
     };
     
     function saveSelected(){
@@ -1074,13 +1174,72 @@
 	    	};
     };
     
+    function isRowIncludedInFilter(rowId) {
+    	var table = _representation.inObjects[0];
+    	if (currentFilter && currentFilter.elements) {
+			var included = true;
+			var row = getTableRow(rowId);
+			for (var i = 0; i < currentFilter.elements.length; i++) {
+				var filterElement = currentFilter.elements[i];
+				if (filterElement.type == "range" && filterElement.columns) {
+					for (var col = 0; col < filterElement.columns.length; col++) {
+						var column = filterElement.columns[col];
+						var columnIndex = getTableColumnId(column.columnName);
+						if (columnIndex != null) {
+							var rowValue = row.data[columnIndex];
+							if (column.type = "numeric") {
+								if (column.minimumInclusive) {
+									included &= (rowValue >= column.minimum);
+								} else {
+									included &= (rowValue > column.minimum);
+								}
+								if (column.maximumInclusive) {
+									included &= (rowValue <= column.maximum);
+								} else {
+									included &= (rowValue < column.maximum);
+								}
+							} else if (column.type = "nominal") {
+								included &= (column.values.indexOf(rowValue) >= 0);
+							}
+						}
+					}
+				} else {
+					// TODO row filter - currently not possible
+				}
+			}
+			return included;
+		}
+		return true;
+    }
+    
+    function getTableColumnId( columnName) {
+    	var table = _representation.inObjects[0];
+    	var colID = null;
+		for (var i = 0; i < table.spec.numColumns; i++) {
+			if (table.spec.colNames[i] === columnName) {
+				colID = i;
+				break;
+			};
+		};
+		return colID;
+    }
+    
+    function getTableRow(rowId) {
+    	var table = _representation.inObjects[0];
+		for (var i = 0; i < table.spec.numRows; i++) {
+			if (table.rows[i].rowKey == rowId) {
+				return table.rows[i];
+			}
+		}
+    }
+    
     function noBrushes(){
     	var noBrushes = true;
     	for (var i = 0; i < _data.colNames.length; i++) {
     		//noBrushes &= brushes[_data.colNames[i]].empty();
     		noBrushes = noBrushes && brushes[_data.colNames[i]].empty();
     	};
-    	if (_value.options.mValues == "Show\u00A0missing\u00A0values" && xBrush){
+    	if (_value.options.mValues == MISSING_VALUE_MODE && xBrush && containMissing()){
     		noBrushes = noBrushes && xBrush.empty();
     	};
     	if (xBrush){
@@ -1099,26 +1258,33 @@
     	};
     };
     
-    function containsMissingOnly(){
-    	var missing = true;
-    	d3.selectAll(".row.selected").each(function(d){
-    		missing = missing && this.__data__.containsMissing;
-    	});
-    	return missing;
-    }
-    
     input.getComponentValue = function() {
-    	saveSettingsToValue();
-    	return _value;
+    	if (!d3.selectAll(".axis").empty()){
+    		saveSettingsToValue(true);
+    		return _value;
+    	} else {
+    		return null;
+    	}
     }
     
-    function saveSettingsToValue(){
+    function containMissing(){
+    	 var missing = false;
+         for (i = 0; i < _data.objects.length; i++ ){
+        	 missing = missing || (_data.objects[i].containsMissing == true);
+         };
+         return missing;
+    }
+    
+    function saveSettingsToValue(par){
+    	par = par || false;
     	if (_representation.options.enableSelection && _representation.options.enableBrushing) {
 	    	getExtents();
 	    	_value.options.selections = {};
 	    	_value.options.selections.extents = extents;
-	    	if (_value.options.mValues == "Show\u00A0missing\u00A0values" && !xBrush.empty()){
-	    	_value.options.selections.xBrush = xExtent;
+	    	if (_value.options.mValues == MISSING_VALUE_MODE && containMissing()){
+	    		if (!xBrush.empty()){
+	    			_value.options.selections.xBrush = xExtent;
+	    		}
 	    	}
 	    	// empty saved single rows selection
 	    	if (_value.options.selectedrows){
@@ -1126,7 +1292,8 @@
 	    	};
     	};
     	
-    	if (_representation.options.enableSelection && _representation.options.enableBrushing && noBrushes() && !d3.selectAll(".row.selected").empty()){
+    	if ((_representation.options.enableSelection && _representation.options.enableBrushing && noBrushes() && !d3.selectAll(".row.selected").empty()) 
+    			|| _representation.options.enableSelection && !_representation.options.enableBrushing && !d3.selectAll(".row.selected").empty()){
     		_value.options.selectedrows = [];
     		d3.selectAll(".row.selected").each(function (row){
         		_value.options.selectedrows.push(row.id);
@@ -1139,7 +1306,10 @@
     	if (_representation.options.enableAxesSwapping) {
     		_value.options.sortedCols = _data.colNames;
     	}
-    	_value.options.height = h;
+    	if (par){
+    		_value.options.oldHeight = h;
+    		_value.options.oldWidth = w;
+    	}
     	// save selected rows for the node output column
     	saveSelected();
     }
