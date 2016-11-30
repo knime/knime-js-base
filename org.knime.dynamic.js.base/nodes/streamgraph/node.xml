@@ -1,117 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
 <js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
-    xmlns="http://knime.org/dynamicnode/v3.0"
-    xmlns:n="http://knime.org/node/v2.12"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-    jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/preview"
-    icon="../js.png" type="Visualizer">
-    <name>JavaScript Streamgraph</name>
-    <shortDescription>A streamgraph based on the NVD3 library.</shortDescription>
-    <fullDescription>
-      <intro>
-        <n:p>
-                    This chart shows multiple columns as stacked areas displaced around a central axis.
-                    Different interpolation methods can be choosen to give the graph an organic appearance.
-                </n:p>
-      </intro>
-      <tab name="Options">
-        <options>
-        <columnFilterOption name="Included columns"
-          id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
-          Select the columns which you wish to be included in the chart.
-        </columnFilterOption>
-        </options>
-      </tab>
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
+	jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/labs/interactiveView"
+	icon="../js.png" type="Visualizer">
+	<name>JavaScript Streamgraph</name>
+	<shortDescription>A streamgraph based on the NVD3 library.</shortDescription>
+	<fullDescription>
+		<intro>
+			<n:p>
+				This chart shows multiple columns as stacked areas displaced
+				around a
+				central axis.
+				Different interpolation methods can be choosen
+				to give the graph an organic
+				appearance.
+			</n:p>
+		</intro>
+		<tab name="Options">
+			<options>
+				<!-- TODO: I want rowkey here as well -->
+				<columnSelectorOption name="x-Axis Column" id="xAxisColum"
+					inPortIndex="0" label="Choose column for x axis" filterClasses="org.knime.core.data.DataValue">
+					Choose column for x axis
+				</columnSelectorOption>
+				<columnFilterOption name="Included columns" id="columns"
+					inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
+					Select the
+					columns which you wish to be included in the chart.
+				</columnFilterOption>
+			</options>
+		</tab>
 
-      <tab name="General Plot Options">
-        <options>
-        <radioButtonOption name="Interpolation Method" id="interpolation" saveInView="true"
-          possibleValues="basis linear step" label="Interpolation Method" defaultValue="basis">
-          Select the interpolation method used to interpolate in-between data items.
-                    -basis: a B-spline, with control point duplication on the ends.
-                    -linear: piecewise linear segments
-                    -step: alternate between horizontal and vertical segments
-        </radioButtonOption>
-            <stringOption name="Title" id="title" label="Title" defaultValue="Streamgraph" optional="true" saveInView="true">
-            The chart title.
-          </stringOption>
-          <stringOption name="Subitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
-            The chart subtitle.
-          </stringOption>
-        <checkBoxOption name="Use custom colors" id="customColors" label="Use custom colors" defaultValue="false" saveInView="true">
-          Select whether colors from the second input port are used instead of standard colors.
-        </checkBoxOption>
-        <checkBoxOption name="Display legend" id="legend" label="Display legend" defaultValue="true" saveInView="true">
-          When checked, the streamgraph legend is displayed.
-        </checkBoxOption>
-        <checkBoxOption name="Display interactive guideline" id="interactiveGuideline" label="Display interactive guideline" defaultValue="true" saveInView="true">
-          When checked, interactive guideline is displayed.
-        </checkBoxOption>
-        <checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
-          label="Display fullscreen button" defaultValue="true" loadDefaults="true">
-          Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
-        </checkBoxOption>
-        <svgOption name="Image" id="svg" portIndex="0" label="Image" additionalWait="500" defaultWidth="600" defaultHeight="400" defaultFullscreen="true">
-          Settings for image generation.
-        </svgOption>
-        </options>
-      </tab>
+		<tab name="General Plot Options">
+			<options>
+				<radioButtonOption name="Stack Style" id="stackStyle"
+					saveInView="true" possibleValues="stack expand stream stream-center"
+					label="Stack Style" defaultValue="stack">
+					Select the style of the stack
+					chart.
+				</radioButtonOption>
+				<radioButtonOption name="Interpolation Method" id="interpolation"
+					saveInView="true" possibleValues="linear step basis" label="Interpolation Method"
+					defaultValue="linear">
+					Select the interpolation method used to interpolate
+					in-between data
+					items.
+					-basis: a B-spline, with control point
+					duplication on the ends.
+					-linear: piecewise linear segments
+					-step:
+					alternate between horizontal and vertical segments
+				</radioButtonOption>
+				<stringOption name="Title" id="title" label="Title"
+					defaultValue="Streamgraph" optional="true" saveInView="true">
+					The chart
+					title.
+				</stringOption>
+				<stringOption name="Subitle" id="subtitle" label="Subtitle"
+					optional="true" saveInView="true">
+					The chart subtitle.
+				</stringOption>
+				<checkBoxOption name="Use custom colors" id="customColors"
+					label="Use custom colors" defaultValue="false" saveInView="true">
+					Select
+					whether colors from the second input port are used instead of
+					standard colors.
+				</checkBoxOption>
+				<checkBoxOption name="Display legend" id="legend"
+					label="Display legend" defaultValue="true" saveInView="true">
+					When checked,
+					the streamgraph legend is displayed.
+				</checkBoxOption>
+				<checkBoxOption name="Display interactive guideline"
+					id="interactiveGuideline" label="Display interactive guideline"
+					defaultValue="true" saveInView="true">
+					When checked, interactive guideline
+					is displayed.
+				</checkBoxOption>
+				<checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
+					label="Display fullscreen button" defaultValue="true" loadDefaults="true">
+					Check to display a button which switches the view into fullscreen
+					mode. The button is only available in the KNIME WebPortal.
+				</checkBoxOption>
+				<svgOption name="Image" id="svg" portIndex="0" label="Image"
+					additionalWait="500" defaultWidth="600" defaultHeight="400"
+					defaultFullscreen="true">
+					Settings for image generation.
+				</svgOption>
+			</options>
+		</tab>
 
-    <tab name="Control Options">
-          <options>
-              <checkBoxOption name="Enable view controls" id="enableViewControls"
-                   label="Enable view controls" defaultValue="true">
-                   Check to enable controls in the chart.
-               </checkBoxOption>
-               <checkBoxOption name="Enable title editing" id="enableTitleEdit"
-                   label="Enable title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the editing of the title within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable subtitle editing" id="enableSubtitleEdit"
-                   label="Enable subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the editing of the subtitle within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable interpolation method editing" id="enableInterpolationMethodEdit"
-                   label="Enable interpolation method editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the editing of the interpolation method within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable custom color toggle" id="enableCustomColorToggle"
-                   label="Enable custom color toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable toggling of custom colors within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable legend toggle" id="enableLegendToggle"
-                   label="Enable legend toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable toggling of the legend within the view.
-               </checkBoxOption>
-               <checkBoxOption name="Enable interactive guideline toggle" id="enableInteractiveGuidelineToggle"
-                   label="Enable interactive guideline toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable toggling of the interactive guideline within the view.
-               </checkBoxOption>
-           </options>
-        </tab>
+		<tab name="Control Options">
+			<options>
+				<checkBoxOption name="Enable view controls" id="enableViewControls"
+					label="Enable view controls" defaultValue="true">
+					Check to enable controls
+					in the chart.
+				</checkBoxOption>
+				<checkBoxOption name="Enable title editing" id="enableTitleEdit"
+					label="Enable title editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the title within the
+					view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable subtitle editing" id="enableSubtitleEdit"
+					label="Enable subtitle editing" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable
+					the editing of the subtitle within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable stack style change"
+					id="enableStackStyleChange" label="Enable stack style change"
+					defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable changing of the stack style
+					within the view.
+				</checkBoxOption>				
+				<checkBoxOption name="Enable interpolation method editing"
+					id="enableInterpolationMethodEdit" label="Enable interpolation method editing"
+					defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the interpolation method
+					within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable custom color toggle" id="enableCustomColorToggle"
+					label="Enable custom color toggle" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable
+					toggling of custom colors within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable legend toggle" id="enableLegendToggle"
+					label="Enable legend toggle" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable toggling of the legend within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable interactive guideline toggle"
+					id="enableInteractiveGuidelineToggle" label="Enable interactive guideline toggle"
+					defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable toggling of the interactive guideline
+					within the view.
+				</checkBoxOption>
+				<!-- TODO: have _value.options.dateFormat here as well  -->
+			</options>
+		</tab>
 
-    </fullDescription>
-    <interactiveView name="JavaScript Streamgraph">
-      A NVD3.js implementation of a streamgraph.
-    </interactiveView>
-    <ports>
-      <inPort portType="Data" name="Display data" index="0">
-                Data table containing the values to be plotted in the streamgraph.
-    </inPort>
-    <inPort portType="Data" name="Color data" index="1" optional="true">
-      Data table containing one column with the column names of the first table. Each column name has a color assigned.
-    </inPort>
-      <outPort portType="Image" name="Streamgraph image" index="0">
-        SVG image of the pie chart.
-      </outPort>
-    </ports>
-  <js:resources>
-    <!-- Added for inlining style rules when generating svg -->
-    <js:resource type="css" path="nv.d3.v1_8_1.min.css" />
-    <js:resource type="js" path="streamgraph.js" />
-  </js:resources>
-  <js:dependencies>
-    <js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local" exports="nv" />
-  </js:dependencies>
+		<tab name="Axis Configuration">
+			<options>
+				<integerOption name="x-Axis Ticks" id="xAxisTicks"
+					label="x-Axis Ticks" defaultValue="10" minValue="0" saveInView="true">
+					Number of Ticks
+					on the x-Axis
+				</integerOption>
+				<stringListOption name="Date Format" id="dateFormat"
+					label="Date Format" possibleValues="yyyy-mm-dd m/d/yy" editable="true"
+					saveInView="false" optional="true" defaultValues="yyyy-mm-dd"  >
+					Choose how to format x-Axis ticks if the
+					associated
+					column is of type Date/Time.
+				</stringListOption>
+				<integerOption name="y-Axis Ticks" id="yAxisTicks"
+					label="y-Axis Ticks" defaultValue="2" minValue="0" saveInView="true">
+					Number of Ticks
+					on the y-Axis
+				</integerOption>
+			</options>
+		</tab>
+
+	</fullDescription>
+	<interactiveView name="JavaScript Streamgraph">
+		A NVD3.js implementation of a
+		streamgraph.
+	</interactiveView>
+	<ports>
+		<inPort portType="Data" name="Display data" index="0">
+			Data table
+			containing the values to be plotted in the streamgraph.
+		</inPort>
+		<inPort portType="Data" name="Color data" index="1" optional="true">
+			Data table containing one column with the column names of the first
+			table. Each column name has a color assigned.
+		</inPort>
+		<outPort portType="Image" name="Streamgraph image" index="0">
+			SVG
+			image of the pie chart.
+		</outPort>
+	</ports>
+	<js:resources>
+		<!-- Added for inlining style rules when generating svg -->
+		<js:resource type="css" path="nv.d3.v1_8_1.min.css" />
+		<js:resource type="js" path="streamgraph.js" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local"
+			exports="nv" />
+	</js:dependencies>
 </js:knimeNode>
