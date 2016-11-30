@@ -3,6 +3,10 @@
 	overflow: hidden;
 }
 
+.noUi-value, .noUi-tooltip {
+	white-space: nowrap;
+}
+
 .noUi-value-horizontal {
     -webkit-transform: translate3d(-50%,100%,0);
     transform: translate3d(-50%,100%,0);
