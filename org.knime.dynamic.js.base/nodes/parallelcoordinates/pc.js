@@ -486,15 +486,17 @@
     
     function filterChanged(data){
     	currentFilter = data;
-    	applyFilter();
+    	applyFilter(true);
     };
     
-    function applyFilter(){
+    function applyFilter(clear){
     	if (currentFilter){
     		d3.selectAll(".row").each(function(d){
     			d3.select(this).classed("filtered", !isRowIncludedInFilter(d.id));
     		});
-    		clearBrushes();
+    		if (clear) {
+    			clearBrushes();
+    		}
     	};
     };
     
