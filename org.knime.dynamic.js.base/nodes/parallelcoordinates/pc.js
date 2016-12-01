@@ -235,7 +235,7 @@
 
     function createControls() {
     	
-    	if (!knimeService) {
+    	if (!knimeService || !_representation.options.enableViewControls) {
 			// TODO: error handling?
 			return;
 		}
@@ -253,139 +253,137 @@
 			d3.select("#clearSelectionButton").classed("inactive", true);
 		}
 		
-		
-        if (_representation.options.enableViewControls) {
-            if (_representation.options.enableTitleEdit) {
-            	var plotTitleText = knimeService.createMenuTextField('plotTitleText', _value.options.title, function() {
-            		var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-                    _value.options.title = this.value;
-                    var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-                    d3.select("#title").text(this.value);
-                    if (hasTitles != hadTitles) {
-                        drawChart(true);
-                    }}, true);
-	    		knimeService.addMenuItem('Plot Title:', 'header', plotTitleText);
-            };
-    
-            if (_representation.options.enableSubtitleEdit) {
-    	    		var plotSubtitleText = knimeService.createMenuTextField('plotSubtitleText', _value.options.subtitle, function() {
-                        var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-                        _value.options.subtitle = this.value;
-                        var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-                        d3.select("#subtitle").text(this.value);
-                        if (hasTitles != hadTitles) {
-                            drawChart(true);
-                        }
-                    }, true);
-    	    	knimeService.addMenuItem('Plot Subtitle:', 'header', plotSubtitleText, null, knimeService.SMALL_ICON);
-            }
-            if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit 
-            		|| _representation.options.enableMValuesHandling && containMissing()) {
-	    		knimeService.addMenuDivider();
-	    	}
-            if (_representation.options.enableMValuesHandling && containMissing()) {
-            	
-            	
-            	var missingMenuSelect = knimeService.createMenuSelect('missingMenuSelect','Skip\u00A0rows\u00A0with\u00A0missing\u00A0values', ['Skip\u00A0rows\u00A0with\u00A0missing\u00A0values','Skip\u00A0missing\u00A0values',MISSING_VALUE_MODE], function() {
-            		_value.options.mValues = this.value;
-	    			if (this.value == 'Skip\u00A0rows\u00A0with\u00A0missing\u00A0values'){
-	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
-	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-	    	    				&& !d3.selectAll(".row.selected").empty()) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-	    	    				getExtents();
-	    	    		};
-	    	        	drawChart();
-	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-	    	        		drawBrushes();
-	        	        	brush();
-	    	        	};
-	    			}
-	    			if (this.value == 'Skip\u00A0missing\u00A0values'){
-	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
-	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-	    	    				&& !d3.selectAll(".row.selected").empty()) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-	    	    				getExtents();
-	    	    		};
-	    	        	drawChart();
-	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-	    	        		drawBrushes();
-	        	        	brush();
-	    	        	};
-	    	        	extraRows();
-	    			}
-	    			if (this.value == MISSING_VALUE_MODE){
-	    				if (_representation.options.enableSelection && _representation.options.enableBrushing 
-	    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty()) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		
-	    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-	    	    				&& !d3.selectAll(".row.selected").empty()) {
-	    	    			saveSelectedRows();
-	    	    		}
-	    	    		
-	    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-	    	    				getExtents();
-	    	    		};
-	    	        	drawChart();
-	    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-	    	        		drawBrushes();
-	        	        	brush();
-	    	        	};
-	    	        	extraRows();
-	    			}
-	    			
-	    			
-	    		});
-	    		knimeService.addMenuItem('Missing values:', 'braille', missingMenuSelect);
-            }
-            
-            if ((_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) 
-            		&& _representation.options.enableMValuesHandling && containMissing()) {
-            	knimeService.addMenuDivider();
-            }
-            
-            if (_representation.options.enableLineChange) {
-            	var lineTypeRadio = knimeService.createInlineMenuRadioButtons('lineType', 'lineType', 
-            		_value.options.lType, ["Straight", "Curved"], function() {
-    	    		_value.options.lType = this.value;
-    	    		if (_representation.options.enableSelection && _representation.options.enableBrushing 
-    	    				&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection && !_representation.options.enableBrushing 
-    	    				&& !d3.selectAll(".row.selected").empty()) {
-    	    			saveSelectedRows();
-    	    		}
-    	    		if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
-    	    				getExtents();
-    	    		};
-    	        	drawChart();
-    	        	if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
-    	        		drawBrushes();
-        	        	brush();
-    	        	};
-    	    	});
-    	    	knimeService.addMenuItem('Line type:', 'bars', lineTypeRadio);
-            	
-            	var lineThicknessSpin = knimeService.createMenuNumberField("lineThickness", _value.options.lThickness, 0.1, 100, 0.1, function(){
-            		_value.options.lThickness = Number(this.value);
-            		d3.selectAll(".row").attr("stroke-width", this.value);
-            	});
-            	knimeService.addMenuItem('Line thickness:', 'minus', lineThicknessSpin);
-            }
+		if (_representation.options.enableTitleEdit) {
+			var plotTitleText = knimeService.createMenuTextField('plotTitleText', _value.options.title, function() {
+				var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
+				_value.options.title = this.value;
+				var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
+				d3.select("#title").text(this.value);
+				if (hasTitles != hadTitles) {
+					drawChart(true);
+				}}, true);
+			knimeService.addMenuItem('Plot Title:', 'header', plotTitleText);
+		};
+
+		if (_representation.options.enableSubtitleEdit) {
+			var plotSubtitleText = knimeService.createMenuTextField('plotSubtitleText', _value.options.subtitle, function() {
+				var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
+				_value.options.subtitle = this.value;
+				var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
+				d3.select("#subtitle").text(this.value);
+				if (hasTitles != hadTitles) {
+					drawChart(true);
+				}
+			}, true);
+			knimeService.addMenuItem('Plot Subtitle:', 'header', plotSubtitleText, null, knimeService.SMALL_ICON);
+		}
+		if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit 
+				|| _representation.options.enableMValuesHandling && containMissing()) {
+			knimeService.addMenuDivider();
+		}
+		if (_representation.options.enableMValuesHandling && containMissing()) {
+
+
+			var missingMenuSelect = knimeService.createMenuSelect('missingMenuSelect','Skip\u00A0rows\u00A0with\u00A0missing\u00A0values', ['Skip\u00A0rows\u00A0with\u00A0missing\u00A0values','Skip\u00A0missing\u00A0values',MISSING_VALUE_MODE], function() {
+				_value.options.mValues = this.value;
+				if (this.value == 'Skip\u00A0rows\u00A0with\u00A0missing\u00A0values'){
+					if (_representation.options.enableSelection && _representation.options.enableBrushing 
+							&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
+						saveSelectedRows();
+					}
+					if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+							&& !d3.selectAll(".row.selected").empty()) {
+						saveSelectedRows();
+					}
+					if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+						getExtents();
+					};
+					drawChart();
+					if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+						drawBrushes();
+						brush();
+					};
+				}
+				if (this.value == 'Skip\u00A0missing\u00A0values'){
+					if (_representation.options.enableSelection && _representation.options.enableBrushing 
+							&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
+						saveSelectedRows();
+					}
+					if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+							&& !d3.selectAll(".row.selected").empty()) {
+						saveSelectedRows();
+					}
+					if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+						getExtents();
+					};
+					drawChart();
+					if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+						drawBrushes();
+						brush();
+					};
+					extraRows();
+				}
+				if (this.value == MISSING_VALUE_MODE){
+					if (_representation.options.enableSelection && _representation.options.enableBrushing 
+							&& noBrushes() && !d3.selectAll(".row.selected").empty()) {
+						saveSelectedRows();
+					}
+
+					if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+							&& !d3.selectAll(".row.selected").empty()) {
+						saveSelectedRows();
+					}
+
+					if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+						getExtents();
+					};
+					drawChart();
+					if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+						drawBrushes();
+						brush();
+					};
+					extraRows();
+				}
+
+
+			});
+			knimeService.addMenuItem('Missing values:', 'braille', missingMenuSelect);
+		}
+
+		if ((_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) 
+				&& _representation.options.enableMValuesHandling && containMissing()) {
+			knimeService.addMenuDivider();
+		}
+
+		if (_representation.options.enableLineChange) {
+			var lineTypeRadio = knimeService.createInlineMenuRadioButtons('lineType', 'lineType', 
+					_value.options.lType, ["Straight", "Curved"], function() {
+				_value.options.lType = this.value;
+				if (_representation.options.enableSelection && _representation.options.enableBrushing 
+						&& noBrushes() && !d3.selectAll(".row.selected").empty() ) {
+					saveSelectedRows();
+				}
+				if (_representation.options.enableSelection && !_representation.options.enableBrushing 
+						&& !d3.selectAll(".row.selected").empty()) {
+					saveSelectedRows();
+				}
+				if (_representation.options.enableSelection &&_representation.options.enableBrushing && brushes && !rowsSelected){
+					getExtents();
+				};
+				drawChart();
+				if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected){
+					drawBrushes();
+					brush();
+				};
+			});
+			knimeService.addMenuItem('Line type:', 'bars', lineTypeRadio);
+
+			var lineThicknessSpin = knimeService.createMenuNumberField("lineThickness", _value.options.lThickness, 0.1, 100, 0.1, function(){
+				_value.options.lThickness = Number(this.value);
+				d3.selectAll(".row").attr("stroke-width", this.value);
+			});
+			knimeService.addMenuItem('Line thickness:', 'minus', lineThicknessSpin);
+		}
             
          // temporarily use controlContainer to solve th resizing problem with ySelect
             if (_representation.options.enableColumnSelection){
@@ -436,6 +434,11 @@
 		    	ySelectComponent.style.height = '';
 		    	controlContainer.remove();
 	        }
+        
+        if ((_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) 
+        		|| (_representation.options.enableMValuesHandling && containMissing()) || _representation.options.enableLineChange 
+        		&& knimeService.isInteractivityAvailable() && _representation.options.enableSelection) {
+        	knimeService.addMenuDivider();
         }
         
         if (knimeService.isInteractivityAvailable()) {
@@ -900,6 +903,13 @@
     		 return d.selected == false;
     	 });
      	};
+     	
+     // render rows with a delay	
+     /*d3.selectAll(".row").style("visibility", "hidden");	
+     d3.selectAll(".row").transition().style("visibility", "visible").delay(function(d,i){
+    	 arraySize = d3.selectAll(".row").length;
+    	 return arraySize / i * 5000;
+     });*/
      
     };
 
