@@ -533,7 +533,7 @@ function DecTreeDrawer(representation, value) {
 	}
     
     updateTitle = function() {
-    	var hadTitle = (title.length > 0);
+    	var hadTitle = (title && title.length > 0);
         title = document.getElementById("chartTitleText").value;
         var hasTitle = (title.length > 0);        
         if (hasTitle != hadTitle) {
@@ -545,7 +545,7 @@ function DecTreeDrawer(representation, value) {
 	};
 	
 	updateSubtitle = function() {
-		var hadTitle = (subtitle.length > 0);
+		var hadTitle = (subtitle && subtitle.length > 0);
         subtitle = document.getElementById("chartSubtitleText").value;
         var hasTitle = (subtitle.length > 0);
         if (hasTitle != hadTitle) {
