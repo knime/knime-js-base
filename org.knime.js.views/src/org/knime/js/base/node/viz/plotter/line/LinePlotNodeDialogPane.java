@@ -265,6 +265,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_xColComboBox.setPreferredSize(new Dimension(260, 50));
         panel.add(m_xColComboBox, c);
         c.gridy++;
+        panel.add(new JLabel("Choose column for y axis: "), c);
+        c.gridy++;
         c.gridwidth = 4;
         panel.add(m_yColFilter, c);
 

@@ -52,8 +52,10 @@
                     The subtitle of the graph shown above the generated image. If left blank, no subtitle will be shown.
                 </stringOption>
                
-				<svgOption name="Create image at outport" additionalWait="500"
-				id="svg" portIndex="0" label="Create image at output port"></svgOption>
+				<svgOption name="Image" additionalWait="500"
+                    id="svg" portIndex="0" label="Image">
+                    Settings for image generation.
+                </svgOption>
 	
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
@@ -104,7 +106,7 @@
                    label="Enable subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Enables the editing of the subtitle in the interactive view.
                </checkBoxOption>
-               <checkBoxOption name="Enable missing Values handling" id="enableMValuesHandling"
+               <checkBoxOption name="Enable missing values handling" id="enableMValuesHandling"
                    label="Enable missing values handling" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Enables handling of missing values in the interactive view.
                </checkBoxOption>
@@ -127,7 +129,7 @@
           <options>
            <checkBoxOption name="Enable selection" id="enableSelection"
                label="Enable selection" defaultValue="true">
-               Enables row selection within the view by clicking the rendered lines. Use Shift key to select multiple rows. To deselect previously selected row use shift + mouse click of the selected row.
+               Enables row selection within the view by clicking the rendered lines. Use Shift key to select multiple rows. To deselect previously selected row use Shift + mouse click of the selected row.
                Please note that this will deactivate the selection previously selected by the range selection, if applicable.
            </checkBoxOption>
            <checkBoxOption name="Enable range selection" id="enableBrushing"
@@ -141,13 +143,14 @@
            </checkBoxOption>
            <checkBoxOption name="Publish selection events" id="publishSelection"
                label="Publish selection events" defaultValue="true" enableDependency="enableSelection" enableValue="true" saveInView="true">
-               Makes information on the rows selected interactively in the view available for the subsequent node.
+               If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".
            </checkBoxOption>
            <checkBoxOption name="Subscribe to selection events" id="subscribeSelection"
                label="Subscribe to selection events" defaultValue="true" enableDependency="enableSelection" enableValue="true" saveInView="true">
-               Enables receiving information on the data rows selected in the previous node.
+               If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".
            </checkBoxOption>
            <checkBoxOption name="Subscribe to filter events" id="subscribeFilter" label="Subscribe to filter events" defaultValue="true" saveInView="true">
+                If checked, the view reacts when applied filters have been changed.
            </checkBoxOption>
  		</options>
         </tab>

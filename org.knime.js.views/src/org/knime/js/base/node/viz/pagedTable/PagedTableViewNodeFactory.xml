@@ -28,6 +28,9 @@
 	        <option name="Display row keys">
 	        	Enable or disable the display of row keys. When enabled row keys will be rendered in a separate column.
 	        </option>
+	        <option name="Display full screen button">
+	           Displays a button enabling full screen mode.
+            </option>
 	        <option name="Display row indices">
 	        	Enable or disable the display of row indices. When enabled row indices will be rendered in a separate column.
 	        </option>
@@ -60,6 +63,15 @@
         	<option name="Enable selection">
         		If checked a separate column containing checkboxes is rendered in the view. The selection, when applied, will be represented in the output table as a new boolean column.
         	</option>
+        	<option name="Enable 'Show selected rows only' option">
+        	    If checked, a checkbox to switch on and off the mode of displaying only selected rows is rendered in the view.
+        	</option>
+        	<option name="Publish selection events">
+        	    If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".
+        	</option>
+        	<option name="Subscribe to selection events">
+        	    If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".
+        	</option>
         	<option name="Selection column name">
         		The name of the boolean column containing the selection.
         	</option>
@@ -68,6 +80,9 @@
         	</option>
         	<option name="Enable search for individual columns">
         		Enable or disable search fields on each individual column.
+        	</option>
+        	<option name="Subscribe to filter events">
+        	    If checked, the view reacts when applied filters have been changed.
         	</option>
         	<option name="Enable sorting on columns">
         		Enable or disable the sorting functionality for each column.

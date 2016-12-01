@@ -83,18 +83,26 @@
 					Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
 				</checkBoxOption>
 				
-				<svgOption name="Create image at outport" id="svg" additionalWait="500"
-				    portIndex="0" label="Create image at output port"></svgOption>
-				   
+				<svgOption name="Image" additionalWait="500"
+                    id="svg" portIndex="0" label="Image">
+                    Settings for image generation.
+                </svgOption>
+					
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
-                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    The color of the background.
+                </colorOption>
                     
-                    <colorOption name="Data area color" id="daColor" label="Data area color"
-                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
+                <colorOption name="Data area color" id="daColor" label="Data area color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    The background color of the data area, within the axes.
+                </colorOption>
 
-				<!-- Use a color selector to choose bar colors? -->
-				<colorOption name="Box color" id="boxColor" label="Box color"
-					format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255"></colorOption>
+                <!-- Use a color selector to choose bar colors? -->
+                <colorOption name="Box color" id="boxColor" label="Box color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    The filling color of the boxes.
+                </colorOption>
 			</options>
 		</tab>
 		

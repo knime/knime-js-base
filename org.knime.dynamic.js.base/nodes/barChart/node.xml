@@ -24,8 +24,8 @@
 					of the selected category columns are determined.
 				</radioButtonOption>
 
-				<columnFilterOption name="Select frequency columns"
-					id="freq" inPortIndex="0" label="Frequency Columns" filterClasses="org.knime.core.data.DoubleValue"
+				<columnFilterOption name="Frequency columns"
+					id="freq" inPortIndex="0" label="Frequency columns" filterClasses="org.knime.core.data.DoubleValue"
 					enableDependency="aggr" enableValue="Sum Average">
 					Select the columns with frequencies for which you wish to plot bars.
 				</columnFilterOption>

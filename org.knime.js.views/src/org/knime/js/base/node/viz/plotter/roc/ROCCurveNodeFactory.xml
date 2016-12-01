@@ -57,6 +57,7 @@
             <option name="Line width (in px)">The width of the shown lines.</option>
             <option name="Show area under curve">If set, the plot displays the size of the area under the curves</option>
             <option name="Resize view to fill window">Setting this option resizes the view to the available area of the window. If disabled the view size is static according to the set width and height.</option>
+            <option name="Display full screen button">Displays a button enabling full screen mode.</option>
             
             <option name="Background color">The color of the background of the image.</option>
             <option name="Data area color">The background color of the data area, within the axes.</option>

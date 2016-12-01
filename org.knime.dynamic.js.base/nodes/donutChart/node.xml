@@ -42,7 +42,7 @@
     				The chart subtitle.
     			</stringOption>
 		    	<checkBoxOption name="Chart type" id="togglePie" label="Plot donut chart" defaultValue="false" saveInView="true">
-	    			Select whether to plot a pie chart, or a donut chart.
+	    			Check this option to build a donut chart. Otherwise, a pie chart will be plotted.
 				</checkBoxOption>
 				<doubleOption name="Donut Hole Ratio" id="holeSize" 
 					label="Donut Hole Ratio"  defaultValue="0.35" minValue="0" maxValue="1" saveInView="true" enableDependency="togglePie" enableValue="true">

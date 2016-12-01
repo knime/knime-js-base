@@ -41,6 +41,7 @@
             <option name="Width of image (in px)">The width of the generated SVG image.</option>
             <option name="Height of image (in px)">The height of the generated SVG image.</option>
             <option name="Resize view to fill window">Setting this option resizes the view to the available area of the window. If disabled the view size is static according to the set width and height.</option>
+            <option name="Display full screen button">Displays a button enabling full screen mode.</option>
             <option name="Background color">The color of the background of the image.</option>
             <option name="Data area color">The background color of the data area, within the axes.</option>
             <option name="Show grid">If an additional grid is being rendered at the axes tick positions.</option>
@@ -59,6 +60,10 @@
             <option name="Enable selection">Enables or disables the selection feature. When enabled data points can be selected in the scatter plot by activating the corresponding button and clicking on points. Extending the selection is possible by holding down the Shift-Key and clicking. The selection is propagated in an appended column of the data table.</option>
             <option name="Enable rectangular selection">Enables a selection mode where a rectangle can be drawn to select points. To start drawing a selection rectangle activate the corresponding button in the view and drag the mouse. To extend the selection hold down the Shift-Key and click or drag the mouse.</option>
             <option name="Enable lasso selection">Enables a selection mode where a freeform shape can be drawn to select points. To start drawing a selection lasso activate the corresponding button in the view and hold down the Ctrl-Key (Cmd-Key on Mac) and drag the mouse. To extend the selection hold down the Ctrl, and Shift-Key (Cmd, and Shift on Mac) and drag the mouse.</option>
+            <option name="Publish selection events">If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".</option>
+            <option name="Subscribe to selection events">If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".</option>
+            <option name="Enable 'Show selected rows only' option">If checked, a checkbox to switch on and off the mode of displaying only selected rows is rendered in the view.</option>
+            <option name="Subscribe to filter events">If checked, the view reacts when applied filters have been changed.</option>
             <option name="Enable panning">Enable panning on the plot. To start panning activate the corresponding button in the view then click and drag the mouse.</option>
             <option name="Enable mouse wheel zooming">Enable zooming on the plot using the mouse wheel.</option>
             <option name="Enable drag zooming">Enable zooming on the plot by dragging the mouse and drawing a zoom rectangle. Dragging from the top-left down 
