@@ -261,6 +261,7 @@
 				d3.select("#title").text(this.value);
 				if (hasTitles != hadTitles) {
 					drawChart(true);
+					applyFilter();
 				}}, true);
 			knimeService.addMenuItem('Plot Title:', 'header', plotTitleText);
 		};
@@ -273,6 +274,7 @@
 				d3.select("#subtitle").text(this.value);
 				if (hasTitles != hadTitles) {
 					drawChart(true);
+					applyFilter();
 				}
 			}, true);
 			knimeService.addMenuItem('Plot Subtitle:', 'header', plotSubtitleText, null, knimeService.SMALL_ICON);
@@ -303,6 +305,7 @@
 						drawBrushes();
 						brush();
 					};
+					applyFilter();
 				}
 				if (this.value == 'Skip\u00A0missing\u00A0values'){
 					if (_representation.options.enableSelection && _representation.options.enableBrushing 
@@ -322,6 +325,7 @@
 						brush();
 					};
 					extraRows();
+					applyFilter();
 				}
 				if (this.value == MISSING_VALUE_MODE){
 					if (_representation.options.enableSelection && _representation.options.enableBrushing 
@@ -343,9 +347,8 @@
 						brush();
 					};
 					extraRows();
+					applyFilter();
 				}
-
-
 			});
 			knimeService.addMenuItem('Missing values:', 'braille', missingMenuSelect);
 		}
@@ -375,6 +378,7 @@
 					drawBrushes();
 					brush();
 				};
+				applyFilter();
 			});
 			knimeService.addMenuItem('Line type:', 'bars', lineTypeRadio);
 
@@ -413,6 +417,7 @@
 		    		saveSettingsToValue();
 		    		_data = createData(_representation);
 		    		drawChart();
+		    		applyFilter();
 		    		if (_representation.options.enableSelection && _representation.options.enableBrushing){
 		            	drawSavedBrushes();
 		            }
