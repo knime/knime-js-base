@@ -136,6 +136,9 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 			slider.setAttribute('disabled', true);
 		} else {
 			if (knimeService && knimeService.isInteractivityAvailable()) {
+				if (_value.filter && _value.filter.columns) {
+					knimeService.addToFilter(representation.tableId, _value.filter);
+				}
 				slider.noUiSlider.on('set', function() {
 					if (setFilterOnValue()) {
 						knimeService.addToFilter(representation.tableId, _value.filter);
