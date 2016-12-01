@@ -71,6 +71,7 @@ public class DecisionTreeViewConfig {
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String BACKGROUND_COLOR = "backgroundColor";
     static final String DATA_AREA_COLOR = "dataAreaColor";
+    static final String NODE_BACKGROUND_COLOR = "nodeBackgroundColor";
     static final String NODE_STATUS = "nodeStatus";
     static final String EXPANDED_LEVEL = "expandedLevel";
     static final String NODE_STATUS_FROM_VIEW = "nodeStatusFromView";
@@ -81,32 +82,38 @@ public class DecisionTreeViewConfig {
     static final String SUBSCRIBE_SELECTION = "subscribeSelection";
     static final String DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String ENABLE_ZOOMING = "enableZooming";
+    static final String DISPLAY_SELECTION_RESET_BUTTON = "displaySelectionResetButton";
 
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
-    static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
-    static final int DEFAULT_MAX_ROWS = 2500;
+    static final Color DEFAULT_DATA_AREA_COLOR = DEFAULT_BACKGROUND_COLOR;
+    static final Color DEFAULT_NODE_BACKGROUND_COLOR = DEFAULT_BACKGROUND_COLOR;
+    static final int DEFAULT_MAX_ROWS = 10000;
     static final String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Decision Tree View)";
-    static final int DEFAULT_WIDTH = 800;
-    static final int DEFAULT_HEIGHT = 600;
+    static final boolean DEFAULT_GENERATE_IMAGE = true;
     final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     final static int DEFAULT_EXPANDED_LEVEL = 1;
     static final boolean DEFAULT_NODE_STATUS_FROM_VIEW = false;
-    static final boolean DEFAULT_ENABLE_SELECTION = false;
+    static final boolean DEFAULT_ENABLE_SELECTION = true;
     static final boolean DEFAULT_ENABLE_ZOOMING = true;
+    static final boolean DEFAULT_ENABLE_CONFIG = true;
+    static final boolean DEFAULT_ENABLE_TITLE_CHANGE = true;
+    static final boolean DEFAULT_ENABLE_SUBTITLE_CHANGE = true;
+    static final boolean DEFAULT_DISPLAY_SELECTION_RESET_BUTTON = true;
     static final NumberFormatSettings DEFAULT_NUMBER_FORMAT = new NumberFormatSettings();
 
     private String m_title;
     private String m_subtitle;
-    private boolean m_generateImage;
+    private boolean m_generateImage = DEFAULT_GENERATE_IMAGE;
     private boolean m_hideInWizard;
-    private boolean m_enableConfig;
-    private boolean m_enableTitleChange;
-    private boolean m_enableSubtitleChange;
+    private boolean m_enableConfig = DEFAULT_ENABLE_CONFIG;
+    private boolean m_enableTitleChange = DEFAULT_ENABLE_TITLE_CHANGE;
+    private boolean m_enableSubtitleChange = DEFAULT_ENABLE_SUBTITLE_CHANGE;
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
+    private Color m_nodeBackgroundColor = DEFAULT_NODE_BACKGROUND_COLOR;
     private int m_expandedLevel = DEFAULT_EXPANDED_LEVEL;
     private boolean m_nodeStatusFromView;
     private int m_maxRows = DEFAULT_MAX_ROWS;
@@ -115,6 +122,7 @@ public class DecisionTreeViewConfig {
     private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
     private boolean m_displayFullScreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_enableZooming = DEFAULT_ENABLE_ZOOMING;
+    private boolean m_displaySelectionResetButton = DEFAULT_DISPLAY_SELECTION_RESET_BUTTON;
 
     private NumberFormatSettings m_numberFormat = DEFAULT_NUMBER_FORMAT;
 
@@ -135,6 +143,7 @@ public class DecisionTreeViewConfig {
         settings.addString(SUBTITLE, m_subtitle);
         settings.addString(BACKGROUND_COLOR, getBackgroundColorString());
         settings.addString(DATA_AREA_COLOR, getDataAreaColorString());
+        settings.addString(NODE_BACKGROUND_COLOR, getNodeBackgroundColorString());
         settings.addIntArray(NODE_STATUS, m_nodeStatus);
         settings.addInt(EXPANDED_LEVEL, m_expandedLevel);
         settings.addBoolean(NODE_STATUS_FROM_VIEW, m_nodeStatusFromView);
@@ -146,6 +155,7 @@ public class DecisionTreeViewConfig {
         settings.addBoolean(SUBSCRIBE_SELECTION, m_subscribeSelection);
         settings.addBoolean(DISPLAY_FULLSCREEN_BUTTON, m_displayFullScreenButton);
         settings.addBoolean(ENABLE_ZOOMING, m_enableZooming);
+        settings.addBoolean(DISPLAY_SELECTION_RESET_BUTTON, m_displaySelectionResetButton);
     }
 
     /**
@@ -168,6 +178,8 @@ public class DecisionTreeViewConfig {
         String dataColorString = settings.getString(DATA_AREA_COLOR);
         Color dataAreaColor = CSSUtils.colorFromCssHexString(dataColorString);
         setDataAreaColor(dataAreaColor);
+        String nodeBgColorString = settings.getString(NODE_BACKGROUND_COLOR);
+        setNodeBackgroundColor(CSSUtils.colorFromCssHexString(nodeBgColorString));
         setNodeStatus(settings.getIntArray(NODE_STATUS));
         NumberFormatSettings numberFormat = new NumberFormatSettings();
         numberFormat.loadFromNodeSettings(settings);
@@ -181,6 +193,7 @@ public class DecisionTreeViewConfig {
         setSubscribeSelection(settings.getBoolean(SUBSCRIBE_SELECTION));
         setDisplayFullScreenButton(settings.getBoolean(DISPLAY_FULLSCREEN_BUTTON));
         setEnableZooming(settings.getBoolean(ENABLE_ZOOMING));
+        setDisplaySelectionResetButton(settings.getBoolean(DISPLAY_SELECTION_RESET_BUTTON));
     }
 
     /**
@@ -204,6 +217,8 @@ public class DecisionTreeViewConfig {
         String dataColorString = settings.getString(DATA_AREA_COLOR, null);
         Color dataAreaColor = dataColorString == null ? DEFAULT_DATA_AREA_COLOR : CSSUtils.colorFromCssHexString(dataColorString);
         setDataAreaColor(dataAreaColor);
+        String nodeBgColorString = settings.getString(NODE_BACKGROUND_COLOR, null);
+        setNodeBackgroundColor(nodeBgColorString == null ? DEFAULT_NODE_BACKGROUND_COLOR : CSSUtils.colorFromCssHexString(nodeBgColorString));
 
         setNodeStatus(settings.getIntArray(NODE_STATUS, null));
 
@@ -219,6 +234,7 @@ public class DecisionTreeViewConfig {
         setSubscribeSelection(settings.getBoolean(SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
         setDisplayFullScreenButton(settings.getBoolean(DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
         setEnableZooming(settings.getBoolean(EXPANDED_LEVEL, DEFAULT_ENABLE_ZOOMING));
+        setDisplaySelectionResetButton(settings.getBoolean(DISPLAY_SELECTION_RESET_BUTTON, DEFAULT_DISPLAY_SELECTION_RESET_BUTTON));
     }
 
 
@@ -509,5 +525,40 @@ public class DecisionTreeViewConfig {
      */
     public void setEnableZooming(final boolean enableZooming) {
         m_enableZooming = enableZooming;
+    }
+
+    /**
+     * @return the css hex string representation of the node background color
+     */
+    public String getNodeBackgroundColorString() {
+        return CSSUtils.cssHexStringFromColor(m_nodeBackgroundColor);
+    }
+
+    /**
+     * @return the nodeBackgroundColor
+     */
+    public Color getNodeBackgroundColor() {
+        return m_nodeBackgroundColor;
+    }
+
+    /**
+     * @param nodeBackgroundColor the nodeBackgroundColor to set
+     */
+    public void setNodeBackgroundColor(final Color nodeBackgroundColor) {
+        m_nodeBackgroundColor = nodeBackgroundColor;
+    }
+
+    /**
+     * @return the displaySelectionResetButton
+     */
+    public boolean getDisplaySelectionResetButton() {
+        return m_displaySelectionResetButton;
+    }
+
+    /**
+     * @param displaySelectionResetButton the displaySelectionResetButton to set
+     */
+    public void setDisplaySelectionResetButton(final boolean displaySelectionResetButton) {
+        m_displaySelectionResetButton = displaySelectionResetButton;
     }
 }

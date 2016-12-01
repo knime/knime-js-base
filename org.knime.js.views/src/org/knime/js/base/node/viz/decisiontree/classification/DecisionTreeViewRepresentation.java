@@ -77,7 +77,9 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
     private boolean m_enableSelection;
     private String m_backgroundColor;
     private String m_dataAreaColor;
+    private String m_nodeBackgroundColor;
     private boolean m_displayFullscreenButton;
+    private boolean m_displaySelectionResetButton;
     private String m_tableId;
     private boolean m_enableZooming;
 
@@ -97,6 +99,8 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         settings.addString("TableId", m_tableId);
         m_numberFormat.saveToNodeSettings(settings);
         settings.addBoolean(DecisionTreeViewConfig.ENABLE_ZOOMING, m_enableZooming);
+        settings.addString(DecisionTreeViewConfig.NODE_BACKGROUND_COLOR, m_nodeBackgroundColor);
+        settings.addBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON, m_displaySelectionResetButton);
         // don't save decision tree representation (for now)
     }
 
@@ -111,12 +115,14 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         setEnableSelection(settings.getBoolean(DecisionTreeViewConfig.ENABLE_SELECTION));
         setBackgroundColor(settings.getString(DecisionTreeViewConfig.BACKGROUND_COLOR));
         setDataAreaColor(settings.getString(DecisionTreeViewConfig.DATA_AREA_COLOR));
+        setNodeBackgroundColor(settings.getString(DecisionTreeViewConfig.NODE_BACKGROUND_COLOR));
         NumberFormatSettings numberFormat = new NumberFormatSettings();
         numberFormat.loadFromNodeSettings(settings);
         setNumberFormat(numberFormat);
         setDisplayFullscreenButton(settings.getBoolean(DecisionTreeViewConfig.DISPLAY_FULLSCREEN_BUTTON));
         setTableId(settings.getString("TableId"));
         setEnableZooming(settings.getBoolean(DecisionTreeViewConfig.ENABLE_ZOOMING));
+        setDisplaySelectionResetButton(settings.getBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON));
     }
 
     /**
@@ -142,9 +148,11 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
                 .append(m_tree, other.m_tree)
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_backgroundColor, other.m_backgroundColor)
+                .append(m_nodeBackgroundColor, other.m_nodeBackgroundColor)
                 .append(m_numberFormat, other.m_numberFormat)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_tableId, other.m_tableId)
+                .append(m_displaySelectionResetButton, other.m_displaySelectionResetButton)
                 .isEquals();
     }
 
@@ -160,9 +168,11 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
             .append(m_tree)
             .append(m_dataAreaColor)
             .append(m_backgroundColor)
+            .append(m_nodeBackgroundColor)
             .append(m_numberFormat)
             .append(m_displayFullscreenButton)
             .append(m_tableId)
+            .append(m_displaySelectionResetButton)
             .toHashCode();
     }
 
@@ -318,6 +328,34 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
      */
     public void setEnableZooming(final boolean enableZooming) {
         m_enableZooming = enableZooming;
+    }
+
+    /**
+     * @return the nodeBackgroundColor
+     */
+    public String getNodeBackgroundColor() {
+        return m_nodeBackgroundColor;
+    }
+
+    /**
+     * @param nodeBackgroundColor the nodeBackgroundColor to set
+     */
+    public void setNodeBackgroundColor(final String nodeBackgroundColor) {
+        m_nodeBackgroundColor = nodeBackgroundColor;
+    }
+
+    /**
+     * @return the displaySelectionResetButton
+     */
+    public boolean getDisplaySelectionResetButton() {
+        return m_displaySelectionResetButton;
+    }
+
+    /**
+     * @param displaySelectionResetButton the displaySelectionResetButton to set
+     */
+    public void setDisplaySelectionResetButton(final boolean displaySelectionResetButton) {
+        m_displaySelectionResetButton = displaySelectionResetButton;
     }
 
 }

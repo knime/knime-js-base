@@ -93,6 +93,8 @@ import org.w3c.dom.Node;
  */
 public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<DecisionTreeViewRepresentation, DecisionTreeViewValue> implements PortObjectHolder, LayoutTemplateProvider {
 
+    private static final String[] EMPTY_SELECTION = new String[0];
+
     private DecisionTreeViewConfig m_config;
 
     private PMMLPortObject m_pmmlTree;
@@ -165,23 +167,43 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         PMMLPortObjectSpec pmmlSpec = (PMMLPortObjectSpec)inSpecs[0];
         DataTableSpec tableSpec = (DataTableSpec)inSpecs[1];
-        // TODO check if input table is compatible with dectree training table
+        PortObjectSpec out;
+        if (tableSpec != null) {
+            // check if table is compatible with decision tree
+            DataTableSpec trainingSpec = pmmlSpec.getDataTableSpec();
+            for (final DataColumnSpec colSpec : trainingSpec) {
+                DataColumnSpec other = tableSpec.getColumnSpec(colSpec.getName());
+                if (other == null || !colSpec.equalStructure(other)) {
+                    StringBuilder exMessage = new StringBuilder("The provided table is not compatible with the decision tree.");
+                    if (other == null) {
+                        exMessage.append(" (Column \"")
+                            .append(colSpec)
+                            .append("\" is not contained in table.)");
+                    } else {
+                        exMessage.append("Column \"")
+                            .append(other)
+                            .append("\" does not match column \"")
+                            .append(colSpec)
+                            .append("\".)");
+                    }
+                    throw new InvalidSettingsException(exMessage.toString());
+                }
+            }
+            // set output tableSpec
+            out = tableSpec;
+            if (m_config.getEnableSelection()) {
+                ColumnRearranger rearranger = createColumnAppender(tableSpec, null);
+                out = rearranger.createSpec();
+            }
+        } else {
+            out = InactiveBranchPortObjectSpec.INSTANCE;
+        }
 
         PortObjectSpec imageSpec;
         if (generateImage()) {
             imageSpec = new ImagePortObjectSpec(SvgCell.TYPE);
         } else {
             imageSpec = InactiveBranchPortObjectSpec.INSTANCE;
-        }
-        PortObjectSpec out;
-        if (tableSpec == null) {
-            out = InactiveBranchPortObjectSpec.INSTANCE;
-        } else {
-            out = tableSpec;
-            if (m_config.getEnableSelection()) {
-                ColumnRearranger rearranger = createColumnAppender(tableSpec, null);
-                out = rearranger.createSpec();
-            }
         }
         return new PortObjectSpec[] {imageSpec, out};
     }
@@ -335,12 +357,14 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         DecisionTreeViewRepresentation representation = getViewRepresentation();
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
+        representation.setNodeBackgroundColor(m_config.getNodeBackgroundColorString());
         representation.setEnableSubtitleChange(m_config.isEnableSubtitleChange());
         representation.setEnableTitleChange(m_config.isEnableTitleChange());
         representation.setEnableViewConfiguration(m_config.isEnableViewConfiguration());
         representation.setNumberFormat(m_config.getNumberFormat());
         representation.setEnableZooming(m_config.getEnableZooming());
         representation.setDisplayFullscreenButton(m_config.getDisplayFullScreenButton());
+        representation.setDisplaySelectionResetButton(m_config.getDisplaySelectionResetButton());
         if (m_table == null) {
             // can't select if there is no table.
             representation.setEnableSelection(false);
@@ -355,6 +379,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         value.setTitle(m_config.getTitle());
         value.setPublishSelection(m_config.getPublishSelection());
         value.setSubscribeSelection(m_config.getSubscribeSelection());
+        value.setSelection(EMPTY_SELECTION);
 //        int[] nodeStatus = {5, 1, 0};
 //        value.setNodeStatus(m_config.getNodeStatus());
     }

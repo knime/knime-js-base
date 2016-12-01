@@ -9,43 +9,54 @@
 	<fullDescription>
 		<intro>		
     	    <p>A plot of the provided decision tree using a JavaScript based library. The view can be accessed either via
-            the "interactive view" action on the executed node or in KNIME Server web portal page. 
+            the "interactive view" action on the executed node or in a KNIME Server web portal page. 
 	       	</p>
-            <p>The configuration of the node lets you choose the size of a sample to display and to enable certain 
-            controls, which are then available in the view. This includes the ability to choose different columns
-            for x and y or the possibility to set a title. Enabling or disabling these controls via the configuration
+	       	<p>The view shows a decision tree consisting of a number of nodes.
+	       	The class label and the class counts displayed inside the nodes correspond to those of the training data.
+	       	This especially means that the shown frequencies do not correspond to the rows used for selection (unless you use the full training dataset for selection). </p>
+            <p>The configuration of the node lets you choose the number of rows to be used for selection and to enable certain 
+            controls, which are then available in the view. This includes the possibility to set a title. Enabling or disabling these controls via the configuration
             dialog might not seem useful at first glance but has benefits when used in a web portal/wizard execution 
             where the end user has no access to the workflow itself.
             </p>
             <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
             <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
 		</intro>
-		<tab name="Scatter Plot Options">
+		<tab name="Decision Tree Plot Options">
 		    <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>
-		   <!-- <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
-		    <option name="Maximum number of rows">Use this numerical value to restrict the number of rows used for this visualization.</option>
-		    <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not.</option>
-		-->
+		    <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
+		    <option name="Expanded levels">Specifies how many levels of the tree are initially expanded. In case of a 0 only the root node is displayed, in case of a 1 also the children of the root are displayed, and so on.
+		    (Initially disabled if a different node status is specified in the view and saved as new default.)</option>
+		    <option name="Reset node status">If selected the node status is reset to the status corresponding to the specified expanded levels.
+		    (Disabled if there is no node status from the view available.)</option>
+		    <option name="Maximum number of rows">Use this numerical value to restrict the number of rows used for selection.</option>
+		    <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not (disabled if no table is connected).</option>
 		</tab>
 		<tab name="General Plot Options">
             <option name="Chart title" optional="true">The title of the graph shown above the generated image. If left blank, no title will be shown.</option>
             <option name="Chart subtitle" optional="true">The subtitle of the graph shown above the generated image. If left blank, no subtitle will be shown.</option>
-            <!-- <option name="Width of image (in px)">The width of the generated SVG image.</option>
-            <option name="Height of image (in px)">The height of the generated SVG image.</option>
-            <option name="Resize view to fill window">Setting this option resizes the view to the available area of the window. If disabled the view size is static according to the set width and height.</option>
             <option name="Background color">The color of the background of the image.</option>
-            <option name="Data area color">The background color of the data area, within the axes.</option>
-            -->
+            <option name="Tree area color">The background color of the decision tree.</option>
+            <option name="Node background color">The background color of the individual decision tree nodes.</option>
+            <option name="Decimal digits">The number of decimals to show for numeric thresholds in the node conditions.</option>
+            <option name="Decimal separator">The decimal separator to use for numeric thresholds in the node conditions.</option>
+            <option name="Thousands separator">The separator to be used to separate thousands (i.e. " " corresponds to "100 000").</option>
+            <option name="Custom prefix">A custom prefix for numbers displayed in node conditions.</option>
+            <option name="Custom postfix">A custom postfix for numbers displayed in node conditions (i.e. to display currency).</option>
+            <option name="Negative sign">A custom negative sign to use in node conditions.</option>
+            <option name="Negative before string">A prefix that is used for negative numbers only. Inserted before the prefix.</option>
 		</tab>
 		<tab name="View Controls">
 		    <option name="Enable view edit controls">If checked all edit controls selected below will be rendered in the view. Unchecking this option disables all edit controls.</option>
             <option name="Enable title edit controls">Renders a text box to change the chart title in the view.</option>
             <option name="Enable subtitle edit controls">Renders a text box to change the chart subtitle in the view.</option>
-           <!--  <option name="Enable selection">Enables or disables the selection feature. When enabled data points can be selected in the scatter plot by holding down the Alt-key (Meta-Key on Linux) and clicking. Extending the selection is possible by holding down the Alt and Shift-Key (Meta and Shift-Key on Linux) and clicking. The selection is propagated in an appended column of the data table.</option>
-            <option name="Enable panning">Enable panning on the plot. To start panning click and drag the mouse. Note if panning and drag zooming is enabled, 
-                panning can be achieved by holding the Ctrl key (Cmd key on Mac) and dragging the mouse.</option>
-            <option name="Enable mouse wheel zooming">Enable zooming on the plot using the mouse wheel.</option>
-            <option name="Show zoom reset button">Renders a button to resize the plot to it's extends.</option>
+            <option name="Enable selection">Enables or disables the selection feature. When enabled, checking the selection checkbox in a decision tree node selects all rows that run through the decision tree node.
+            The selection is propagated as an additional column in the output table of this node.</option>
+            <option name="Display selection reset button">When enabled, a button is displayed in the view that allows to clear the current selection.</option>
+            <option name="Publish selection events">When enabled, the view publishes the selections performed in it when it is run in the KNIME Server web portal.</option>
+            <option name="Subscribe to selection events">When enabled, the view will react to selection events in the KNIME Server web portal</option>
+            <option name="Enable zooming">Enable zooming on the plot using the mouse wheel.</option>
+            <!--<option name="Show zoom reset button">Renders a button to resize the plot to it's extends.</option>
              -->
 		</tab>
 	</fullDescription>

@@ -29,6 +29,7 @@ function DecTreeDrawer(representation, value) {
     var options = {
     		numberFormat: representation.numberFormat,
     		backgroundColor: representation.backgroundColor,
+    		nodeBackgroundColor : representation.nodeBackgroundColor,
     		enableSelection: representation.enableSelection,
     		dataAreaColor: representation.dataAreaColor,
     		enableTitleChange: representation.enableTitleChange,
@@ -37,7 +38,9 @@ function DecTreeDrawer(representation, value) {
     		publishSelection: value.publishSelection,
     		subscribeSelection: value.subscribeSelection,
     		tableId: representation.tableId,
-    		displayFullScreenButton: representation.displayFullScreenButton
+    		displayFullscreenButton: representation.displayFullscreenButton,
+    		enableZooming : representation.enableZooming,
+    		displaySelectionResetButton: representation.displaySelectionResetButton
     };
     var selection;
     var decTree = representation.tree;
@@ -374,7 +377,8 @@ function DecTreeDrawer(representation, value) {
     	titleGroup.append("text")
 	    	.attr("id", "subtitle")
 	    	.attr("font-size", 12)
-	    	.attr("x", 20)            
+	    	.attr("x", 20)
+	    	.attr("y", 46)
 	    	.text(subtitle);
     	
     	
@@ -390,6 +394,7 @@ function DecTreeDrawer(representation, value) {
     	if (options.enableViewConfiguration) {
     		drawControls();
     	}
+    	checkClearSelectionButton();
     	drawTree();
     	layout();
     }
@@ -400,7 +405,7 @@ function DecTreeDrawer(representation, value) {
 			return;
 		}
 		
-    	if (options.displayFullScreenButton) {
+    	if (options.displayFullscreenButton) {
     		knimeService.allowFullscreen();
     	}
 		
@@ -417,6 +422,16 @@ function DecTreeDrawer(representation, value) {
 	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', subtitle, updateSubtitle, true);
 	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 	    	}
+	    }
+	    
+	    if (options.enableSelection && options.displaySelectionResetButton) {
+	    	knimeService.addButton("dectree-selection-reset-button", "minus-square-o", "Reset Selection", function() {
+	    		selectionChanged();
+	    		if (options.publishSelection) {
+	    			knimeService.setSelectedRows(options.tableId, getSelection(), selectionChanged);
+	    		}
+	    	});
+	    	d3.select('#dectree-selection-reset-button').classed('inactive', true);
 	    }
 	    
 	    if (knimeService.isInteractivityAvailable()) {
@@ -454,30 +469,34 @@ function DecTreeDrawer(representation, value) {
 	}
     
     selectionChanged = function(data) {
-    	if (data.changeSet) {
-    		// incremental update
-    		if (data.changeSet.removed) {
-    			for (var i = 0; i < data.changeSet.removed.length; i++) {
-					selection.remove(data.changeSet.removed[i]);
-				}
-    		}
-    		if (data.changeSet.added) {
-    			for (var i = 0; i < data.changeSet.added.length; i++) {
-    				selection.add(data.changeSet.added[i]);
+    	if (data) {
+    		if (data.changeSet) {
+    			// incremental update
+    			if (data.changeSet.removed) {
+    				for (var i = 0; i < data.changeSet.removed.length; i++) {
+    					selection.remove(data.changeSet.removed[i]);
+    				}
+    			}
+    			if (data.changeSet.added) {
+    				for (var i = 0; i < data.changeSet.added.length; i++) {
+    					selection.add(data.changeSet.added[i]);
+    				}
+    			}
+    		} else {
+    			// reset selection
+    			selection = d3.set();
+    			for (var elId = 0; elId < data.elements.length; elId++) {
+    				var element = data.elements[elId];
+    				if (!element.rows) {
+    					continue;
+    				}
+    				for (var rId = 0; rId < element.rows.length; rId++) {
+    					selection.add(element.rows[rId]);
+    				}
     			}
     		}
     	} else {
-    		// reset selection
     		selection = d3.set();
-    		for (var elId = 0; elId < data.elements.length; elId++) {
-				var element = data.elements[elId];
-				if (!element.rows) {
-					continue;
-				}
-				for (var rId = 0; rId < element.rows.length; rId++) {
-					selection.add(element.rows[rId]);
-				}
-			}
     	}
     	traverseAndCollect(decTree.root, function(d) {
     		if (hasChildren(d)) {
@@ -491,11 +510,27 @@ function DecTreeDrawer(representation, value) {
     					selected++;
     				}
     			}
-    			d.fracSelected = selected / d.rowKeys.length;
+    			
+    			var frac = selected / d.rowKeys.length;
+    			if (isNaN(frac)) {
+    				d.fracSelected = 0;
+    			} else {
+    				d.fracSelected = frac;
+    			}
     		}
     	});
     	dtd.update(decTree.root);
+    	checkClearSelectionButton();
     }
+    
+    checkClearSelectionButton = function() {
+		var button = d3.select("#dectree-selection-reset-button");
+		if (!button.empty()){
+			button.classed("inactive", function() {
+				return selection.empty()
+			});
+		}
+	}
     
     updateTitle = function() {
     	var hadTitle = (title.length > 0);
@@ -503,6 +538,7 @@ function DecTreeDrawer(representation, value) {
         var hasTitle = (title.length > 0);        
         if (hasTitle != hadTitle) {
         	// if the title appeared or disappeared, we need to resize the chart
+        	d3.select("#subtitle").attr("y", hasTitle ? 46 : 20);
             layout();
         }
         d3.select("#title").text(title);
@@ -516,7 +552,8 @@ function DecTreeDrawer(representation, value) {
         	// if the subtitle appeared or disappeared, we need to resize the chart
             layout();
         }
-        d3.select("#subtitle").text(subtitle);
+        d3.select("#subtitle").text(subtitle)
+        	.attr("y", title.length > 0 ? 46 : 20);
 	};
 	
 	function layout() {
@@ -666,7 +703,7 @@ function DecTreeDrawer(representation, value) {
                 .attr("height", 1e-6)
                 .attr("rx", 3)
                 .attr("ry", 3)
-                .style("fill", function(d) { return /*d._children ? "lightsteelblue" :*/ "#fff"; })
+                .style("fill", options.nodeBackgroundColor)
                 .style("stroke", "steelblue")
                 .style("stroke-width", "5px");
             
@@ -708,7 +745,7 @@ function DecTreeDrawer(representation, value) {
             			return d.x_size - 2 * dtd.margin[0];
             		})
             		.attr("height", fontsize)
-            		.attr("fill", "white")
+            		.attr("fill", options.nodeBackgroundColor)
             		.attr("fill-opacity", 0)
             		.attr("stroke", "black")
             		.attr("stroke-width", "1px");
@@ -800,8 +837,8 @@ function DecTreeDrawer(representation, value) {
             nodeUpdate.select("rect")
         	.attr("x", function(d) { return -d.x_size / 2; })
             .attr("width", function(d) { return d.x_size; })
-            .attr("height", function(d) { return d.y_size - appendixHeight - dtd.margin[1]; })
-            .style("fill", function(d) { return /*d._children ? "lightsteelblue" :*/ "#fff"; });
+            .attr("height", function(d) { return d.y_size - appendixHeight - dtd.margin[1]; });
+//            .style("fill", function(d) { return /*d._children ? "lightsteelblue" :*/ "#fff"; });
             
 
     
@@ -925,6 +962,7 @@ function DecTreeDrawer(representation, value) {
         		select(d);
         	}
         	update(d);
+        	checkClearSelectionButton();
         }
         
     }
@@ -987,64 +1025,6 @@ function DecTreeDrawer(representation, value) {
         });
     }
     
-    function createSelectionPanel() {
-    	
-    	var enter = function(nodeEnter) {
-    		var selGroup = nodeEnter.append("g")
-    		.attr("class", "selection");
-    		// caption
-    		selGroup.append("text")
-    		.attr("y", fontsize)
-    		.text("Selection:");
-    		var captionLength = getTextSize("Selection:");
-    		// checkbox
-    		selGroup.append("text")
-    		.attr("class", "selection-checkbox")
-    		.attr("y", fontsize)
-    		.attr("x", captionLength.width + 3)
-    		.attr('font-family', 'FontAwesome')
-    		.text("\uf096")
-    		.on("click", selectClick);
-    		selGroup.append("rect")
-    		.attr("y", fontsize + 3)
-    		.attr("width", function(d) {
-    			return d.x_size - 2 * dtd.margin[0];
-    		})
-    		.attr("height", fontsize)
-    		.attr("fill", "white")
-    		.attr("fill-opacity", 0)
-    		.attr("stroke", "black")
-    		.attr("stroke-width", "1px");
-    		selGroup.append("rect")
-    		.attr("class", "selection-bar")
-    		.attr("y", fontsize + 3)
-    		.attr("width", 0)
-    		.attr("height", fontsize)
-    		.attr("fill", "#fff")
-    		.attr("stroke", "transparent");
-    		return selGroup;
-    	}
-    	var update = function(nodeUpdate) {
-    		var selG = nodeUpdate.selectAll(".selection");
-        	selG.selectAll(".selectionBar")
-        		.attr("width", function(d) {
-        			return d.fracSelected * (d.x_size - 2 * dtd.margin[0]);
-        		});
-        	selG.selectAll(".selection-checkbox")
-        		.text(function(d) {
-        			return d.fracSelected > 0 ? "\uf046" : "\uf096";
-        		});
-        	return selG;
-    	}
-    	var height = function() {
-    		return 2 * fontsize + 3;
-    	}
-    	var captionWidth = getTextSize("Selection:" + "\uf096").width + 3;
-    	var width = function() {
-    		return captionWidth;
-    	}
-    	return new Panel("fracSelected", enter, update, width, height);
-    }
     
     
     
@@ -1069,21 +1049,30 @@ function DecTreeDrawer(representation, value) {
             .attr("d", "M-" + length + " 0 L" + length + " 0");
     }
     
-    function resolveOperator(op) {
+    function resolveOperator(condition) {
+    	var op;
+    	if(condition.name == "SimpleSetPredicate") {
+    		op = condition.setOperator;
+    	} else if (condition.name == "SimplePredicate") {
+    		op = condition.operator;
+    	}
         switch (op) {
             case "equal":
                 return "=";
             case "lessOrEqual":
-                return "<=";
+                return "\u2264";
                 break;
             case "greaterOrEqual":
-                return ">=";
+                return "\u2265";
                 break;
             case "greaterThan":
             	return ">";
-            case "in":
-                return "in";
+            case "IS_IN":
+                return "\u2208";
                 break;
+            case "IS_NOT_IN":
+            	return "\u2209";
+            	break;
             default:
                 return "something went wrong!";
         }
@@ -1092,7 +1081,11 @@ function DecTreeDrawer(representation, value) {
     function printValue(condition) {
         var text = "";
         if (condition.name == "SimplePredicate") {
-            text += numFormatter.to(Number(condition.threshold));
+        	var val = numFormatter.to(Number(condition.threshold));
+        	if (!val) {
+        		val = condition.threshold;
+        	}
+            text += val;
         } else {
             text += "[";
             var numVals = condition.values.length;
@@ -1109,7 +1102,7 @@ function DecTreeDrawer(representation, value) {
 
     function conditionText(d) {
         var text = "";
-        text += resolveOperator(d.condition.operator);
+        text += resolveOperator(d.condition);
         text += " ";
         text += printValue(d.condition);
         return text;
@@ -1212,8 +1205,8 @@ function DecTreeDrawer(representation, value) {
             // header background
             headerPanel.append("rect")
             	.attr("class", "in-node-text-background")
-                .style("stroke", "white")
-                .style("fill", "white")
+                .style("stroke", options.nodeBackgroundColor)
+                .style("fill", options.nodeBackgroundColor)
                 .attr("height", fontsize)
                 .attr("x", 5)
                 .attr("width", headerWidth);
@@ -1378,14 +1371,17 @@ function DecTreeDrawer(representation, value) {
         }();
         
         function tableWidth(d) {
-            var width, maxNum, i;
+            var width, maxNum, sum, i;
             // last term stands for the size of percentage column
             width = catColLength + 2*dx + 25;
             maxNum = 0;
+            
             for (i = 0; i < nc; i++) {
                 maxNum = d3.max([maxNum, ("" + d.content.classCounts[i]).length]);
+                sum += maxNum;
             }
-            width += 7 * maxNum;
+            
+            width += getTextSize("" + sum).width;
             return width;
         }
         
@@ -1404,17 +1400,6 @@ function DecTreeDrawer(representation, value) {
         
             // write header
         	var tableGroup = body.append("g");
-//            var table = tableGroup.append("text");
-//            table.append("tspan")
-//                .attr("x", 0)
-//                .attr("y", 0)
-//                .text("Category");
-//            table.append("tspan")
-//                .attr("x", xPerc)
-//                .text("%");
-//            table.append("tspan")
-//                .attr("x", xNum)
-//                .text("n");
             /* Chrome doesn't display tspan table correctly (likely a bug) so we have to use individual text elements
              * and position them via translate
              */
@@ -1431,19 +1416,6 @@ function DecTreeDrawer(representation, value) {
         	fillInClasses(tableGroup);
             // write total row
             var totalCount = getNumTotal(decTree.root);
-//            table.append("tspan")
-//                .attr("y", (nc + 1) *(dy + fontsize))
-//                .attr("x", 0)
-//                .text("Total")
-//                .append("tspan")
-//                .attr("x", xPerc)
-//                .text(function(d) {
-//                    var perc = 100 * getNumTotal(d) / totalCount;
-//                    return Number((perc).toFixed(1));
-//                })
-//                .append("tspan")
-//                .attr("x", xNum)
-//                .text(getNumTotal);
             var yTotal = (nc + 1) * (dy + fontsize);
             tableGroup.append("text")
             	.attr("transform", "translate(0," + yTotal + ")")
@@ -1452,12 +1424,15 @@ function DecTreeDrawer(representation, value) {
             	.attr("transform", "translate(" + xPerc + "," + yTotal + ")")
             	.text(function(d) {
             		var perc = 100* getNumTotal(d) / totalCount;
+            		if (perc % 1 === 0) {
+            			// percentage is integer -> add .0
+            			return perc + ".0";
+            		}
             		return Number((perc).toFixed(1));
             	});
             tableGroup.append("text")
             	.attr("transform", "translate(" + xNum + "," + yTotal + ")")
             	.text(getNumTotal);
-//                .call(offsetText);
             // position text below y coordinate
             tableGroup.attr("transform", "translate(0," + fontsize + ")");
                 
@@ -1488,28 +1463,18 @@ function DecTreeDrawer(representation, value) {
                 		.attr("transform", "translate(" + xPerc + "," + cy + ")")
                 		.text(function(d) {
                 			var perc = 100 * d.content.classCounts[i] / getNumTotal(d);
-                			return Number((perc).toFixed(1));
+                			var num = Number((perc).toFixed(1));
+                			if (num % 1 === 0) {
+                    			// percentage is integer -> add .0
+                    			return num + ".0";
+                    		}
+                			return num;
                 		});
                 	table.append("text")
                 		.attr("transform", "translate(" + xNum + "," + cy + ")")
                 		.text(function(d) {
                 			return d.content.classCounts[i];
                 		});
-//                    table.append("tspan")
-//                        .attr("x", 0)
-//                        .attr("y", (i + 1)*(dy + fontsize))
-//                        .text(decTree.metaData.classNames[i]);
-//                    table.append("tspan")
-//                        .attr("x", xPerc)
-//                        .text(function (d) {
-//                            var perc = 100 * d.content.classCounts[i] / getNumTotal(d);
-//                            return Number((perc).toFixed(1));
-//                        });
-//                    table.append("tspan")
-//                        .attr("x", xNum)
-//                        .text(function (d) {
-//                            return d.content.classCounts[i];
-//                        })
                 }
             }
             

@@ -88,22 +88,19 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
     private final JCheckBox m_generateImageCheckBox;
 
-    //    private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_displayFullscreenButtonCheckBox;
-    //    private final JCheckBox m_resizeViewToWindow;
     private final JCheckBox m_enableViewConfigCheckBox;
 
     private final JCheckBox m_enableTitleChangeCheckBox;
 
     private final JCheckBox m_enableSubtitleChangeCheckBox;
     //    private final JCheckBox m_allowMouseWheelZoomingCheckBox;
-    //    private final JCheckBox m_allowDragZoomingCheckBox;
     //    private final JCheckBox m_allowPanningCheckBox;
     //    private final JCheckBox m_showZoomResetCheckBox;
     private final JCheckBox m_enableSelectionCheckBox;
     private final JCheckBox m_publishSelectionCheckBox;
     private final JCheckBox m_subscribeSelectionCheckBox;
-    //    private final JCheckBox m_subscribeFilterCheckBox;
+    private final JCheckBox m_displaySelectionResetButtonCheckBox;
 
     private final JSpinner m_maxRowsSpinner;
     private final JTextField m_appendedColumnName;
@@ -111,11 +108,11 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
     private final JTextField m_chartSubtitleTextField;
 
-    //    private final JSpinner m_imageWidthSpinner;
-    //    private final JSpinner m_imageHeightSpinner;
     private final DialogComponentColorChooser m_dataAreaColorChooser;
 
     private final DialogComponentColorChooser m_backgroundColorChooser;
+
+    private final DialogComponentColorChooser m_nodeBackgroundColorChooser;
 
     private final NumberFormatNodeDialogUI m_numberFormatUI;
 
@@ -131,20 +128,17 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     public DecisionTreeViewNodeDialogPane() {
         m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
-        //        m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
-        //        m_resizeViewToWindow = new JCheckBox("Resize view to fill window");
         m_enableViewConfigCheckBox = new JCheckBox("Enable view edit controls");
         m_enableTitleChangeCheckBox = new JCheckBox("Enable title edit controls");
         m_enableSubtitleChangeCheckBox = new JCheckBox("Enable subtitle edit controls");
         //        m_allowMouseWheelZoomingCheckBox = new JCheckBox("Enable mouse wheel zooming");
-        //        m_allowDragZoomingCheckBox = new JCheckBox("Enable drag zooming");
         //        m_allowPanningCheckBox = new JCheckBox("Enable panning");
         //        m_showZoomResetCheckBox = new JCheckBox("Show zoom reset button");
         m_enableSelectionCheckBox = new JCheckBox("Enable selection");
         m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
         m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
-        //        m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
+        m_displaySelectionResetButtonCheckBox = new JCheckBox("Display selection reset button");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
@@ -169,12 +163,12 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
         m_enableZoomingCheckBox = new JCheckBox("Enable zooming");
 
-        //        m_imageWidthSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
-        //        m_imageHeightSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
         m_dataAreaColorChooser =
-            new DialogComponentColorChooser(new SettingsModelColor("dataAreaColor", null), "Data area color: ", true);
+            new DialogComponentColorChooser(new SettingsModelColor("dataAreaColor", null), "Tree area color: ", true);
         m_backgroundColorChooser = new DialogComponentColorChooser(new SettingsModelColor("backgroundColor", null),
             "Background color: ", true);
+        m_nodeBackgroundColorChooser = new DialogComponentColorChooser(new SettingsModelColor("nodeBackgroundColor", null),
+            "Node background color: ", true);
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -191,7 +185,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
             }
         });
 
-        addTab("Options", initOptionsPanel());
+        addTab("Decision Tree Plot Options", initOptionsPanel());
         addTab("General Plot Options", initGeneralPanel());
         addTab("View Controls", initControlsPanel());
     }
@@ -203,7 +197,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 5, 10, 5);
-        c.anchor = GridBagConstraints.CENTER;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
@@ -212,28 +207,42 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         panel.add(m_generateImageCheckBox, c);
         c.gridx = 0;
         c.gridy++;
-        c.gridwidth = 1;
-        panel.add(new JLabel("Expanded Levels"), c);
-        c.gridx++;
-        panel.add(m_expandedLevelSpinner, c);
-        c.gridx = 0;
-        c.gridy++;
         c.gridwidth = 2;
-        panel.add(m_resetNodeStatus, c);
+
+        JPanel nodeStatusPanel = new JPanel(new GridBagLayout());
+        nodeStatusPanel.setBorder(BorderFactory.createTitledBorder("Node status"));
+        panel.add(nodeStatusPanel, c);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.insets = new Insets(5, 5, 5, 5);
+        cc.anchor = GridBagConstraints.NORTHWEST;
+        nodeStatusPanel.add(new JLabel("Expanded levels"), cc);
+        cc.gridx++;
+        nodeStatusPanel.add(m_expandedLevelSpinner, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        cc.gridwidth = 2;
+        nodeStatusPanel.add(m_resetNodeStatus, cc);
+
         c.gridwidth = 1;
         c.gridx = 0;
         c.gridy++;
-        panel.add(new JLabel("Maximum number of rows: "), c);
-        c.gridx += 1;
+        JPanel selectionPanel = new JPanel(new GridBagLayout());
+        selectionPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
+        panel.add(selectionPanel, c);
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.gridwidth = 1;
+        selectionPanel.add(new JLabel("Maximum number of rows: "), cc);
+        cc.gridx += 1;
         m_maxRowsSpinner.setPreferredSize(new Dimension(100, TEXT_FIELD_SIZE));
-        panel.add(m_maxRowsSpinner, c);
-        c.gridx = 0;
-        c.gridy++;
-        panel.add(new JLabel("Selection column name: "), c);
-        c.gridx++;
-        panel.add(m_appendedColumnName, c);
-        //        c.gridx = 0;
-        //        c.gridy++;
+        selectionPanel.add(m_maxRowsSpinner, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        selectionPanel.add(new JLabel("Selection column name: "), cc);
+        cc.gridx++;
+        selectionPanel.add(m_appendedColumnName, cc);
 
         return panel;
     }
@@ -272,21 +281,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         panel.add(sizesPanel, c);
         cc.gridx = 0;
         cc.gridy = 0;
-        //        sizesPanel.add(new JLabel("Width of image (in px): "), cc);
-        //        cc.gridx++;
-        //        m_imageWidthSpinner.setPreferredSize(new Dimension(100, TEXT_FIELD_SIZE));
-        //        sizesPanel.add(m_imageWidthSpinner, cc);
-        //        cc.gridx = 0;
-        //        cc.gridy++;
-        //        sizesPanel.add(new JLabel("Height of image (in px): "), cc);
-        //        cc.gridx++;
-        //        m_imageHeightSpinner.setPreferredSize(new Dimension(100, TEXT_FIELD_SIZE));
-        //        sizesPanel.add(m_imageHeightSpinner, cc);
-        //        cc.gridx = 0;
-        //        cc.gridy++;
-        //        cc.anchor = GridBagConstraints.CENTER;
-        //        sizesPanel.add(m_resizeViewToWindow, cc);
-        //        cc.gridx++;
         sizesPanel.add(m_displayFullscreenButtonCheckBox, cc);
         //
         c.gridx = 0;
@@ -299,19 +293,16 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         backgroundPanel.add(m_backgroundColorChooser.getComponentPanel(), cc);
         cc.gridy++;
         backgroundPanel.add(m_dataAreaColorChooser.getComponentPanel(), cc);
-
         cc.gridy++;
-        backgroundPanel.add(m_numberFormatUI.createPanel(), cc);
+        backgroundPanel.add(m_nodeBackgroundColorChooser.getComponentPanel(), cc);
 
-        /*c.gridx = 0;
+        c.gridx = 0;
         c.gridy++;
-        panel.add(new JLabel("Dot size: "), c);
-        c.gridx++;
-        m_dotSize.setPreferredSize(new Dimension(100, 20));
-        panel.add(m_dotSize, c);
-        c.gridx++;
-        c.gridwidth = 2;
-        panel.add(m_enableDotSizeChangeCheckBox, c);*/
+        JPanel numFormatPanel = new JPanel(new GridBagLayout());
+        numFormatPanel.setBorder(BorderFactory.createTitledBorder("Number format"));
+        panel.add(numFormatPanel, c);
+        cc.gridy = 0;
+        numFormatPanel.add(m_numberFormatUI.createPanel(), cc);
 
         return panel;
     }
@@ -347,11 +338,14 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         cc.gridx = 0;
         cc.gridy = 0;
         selectionControlPanel.add(m_enableSelectionCheckBox, cc);
+        cc.gridx++;
+        selectionControlPanel.add(m_displaySelectionResetButtonCheckBox, cc);
         cc.gridx = 0;
         cc.gridy++;
         selectionControlPanel.add(m_publishSelectionCheckBox, cc);
         cc.gridx++;
         selectionControlPanel.add(m_subscribeSelectionCheckBox, cc);
+
         //        cc.gridx++;
         //        selectionControlPanel.add(m_subscribeFilterCheckBox, cc);
 
@@ -373,8 +367,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         zoomControlPanel.add(m_enableZoomingCheckBox, cc);
         //        zoomControlPanel.add(m_allowMouseWheelZoomingCheckBox, cc);
         //        cc.gridx++;
-        //        zoomControlPanel.add(m_allowDragZoomingCheckBox, cc);
-        //        cc.gridx++;
         //        zoomControlPanel.add(m_showZoomResetCheckBox, cc);
 
         return panel;
@@ -392,6 +384,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         //        m_allowLassoSelectionCheckBox.setEnabled(enable);
         m_publishSelectionCheckBox.setEnabled(enable);
         m_subscribeSelectionCheckBox.setEnabled(enable);
+        m_displaySelectionResetButtonCheckBox.setEnabled(enable);
     }
 
     /**
@@ -405,20 +398,11 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         m_hideInWizardCheckBox.setSelected(config.isHideInWizard());
         m_generateImageCheckBox.setSelected(config.isGenerateImage());
 
-        //        m_showLegendCheckBox.setSelected(config.getShowLegend());
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullScreenButton());
-        //        m_autoRangeAxisCheckBox.setSelected(config.getAutoRangeAxes());
-        //        m_useDomainInformationCheckBox.setSelected(config.getUseDomainInfo());
-        //        m_showGridCheckBox.setSelected(config.getShowGrid());
-        //        m_showCrosshairCheckBox.setSelected(config.getShowCrosshair());
-        //        m_snapToPointsCheckBox.setSelected(config.getSnapToPoints());
-        //        m_resizeViewToWindow.setSelected(config.getResizeToWindow());
 
         m_enableViewConfigCheckBox.setSelected(config.isEnableViewConfiguration());
         m_enableTitleChangeCheckBox.setSelected(config.isEnableTitleChange());
         m_enableSubtitleChangeCheckBox.setSelected(config.isEnableSubtitleChange());
-        //        m_allowMouseWheelZoomingCheckBox.setSelected(config.getEnableZooming());
-        //        m_allowDragZoomingCheckBox.setSelected(config.getEnableDragZooming());
         //        m_allowPanningCheckBox.setSelected(config.getEnablePanning());
         //        m_showZoomResetCheckBox.setSelected(config.getShowZoomResetButton());
         m_appendedColumnName.setText(config.getSelectionColumnName());
@@ -427,22 +411,22 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
             m_enableSelectionCheckBox.setEnabled(true);
             m_appendedColumnName.setEnabled(true);
         } else {
+            m_enableSelectionCheckBox.setSelected(false);
             m_enableSelectionCheckBox.setEnabled(false);
             m_appendedColumnName.setEnabled(false);
         }
         m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
         m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
-        //        m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
+        m_displaySelectionResetButtonCheckBox.setSelected(config.getDisplaySelectionResetButton());
 
         m_chartTitleTextField.setText(config.getTitle());
         m_chartSubtitleTextField.setText(config.getSubtitle());
 
         m_maxRowsSpinner.setValue(config.getMaxRows());
 
-        //        m_imageWidthSpinner.setValue(config.getImageWidth());
-        //        m_imageHeightSpinner.setValue(config.getImageHeight());
         m_backgroundColorChooser.setColor(config.getBackgroundColor());
         m_dataAreaColorChooser.setColor(config.getDataAreaColor());
+        m_nodeBackgroundColorChooser.setColor(config.getNodeBackgroundColor());
 
         m_numberFormatUI.loadSettingsFrom(config.getNumberFormat());
 
@@ -467,22 +451,17 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
-        //        config.setShowLegend(m_showLegendCheckBox.isSelected());
         config.setDisplayFullScreenButton(m_displayFullscreenButtonCheckBox.isSelected());
-        //        config.setResizeToWindow(m_resizeViewToWindow.isSelected());
 
         config.setSelectionColumnName(m_appendedColumnName.getText());
         config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
         config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
         config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
-        //        config.setEnableZooming(m_allowMouseWheelZoomingCheckBox.isSelected());
-        //        config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
-        //        config.setEnablePanning(m_allowPanningCheckBox.isSelected());
         //        config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
         config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
         config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
         config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
-        //        config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
+        config.setDisplaySelectionResetButton(m_displaySelectionResetButtonCheckBox.isSelected());
         config.setExpandedLevel((int)m_expandedLevelSpinner.getValue());
         boolean resetNodeStatus = m_resetNodeStatus.isSelected();
         if (resetNodeStatus) {
@@ -497,10 +476,9 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setSubtitle(m_chartSubtitleTextField.getText());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
-        //        config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
-        //        config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
         config.setBackgroundColor(m_backgroundColorChooser.getColor());
         config.setDataAreaColor(m_dataAreaColorChooser.getColor());
+        config.setNodeBackgroundColor(m_nodeBackgroundColorChooser.getColor());
         config.setNumberFormat(m_numberFormatUI.saveSettingsTo());
 
         config.setEnableZooming(m_enableZoomingCheckBox.isSelected());
