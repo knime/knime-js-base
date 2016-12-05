@@ -51,7 +51,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -221,7 +220,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     }
 
     private JPanel initViewLayout() {
-        JPanel wrapperPanel = new JPanel(new GridBagLayout());
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setBorder(m_paddingBorder);
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
@@ -240,7 +239,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = gbc.gridy = 0;
-        wrapperPanel.add(topPanel, gbc);
+        wrapperPanel.add(topPanel, BorderLayout.NORTH);
 
         JPanel p = new JPanel(new BorderLayout());
 
@@ -301,7 +300,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridy++;
-        wrapperPanel.add(outFieldsPane, gbc);
+        wrapperPanel.add(outFieldsPane, BorderLayout.CENTER);
 
         return wrapperPanel;
     }
