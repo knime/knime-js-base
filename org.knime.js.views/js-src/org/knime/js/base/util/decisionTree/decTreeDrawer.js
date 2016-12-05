@@ -611,12 +611,24 @@ function DecTreeDrawer(representation, value) {
     		.attr("height", scale * tbox.height)
     		.attr("width", scale * tbox.width);
     	var bbox = d3.select("#plot").node().getBBox();
-//		translation[0] = dtd.margin[0] - bbox.x; 
-		d3.selectAll("svg, #bgr")
-			.attr("height", 10+2*bbox.y + bbox.height)
-			.attr("width", 10 + 2*bbox.x + bbox.width);
-		updateScrollPosition(pxlsMoved);
+//		translation[0] = dtd.margin[0] - bbox.x;
+    	var windowWidth = d3.select("#layoutContainer").node().clientWidth;
+    	var treeWidth = 10+2*bbox.x + bbox.width;
+    	if (treeWidth > windowWidth-1) {
+    		d3.selectAll("svg, #bgr")
+    		.attr("height", 10+2*bbox.y + bbox.height)
+    		.attr("width", treeWidth);
+    		updateScrollPosition(pxlsMoved);
+    	} else {
+    		d3.selectAll("svg, #bgr")
+    			.attr("height", 10+2*bbox.y + bbox.height)
+    			/* ensures that no scrollbars appear if the tree is smaller than
+    			 * the window (at least in IE)
+    			 */
+    			.attr("width", windowWidth-1);
+    	}
     }
+    
     
     function drawTree() {
     	
