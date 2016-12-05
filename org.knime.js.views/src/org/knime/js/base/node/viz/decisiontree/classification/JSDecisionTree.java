@@ -57,7 +57,11 @@ public class JSDecisionTree {
 	    }
 	    nodeId.add(node.getName());
 	    int nextLevel = currentLevel + 1;
-	    for (JSDecisionTreeNode child : node.getChildren()) {
+	    final JSDecisionTreeNode[] children = node.getChildren();
+	    if (children == null) {
+	        return;
+	    }
+	    for (JSDecisionTreeNode child : children) {
 	        traverseTreeAndRecordNodeIds(child, maxLevel, nextLevel, nodeId);
 	    }
 	}
