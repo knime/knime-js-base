@@ -67,6 +67,7 @@
 				&& runningInView;
 		var optWidth = _representation.options["svg"]["width"];
 		var optHeight = _representation.options["svg"]["height"];
+		var optDateFormat = _representation.options.dateFormat;
 
 		var isTitle = optTitle || optSubtitle;
 
@@ -114,6 +115,7 @@
 			svg.attr("height", "100%");
 		}
 
+		
 		// create the streamgraph
 		nv.addGraph(function() {
 			chart = nv.models.stackedAreaChart()
@@ -124,36 +126,22 @@
 				.style(stackStyle)
 				.showControls(false)
 				.margin({ "top" : 10, "bottom" : 10 })
-				.showLegend(Boolean(enableLegend))
+				.showLegend(enableLegend)
+				.useInteractiveGuideline(enableInteractiveGuideline)
+				.interactive(false)
 
-			// using if-clause because there is strange behavior otherwise
-			if (enableInteractiveGuideline) {
-				chart.useInteractiveGuideline(true);
-			} else {
-				chart.interactive(false);
+			if (getXAxisType() === "Date and Time") {
+				chart.xAxis
+					.tickFormat(createDateFormatter(optDateFormat));			
+			} else if (getXAxisType() !== "RowID") {
+				// TODO
 			}
 
-			//Format x-axis.
-			// TODO: next 5 lines...
-			var xAxisFormatter;
-			if (true) { // xAxis-Column is date
-				// TODO: check if _value.options.dateFormat is valid format
-				xAxisFormatter = new function() {
-					// TODO: import moment.js
-					return moment(date).format(_value.options.dateFormat);
-				};
-			} else {
-				
-			}
-			
-			chart.xAxis
-				.ticks(_value.options.xAxisTicks)
-				.tickFormat(xAxisFormatter);
-
-			//Format y-axis.
-			chart.yAxis
-				.ticks(_value.options.yAxisTicks)
-				.tickFormat(d3.format(".2s"));
+			//Format y-axis
+			// TODO: Change format here
+			// maybe do this in ".y(function(d) { return d[1]; })"
+			// chart.yAxis
+			//	.tickFormat(d3.format(".2s"));
 
 			updateTitles(false);
 
@@ -193,7 +181,6 @@
 			var rowColors = knimeTable2.getRowColors();
 			var numColumns = columns.length;
 			for (var i = 0; i < numColumns; i++) {
-				setColors
 				var columnName = columns[i]
 				var rowIndex = knimeTable1.getColumnNames().indexOf(columnName);
 				var color = rowColors[rowIndex];
@@ -210,6 +197,29 @@
 				colorScale = d3.scale.category20();
 			}
 			_colorRange = colorScale.range();
+		}
+	}
+	
+	var createDateFormatter = function(format) {
+		var xAxisColumn = _representation.options.xAxisColumn;
+		var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
+		var columnType = knimeTable1.getKnimeColumnTypes()[columnIndex];
+		
+		var dates = knimeTable1.getColumn(columnIndex);
+		return function(i) {
+			var date = dates[i];
+			return moment(date).format(format);
+		}
+	}
+	
+	var getXAxisType = function() {
+		var xAxisColumn = _representation.options.xAxisColumn;
+		if (xAxisColumn) {
+			var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
+			var columnType = knimeTable1.getKnimeColumnTypes()[columnIndex];
+			return columnType;
+		} else {
+			return "RowID";
 		}
 	}
 
@@ -319,44 +329,36 @@
 			}
 		}
 
-		if (_representation.options.enableStackStyleChange) {
-			knimeService.addMenuDivider();
-
-			var stackStyles = [ 'stack', 'expand', 'stream', 'stream-center'];
-			var stackStyleSelector =
-				knimeService.createMenuSelect('stackStyleSelector', _value.options.stackStyle, stackStyles, function() {
-					_value.options.stackStyle = this.options[this.selectedIndex].value;
-					chart.style(_value.options.stackStyle);
-					chart.update();
-				});
-			knimeService.addMenuItem('Stack style:', 'bathtub', stackStyleSelector);		
-		}
-
-		
-		
-		// Interpolation method Configuration
-		if (_representation.options.enableInterpolationMethodEdit) {
-			knimeService.addMenuDivider();
-
-			var interpolationMethods = [ 'linear', 'step', 'basis' ];
-			var interpolationMethodSelector =
-				knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function() {
-					_value.options.interpolation = this.options[this.selectedIndex].value;
-					chart.interpolate(_value.options.interpolation);
-					chart.update();
-				});
-			knimeService.addMenuItem('Interpolation:', 'line-chart', interpolationMethodSelector);
-		}
-
-		// Controls for toggling certain options
+		// Stack Style / Interpolation Method / Custom Color
+		var stackStyleChange = _representation.options.enableStackStyleChange;
+		var interpolationEdit = _representation.options.enableInterpolationMethodEdit;
 		var customColorToggle = _representation.options.enableCustomColorToggle;
-		var legendToggle = _representation.options.enableLegendToggle;
-		var interactiveGuidelineToggle = _representation.options.enableInteractiveGuidelineToggle;
-		if (customColorToggle || legendToggle || interactiveGuidelineToggle) {
+		if (stackStyleChange || interpolationEdit || customColorToggle) {
 			knimeService.addMenuDivider();
+			
+			if (stackStyleChange) {
+				var stackStyles = [ 'stack', 'expand', 'stream', 'stream-center'];
+				var stackStyleSelector =
+					knimeService.createMenuSelect('stackStyleSelector', _value.options.stackStyle, stackStyles, function() {
+						_value.options.stackStyle = this.options[this.selectedIndex].value;
+						chart.style(_value.options.stackStyle);
+						chart.update();
+					});
+				knimeService.addMenuItem('Stack style:', 'bathtub', stackStyleSelector);		
+			}
 
-			// TODO: Check: Is  this working?
-			if (customColorToggle) {
+			if (interpolationEdit) {
+				var interpolationMethods = [ 'linear', 'step', 'basis' ];
+				var interpolationMethodSelector =
+					knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function() {
+						_value.options.interpolation = this.options[this.selectedIndex].value;
+						chart.interpolate(_value.options.interpolation);
+						chart.update();
+					});
+				knimeService.addMenuItem('Interpolation:', 'line-chart', interpolationMethodSelector);
+			}
+			
+			if (customColorToggle && knimeTable2 !== null) {
 				var customColorCheckbox = knimeService.createMenuCheckbox(
 						'customColorCheckbox', _value.options.customColors,
 						function() {
@@ -365,16 +367,23 @@
 							chart.color(_colorRange);
 							chart.update();
 						});
-				knimeService.addMenuItem('Custom colors:', 'paint-brush',
-						customColorCheckbox);
+				knimeService
+					.addMenuItem('Custom colors:', 'paint-brush', customColorCheckbox);
 			}
+		}
+		
+		// Controls Legend and Interactive Guideline
+		var legendToggle = _representation.options.enableLegendToggle;
+		var interactiveGuidelineToggle = _representation.options.enableInteractiveGuidelineToggle;
+		if (legendToggle || interactiveGuidelineToggle) {
+			knimeService.addMenuDivider();
 
 			// TODO: This is not working.
 			if (legendToggle) {
 				var legendCheckbox = knimeService.createMenuCheckbox(
 						'legendCheckbox', _value.options.legend, function() {
 							_value.options.legend = this.checked;
-							chart.showLegend(_value.options.legend);
+							chart.showLegend(Boolean(_value.options.legend));
 							chart.update();
 						});
 				knimeService.addMenuItem('Legend:', 'info-circle',
@@ -389,20 +398,51 @@
 								_value.options.interactiveGuideline,
 								function() {
 									_value.options.interactiveGuideline = this.checked;
+									
+									// TODO: THIS SHIT IS NOT WORKING.
+//									chart.useInteractiveGuideline(false);
+//									chart.interactive(false);
 
-									// using if-clause because there is strange behavior otherwise
-									if (_value.options.interactiveGuideline) {
-										chart.useInteractiveGuideline(true);
-									} else {
-										chart.useInteractiveGuideline(false);
-										chart.interactive(false);
-									}
-
+//									// Using if-clause because order of function calls does matter.
+//									if (_value.options.interactiveGuideline) {
+//										chart
+//											.interactive(false)
+//											.useInteractiveGuideline(true);
+//									} else {
+//										chart
+//											.useInteractiveGuideline(false)
+//											.interactive(false);
+//									}
+									
 									chart.update();
 								});
 				knimeService.addMenuItem('Guideline:', 'bathtub',
 						interactiveGuidelineCheckbox);
 			}
+		}
+		
+		// Date Format Configuration
+		if (getXAxisType() === "Date and Time" &&
+			_representation.options.enableDateFormatEdit) {
+
+			knimeService.addMenuDivider();
+
+			// TODO: more items
+			var dateFormats = ['YYYY-MM-DD', 'M/D/YY'];
+			// Add the chosen format to the array if it is not already in the array.
+			if (_value.options.dateFormat && dateFormats.indexOf(_value.options.dateFormat) === -1) {
+				dateFormats.unshift(_value.options.dateFormat);
+			}
+
+			// TODO: have a editable select here
+			var dateFormatSelector =
+				knimeService.createMenuSelect('dateFormatSelector', _value.options.dateFormat, dateFormats, function() {
+					_value.options.dateFormat = this.options[this.selectedIndex].value;
+					var dateFormatter = createDateFormatter(_value.options.dateFormat);
+					chart.xAxis.tickFormat(dateFormatter);	
+					chart.update();
+				});
+			knimeService.addMenuItem('Date format:', 'calendar', dateFormatSelector);	
 		}
 	};
 
@@ -428,26 +468,23 @@
 
 			for (var j = 0; j < styles[i].cssRules.length; j++) {
 				var rule = styles[i].cssRules[j];
-				d3
-						.selectAll(rule.selectorText)
-						.each(
-								function() {
-									for (var k = 0; k < rule.style.length; k++) {
-										var curStyle = this.style
-												.getPropertyValue(rule.style[k]);
-										var curPrio = this.style
-												.getPropertyPriority(rule.style[k]);
-										var rulePrio = rule.style
-												.getPropertyPriority(rule.style[k]);
-										//only overwrite style if not set or priority is overruled
-										if (!curStyle
-												|| (curPrio != "important" && rulePrio == "important")) {
-											d3.select(this).style(
-													rule.style[k],
-													rule.style[rule.style[k]]);
-										}
-									}
-								});
+				d3.selectAll(rule.selectorText).each(function() {
+					for (var k = 0; k < rule.style.length; k++) {
+						var curStyle = this.style
+								.getPropertyValue(rule.style[k]);
+						var curPrio = this.style
+								.getPropertyPriority(rule.style[k]);
+						var rulePrio = rule.style
+								.getPropertyPriority(rule.style[k]);
+						// only overwrite style if not set or
+						// priority is overruled
+						if (!curStyle || (curPrio != "important" && rulePrio === "important")) {
+							d3.select(this).style(
+									rule.style[k],
+									rule.style[rule.style[k]]);
+						}
+					}
+				});
 			}
 		}
 		// correct faulty rect elements

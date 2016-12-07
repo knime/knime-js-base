@@ -20,9 +20,9 @@
 		</intro>
 		<tab name="Options">
 			<options>
-				<!-- TODO: I want rowkey here as well -->
-				<columnSelectorOption name="x-Axis Column" id="xAxisColum"
-					inPortIndex="0" label="Choose column for x axis" filterClasses="org.knime.core.data.DataValue">
+				<columnSelectorOption name="x-Axis Column" id="xAxisColumn"
+					inPortIndex="0" label="Choose column for x axis" filterClasses="org.knime.core.data.DataValue"
+					allowRowID="true">
 					Choose column for x axis
 				</columnSelectorOption>
 				<columnFilterOption name="Included columns" id="columns"
@@ -111,13 +111,13 @@
 					Check to enable
 					the editing of the subtitle within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable stack style change"
-					id="enableStackStyleChange" label="Enable stack style change"
-					defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable changing of the stack style
+				<checkBoxOption name="Enable stack style change" id="enableStackStyleChange"
+					label="Enable stack style change" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable
+					changing of the stack style
 					within the view.
-				</checkBoxOption>				
+				</checkBoxOption>
 				<checkBoxOption name="Enable interpolation method editing"
 					id="enableInterpolationMethodEdit" label="Enable interpolation method editing"
 					defaultValue="true" enableDependency="enableViewControls"
@@ -143,29 +143,27 @@
 					Check to enable toggling of the interactive guideline
 					within the view.
 				</checkBoxOption>
-				<!-- TODO: have _value.options.dateFormat here as well  -->
+				<checkBoxOption name="Enable date format editing" id="enableDateFormatEdit"
+					label="Enable date format editing" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable
+					editing of the date format
+					within the view.
+				</checkBoxOption>
 			</options>
 		</tab>
 
 		<tab name="Axis Configuration">
 			<options>
-				<integerOption name="x-Axis Ticks" id="xAxisTicks"
-					label="x-Axis Ticks" defaultValue="10" minValue="0" saveInView="true">
-					Number of Ticks
-					on the x-Axis
-				</integerOption>
+				<!-- TODO: How to have date formats with whitespace? -->
 				<stringListOption name="Date Format" id="dateFormat"
-					label="Date Format" possibleValues="yyyy-mm-dd m/d/yy" editable="true"
-					saveInView="false" optional="true" defaultValues="yyyy-mm-dd"  >
+					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
+					saveInView="false" optional="true" defaultValues="YYYY-MM-DD">
 					Choose how to format x-Axis ticks if the
 					associated
-					column is of type Date/Time.
+					column is of type
+					Date/Time.
 				</stringListOption>
-				<integerOption name="y-Axis Ticks" id="yAxisTicks"
-					label="y-Axis Ticks" defaultValue="2" minValue="0" saveInView="true">
-					Number of Ticks
-					on the y-Axis
-				</integerOption>
 			</options>
 		</tab>
 
@@ -196,5 +194,7 @@
 	<js:dependencies>
 		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local"
 			exports="nv" />
+		<js:dependency name="moment" path="moment_2_13_Debug"
+			type="local" exports="moment" />
 	</js:dependencies>
 </js:knimeNode>
