@@ -131,14 +131,14 @@
     	var table = representation.inObjects[0];
     	
     	filterIds = [];
-        for (var i = 0; i < table.spec.filterIds.length; i++) {
-          if (table.spec.filterIds[i]) {
-            filterIds.push(table.spec.filterIds[i]);
-          }
-        }
-        if (filterIds.length < 1) {
-          filterIds = null;
-        }
+    	for (var i = 0; i < table.spec.filterIds.length; i++) {
+    		if (table.spec.filterIds[i]) {
+    			filterIds.push(table.spec.filterIds[i]);
+    		}
+    	}
+    	if (filterIds.length < 1) {
+    		filterIds = null;
+    	}
 
     	var catColIdx = getDataColumnID(_representation.options.catCol, table);
     	var indices = {};
@@ -177,7 +177,7 @@
     		}
     	}
 
-    	if (catColIdx) {
+    	if (catColIdx != null) {
     		data.domains[_representation.options.catCol] = d3.set();
     	}
 	    for (var r = 0; r < table.rows.length; r++) {
@@ -534,7 +534,7 @@
 			// if changeSet is presented, we do only an incremental update
 			if (data.changeSet.removed) {
 				for (var i = 0; i < data.changeSet.removed.length; i++) {
-					var removedId = getRowIndex(data.changeSet.removed[i]);
+					var removedId = data.changeSet.removed[i];
 					var row = d3.select("#"+ removedId);
 					if (!row.classed("filtered")) {
 						row.classed({"unselected": true, "selected": false});
@@ -543,7 +543,7 @@
 			}
 			if (data.changeSet.added) {
 				for (var i = 0; i < data.changeSet.added.length; i++) {
-					var addedId = getRowIndex(data.changeSet.added[i]);
+					var addedId = data.changeSet.added[i];
 					var row = d3.select("#"+ addedId);
 					if (!row.classed("filtered")) {
 						row.classed({"selected": true, "unselected": false});
