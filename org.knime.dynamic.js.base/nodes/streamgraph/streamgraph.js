@@ -1,4 +1,15 @@
 (streamgraph_namespace = function() {
+	
+//	TODO
+//	- wait for christian's x, y- axis: number formatter
+//	- What happens for unregular time intervals?
+//  - other date/time types
+//  - save in view selected columns
+
+//  - in java
+//		- missing data: drop row
+//		- option: sort for x-axis value
+
 
 	var view = {};
 	var _representation, _value;
@@ -8,6 +19,14 @@
 	var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 	var chart, svg;
 	var knimeTable1, knimeTable2;
+	
+	
+	var stackStyleByType = {
+		"Stacked-Area-Chart": "stack",
+		"Percentage-Area-Chart": "expand",
+		"Stream-Graph": "stream-center"
+	}
+		
 
 	view.init = function(representation, value) {
 		_representation = representation;
@@ -26,39 +45,26 @@
 			knimeTable2.setDataTable(_representation.inObjects[1]);
 		}
 
-		// Error messages for missing inputs.
-		// TODO: is there a nicer way than using alert-modals?
-
-		// Check if there is data in first table.
-		if (columnKeys.length === 0 || knimeTable1.getNumRows() === 0) {
-			alert("No data given.");
-			return;
-		}
-
-		// Check if table2 has right number of rows.
-		if (knimeTable2 !== null
-				&& knimeTable1.getNumColumns() !== knimeTable2.getNumRows()) {
-
-			alert("Number of objects is not equal between data port one and two.");
-		}
-
+		
 		if (_representation.options.enableViewControls) {
 			drawControls();
 		}
 		setColors();
 		transformData();
-		drawChart(false);
+		drawChart();
 	}
 
-	var drawChart = function(redraw) {
+	var drawChart = function() {
+		// Remove earlier chart.
+		d3.select("#layoutContainer").remove();
+		
 		/*
 		 * Parse the options.
 		 */
-
 		var optTitle = _value.options["title"];
 		var optSubtitle = _value.options["subtitle"];
 
-		var stackStyle = _value.options.stackStyle;
+		var stackStyle = stackStyleByType[_value.options.chartType];
 		var interpolation = _value.options["interpolation"];
 		var enableLegend = _value.options["legend"];
 		var enableInteractiveGuideline = _value.options["interactiveGuideline"];
@@ -67,14 +73,12 @@
 				&& runningInView;
 		var optWidth = _representation.options["svg"]["width"];
 		var optHeight = _representation.options["svg"]["height"];
-		var optDateFormat = _representation.options.dateFormat;
 
 		var isTitle = optTitle || optSubtitle;
 
 		/*
 		 * Create HTML for the view.
 		 */
-
 		d3.selectAll("html, body").style("width", "100%").style("height",
 				"100%").style("margin", "0").style("padding", "0");
 
@@ -101,22 +105,18 @@
 				.style("width", width).style("height", height);
 
 		// Create the SVG object
-		svg = svgContainer.append("svg").attr("id", "svg").style("font-family",
-				"sans-serif").attr("width", width).attr("height", height);
+		svg = svgContainer.append("svg")
+			.attr("id", "svg")
+			.style("font-family", "sans-serif")
+			.attr("width", width)
+			.attr("height", height);
 
-		// TODO
-		// set svg dimensions (apache batik needs width/height to be declared)
-		// if (!runningInView) {
 		if (optFullscreen) {
-			svg.attr("width", optWidth);
-			svg.attr("height", optHeight);
-		} else {
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
 		}
-
 		
-		// create the streamgraph
+		// create the stacked area chart
 		nv.addGraph(function() {
 			chart = nv.models.stackedAreaChart()
 				.x(function(d) { return d[0]; })
@@ -129,19 +129,22 @@
 				.showLegend(enableLegend)
 				.useInteractiveGuideline(enableInteractiveGuideline)
 				.interactive(false)
+				.duration(0);
 
-			if (getXAxisType() === "Date and Time") {
-				chart.xAxis
-					.tickFormat(createDateFormatter(optDateFormat));			
-			} else if (getXAxisType() !== "RowID") {
-				// TODO
-			}
+			chart.xAxis
+				.tickFormat(createXAxisFormatter());
+			
 
-			//Format y-axis
-			// TODO: Change format here
-			// maybe do this in ".y(function(d) { return d[1]; })"
+
+			// Format y-axis
 			// chart.yAxis
 			//	.tickFormat(d3.format(".2s"));
+			
+			chart.legend.dispatch.legendClick = function(d, i){
+				//alert(chart);
+			};
+
+
 
 			updateTitles(false);
 
@@ -154,7 +157,6 @@
 	}
 
 	// transform the tabular format into a JSON format
-	// TODO: this could be done in Java.
 	var transformData = function() {
 		_data = [];
 		var columns = _representation.options.columns
@@ -176,8 +178,7 @@
 		// Set color scale: custom or default.
 		var colorScale = [];
 		var columns = _representation.options.columns;
-		var customColors = _value.options.customColors;
-		if (customColors && knimeTable2 !== null) {
+		if (knimeTable2 !== null) {
 			var rowColors = knimeTable2.getRowColors();
 			var numColumns = columns.length;
 			for (var i = 0; i < numColumns; i++) {
@@ -200,27 +201,33 @@
 		}
 	}
 	
-	var createDateFormatter = function(format) {
+	// Return a function to format the x-axis-ticks.
+	var createXAxisFormatter = function() {
 		var xAxisColumn = _representation.options.xAxisColumn;
 		var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
-		var columnType = knimeTable1.getKnimeColumnTypes()[columnIndex];
-		
-		var dates = knimeTable1.getColumn(columnIndex);
-		return function(i) {
-			var date = dates[i];
-			return moment(date).format(format);
-		}
-	}
-	
-	var getXAxisType = function() {
-		var xAxisColumn = _representation.options.xAxisColumn;
+
 		if (xAxisColumn) {
-			var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
-			var columnType = knimeTable1.getKnimeColumnTypes()[columnIndex];
-			return columnType;
-		} else {
-			return "RowID";
+			var columnType = knimeTable1.getColumnTypes()[columnIndex];
+			var data = knimeTable1.getColumn(columnIndex);
+			if (columnType === "dateTime") {
+				var dateFormat = _representation.options.dateFormat;
+				return function(i) {
+					var date = data[i];
+					return moment(date).format(dateFormat);
+				}
+			}
+			else if (columnType === "string") {
+				return function(i) { return data[i] };
+			}
+			else if (columnType === "number") {
+				return function(i) { return data[i] };
+			}
+			
 		}
+		
+		// Return identity function if nothing else applies.
+		// The argument to the function is the row index. 
+		return function(i) { return i };
 	}
 
 	var updateTitles = function(updateChart) {
@@ -329,22 +336,21 @@
 			}
 		}
 
-		// Stack Style / Interpolation Method / Custom Color
-		var stackStyleChange = _representation.options.enableStackStyleChange;
+		// Chart Type / Interpolation Method / Custom Color
+		var chartTypeChange = _representation.options.enableChartTypeChange;
 		var interpolationEdit = _representation.options.enableInterpolationMethodEdit;
-		var customColorToggle = _representation.options.enableCustomColorToggle;
-		if (stackStyleChange || interpolationEdit || customColorToggle) {
+		if (chartTypeChange || interpolationEdit || customColorToggle) {
 			knimeService.addMenuDivider();
 			
-			if (stackStyleChange) {
-				var stackStyles = [ 'stack', 'expand', 'stream', 'stream-center'];
-				var stackStyleSelector =
-					knimeService.createMenuSelect('stackStyleSelector', _value.options.stackStyle, stackStyles, function() {
-						_value.options.stackStyle = this.options[this.selectedIndex].value;
-						chart.style(_value.options.stackStyle);
+			if (chartTypeChange) {
+				var chartTypes = Object.keys(stackStyleByType);
+				var chartTypeSelector =
+					knimeService.createMenuSelect('chartTypeSelector', _value.options.chartType, chartTypes, function() {
+						_value.options.chartType = this.options[this.selectedIndex].value;
+						chart.style(stackStyleByType[_value.options.chartType]);
 						chart.update();
 					});
-				knimeService.addMenuItem('Stack style:', 'bathtub', stackStyleSelector);		
+				knimeService.addMenuItem('Chart Type:', 'bathtub', chartTypeSelector);		
 			}
 
 			if (interpolationEdit) {
@@ -357,19 +363,6 @@
 					});
 				knimeService.addMenuItem('Interpolation:', 'line-chart', interpolationMethodSelector);
 			}
-			
-			if (customColorToggle && knimeTable2 !== null) {
-				var customColorCheckbox = knimeService.createMenuCheckbox(
-						'customColorCheckbox', _value.options.customColors,
-						function() {
-							_value.options.customColors = this.checked;
-							setColors();
-							chart.color(_colorRange);
-							chart.update();
-						});
-				knimeService
-					.addMenuItem('Custom colors:', 'paint-brush', customColorCheckbox);
-			}
 		}
 		
 		// Controls Legend and Interactive Guideline
@@ -378,71 +371,27 @@
 		if (legendToggle || interactiveGuidelineToggle) {
 			knimeService.addMenuDivider();
 
-			// TODO: This is not working.
 			if (legendToggle) {
 				var legendCheckbox = knimeService.createMenuCheckbox(
 						'legendCheckbox', _value.options.legend, function() {
 							_value.options.legend = this.checked;
-							chart.showLegend(Boolean(_value.options.legend));
-							chart.update();
+							drawChart();
 						});
-				knimeService.addMenuItem('Legend:', 'info-circle',
-						legendCheckbox);
+				knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
 			}
 
-			// TODO: This is not working.
 			if (interactiveGuidelineToggle) {
-				var interactiveGuidelineCheckbox = knimeService
-						.createMenuCheckbox(
+				var interactiveGuidelineCheckbox = knimeService.createMenuCheckbox(
 								'interactiveGuidelineCheckbox',
 								_value.options.interactiveGuideline,
 								function() {
 									_value.options.interactiveGuideline = this.checked;
-									
-									// TODO: THIS SHIT IS NOT WORKING.
-//									chart.useInteractiveGuideline(false);
-//									chart.interactive(false);
-
-//									// Using if-clause because order of function calls does matter.
-//									if (_value.options.interactiveGuideline) {
-//										chart
-//											.interactive(false)
-//											.useInteractiveGuideline(true);
-//									} else {
-//										chart
-//											.useInteractiveGuideline(false)
-//											.interactive(false);
-//									}
-									
-									chart.update();
+									drawChart();
 								});
+				
 				knimeService.addMenuItem('Guideline:', 'bathtub',
 						interactiveGuidelineCheckbox);
 			}
-		}
-		
-		// Date Format Configuration
-		if (getXAxisType() === "Date and Time" &&
-			_representation.options.enableDateFormatEdit) {
-
-			knimeService.addMenuDivider();
-
-			// TODO: more items
-			var dateFormats = ['YYYY-MM-DD', 'M/D/YY'];
-			// Add the chosen format to the array if it is not already in the array.
-			if (_value.options.dateFormat && dateFormats.indexOf(_value.options.dateFormat) === -1) {
-				dateFormats.unshift(_value.options.dateFormat);
-			}
-
-			// TODO: have a editable select here
-			var dateFormatSelector =
-				knimeService.createMenuSelect('dateFormatSelector', _value.options.dateFormat, dateFormats, function() {
-					_value.options.dateFormat = this.options[this.selectedIndex].value;
-					var dateFormatter = createDateFormatter(_value.options.dateFormat);
-					chart.xAxis.tickFormat(dateFormatter);	
-					chart.update();
-				});
-			knimeService.addMenuItem('Date format:', 'calendar', dateFormatSelector);	
 		}
 	};
 
