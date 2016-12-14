@@ -35,12 +35,12 @@
 
 		<tab name="General Plot Options">
 			<options>
-				<radioButtonOption name="Stack Style" id="stackStyle"
-					saveInView="true" possibleValues="stack expand stream stream-center"
-					label="Stack Style" defaultValue="stack">
-					Select the style of the stack
-					chart.
+				<radioButtonOption name="Chart Type" id="chartType"
+					saveInView="true" possibleValues="Stacked-Area-Chart Percentage-Area-Chart Stream-Graph"
+					label="Chart Type" defaultValue="Stacked-Area-Chart">
+					Select the chart type.
 				</radioButtonOption>
+				<!-- stackStyle "stack expand stream stream-center"-->
 				<radioButtonOption name="Interpolation Method" id="interpolation"
 					saveInView="true" possibleValues="linear step basis" label="Interpolation Method"
 					defaultValue="linear">
@@ -62,16 +62,10 @@
 					optional="true" saveInView="true">
 					The chart subtitle.
 				</stringOption>
-				<checkBoxOption name="Use custom colors" id="customColors"
-					label="Use custom colors" defaultValue="false" saveInView="true">
-					Select
-					whether colors from the second input port are used instead of
-					standard colors.
-				</checkBoxOption>
 				<checkBoxOption name="Display legend" id="legend"
 					label="Display legend" defaultValue="true" saveInView="true">
 					When checked,
-					the streamgraph legend is displayed.
+					the legend is displayed.
 				</checkBoxOption>
 				<checkBoxOption name="Display interactive guideline"
 					id="interactiveGuideline" label="Display interactive guideline"
@@ -85,7 +79,7 @@
 					mode. The button is only available in the KNIME WebPortal.
 				</checkBoxOption>
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
-					additionalWait="500" defaultWidth="600" defaultHeight="400"
+					additionalWait="2000" defaultWidth="800" defaultHeight="600"
 					defaultFullscreen="true">
 					Settings for image generation.
 				</svgOption>
@@ -111,11 +105,11 @@
 					Check to enable
 					the editing of the subtitle within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable stack style change" id="enableStackStyleChange"
-					label="Enable stack style change" defaultValue="true"
+				<checkBoxOption name="Enable chart type change" id="enableChartTypeChange"
+					label="Enable chart type change" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable
-					changing of the stack style
+					changing of the chart style
 					within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable interpolation method editing"
@@ -188,13 +182,14 @@
 	</ports>
 	<js:resources>
 		<!-- Added for inlining style rules when generating svg -->
-		<js:resource type="css" path="nv.d3.v1_8_1.min.css" />
+		<js:resource type="css" path="nv.d3.min.css" />
 		<js:resource type="js" path="streamgraph.js" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local"
+		<js:dependency name="nvd3" path="NVD3_1.8.4_Debug" type="local"
 			exports="nv" />
 		<js:dependency name="moment" path="moment_2_13_Debug"
 			type="local" exports="moment" />
 	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.base.stackedarea.StackedAreaProcessor" hidesLimitRowOption="false"/>
 </js:knimeNode>
