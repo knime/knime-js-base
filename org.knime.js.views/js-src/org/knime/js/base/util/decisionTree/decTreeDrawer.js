@@ -304,7 +304,8 @@ function DecTreeDrawer(representation, value) {
     }
     
     this.resize = function() {
-    	drawTree;
+//    	drawTree;
+    	resizeSVG();
     }
     
     this.getSVG = function() {
@@ -326,19 +327,11 @@ function DecTreeDrawer(representation, value) {
     	// Create container for our content
     	layoutContainer = body.append("div")
 	    	.attr("id", "layoutContainer");
-	//  	.style("min-width", MIN_WIDTH + "px")
-	//  	.style("min-height", MIN_HEIGHT + "px");
 
     	// Size layout container based on sizing settings
-//  	if (_representation.options.svg.fullscreen && _representation.runningInView) {
     	layoutContainer.style("width", "100%")
 	    	.style("height", "100vh")
 	    	.style("overflow", "auto");
-//  	} else {
-//  	layoutContainer.style("width", _representation.options.svg.width + "px")
-//  	.style("height", _representation.options.svg.height + "px");
-//  	}
-
 
     	// Add SVG element
     	var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -613,19 +606,16 @@ function DecTreeDrawer(representation, value) {
     	var bbox = d3.select("#plot").node().getBBox();
 //		translation[0] = dtd.margin[0] - bbox.x;
     	var windowWidth = d3.select("#layoutContainer").node().clientWidth;
-    	var treeWidth = 10+2*bbox.x + bbox.width;
-    	if (treeWidth > windowWidth-1) {
-    		d3.selectAll("svg, #bgr")
-    		.attr("height", 10+2*bbox.y + bbox.height)
-    		.attr("width", treeWidth);
+    	var windowHeight = d3.select("#layoutContainer").node().clientHeight;
+    	var treeWidth = 10 + 2*bbox.x + bbox.width;
+    	var treeHeight = 10 + 2*bbox.y + bbox.height;
+    	var bgWidth = treeWidth > windowWidth - 1 ? treeWidth : windowWidth - 1;
+    	var bgHeight = treeHeight > windowHeight - 1 ? treeHeight : windowHeight - 1;
+    	d3.selectAll("svg, #bgr")
+    		.attr("height", bgHeight)
+    		.attr("width", bgWidth);
+    	if (treeWidth == bgWidth || treeHeight == bgHeight) {
     		updateScrollPosition(pxlsMoved);
-    	} else {
-    		d3.selectAll("svg, #bgr")
-    			.attr("height", 10+2*bbox.y + bbox.height)
-    			/* ensures that no scrollbars appear if the tree is smaller than
-    			 * the window (at least in IE)
-    			 */
-    			.attr("width", windowWidth-1);
     	}
     }
     
@@ -993,6 +983,12 @@ function DecTreeDrawer(representation, value) {
                 var nw = att.width(d) + 2*xMargin;
                 width = d3.max([width, nw]);
             }
+        }
+        if (options.enableSelection) {
+        	var ls = getTextSize("Selection:").width;
+        	var is = getTextSize("\uf096").width;
+        	var nw = ls + 3 + is + 2 * xMargin;
+        	width = d3.max([width,nw])
         }
         return width;
     }

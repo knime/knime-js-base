@@ -43,6 +43,8 @@ knime_decision_tree = function() {
             }, tableCreator.createClassTable, tableCreator.tableWidth, tableCreator.tableHeight));
         
         decTreeDrawer.init();
+        var win = document.defaultView || document.parentWindow;
+        win.onresize = resize;
     }
 
     input.getSVG = function() {
