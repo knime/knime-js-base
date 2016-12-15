@@ -1,14 +1,13 @@
 (streamgraph_namespace = function() {
 	
 //	TODO
-//	- wait for christian's x, y- axis: number formatter
+//  - export SVG does not work right now
+//  - Node documentation
+//	- wait for christian's number-formatter-component for x- and y-axis
+//	- wait for christian's date-format-selector-component
 //	- What happens for unregular time intervals?
-//  - other date/time types
-//  - save in view selected columns
-
-//  - in java
-//		- missing data: drop row
-//		- option: sort for x-axis value
+//  - Check for other date/time types in new knime release
+//  - react to external filters: see tableview / parallel coordinates
 
 
 	var view = {};
@@ -26,8 +25,8 @@
 		"Percentage-Area-Chart": "expand",
 		"Stream-Graph": "stream-center"
 	}
-		
-
+	
+	
 	view.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
@@ -119,6 +118,7 @@
 		// create the stacked area chart
 		nv.addGraph(function() {
 			chart = nv.models.stackedAreaChart()
+				.margin({ right: 50 })
 				.x(function(d) { return d[0]; })
 				.y(function(d) { return d[1]; })
 				.color(_colorRange)
@@ -140,21 +140,23 @@
 			// chart.yAxis
 			//	.tickFormat(d3.format(".2s"));
 			
-			chart.legend.dispatch.legendClick = function(d, i){
-				//alert(chart);
-			};
-
-
-
 			updateTitles(false);
 
 			svg.datum(_data).call(chart);
 
 			nv.utils.windowResize(chart.update);
 
+			if  ("disabled" in _value.options) {
+				var state = chart.defaultState();
+				state.disabled = _value.options.disabled;
+				chart.dispatch.changeState(state);
+			} 
+			
 			return chart;
 		});
 	}
+	
+
 
 	// transform the tabular format into a JSON format
 	var transformData = function() {
@@ -174,8 +176,8 @@
 		}
 	};
 
+	// Set color scale: custom or default.
 	var setColors = function() {
-		// Set color scale: custom or default.
 		var colorScale = [];
 		var columns = _representation.options.columns;
 		if (knimeTable2 !== null) {
@@ -400,6 +402,17 @@
 	}
 
 	view.getComponentValue = function() {
+		// Save disabled-state of the series from the chart if:
+		//   - it was saved in _value before
+		//   - some series are disabled
+		
+		var container = d3.select("#svgContainer");
+		var disabled = container.selectAll('g .nv-series').data().map(function(o) { return !!o.disabled })
+		
+		if  (("disabled" in _value.options) || disabled.some(Boolean)) {
+			_value.options.disabled = disabled;
+		}			
+		
 		return _value;
 	}
 

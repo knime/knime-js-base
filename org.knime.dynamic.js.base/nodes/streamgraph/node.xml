@@ -119,12 +119,6 @@
 					Check to enable the editing of the interpolation method
 					within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable custom color toggle" id="enableCustomColorToggle"
-					label="Enable custom color toggle" defaultValue="true"
-					enableDependency="enableViewControls" enableValue="true">
-					Check to enable
-					toggling of custom colors within the view.
-				</checkBoxOption>
 				<checkBoxOption name="Enable legend toggle" id="enableLegendToggle"
 					label="Enable legend toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
@@ -137,19 +131,16 @@
 					Check to enable toggling of the interactive guideline
 					within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable date format editing" id="enableDateFormatEdit"
-					label="Enable date format editing" defaultValue="true"
-					enableDependency="enableViewControls" enableValue="true">
-					Check to enable
-					editing of the date format
-					within the view.
-				</checkBoxOption>
 			</options>
 		</tab>
 
 		<tab name="Axis Configuration">
 			<options>
-				<!-- TODO: How to have date formats with whitespace? -->
+				<checkBoxOption name="Sort for x-axis column"
+					id="xAxisSort" label="Sort for x-axis column"
+					defaultValue="false">
+					When checked, the table is sorted for the x-axis column.
+				</checkBoxOption>
 				<stringListOption name="Date Format" id="dateFormat"
 					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
 					saveInView="false" optional="true" defaultValues="YYYY-MM-DD">
