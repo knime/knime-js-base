@@ -35,6 +35,9 @@
           It is possible to enter a URL here. This can be useful if a default file is to be addressed with 
           the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a remote server.
         </option>
+        <option name="Timeout">
+        The time in milliseconds after which the connection times out.
+        </option>
         <option name="Disable output, if file does not exist">
           If enabled, output port will be disabled, if the provided file does not exist or cannot be accessed.<br/>
           This option is helpful in the wizard (WebPortal) execution to keep this and subsequent nodes from failing during execution.

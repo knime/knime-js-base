@@ -52,7 +52,9 @@ import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -72,6 +74,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final FilesHistoryPanel m_fileHistoryPanel;
     private final JTextField m_validExtensionsField;
+    private final JSpinner m_timeoutSpinner;
     private final JCheckBox m_disableOutputBox;
 
     private FileUploadQuickFormConfig m_config;
@@ -99,6 +102,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
                 // nothing to do
             }
         });
+        m_timeoutSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1000));
         m_disableOutputBox = new JCheckBox();
         createAndAddTab();
     }
@@ -112,6 +116,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
             m_validExtensionsField, panelWithGBLayout, gbc);
         addPairToPanel("Default File:",
             m_fileHistoryPanel, panelWithGBLayout, gbc);
+        addPairToPanel("Timeout in ms: ", m_timeoutSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
     }
 
@@ -145,6 +150,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         m_validExtensionsField.setText(text);
         m_fileHistoryPanel.setSelectedFile(m_config.getDefaultValue().getPath());
         m_fileHistoryPanel.setSuffixes(getFileTypes());
+        m_timeoutSpinner.setValue(m_config.getTimeout());
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
@@ -156,6 +162,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
         m_config.setFileTypes(getFileTypes());
+        m_config.setTimeout((int) m_timeoutSpinner.getValue());
         m_config.setDisableOutput(m_disableOutputBox.isSelected());
         m_config.saveSettings(settings);
     }

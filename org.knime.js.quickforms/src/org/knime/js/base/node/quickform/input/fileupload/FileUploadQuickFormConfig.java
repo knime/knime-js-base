@@ -62,13 +62,27 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileUploadQuickFormValue> {
 
     private static final String CFG_FILE_TYPES = "types";
+
     private static final String[] DEFAULT_FILE_TYPES = new String[0];
+
     private String[] m_fileTypes = DEFAULT_FILE_TYPES;
+
     private static final String CFG_ERROR_MESSAGE = "error_message";
+
     private static final String DEFAULT_ERROR_MESSAGE = "";
+
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
+
     private static final String CFG_DISABLE_OUTPUT = "disable_output";
+
+    private static final String CFG_TIMEOUT = "timeout";
+
+    private static final int DEFAULT_TIMEOUT = 5000;
+
+    private int m_timeout = DEFAULT_TIMEOUT;
+
     private static final boolean DEFAULT_DISABLE_OUTPUT = true;
+
     private boolean m_disableOutput = DEFAULT_DISABLE_OUTPUT;
 
     /**
@@ -97,6 +111,20 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
      */
     public void setErrorMessage(final String errorMessage) {
         m_errorMessage = errorMessage;
+    }
+
+    /**
+     * @return the timeout
+     */
+    public int getTimeout() {
+        return m_timeout;
+    }
+
+    /**
+     * @param timeout the timeout to set
+     */
+    public void setTimeout(final int timeout) {
+        m_timeout = timeout;
     }
 
     /**
@@ -129,6 +157,7 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         super.saveSettings(settings);
         settings.addStringArray(CFG_FILE_TYPES, m_fileTypes);
         settings.addString(CFG_ERROR_MESSAGE, m_errorMessage);
+        settings.addInt(CFG_TIMEOUT, m_timeout);
         settings.addBoolean(CFG_DISABLE_OUTPUT, m_disableOutput);
     }
 
@@ -143,6 +172,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
 
         // added with 3.1
         m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
+
+        // added with 3.3.1
+        m_timeout = settings.getInt(CFG_TIMEOUT, DEFAULT_TIMEOUT);
     }
 
     /**
@@ -156,6 +188,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
 
         // added with 3.1
         m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
+
+        // added with 3.3.1
+        m_timeout = settings.getInt(CFG_TIMEOUT, DEFAULT_TIMEOUT);
     }
 
     /**
@@ -172,6 +207,9 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
         sb.append(", ");
+        sb.append("timeout=");
+        sb.append(m_timeout);
+        sb.append(", ");
         sb.append("disableOutput=");
         sb.append(m_disableOutput);
         return sb.toString();
@@ -182,11 +220,8 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_fileTypes)
-                .append(m_errorMessage)
-                .append(m_disableOutput)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_fileTypes).append(m_errorMessage).append(m_timeout)
+            .append(m_disableOutput).toHashCode();
     }
 
     /**
@@ -204,11 +239,8 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
             return false;
         }
         FileUploadQuickFormConfig other = (FileUploadQuickFormConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_fileTypes, other.m_fileTypes)
-                .append(m_errorMessage, other.m_errorMessage)
-                .append(m_disableOutput, other.m_disableOutput)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_fileTypes, other.m_fileTypes)
+            .append(m_errorMessage, other.m_errorMessage).append(m_timeout, other.m_timeout).append(m_disableOutput, other.m_disableOutput).isEquals();
     }
 
 }
