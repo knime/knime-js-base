@@ -34,7 +34,9 @@ knime_decision_tree = function() {
         			}
         			sum += classCounts[i];
         		}
-                return meta.classNames[maxIdx] + " (" + max + "/" + sum + ")";
+        		
+        		
+                return meta.classNames[maxIdx] + " (" + decTreeDrawer.formatNumber(max) + "/" + decTreeDrawer.formatNumber(sum) + ")";
             }));
 
         // class table

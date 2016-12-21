@@ -45,6 +45,8 @@
             <option name="Custom postfix">A custom postfix for numbers displayed in node conditions (i.e. to display currency).</option>
             <option name="Negative sign">A custom negative sign to use in node conditions.</option>
             <option name="Negative before string">A prefix that is used for negative numbers only. Inserted before the prefix.</option>
+            <option name="Truncation limit">In the view long strings are abbreviated to avoid cluttering.
+            The truncation limit specifies the maximal length of a string. For abbreviated strings a tooltip is added that displays the full string.</option>
 		</tab>
 		<tab name="View Controls">
 		    <option name="Enable view edit controls">If checked all edit controls selected below will be rendered in the view. Unchecking this option disables all edit controls.</option>

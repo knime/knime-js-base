@@ -83,6 +83,7 @@ public class DecisionTreeViewConfig {
     static final String DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String ENABLE_ZOOMING = "enableZooming";
     static final String DISPLAY_SELECTION_RESET_BUTTON = "displaySelectionResetButton";
+    static final String TRUNCATION_LIMIT = "truncationLimit";
 
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = DEFAULT_BACKGROUND_COLOR;
@@ -102,6 +103,7 @@ public class DecisionTreeViewConfig {
     static final boolean DEFAULT_ENABLE_SUBTITLE_CHANGE = true;
     static final boolean DEFAULT_DISPLAY_SELECTION_RESET_BUTTON = true;
     static final NumberFormatSettings DEFAULT_NUMBER_FORMAT = new NumberFormatSettings();
+    static final int DEFAULT_TRUNCATION_LIMIT = 25;
 
     private String m_title;
     private String m_subtitle;
@@ -123,6 +125,7 @@ public class DecisionTreeViewConfig {
     private boolean m_displayFullScreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_enableZooming = DEFAULT_ENABLE_ZOOMING;
     private boolean m_displaySelectionResetButton = DEFAULT_DISPLAY_SELECTION_RESET_BUTTON;
+    private int m_truncationLimit = DEFAULT_TRUNCATION_LIMIT;
 
     private NumberFormatSettings m_numberFormat = DEFAULT_NUMBER_FORMAT;
 
@@ -156,6 +159,7 @@ public class DecisionTreeViewConfig {
         settings.addBoolean(DISPLAY_FULLSCREEN_BUTTON, m_displayFullScreenButton);
         settings.addBoolean(ENABLE_ZOOMING, m_enableZooming);
         settings.addBoolean(DISPLAY_SELECTION_RESET_BUTTON, m_displaySelectionResetButton);
+        settings.addInt(TRUNCATION_LIMIT, m_truncationLimit);
     }
 
     /**
@@ -194,6 +198,9 @@ public class DecisionTreeViewConfig {
         setDisplayFullScreenButton(settings.getBoolean(DISPLAY_FULLSCREEN_BUTTON));
         setEnableZooming(settings.getBoolean(ENABLE_ZOOMING));
         setDisplaySelectionResetButton(settings.getBoolean(DISPLAY_SELECTION_RESET_BUTTON));
+
+        //added with 3.3.2
+        setTruncationLimit(settings.getInt(TRUNCATION_LIMIT, DEFAULT_TRUNCATION_LIMIT));
     }
 
     /**
@@ -235,6 +242,7 @@ public class DecisionTreeViewConfig {
         setDisplayFullScreenButton(settings.getBoolean(DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
         setEnableZooming(settings.getBoolean(EXPANDED_LEVEL, DEFAULT_ENABLE_ZOOMING));
         setDisplaySelectionResetButton(settings.getBoolean(DISPLAY_SELECTION_RESET_BUTTON, DEFAULT_DISPLAY_SELECTION_RESET_BUTTON));
+        setTruncationLimit(settings.getInt(TRUNCATION_LIMIT, DEFAULT_TRUNCATION_LIMIT));
     }
 
 
@@ -560,5 +568,19 @@ public class DecisionTreeViewConfig {
      */
     public void setDisplaySelectionResetButton(final boolean displaySelectionResetButton) {
         m_displaySelectionResetButton = displaySelectionResetButton;
+    }
+
+    /**
+     * @return the truncationLimit
+     */
+    public int getTruncationLimit() {
+        return m_truncationLimit;
+    }
+
+    /**
+     * @param truncationLimit the truncationLimit to set
+     */
+    public void setTruncationLimit(final int truncationLimit) {
+        m_truncationLimit = truncationLimit;
     }
 }

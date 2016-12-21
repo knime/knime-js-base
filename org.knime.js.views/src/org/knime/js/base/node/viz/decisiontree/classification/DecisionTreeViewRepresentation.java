@@ -82,6 +82,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
     private boolean m_displaySelectionResetButton;
     private String m_tableId;
     private boolean m_enableZooming;
+    private int m_truncationLimit;
 
 
     /**
@@ -101,6 +102,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         settings.addBoolean(DecisionTreeViewConfig.ENABLE_ZOOMING, m_enableZooming);
         settings.addString(DecisionTreeViewConfig.NODE_BACKGROUND_COLOR, m_nodeBackgroundColor);
         settings.addBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON, m_displaySelectionResetButton);
+        settings.addInt(DecisionTreeViewConfig.TRUNCATION_LIMIT, m_truncationLimit);
         // don't save decision tree representation (for now)
     }
 
@@ -123,6 +125,9 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         setTableId(settings.getString("TableId"));
         setEnableZooming(settings.getBoolean(DecisionTreeViewConfig.ENABLE_ZOOMING));
         setDisplaySelectionResetButton(settings.getBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON));
+
+        //added with 3.3.2
+        setTruncationLimit(settings.getInt(DecisionTreeViewConfig.TRUNCATION_LIMIT, DecisionTreeViewConfig.DEFAULT_TRUNCATION_LIMIT));
     }
 
     /**
@@ -153,6 +158,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_tableId, other.m_tableId)
                 .append(m_displaySelectionResetButton, other.m_displaySelectionResetButton)
+                .append(m_truncationLimit, other.m_truncationLimit)
                 .isEquals();
     }
 
@@ -173,6 +179,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
             .append(m_displayFullscreenButton)
             .append(m_tableId)
             .append(m_displaySelectionResetButton)
+            .append(m_truncationLimit)
             .toHashCode();
     }
 
@@ -356,6 +363,20 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
      */
     public void setDisplaySelectionResetButton(final boolean displaySelectionResetButton) {
         m_displaySelectionResetButton = displaySelectionResetButton;
+    }
+
+    /**
+     * @return the truncationLimit
+     */
+    public int getTruncationLimit() {
+        return m_truncationLimit;
+    }
+
+    /**
+     * @param truncationLimit the truncationLimit to set
+     */
+    public void setTruncationLimit(final int truncationLimit) {
+        m_truncationLimit = truncationLimit;
     }
 
 }

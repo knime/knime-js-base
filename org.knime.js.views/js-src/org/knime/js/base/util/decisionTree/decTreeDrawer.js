@@ -40,13 +40,53 @@ function DecTreeDrawer(representation, value) {
     		tableId: representation.tableId,
     		displayFullscreenButton: representation.displayFullscreenButton,
     		enableZooming : representation.enableZooming,
-    		displaySelectionResetButton: representation.displaySelectionResetButton
+    		displaySelectionResetButton: representation.displaySelectionResetButton,
+    		truncationLimit : representation.truncationLimit
     };
     var selection;
     var decTree = representation.tree;
     var nodeStatus = value.nodeStatus;
     var title = value.title;
     var subtitle = value.subtitle;
+    
+    var tooltipElement;
+    var tooltip = d3.tip()
+    	.attr("class", "d3-tip")
+    	.direction(function() {
+    		var bbox = this.getBoundingClientRect();
+    		var tooltipBox = tooltipSize.call(this);
+    		if (bbox.top - tooltipBox.height - 15 < 0) {
+    			return "s";
+    		}
+    		return "n";
+    	})
+    	.offset(function() {
+    		var bbox = this.getBoundingClientRect();
+    		var tooltipBox = tooltipSize.call(this);
+    		if (bbox.top - tooltipBox.height - 15 < 0) {
+    			return [bbox.height/2,0];
+    		}
+    		return [-bbox.height/2, 0];
+    	})
+    	.html(tooltipHTML);
+    
+    function tooltipHTML() {
+    	var text = d3.select(this).attr("title");
+		if (text.indexOf(", ") != -1) {
+			return text.replace(/, /g, ",<br>");
+		}
+		return text;
+    }
+    
+    function tooltipSize() {
+    	var html = tooltipHTML.call(this);
+    	var tip = d3.select("body").append("div")
+    		.attr("class", "d3-tip")
+    		.text(html);
+    	var bbox = tip.node().getBoundingClientRect();
+    	tip.remove();
+    	return bbox;
+    }
     
     if (value.selection) {
     	selection = d3.set(value.selection);
@@ -343,6 +383,9 @@ function DecTreeDrawer(representation, value) {
     		.attr("font-size", "14px")
     		.attr("margin", "0px")
     		.attr("padding", "0px");
+    	
+    	svg.call(tooltip);
+    	tooltipElement = d3.select(".d3-tip").node();
     	
     	var plot = svg
 	    	.append("g")
@@ -670,6 +713,10 @@ function DecTreeDrawer(representation, value) {
   
         update(root);
 
+        /**
+         * Updates the tree view.
+         * All visible components of the tree are drawn within this function.
+         */
         function update(source) {
 
             // Compute the new tree layout.
@@ -794,8 +841,11 @@ function DecTreeDrawer(representation, value) {
             	.style("stroke", options.dataAreaColor);
             splitGroup.append("text")
                 .style("text-anchor", "middle")
-                .text(splitAttribute)
+                .call(insertTrimmedText, splitAttribute)
+//                .text(splitAttribute)
                 .call(offsetText);
+            
+//            tooltip.html(conditionText);
 
             var conditionGroup = nodeEnter.append("g")
                 .filter(function(d) { return d.condition; })
@@ -803,13 +853,17 @@ function DecTreeDrawer(representation, value) {
                 .attr("transform", "translate(0, -15)");
             conditionGroup.append("text")
                 .style("text-anchor", "middle")
-                .attr("title", conditionText)
-                .text(briefCondText)
+                .call(insertTrimmedText, conditionText)
+//                .attr("title", conditionText)
+//                .text(briefCondText)
+//                .on('mouseover', tooltip.show)
+//                .on('mouseout', tooltip.hide)
                 .call(offsetText);
+            
             
             function briefCondText(d) {
                 var text = conditionText(d);
-                    if (d.length > 10) {
+                    if (text.length > 10) {
                         text = text.substr(0, 7);
                         text += "...";
                     }
@@ -1076,7 +1130,7 @@ function DecTreeDrawer(representation, value) {
             case "greaterThan":
             	return ">";
             case "IS_IN":
-                return "\u2208";
+                return /*"\u2208"*/ "in";
                 break;
             case "IS_NOT_IN":
             	return "\u2209";
@@ -1135,10 +1189,50 @@ function DecTreeDrawer(representation, value) {
     }
     
     /**
+     * Trims a String by replacing its tail with ... s.t. the maximal length of a String returned by this
+     * function is maxLength.
+     * input: 	text - The text to be trimmed to maxLength
+     * 			maxLength - The maximum length a String returned by this function may have 
+     * 					(must be larger than 3 because the remainder is replaced with ...)
+     * output:	A String of maximal length maxLength
+     */
+    function trimText(text, maxLength) {
+    	if (text.length < maxLength) {
+    		return text;
+    	} else {
+    		return text.slice(0, maxLength - 3) + "...";
+    	}
+    }
+    
+    function trimWrapper(textFunc) {
+    	return function(d) {
+    		return trimText(textFunc(d), options.truncationLimit);
+    	}
+    }
+    
+    /**
+     * To be used as argument to the d3 selection.call() function on a selection of text elements.
+     * Inserts a trimmed version of the provided textFunc (using trimText()) and adds the full text as title attribute.
+     */
+    function insertTrimmedText(textElement, textFunc) {
+    	var trimmed = trimWrapper(textFunc);
+//    	tooltip.html(textFunc);
+    	textElement.attr("title", textFunc)
+    		.text(trimmed)
+    		.filter(function() {
+    			var el = d3.select(this);
+    			return el.text() != el.attr("title");
+    		})
+    		.on("mouseover", tooltip.show)
+    		.on("mouseout", tooltip.hide);
+    }
+    
+    /**
      * Makes metaData accessible for external functions.
      */
     function createFunctionWrapper(func) {
     	var metaData = decTree.metaData;
+    	var numFormatter = numFormatter;
     	var wrappedFunction = function(d) {
     		var result = func(d, metaData);
     		return result;
@@ -1156,8 +1250,9 @@ function DecTreeDrawer(representation, value) {
                 .attr("class", panelName);
             
             panel.append("text")
+            	.style("fill-opacity", 1e-6)
                 .text(wrappedContent)
-                .style("fill-opacity", 1e-6)
+            	.call(insertTrimmedText, wrappedContent)
                 .call(offsetText);
             return panel;
         };
@@ -1167,7 +1262,7 @@ function DecTreeDrawer(representation, value) {
                 .style("fill-opacity", 1);
             return panel;
         };
-        var width = function(d) { return getTextSize(wrappedContent(d)).width; };
+        var width = function(d) { return getTextSize(trimText(wrappedContent(d), options.truncationLimit)).width; };
         var height = function(d) { return fontsize; };
         return new Panel(attributeName, enter, update, width, height);
     }
@@ -1233,7 +1328,7 @@ function DecTreeDrawer(representation, value) {
                 .call(offsetText);
             var body = panel.append("g")
                 .attr("class", "collapsibleBody")
-                .attr("transform", "translate(10,13)");
+                .attr("transform", "translate(" + [padding,padding + 10] + ")");
             
 //            enterContent(body);
             return panel;
@@ -1302,12 +1397,12 @@ function DecTreeDrawer(representation, value) {
             var hw = headerWidth(d);
             var bw;
             if (panelActivated(d)) {
-            	bw = contentWidth(d) + 10;
+            	bw = contentWidth(d);
             } else {
             	bw = 0;
             }
             var w = d3.max([hw, bw]);
-            return w + padding;
+            return w + 2*padding;
         };
     
         var height = function(d) {
@@ -1365,31 +1460,52 @@ function DecTreeDrawer(representation, value) {
     	return {width : size.width, height : size.height};
     }
     
+    this.formatNumber = function(x) {
+    	return isInteger(x) ? x : numFormatter.to(x);
+    }
+    
+    function isInteger(x) {
+    	return x % 1 === 0;
+    }
+    
     
     function ClassTableCreator(decTree, dx, dy) {
     	var classNames = decTree.metaData.classNames;
         var nc = classNames.length;
-        var catColLength = function() {
-            var i, length;
-            length = 50;
-            for (i = 0; i < nc; i++) {
-                length = d3.max([length, classNames[i].length * 7]);
-            }
-            return length;
-        }();
+        // svg is not instantiated at the point where this is called
+        var catColLength;
+        var xPerc;
+        var xNum;
+        var sizePerc;
+        
+        /**
+         * Necessary because by the time the constructor is called it is not guaranteed
+         * that there is a svg for getTextSize() yet.
+         */
+        function initialize() {
+        	if (typeof catColLength == "undefined") {
+        		catColLength = function() {
+                    var i, length;
+                    length = getTextSize("Category").width;
+                    for (i = 0; i < nc; i++) {
+                        length = d3.max([length, getTextSize(classNames[i]).width]);
+                    }
+                    return length;
+                }();
+                xPerc = catColLength + dx
+                sizePerc = getTextSize("100.0").width;
+                xNum = xPerc + sizePerc + dx;
+        	}
+        }
         
         function tableWidth(d) {
-            var width, maxNum, sum, i;
+            var width, sum, i;
+            
+            initialize();
+            
             // last term stands for the size of percentage column
-            width = catColLength + 2*dx + 25;
-            maxNum = 0;
-            
-            for (i = 0; i < nc; i++) {
-                maxNum = d3.max([maxNum, ("" + d.content.classCounts[i]).length]);
-                sum += maxNum;
-            }
-            
-            width += getTextSize("" + sum).width;
+            width = catColLength + 2*dx + sizePerc;
+            width += getTextSize("" + formatClassCount(getNumTotal(d))).width;
             return width;
         }
         
@@ -1399,12 +1515,13 @@ function DecTreeDrawer(representation, value) {
             return fixedHeight;
         }
         
-        var xPerc = catColLength + dx;
-        var xNum = xPerc + 25 + dx;
+        
         
         this.createClassTable = createClassTable;
         
         function createClassTable(body) {
+        	
+        	initialize();
         
             // write header
         	var tableGroup = body.append("g");
@@ -1420,7 +1537,6 @@ function DecTreeDrawer(representation, value) {
         		.attr("transform", "translate(" + xNum + ",0)")
         		.text("n");
             // write body
-//            fillInClasses(table);
         	fillInClasses(tableGroup);
             // write total row
             var totalCount = getNumTotal(decTree.root);
@@ -1440,7 +1556,7 @@ function DecTreeDrawer(representation, value) {
             	});
             tableGroup.append("text")
             	.attr("transform", "translate(" + xNum + "," + yTotal + ")")
-            	.text(getNumTotal);
+            	.text(function(d) { return formatClassCount(getNumTotal(d)); });
             // position text below y coordinate
             tableGroup.attr("transform", "translate(0," + fontsize + ")");
                 
@@ -1464,15 +1580,16 @@ function DecTreeDrawer(representation, value) {
                 var i;         
                 for (i = 0; i < nc; i++) {
                 	var cy = (i + 1) * (dy + fontsize);
+                	var cl = decTree.metaData.classNames[i];
                 	table.append("text")
                 		.attr("transform", "translate(0," + cy + ")")
-                		.text(decTree.metaData.classNames[i]);
+                		.call(insertTrimmedText, textFuncCreator(cl));
                 	table.append("text")
                 		.attr("transform", "translate(" + xPerc + "," + cy + ")")
                 		.text(function(d) {
                 			var perc = 100 * d.content.classCounts[i] / getNumTotal(d);
                 			var num = Number((perc).toFixed(1));
-                			if (num % 1 === 0) {
+                			if (isInteger(num)) {
                     			// percentage is integer -> add .0
                     			return num + ".0";
                     		}
@@ -1481,19 +1598,33 @@ function DecTreeDrawer(representation, value) {
                 	table.append("text")
                 		.attr("transform", "translate(" + xNum + "," + cy + ")")
                 		.text(function(d) {
-                			return d.content.classCounts[i];
+                			return formatClassCount(d.content.classCounts[i]);
                 		});
                 }
             }
-            
-            function getNumTotal(d) {
-                var i, numTotal;
-                numTotal = 0;
-                for (i = 0; i < nc; i++) {
-                    numTotal += d.content.classCounts[i];
-                }
-                return numTotal;
+            function textFuncCreator(text) {
+            	return function() {
+            		return text;
+            	}
             }
+            
+        }
+        
+        function formatClassCount(cc) {
+        	if (isInteger(cc)) {
+				return cc;
+			} else {
+				return numFormatter.to(cc);
+			}
+        }
+        
+        function getNumTotal(d) {
+        	var i, numTotal;
+        	numTotal = 0;
+        	for (i = 0; i < nc; i++) {
+        		numTotal += d.content.classCounts[i];
+        	}
+        	return numTotal;
         }
         
         this.updateClassTable = updateClassTable;
