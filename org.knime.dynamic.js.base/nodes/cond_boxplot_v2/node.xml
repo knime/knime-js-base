@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
-	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="boxplot_namespace" nodeID="conditionalBoxplotJS" categoryPath="/labs/interactiveView"
-	icon="../js.png" type="Visualizer" deprecated="true">
+	icon="../js.png" type="Visualizer">
 
 	<name>JavaScript Conditional Box Plot</name>
 	<shortDescription>This node provides a view with a Conditional Box Plot implemented with D3.js.</shortDescription>
@@ -99,9 +99,14 @@
                 </colorOption>
 
                 <!-- Use a color selector to choose bar colors? -->
-                <colorOption name="Box color" id="boxColor" label="Box color"
-                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
-                    The filling color of the boxes.
+                <checkBoxOption name="Apply colors by category" id="applyColors" label="Apply colors by category" defaultValue="true" saveInView="true">
+					Check to apply a color scheme to the boxes by category. The colors can be defined as a table 
+					with a single column which contains the category names and color settings applied accordingly.<n:br/>
+					If the table with desired color scheme is not provided, a standard color scheme will be used. 
+				</checkBoxOption>
+				<colorOption name="Box color" id="boxColor" label="Box color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255" enableDependency="applyColors" enableValue="false">
+                    The filling color of the boxes. Not available if the previous option is checked. 
                 </colorOption>
 			</options>
 		</tab>
@@ -138,6 +143,9 @@
 		<inPort portType="Data" name="Input Data" index="0">
 			Data table containing the categories and values to be plotted in a box plot.
 		</inPort>
+		<inPort portType="Data" name="Color Data" index="1" optional="true">
+			Data table containing the category names with colors applied.
+		</inPort>
 		<outPort portType="Image" name="Box Plot image" index="0">
 			SVG image of the box plot.
 		</outPort>
@@ -150,5 +158,5 @@
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
 	</js:dependencies>
-	<js:javaProcessor className="org.knime.dynamic.js.base.boxplot.ConditionalBoxplotProcessor" hidesLimitRowOption="true"/>
+	<js:javaProcessor className="org.knime.dynamic.js.base.boxplot.ConditionalBoxplotProcessor_v2" hidesLimitRowOption="true"/>
 </js:knimeNode>
