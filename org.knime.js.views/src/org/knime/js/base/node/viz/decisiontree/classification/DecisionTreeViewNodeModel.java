@@ -365,6 +365,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         representation.setEnableZooming(m_config.getEnableZooming());
         representation.setDisplayFullscreenButton(m_config.getDisplayFullScreenButton());
         representation.setDisplaySelectionResetButton(m_config.getDisplaySelectionResetButton());
+        representation.setTruncationLimit(m_config.getTruncationLimit());
         if (m_table == null) {
             // can't select if there is no table.
             representation.setEnableSelection(false);

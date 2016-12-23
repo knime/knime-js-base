@@ -106,6 +106,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     private final JTextField m_appendedColumnName;
     private final JTextField m_chartTitleTextField;
 
+
     private final JTextField m_chartSubtitleTextField;
 
     private final DialogComponentColorChooser m_dataAreaColorChooser;
@@ -115,6 +116,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     private final DialogComponentColorChooser m_nodeBackgroundColorChooser;
 
     private final NumberFormatNodeDialogUI m_numberFormatUI;
+    private final JSpinner m_truncationLimitSpinner;
 
     private final JSpinner m_expandedLevelSpinner;
     private final JCheckBox m_resetNodeStatus;
@@ -169,6 +171,9 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
             "Background color: ", true);
         m_nodeBackgroundColorChooser = new DialogComponentColorChooser(new SettingsModelColor("nodeBackgroundColor", null),
             "Node background color: ", true);
+
+        m_truncationLimitSpinner = new JSpinner(
+            new SpinnerNumberModel(DecisionTreeViewConfig.DEFAULT_TRUNCATION_LIMIT, 3, Integer.MAX_VALUE, 1));
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -254,7 +259,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
 
         JPanel titlesPanel = new JPanel(new GridBagLayout());
@@ -303,6 +308,12 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         panel.add(numFormatPanel, c);
         cc.gridy = 0;
         numFormatPanel.add(m_numberFormatUI.createPanel(), cc);
+
+        c.gridy++;
+        c.gridwidth = 1;
+        panel.add(new JLabel("Truncation limit: "), c);
+        c.gridx++;
+        panel.add(m_truncationLimitSpinner, c);
 
         return panel;
     }
@@ -438,6 +449,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
         m_enableZoomingCheckBox.setSelected(config.getEnableZooming());
 
+        m_truncationLimitSpinner.setValue(config.getTruncationLimit());
+
         enableViewControls();
         enableSelectionControls();
     }
@@ -482,6 +495,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setNumberFormat(m_numberFormatUI.saveSettingsTo());
 
         config.setEnableZooming(m_enableZoomingCheckBox.isSelected());
+
+        config.setTruncationLimit((int)m_truncationLimitSpinner.getValue());
 
         config.saveSettings(settings);
     }

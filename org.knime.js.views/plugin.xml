@@ -407,6 +407,13 @@
          <webDependency
                webResourceBundleID="d3-flextree_1.0.3_debug">
          </webDependency>
+         <webDependency
+               webResourceBundleID="d3-tip_1.0.0">
+         </webDependency>
+         <importResource
+               relativePath="src/org/knime/js/base/util/decisionTree/decTreeDrawer.css"
+               type="CSS">
+         </importResource>
       </webResourceBundle>
       <webResourceBundle
             debug="true"
