@@ -102,7 +102,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
                 // nothing to do
             }
         });
-        m_timeoutSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1000));
+        m_timeoutSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.0, Integer.MAX_VALUE, 1.0));
         m_disableOutputBox = new JCheckBox();
         createAndAddTab();
     }
@@ -116,7 +116,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
             m_validExtensionsField, panelWithGBLayout, gbc);
         addPairToPanel("Default File:",
             m_fileHistoryPanel, panelWithGBLayout, gbc);
-        addPairToPanel("Timeout in ms: ", m_timeoutSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Timeout (s): ", m_timeoutSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
     }
 
@@ -150,7 +150,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         m_validExtensionsField.setText(text);
         m_fileHistoryPanel.setSelectedFile(m_config.getDefaultValue().getPath());
         m_fileHistoryPanel.setSuffixes(getFileTypes());
-        m_timeoutSpinner.setValue(m_config.getTimeout());
+        m_timeoutSpinner.setValue((double) m_config.getTimeout() / 1000);
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
@@ -162,7 +162,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
         m_config.setFileTypes(getFileTypes());
-        m_config.setTimeout((int) m_timeoutSpinner.getValue());
+        m_config.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
         m_config.setDisableOutput(m_disableOutputBox.isSelected());
         m_config.saveSettings(settings);
     }

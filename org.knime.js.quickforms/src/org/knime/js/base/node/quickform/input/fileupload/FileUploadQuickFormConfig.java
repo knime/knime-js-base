@@ -77,7 +77,7 @@ public class FileUploadQuickFormConfig extends QuickFormFlowVariableConfig<FileU
 
     private static final String CFG_TIMEOUT = "timeout";
 
-    private static final int DEFAULT_TIMEOUT = 5000;
+    private static final int DEFAULT_TIMEOUT = 1000;
 
     private int m_timeout = DEFAULT_TIMEOUT;
 

@@ -36,7 +36,7 @@
           the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a remote server.
         </option>
         <option name="Timeout">
-        The time in milliseconds after which the connection times out.
+        The time in seconds after which the connection times out. The timeout is used when testing the existence of default files. The default is set to 1 second and should be sufficient in most cases.
         </option>
         <option name="Disable output, if file does not exist">
           If enabled, output port will be disabled, if the provided file does not exist or cannot be accessed.<br/>
