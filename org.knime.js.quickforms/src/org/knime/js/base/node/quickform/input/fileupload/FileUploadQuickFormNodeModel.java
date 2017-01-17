@@ -51,6 +51,7 @@ package org.knime.js.base.node.quickform.input.fileupload;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -165,13 +166,18 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         try {
             URL url = new URL(path);
             if (openStream) {
-                try (InputStream stream = FileUtil.openStreamWithTimeout(url, getConfig().getTimeout())) {
+                try (InputStream stream = FileUtil.openStreamWithTimeout(url, 1/*getConfig().getTimeout()*/)) {
                     /* just testing if connection can be achieved */
                 } catch (Exception e) {
                     StringBuilder b = new StringBuilder("Connection to given URL: \"");
                     b.append(url.toString());
-                    b.append("\" could not be achieved. ");
-                    b.append(e.getMessage());
+                    if (e instanceof SocketTimeoutException) {
+                        b.append(
+                            "\" timed out. Check that the file is accessible from your network, and consider increasing the default timeout value.");
+                    } else {
+                        b.append("\" could not be achieved. ");
+                        b.append(e.getMessage());
+                    }
                     throw new InvalidSettingsException(b.toString(), e);
                 }
             }
