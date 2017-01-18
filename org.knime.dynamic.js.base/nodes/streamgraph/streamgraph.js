@@ -1,32 +1,30 @@
 (streamgraph_namespace = function() {
-	
+
 //	TODO
-//  - export SVG does not work right now
-//  - Node documentation
 //	- wait for christian's number-formatter-component for x- and y-axis
 //	- wait for christian's date-format-selector-component
-//	- What happens for unregular time intervals?
+//  - Node documentation
 //  - Check for other date/time types in new knime release
 //  - react to external filters: see tableview / parallel coordinates
 
 
 	var view = {};
 	var _representation, _value;
-	var _data = {};
+	var _data;
 	var _colorRange;
 	var layoutContainer;
 	var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 	var chart, svg;
 	var knimeTable1, knimeTable2;
-	
-	
+	var xAxisType, xAxisData;
+
 	var stackStyleByType = {
 		"Stacked-Area-Chart": "stack",
 		"Percentage-Area-Chart": "expand",
 		"Stream-Graph": "stream-center"
 	}
-	
-	
+
+
 	view.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
@@ -44,11 +42,12 @@
 			knimeTable2.setDataTable(_representation.inObjects[1]);
 		}
 
-		
+
 		if (_representation.options.enableViewControls) {
 			drawControls();
 		}
 		setColors();
+		setXAxisConf();
 		transformData();
 		drawChart();
 	}
@@ -56,7 +55,7 @@
 	var drawChart = function() {
 		// Remove earlier chart.
 		d3.select("#layoutContainer").remove();
-		
+
 		/*
 		 * Parse the options.
 		 */
@@ -114,7 +113,7 @@
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
 		}
-		
+
 		// create the stacked area chart
 		nv.addGraph(function() {
 			chart = nv.models.stackedAreaChart()
@@ -133,13 +132,13 @@
 
 			chart.xAxis
 				.tickFormat(createXAxisFormatter());
-			
+
 
 
 			// Format y-axis
 			// chart.yAxis
 			//	.tickFormat(d3.format(".2s"));
-			
+
 			updateTitles(false);
 
 			svg.datum(_data).call(chart);
@@ -150,13 +149,30 @@
 				var state = chart.defaultState();
 				state.disabled = _value.options.disabled;
 				chart.dispatch.changeState(state);
-			} 
-			
+			}
+
 			return chart;
 		});
 	}
-	
 
+	var setXAxisConf = function() {
+		// Set data and data type for the x-axis.
+		var xAxisColumn = _representation.options.xAxisColumn;
+		if (typeof xAxisColumn !== "undefined") {
+			var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
+		  xAxisType = knimeTable1.getColumnTypes()[columnIndex];
+		  xAxisData = knimeTable1.getColumn(columnIndex);
+		} else {
+			// If undefined: The user selected RowId as x-Axis.
+		  xAxisType = "string";
+			xAxisData = [];
+
+			var rows = knimeTable1.getRows();
+			for (var i = 0; i < rows.length; i++) {
+				xAxisData.push(rows[i].rowKey);
+			}
+		}
+	}
 
 	// transform the tabular format into a JSON format
 	var transformData = function() {
@@ -170,7 +186,14 @@
 				"key" : columnKey,
 				"values" : knimeTable1.getColumn(columnIndex).map(
 						function(d, i) {
-							return [ i, d ];
+							if (xAxisType === 'dateTime' || xAxisType === 'number') {
+								// If data type of x-axis column can be interpreted as numeric,
+								// use the data for the x-axis.
+								return [xAxisData[i], d]
+							} else {
+								// If not, just use an integer index [0, n[.
+								return [i, d];
+							}
 						})
 			});
 		}
@@ -202,34 +225,22 @@
 			_colorRange = colorScale.range();
 		}
 	}
-	
+
 	// Return a function to format the x-axis-ticks.
 	var createXAxisFormatter = function() {
-		var xAxisColumn = _representation.options.xAxisColumn;
-		var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
-
-		if (xAxisColumn) {
-			var columnType = knimeTable1.getColumnTypes()[columnIndex];
-			var data = knimeTable1.getColumn(columnIndex);
-			if (columnType === "dateTime") {
+		switch (xAxisType) {
+		  case "dateTime":
 				var dateFormat = _representation.options.dateFormat;
-				return function(i) {
-					var date = data[i];
-					return moment(date).format(dateFormat);
-				}
-			}
-			else if (columnType === "string") {
-				return function(i) { return data[i] };
-			}
-			else if (columnType === "number") {
-				return function(i) { return data[i] };
-			}
-			
+				return function(timestamp) {
+					return moment(timestamp).format(dateFormat);
+				};
+			case "string":
+        return function(i) { return xAxisData[i]; };
+			case "number":
+	      return function(x) { return x; };
+	    default:
+	      return function(i) { return i; };
 		}
-		
-		// Return identity function if nothing else applies.
-		// The argument to the function is the row index. 
-		return function(i) { return i };
 	}
 
 	var updateTitles = function(updateChart) {
@@ -306,8 +317,9 @@
 			knimeService.allowFullscreen();
 		}
 
-		if (!_representation.options.enableViewControls)
+		if (!_representation.options.enableViewControls) {
 			return;
+		}
 
 		// Title / Subtitle Configuration
 		var titleEdit = _representation.options.enableTitleEdit;
@@ -343,7 +355,7 @@
 		var interpolationEdit = _representation.options.enableInterpolationMethodEdit;
 		if (chartTypeChange || interpolationEdit || customColorToggle) {
 			knimeService.addMenuDivider();
-			
+
 			if (chartTypeChange) {
 				var chartTypes = Object.keys(stackStyleByType);
 				var chartTypeSelector =
@@ -352,11 +364,11 @@
 						chart.style(stackStyleByType[_value.options.chartType]);
 						chart.update();
 					});
-				knimeService.addMenuItem('Chart Type:', 'bathtub', chartTypeSelector);		
+				knimeService.addMenuItem('Chart Type:', 'bathtub', chartTypeSelector);
 			}
 
 			if (interpolationEdit) {
-				var interpolationMethods = [ 'linear', 'step', 'basis' ];
+				var interpolationMethods = [ 'basis', 'linear', 'step' ];
 				var interpolationMethodSelector =
 					knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function() {
 						_value.options.interpolation = this.options[this.selectedIndex].value;
@@ -366,7 +378,7 @@
 				knimeService.addMenuItem('Interpolation:', 'line-chart', interpolationMethodSelector);
 			}
 		}
-		
+
 		// Controls Legend and Interactive Guideline
 		var legendToggle = _representation.options.enableLegendToggle;
 		var interactiveGuidelineToggle = _representation.options.enableInteractiveGuidelineToggle;
@@ -390,8 +402,8 @@
 									_value.options.interactiveGuideline = this.checked;
 									drawChart();
 								});
-				
-				knimeService.addMenuItem('Guideline:', 'bathtub',
+
+				knimeService.addMenuItem('Pop-up', 'comment',
 						interactiveGuidelineCheckbox);
 			}
 		}
@@ -405,18 +417,17 @@
 		// Save disabled-state of the series from the chart if:
 		//   - it was saved in _value before
 		//   - some series are disabled
-		
+
 		var container = d3.select("#svgContainer");
 		var disabled = container.selectAll('g .nv-series').data().map(function(o) { return !!o.disabled })
-		
+
 		if  (("disabled" in _value.options) || disabled.some(Boolean)) {
 			_value.options.disabled = disabled;
-		}			
-		
+		}
+
 		return _value;
 	}
 
-	// TODO: This does not work right now.
 	view.getSVG = function() {
 		// inline global style declarations for SVG export
 		var styles = document.styleSheets;
@@ -430,23 +441,26 @@
 
 			for (var j = 0; j < styles[i].cssRules.length; j++) {
 				var rule = styles[i].cssRules[j];
-				d3.selectAll(rule.selectorText).each(function() {
-					for (var k = 0; k < rule.style.length; k++) {
-						var curStyle = this.style
-								.getPropertyValue(rule.style[k]);
-						var curPrio = this.style
-								.getPropertyPriority(rule.style[k]);
-						var rulePrio = rule.style
-								.getPropertyPriority(rule.style[k]);
-						// only overwrite style if not set or
-						// priority is overruled
-						if (!curStyle || (curPrio != "important" && rulePrio === "important")) {
-							d3.select(this).style(
-									rule.style[k],
-									rule.style[rule.style[k]]);
+				// rule.selectorText might not be defined for print media queries.
+				if (typeof rule.selectorText !== "undefined") {
+					d3.selectAll(rule.selectorText).each(function() {
+						for (var k = 0; k < rule.style.length; k++) {
+							var curStyle = this.style
+									.getPropertyValue(rule.style[k]);
+							var curPrio = this.style
+									.getPropertyPriority(rule.style[k]);
+							var rulePrio = rule.style
+									.getPropertyPriority(rule.style[k]);
+							// only overwrite style if not set or
+							// priority is overruled
+							if (!curStyle || (curPrio != "important" && rulePrio === "important")) {
+								d3.select(this).style(
+										rule.style[k],
+										rule.style[rule.style[k]]);
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 		}
 		// correct faulty rect elements
