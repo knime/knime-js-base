@@ -179,7 +179,8 @@
 	// Transform the tabular format into a JSON format.
 	// CHECK: This could be done more efficient,
 	// i.e. create the json representation once and then
-	// _data_filtered = filter(_data)
+	// _data_filtered = filter(_data) in funct filterData()
+	// In this case, we could combine function transformData with function setXAxisConf.
 	var transformData = function() {
 		_data = [];
 		var columns = _representation.options.columns
@@ -197,6 +198,7 @@
 							// Apply filter.
 							if (!currentFilter ||
 									knimeTable.isRowIncludedInFilter(index, currentFilter)) {
+
 								if (xAxisType === 'dateTime' || xAxisType === 'number') {
 									// If data type of x-axis column can be interpreted as numeric,
 									// use the data for the x-axis.
@@ -213,7 +215,9 @@
 
 	var toggleFilter = function() {
 		if (_value.options.subscribeFilter) {
-			knimeService.subscribeToFilter(knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds());
+			knimeService.subscribeToFilter(
+				knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
+			);
 		} else {
 			knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
 		}
