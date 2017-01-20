@@ -51,6 +51,7 @@
 		setXAxisConf();
 		transformData();
 		drawChart();
+		toggleFilter();
 	}
 
 	var drawChart = function() {
@@ -194,8 +195,8 @@
 						function(d, i) {
 
 							// Apply filter.
-							if (currentFilter &&
-									knimeTable.isRowIncludedInFilter(index, currentFilter) {
+							if (!currentFilter ||
+									knimeTable.isRowIncludedInFilter(index, currentFilter)) {
 								if (xAxisType === 'dateTime' || xAxisType === 'number') {
 									// If data type of x-axis column can be interpreted as numeric,
 									// use the data for the x-axis.
@@ -209,6 +210,14 @@
 			});
 		}
 	};
+
+	var toggleFilter = function() {
+		if (_value.options.subscribeFilter) {
+			knimeService.subscribeToFilter(knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds());
+		} else {
+			knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
+		}
+	}
 
 	var filterChanged = function(filter) {
 	  currentFilter = filter;
@@ -427,18 +436,18 @@
 		}
 
 		// Controls filter event checkbox.
+		debugger;
 		var subscribeFilterToggle = _representation.options.subscribeFilterToggle;
-		if (subscribeFilterToggle) {
+		if (knimeService.isInteractivityAvailable() && subscribeFilterToggle) {
 			knimeService.addMenuDivider();
+			var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
 
-			if (legendToggle) {
-				var legendCheckbox = knimeService.createMenuCheckbox(
-						'legendCheckbox', _value.options.legend, function() {
-							_value.options.legend = this.checked;
-							drawChart();
-						});
-				knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
-			}
+			var subFilCheckbox = knimeService.createMenuCheckbox(
+					'filterCheckbox', _value.options.subscribeFilter, function() {
+						_value.options.subscribeFilter = this.checked;
+						toggleFilter();
+					});
+			knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
 		}
 	};
 
