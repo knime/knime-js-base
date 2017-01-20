@@ -1,11 +1,11 @@
 (streamgraph_namespace = function() {
 
 //	TODO
+//  - react to external filters: see tableview / parallel coordinates
+//  - missing values and other stuff?
 //	- wait for christian's number-formatter-component for x- and y-axis
 //	- wait for christian's date-format-selector-component
-//  - Node documentation
 //  - Check for other date/time types in new knime release
-//  - react to external filters: see tableview / parallel coordinates
 
 
 	var view = {};
@@ -17,6 +17,7 @@
 	var chart, svg;
 	var knimeTable1, knimeTable2;
 	var xAxisType, xAxisData;
+	var currentFilter = null;
 
 	var stackStyleByType = {
 		"Stacked-Area-Chart": "stack",
@@ -174,10 +175,14 @@
 		}
 	}
 
-	// transform the tabular format into a JSON format
+	// Transform the tabular format into a JSON format.
+	// CHECK: This could be done more efficient,
+	// i.e. create the json representation once and then
+	// _data_filtered = filter(_data)
 	var transformData = function() {
 		_data = [];
 		var columns = _representation.options.columns
+		// Loop over all columns.
 		for (var i = 0; i < columns.length; i++) {
 			var columnKey = columns[i];
 			var columnIndex = knimeTable1.getColumnNames().indexOf(columnKey);
@@ -185,19 +190,32 @@
 			_data.push({
 				"key" : columnKey,
 				"values" : knimeTable1.getColumn(columnIndex).map(
+						// This loops over all rows.
 						function(d, i) {
-							if (xAxisType === 'dateTime' || xAxisType === 'number') {
-								// If data type of x-axis column can be interpreted as numeric,
-								// use the data for the x-axis.
-								return [xAxisData[i], d]
-							} else {
-								// If not, just use an integer index [0, n[.
-								return [i, d];
+
+							// Apply filter.
+							if (currentFilter &&
+									knimeTable.isRowIncludedInFilter(index, currentFilter) {
+								if (xAxisType === 'dateTime' || xAxisType === 'number') {
+									// If data type of x-axis column can be interpreted as numeric,
+									// use the data for the x-axis.
+									return [xAxisData[i], d]
+								} else {
+									// If not, just use an integer index [0, n[.
+									return [i, d];
+								}
 							}
 						})
 			});
 		}
 	};
+
+	var filterChanged = function(filter) {
+	  currentFilter = filter;
+	  transformData();
+	  svg.datum(_data);
+	  chart.update();
+	}
 
 	// Set color scale: custom or default.
 	var setColors = function() {
@@ -405,6 +423,21 @@
 
 				knimeService.addMenuItem('Pop-up', 'comment',
 						interactiveGuidelineCheckbox);
+			}
+		}
+
+		// Controls filter event checkbox.
+		var subscribeFilterToggle = _representation.options.subscribeFilterToggle;
+		if (subscribeFilterToggle) {
+			knimeService.addMenuDivider();
+
+			if (legendToggle) {
+				var legendCheckbox = knimeService.createMenuCheckbox(
+						'legendCheckbox', _value.options.legend, function() {
+							_value.options.legend = this.checked;
+							drawChart();
+						});
+				knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
 			}
 		}
 	};
