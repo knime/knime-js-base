@@ -5,8 +5,8 @@
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/labs/interactiveView"
 	icon="../js.png" type="Visualizer">
-	<name>JavaScript Stacked Area Graph</name>
-	<shortDescription>A Stacked Area Graph based on the NVD3 library.</shortDescription>
+	<name>JavaScript Stacked Area Chart</name>
+	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
 			<n:p>
@@ -137,11 +137,11 @@
 
 	</fullDescription>
 	<interactiveView name="JavaScript Streamgraph">
-		A NVD3.js implementation of a Stacked Area Graph.
+		A NVD3.js implementation of a Stacked Area Chart.
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">
-			Data table containing the values to be plotted in the streamgraph.
+			Data table containing the values to be plotted in the Stacked Area Chart.
 		</inPort>
 		<inPort portType="Data" name="Color data" index="1" optional="true">
 			Data table containing one column with the column names of the first
