@@ -41,7 +41,9 @@ function DecTreeDrawer(representation, value) {
     		displayFullscreenButton: representation.displayFullscreenButton,
     		enableZooming : representation.enableZooming,
     		displaySelectionResetButton: representation.displaySelectionResetButton,
-    		truncationLimit : representation.truncationLimit
+    		truncationLimit : representation.truncationLimit,
+    		fillViewport : representation.fillViewport,
+    		runningInView : representation.runningInView
     };
     var selection;
     var decTree = representation.tree;
@@ -369,16 +371,24 @@ function DecTreeDrawer(representation, value) {
 	    	.attr("id", "layoutContainer");
 
     	// Size layout container based on sizing settings
-    	layoutContainer.style("width", "100%")
-	    	.style("height", "100vh")
-	    	.style("overflow", "auto");
+//    	layoutContainer.style("width", "100%")
+//	    	.style("height", "100vh")
+//	    	.style("overflow", "auto");
 
+    	layoutContainer.style("min-width", "100%");
+    	var inLayout = knimeService && knimeService.isInteractivityAvailable();
+    	// there is no special reason why we have to be in a layout to fill the viewport.
+    	if (options.runningInView || (/*inLayout &&*/ options.fillViewport)) {
+    		layoutContainer.style("min-height", "100%")
+    	}
+    	
     	// Add SVG element
     	var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     	layoutContainer[0][0].appendChild(svg1);
 
     	var svg = d3.select("svg")
     		.style("display", "block")
+    		.attr("data-iframe-height", "")
     		.attr("font-family", "sans-serif")
     		.attr("font-size", "14px")
     		.attr("margin", "0px")
@@ -425,6 +435,8 @@ function DecTreeDrawer(representation, value) {
 	    	.attr("id", "da")
 	    	.style("fill", options.dataAreaColor)
 	    	.attr("width", "100")
+	    	.attr("stroke-widt", "5px")
+	    	.attr("stroke", "rgb(255, 204, 204)")
 	    	.attr("height", "100");
 
     	if (options.enableViewConfiguration) {
@@ -627,40 +639,107 @@ function DecTreeDrawer(representation, value) {
 		scrollContainer.scrollTop += updateVec[1];
 	}
 	
+//	function moveTreeToPositive() {
+//    	var t = d3.select("#decTree").select("g");
+//    	var bbox = t.node().getBBox();
+//    	if (bbox.x < 0) {
+//    		var oldTrans = translation.slice();
+//    		translation[0] = -bbox.x;
+//    		translation[1] = -bbox.y;
+//    		t.attr("transform", "translate(" + scaledArray(translation, scale) + ") scale(" + scale + ")");
+//    	}
+//    	return [translation[0] - oldTrans[0], translation[1] - oldTrans[1]];
+//    }
+//    
+//    function resizeSVG() {
+//    	var pxlsMoved = moveTreeToPositive();
+//    	d3.select("#bgr").attr("height", 0).attr("width", 0);
+//    	var tbox = d3.select("#decTree").select("g").node().getBBox();
+//    	d3.select("#da")
+//    		.attr("height", scale * tbox.height)
+//    		.attr("width", scale * tbox.width);
+//    	var bbox = d3.select("#plot").node().getBBox();
+////		translation[0] = dtd.margin[0] - bbox.x;
+//    	var windowWidth = d3.select("#layoutContainer").node().clientWidth;
+//    	var windowHeight = d3.select("#layoutContainer").node().clientHeight;
+//    	var treeWidth = 10 + 2*bbox.x + bbox.width;
+//    	var treeHeight = 10 + 2*bbox.y + bbox.height;
+//    	var bgWidth = treeWidth > windowWidth - 1 ? treeWidth : windowWidth - 1;
+//    	var bgHeight = treeHeight > windowHeight - 1 ? treeHeight : windowHeight - 1;
+//    	d3.selectAll("svg, #bgr")
+//    		.attr("height", bgHeight)
+//    		.attr("width", bgWidth);
+//    	if (treeWidth == bgWidth || treeHeight == bgHeight) {
+//    		updateScrollPosition(pxlsMoved);
+//    	}
+//    }
+	
+	/**
+	 * Ensures that the the tree is in the positive quadrant of the surrounding coordinate system.
+	 * Returns the translation that was necessary to move the complete tree from the positive quadrant
+	 * (the tree is first moved to the origin).
+	 */
 	function moveTreeToPositive() {
-    	var t = d3.select("#decTree").select("g");
-    	var bbox = t.node().getBBox();
-    	if (bbox.x < 0) {
-    		var oldTrans = translation.slice();
-    		translation[0] = -bbox.x;
-    		translation[1] = -bbox.y;
-    		t.attr("transform", "translate(" + scaledArray(translation, scale) + ") scale(" + scale + ")");
-    	}
-    	return [translation[0] - oldTrans[0], translation[1] - oldTrans[1]];
-    }
-    
-    function resizeSVG() {
-    	var pxlsMoved = moveTreeToPositive();
-    	d3.select("#bgr").attr("height", 0).attr("width", 0);
-    	var tbox = d3.select("#decTree").select("g").node().getBBox();
-    	d3.select("#da")
-    		.attr("height", scale * tbox.height)
-    		.attr("width", scale * tbox.width);
-    	var bbox = d3.select("#plot").node().getBBox();
-//		translation[0] = dtd.margin[0] - bbox.x;
-    	var windowWidth = d3.select("#layoutContainer").node().clientWidth;
-    	var windowHeight = d3.select("#layoutContainer").node().clientHeight;
-    	var treeWidth = 10 + 2*bbox.x + bbox.width;
-    	var treeHeight = 10 + 2*bbox.y + bbox.height;
-    	var bgWidth = treeWidth > windowWidth - 1 ? treeWidth : windowWidth - 1;
-    	var bgHeight = treeHeight > windowHeight - 1 ? treeHeight : windowHeight - 1;
-    	d3.selectAll("svg, #bgr")
-    		.attr("height", bgHeight)
-    		.attr("width", bgWidth);
-    	if (treeWidth == bgWidth || treeHeight == bgHeight) {
-    		updateScrollPosition(pxlsMoved);
-    	}
-    }
+		var t = d3.select("#decTree").select("g");
+		var trans = t.attr("transform");
+		if (trans == null) {
+			trans = "translate(0,0)";
+		}
+		var transform = d3.transform(trans);
+		var translation = [0,0];
+		// translate tree to origin to obtain accurate size in next steps
+		t.attr("transform", "translate(" + translation + ") scale(" + transform.scale + ")");
+		var bbox = t.node().getBBox();
+		if (bbox.x < 0) {
+			translation[0] = -bbox.x * transform.scale[0];
+		}
+		if (bbox.y < 0) { // unlikely to happen but covered for consistency
+			translation[1] = -bbox.y * transform.scale[1];
+		}
+		t.attr("transform", "translate(" + translation + ") scale(" + transform.scale + ")");
+		return translation;
+	}
+	
+	function resizeSVG() {
+		var pxlsMoved = moveTreeToPositive();
+		// set sizes of background rectangles to 0 to allow accurate measurements
+		// of the important contents
+		d3.selectAll("#bgr, #da")
+			.attr("height", "0px")
+			.attr("width", "0px");
+		var plotBox = d3.select("#plot").node().getBoundingClientRect();
+		var tbox = d3.select("#decTree").node().getBoundingClientRect();
+		var htmlBox = d3.select("html").node().getBoundingClientRect();
+		// set tree background to the size of the tree component
+		// since the zoom is applied to decTree we need to get the size without scaling
+		var tbbox = d3.select("#decTree").node().getBBox();
+		d3.select("#da")
+			.attr("height", tbbox.height)
+			.attr("width", tbbox.width);
+		// set sizes of svg and plot background to the size of the whole plot (tree + margins + titles)
+		d3.selectAll("svg, #bgr")
+			.attr("height", plotBox.height + plotBox.top + dtd.margin[1] - htmlBox.top)
+			.attr("width", plotBox.width + plotBox.left + dtd.margin[0] - htmlBox.left);
+		if (options.fillViewport || options.runningInView) {
+			// the div containing the svg
+			var container = d3.select("#layoutContainer").node();
+			var treeWidthWithMargin = tbox.width + tbox.left + dtd.margin[0];
+			if (container.clientWidth > treeWidthWithMargin) { // there is more space than the svg fills
+				// make sure that the svg fills available space
+				d3.selectAll("svg, #bgr")
+					.attr("width", container.clientWidth)
+					.attr("height", container.clientHeight);
+				// center the tree component
+				var diff = (container.clientWidth - tbox.width) / 2;
+				var decTree = d3.select("#decTree");
+				var transformation = d3.transform(decTree.attr("transform"));
+				transformation.translate[0] = diff;
+				d3.select("#decTree") 
+					.attr("transform", transformation.toString());
+			}
+		}
+			
+	}
     
     
     function drawTree() {
@@ -670,10 +749,17 @@ function DecTreeDrawer(representation, value) {
     	if (options.enableZooming) {
         var zoom = d3.behavior.zoom().on("zoom", function() {
 //        	translation = arraySum(translation, d3.event.translate);
-        	scale = d3.event.scale;
+//        	scale = d3.event.scale;
         	var panVec = d3.event.translate;
-        	d3.select("#decTree").select("g").attr("transform", "translate(" + d3.event.translate + ") scale(" + scale + ")");
-        	zoom.translate([0,0]);
+        	decTree = d3.select("#decTree");
+        	t = d3.select("#decTree").select("g");
+        	var transformation = d3.transform(t.attr("transform"));
+        	transformation.scale = d3.event.scale;
+        	decTreeTrans = d3.transform(decTree.attr("transform"));
+        	decTreeTrans.scale = d3.event.scale;
+        	decTree.attr("transform", decTreeTrans.toString());
+//        	t.attr("transform", transformation.toString());
+//        	zoom.translate([0,0]);
 //        	translation = calculatePanningVector(translation, d3.event.translate);
 //        	updateScrollPosition(d3.event.translate);
 //        	console.log(panVec);

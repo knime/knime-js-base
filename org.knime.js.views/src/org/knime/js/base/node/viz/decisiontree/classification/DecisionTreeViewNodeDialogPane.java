@@ -91,6 +91,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JCheckBox m_enableViewConfigCheckBox;
 
+    private final JCheckBox m_fillViewportCheckBox;
+
     private final JCheckBox m_enableTitleChangeCheckBox;
 
     private final JCheckBox m_enableSubtitleChangeCheckBox;
@@ -141,6 +143,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
         m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
         m_displaySelectionResetButtonCheckBox = new JCheckBox("Display selection reset button");
+
+        m_fillViewportCheckBox = new JCheckBox("Fill viewport");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
@@ -287,6 +291,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         cc.gridx = 0;
         cc.gridy = 0;
         sizesPanel.add(m_displayFullscreenButtonCheckBox, cc);
+        cc.gridy++;
+        sizesPanel.add(m_fillViewportCheckBox, cc);
         //
         c.gridx = 0;
         c.gridy++;
@@ -411,6 +417,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullScreenButton());
 
+        m_fillViewportCheckBox.setSelected(config.getFillViewport());
+
         m_enableViewConfigCheckBox.setSelected(config.isEnableViewConfiguration());
         m_enableTitleChangeCheckBox.setSelected(config.isEnableTitleChange());
         m_enableSubtitleChangeCheckBox.setSelected(config.isEnableSubtitleChange());
@@ -465,6 +473,7 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setDisplayFullScreenButton(m_displayFullscreenButtonCheckBox.isSelected());
+        config.setFillViewport(m_fillViewportCheckBox.isSelected());
 
         config.setSelectionColumnName(m_appendedColumnName.getText());
         config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
