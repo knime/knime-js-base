@@ -5,6 +5,7 @@
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/labs/interactiveView"
 	icon="../js.png" type="Visualizer">
+
 	<name>JavaScript Stacked Area Chart</name>
 	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
@@ -19,7 +20,7 @@
 			<options>
 				<columnSelectorOption name="x-Axis Column" id="xAxisColumn"
 					inPortIndex="0" label="Choose column for x axis" filterClasses="org.knime.core.data.DataValue"
-					allowRowID="true">
+					allowRowID="true" optional="true">
 					Choose the column for the x-axis. Dependent on the column's type, labels on the x-axis get rendered differently.
 				</columnSelectorOption>
 				<columnFilterOption name="Included Columns" id="columns"
@@ -67,12 +68,12 @@
 					Check to display a button which switches the view into fullscreen
 					mode. The button is only available in the KNIME WebPortal.
 				</checkBoxOption>
-				
+
 				<checkBoxOption name="Subscribe to filter events" id="subscribeFilter"
 					label="Subscribe to filter events" defaultValue="true" saveInView="true">
 					Check to subscribe to external filter events. The data will then be filtered according to the filters.
 				</checkBoxOption>
-				
+
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="2000" defaultWidth="800" defaultHeight="600"
 					defaultFullscreen="true">
@@ -124,12 +125,12 @@
 					label="Enable subscribe to filter events toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of the filter events within the view.
-				</checkBoxOption>		
+				</checkBoxOption>
 				<checkBoxOption name="Enable show grid toggle" id="showGridToggle"
 					label="Enable show grid toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of the grid within the view.
-				</checkBoxOption>		
+				</checkBoxOption>
 			</options>
 		</tab>
 

@@ -28,9 +28,6 @@ public class StackedAreaProcessor implements DynamicJSProcessor {
 
         // Get columns selected for y-axis.
         String[] yAxisColumns = ((SettingsModelColumnFilter2)config.getModel("columns")).applyTo(dt.getDataTableSpec()).getIncludes();
-        if (yAxisColumns.length == 0) {
-            throw new InvalidSettingsException("No y-axis columns given");
-        }
         
         // Get column selected for x-axis.
         String xAxisColumn = ((SettingsModelString)config.getModel("xAxisColumn")).getStringValue();
