@@ -11,8 +11,8 @@
 		<intro>
 			<n:p>
 				This chart visualizes numerical values from multiple columns as stacked areas.
-				Different stacking types can be choosen to guide the observer in her interpretation.
-				Different interpolation methods can be choosen to give the graph an organic appearance.
+				Different stacking types can be chosen to guide the user's interpretation: The node can display Stacked Area Charts, Percentage Area Charts and Stream Graphs.
+				Different interpolation methods can be chosen to give the graph an organic appearance.
 			</n:p>
 		</intro>
 		<tab name="Options">
@@ -46,7 +46,7 @@
 					-step: alternate between horizontal and vertical segments
 				</radioButtonOption>
 				<stringOption name="Title" id="title" label="Title"
-					defaultValue="Streamgraph" optional="true" saveInView="true">
+					defaultValue="Stacked Area Chart" optional="true" saveInView="true">
 					The chart's title.
 				</stringOption>
 				<stringOption name="Subitle" id="subtitle" label="Subtitle"
@@ -120,26 +120,42 @@
 					Check to enable toggling of the interactive pop-up
 					within the view.
 				</checkBoxOption>
-				
 				<checkBoxOption name="Enable subscribe to filter events toggle" id="subscribeFilterToggle"
-					label="Enable subscribe to filter events toggle" defaultValue="true" enableDependency="subscribeFilter"
+					label="Enable subscribe to filter events toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
-					Check to enable toggling of the filter events within the vief.
+					Check to enable toggling of the filter events within the view.
 				</checkBoxOption>		
-				
+				<checkBoxOption name="Enable show grid toggle" id="showGridToggle"
+					label="Enable show grid toggle" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable toggling of the grid within the view.
+				</checkBoxOption>		
 			</options>
 		</tab>
 
 		<tab name="Axis Configuration">
 			<options>
+				<checkBoxOption name="Show Grid"
+					id="showGrid" label="Show grid"
+					defaultValue="true" saveInView="true">
+					When checked, a grid is displayed in the chart.
+				</checkBoxOption>
 				<checkBoxOption name="Sort for x-axis column"
 					id="xAxisSort" label="Sort for x-axis column"
 					defaultValue="false">
 					When checked, the table is sorted for the x-axis column.
 				</checkBoxOption>
+				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
+					defaultValue=",.2f" optional="true">
+					d3-Format string for numbers on the x-Axis.
+				</stringOption>
+				<stringOption name="y-Axis Number Format" id="yAxisFormatString" label="y-Axis Number Format"
+					defaultValue=",.2f" optional="true">
+					d3-Format string for numbers on the y-Axis.
+				</stringOption>
 				<stringListOption name="Date Format" id="dateFormat"
 					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
-					saveInView="false" optional="true" defaultValues="YYYY-MM-DD">
+					optional="true" defaultValues="YYYY-MM-DD">
 					Choose how to format x-Axis ticks if the
 					associated
 					column is of type
@@ -154,7 +170,7 @@
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">
-			Data table containing the values to be plotted in the Stacked Area Chart.
+			Data table containing the values to be plotted in the Stacked Area Chart. Rows with missing values get excluded.
 		</inPort>
 		<inPort portType="Data" name="Color data" index="1" optional="true">
 			Data table containing one column with the column names of the first

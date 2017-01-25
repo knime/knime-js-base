@@ -44,10 +44,8 @@ public class StackedAreaProcessor implements DynamicJSProcessor {
 	           	dt = sorter.sort(exec);
         	}
         }
-        
-        // Filter out missing values.
-        
-        // But only include selected columns.
+               
+        // Concatenate y-axis and x-axis columns, but only include columns that exist.
         String[] includeColumns = Stream
         		.concat(Arrays.stream(yAxisColumns), Stream.of(xAxisColumn))
         		.filter(p -> p != null)
@@ -57,6 +55,8 @@ public class StackedAreaProcessor implements DynamicJSProcessor {
         //int filteredCount = 0;
         DataContainer dc = exec.createDataContainer(ft.getDataTableSpec());
         for (DataRow row : ft) {
+            // Filter out rows with missing values.
+
         	if (row.stream().allMatch(cell -> !cell.isMissing())) {
         		dc.addRowToTable(row);
         		//filteredCount++;
