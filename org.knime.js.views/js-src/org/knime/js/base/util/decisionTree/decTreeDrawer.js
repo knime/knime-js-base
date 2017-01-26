@@ -634,41 +634,6 @@ function DecTreeDrawer(representation, value) {
 		scrollContainer.scrollTop += updateVec[1];
 	}
 	
-//	function moveTreeToPositive() {
-//    	var t = d3.select("#decTree").select("g");
-//    	var bbox = t.node().getBBox();
-//    	if (bbox.x < 0) {
-//    		var oldTrans = translation.slice();
-//    		translation[0] = -bbox.x;
-//    		translation[1] = -bbox.y;
-//    		t.attr("transform", "translate(" + scaledArray(translation, scale) + ") scale(" + scale + ")");
-//    	}
-//    	return [translation[0] - oldTrans[0], translation[1] - oldTrans[1]];
-//    }
-//    
-//    function resizeSVG() {
-//    	var pxlsMoved = moveTreeToPositive();
-//    	d3.select("#bgr").attr("height", 0).attr("width", 0);
-//    	var tbox = d3.select("#decTree").select("g").node().getBBox();
-//    	d3.select("#da")
-//    		.attr("height", scale * tbox.height)
-//    		.attr("width", scale * tbox.width);
-//    	var bbox = d3.select("#plot").node().getBBox();
-////		translation[0] = dtd.margin[0] - bbox.x;
-//    	var windowWidth = d3.select("#layoutContainer").node().clientWidth;
-//    	var windowHeight = d3.select("#layoutContainer").node().clientHeight;
-//    	var treeWidth = 10 + 2*bbox.x + bbox.width;
-//    	var treeHeight = 10 + 2*bbox.y + bbox.height;
-//    	var bgWidth = treeWidth > windowWidth - 1 ? treeWidth : windowWidth - 1;
-//    	var bgHeight = treeHeight > windowHeight - 1 ? treeHeight : windowHeight - 1;
-//    	d3.selectAll("svg, #bgr")
-//    		.attr("height", bgHeight)
-//    		.attr("width", bgWidth);
-//    	if (treeWidth == bgWidth || treeHeight == bgHeight) {
-//    		updateScrollPosition(pxlsMoved);
-//    	}
-//    }
-	
 	/**
 	 * Ensures that the the tree is in the positive quadrant of the surrounding coordinate system.
 	 * Returns the translation that was necessary to move the complete tree from the positive quadrant
@@ -715,23 +680,23 @@ function DecTreeDrawer(representation, value) {
 		d3.selectAll("svg, #bgr")
 			.attr("height", plotBox.height + plotBox.top + dtd.margin[1] - htmlBox.top)
 			.attr("width", plotBox.width + plotBox.left + dtd.margin[0] - htmlBox.left);
-//		if (options.fillViewport || options.runningInView) {
-			// the div containing the svg
-			var container = d3.select("#layoutContainer").node();
-			var treeWidthWithMargin = tbox.width + tbox.left + dtd.margin[0];
-			if (container.clientWidth > treeWidthWithMargin) { // there is more space than the svg fills
-				// make sure that the svg fills available space
-				d3.selectAll("svg, #bgr")
-					.attr("width", container.clientWidth)
-					.attr("height", container.clientHeight);
-				// center the tree component
-				var diff = (container.clientWidth - tbox.width) / 2;
-				var dt = d3.select("#decTree");
-				var transformation = d3.transform(dt.attr("transform"));
-				transformation.translate[0] = diff; 
-				dt.attr("transform", transformation.toString());
-			}
-//		}
+		// the div containing the svg
+		var container = d3.select("#layoutContainer").node();
+		bgr = d3.selectAll("svg, #bgr");
+		var dt = d3.select("#decTree");
+		var transformation = d3.transform(dt.attr("transform"));
+		// center the tree component
+		var diff = (container.clientWidth - tbox.width) / 2;
+		var treeWidthWithMargin = tbox.width + dtd.margin[0];
+		transformation.translate[0] = diff > dtd.margin[0] ? diff : dtd.margin[0];
+		dt.attr("transform", transformation.toString());
+		if (container.clientWidth > treeWidthWithMargin) { // there is more space than the svg fills
+			// make sure that the svg fills available space
+			bgr.attr("width", container.clientWidth);
+		}
+		if (container.clientHeight > bgr.node().clientHeight) {
+			bgr.attr("height", container.clientHeight);
+		}
 			
 	}
     
@@ -742,8 +707,6 @@ function DecTreeDrawer(representation, value) {
         // zooming and panning
     	if (options.enableZooming) {
         var zoom = d3.behavior.zoom().on("zoom", function() {
-//        	translation = arraySum(translation, d3.event.translate);
-//        	scale = d3.event.scale;
         	var panVec = d3.event.translate;
         	dt = d3.select("#decTree");
         	t = dt.select("g");
