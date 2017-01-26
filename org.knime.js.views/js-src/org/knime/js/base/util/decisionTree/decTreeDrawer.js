@@ -41,9 +41,7 @@ function DecTreeDrawer(representation, value) {
     		displayFullscreenButton: representation.displayFullscreenButton,
     		enableZooming : representation.enableZooming,
     		displaySelectionResetButton: representation.displaySelectionResetButton,
-    		truncationLimit : representation.truncationLimit,
-    		fillViewport : representation.fillViewport,
-    		runningInView : representation.runningInView
+    		truncationLimit : representation.truncationLimit
     };
     var selection;
     var decTree = representation.tree;
@@ -377,10 +375,7 @@ function DecTreeDrawer(representation, value) {
 
     	layoutContainer.style("min-width", "100%");
     	var inLayout = knimeService && knimeService.isInteractivityAvailable();
-    	// there is no special reason why we have to be in a layout to fill the viewport.
-    	if (options.runningInView || (/*inLayout &&*/ options.fillViewport)) {
-    		layoutContainer.style("min-height", "100%")
-    	}
+   		layoutContainer.style("min-height", "100%")
     	
     	// Add SVG element
     	var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -720,7 +715,7 @@ function DecTreeDrawer(representation, value) {
 		d3.selectAll("svg, #bgr")
 			.attr("height", plotBox.height + plotBox.top + dtd.margin[1] - htmlBox.top)
 			.attr("width", plotBox.width + plotBox.left + dtd.margin[0] - htmlBox.left);
-		if (options.fillViewport || options.runningInView) {
+//		if (options.fillViewport || options.runningInView) {
 			// the div containing the svg
 			var container = d3.select("#layoutContainer").node();
 			var treeWidthWithMargin = tbox.width + tbox.left + dtd.margin[0];
@@ -737,7 +732,7 @@ function DecTreeDrawer(representation, value) {
 				d3.select("#decTree") 
 					.attr("transform", transformation.toString());
 			}
-		}
+//		}
 			
 	}
     

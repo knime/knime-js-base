@@ -229,7 +229,6 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
             // test if re-execute (tree is already set in that case.
             if (getViewRepresentation().getTree() == null) {
                 copyConfigToView();
-                getViewRepresentation().setRunningInView(false);
                 writeTreeToRepresentation();
             }
         }
@@ -270,7 +269,6 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         PortObject out = m_table;
         synchronized (getLock()) {
             DecisionTreeViewValue value = getViewValue();
-            getViewRepresentation().setRunningInView(true);
             if (m_table != null && m_config.getEnableSelection()) {
                 List<String> selectionList = null;
                 if (value != null && value.getSelection() != null) {
@@ -368,7 +366,6 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         representation.setDisplayFullscreenButton(m_config.getDisplayFullScreenButton());
         representation.setDisplaySelectionResetButton(m_config.getDisplaySelectionResetButton());
         representation.setTruncationLimit(m_config.getTruncationLimit());
-        representation.setFillViewport(m_config.getFillViewport());
         if (m_table == null) {
             // can't select if there is no table.
             representation.setEnableSelection(false);
@@ -448,11 +445,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
     @Override
     public JSONLayoutViewContent getLayoutTemplate() {
         JSONLayoutViewContent view = new JSONLayoutViewContent();
-        if (m_config.getFillViewport()) {
-            view.setResizeMethod(ResizeMethod.ASPECT_RATIO_4by3);
-        } else {
-            view.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
-        }
+        view.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
         return view;
     }
 }

@@ -36,7 +36,6 @@
             <option name="Chart title" optional="true">The title of the graph shown above the generated image. If left blank, no title will be shown.</option>
             <option name="Chart subtitle" optional="true">The subtitle of the graph shown above the generated image. If left blank, no subtitle will be shown.</option>
             <option name="Display fullscreen button">Webportal option. If checked, a button is shown in the webportal to open the view in fullscreen mode.</option>
-            <option name="Fill viewport">Webportal option. If checked, the view will fill all the space it gets in the webportal, even if the tree itself does not require the complete space.</option>
             <option name="Background color">The color of the background of the image.</option>
             <option name="Tree area color">The background color of the decision tree.</option>
             <option name="Node background color">The background color of the individual decision tree nodes.</option>

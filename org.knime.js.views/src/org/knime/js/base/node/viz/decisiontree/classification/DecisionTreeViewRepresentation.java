@@ -68,9 +68,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DecisionTreeViewRepresentation extends JSONViewContent {
 
-    private static final String RUNNING_IN_VIEW = "runningInView";
-
-    private static final boolean DEFAULT_RUNNING_IN_VIEW = false;
 
     private JSDecisionTree m_tree;
     private NumberFormatSettings m_numberFormat;
@@ -87,8 +84,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
     private String m_tableId;
     private boolean m_enableZooming;
     private int m_truncationLimit;
-    private boolean m_fillViewport;
-    private boolean m_runningInView;
 
 
     /**
@@ -110,8 +105,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         settings.addBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON, m_displaySelectionResetButton);
         settings.addInt(DecisionTreeViewConfig.TRUNCATION_LIMIT, m_truncationLimit);
         // don't save decision tree representation (for now)
-        settings.addBoolean(DecisionTreeViewConfig.FILL_VIEWPORT, m_fillViewport);
-        settings.addBoolean(RUNNING_IN_VIEW, m_runningInView);
     }
 
     /**
@@ -137,8 +130,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         //added with 3.3.2
         setTruncationLimit(settings.getInt(DecisionTreeViewConfig.TRUNCATION_LIMIT, DecisionTreeViewConfig.DEFAULT_TRUNCATION_LIMIT));
 
-        setFillViewport(settings.getBoolean(DecisionTreeViewConfig.FILL_VIEWPORT, DecisionTreeViewConfig.DEFAULT_FILL_VIEWPORT));
-        setRunningInView(settings.getBoolean(RUNNING_IN_VIEW, DEFAULT_RUNNING_IN_VIEW));
     }
 
     /**
@@ -170,8 +161,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
                 .append(m_tableId, other.m_tableId)
                 .append(m_displaySelectionResetButton, other.m_displaySelectionResetButton)
                 .append(m_truncationLimit, other.m_truncationLimit)
-                .append(m_fillViewport, other.m_fillViewport)
-                .append(m_runningInView, other.m_runningInView)
                 .isEquals();
     }
 
@@ -193,8 +182,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
             .append(m_tableId)
             .append(m_displaySelectionResetButton)
             .append(m_truncationLimit)
-            .append(m_fillViewport)
-            .append(m_runningInView)
             .toHashCode();
     }
 
@@ -392,34 +379,6 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
      */
     public void setTruncationLimit(final int truncationLimit) {
         m_truncationLimit = truncationLimit;
-    }
-
-    /**
-     * @return the fillViewport
-     */
-    public boolean getFillViewport() {
-        return m_fillViewport;
-    }
-
-    /**
-     * @param fillViewport the fillViewport to set
-     */
-    public void setFillViewport(final boolean fillViewport) {
-        m_fillViewport = fillViewport;
-    }
-
-    /**
-     * @return the runningInView
-     */
-    public boolean getRunningInView() {
-        return m_runningInView;
-    }
-
-    /**
-     * @param runningInView the runningInView to set
-     */
-    public void setRunningInView(final boolean runningInView) {
-        m_runningInView = runningInView;
     }
 
 }
