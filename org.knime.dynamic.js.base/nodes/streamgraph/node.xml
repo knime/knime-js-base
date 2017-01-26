@@ -58,10 +58,10 @@
 					label="Display legend" defaultValue="true" saveInView="true">
 					When checked, the legend is displayed.
 				</checkBoxOption>
-				<checkBoxOption name="Display interactive guideline"
-					id="interactiveGuideline" label="Display interactive guideline"
+				<checkBoxOption name="Display tooltip"
+					id="interactiveGuideline" label="Display tooltip"
 					defaultValue="true" saveInView="true">
-					When checked, an interactive pop-up is displayed.
+					When checked, an interactive tooltip is displayed on hover.
 				</checkBoxOption>
 				<checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
 					label="Display fullscreen button" defaultValue="true" loadDefaults="true">
@@ -81,7 +81,36 @@
 				</svgOption>
 			</options>
 		</tab>
-
+		<tab name="Axis Configuration">
+			<options>
+				<checkBoxOption name="Show Grid"
+					id="showGrid" label="Show grid"
+					defaultValue="true" saveInView="true">
+					When checked, a grid is displayed in the chart.
+				</checkBoxOption>
+				<checkBoxOption name="Sort for x-axis column"
+					id="xAxisSort" label="Sort for x-axis column"
+					defaultValue="false">
+					When checked, the table is sorted for the x-axis column.
+				</checkBoxOption>
+				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
+					defaultValue=",.2f" optional="true">
+					d3-Format string for numbers on the x-Axis.
+				</stringOption>
+				<stringOption name="y-Axis Number Format" id="yAxisFormatString" label="y-Axis Number Format"
+					defaultValue=",.2f" optional="true">
+					d3-Format string for numbers on the y-Axis.
+				</stringOption>
+				<stringListOption name="Date Format" id="dateFormat"
+					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
+					optional="true" defaultValues="YYYY-MM-DD">
+					Choose how to format x-Axis ticks if the
+					associated
+					column is of type
+					Date/Time.
+				</stringListOption>
+			</options>
+		</tab>
 		<tab name="Control Options">
 			<options>
 				<checkBoxOption name="Enable view controls" id="enableViewControls"
@@ -121,47 +150,11 @@
 					Check to enable toggling of the interactive pop-up
 					within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable subscribe to filter events toggle" id="subscribeFilterToggle"
-					label="Enable subscribe to filter events toggle" defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable toggling of the filter events within the view.
-				</checkBoxOption>
 				<checkBoxOption name="Enable show grid toggle" id="showGridToggle"
 					label="Enable show grid toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of the grid within the view.
 				</checkBoxOption>
-			</options>
-		</tab>
-
-		<tab name="Axis Configuration">
-			<options>
-				<checkBoxOption name="Show Grid"
-					id="showGrid" label="Show grid"
-					defaultValue="true" saveInView="true">
-					When checked, a grid is displayed in the chart.
-				</checkBoxOption>
-				<checkBoxOption name="Sort for x-axis column"
-					id="xAxisSort" label="Sort for x-axis column"
-					defaultValue="false">
-					When checked, the table is sorted for the x-axis column.
-				</checkBoxOption>
-				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
-					defaultValue=",.2f" optional="true">
-					d3-Format string for numbers on the x-Axis.
-				</stringOption>
-				<stringOption name="y-Axis Number Format" id="yAxisFormatString" label="y-Axis Number Format"
-					defaultValue=",.2f" optional="true">
-					d3-Format string for numbers on the y-Axis.
-				</stringOption>
-				<stringListOption name="Date Format" id="dateFormat"
-					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
-					optional="true" defaultValues="YYYY-MM-DD">
-					Choose how to format x-Axis ticks if the
-					associated
-					column is of type
-					Date/Time.
-				</stringListOption>
 			</options>
 		</tab>
 

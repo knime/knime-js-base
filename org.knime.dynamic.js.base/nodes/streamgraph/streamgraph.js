@@ -189,7 +189,7 @@
 		var includedRows = [];
 		for (var i = 0; i < knimeTable1.getNumRows(); i++) {
 			if (!currentFilter ||
-					knimeTable1.isRowIncludedInFilter(index, currentFilter)) {
+					knimeTable1.isRowIncludedInFilter(i, currentFilter)) {
 
 				includedRows.push(i);
 			}
@@ -350,17 +350,13 @@
   }
 
   var drawControls = function() {
-    if (!knimeService) {
-      // TODO: error handling?
-      return;
-    }
+	  if (!knimeService || !_representation.options.enableViewControls) {
+		  // TODO: error handling?
+		  return;
+	  }
 
-    if (_representation.displayFullscreenButton) {
+    if (_representation.options.displayFullscreenButton) {
       knimeService.allowFullscreen();
-    }
-
-    if (!_representation.options.enableViewControls) {
-      return;
     }
 
     // Title / Subtitle Configuration
@@ -447,7 +443,7 @@
                   drawChart();
                 });
 
-        knimeService.addMenuItem('Pop-up', 'comment',
+        knimeService.addMenuItem('Tooltip:', 'comment',
             interactiveGuidelineCheckbox);
       }
 
@@ -462,8 +458,7 @@
     }
 
     // Filter event checkbox.
-    var subscribeFilterToggle = _representation.options.subscribeFilterToggle;
-    if (knimeService.isInteractivityAvailable() && subscribeFilterToggle) {
+    if (knimeService.isInteractivityAvailable()) {
       knimeService.addMenuDivider();
       var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
 
