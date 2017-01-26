@@ -46,6 +46,7 @@ public class StackedAreaProcessor implements DynamicJSProcessor {
         String[] includeColumns = Stream
         		.concat(Arrays.stream(yAxisColumns), Stream.of(xAxisColumn))
         		.filter(p -> p != null)
+        		.distinct()
                 .toArray(String[]::new);
 
         FilterColumnTable ft = new FilterColumnTable(dt, includeColumns);
