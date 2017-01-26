@@ -726,11 +726,10 @@ function DecTreeDrawer(representation, value) {
 					.attr("height", container.clientHeight);
 				// center the tree component
 				var diff = (container.clientWidth - tbox.width) / 2;
-				var decTree = d3.select("#decTree");
-				var transformation = d3.transform(decTree.attr("transform"));
-				transformation.translate[0] = diff;
-				d3.select("#decTree") 
-					.attr("transform", transformation.toString());
+				var dt = d3.select("#decTree");
+				var transformation = d3.transform(dt.attr("transform"));
+				transformation.translate[0] = diff; 
+				dt.attr("transform", transformation.toString());
 			}
 //		}
 			
@@ -746,13 +745,13 @@ function DecTreeDrawer(representation, value) {
 //        	translation = arraySum(translation, d3.event.translate);
 //        	scale = d3.event.scale;
         	var panVec = d3.event.translate;
-        	decTree = d3.select("#decTree");
-        	t = d3.select("#decTree").select("g");
+        	dt = d3.select("#decTree");
+        	t = dt.select("g");
         	var transformation = d3.transform(t.attr("transform"));
         	transformation.scale = d3.event.scale;
-        	decTreeTrans = d3.transform(decTree.attr("transform"));
+        	decTreeTrans = d3.transform(dt.attr("transform"));
         	decTreeTrans.scale = d3.event.scale;
-        	decTree.attr("transform", decTreeTrans.toString());
+        	dt.attr("transform", decTreeTrans.toString());
 //        	t.attr("transform", transformation.toString());
 //        	zoom.translate([0,0]);
 //        	translation = calculatePanningVector(translation, d3.event.translate);
