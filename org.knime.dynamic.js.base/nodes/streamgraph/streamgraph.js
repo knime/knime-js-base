@@ -57,60 +57,77 @@
     d3.select("#layoutContainer").remove();
 
     /*
-     * Parse the options.
+     * Parse some options.
      */
-    var optTitle = _value.options.title;
-    var optSubtitle = _value.options.subtitle;
-
     var stackStyle = stackStyleByType[_value.options.chartType];
-    var interpolation = _value.options.interpolation;
-    var enableInteractiveGuideline = _value.options.interactiveGuideline;
-    var runningInView = _representation.runningInView;
-    var optFullscreen = _representation.options.svg.fullscreen
-        && runningInView;
-    var optWidth = _representation.options.svg.width;
-    var optHeight = _representation.options.svg.height;
-
-    var isTitle = optTitle || optSubtitle;
+    var optFullscreen = _representation.options.svg.fullscreen &&
+                        _representation.runningInView;
+    var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
 
     /*
      * Create HTML for the view.
      */
-    d3.selectAll("html, body").style("width", "100%").style("height",
-        "100%").style("margin", "0").style("padding", "0");
+    d3.selectAll("html, body")
+      .style({
+        "width": "100%",
+        "height": "100%",
+        "margin": "0",
+        "padding": "0"
+      });
 
     var body = d3.select("body");
 
-    var width = optWidth + 'px';
-    var height = optHeight + 'px';
+    // Determine available witdh and height.
     if (optFullscreen) {
-      width = "100%";
-      height = (isTitle) ? "100%" : "calc(100% - "
-          + knimeService.headerHeight() + "px)";
+      var width = "100%";
+
+      if (isTitle || !_representation.options.enableViewControls) {
+        knimeService.floatingHeader(true);
+        var height = "100%";
+      } else {
+        knimeService.floatingHeader(false);
+        var height = "calc(100% - " + knimeService.headerHeight() + "px)"
+      }
+
+    } else {
+      var width = _representation.options.svg.width + 'px';
+      var height = _representation.options.svg.height + 'px';
     }
 
-    layoutContainer = body.append("div").attr("id", "layoutContainer")
-        .style("width", width).style("height", height).style(
-            "min-width", MIN_WIDTH + "px").style("min-height",
-            MIN_HEIGHT + "px");
+    layoutContainer = body.append("div")
+      .attr("id", "layoutContainer")
+      .style({
+        "width": width,
+        "height": height,
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "position": "absolute"
+      });
 
     // create div container to hold svg
-    var svgContainer = layoutContainer.append("div").attr("id",
-        "svgContainer").style("min-width", MIN_WIDTH + "px").style(
-        "min-height", MIN_HEIGHT + "px").style("box-sizing",
-        "border-box").style("overflow", "hidden").style("margin", "0")
-        .style("width", width).style("height", height);
+    var svgContainer = layoutContainer.append("div")
+      .attr("id", "svgContainer")
+      .style({
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "box-sizing": "border-box",
+        "overflow": "hidden",
+        "margin": "0",
+        "width": "100%",
+        "height": "100%"
+      });
 
     // Create the SVG object
     svg = svgContainer.append("svg")
       .attr("id", "svg")
       .style("font-family", "sans-serif")
-      .attr("width", width)
-      .attr("height", height);
 
     if (optFullscreen) {
       svg.attr("width", "100%");
       svg.attr("height", "100%");
+    } else {
+      svg.attr("width", width)
+      svg.attr("height", height);
     }
 
     // create the stacked area chart
@@ -120,14 +137,27 @@
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; })
         .color(_colorRange)
-        .interpolate(interpolation)
+        .interpolate(_value.options.interpolation)
         .style(stackStyle)
         .showControls(false)
-        .margin({ "top" : 10, "bottom" : 10 })
         .showLegend(true)
-        .useInteractiveGuideline(enableInteractiveGuideline)
+        .useInteractiveGuideline(_value.options.interactiveGuideline)
         .interactive(false)
         .duration(0);
+
+        var topMargin = 10;
+  			topMargin += _value.options.title ? 10 : 0;
+  			topMargin += _value.options["legend"] ? 0 : 30;
+  			topMargin += _value.options.subtitle ? 8 : 0;
+        var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
+  			chart.legend.margin({
+  				top : topMargin,
+  				bottom : topMargin
+  			});
+  			chart.margin({
+  				top : topMargin,
+  				bottom : bottomMargin
+  			});
 
       chart.xAxis
         .tickFormat(createXAxisFormatter());
@@ -318,32 +348,40 @@
         }
       }
 
-      var topMargin = 10;
-      topMargin += _value.options.title ? 10 : 0;
-      // topMargin += _value.options.legend ? 0 : 30;
-      topMargin += _value.options.subtitle ? 8 : 0;
-      chart.legend.margin({
-        top : topMargin,
-        bottom : topMargin
-      });
-      chart.margin({
-        top : topMargin,
-        bottom : topMargin
-      });
-
-      var isTitle = _value.options.title || _value.options.subtitle;
-      knimeService.floatingHeader(isTitle);
-
       if (updateChart && chartNeedsUpdating) {
+        var topMargin = 10;
+  			topMargin += _value.options.title ? 10 : 0;
+  			topMargin += _value.options["legend"] ? 0 : 30;
+  			topMargin += _value.options.subtitle ? 8 : 0;
+        var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
+  			chart.legend.margin({
+  				top : topMargin,
+  				bottom : topMargin
+  			});
+  			chart.margin({
+  				top : topMargin,
+  				bottom : bottomMargin
+  			});
+
         if (_representation.options.svg.fullscreen
             && _representation.runningInView) {
-          var height = (isTitle) ? "100%" : "calc(100% - "
-              + knimeService.headerHeight() + "px)";
+
+          var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
+
+          if (isTitle || !_representation.options.enableViewControls) {
+            knimeService.floatingHeader(true);
+            var height = "100%";
+          } else {
+            knimeService.floatingHeader(false);
+            var height = "calc(100% - " + knimeService.headerHeight() + "px)"
+          }
+
           layoutContainer.style("height", height)
           // two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE
           .style('display', 'none').style('display', 'block');
-          d3.select("#svgContainer").style("height", height);
+          // d3.select("#svgContainer").style("height", height);
         }
+
         chart.update();
       }
     }

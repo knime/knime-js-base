@@ -19,10 +19,15 @@
 		<tab name="Options">
 			<options>
 				<columnSelectorOption name="x-Axis Column" id="xAxisColumn"
-					inPortIndex="0" label="Choose column for x axis" filterClasses="org.knime.core.data.DataValue"
+					inPortIndex="0" label="Choose column for x-axis" filterClasses="org.knime.core.data.DataValue"
 					allowRowID="true" optional="true">
 					Choose the column for the x-axis. Dependent on the column's type, labels on the x-axis get rendered differently.
 				</columnSelectorOption>
+				<checkBoxOption name="Sort for x-axis column"
+					id="xAxisSort" label="Sort for x-axis column"
+					defaultValue="true">
+					When checked, the table is sorted for the x-axis column.
+				</checkBoxOption>
 				<columnFilterOption name="Included Columns" id="columns"
 					inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
 					Select the numeric columns which you wish to be included in the chart.
@@ -87,11 +92,6 @@
 					id="showGrid" label="Show grid"
 					defaultValue="true" saveInView="true">
 					When checked, a grid is displayed in the chart.
-				</checkBoxOption>
-				<checkBoxOption name="Sort for x-axis column"
-					id="xAxisSort" label="Sort for x-axis column"
-					defaultValue="false">
-					When checked, the table is sorted for the x-axis column.
 				</checkBoxOption>
 				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
 					defaultValue=",.2f" optional="true">
