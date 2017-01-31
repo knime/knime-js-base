@@ -284,15 +284,17 @@ public class RangeSliderFilterNodeModel
 
     private void setFilterOnValue() {
         RangeSliderFilterValue value = getViewValue();
-        if (value != null && value.getFilter() == null && m_config.getSliderSettings() != null) {
-            RangeSelection filter = new RangeSelection();
-            filter.setId(getViewRepresentation().getFilterId());
-            NumericColumnRangeSelection range = new NumericColumnRangeSelection();
-            range.setColumnName(m_config.getDomainColumn().getStringValue());
-            range.setMinimum(m_config.getSliderSettings().getStart()[0]);
-            range.setMaximum(m_config.getSliderSettings().getStart()[1]);
-            filter.setColumns(new AbstractColumnRangeSelection[]{range});
-            value.setFilter(filter);
+        if (value != null && m_config.getSliderSettings() != null) {
+            if (value.getFilter() == null) {
+                RangeSelection filter = new RangeSelection();
+                NumericColumnRangeSelection range = new NumericColumnRangeSelection();
+                range.setColumnName(m_config.getDomainColumn().getStringValue());
+                range.setMinimum(m_config.getSliderSettings().getStart()[0]);
+                range.setMaximum(m_config.getSliderSettings().getStart()[1]);
+                filter.setColumns(new AbstractColumnRangeSelection[]{range});
+                value.setFilter(filter);
+            }
+            value.getFilter().setId(getViewRepresentation().getFilterId());
         }
     }
 
