@@ -62,10 +62,14 @@ import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.time.duration.DurationCellFactory;
 import org.knime.core.data.time.localdate.LocalDateCellFactory;
 import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
 import org.knime.core.data.time.localtime.LocalTimeCellFactory;
+import org.knime.core.data.time.period.PeriodCellFactory;
 import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 import org.knime.core.node.DefaultNodeProgressMonitor;
 import org.knime.core.node.ExecutionContext;
@@ -96,20 +100,28 @@ public class JSONDataTableTest {
 
         DataTableSpec tableSpec = new DataTableSpec(
             new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col2", DateAndTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col3", LocalDateCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col4", LocalDateTimeCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col5", LocalTimeCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col6", ZonedDateTimeCellFactory.TYPE).createSpec()
+            new DataColumnSpecCreator("col2", IntCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", DoubleCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col7", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col8", ZonedDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col9", PeriodCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col10", DurationCellFactory.TYPE).createSpec()
         );
         DataRow expectedRow = new DefaultRow(
             "Row0",
             "Some value",
+            "1",
+            "1.2",
             "2007-12-03'T'10:30:31.S",
             "2007-12-03",
             "2007-12-03T10:15:30",
             "10:15:30",
-            "2007-12-03T10:15:30+01:00[Europe/Paris]"
+            "2007-12-03T10:15:30+01:00[Europe/Paris]",
+            "P1Y2M3W4D",
+            "PT20.345S"
         );
 
         DataContainer cont = new DataContainer(tableSpec);
@@ -141,7 +153,10 @@ public class JSONDataTableTest {
             assertThat("Unexpected fourth cell", actualRow.getCell(3), is(actualRow.getCell(3)));
             assertThat("Unexpected fifth cell", actualRow.getCell(4), is(actualRow.getCell(4)));
             assertThat("Unexpected sixth cell", actualRow.getCell(5), is(actualRow.getCell(5)));
-
+            assertThat("Unexpected seventh cell", actualRow.getCell(5), is(actualRow.getCell(6)));
+            assertThat("Unexpected eight cell", actualRow.getCell(5), is(actualRow.getCell(7)));
+            assertThat("Unexpected nineth cell", actualRow.getCell(5), is(actualRow.getCell(8)));
+            assertThat("Unexpected tenth cell", actualRow.getCell(5), is(actualRow.getCell(9)));
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }
