@@ -63,10 +63,10 @@ import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.data.time.localdate.LocalDateCell;
-import org.knime.core.data.time.localdatetime.LocalDateTimeCell;
-import org.knime.core.data.time.localtime.LocalTimeCell;
-import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCell;
+import org.knime.core.data.time.localdate.LocalDateCellFactory;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
+import org.knime.core.data.time.localtime.LocalTimeCellFactory;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 import org.knime.core.node.DefaultNodeProgressMonitor;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
@@ -97,10 +97,10 @@ public class JSONDataTableTest {
         DataTableSpec tableSpec = new DataTableSpec(
             new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
             new DataColumnSpecCreator("col2", DateAndTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col3", LocalDateCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col4", LocalDateTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col5", LocalTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col6", ZonedDateTimeCell.TYPE).createSpec()
+            new DataColumnSpecCreator("col3", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", ZonedDateTimeCellFactory.TYPE).createSpec()
         );
         DataRow expectedRow = new DefaultRow(
             "Row0",

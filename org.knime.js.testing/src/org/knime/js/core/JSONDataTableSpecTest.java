@@ -56,10 +56,10 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.data.time.localdate.LocalDateCell;
-import org.knime.core.data.time.localdatetime.LocalDateTimeCell;
-import org.knime.core.data.time.localtime.LocalTimeCell;
-import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCell;
+import org.knime.core.data.time.localdate.LocalDateCellFactory;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
+import org.knime.core.data.time.localtime.LocalTimeCellFactory;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -82,10 +82,10 @@ public class JSONDataTableSpecTest {
         DataTableSpec expectedSpec = new DataTableSpec(
             new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
             new DataColumnSpecCreator("col2", DateAndTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col3", LocalDateCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col4", LocalDateTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col5", LocalTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col6", ZonedDateTimeCell.TYPE).createSpec()
+            new DataColumnSpecCreator("col3", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", ZonedDateTimeCellFactory.TYPE).createSpec()
         );
 
         JSONDataTableSpec jsonSpec = new JSONDataTableSpec(expectedSpec, 0);
