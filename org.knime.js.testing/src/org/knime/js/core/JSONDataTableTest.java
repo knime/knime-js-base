@@ -153,10 +153,10 @@ public class JSONDataTableTest {
             assertThat("Unexpected fourth cell", actualRow.getCell(3), is(actualRow.getCell(3)));
             assertThat("Unexpected fifth cell", actualRow.getCell(4), is(actualRow.getCell(4)));
             assertThat("Unexpected sixth cell", actualRow.getCell(5), is(actualRow.getCell(5)));
-            assertThat("Unexpected seventh cell", actualRow.getCell(5), is(actualRow.getCell(6)));
-            assertThat("Unexpected eight cell", actualRow.getCell(5), is(actualRow.getCell(7)));
-            assertThat("Unexpected nineth cell", actualRow.getCell(5), is(actualRow.getCell(8)));
-            assertThat("Unexpected tenth cell", actualRow.getCell(5), is(actualRow.getCell(9)));
+            assertThat("Unexpected seventh cell", actualRow.getCell(6), is(actualRow.getCell(6)));
+            assertThat("Unexpected eight cell", actualRow.getCell(7), is(actualRow.getCell(7)));
+            assertThat("Unexpected nineth cell", actualRow.getCell(8), is(actualRow.getCell(8)));
+            assertThat("Unexpected tenth cell", actualRow.getCell(9), is(actualRow.getCell(9)));
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }
