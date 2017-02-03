@@ -60,8 +60,13 @@ import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.DataContainer;
+import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.time.localdate.LocalDateCell;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCell;
+import org.knime.core.data.time.localtime.LocalTimeCell;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCell;
 import org.knime.core.node.DefaultNodeProgressMonitor;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
@@ -89,9 +94,26 @@ public class JSONDataTableTest {
     public void testSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        DataTableSpec tableSpec = new DataTableSpec(new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec());
+        DataTableSpec tableSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", LocalDateCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalDateTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", LocalTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", ZonedDateTimeCell.TYPE).createSpec()
+        );
+        DataRow expectedRow = new DefaultRow(
+            "Row0",
+            "Some value",
+            "2007-12-03'T'10:30:31.S",
+            "2007-12-03",
+            "2007-12-03T10:15:30",
+            "10:15:30",
+            "2007-12-03T10:15:30+01:00[Europe/Paris]"
+        );
+
         DataContainer cont = new DataContainer(tableSpec);
-        DataRow expectedRow = new DefaultRow("Row0", "Some value");
+
         cont.addRowToTable(expectedRow);
         cont.close();
         DataTable expectedTable = cont.getTable();
@@ -114,6 +136,12 @@ public class JSONDataTableTest {
             DataRow actualRow = expectedTable.iterator().next();
             assertThat("Unexpected first row key", actualRow.getKey(), is(actualRow.getKey()));
             assertThat("Unexpected first cell", actualRow.getCell(0), is(actualRow.getCell(0)));
+            assertThat("Unexpected second cell", actualRow.getCell(1), is(actualRow.getCell(1)));
+            assertThat("Unexpected third cell", actualRow.getCell(2), is(actualRow.getCell(2)));
+            assertThat("Unexpected fourth cell", actualRow.getCell(3), is(actualRow.getCell(3)));
+            assertThat("Unexpected fifth cell", actualRow.getCell(4), is(actualRow.getCell(4)));
+            assertThat("Unexpected sixth cell", actualRow.getCell(5), is(actualRow.getCell(5)));
+
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }

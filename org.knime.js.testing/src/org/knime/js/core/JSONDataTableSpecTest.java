@@ -54,7 +54,12 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.time.localdate.LocalDateCell;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCell;
+import org.knime.core.data.time.localtime.LocalTimeCell;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCell;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -74,7 +79,15 @@ public class JSONDataTableSpecTest {
     public void testSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        DataTableSpec expectedSpec = new DataTableSpec(new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec());
+        DataTableSpec expectedSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", LocalDateCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalDateTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", LocalTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", ZonedDateTimeCell.TYPE).createSpec()
+        );
+
         JSONDataTableSpec jsonSpec = new JSONDataTableSpec(expectedSpec, 0);
         String json = mapper.writer().writeValueAsString(jsonSpec);
 
