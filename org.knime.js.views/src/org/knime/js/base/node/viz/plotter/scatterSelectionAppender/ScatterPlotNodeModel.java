@@ -345,6 +345,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 dataset.setDateTimeFormat(m_config.getDateFormat(), col);
             }
         }
+        dataset.setColorModels(tableSpec.getColorModels());
 
         ScatterPlotViewValue viewValue = getViewValue();
         final String xColumn = viewValue.getxColumn();
