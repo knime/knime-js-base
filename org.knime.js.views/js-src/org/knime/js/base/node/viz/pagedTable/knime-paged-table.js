@@ -546,9 +546,20 @@ knime_paged_table = function() {
 				}
 			}
 		}
+		var partialRows = [];
+		if (data.partial) {
+			partialRows = data.partial.rows;
+		}
 		// set checked status on checkboxes
 		allCheckboxes.each(function() {
 			this.checked = selection[this.getAttribute('value')];
+			if ('indeterminate' in this) {
+				if (partialRows && partialRows.indexOf(this.getAttribute('value')) > -1) {
+					this.indeterminate = true;
+				} else {
+					this.indeterminate = false;
+				}
+			}
 		});
 		_value.selectAllIndeterminate = false;
 		_value.selectAll = false;
