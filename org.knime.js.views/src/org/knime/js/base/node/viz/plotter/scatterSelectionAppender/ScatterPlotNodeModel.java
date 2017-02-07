@@ -439,7 +439,6 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
     private void copyConfigToView(final DataTableSpec spec) {
         ScatterPlotViewRepresentation representation = getViewRepresentation();
-        representation.setShowLegend(m_config.getShowLegend());
         representation.setAutoRangeAxes(m_config.getAutoRangeAxes());
         representation.setUseDomainInformation(m_config.getUseDomainInfo());
         representation.setShowGrid(m_config.getShowGrid());
@@ -524,6 +523,10 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         viewValue.setPublishSelection(m_config.getPublishSelection());
         viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
         viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
+
+        // added with 3.4
+        representation.setEnableSwitchLegend(m_config.getEnableSwitchLegend());
+        viewValue.setShowLegend(m_config.getShowLegend());
     }
 
     private void copyValueToConfig() {
@@ -544,6 +547,9 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         m_config.setPublishSelection(viewValue.getPublishSelection());
         m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
         m_config.setSubscribeFilter(viewValue.getSubscribeFilter());
+
+        // added with 3.4
+        m_config.setShowLegend(viewValue.getShowLegend());
     }
 
     /**

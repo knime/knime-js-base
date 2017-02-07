@@ -97,6 +97,7 @@ final class ScatterPlotViewConfig {
     static final String ENABLE_X_LABEL_EDIT = "enableXAxisLabelEdit";
     static final String ENABLE_Y_LABEL_EDIT = "enableYAxisLabelEdit";
     static final String ENABLE_DOT_SIZE_CHANGE = "enableDotSizeChange";
+    static final String ENABLE_SWITCH_LEGEND = "enableSwitchLegend";
     static final String ENABLE_ZOOMING = "enableZooming";
     static final String ENABLE_DRAG_ZOOMING = "enableDragZooming";
     static final String ENABLE_PANNING = "enablePanning";
@@ -130,7 +131,7 @@ final class ScatterPlotViewConfig {
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
-    private boolean m_showLegend = false;
+    private boolean m_showLegend = true;
     private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_autoRangeAxes = true;
     private boolean m_useDomainInfo = false;
@@ -146,6 +147,7 @@ final class ScatterPlotViewConfig {
     private boolean m_enableXAxisLabelEdit = true;
     private boolean m_enableYAxisLabelEdit = true;
     private boolean m_enableDotSizeChange = false;
+    private boolean m_enableSwitchLegend = true;
     private boolean m_enableZooming = true;
     private boolean m_enablePanning = true;
     private boolean m_enableDragZooming = false;
@@ -787,6 +789,20 @@ final class ScatterPlotViewConfig {
         m_yAxisMax = yAxisMax;
     }
 
+   /**
+     * @return the enableSwitchLegend
+     */
+    public boolean getEnableSwitchLegend() {
+        return m_enableSwitchLegend;
+    }
+
+    /**
+     * @param enableSwitchLegend the enableSwitchLegend to set
+     */
+    public void setEnableSwitchLegend(final boolean enableSwitchLegend) {
+        m_enableSwitchLegend = enableSwitchLegend;
+    }
+
     /**
      * @return the allowZooming
      */
@@ -929,6 +945,9 @@ final class ScatterPlotViewConfig {
         settings.addBoolean(CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
         settings.addBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, getEnableShowSelectedOnly());
         settings.addBoolean(CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
+
+        //added with 3.4
+        settings.addBoolean(ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
     }
 
     /** Loads parameters in NodeModel.
@@ -999,6 +1018,9 @@ final class ScatterPlotViewConfig {
         setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
         setEnableShowSelectedOnly(settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
+
+        //added with 3.4
+        setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
     }
 
     /** Loads parameters in Dialog.
@@ -1008,7 +1030,7 @@ final class ScatterPlotViewConfig {
         setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
         setGenerateImage(settings.getBoolean(GENERATE_IMAGE, true));
 
-        setShowLegend(settings.getBoolean(SHOW_LEGEND, false));
+        setShowLegend(settings.getBoolean(SHOW_LEGEND, true));
         setAutoRangeAxes(settings.getBoolean(AUTO_RANGE_AXES, true));
         setUseDomainInfo(settings.getBoolean(USE_DOMAIN_INFO, false));
         setShowGrid(settings.getBoolean(SHOW_GRID, true));
@@ -1081,5 +1103,8 @@ final class ScatterPlotViewConfig {
         setSubscribeSelection(settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION));
         setEnableShowSelectedOnly(settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER));
+
+        //added with 3.4
+        setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
     }
 }
