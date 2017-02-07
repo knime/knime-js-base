@@ -4,6 +4,7 @@ knime_scatter_plot_selection_appender = function() {
 	var _representation = null;
 	var _value = null;
 	var _keyedDataset = null;
+	var _colorModel = null;
 	var chartManager = null;
 	var containerID = "scatterContainer";
 	var initialAxisBounds;
@@ -205,9 +206,12 @@ knime_scatter_plot_selection_appender = function() {
         chart.setTitle(chartTitle, chartSubtitle, chart.getTitleAnchor());
         chart.updateTitle(null, new jsfc.Font("sans-serif", 24, false, false));
         chart.updateSubtitle(null, new jsfc.Font("sans-serif", 12, false, false));
-        if (_representation.showLegend) {
+        if (!_representation.showLegend && _representation.keyedDataset.colorModels && _representation.keyedDataset.colorModels.length > 0) {
+        	_colorModel = _representation.keyedDataset.colorModels[0];
+        	plot.legendInfo = legendInfo;
         	var legendBuilder = new jsfc.StandardLegendBuilder();
         	legendBuilder.setFont(new jsfc.Font("sans-serif", 12));
+        	legendBuilder.createLegend = createLegend;
         	chart.setLegendBuilder(legendBuilder);
         } else {
         	chart.setLegendBuilder(null);
@@ -951,6 +955,52 @@ knime_scatter_plot_selection_appender = function() {
 			_value.yAxisMin = yMin;
 			_value.yAxisMax = yMax;
 		}
+	};
+	
+	legendInfo = function() {
+		var info = {};		
+	    if (_colorModel) {
+	    	info.type = _colorModel.type;
+	    	info.title = _colorModel.title + ": ";
+	    	if (_colorModel.type == "nominal") {
+	    		info.values = [];
+	    		for (var i = 0; i < _colorModel.labels.length; i++) {
+	    			var item = new jsfc.LegendItemInfo(_colorModel.labels[i], jsfc.Color.fromStr(_colorModel.colors[i]));
+	    			item.label = _colorModel.labels[i];
+	    			info.push(item);
+	    		}
+	    	} else if (_colorModel.type == "range") {
+	    		info = {};
+	    	}
+	    }		
+	    return info;
+	}
+	
+	createLegend = function(plot, anchor, orientation, style) {
+	    var info = plot.legendInfo();
+	    var result = new jsfc.FlowElement();
+	    var me = this;
+	    
+	    //TODO: enable when we want to show a title for a legend
+	    /*var title = new jsfc.TextElement().setFont(me._font);
+	    var item = new jsfc.GridElement();
+	    item.add(title, "R1", "C1");
+        result.add(item);*/
+        
+        if (info.type == "nominal") {        
+		    info.values.forEach(function(info) {
+		        var shape = new jsfc.RectangleElement(8, 5)
+		                .setFillColor(info.color);
+		        var text = new jsfc.TextElement(info.label).setFont(me._font);
+		        item = new jsfc.GridElement();
+		        item.add(shape, "R1", "C1");
+		        item.add(text, "R1", "C2");
+		        result.add(item);
+		    });
+        } else if (info.type == "range") {
+        	
+        }
+	    return result;
 	};
 	
 	return view;
