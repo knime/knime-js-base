@@ -51,6 +51,7 @@ package org.knime.js.core;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -61,6 +62,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.date.DateAndTimeCellFactory;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
@@ -110,19 +112,18 @@ public class JSONDataTableTest {
             new DataColumnSpecCreator("col9", PeriodCellFactory.TYPE).createSpec(),
             new DataColumnSpecCreator("col10", DurationCellFactory.TYPE).createSpec()
         );
-        DataRow expectedRow = new DefaultRow(
-            "Row0",
-            "Some value",
-            "1",
-            "1.2",
-            "2007-12-03'T'10:30:31.S",
-            "2007-12-03",
-            "2007-12-03T10:15:30",
-            "10:15:30",
-            "2007-12-03T10:15:30+01:00[Europe/Paris]",
-            "P1Y2M3W4D",
-            "PT20.345S"
-        );
+        DataRow expectedRow = new DefaultRow("r0", Arrays.asList(
+            new StringCell("Some value"),
+            new IntCell(1),
+            new DoubleCell(1.2),
+            DateAndTimeCellFactory.create("2007-12-03T10:30:31.124"),
+            LocalDateCellFactory.create("2007-12-03"),
+            LocalDateTimeCellFactory.create("2007-12-03T10:15:30"),
+            LocalTimeCellFactory.create("10:15:30"),
+            ZonedDateTimeCellFactory.create("2007-12-03T10:15:30+01:00[Europe/Paris]"),
+            PeriodCellFactory.create("P1Y2M3W4D"),
+            DurationCellFactory.create("PT20.345S")
+        ));
 
         DataContainer cont = new DataContainer(tableSpec);
 
@@ -146,17 +147,17 @@ public class JSONDataTableTest {
                 is(expectedTable.getDataTableSpec()));
 
             DataRow actualRow = expectedTable.iterator().next();
-            assertThat("Unexpected first row key", actualRow.getKey(), is(actualRow.getKey()));
-            assertThat("Unexpected first cell", actualRow.getCell(0), is(actualRow.getCell(0)));
-            assertThat("Unexpected second cell", actualRow.getCell(1), is(actualRow.getCell(1)));
-            assertThat("Unexpected third cell", actualRow.getCell(2), is(actualRow.getCell(2)));
-            assertThat("Unexpected fourth cell", actualRow.getCell(3), is(actualRow.getCell(3)));
-            assertThat("Unexpected fifth cell", actualRow.getCell(4), is(actualRow.getCell(4)));
-            assertThat("Unexpected sixth cell", actualRow.getCell(5), is(actualRow.getCell(5)));
-            assertThat("Unexpected seventh cell", actualRow.getCell(6), is(actualRow.getCell(6)));
-            assertThat("Unexpected eight cell", actualRow.getCell(7), is(actualRow.getCell(7)));
-            assertThat("Unexpected nineth cell", actualRow.getCell(8), is(actualRow.getCell(8)));
-            assertThat("Unexpected tenth cell", actualRow.getCell(9), is(actualRow.getCell(9)));
+            assertThat("Unexpected row key", actualRow.getKey(), is(actualRow.getKey()));
+            assertThat("Unexpected cell (StringCell)", actualRow.getCell(0), is(actualRow.getCell(0)));
+            assertThat("Unexpected cell (IntCell)", actualRow.getCell(1), is(actualRow.getCell(1)));
+            assertThat("Unexpected cell (DoubleCell)", actualRow.getCell(2), is(actualRow.getCell(2)));
+            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(3), is(actualRow.getCell(3)));
+            assertThat("Unexpected cell (LocalDateCell)", actualRow.getCell(4), is(actualRow.getCell(4)));
+            assertThat("Unexpected cell (LocalDateTimeCell)", actualRow.getCell(5), is(actualRow.getCell(5)));
+            assertThat("Unexpected cell (LocalTimeCell)", actualRow.getCell(6), is(actualRow.getCell(6)));
+            assertThat("Unexpected cell (ZonedDateTimeCell)", actualRow.getCell(7), is(actualRow.getCell(7)));
+            assertThat("Unexpected cell (PeriodCell)", actualRow.getCell(8), is(actualRow.getCell(8)));
+            assertThat("Unexpected cell (DurationCell)", actualRow.getCell(9), is(actualRow.getCell(9)));
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }
