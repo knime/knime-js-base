@@ -25,12 +25,12 @@
 		    <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
 		    <option name="Maximum number of rows">Use this numerical value to restrict the number of rows used for this visualization.</option>
 		    <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not.</option>
-            <option name="Choose column for x-axis">Defines the column that contains the values for X coordinates.</option>
-		    <option name="Choose column for y-axis">Defines the column that contains the values for Y coordinates.</option>
+            <option name="Choose column for x axis">Defines the column that contains the values for X coordinates.</option>
+		    <option name="Choose column for y axis">Defines the column that contains the values for Y coordinates.</option>
 		</tab>
 		<tab name="Axis Configuration">
-            <option name="Label for x-axis" optional="true">The label for the x-axis. If left blank, the selected column name is displayed.</option>
-            <option name="Label for y-axis" optional="true">The label for the y-axis. If left blank, the selected column name is displayed.</option>
+            <option name="Label for x axis" optional="true">The label for the x-axis. If left blank, the selected column name is displayed.</option>
+            <option name="Label for y axis" optional="true">The label for the y-axis. If left blank, the selected column name is displayed.</option>
             <option name="Date format">A format string, required when displaying dates and times on an axis.</option>
             <option name="Auto range axes">Select if axes ranges are supposed to be automatically calculated. This also applies if the columns are changed in the view.</option>
             <option name="Use domain information">Using this option, the axis ranges are determined by bounds from the domain on initial layout.</option>
@@ -38,13 +38,14 @@
 		<tab name="General Plot Options">
             <option name="Chart title" optional="true">The title of the graph shown above the generated image. If left blank, no title will be shown.</option>
             <option name="Chart subtitle" optional="true">The subtitle of the graph shown above the generated image. If left blank, no subtitle will be shown.</option>
+            <option name="Show color legend">If checked a color legend will be displayed in the view. This options requires a color model for <i>nominal</i> values to be provided. This can be done e.g. by applying Color Manager node ahead.</option>
+            <option name="Show grid">If an additional grid is being rendered at the axes tick positions.</option>
             <option name="Width of image (in px)">The width of the generated SVG image.</option>
             <option name="Height of image (in px)">The height of the generated SVG image.</option>
             <option name="Resize view to fill window">Setting this option resizes the view to the available area of the window. If disabled the view size is static according to the set width and height.</option>
             <option name="Display full screen button">Displays a button enabling full screen mode.</option>
             <option name="Background color">The color of the background of the image.</option>
             <option name="Data area color">The background color of the data area, within the axes.</option>
-            <option name="Show grid">If an additional grid is being rendered at the axes tick positions.</option>
             <option name="Grid color">The color of the grid.</option>
 		</tab>
 		<tab name="View Controls">
@@ -55,6 +56,7 @@
             <option name="Enable column chooser for y-axis">Renders a selection box to change column used for X coordinates in the view.</option>
             <option name="Enable label edit for x-axis">Renders a text box to change x-axis label in the view.</option>
             <option name="Enable label edit for y-axis">Renders a text box to change y-axis label in the view.</option>
+            <option name="Enable legend display control">If checked, a checkbox to switch on and off the legend is rendered in the view. This options requires a color model for <i>nominal</i> values to be provided. This can be done e.g. by applying Color Manager node ahead.</option>
             <option name="Enable mouse crosshair">Enables the display of additional crosshairs with labels of the current mouse position.</option>
             <option name="Snap to data points">If enabled the crosshairs will snap to the closest data point according to mouse position.</option>
             <option name="Enable selection">Enables or disables the selection feature. When enabled data points can be selected in the scatter plot by activating the corresponding button and clicking on points. Extending the selection is possible by holding down the Shift-Key and clicking. The selection is propagated in an appended column of the data table.</option>
