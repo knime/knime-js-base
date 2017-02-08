@@ -217,7 +217,7 @@ knime_scatter_plot_selection_appender = function() {
         	_legendBuilder.setFont(new jsfc.Font("sans-serif", 12));
         	_legendBuilder.createLegend = createLegend;        	
         }
-        chart.setLegendBuilder(_value.showLegend ? _legendBuilder : null);
+        chart.setLegendBuilder(_legendBuilder);  // if there's no color model, _legendBuilder is null by default
         		
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		document.getElementById(containerID).appendChild(svg);
@@ -525,7 +525,9 @@ knime_scatter_plot_selection_appender = function() {
 	    		.style("font-family", defaultFont)
 	    		.style("font-size", defaultFontSize+"px");*/
 	    }
-	    if (_representation.enableSwitchLegend) {
+	    if (_representation.enableSwitchLegend && _legendBuilder) {  
+	    	// Initialization of _legendBuilder means there's a color model. We need to check it because of backward compatibility:
+	    	// the old executed plots do not have color models, but default value for enableSwitchLegend is true.
 	    	if (pre) {
 	    		knimeService.addMenuDivider();
 	    	}
