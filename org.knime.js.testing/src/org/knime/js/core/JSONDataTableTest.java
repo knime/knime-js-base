@@ -104,18 +104,66 @@ public class JSONDataTableTest {
             new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
             new DataColumnSpecCreator("col2", IntCell.TYPE).createSpec(),
             new DataColumnSpecCreator("col3", DoubleCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col4", DateAndTimeCell.TYPE).createSpec(),
-            new DataColumnSpecCreator("col5", LocalDateCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col6", LocalDateTimeCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col7", LocalTimeCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col8", ZonedDateTimeCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col9", PeriodCellFactory.TYPE).createSpec(),
-            new DataColumnSpecCreator("col10", DurationCellFactory.TYPE).createSpec()
+            new DataColumnSpecCreator("col4", DateAndTimeCell.TYPE).createSpec()
         );
         DataRow expectedRow = new DefaultRow("r0", Arrays.asList(
             new StringCell("Some value"),
             new IntCell(1),
             new DoubleCell(1.2),
+            DateAndTimeCellFactory.create("2007-12-03T10:30:31.124")
+        ));
+
+        DataContainer cont = new DataContainer(tableSpec);
+
+        cont.addRowToTable(expectedRow);
+        cont.close();
+        DataTable expectedTable = cont.getTable();
+
+        NodeFactory<NodeModel> dummyFactory =
+            (NodeFactory)new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
+        ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
+            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
+
+        String json = mapper.writer().writeValueAsString(new JSONDataTable(expectedTable, 1, 1, execContext));
+
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            JSONDataTable deserializedJsonTable = mapper.reader().forType(JSONDataTable.class).readValue(json);
+            DataTable actualTable = deserializedJsonTable.createBufferedDataTable(execContext);
+            assertThat("Unexpected deserialized spec", actualTable.getDataTableSpec(),
+                is(expectedTable.getDataTableSpec()));
+
+            DataRow actualRow = actualTable.iterator().next();
+            assertThat("Unexpected row key", actualRow.getKey(), is(expectedRow.getKey()));
+            assertThat("Unexpected cell (StringCell)", actualRow.getCell(0), is(expectedRow.getCell(0)));
+            assertThat("Unexpected cell (IntCell)", actualRow.getCell(1), is(expectedRow.getCell(1)));
+            assertThat("Unexpected cell (DoubleCell)", actualRow.getCell(2), is(expectedRow.getCell(2)));
+            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(3), is(expectedRow.getCell(3)));
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+    }
+
+    /**
+     * Checks that serialization of the new date/time types works as expected. (see AP-6967)
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDateTimeSerialization() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DataTableSpec tableSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", ZonedDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", PeriodCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col7", DurationCellFactory.TYPE).createSpec()
+        );
+        DataRow expectedRow = new DefaultRow("r0", Arrays.asList(
             DateAndTimeCellFactory.create("2007-12-03T10:30:31.124"),
             LocalDateCellFactory.create("2007-12-03"),
             LocalDateTimeCellFactory.create("2007-12-03T10:15:30"),
@@ -146,18 +194,15 @@ public class JSONDataTableTest {
             assertThat("Unexpected deserialized spec", actualTable.getDataTableSpec(),
                 is(expectedTable.getDataTableSpec()));
 
-            DataRow actualRow = expectedTable.iterator().next();
-            assertThat("Unexpected row key", actualRow.getKey(), is(actualRow.getKey()));
-            assertThat("Unexpected cell (StringCell)", actualRow.getCell(0), is(actualRow.getCell(0)));
-            assertThat("Unexpected cell (IntCell)", actualRow.getCell(1), is(actualRow.getCell(1)));
-            assertThat("Unexpected cell (DoubleCell)", actualRow.getCell(2), is(actualRow.getCell(2)));
-            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(3), is(actualRow.getCell(3)));
-            assertThat("Unexpected cell (LocalDateCell)", actualRow.getCell(4), is(actualRow.getCell(4)));
-            assertThat("Unexpected cell (LocalDateTimeCell)", actualRow.getCell(5), is(actualRow.getCell(5)));
-            assertThat("Unexpected cell (LocalTimeCell)", actualRow.getCell(6), is(actualRow.getCell(6)));
-            assertThat("Unexpected cell (ZonedDateTimeCell)", actualRow.getCell(7), is(actualRow.getCell(7)));
-            assertThat("Unexpected cell (PeriodCell)", actualRow.getCell(8), is(actualRow.getCell(8)));
-            assertThat("Unexpected cell (DurationCell)", actualRow.getCell(9), is(actualRow.getCell(9)));
+            DataRow actualRow = actualTable.iterator().next();
+            assertThat("Unexpected row key", actualRow.getKey(), is(expectedRow.getKey()));
+            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(0), is(expectedRow.getCell(0)));
+            assertThat("Unexpected cell (LocalDateCell)", actualRow.getCell(1), is(expectedRow.getCell(1)));
+            assertThat("Unexpected cell (LocalDateTimeCell)", actualRow.getCell(2), is(expectedRow.getCell(2)));
+            assertThat("Unexpected cell (LocalTimeCell)", actualRow.getCell(3), is(expectedRow.getCell(3)));
+            assertThat("Unexpected cell (ZonedDateTimeCell)", actualRow.getCell(4), is(expectedRow.getCell(4)));
+            assertThat("Unexpected cell (PeriodCell)", actualRow.getCell(5), is(expectedRow.getCell(5)));
+            assertThat("Unexpected cell (DurationCell)", actualRow.getCell(6), is(expectedRow.getCell(6)));
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }
