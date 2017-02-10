@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.js.views"
       label="KNIME JavaScript Views"
-      version="3.3.1.qualifier"
+      version="3.4.0.qualifier"
       provider-name="KNIME GmbH, Konstanz, Germany"
       plugin="org.knime.js.core"
       image="icons/knime64.gif">
