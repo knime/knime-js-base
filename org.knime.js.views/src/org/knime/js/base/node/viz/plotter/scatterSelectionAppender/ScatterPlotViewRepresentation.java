@@ -88,6 +88,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_enableXAxisLabelEdit;
     private boolean m_enableYAxisLabelEdit;
     private boolean m_enableDotSizeChange;
+    private boolean m_enableSwitchLegend;
     private boolean m_enableZooming;
     private boolean m_enableDragZooming;
     private boolean m_enablePanning;
@@ -347,6 +348,20 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
      */
     public void setEnableDotSizeChange(final boolean enableDotSizeChange) {
         m_enableDotSizeChange = enableDotSizeChange;
+    }
+
+    /**
+     * @return the enableSwitchLegend
+     */
+    public boolean getEnableSwitchLegend() {
+        return m_enableSwitchLegend;
+    }
+
+    /**
+     * @param enableSwitchLegend the enableSwitchLegend to set
+     */
+    public void setEnableSwitchLegend(final boolean enableSwitchLegend) {
+        m_enableSwitchLegend = enableSwitchLegend;
     }
 
     /**
@@ -621,6 +636,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
         settings.addBoolean(ScatterPlotViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, getEnableShowSelectedOnly());
         settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
+
+        // added with 3.4
+        settings.addBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
     }
 
     /**
@@ -673,6 +691,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         setDisplayFullscreenButton(settings.getBoolean(ScatterPlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, ScatterPlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
         setEnableShowSelectedOnly(settings.getBoolean(ScatterPlotViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, ScatterPlotViewConfig.DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
         m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
+
+        //added with 3.4
+        setEnableSwitchLegend(settings.getBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, true));
     }
 
     /**
@@ -708,6 +729,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableXAxisLabelEdit, other.m_enableXAxisLabelEdit)
                 .append(m_enableYAxisLabelEdit, other.m_enableYAxisLabelEdit)
                 .append(m_enableDotSizeChange, other.m_enableDotSizeChange)
+                .append(m_enableSwitchLegend, other.m_enableSwitchLegend)
                 .append(m_enableZooming, other.m_enableZooming)
                 .append(m_enableDragZooming, other.m_enableDragZooming)
                 .append(m_enablePanning, other.m_enablePanning)
@@ -750,6 +772,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableXAxisLabelEdit)
                 .append(m_enableYAxisLabelEdit)
                 .append(m_enableDotSizeChange)
+                .append(m_enableSwitchLegend)
                 .append(m_enableZooming)
                 .append(m_enableDragZooming)
                 .append(m_enablePanning)
