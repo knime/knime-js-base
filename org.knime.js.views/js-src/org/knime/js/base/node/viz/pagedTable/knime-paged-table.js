@@ -498,12 +498,15 @@ knime_paged_table = function() {
 		//var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
 		selection = {};
 		_value.selectAllIndeterminate = false;
-		allCheckboxes.prop('checked', all);
-		if (all) {
-			allCheckboxes.each(function() {
+		allCheckboxes.each(function() {
+			this.checked = all;
+			if ('indeterminate' in this && this.indeterminate) {
+				this.indeterminate = false;
+			}
+			if (all) {
 				selection[this.value] = true;
-			});
-		}
+			}
+		});
 		_value.selectAll = all ? true : false;
 		if (hideUnselected) {
 			dataTable.draw();
@@ -532,7 +535,7 @@ knime_paged_table = function() {
 			}, 500);
 		}
 		
-		// clear current selection
+		/*// clear current selection
 		selection = {};
 		// construct new selection object
 		if (data.elements) {
@@ -545,16 +548,26 @@ knime_paged_table = function() {
 					selection[element.rows[rId]] = true;
 				}
 			}
+		}*/
+		// apply changeSet
+		if (data.changeSet) {
+			if (data.changeSet.removed) {
+				for (var i = 0; i < data.changeSet.removed.length; i++) {
+					selection[data.changeSet.removed[i]] = false;
+				}
+			}
+			if (data.changeSet.added) {
+				for (var i = 0; i < data.changeSet.added.length; i++) {
+					selection[data.changeSet.added[i]] = true;
+				}
+			}
 		}
-		var partialRows = [];
-		if (data.partial) {
-			partialRows = data.partial.rows;
-		}
+		var partialRows = knimeService.getAllPartiallySelectedRows(_representation.table.id);
 		// set checked status on checkboxes
 		allCheckboxes.each(function() {
 			this.checked = selection[this.getAttribute('value')];
 			if ('indeterminate' in this) {
-				if (partialRows && partialRows.indexOf(this.getAttribute('value')) > -1) {
+				if (!this.checked && partialRows.indexOf(this.getAttribute('value')) > -1) {
 					this.indeterminate = true;
 				} else {
 					this.indeterminate = false;

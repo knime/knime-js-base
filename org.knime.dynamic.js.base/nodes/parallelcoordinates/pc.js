@@ -536,7 +536,7 @@
 				for (var i = 0; i < data.changeSet.removed.length; i++) {
 					var removedId = data.changeSet.removed[i];
 					var row = d3.select("#"+ removedId);
-					if (!row.classed("filtered")) {
+					if (!row.empty() && !row.classed("filtered")) {
 						row.classed({"unselected": true, "selected": false});
 					}
 				}
@@ -545,7 +545,7 @@
 				for (var i = 0; i < data.changeSet.added.length; i++) {
 					var addedId = data.changeSet.added[i];
 					var row = d3.select("#"+ addedId);
-					if (!row.classed("filtered")) {
+					if (!row.empty() && !row.classed("filtered")) {
 						row.classed({"selected": true, "unselected": false});
 					}
 				}
