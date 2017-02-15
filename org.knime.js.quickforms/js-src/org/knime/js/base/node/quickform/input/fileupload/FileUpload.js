@@ -65,7 +65,6 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		var messageNotFound = 'File upload not available. Native component not found.';
 		var messageNotStandalone = 'File upload not available in standalone mode.';
 		m_component = insertNativeComponent(representation, messageNotFound, messageNotStandalone);
-		m_component.setAttribute("aria-label", representation.label);
 		
 		//add error field
 		m_errorDiv = document.createElement('div');
@@ -80,6 +79,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 
 		//set listener on label
 		if (m_component) {
+			m_component.setAttribute("aria-label", representation.label);
 			var uLabel = m_component.getElementsByClassName('knime-upload-label')[0];
 			if (uLabel) {
 				//use mutation event instead of observer, since IE only supports it as of version 11 
