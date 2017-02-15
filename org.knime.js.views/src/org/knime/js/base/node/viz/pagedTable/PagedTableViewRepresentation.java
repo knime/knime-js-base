@@ -89,6 +89,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_enableHideUnselected;
     private boolean m_enableSorting;
     private boolean m_enableClearSortButton;
+    private String m_globalDateTimeLocale;
     private String m_globalDateTimeFormat;
     private String m_globalLocalDateFormat;
     private String m_globalLocalDateTimeFormat;
@@ -409,6 +410,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the globalDateTimeLocale
+     */
+    public String getGlobalDateTimeLocale() {
+        return m_globalDateTimeLocale;
+    }
+
+    /**
+     * @param globalDateTimeLocale the globalDateTimeLocale to set
+     */
+    public void setGlobalDateTimeLocale(final String globalDateTimeLocale) {
+        m_globalDateTimeLocale = globalDateTimeLocale;
+    }
+
+    /**
      * @return the globalDateTimeFormat
      */
     public String getGlobalDateTimeFormat() {
@@ -570,6 +585,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
 
         //added with 4.4
+        settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT, m_globalLocalDateFormat);
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, m_globalLocalDateTimeFormat);
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT, m_globalLocalTimeFormat);
@@ -612,10 +628,11 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
 
         //added with 4.4
-        m_globalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
+        m_globalDateTimeLocale = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE);
+        m_globalLocalDateFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
+        m_globalLocalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
+        m_globalLocalTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
+        m_globalZonedDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
     }
 
     /**
@@ -655,6 +672,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_enableHideUnselected, other.m_enableHideUnselected)
                 .append(m_enableSorting, other.m_enableSorting)
                 .append(m_enableClearSortButton, other.m_enableClearSortButton)
+                .append(m_globalDateTimeLocale, other.m_globalDateTimeLocale)
                 .append(m_globalDateTimeFormat, other.m_globalDateTimeFormat)
                 .append(m_globalLocalDateFormat, other.m_globalLocalDateFormat)
                 .append(m_globalLocalDateTimeFormat, other.m_globalLocalDateTimeFormat)
@@ -694,6 +712,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_enableHideUnselected)
                 .append(m_enableSorting)
                 .append(m_enableClearSortButton)
+                .append(m_globalDateTimeLocale)
                 .append(m_globalDateTimeFormat)
                 .append(m_globalLocalDateFormat)
                 .append(m_globalLocalDateTimeFormat)

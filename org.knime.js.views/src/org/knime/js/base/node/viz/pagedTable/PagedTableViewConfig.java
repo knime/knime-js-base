@@ -172,6 +172,10 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_ENABLE_CLEAR_SORT_BUTTON = false;
     private boolean m_enableClearSortButton = DEFAULT_ENABLE_CLEAR_SORT_BUTTON;
 
+    final static String CFG_GLOBAL_DATE_TIME_LOCALE = "globalDateTimeLocale";
+    final static String DEFAULT_GLOBAL_DATE_TIME_LOCALE = "en";
+    private String m_globalDateTimeLocale = DEFAULT_GLOBAL_DATE_TIME_LOCALE;
+
     final static String CFG_GLOBAL_DATE_TIME_FORMAT = "globalDateFormat";
     final static String DEFAULT_GLOBAL_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.iterator().next();
     private String m_globalDateTimeFormat = DEFAULT_GLOBAL_DATE_TIME_FORMAT;
@@ -594,6 +598,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the globalDateTimeLocale
+     */
+    public String getGlobalDateTimeLocale() {
+        return m_globalDateTimeLocale;
+    }
+
+    /**
+     * @param globalDateTimeLocale the globalDateTimeLocale to set
+     */
+    public void setGlobalDateTimeLocale(final String globalDateTimeLocale) {
+        m_globalDateTimeLocale = globalDateTimeLocale;
+    }
+
+    /**
      * @return the globalDateTimeFormat
      */
     public String getGlobalDateTimeFormat() {
@@ -730,6 +748,7 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
 
         //added with 4.4
+        settings.addString(CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
         settings.addString(CFG_GLOBAL_LOCAL_DATE_FORMAT, m_globalLocalDateFormat);
         settings.addString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, m_globalLocalDateTimeFormat);
         settings.addString(CFG_GLOBAL_LOCAL_TIME_FORMAT, m_globalLocalTimeFormat);
@@ -776,6 +795,7 @@ public class PagedTableViewConfig {
         m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
 
         //added with 4.4
+        m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
         m_globalLocalDateFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
         m_globalLocalDateTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
         m_globalLocalTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
@@ -822,6 +842,7 @@ public class PagedTableViewConfig {
         m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
 
         //added with 4.4
+        m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
         m_globalLocalDateFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
         m_globalLocalDateTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
         m_globalLocalTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);

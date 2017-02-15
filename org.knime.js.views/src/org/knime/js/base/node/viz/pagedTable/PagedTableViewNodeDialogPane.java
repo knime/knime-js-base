@@ -52,7 +52,10 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -77,20 +80,25 @@ import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 /**
  *
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
+    /** BiMap of locale keys and locale values as supported by moment.js */
+    public static final BiMap<String, String> PREDEFINED_DATE_TIME_LOCALES = loadDateTimeLocales();
+
     /**
      * Keys for the string history to re-use user entered date formats.
      */
     public static final String DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-date-formats";
-    public static final String LOCAL_DATE_FORMAT_HISTORY_KEY = "momentjs-local-date-formats";
-    public static final String LOCAL_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-local-date-time-formats";
-    public static final String LOCAL_TIME_FORMAT_HISTORY_KEY = "momentjs-local-time-date-formats";
-    public static final String ZONED_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-date-formats";
+    public static final String DATE_FORMAT_HISTORY_KEY = "momentjs-date-new-formats";
+    public static final String TIME_FORMAT_HISTORY_KEY = "momentjs-time-formats";
+    public static final String ZONED_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-zoned-date-time-formats";
 
     /** Sets of predefined date and time formats for JavaScript processing with moment.js. */
     public static final LinkedHashSet<String> PREDEFINED_DATE_TIME_FORMATS = createPredefinedDateTimeFormats();
@@ -128,6 +136,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_subscribeFilterCheckBox;
     private final JCheckBox m_enableSortingCheckBox;
     private final JCheckBox m_enableClearSortButtonCheckBox;
+    private final DialogComponentStringSelection m_globalDateTimeLocaleChooser;
     private final DialogComponentStringSelection m_globalDateTimeFormatChooser;
     private final DialogComponentStringSelection m_globalLocalDateFormatChooser;
     private final DialogComponentStringSelection m_globalLocalDateTimeFormatChooser;
@@ -210,25 +219,33 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         });
         m_enableClearSortButtonCheckBox = new JCheckBox("Enable 'Clear Sorting' button");
 
+        m_globalDateTimeLocaleChooser =
+                new DialogComponentStringSelection(
+                    new SettingsModelString(
+                        PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE,
+                        PREDEFINED_DATE_TIME_LOCALES.get(PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE)
+                    ),
+                    "", PREDEFINED_DATE_TIME_LOCALES.values(), true);
+
         m_globalDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_FORMAT), "date/time format:", PREDEFINED_DATE_TIME_FORMATS, true);
+                PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_FORMAT), "", PREDEFINED_DATE_TIME_FORMATS, true);
 
         m_globalLocalDateFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT), "local date format:", PREDEFINED_LOCAL_DATE_FORMATS, true);
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT), "", PREDEFINED_LOCAL_DATE_FORMATS, true);
 
         m_globalLocalDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT), "local date/time format:", PREDEFINED_LOCAL_DATE_TIME_FORMATS, true);
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT), "", PREDEFINED_LOCAL_DATE_TIME_FORMATS, true);
 
         m_globalLocalTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT), "local time format:", PREDEFINED_LOCAL_TIME_FORMATS, true);
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT), "", PREDEFINED_LOCAL_TIME_FORMATS, true);
 
         m_globalZonedDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "zoned date/time format:", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
+                PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
 
         m_enableGlobalNumberFormatCheckbox = new JCheckBox("Enable global number format (double cells)");
         m_enableGlobalNumberFormatCheckbox.addChangeListener(new ChangeListener() {
@@ -383,18 +400,37 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
     private JPanel initFormatters() {
         JPanel datePanel = new JPanel(new GridBagLayout());
-        datePanel.setBorder(new TitledBorder("Global Date Formatter"));
+        datePanel.setBorder(new TitledBorder("Global Date Formatters"));
         GridBagConstraints gbcD = createConfiguredGridBagConstraints();
+        datePanel.add(new JLabel("Locale: "), gbcD);
+        gbcD.gridx++;
+        datePanel.add(m_globalDateTimeLocaleChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
+        gbcD.gridy++;
+        datePanel.add(new JLabel("Date&Time (legacy) format: "), gbcD);
+        gbcD.gridx++;
         datePanel.add(m_globalDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
         gbcD.gridy++;
+        datePanel.add(new JLabel("Local Date format: "), gbcD);
+        gbcD.gridx++;
         datePanel.add(m_globalLocalDateFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
         gbcD.gridy++;
+        datePanel.add(new JLabel("Local Date&Time format: "), gbcD);
+        gbcD.gridx++;
         datePanel.add(m_globalLocalDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
         gbcD.gridy++;
+        datePanel.add(new JLabel("Local Time format: "), gbcD);
+        gbcD.gridx++;
         datePanel.add(m_globalLocalTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
         gbcD.gridy++;
+        datePanel.add(new JLabel("Zoned Date&Time format: "), gbcD);
+        gbcD.gridx++;
         datePanel.add(m_globalZonedDateTimeFormatChooser.getComponentPanel(), gbcD);
-        gbcD.gridy++;
+        gbcD.gridx = 0;
 
         JPanel numberPanel = new JPanel(new GridBagLayout());
         numberPanel.setBorder(new TitledBorder("Number Formatter"));
@@ -476,6 +512,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
         m_enableSortingCheckBox.setSelected(config.getEnableSorting());
         m_enableClearSortButtonCheckBox.setSelected(config.getEnableClearSortButton());
+        m_globalDateTimeLocaleChooser.replaceListItems(loadDateTimeLocales().values(),
+                                                       PREDEFINED_DATE_TIME_LOCALES.get(config.getGlobalDateTimeLocale()));
         m_globalDateTimeFormatChooser.replaceListItems(createPredefinedDateTimeFormats(), config.getGlobalDateTimeFormat());
         m_globalLocalDateFormatChooser.replaceListItems(createPredefinedLocalDateFormats(), config.getGlobalLocalDateFormat());
         m_globalLocalDateTimeFormatChooser.replaceListItems(createPredefinedLocalDateTimeFormats(), config.getGlobalLocalDateTimeFormat());
@@ -526,6 +564,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setEnableColumnSearching(m_enableColumnSearchCheckbox.isSelected());
         config.setPublishFilter(m_publishFilterCheckBox.isSelected());
         config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
+        config.setGlobalDateTimeFormat(PREDEFINED_DATE_TIME_LOCALES.inverse().get(
+            ((SettingsModelString)m_globalDateTimeLocaleChooser.getModel()).getStringValue())
+        );
         config.setGlobalDateTimeFormat(((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue());
         config.setGlobalLocalDateFormat(((SettingsModelString)m_globalLocalDateFormatChooser.getModel()).getStringValue());
         config.setGlobalLocalDateTimeFormat(((SettingsModelString)m_globalLocalDateTimeFormatChooser.getModel()).getStringValue());
@@ -626,6 +667,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        // TODO: add a few zone formats
         formats.add("YYYY-MM-DD");
         formats.add("ddd MMM DD YYYY HH:mm:ss");
         formats.add("M/D/YY");
@@ -637,7 +679,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        String[] userFormats = StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
             formats.add(userFormat);
         }
@@ -648,18 +690,12 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedLocalTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
         formats.add("h:mm A");
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        String[] userFormats = StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
             formats.add(userFormat);
         }
@@ -695,20 +731,36 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private static LinkedHashSet<String> createPredefinedLocalDateFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
         formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
         formats.add("M/D/YY");
         formats.add("MMM D, YYYY");
         formats.add("MMMM D, YYYY");
         formats.add("dddd, MMM D, YYYY");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        String[] userFormats = StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
             formats.add(userFormat);
         }
         return formats;
+    }
+
+    /**
+     * @return a BiMap of locale keys and locale values as supported by moment.js
+     * @throws IOException
+     */
+    private static BiMap<String, String> loadDateTimeLocales() {
+        BiMap<String, String> biMap = HashBiMap.create();
+        Properties props = new Properties();
+        InputStream input = PagedTableViewNodeDialogPane.class.getResourceAsStream("locales.properties");
+
+        try {
+            props.load(input);
+            props.entrySet().stream().forEach(
+                (entry) -> biMap.put((String)entry.getKey(), (String)entry.getValue())
+            );
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
+
+        return biMap;
     }
 }

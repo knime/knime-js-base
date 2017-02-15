@@ -325,10 +325,11 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
 
             //added with 4.4
-            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalDateFormat());
-            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
-            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalTimeFormat());
-            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
+            viewRepresentation.setGlobalDateTimeLocale(m_config.getGlobalDateTimeLocale());
+            viewRepresentation.setGlobalLocalDateFormat(m_config.getGlobalLocalDateFormat());
+            viewRepresentation.setGlobalLocalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
+            viewRepresentation.setGlobalLocalTimeFormat(m_config.getGlobalLocalTimeFormat());
+            viewRepresentation.setGlobalZonedDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
         }
     }
 
