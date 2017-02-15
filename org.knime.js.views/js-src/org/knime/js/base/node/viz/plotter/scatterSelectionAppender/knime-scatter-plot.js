@@ -109,6 +109,18 @@ knime_scatter_plot_selection_appender = function() {
 			yCol = "[EMPTY]";
 		}
 		var xyDataset = jsfc.DatasetUtils.extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
+		
+		// filter out missing values indicated as nulls
+		var series = xyDataset.data.series[0];
+		var notNullItems = [];
+		for (var i = 0; i < series.items.length; i++) {
+			var obj = series.items[i];
+			if (obj.x !== null && obj.y !== null) {
+				notNullItems.push(obj);
+			}
+		}
+		series.items = notNullItems;
+		
 		//console.timeEnd("Building XYDataset");
 		return xyDataset;
 	};
