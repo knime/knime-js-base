@@ -132,14 +132,41 @@ knime_paged_table = function() {
 			}
 			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
 				var colType = knimeTable.getColumnTypes()[i];
+				var knimeColType = knimeTable.getKnimeColumnTypes()[i];
 				var colDef = {
 					'title': knimeTable.getColumnNames()[i],
 					'orderable' : isColumnSortable(colType),
 					'searchable': isColumnSearchable(colType)
 				}
-				if (colType == 'dateTime' && _representation.globalDateFormat) {
+				if (knimeColType == 'Date and Time' && _representation.globalDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
-						return moment(data).utc().format(_representation.globalDateFormat);
+						return moment(data).utc().format(_representation.globalDateTimeFormat);
+					}
+				}
+				if (knimeColType == 'Local Date' && _representation.globalLocalDateFormat) {
+				  colDef.render = function (data, type, full, meta) {
+				    return moment(data).utc().format(_representation.globalLocalDateFormat);
+				  }
+				}
+
+				if (knimeColType == 'Local Date Time' && _representation.globalLocalDateTimeFormat) {
+				  colDef.render = function (data, type, full, meta) {
+				    return moment(data).utc().format(_representation.globalLocalDateTimeFormat);
+				  }
+				}
+
+				if (knimeColType == 'Local Time' && _representation.globalLocalTimeFormat) {
+				  colDef.render = function (data, type, full, meta) {
+				    return moment(data).utc().format(_representation.globalLocalTimeFormat);
+				  }
+				}
+
+				if (knimeColType == 'Zoned Date Time' && _representation.globalZonedDateTimeFormat) {
+					colDef.render = function (data, type, full, meta) {
+						// TODO: change time zone stuff
+						// Direct parsing of time zone not supported: http://momentjs.com/docs/#/parsing/string/
+					  	// TODO: check for locale "en" - it is not supported by moment.js
+				    return moment(data).utc().format(_representation.globalZonedDateTimeFormat);
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {

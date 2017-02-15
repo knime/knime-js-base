@@ -383,7 +383,7 @@
                webResourceBundleID="dataTables_1_10_11_bootstrap">
          </webDependency>
          <webDependency
-               webResourceBundleID="moment_2_13">
+               webResourceBundleID="moment_timezone_locales_2_17">
          </webDependency>
          <importResource
                relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.css"
