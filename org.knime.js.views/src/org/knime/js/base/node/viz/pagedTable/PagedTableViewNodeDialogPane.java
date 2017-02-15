@@ -84,11 +84,21 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
     /**
-     * Key for the string history to re-use user entered date formats.
+     * Keys for the string history to re-use user entered date formats.
      */
-    public static final String FORMAT_HISTORY_KEY = "momentjs-date-formats";
-    /** Set of predefined date and time formats for JavaScript processing with moment.js. */
-    public static final LinkedHashSet<String> PREDEFINED_FORMATS = createPredefinedFormats();
+    public static final String DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-date-formats";
+    public static final String LOCAL_DATE_FORMAT_HISTORY_KEY = "momentjs-local-date-formats";
+    public static final String LOCAL_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-local-date-time-formats";
+    public static final String LOCAL_TIME_FORMAT_HISTORY_KEY = "momentjs-local-time-date-formats";
+    public static final String ZONED_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-date-formats";
+
+    /** Sets of predefined date and time formats for JavaScript processing with moment.js. */
+    public static final LinkedHashSet<String> PREDEFINED_DATE_TIME_FORMATS = createPredefinedDateTimeFormats();
+    public static final LinkedHashSet<String> PREDEFINED_LOCAL_DATE_FORMATS = createPredefinedLocalDateFormats();
+    public static final LinkedHashSet<String> PREDEFINED_LOCAL_DATE_TIME_FORMATS = createPredefinedLocalDateTimeFormats();
+    public static final LinkedHashSet<String> PREDEFINED_LOCAL_TIME_FORMATS = createPredefinedLocalTimeFormats();
+    public static final LinkedHashSet<String> PREDEFINED_ZONED_DATE_TIME_FORMATS = createPredefinedZonedDateTimeFormats();
+
     private static final int TEXT_FIELD_SIZE = 20;
 
     private final JCheckBox m_hideInWizardCheckBox;
@@ -118,7 +128,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_subscribeFilterCheckBox;
     private final JCheckBox m_enableSortingCheckBox;
     private final JCheckBox m_enableClearSortButtonCheckBox;
-    private final DialogComponentStringSelection m_globalDateFormatChooser;
+    private final DialogComponentStringSelection m_globalDateTimeFormatChooser;
+    private final DialogComponentStringSelection m_globalLocalDateFormatChooser;
+    private final DialogComponentStringSelection m_globalLocalDateTimeFormatChooser;
+    private final DialogComponentStringSelection m_globalLocalTimeFormatChooser;
+    private final DialogComponentStringSelection m_globalZonedDateTimeFormatChooser;
     private final JCheckBox m_enableGlobalNumberFormatCheckbox;
     private final JSpinner m_globalNumberFormatDecimalSpinner;
 
@@ -195,9 +209,27 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
             }
         });
         m_enableClearSortButtonCheckBox = new JCheckBox("Enable 'Clear Sorting' button");
-        m_globalDateFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_FORMAT,
-                PagedTableViewConfig.DEFAULT_GLOBAL_DATE_FORMAT), "Global date format:", PREDEFINED_FORMATS, true);
+
+        m_globalDateTimeFormatChooser =
+            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_FORMAT,
+                PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_FORMAT), "date/time format:", PREDEFINED_DATE_TIME_FORMATS, true);
+
+        m_globalLocalDateFormatChooser =
+            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT,
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT), "local date format:", PREDEFINED_LOCAL_DATE_FORMATS, true);
+
+        m_globalLocalDateTimeFormatChooser =
+            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT,
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT), "local date/time format:", PREDEFINED_LOCAL_DATE_TIME_FORMATS, true);
+
+        m_globalLocalTimeFormatChooser =
+            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT,
+                PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT), "local time format:", PREDEFINED_LOCAL_TIME_FORMATS, true);
+
+        m_globalZonedDateTimeFormatChooser =
+            new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT,
+                PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "zoned date/time format:", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
+
         m_enableGlobalNumberFormatCheckbox = new JCheckBox("Enable global number format (double cells)");
         m_enableGlobalNumberFormatCheckbox.addChangeListener(new ChangeListener() {
             @Override
@@ -351,9 +383,18 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
     private JPanel initFormatters() {
         JPanel datePanel = new JPanel(new GridBagLayout());
-        datePanel.setBorder(new TitledBorder("Date Formatter"));
+        datePanel.setBorder(new TitledBorder("Global Date Formatter"));
         GridBagConstraints gbcD = createConfiguredGridBagConstraints();
-        datePanel.add(m_globalDateFormatChooser.getComponentPanel(), gbcD);
+        datePanel.add(m_globalDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridy++;
+        datePanel.add(m_globalLocalDateFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridy++;
+        datePanel.add(m_globalLocalDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridy++;
+        datePanel.add(m_globalLocalTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridy++;
+        datePanel.add(m_globalZonedDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridy++;
 
         JPanel numberPanel = new JPanel(new GridBagLayout());
         numberPanel.setBorder(new TitledBorder("Number Formatter"));
@@ -435,7 +476,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
         m_enableSortingCheckBox.setSelected(config.getEnableSorting());
         m_enableClearSortButtonCheckBox.setSelected(config.getEnableClearSortButton());
-        m_globalDateFormatChooser.replaceListItems(createPredefinedFormats(), config.getGlobalDateFormat());
+        m_globalDateTimeFormatChooser.replaceListItems(createPredefinedDateTimeFormats(), config.getGlobalDateTimeFormat());
+        m_globalLocalDateFormatChooser.replaceListItems(createPredefinedLocalDateFormats(), config.getGlobalLocalDateFormat());
+        m_globalLocalDateTimeFormatChooser.replaceListItems(createPredefinedLocalDateTimeFormats(), config.getGlobalLocalDateTimeFormat());
+        m_globalLocalTimeFormatChooser.replaceListItems(createPredefinedLocalTimeFormats(), config.getGlobalLocalTimeFormat());
+        m_globalZonedDateTimeFormatChooser.replaceListItems(createPredefinedZonedDateTimeFormats(), config.getGlobalZonedDateTimeFormat());
         m_enableGlobalNumberFormatCheckbox.setSelected(config.getEnableGlobalNumberFormat());
         m_globalNumberFormatDecimalSpinner.setValue(config.getGlobalNumberFormatDecimals());
         enablePagingFields();
@@ -481,7 +526,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setEnableColumnSearching(m_enableColumnSearchCheckbox.isSelected());
         config.setPublishFilter(m_publishFilterCheckBox.isSelected());
         config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
-        config.setGlobalDateFormat(((SettingsModelString)m_globalDateFormatChooser.getModel()).getStringValue());
+        config.setGlobalDateTimeFormat(((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue());
+        config.setGlobalLocalDateFormat(((SettingsModelString)m_globalLocalDateFormatChooser.getModel()).getStringValue());
+        config.setGlobalLocalDateTimeFormat(((SettingsModelString)m_globalLocalDateTimeFormatChooser.getModel()).getStringValue());
+        config.setGlobalLocalTimeFormat(((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue());
+        config.setGlobalZonedDateTimeFormat(((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue());
         config.setEnableGlobalNumberFormat(m_enableGlobalNumberFormatCheckbox.isSelected());
         config.setGlobalNumberFormatDecimals((Integer)m_globalNumberFormatDecimalSpinner.getValue());
         config.saveSettings(settings);
@@ -552,7 +601,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     /**
      * @return a list of predefined formats for use in a date format with moment.js
      */
-    public static LinkedHashSet<String> createPredefinedFormats() {
+    public static LinkedHashSet<String> createPredefinedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
         formats.add("YYYY-MM-DD");
         formats.add("ddd MMM DD YYYY HH:mm:ss");
@@ -565,7 +614,98 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(FORMAT_HISTORY_KEY).getHistory();
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        for (String userFormat : userFormats) {
+            formats.add(userFormat);
+        }
+        return formats;
+    }
+
+    /**
+     * @return a list of predefined formats for use in a date format with moment.js
+     */
+    private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
+        LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        formats.add("YYYY-MM-DD");
+        formats.add("ddd MMM DD YYYY HH:mm:ss");
+        formats.add("M/D/YY");
+        formats.add("MMM D, YYYY");
+        formats.add("MMMM D, YYYY");
+        formats.add("dddd, MMM D, YYYY");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+        // check also the StringHistory....
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        for (String userFormat : userFormats) {
+            formats.add(userFormat);
+        }
+        return formats;    }
+
+    /**
+     * @return a list of predefined formats for use in a date format with moment.js
+     */
+    private static LinkedHashSet<String> createPredefinedLocalTimeFormats() {
+        LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        formats.add("YYYY-MM-DD");
+        formats.add("ddd MMM DD YYYY HH:mm:ss");
+        formats.add("M/D/YY");
+        formats.add("MMM D, YYYY");
+        formats.add("MMMM D, YYYY");
+        formats.add("dddd, MMM D, YYYY");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+        // check also the StringHistory....
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        for (String userFormat : userFormats) {
+            formats.add(userFormat);
+        }
+        return formats;
+    }
+
+    /**
+     * @return a list of predefined formats for use in a date format with moment.js
+     */
+    private static LinkedHashSet<String> createPredefinedLocalDateTimeFormats() {
+        LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        formats.add("YYYY-MM-DD");
+        formats.add("ddd MMM DD YYYY HH:mm:ss");
+        formats.add("M/D/YY");
+        formats.add("MMM D, YYYY");
+        formats.add("MMMM D, YYYY");
+        formats.add("dddd, MMM D, YYYY");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+        // check also the StringHistory....
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        for (String userFormat : userFormats) {
+            formats.add(userFormat);
+        }
+        return formats;
+    }
+
+    /**
+     * @return a list of predefined formats for use in a date format with moment.js
+     */
+    private static LinkedHashSet<String> createPredefinedLocalDateFormats() {
+        LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        formats.add("YYYY-MM-DD");
+        formats.add("ddd MMM DD YYYY HH:mm:ss");
+        formats.add("M/D/YY");
+        formats.add("MMM D, YYYY");
+        formats.add("MMMM D, YYYY");
+        formats.add("dddd, MMM D, YYYY");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+        // check also the StringHistory....
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
             formats.add(userFormat);
         }

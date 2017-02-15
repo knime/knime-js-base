@@ -312,7 +312,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewRepresentation.setEnableColumnSearching(m_config.getEnableColumnSearching());
             viewRepresentation.setEnableSorting(m_config.getEnableSorting());
             viewRepresentation.setEnableClearSortButton(m_config.getEnableClearSortButton());
-            viewRepresentation.setGlobalDateFormat(m_config.getGlobalDateFormat());
+            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalDateTimeFormat());
             viewRepresentation.setEnableGlobalNumberFormat(m_config.getEnableGlobalNumberFormat());
             viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());
 
@@ -323,6 +323,12 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
             viewValue.setPublishFilter(m_config.getPublishFilter());
             viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
+
+            //added with 4.4
+            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalDateFormat());
+            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
+            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalLocalTimeFormat());
+            viewRepresentation.setGlobalDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
         }
     }
 
