@@ -876,7 +876,7 @@ function DecTreeDrawer(representation, value) {
             splitGroup.append("rect")
             	.attr("height", fontsize)
             	.each(function(d) {
-            		var width = getTextSize(splitAttribute(d)).width;
+            		var width = getTextSize(trimText(splitAttribute(d), options.truncationLimit)).width;
             		d3.select(this).attr("width", width)
             			.attr("transform", "translate(-" + width/2 + ",0)");
             	})
