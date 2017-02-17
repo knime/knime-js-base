@@ -4,6 +4,8 @@ knime_scatter_plot_selection_appender = function() {
 	var _representation = null;
 	var _value = null;
 	var _keyedDataset = null;
+	var _colorModel = null;
+	var _legendBuilder = null;
 	var chartManager = null;
 	var containerID = "scatterContainer";
 	var initialAxisBounds;
@@ -15,6 +17,9 @@ knime_scatter_plot_selection_appender = function() {
 	
 	var SELECTION_ID = "selection";
 	var FILTERED_ID = "filtered";
+	
+	var NOMINAL_MODEL = "nominal";
+	var RANGE_MODEL = "range";
 	
 	var hiddenItemKeys = [];
 	
@@ -205,14 +210,16 @@ knime_scatter_plot_selection_appender = function() {
         chart.setTitle(chartTitle, chartSubtitle, chart.getTitleAnchor());
         chart.updateTitle(null, new jsfc.Font("sans-serif", 24, false, false));
         chart.updateSubtitle(null, new jsfc.Font("sans-serif", 12, false, false));
-        if (_representation.showLegend) {
-        	var legendBuilder = new jsfc.StandardLegendBuilder();
-        	legendBuilder.setFont(new jsfc.Font("sans-serif", 12));
-        	chart.setLegendBuilder(legendBuilder);
-        } else {
-        	chart.setLegendBuilder(null);
+        if (_representation.keyedDataset.colorModels && _representation.keyedDataset.colorModels.length > 0) {
+        	_colorModel = _representation.keyedDataset.colorModels[0];
+        	plot.legendInfo = legendInfo;
+        	_legendBuilder = new jsfc.StandardLegendBuilder();
+        	_legendBuilder.setFont(new jsfc.Font("sans-serif", 12));
+        	_legendBuilder.createLegend = createLegend;        	
         }
-		var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        chart.setLegendBuilder(_legendBuilder);  // if there's no color model, _legendBuilder is null by default
+        		
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		document.getElementById(containerID).appendChild(svg);
 		if (_representation.resizeToWindow) {
 			chartHeight = "100%";
@@ -517,6 +524,19 @@ knime_scatter_plot_selection_appender = function() {
 	    		.attr("value", _value.dotSize)
 	    		.style("font-family", defaultFont)
 	    		.style("font-size", defaultFontSize+"px");*/
+	    }
+	    if (_representation.enableSwitchLegend && _legendBuilder) {  
+	    	// Initialization of _legendBuilder means there's a color model. We need to check it because of backward compatibility:
+	    	// the old executed plots do not have color models, but default value for enableSwitchLegend is true.
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    	var showLegendCheckbox = knimeService.createMenuCheckbox('showLegendCheckbox', _value.showLegend, function() {
+				_value.showLegend = this.checked;
+				chartManager.getChart().setLegendBuilder(_value.showLegend ? _legendBuilder : null);
+			});
+			knimeService.addMenuItem('Show legend', 'info-circle', showLegendCheckbox);			
+	    	pre = true;
 	    }
 	    if (_representation.enableSelection) {
 	    	if (pre) {
@@ -951,6 +971,52 @@ knime_scatter_plot_selection_appender = function() {
 			_value.yAxisMin = yMin;
 			_value.yAxisMax = yMax;
 		}
+	};
+	
+	legendInfo = function() {
+		var info = {};		
+	    if (_colorModel) {
+	    	info.type = _colorModel.type;
+	    	info.title = _colorModel.title + ": ";
+	    	if (_colorModel.type == NOMINAL_MODEL) {
+	    		info.values = [];
+	    		for (var i = 0; i < _colorModel.labels.length; i++) {
+	    			var item = new jsfc.LegendItemInfo(_colorModel.labels[i], jsfc.Color.fromStr(_colorModel.colors[i]));
+	    			item.label = _colorModel.labels[i];
+	    			info.values.push(item);
+	    		}
+	    	} else if (_colorModel.type == RANGE_MODEL) {
+	    		info = {};
+	    	}
+	    }		
+	    return info;
+	}
+	
+	createLegend = function(plot, anchor, orientation, style) {
+	    var info = plot.legendInfo();
+	    var result = new jsfc.FlowElement();
+	    var me = this;
+	    
+	    //TODO: enable when we want to show a title for a legend
+	    /*var title = new jsfc.TextElement().setFont(me._font);
+	    var item = new jsfc.GridElement();
+	    item.add(title, "R1", "C1");
+        result.add(item);*/
+        
+        if (info.type == NOMINAL_MODEL) {        
+		    info.values.forEach(function(info) {
+		        var shape = new jsfc.RectangleElement(8, 5)
+		                .setFillColor(info.color);
+		        var text = new jsfc.TextElement(info.label).setFont(me._font);
+		        var item = new jsfc.GridElement();
+		        item.add(shape, "R1", "C1");
+		        item.add(text, "R1", "C2");
+		        result.add(item);
+		    });
+        } else if (info.type == RANGE_MODEL) {
+        	
+        }
+	    return result;
 	};
 	
 	return view;

@@ -51,6 +51,7 @@ package org.knime.js.core;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -60,8 +61,18 @@ import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.DataContainer;
+import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.date.DateAndTimeCellFactory;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.time.duration.DurationCellFactory;
+import org.knime.core.data.time.localdate.LocalDateCellFactory;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
+import org.knime.core.data.time.localtime.LocalTimeCellFactory;
+import org.knime.core.data.time.period.PeriodCellFactory;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 import org.knime.core.node.DefaultNodeProgressMonitor;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
@@ -89,9 +100,21 @@ public class JSONDataTableTest {
     public void testSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        DataTableSpec tableSpec = new DataTableSpec(new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec());
+        DataTableSpec tableSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", IntCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", DoubleCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", DateAndTimeCell.TYPE).createSpec()
+        );
+        DataRow expectedRow = new DefaultRow("r0", Arrays.asList(
+            new StringCell("Some value"),
+            new IntCell(1),
+            new DoubleCell(1.2),
+            DateAndTimeCellFactory.create("2007-12-03T10:30:31.124")
+        ));
+
         DataContainer cont = new DataContainer(tableSpec);
-        DataRow expectedRow = new DefaultRow("Row0", "Some value");
+
         cont.addRowToTable(expectedRow);
         cont.close();
         DataTable expectedTable = cont.getTable();
@@ -111,9 +134,75 @@ public class JSONDataTableTest {
             assertThat("Unexpected deserialized spec", actualTable.getDataTableSpec(),
                 is(expectedTable.getDataTableSpec()));
 
-            DataRow actualRow = expectedTable.iterator().next();
-            assertThat("Unexpected first row key", actualRow.getKey(), is(actualRow.getKey()));
-            assertThat("Unexpected first cell", actualRow.getCell(0), is(actualRow.getCell(0)));
+            DataRow actualRow = actualTable.iterator().next();
+            assertThat("Unexpected row key", actualRow.getKey(), is(expectedRow.getKey()));
+            assertThat("Unexpected cell (StringCell)", actualRow.getCell(0), is(expectedRow.getCell(0)));
+            assertThat("Unexpected cell (IntCell)", actualRow.getCell(1), is(expectedRow.getCell(1)));
+            assertThat("Unexpected cell (DoubleCell)", actualRow.getCell(2), is(expectedRow.getCell(2)));
+            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(3), is(expectedRow.getCell(3)));
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+    }
+
+    /**
+     * Checks that serialization of the new date/time types works as expected. (see AP-6967)
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDateTimeSerialization() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DataTableSpec tableSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", ZonedDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", PeriodCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col7", DurationCellFactory.TYPE).createSpec()
+        );
+        DataRow expectedRow = new DefaultRow("r0", Arrays.asList(
+            DateAndTimeCellFactory.create("2007-12-03T10:30:31.124"),
+            LocalDateCellFactory.create("2007-12-03"),
+            LocalDateTimeCellFactory.create("2007-12-03T10:15:30"),
+            LocalTimeCellFactory.create("10:15:30"),
+            ZonedDateTimeCellFactory.create("2007-12-03T10:15:30+01:00[Europe/Paris]"),
+            PeriodCellFactory.create("P1Y2M3W4D"),
+            DurationCellFactory.create("PT20.345S")
+        ));
+
+        DataContainer cont = new DataContainer(tableSpec);
+
+        cont.addRowToTable(expectedRow);
+        cont.close();
+        DataTable expectedTable = cont.getTable();
+
+        NodeFactory<NodeModel> dummyFactory =
+            (NodeFactory)new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
+        ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
+            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
+
+        String json = mapper.writer().writeValueAsString(new JSONDataTable(expectedTable, 1, 1, execContext));
+
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            JSONDataTable deserializedJsonTable = mapper.reader().forType(JSONDataTable.class).readValue(json);
+            DataTable actualTable = deserializedJsonTable.createBufferedDataTable(execContext);
+            assertThat("Unexpected deserialized spec", actualTable.getDataTableSpec(),
+                is(expectedTable.getDataTableSpec()));
+
+            DataRow actualRow = actualTable.iterator().next();
+            assertThat("Unexpected row key", actualRow.getKey(), is(expectedRow.getKey()));
+            assertThat("Unexpected cell (DateAndTimeCell)", actualRow.getCell(0), is(expectedRow.getCell(0)));
+            assertThat("Unexpected cell (LocalDateCell)", actualRow.getCell(1), is(expectedRow.getCell(1)));
+            assertThat("Unexpected cell (LocalDateTimeCell)", actualRow.getCell(2), is(expectedRow.getCell(2)));
+            assertThat("Unexpected cell (LocalTimeCell)", actualRow.getCell(3), is(expectedRow.getCell(3)));
+            assertThat("Unexpected cell (ZonedDateTimeCell)", actualRow.getCell(4), is(expectedRow.getCell(4)));
+            assertThat("Unexpected cell (PeriodCell)", actualRow.getCell(5), is(expectedRow.getCell(5)));
+            assertThat("Unexpected cell (DurationCell)", actualRow.getCell(6), is(expectedRow.getCell(6)));
         } finally {
             Thread.currentThread().setContextClassLoader(oldLoader);
         }

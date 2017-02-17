@@ -67,9 +67,11 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.StringValue;
+import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -108,6 +110,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableYColumnChangeCheckBox;
     private final JCheckBox m_enableXAxisLabelEditCheckBox;
     private final JCheckBox m_enableYAxisLabelEditCheckBox;
+    private final JCheckBox m_enableSwitchLegendBox;
     private final JCheckBox m_allowMouseWheelZoomingCheckBox;
     private final JCheckBox m_allowDragZoomingCheckBox;
     private final JCheckBox m_allowPanningCheckBox;
@@ -158,6 +161,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_enableYColumnChangeCheckBox = new JCheckBox("Enable column chooser for y-axis");
         m_enableXAxisLabelEditCheckBox = new JCheckBox("Enable label edit for x-axis");
         m_enableYAxisLabelEditCheckBox = new JCheckBox("Enable label edit for y-axis");
+        m_enableSwitchLegendBox = new JCheckBox("Enable legend display control");
         m_enableDotSizeChangeCheckBox = new JCheckBox("Enable dot size edit");
         m_allowMouseWheelZoomingCheckBox = new JCheckBox("Enable mouse wheel zooming");
         m_allowDragZoomingCheckBox = new JCheckBox("Enable drag zooming");
@@ -311,17 +315,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy++;
 
-        //TODO: enable if sensible legend can be shown
-        /*JPanel legendPanel = new JPanel(new GridBagLayout());
-        legendPanel.setBorder(BorderFactory.createTitledBorder("Legends"));
-        panel.add(legendPanel, c);
-        cc.gridx = 0;
-        cc.gridy = 0;
-        legendPanel.add(m_showLegendCheckBox, cc);
-        c.gridx = 0;
-        c.gridy++;
-        */
-
         JPanel rangePanel = new JPanel(new GridBagLayout());
         rangePanel.setBorder(BorderFactory.createTitledBorder("Axes ranges"));
         panel.add(rangePanel, c);
@@ -363,6 +356,17 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy++;
 
+        JPanel featuresPanel = new JPanel(new GridBagLayout());
+        featuresPanel.setBorder(BorderFactory.createTitledBorder("Features"));
+        panel.add(featuresPanel, c);
+        cc.gridx = 0;
+        cc.gridy = 0;
+        featuresPanel.add(m_showLegendCheckBox, cc);
+        cc.gridx++;
+        featuresPanel.add(m_showGridCheckBox, cc);
+        c.gridx = 0;
+        c.gridy++;
+
         JPanel sizesPanel = new JPanel(new GridBagLayout());
         sizesPanel.setBorder(BorderFactory.createTitledBorder("Sizes"));
         panel.add(sizesPanel, c);
@@ -387,18 +391,16 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
         c.gridx = 0;
         c.gridy++;
-        JPanel backgroundPanel = new JPanel(new GridBagLayout());
-        backgroundPanel.setBorder(BorderFactory.createTitledBorder("Background"));
-        panel.add(backgroundPanel, c);
+        JPanel colorsPanel = new JPanel(new GridBagLayout());
+        colorsPanel.setBorder(BorderFactory.createTitledBorder("Colors"));
+        panel.add(colorsPanel, c);
         cc.gridx = 0;
         cc.gridy = 0;
-        backgroundPanel.add(m_backgroundColorChooser.getComponentPanel(), cc);
+        colorsPanel.add(m_backgroundColorChooser.getComponentPanel(), cc);
         cc.gridy++;
-        backgroundPanel.add(m_dataAreaColorChooser.getComponentPanel(), cc);
+        colorsPanel.add(m_dataAreaColorChooser.getComponentPanel(), cc);
         cc.gridy++;
-        backgroundPanel.add(m_showGridCheckBox, cc);
-        cc.gridy++;
-        backgroundPanel.add(m_gridColorChooser.getComponentPanel(), cc);
+        colorsPanel.add(m_gridColorChooser.getComponentPanel(), cc);
 
         /*c.gridx = 0;
         c.gridy++;
@@ -445,6 +447,15 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         viewControlsPanel.add(m_enableXAxisLabelEditCheckBox, cc);
         cc.gridx += 2;
         viewControlsPanel.add(m_enableYAxisLabelEditCheckBox, cc);
+
+        c.gridx = 0;
+        c.gridy++;
+        JPanel legendPanel = new JPanel(new GridBagLayout());
+        legendPanel.setBorder(BorderFactory.createTitledBorder("Legend"));
+        panel.add(legendPanel, c);
+        cc.gridx = 0;
+        cc.gridy = 0;
+        legendPanel.add(m_enableSwitchLegendBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -562,6 +573,15 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showLegendCheckBox.setSelected(config.getShowLegend());
+        m_enableSwitchLegendBox.setSelected(config.getEnableSwitchLegend());
+        if (!hasColorModelNominal(specs[0])) {
+            m_showLegendCheckBox.setSelected(false);
+            m_showLegendCheckBox.setEnabled(false);
+            m_showLegendCheckBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
+            m_enableSwitchLegendBox.setSelected(false);
+            m_enableSwitchLegendBox.setEnabled(false);
+            m_enableSwitchLegendBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
+        }
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_autoRangeAxisCheckBox.setSelected(config.getAutoRangeAxes());
         m_useDomainInformationCheckBox.setSelected(config.getUseDomainInfo());
@@ -652,6 +672,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setEnableXAxisLabelEdit(m_enableXAxisLabelEditCheckBox.isSelected());
         config.setEnableYAxisLabelEdit(m_enableYAxisLabelEditCheckBox.isSelected());
         config.setEnableDotSizeChange(m_enableDotSizeChangeCheckBox.isSelected());
+        config.setEnableSwitchLegend(m_enableSwitchLegendBox.isSelected());
         config.setEnableZooming(m_allowMouseWheelZoomingCheckBox.isSelected());
         config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
         config.setEnablePanning(m_allowPanningCheckBox.isSelected());
@@ -681,6 +702,23 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setGridColor(m_gridColorChooser.getColor());
 
         config.saveSettings(settings);
+    }
+
+    /**
+     * Check is there is a color model with nominal values in the table
+     * @param spec table specification
+     * @return true, if there is a color model with nominal values, or false - otherwise
+     */
+    protected boolean hasColorModelNominal(final DataTableSpec spec) {
+        //TODO: fix the approach, if we're going to support more than one color model
+        for (DataColumnSpec colSpec : spec) {
+            if (colSpec.getColorHandler() != null) {
+                if (colSpec.getColorHandler().getColorModel() instanceof ColorModelNominal) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

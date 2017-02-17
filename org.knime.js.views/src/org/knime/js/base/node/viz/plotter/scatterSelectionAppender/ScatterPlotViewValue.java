@@ -84,6 +84,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize;
+    private boolean m_showLegend;
     private boolean m_publishSelection;
     private boolean m_subscribeSelection;
     private boolean m_showSelectedOnly;
@@ -245,6 +246,20 @@ public class ScatterPlotViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the showLegend
+     */
+    public boolean getShowLegend() {
+        return m_showLegend;
+    }
+
+    /**
+     * @param showLegend the showLegend to set
+     */
+    public void setShowLegend(final boolean showLegend) {
+        m_showLegend = showLegend;
+    }
+
+    /**
      * @return the publishSelection
      */
     public boolean getPublishSelection() {
@@ -337,6 +352,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
         settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, getSubscribeSelection());
         settings.addBoolean(CFG_SHOW_SELECTED_ONLY, getShowSelectedOnly());
         settings.addBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, getSubscribeFilter());
+
+        // added with 3.4
+        settings.addBoolean(ScatterPlotViewConfig.SHOW_LEGEND, getShowLegend());
     }
 
     /**
@@ -367,6 +385,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
         setSubscribeSelection(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_SELECTION));
         setShowSelectedOnly(settings.getBoolean(CFG_SHOW_SELECTED_ONLY, DEFAULT_SHOW_SELECTED_ONLY));
         setSubscribeFilter(settings.getBoolean(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, ScatterPlotViewConfig.DEFAULT_SUBSCRIBE_FILTER));
+
+        // added with 3.4
+        setShowLegend(settings.getBoolean(ScatterPlotViewConfig.SHOW_LEGEND, true));
     }
 
     /**
@@ -396,6 +417,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_yAxisMin, other.m_yAxisMin)
                 .append(m_yAxisMax, other.m_yAxisMax)
                 .append(m_dotSize, other.m_dotSize)
+                .append(m_showLegend, other.m_showLegend)
                 .append(m_publishSelection, other.m_publishSelection)
                 .append(m_subscribeSelection, other.m_subscribeSelection)
                 .append(m_showSelectedOnly, other.m_showSelectedOnly)
@@ -421,6 +443,7 @@ public class ScatterPlotViewValue extends JSONViewContent {
                 .append(m_yAxisMin)
                 .append(m_yAxisMax)
                 .append(m_dotSize)
+                .append(m_showLegend)
                 .append(m_publishSelection)
                 .append(m_subscribeSelection)
                 .append(m_showSelectedOnly)

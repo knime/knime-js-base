@@ -52,9 +52,20 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.knime.base.data.xml.SvgCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.image.png.PNGImageCellFactory;
+import org.knime.core.data.time.duration.DurationCellFactory;
+import org.knime.core.data.time.localdate.LocalDateCellFactory;
+import org.knime.core.data.time.localdatetime.LocalDateTimeCellFactory;
+import org.knime.core.data.time.localtime.LocalTimeCellFactory;
+import org.knime.core.data.time.period.PeriodCellFactory;
+import org.knime.core.data.time.zoneddatetime.ZonedDateTimeCellFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -74,7 +85,48 @@ public class JSONDataTableSpecTest {
     public void testSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        DataTableSpec expectedSpec = new DataTableSpec(new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec());
+        DataTableSpec expectedSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", IntCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", DoubleCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", PNGImageCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", SvgCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", DateAndTimeCell.TYPE).createSpec()
+        );
+
+        JSONDataTableSpec jsonSpec = new JSONDataTableSpec(expectedSpec, 0);
+        String json = mapper.writer().writeValueAsString(jsonSpec);
+
+        ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            JSONDataTableSpec deserializedJsonSpec = mapper.reader().forType(JSONDataTableSpec.class).readValue(json);
+            DataTableSpec actualSpec = deserializedJsonSpec.createDataTableSpec();
+            assertThat("Unexpected deserialized spec", actualSpec, is(expectedSpec));
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldLoader);
+        }
+    }
+
+    /**
+     * Checks that serialization of the new date/time types works as expected. (see AP-6967)
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testDateTimeSerialization() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DataTableSpec expectedSpec = new DataTableSpec(
+            new DataColumnSpecCreator("col1", DateAndTimeCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("col2", LocalDateCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col3", LocalDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col4", LocalTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col5", ZonedDateTimeCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col6", PeriodCellFactory.TYPE).createSpec(),
+            new DataColumnSpecCreator("col7", DurationCellFactory.TYPE).createSpec()
+        );
+
         JSONDataTableSpec jsonSpec = new JSONDataTableSpec(expectedSpec, 0);
         String json = mapper.writer().writeValueAsString(jsonSpec);
 
