@@ -323,6 +323,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
             Object[] tableData = currentRow.getData();
             for (int colID = 0; colID < numColumns; colID++) {
                 if (tableData[colID] == null) {
+                    hasUnsupportedValues = true;
                     rowData[colID] = null;
                 } else if (tableData[colID] instanceof Double) {
                     Double value = (Double)tableData[colID];
@@ -343,7 +344,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 + rowID + " of " + rowValues.length + ".");
         }
         if (hasUnsupportedValues) {
-            setWarningMessage("Dataset contains NaN or infinite values - these values will be omitted.");
+            setWarningMessage("Table contains missing or unsupported values - these values will be omitted.");
         }
 
         JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);
