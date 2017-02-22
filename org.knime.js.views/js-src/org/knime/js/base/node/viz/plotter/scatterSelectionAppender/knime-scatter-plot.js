@@ -229,7 +229,7 @@ knime_scatter_plot_selection_appender = function() {
         	_legendBuilder.setFont(new jsfc.Font("sans-serif", 12));
         	_legendBuilder.createLegend = createLegend;        	
         }
-        chart.setLegendBuilder(_legendBuilder);  // if there's no color model, _legendBuilder is null by default
+        chart.setLegendBuilder(_value.showLegend ? _legendBuilder : null);  // if there's no color model, _legendBuilder is null by default
         		
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		document.getElementById(containerID).appendChild(svg);

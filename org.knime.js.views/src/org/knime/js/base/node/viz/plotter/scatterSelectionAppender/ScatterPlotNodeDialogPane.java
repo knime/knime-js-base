@@ -573,7 +573,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showLegendCheckBox.setSelected(config.getShowLegend());
+        m_showLegendCheckBox.setEnabled(true);
         m_enableSwitchLegendBox.setSelected(config.getEnableSwitchLegend());
+        m_enableSwitchLegendBox.setEnabled(true);
         if (!hasColorModelNominal(specs[0])) {
             m_showLegendCheckBox.setSelected(false);
             m_showLegendCheckBox.setEnabled(false);
