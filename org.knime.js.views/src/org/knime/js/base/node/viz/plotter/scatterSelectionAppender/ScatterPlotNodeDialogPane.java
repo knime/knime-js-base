@@ -572,18 +572,16 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
-        m_showLegendCheckBox.setSelected(config.getShowLegend());
-        m_showLegendCheckBox.setEnabled(true);
-        m_enableSwitchLegendBox.setSelected(config.getEnableSwitchLegend());
-        m_enableSwitchLegendBox.setEnabled(true);
-        if (!hasColorModelNominal(specs[0])) {
-            m_showLegendCheckBox.setSelected(false);
-            m_showLegendCheckBox.setEnabled(false);
+        boolean legendAvailable = hasColorModelNominal(specs[0]);
+        m_showLegendCheckBox.setSelected(config.getShowLegend() && legendAvailable);
+        m_showLegendCheckBox.setEnabled(legendAvailable);
+        m_enableSwitchLegendBox.setSelected(config.getEnableSwitchLegend() && legendAvailable);
+        m_enableSwitchLegendBox.setEnabled(legendAvailable);
+        if (!legendAvailable) {
             m_showLegendCheckBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
-            m_enableSwitchLegendBox.setSelected(false);
-            m_enableSwitchLegendBox.setEnabled(false);
             m_enableSwitchLegendBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
         }
+
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_autoRangeAxisCheckBox.setSelected(config.getAutoRangeAxes());
         m_useDomainInformationCheckBox.setSelected(config.getUseDomainInfo());
