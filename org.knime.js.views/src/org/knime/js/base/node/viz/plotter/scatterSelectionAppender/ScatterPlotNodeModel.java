@@ -315,24 +315,36 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         String[] rowKeys = new String[tableSpec.getNumRows()];
         JSONKeyedValuesRow[] rowValues = new JSONKeyedValuesRow[tableSpec.getNumRows()];
         JSONDataTableRow[] tableRows = table.getRows();
+        boolean hasUnsupportedValues = false;  // NaN or Inf
         for (int rowID = 0; rowID < rowValues.length; rowID++) {
             JSONDataTableRow currentRow = tableRows[rowID];
             rowKeys[rowID] = currentRow.getRowKey();
-            double[] rowData = new double[numColumns];
+            Double[] rowData = new Double[numColumns];
             Object[] tableData = currentRow.getData();
             for (int colID = 0; colID < numColumns; colID++) {
-                if (tableData[colID] instanceof Double) {
-                    rowData[colID] = (double)tableData[colID];
+                if (tableData[colID] == null) {
+                    hasUnsupportedValues = true;
+                    rowData[colID] = null;
+                } else if (tableData[colID] instanceof Double) {
+                    Double value = (Double)tableData[colID];
+                    if (Double.isNaN(value) || Double.isInfinite(value)) {
+                        hasUnsupportedValues = true;
+                        value = null;
+                    }
+                    rowData[colID] = value;
                 } else if (tableData[colID] instanceof Long) {
-                    rowData[colID] = (long)tableData[colID];
+                    rowData[colID] = ((Long)tableData[colID]).doubleValue();
                 } else if (tableData[colID] instanceof String) {
-                    rowData[colID] = getOrdinalFromStringValue((String)tableData[colID], table, colID);
+                    rowData[colID] = ((Integer)getOrdinalFromStringValue((String)tableData[colID], table, colID)).doubleValue();
                 }
             }
             rowValues[rowID] = new JSONKeyedValuesRow(currentRow.getRowKey(), rowData);
             rowValues[rowID].setColor(tableSpec.getRowColorValues()[rowID]);
             datasetExecutionMonitor.setProgress(((double)rowID) / rowValues.length, "Creating dataset, processing row "
                 + rowID + " of " + rowValues.length + ".");
+        }
+        if (hasUnsupportedValues) {
+            setWarningMessage("Table contains missing or unsupported values - these values will be omitted.");
         }
 
         JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);

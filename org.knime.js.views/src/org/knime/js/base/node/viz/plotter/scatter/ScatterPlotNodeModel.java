@@ -165,13 +165,13 @@ final class ScatterPlotNodeModel extends NodeModel implements
                 for (int rowID = 0; rowID < rowValues.length; rowID++) {
                     JSONDataTableRow currentRow = tableRows[rowID];
                     rowKeys[rowID] = currentRow.getRowKey();
-                    double[] rowData = new double[numColumns];
+                    Double[] rowData = new Double[numColumns];
                     Object[] tableData = currentRow.getData();
                     for (int colID = 0; colID < numColumns; colID++) {
                         if (tableData[colID] instanceof Double) {
-                            rowData[colID] = (double)tableData[colID];
+                            rowData[colID] = (Double)tableData[colID];
                         } else if (tableData[colID] instanceof String) {
-                            rowData[colID] = getOrdinalFromStringValue((String)tableData[colID], table, colID);
+                            rowData[colID] = ((Integer)getOrdinalFromStringValue((String)tableData[colID], table, colID)).doubleValue();
                         }
                     }
                     rowValues[rowID] = new JSONKeyedValuesRow(currentRow.getRowKey(), rowData);

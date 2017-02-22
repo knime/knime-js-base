@@ -15,8 +15,10 @@
             controls, which are then available in the view. This includes the ability to choose different columns
             for x and y or the possibility to set a title. Enabling or disabling these controls via the configuration
             dialog might not seem useful at first glance but has benefits when used in a web portal/wizard execution 
-            where the end user has no access to the workflow itself.
+            where the end user has no access to the workflow itself.            
             </p>
+            <p>Since missing values as well as NaN (not a number) or infinite values cannot be displayed in the view, they will be
+            omitted with a corresponding warning message.</p>
             <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
             <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
 		</intro>
