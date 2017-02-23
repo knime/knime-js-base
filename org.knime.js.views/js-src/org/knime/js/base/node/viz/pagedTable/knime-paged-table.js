@@ -39,6 +39,9 @@ knime_paged_table = function() {
 				drawTable();
 			});
 		}
+		
+		// Set locale for moment.js.
+		moment.locale(_representation.globalDateTimeFormat)
 	};
 	
 	drawTable = function() {
