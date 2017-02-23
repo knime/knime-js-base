@@ -400,10 +400,10 @@
         curYAxisLabel = curYAxisLabelElement.text();
       }
       if (!curXAxisLabelElement.empty()) {
-        curXAxisLabel = curYAxisLabelElement.text();
+        curXAxisLabel = curXAxisLabelElement.text();
       }
-      var chartNeedsUpdating = curYAxisLabel != _value.options.yAxisLabel
-                            || curXAxisLabel != _value.options.xAxisLabel;
+      var chartNeedsUpdating = (curYAxisLabel != _value.options.yAxisLabel)
+                            || (curXAxisLabel != _value.options.xAxisLabel);
 
       if (!chartNeedsUpdating) return;
 
