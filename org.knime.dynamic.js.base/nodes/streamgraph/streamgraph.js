@@ -400,31 +400,54 @@
     // Title / Subtitle Configuration
     var titleEdit = _representation.options.enableTitleEdit;
     var subtitleEdit = _representation.options.enableSubtitleEdit;
-    if (titleEdit || subtitleEdit) {
-      if (titleEdit) {
-        var chartTitleText = knimeService.createMenuTextField(
-            'chartTitleText', _value.options.title, function() {
-              if (_value.options.title != this.value) {
-                _value.options.title = this.value;
-                updateTitles(true);
-              }
-            }, true);
-        knimeService.addMenuItem('Chart Title:', 'header',
-            chartTitleText);
-      }
-      if (subtitleEdit) {
-        var chartSubtitleText = knimeService.createMenuTextField(
-            'chartSubtitleText', _value.options.subtitle,
-            function() {
-              if (_value.options.subtitle != this.value) {
-                _value.options.subtitle = this.value;
-                updateTitles(true);
-              }
-            }, true);
-        var mi = knimeService.addMenuItem('Chart Subtitle:', 'header',
-            chartSubtitleText, null, knimeService.SMALL_ICON);
-      }
-    }
+    var xAxisEdit = _representation.options.enableXAxisEdit;
+    var yAxisEdit = _representation.options.enableYAxisEdit;
+
+	if (titleEdit || subtitleEdit || xAxisEdit || yAxisEdit) {
+	  if (titleEdit) {
+	    var chartTitleText = knimeService.createMenuTextField(
+	        'chartTitleText', _value.options.title, function() {
+	      if (_value.options.title != this.value) {
+	        _value.options.title = this.value;
+	        updateTitles(true);
+	      }
+	    }, true);
+	    knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	  }
+	  if (subtitleEdit) {
+	    var chartSubtitleText = knimeService.createMenuTextField(
+	        'chartSubtitleText', _value.options.subtitle,
+	        function() {
+	        	if (_value.options.subtitle != this.value) {
+	        		_value.options.subtitle = this.value;
+	        		updateTitles(true);
+	        	}
+	        }, true);
+	    knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	  }
+	  if (xAxisEdit) {
+		var xAxisText = knimeService.createMenuTextField(
+			'xAxisText', _value.options.xLabel,
+		function() {
+				if (_value.options.xLabel != this.value) {
+					_value.options.xLabel = this.value;
+					updateAxisLabels(true);
+				}
+			}, true);
+		knimeService.addMenuItem('x-axis label:', 'ellipsis-h', xAxisText);
+	  }
+	  if (yAxisEdit) {
+			var yAxisText = knimeService.createMenuTextField(
+				'yAxisText', _value.options.yLabel,
+			function() {
+					if (_value.options.yLabel != this.value) {
+						_value.options.yLabel = this.value;
+						updateAxisLabels(true);
+					}
+				}, true);
+			knimeService.addMenuItem('y-axis label:', 'ellipsis-v', yAxisText);
+		  }
+	}
 
     // Chart Type / Interpolation Method / Custom Color
     var chartTypeChange = _representation.options.enableChartTypeChange;
