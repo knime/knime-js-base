@@ -147,7 +147,7 @@
 
         var topMargin = 10;
   			topMargin += _value.options.title ? 10 : 0;
-  			topMargin += _value.options["legend"] ? 0 : 30;
+  			topMargin += _value.options.legend ? 0 : 30;
   			topMargin += _value.options.subtitle ? 8 : 0;
         var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
   			chart.legend.margin({
