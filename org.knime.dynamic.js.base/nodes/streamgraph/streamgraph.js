@@ -147,7 +147,7 @@
 
         var topMargin = 10;
   			topMargin += _value.options.title ? 10 : 0;
-  			topMargin += _value.options["legend"] ? 0 : 30;
+  			topMargin += _value.options.legend ? 0 : 30;
   			topMargin += _value.options.subtitle ? 8 : 0;
         var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
   			chart.legend.margin({
@@ -409,8 +409,7 @@
 
       chart.xAxis
         .axisLabel(_value.options.xAxisLabel)
-        .axisLabelDistance(0)
-        .showMaxMin(false);
+        .axisLabelDistance(0);
 
       chart.yAxis
         .axisLabel(_value.options.yAxisLabel)
@@ -483,7 +482,7 @@
   					updateAxisLabels(true);
   				}
   			}, true);
-  		knimeService.addMenuItem('x-axis label:', 'ellipsis-h', xAxisText);
+  		knimeService.addMenuItem('X-axis label:', 'ellipsis-h', xAxisText);
   	  }
   	  if (yAxisEdit) {
   			var yAxisText = knimeService.createMenuTextField(
@@ -494,7 +493,7 @@
   						updateAxisLabels(true);
   					}
   				}, true);
-  			knimeService.addMenuItem('y-axis label:', 'ellipsis-v', yAxisText);
+  			knimeService.addMenuItem('Y-axis label:', 'ellipsis-v', yAxisText);
   		  }
   	}
 
