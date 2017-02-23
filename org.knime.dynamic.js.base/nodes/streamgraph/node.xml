@@ -93,10 +93,10 @@
 					defaultValue="true" saveInView="true">
 					When checked, a grid is displayed in the chart.
 				</checkBoxOption>
-				<stringOption name="x-axis label" id="xLabel" label="x-axis label" optional="true" saveInView="true">
+				<stringOption name="x-axis label" id="xAxisLabel" label="x-axis label" optional="true" saveInView="true">
 					The label used for the x-axis.
 				</stringOption>
-				<stringOption name="y-axis label" id="yLabel" label="y-axis label" optional="true" saveInView="true">
+				<stringOption name="y-axis label" id="yAxisLabel" label="y-axis label" optional="true" saveInView="true">
 					The label used for the y-axis.
 				</stringOption>
 				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
