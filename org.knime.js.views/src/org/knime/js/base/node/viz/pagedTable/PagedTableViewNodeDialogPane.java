@@ -668,7 +668,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        // TODO: add a few zone formats
         formats.add("YYYY-MM-DD");
         formats.add("ddd MMM DD YYYY HH:mm:ss");
         formats.add("M/D/YY");
@@ -679,6 +678,19 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+
+        // TODO: time-zone aware formats
+        formats.add("YYYY-MM-DD z");
+        formats.add("ddd MMM DD YYYY HH:mm:ss z");
+        formats.add("M/D/YY z");
+        formats.add("MMM D, YYYY z");
+        formats.add("MMMM D, YYYY z");
+        formats.add("dddd, MMM D, YYYY z");
+        formats.add("h:mm A z");
+        formats.add("h:mm:ss A z");
+        formats.add("HH:mm:ss z");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS z");
+
         // check also the StringHistory....
         String[] userFormats = StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
@@ -694,7 +706,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm A");
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+        formats.add("HH:mm:ss.SSS");
         // check also the StringHistory....
         String[] userFormats = StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
