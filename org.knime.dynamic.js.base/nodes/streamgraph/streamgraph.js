@@ -409,8 +409,7 @@
 
       chart.xAxis
         .axisLabel(_value.options.xAxisLabel)
-        .axisLabelDistance(0)
-        .showMaxMin(false);
+        .axisLabelDistance(0);
 
       chart.yAxis
         .axisLabel(_value.options.yAxisLabel)
