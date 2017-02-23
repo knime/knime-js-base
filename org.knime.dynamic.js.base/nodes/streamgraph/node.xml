@@ -93,6 +93,12 @@
 					defaultValue="true" saveInView="true">
 					When checked, a grid is displayed in the chart.
 				</checkBoxOption>
+				<stringOption name="x-axis label" id="xAxisLabel" label="x-axis label" optional="true" saveInView="true">
+					The label used for the x-axis.
+				</stringOption>
+				<stringOption name="y-axis label" id="yAxisLabel" label="y-axis label" optional="true" saveInView="true">
+					The label used for the y-axis.
+				</stringOption>
 				<stringOption name="x-Axis Number Format" id="xAxisFormatString" label="x-Axis Number Format"
 					defaultValue=",.2f" optional="true">
 					d3-Format string for numbers on the x-Axis.
@@ -154,6 +160,16 @@
 					label="Enable show grid toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of the grid within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable x-axis  editing" id="enableXAxisEdit"
+					label="Enable x-axis editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the x-axis label within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable y-axis  editing" id="enableYAxisEdit"
+					label="Enable y-axis editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the y-axis label within the view.
 				</checkBoxOption>
 			</options>
 		</tab>
