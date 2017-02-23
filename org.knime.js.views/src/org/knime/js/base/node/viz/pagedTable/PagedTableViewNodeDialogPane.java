@@ -565,7 +565,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setEnableColumnSearching(m_enableColumnSearchCheckbox.isSelected());
         config.setPublishFilter(m_publishFilterCheckBox.isSelected());
         config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
-        config.setGlobalDateTimeFormat(PREDEFINED_DATE_TIME_LOCALES.inverse().get(
+        config.setGlobalDateTimeLocale(PREDEFINED_DATE_TIME_LOCALES.inverse().get(
             ((SettingsModelString)m_globalDateTimeLocaleChooser.getModel()).getStringValue())
         );
         config.setGlobalDateTimeFormat(((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue());
