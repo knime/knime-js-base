@@ -81,7 +81,8 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableBiMap.Builder;
 
 /**
  *
@@ -748,19 +749,21 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      * @throws IOException
      */
     private static BiMap<String, String> loadDateTimeLocales() {
-        BiMap<String, String> biMap = HashBiMap.create();
+        Builder<String, String> biMapBuilder = ImmutableBiMap.builder();
+
         Properties props = new Properties();
         InputStream input = PagedTableViewNodeDialogPane.class.getResourceAsStream("locales.properties");
 
         try {
             props.load(input);
+
             props.entrySet().stream().forEach(
-                (entry) -> biMap.put((String)entry.getKey(), (String)entry.getValue())
+                (entry) -> biMapBuilder.put((String)entry.getKey(), (String)entry.getValue())
             );
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            biMapBuilder.put("en", "English (United States)");
         }
 
-        return biMap;
+        return biMapBuilder.build();
     }
 }
