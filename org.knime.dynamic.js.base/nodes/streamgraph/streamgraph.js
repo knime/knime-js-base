@@ -482,7 +482,7 @@
   					updateAxisLabels(true);
   				}
   			}, true);
-  		knimeService.addMenuItem('x-axis label:', 'ellipsis-h', xAxisText);
+  		knimeService.addMenuItem('X-axis label:', 'ellipsis-h', xAxisText);
   	  }
   	  if (yAxisEdit) {
   			var yAxisText = knimeService.createMenuTextField(
@@ -493,7 +493,7 @@
   						updateAxisLabels(true);
   					}
   				}, true);
-  			knimeService.addMenuItem('y-axis label:', 'ellipsis-v', yAxisText);
+  			knimeService.addMenuItem('Y-axis label:', 'ellipsis-v', yAxisText);
   		  }
   	}
 
