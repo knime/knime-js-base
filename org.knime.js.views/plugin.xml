@@ -376,19 +376,19 @@
                relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.js"
                type="JAVASCRIPT">
          </importResource>
-         <webDependency
-               webResourceBundleID="KnimeTable_1.0.0">
-         </webDependency>
-         <webDependency
-               webResourceBundleID="dataTables_1_10_11_bootstrap">
-         </webDependency>
-         <webDependency
-               webResourceBundleID="moment_timezone_locales_2_17">
-         </webDependency>
          <importResource
                relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.css"
                type="CSS">
          </importResource>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_locales_2_17">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="dataTables_1_10_11_bootstrap">
+         </webDependency>
       </webResourceBundle>
       <webResourceBundle
             debug="true"
