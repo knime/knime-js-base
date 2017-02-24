@@ -39,12 +39,14 @@ knime_paged_table = function() {
 				drawTable();
 			});
 		}
-		
-		// Set locale for moment.js.
-		moment.locale(_representation.globalDateTimeFormat)
 	};
 	
 	drawTable = function() {
+		// Set locale for moment.js.
+		if (_representation.globalDateTimeLocale !== 'en') {
+			moment.locale(_representation.globalDateTimeLocale);
+		}
+		
 		var body = $('body');
 		if (_representation.enableSelection && _value.selection) {
 			for (var i = 0; i < _value.selection.length; i++) {
@@ -166,10 +168,23 @@ knime_paged_table = function() {
 
 				if (knimeColType == 'Zoned Date Time' && _representation.globalZonedDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
-						// TODO: change time zone stuff
-						// Direct parsing of time zone not supported: http://momentjs.com/docs/#/parsing/string/
-					  	// TODO: check for locale "en" - it is not supported by moment.js
-				    return moment(data).utc().format(_representation.globalZonedDateTimeFormat);
+						var regex = /(.*)\[(.*)\]$/
+						var match = regex.exec(data);
+
+						if (match == null) {
+							var date = moment.tz(data, "");
+						} else {
+							dateTimeOffset = match[1];
+							zone = match[2];
+
+							if (moment.tz.zone(zone) == null) {
+								var date = moment.tz(dateTimeOffset, "");
+							} else {
+								var date = moment.tz(dateTimeOffset, zone);
+							}
+						}
+
+						return date.format(_representation.globalZonedDateTimeFormat);
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
