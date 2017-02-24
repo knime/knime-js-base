@@ -109,6 +109,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     public static final LinkedHashSet<String> PREDEFINED_ZONED_DATE_TIME_FORMATS = createPredefinedZonedDateTimeFormats();
 
     private static final int TEXT_FIELD_SIZE = 20;
+    private static final int FORMAT_CHOOSER_WIDTH = 235;
+    private static final int FORMAT_CHOOSER_HEIGHT = 17;
 
     private final JCheckBox m_hideInWizardCheckBox;
     private final JSpinner m_maxRowsSpinner;
@@ -231,22 +233,27 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_FORMAT), "", PREDEFINED_DATE_TIME_FORMATS, true);
+        m_globalDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         m_globalLocalDateFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT), "", PREDEFINED_LOCAL_DATE_FORMATS, true);
+        m_globalLocalDateFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         m_globalLocalDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT), "", PREDEFINED_LOCAL_DATE_TIME_FORMATS, true);
+        m_globalLocalDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         m_globalLocalTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT), "", PREDEFINED_LOCAL_TIME_FORMATS, true);
+        m_globalLocalTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         m_globalZonedDateTimeFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT,
                 PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
+        m_globalZonedDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         m_enableGlobalNumberFormatCheckbox = new JCheckBox("Enable global number format (double cells)");
         m_enableGlobalNumberFormatCheckbox.addChangeListener(new ChangeListener() {
@@ -668,17 +675,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
-
         // TODO: time-zone aware formats
         formats.add("YYYY-MM-DD z");
         formats.add("ddd MMM DD YYYY HH:mm:ss z");
@@ -690,6 +686,17 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm:ss A z");
         formats.add("HH:mm:ss z");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS z");
+
+        formats.add("YYYY-MM-DD");
+        formats.add("ddd MMM DD YYYY HH:mm:ss");
+        formats.add("M/D/YY");
+        formats.add("MMM D, YYYY");
+        formats.add("MMMM D, YYYY");
+        formats.add("dddd, MMM D, YYYY");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss");
+        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
 
         // check also the StringHistory....
         String[] userFormats = StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
@@ -703,9 +710,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedLocalTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
+        formats.add("HH:mm:ss");
         formats.add("h:mm A");
         formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
         formats.add("HH:mm:ss.SSS");
         // check also the StringHistory....
         String[] userFormats = StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory();
@@ -768,10 +775,14 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
         try {
             props.load(input);
+            props.entrySet().stream()
+                .sorted(
+                    (e1, e2) -> ((String)e1.getValue()).toLowerCase().compareTo(((String)e2.getValue()).toLowerCase())
+                )
+                .forEach(
+                    (entry) -> biMapBuilder.put((String)entry.getKey(), (String)entry.getValue())
+                );
 
-            props.entrySet().stream().forEach(
-                (entry) -> biMapBuilder.put((String)entry.getKey(), (String)entry.getValue())
-            );
         } catch (IOException e) {
             biMapBuilder.put("en", "English (United States)");
         }
