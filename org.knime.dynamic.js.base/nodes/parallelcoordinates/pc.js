@@ -531,7 +531,6 @@
 	selectionChanged = function(data) {
 		clearBrushes();
 		if (data.changeSet) {
-			// if changeSet is presented, we do only an incremental update
 			if (data.changeSet.removed) {
 				for (var i = 0; i < data.changeSet.removed.length; i++) {
 					var removedId = data.changeSet.removed[i];
@@ -559,26 +558,6 @@
 			}
 			saveSelectedRows();
 		} 
-/*		else {
-			// if no changeSet is presented, we will need to compare the old and the new selections and 
-			// extract added and removed points from this comparison	
-			// Old selection comes from dataset. New selection comes from data. Their structure is different.
-			
-			var newSelection = []; // row indices from the new selection
-			if (data.elements) {
-				// iterate over the new selected points and add them to newSelection
-				for (var elId = 0; elId < data.elements.length; elId++) {
-					var element = data.elements[elId];
-					if (!element.rows) {
-						continue;
-					}
-					for (var rId = 0; rId < element.rows.length; rId++) {
-						newSelection.push(element.rows[rId]);
-					}
-				}				
-			}
-			selectRows(newSelection);
-		}*/
 		checkClearSelectionButton();
 	};
 
