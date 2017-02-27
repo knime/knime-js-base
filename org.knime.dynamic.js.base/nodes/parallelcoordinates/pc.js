@@ -540,17 +540,26 @@
 						row.classed({"unselected": true, "selected": false});
 					}
 				}
+				if (d3.selectAll(".selected").empty()){
+    				d3.selectAll(".row").classed("unselected", false);
+    				rowsSelected = false;
+    			}
 			}
 			if (data.changeSet.added) {
 				for (var i = 0; i < data.changeSet.added.length; i++) {
 					var addedId = data.changeSet.added[i];
 					var row = d3.select("#"+ addedId);
 					if (!row.empty() && !row.classed("filtered")) {
+						if (d3.selectAll(".selected").empty()) {
+							d3.selectAll(".row").classed("unselected", true);
+						}
 						row.classed({"selected": true, "unselected": false});
 					}
 				}
 			}
-		} else {
+			saveSelectedRows();
+		} 
+/*		else {
 			// if no changeSet is presented, we will need to compare the old and the new selections and 
 			// extract added and removed points from this comparison	
 			// Old selection comes from dataset. New selection comes from data. Their structure is different.
@@ -569,7 +578,7 @@
 				}				
 			}
 			selectRows(newSelection);
-		}
+		}*/
 		checkClearSelectionButton();
 	};
 
