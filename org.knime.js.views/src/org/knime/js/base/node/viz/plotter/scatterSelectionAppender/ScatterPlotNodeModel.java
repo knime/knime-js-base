@@ -303,11 +303,15 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         BufferedDataTable filteredTable = exec.createColumnRearrangeTable(m_table, c, exec.createSubProgress(0.1));
         exec.setProgress(0.1);
         //construct dataset
-        if (m_config.getMaxRows() < filteredTable.getRowCount()) {
+        if (m_config.getMaxRows() < filteredTable.size()) {
             setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
         }
-        final JSONDataTable table =
-            new JSONDataTable(filteredTable, 1, m_config.getMaxRows(), exec.createSubProgress(0.8));
+        final JSONDataTable table = JSONDataTable.newBuilder()
+                .setDataTable(filteredTable)
+                .setId(getTableId(0))
+                .setFirstRow(1)
+                .setMaxRows(m_config.getMaxRows())
+                .build(exec.createSubProgress(0.8));
         exec.setProgress(0.9);
         ExecutionMonitor datasetExecutionMonitor = exec.createSubProgress(0.1);
         final JSONDataTableSpec tableSpec = table.getSpec();

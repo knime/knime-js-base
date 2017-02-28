@@ -128,10 +128,15 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
             if (inObjects[0] != null && representation.getTable() == null) {
               //construct dataset
                 BufferedDataTable table = (BufferedDataTable)inObjects[0];
-                if (m_config.getMaxRows() < table.getRowCount()) {
+                if (m_config.getMaxRows() < table.size()) {
                     setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
                 }
-                JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), getTableId(0), exec);
+                JSONDataTable jsonTable = JSONDataTable.newBuilder()
+                        .setDataTable(table)
+                        .setId(getTableId(0))
+                        .setFirstRow(1)
+                        .setMaxRows(m_config.getMaxRows())
+                        .build(exec);
                 representation.setTable(jsonTable);
             }
 

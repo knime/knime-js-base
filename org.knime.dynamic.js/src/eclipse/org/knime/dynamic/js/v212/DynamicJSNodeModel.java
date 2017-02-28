@@ -785,8 +785,12 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	}
 
 	private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable) throws CanceledExecutionException {
-        JSONDataTable table = new JSONDataTable(inTable, 1, m_config.getMaxRows(), exec);
-        if (m_config.getMaxRows() < inTable.getRowCount()) {
+        JSONDataTable table = JSONDataTable.newBuilder()
+                .setDataTable(inTable)
+                .setFirstRow(1)
+                .setMaxRows(m_config.getMaxRows())
+                .build(exec);
+        if (m_config.getMaxRows() < inTable.size()) {
             setWarningMessage("Only the first "
                     + m_config.getMaxRows() + " rows are displayed.");
         }

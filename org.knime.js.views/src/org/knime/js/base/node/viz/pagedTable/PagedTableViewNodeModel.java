@@ -268,7 +268,13 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
         //ColumnRearranger rearranger = new ColumnRearranger(table.getDataTableSpec());
         //rearranger.keepOnly(filter.getIncludes());
         //BufferedDataTable filteredTable = exec.createColumnRearrangeTable(table, rearranger, exec.createSubExecutionContext(0.5));
-        JSONDataTable jsonTable = new JSONDataTable(table, 1, m_config.getMaxRows(), getTableId(0), filter.getExcludes(), exec);
+        JSONDataTable jsonTable = JSONDataTable.newBuilder()
+                .setDataTable(table)
+                .setId(getTableId(0))
+                .setFirstRow(1)
+                .setMaxRows(m_config.getMaxRows())
+                .setExcludeColumns(filter.getExcludes())
+                .build(exec);
         if (m_config.getMaxRows() < table.size()) {
             setWarningMessage("Only the first "
                     + m_config.getMaxRows() + " rows are displayed.");

@@ -124,7 +124,8 @@ public class JSONDataTableTest {
         ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
             SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
 
-        String json = mapper.writer().writeValueAsString(new JSONDataTable(expectedTable, 1, 1, execContext));
+        String json = mapper.writer().writeValueAsString(
+            JSONDataTable.newBuilder().setDataTable(expectedTable).setFirstRow(1).setMaxRows(1).build(execContext));
 
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -184,7 +185,8 @@ public class JSONDataTableTest {
         ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
             SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
 
-        String json = mapper.writer().writeValueAsString(new JSONDataTable(expectedTable, 1, 1, execContext));
+        String json = mapper.writer().writeValueAsString(
+            JSONDataTable.newBuilder().setDataTable(expectedTable).setFirstRow(1).setMaxRows(1).build(execContext));
 
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try {
