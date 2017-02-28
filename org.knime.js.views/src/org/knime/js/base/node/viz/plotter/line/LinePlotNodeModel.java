@@ -292,15 +292,22 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         BufferedDataTable filteredTable = exec.createColumnRearrangeTable(m_table, c, exec.createSubProgress(0.1));
         exec.setProgress(0.1);
         //construct dataset
-        if (m_config.getMaxRows() < filteredTable.getRowCount()) {
+        if (m_config.getMaxRows() < filteredTable.size()) {
             setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
         }
-        final JSONDataTable table =
-            new JSONDataTable(filteredTable, 1, m_config.getMaxRows(), exec.createSubProgress(0.79));
+        final JSONDataTable table = JSONDataTable.newBuilder()
+                .setDataTable(filteredTable)
+                .setId(getTableId(0))
+                .setFirstRow(1)
+                .setMaxRows(m_config.getMaxRows())
+                .build(exec.createSubProgress(0.79));
         JSONDataTable jsonColorTable = null;
         if (colorTable != null) {
-            jsonColorTable =
-                new JSONDataTable(colorTable, 1, colorTable.getRowCount(), exec.createSilentSubProgress(0.01));
+            jsonColorTable = JSONDataTable.newBuilder()
+                    .setDataTable(colorTable)
+                    .setId(getTableId(1))
+                    .setFirstRow(1)
+                    .build(exec.createSilentSubProgress(0.01));
         }
         exec.setProgress(0.9);
         ExecutionMonitor datasetExecutionMonitor = exec.createSubProgress(0.1);
