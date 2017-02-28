@@ -85,7 +85,7 @@ knime_line_plot = function() {
 			d3.select("body").attr("id", "body").append("div").attr("id", layoutContainer)
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
-						
+
 			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
 				drawControls(layoutContainer);
 			}
@@ -187,7 +187,9 @@ knime_line_plot = function() {
 			}
 		}
         
-        plot.setRenderer(new jsfc.XYLineRenderer(plot));
+        var renderer = new jsfc.XYLineRenderer();
+        renderer.drawSeries = drawSeries;
+		plot.setRenderer(renderer);
         var chart = new jsfc.Chart(plot);
         if (_representation.backgroundColor) {
         	chart.setBackgroundColor(getJsfcColor(_representation.backgroundColor), false);
@@ -517,6 +519,40 @@ knime_line_plot = function() {
 			_value.yAxisMin = yMin;
 			_value.yAxisMax = yMax;
 		}
+	};
+	
+	drawSeries = function(ctx, dataArea, plot,
+	        dataset, seriesIndex) {
+	    var itemCount = dataset.itemCount(seriesIndex);
+	    if (itemCount == 0) {
+	        return;
+	    }
+	    var connect = false;
+	    ctx.beginPath();
+	    for (var i = 0; i < itemCount; i++) {
+	        var x = dataset.x(seriesIndex, i);
+	        var y = dataset.y(seriesIndex, i);
+	        if (y === null) {
+	            // keep the line only if noGap method and the line has been already started, i.e. connect == true
+	        	connect = _representation.missingValueMethod == "noGap" && connect ? true : false;
+	            continue;
+	        }
+
+	        // convert these to target coordinates using the plot's axes
+	        var xx = plot.getXAxis().valueToCoordinate(x, dataArea.x(), dataArea.x() 
+	                + dataArea.width());
+	        var yy = plot.getYAxis().valueToCoordinate(y, dataArea.y() 
+	                + dataArea.height(), dataArea.y());
+	        if (!connect) {
+	            ctx.moveTo(xx, yy);
+	            connect = true;
+	        } else {
+	            ctx.lineTo(xx, yy);
+	        }
+	    }
+	    ctx.setLineColor(this.lookupLineColor(dataset, seriesIndex, i));
+	    ctx.setLineStroke(this._strokeSource.getStroke(seriesIndex, 0));
+	    ctx.stroke();
 	};
 	
 	return view;
