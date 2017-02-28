@@ -106,6 +106,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
     private boolean m_enableStaggeredRendering = true;
 
+    private String m_missingValueMethod;
+
     /**
      * @return the keyedDataset
      */
@@ -541,6 +543,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the missingValueMethod
+     */
+    public String getMissingValueMethod() {
+        return m_missingValueMethod;
+    }
+
+    /**
+     * @param missingValueMethod the missingValueMethod to set
+     */
+    public void setMissingValueMethod(final String missingValueMethod) {
+        m_missingValueMethod = missingValueMethod;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -554,7 +570,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.RESIZE_TO_WINDOW, getResizeToWindow());
         // added with 3.3
         settings.addBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
-
 
         settings.addBoolean(LinePlotViewConfig.ENABLE_CONFIG, getEnableViewConfiguration());
         settings.addBoolean(LinePlotViewConfig.ENABLE_TTILE_CHANGE, getEnableTitleChange());
@@ -573,6 +588,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.ENABLE_SELECTION, getEnableSelection());
         settings.addBoolean(LinePlotViewConfig.ENABLE_RECTANGLE_SELECTION, getEnableRectangleSelection());
         settings.addBoolean(LinePlotViewConfig.ENABLE_LASSO_SELECTION, getEnableLassoSelection());
+
+        // added with 3.4
+        settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
 
         settings.addInt(LinePlotViewConfig.IMAGE_WIDTH, getImageWidth());
         settings.addInt(LinePlotViewConfig.IMAGE_HEIGHT, getImageHeight());
@@ -620,6 +638,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setEnableSelection(settings.getBoolean(LinePlotViewConfig.ENABLE_SELECTION));
         setEnableRectangleSelection(settings.getBoolean(LinePlotViewConfig.ENABLE_RECTANGLE_SELECTION));
         setEnableLassoSelection(settings.getBoolean(LinePlotViewConfig.ENABLE_LASSO_SELECTION));
+
+        //added with 3.4
+        setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
 
         setImageWidth(settings.getInt(LinePlotViewConfig.IMAGE_WIDTH));
         setImageHeight(settings.getInt(LinePlotViewConfig.IMAGE_HEIGHT));
@@ -684,6 +705,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_gridColor, other.m_gridColor)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
+                .append(m_missingValueMethod, other.m_missingValueMethod)
                 .isEquals();
     }
 
@@ -724,6 +746,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_dataAreaColor)
                 .append(m_gridColor)
                 .append(m_enableStaggeredRendering)
+                .append(m_missingValueMethod)
                 .toHashCode();
     }
 }

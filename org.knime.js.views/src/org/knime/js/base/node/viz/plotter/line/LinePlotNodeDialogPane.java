@@ -59,6 +59,7 @@ import java.util.LinkedHashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -126,6 +127,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableSelectionCheckBox;
     private final JCheckBox m_allowRectangleSelectionCheckBox;
     private final JCheckBox m_allowLassoSelectionCheckBox;
+    private final JComboBox<String> m_missingValueMethodComboBox;
 
     private final JSpinner m_maxRowsSpinner;
     private final JTextField m_appendedColumnName;
@@ -172,6 +174,10 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableSelectionCheckBox = new JCheckBox("Enable selection");
         m_allowRectangleSelectionCheckBox = new JCheckBox("Enable rectangular selection");
         m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
+        m_missingValueMethodComboBox = new JComboBox<String>();
+        m_missingValueMethodComboBox.addItem("ignore and keep the line continuous");
+        m_missingValueMethodComboBox.addItem("leave a gap where the value is missing");
+        m_missingValueMethodComboBox.addItem("do not display the whole column");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
@@ -264,7 +270,21 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         c.gridy++;
         m_xColComboBox.setPreferredSize(new Dimension(260, 50));
         panel.add(m_xColComboBox, c);
+
+        c.gridx += 2;
+        JPanel missingValuePanel = new JPanel(new GridBagLayout());
+        missingValuePanel.setBorder(BorderFactory.createTitledBorder("How to handle missing values"));
+        panel.add(missingValuePanel, c);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.insets = new Insets(5, 5, 5, 5);
+        cc.anchor = GridBagConstraints.NORTHWEST;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        missingValuePanel.add(m_missingValueMethodComboBox, cc);
+        c.gridx = 0;
         c.gridy++;
+
+        c.gridx = 0;
         panel.add(new JLabel("Choose column for y axis: "), c);
         c.gridy++;
         c.gridwidth = 4;
@@ -550,6 +570,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
         m_allowRectangleSelectionCheckBox.setSelected(config.getEnableRectangleSelection());
         m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());
+        setMissingValueMethod(config.getMissingValueMethod());
 
         m_chartTitleTextField.setText(config.getChartTitle());
         m_chartSubtitleTextField.setText(config.getChartSubtitle());
@@ -608,6 +629,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
         config.setEnableRectangleSelection(m_allowRectangleSelectionCheckBox.isSelected());
         config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
+        config.setMissingValueMethod(getMissingValueMethod());
 
         config.setChartTitle(m_chartTitleTextField.getText());
         config.setChartSubtitle(m_chartSubtitleTextField.getText());
@@ -650,6 +672,32 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             formats.add(userFormat);
         }
         return formats;
+    }
+
+    private void setMissingValueMethod(final String method) {
+        switch (method) {
+            case LinePlotViewConfig.MISSING_VALUE_METHOD_GAP:
+                m_missingValueMethodComboBox.setSelectedIndex(1);
+                break;
+            case LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN:
+                m_missingValueMethodComboBox.setSelectedIndex(2);
+            case LinePlotViewConfig.MISSING_VALUE_METHOD_NO_GAP:
+            default:
+                m_missingValueMethodComboBox.setSelectedIndex(0);
+                break;
+        }
+    }
+
+    private String getMissingValueMethod() {
+        switch (m_missingValueMethodComboBox.getSelectedIndex()) {
+            case 0:
+                return LinePlotViewConfig.MISSING_VALUE_METHOD_NO_GAP;
+            case 1:
+                return LinePlotViewConfig.MISSING_VALUE_METHOD_GAP;
+            case 2:
+                return LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN;
+        }
+        return null;
     }
 
 }

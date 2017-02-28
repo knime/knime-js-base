@@ -125,6 +125,7 @@ public final class LinePlotViewConfig {
     static final String BACKGROUND_COLOR = "backgroundColor";
     static final String DATA_AREA_COLOR = "dataAreaColor";
     static final String GRID_COLOR = "gridColor";
+    static final String MISSING_VALUE_METHOD = "missingValueMethod";
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -170,6 +171,24 @@ public final class LinePlotViewConfig {
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
+    private String m_missingValueMethod = MISSING_VALUE_METHOD;
+
+    /**
+     * The line will break and have gaps, if the value is missing
+     */
+    static final String MISSING_VALUE_METHOD_GAP = "gap";
+    /**
+     * The line will be continuous, ignoring missing values.
+     */
+    static final String MISSING_VALUE_METHOD_NO_GAP = "noGap";
+    /**
+     * Remove the whole data column, if it contains missing values
+     */
+    static final String MISSING_VALUE_METHOD_REMOVE_COLUMN = "removeColumn";
+    /**
+     * Default missing value handling method
+     */
+    static final String MISSING_VALUE_METHOD_DEFAULT = MISSING_VALUE_METHOD_NO_GAP;
 
     /**
      * @return the hideInWizard
@@ -831,6 +850,20 @@ public final class LinePlotViewConfig {
         m_dateFormat = dateFormat;
     }
 
+    /**
+     * @return the missingValueMethod
+     */
+    public String getMissingValueMethod() {
+        return m_missingValueMethod;
+    }
+
+    /**
+     * @param missingValueMethod the missingValueMethod to set
+     */
+    public void setMissingValueMethod(final String missingValueMethod) {
+        m_missingValueMethod = missingValueMethod;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -907,6 +940,8 @@ public final class LinePlotViewConfig {
         settings.addBoolean(ENABLE_SELECTION, getEnableSelection());
         settings.addBoolean(ENABLE_RECTANGLE_SELECTION, getEnableRectangleSelection());
         settings.addBoolean(ENABLE_LASSO_SELECTION, getEnableLassoSelection());
+        // added with 3.4
+        settings.addString(MISSING_VALUE_METHOD, getMissingValueMethod());
 
         settings.addString(CHART_TITLE, getChartTitle());
         settings.addString(CHART_SUBTITLE, getChartSubtitle());
@@ -963,6 +998,8 @@ public final class LinePlotViewConfig {
         setEnableSelection(settings.getBoolean(ENABLE_SELECTION));
         setEnableRectangleSelection(settings.getBoolean(ENABLE_RECTANGLE_SELECTION));
         setEnableLassoSelection(settings.getBoolean(ENABLE_LASSO_SELECTION));
+        // added with 3.4
+        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
 
         setChartTitle(settings.getString(CHART_TITLE));
         setChartSubtitle(settings.getString(CHART_SUBTITLE));
@@ -1028,6 +1065,8 @@ public final class LinePlotViewConfig {
         setEnableSelection(settings.getBoolean(ENABLE_SELECTION, true));
         setEnableRectangleSelection(settings.getBoolean(ENABLE_RECTANGLE_SELECTION, false));
         setEnableLassoSelection(settings.getBoolean(ENABLE_LASSO_SELECTION, false));
+        // added with 3.4
+        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
 
         setChartTitle(settings.getString(CHART_TITLE, null));
         setChartSubtitle(settings.getString(CHART_SUBTITLE, null));

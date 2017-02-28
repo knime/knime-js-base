@@ -486,6 +486,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         // added with 3.3
         representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
 
+        // added with 3.4
+        representation.setMissingValueMethod(m_config.getMissingValueMethod());
+
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());
         viewValue.setChartSubtitle(m_config.getChartSubtitle());
