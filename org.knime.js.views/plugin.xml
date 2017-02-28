@@ -258,7 +258,7 @@
                type="JAVASCRIPT">
          </importResource>
          <webDependency
-               webResourceBundleID="RequireJS_2.1.8">
+               webResourceBundleID="RequireJS_2.3.3">
          </webDependency>
          <webDependency
                webResourceBundleID="KnimeTable_1.0.0">
