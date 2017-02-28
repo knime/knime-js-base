@@ -28,6 +28,13 @@
             <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not.</option>
             <option name="Choose column for x-axis">Defines the column that contains the values for X coordinates.</option>
             <option name="Choose columns for y-axis">Defines the columns that contains the values for Y coordinates. Every included column is represented by one line in the view.</option>
+            <option name="How to handle missing values">Defines how to operate if the table contains missing values. Three methods are available:
+	            <ul>
+	                <li><i>ignore and keep the line continuous</i> - the plot will be displayed with continuous lines which simply ignore values;</li>
+	                <li><i>leave a gap where the value is missing</i> - line will break and have gap at corresponding places;</li>
+	                <li><i>do not display the whole column</i> - the column will not be present, if it contains missing values.</li>
+	            </ul>
+            </option>
         </tab>
         <tab name="Axis Configuration">
             <option name="Label for x-axis" optional="true">The label for the x-axis. If left blank, the selected column name is displayed.</option>
