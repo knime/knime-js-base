@@ -315,7 +315,10 @@
         
         // Create a selection for each box with data that we created at the beginning
         var boxG = plotG.selectAll("g.box")
-	        .data(d3.entries(_data), function(d) {
+	        .data(d3.entries(_data).map(function(d) {
+	        	d.value.valid = d.value.upperQuantile >= d.value.lowerQuantile;
+	        	return d;
+	        }), function(d) {
 	            return (_representation.options.multi) ? d.key : "__dummy__";
 	        });
         
@@ -403,6 +406,7 @@
         boxG.selectAll(".uwL1")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x1", middle)
             .attr("x2", middle)
             .attr("stroke-dasharray", "5,5")
@@ -418,6 +422,7 @@
         boxG.selectAll(".uwL2")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x2", x.rangeBand())
             .attr("y1", function(d) { return y(d.value.upperWhisker); })
             .attr("y2", function(d) { return y(d.value.upperWhisker); });
@@ -428,6 +433,7 @@
         boxG.selectAll(".uwText")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x", x.rangeBand() + 5)
             .attr("y", function(d) { return y(d.value.upperWhisker) + 10; })
             .text(function(d) { return Math.round(d.value.upperWhisker * 100) / 100; });
@@ -440,6 +446,7 @@
        boxG.selectAll(".ulL1")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x1", middle)
             .attr("x2", middle)
             .attr("stroke-dasharray", "5,5")
@@ -454,6 +461,7 @@
        boxG.selectAll(".ulL2")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x2", x.rangeBand())
             .attr("y1", function(d) { return y(d.value.lowerWhisker); })
             .attr("y2", function(d) { return y(d.value.lowerWhisker); });
@@ -464,6 +472,7 @@
        boxG.selectAll(".ulText")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
+            .attr("opacity", function(d) { return d.value.valid ? 1 : 0; })
             .attr("x", x.rangeBand() + 5)
             .attr("y", function(d) { return y(d.value.lowerWhisker) - 3; })
             .text(function(d) { return Math.round(d.value.lowerWhisker * 100) / 100; });
