@@ -54,6 +54,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -662,6 +663,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+
         // check also the StringHistory....
         String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
         for (String userFormat : userFormats) {
@@ -675,7 +677,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        // TODO: time-zone aware formats
         formats.add("YYYY-MM-DD z");
         formats.add("ddd MMM DD YYYY HH:mm:ss z");
         formats.add("M/D/YY z");
@@ -699,11 +700,18 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
 
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
-        return formats;    }
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
+        return formats;
+    }
 
     /**
      * @return a list of predefined formats for use in a date format with moment.js
@@ -714,11 +722,12 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm A");
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss.SSS");
+
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
         return formats;
     }
 
@@ -737,11 +746,18 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("h:mm:ss A");
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
+
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
         return formats;
     }
 
@@ -755,11 +771,12 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("MMM D, YYYY");
         formats.add("MMMM D, YYYY");
         formats.add("dddd, MMM D, YYYY");
+
         // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
         return formats;
     }
 
