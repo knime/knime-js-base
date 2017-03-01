@@ -8,5 +8,6 @@ Bundle-Vendor: KNIME GmbH, Konstanz, Germany
 Require-Bundle: org.knime.dynamic.js;bundle-version="[3.0.0,4.0.0)",
  org.knime.dynamic.node.generation;bundle-version="[3.0.0,4.0.0)",
  org.knime.core;bundle-version="[3.0.0,4.0.0)",
- org.knime.base;bundle-version="[3.0.0,4.0.0)"
+ org.knime.base;bundle-version="[3.0.0,4.0.0)",
+ org.knime.js.core;bundle-version="3.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

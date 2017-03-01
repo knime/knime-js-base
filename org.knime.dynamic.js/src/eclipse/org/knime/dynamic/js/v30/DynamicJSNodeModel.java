@@ -454,6 +454,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 Object[] processedInputs = inObjects;
                 if (m_processor != null) {
                     processedInputs = m_processor.processInputObjects(inObjects, exec, m_config);
+                    String warnMessage = m_processor.getWarningMessage();
+                    if (warnMessage != null) {
+                        setWarningMessage(warnMessage);
+                    }
                 }
 
                 List<Object> viewInObjects = new ArrayList<Object>();

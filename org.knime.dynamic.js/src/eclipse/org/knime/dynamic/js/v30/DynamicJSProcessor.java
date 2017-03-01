@@ -61,6 +61,20 @@ import org.knime.core.node.port.PortObject;
 public interface DynamicJSProcessor {
 
     /**
+     * A message container to store warning messages.
+     * @since 3.4
+     */
+    WarningMessage WARNING_MESSAGE = new WarningMessage();
+
+    /**
+     * Container class to store warning messages.
+     * @since 3.4
+     */
+    class WarningMessage {
+        String m_message = null;
+    }
+
+    /**
      * Called during execute. Possibility to process {@link PortObject}s to perform heavy calculation or data
      * transformation that is not intended to be run in JavaScript.
      *
@@ -74,5 +88,26 @@ public interface DynamicJSProcessor {
      */
     public Object[] processInputObjects(final PortObject[] inObjects, final ExecutionContext exec,
         final DynamicJSConfig config) throws Exception;
+
+    /**
+     * Sets an optional warning message by the implementing processor.
+     * @param message the warning message to set
+     * @since 3.4
+     */
+    public default void setWarningMessage(final String message) {
+        WARNING_MESSAGE.m_message = message;
+    }
+
+    /**
+     * Returns an optional warning message. Also erases the warning message from this instance, so it can
+     * only be queried once after every {@link #processInputObjects(PortObject[], ExecutionContext, DynamicJSConfig)} call.
+     * @return a warning message to display, or null if not set
+     * @since 3.4
+     */
+    public default String getWarningMessage() {
+        String message = WARNING_MESSAGE.m_message;
+        WARNING_MESSAGE.m_message = null;
+        return message;
+    }
 
 }
