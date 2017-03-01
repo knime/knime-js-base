@@ -107,10 +107,53 @@
         			<li>SVG</li>
         		</ul>
         		All other data types will be treated as UNKNOWN types. These are tried to be displayed by extracting their respective standard string representation.<br/><br/>
-        		If you wish to customize the format for certain data types you can use the following options. For unknown types the formatting has to be applied in preceding nodes.
+        		If you wish to customize the format for certain data types you can use the following options. For unknown types the formatting has to be applied in preceding nodes.<br/><br/>
+        		
+        		<b>Date and Time types</b>
+        		Date and Time values are converted into string using the selected or entered conversion pattern as defined by <a href="http://momentjs.com/docs/#/displaying/format/">moment.js</a>. Examples:
+        		<ul>
+        			<li>"dddd, MMMM Do YYYY, h:mm:ss a" parses dates like "Sunday, February 14th 2010, 3:25:50 pm"</li>
+        			<li>"ddd, hA" parses dates like "Sun, 3PM"</li>
+        		</ul>
+        		Some valid pattern elements are:
+        		<ul>
+					<li>Y: year</li>
+					<li>Q: quarter</li>
+					<li>M: month of year</li>
+					<li>W: week of year</li>
+					<li>DDD: day of year</li>
+					<li>D: day of month</li>
+					<li>d: day of week</li>
+					<li>dd: day of week (Su Mo ... Fr Sa)</li>
+					<li>a: am/pm marker</li>
+					<li>H: hour in day (0-23)</li>
+					<li>k: hour in day (1-24)</li>
+					<li>h: hour in am/pm (1-12)</li>
+					<li>m: minute in hour</li>
+					<li>s: second in minute</li>
+					<li>S: millisecond</li>
+					<li>z: Time zone (EST CST ... MST PST)</li>
+					<li>Z: Time zone (offset)</li>
+					<li>X: unix timestamp</li>
+        		</ul>
         	</description>
-        	<option name="Global date format">
-        		A global format, which is applied to all date/time cells. To format the string the framework Moment.js is used. For information on available format options and tokens please see the <a href="http://momentjs.com/docs/#/displaying/format/"> moment.js documentation</a>.
+			<option name="Locale">
+        		The locale which is used to render all date/time cells.
+        	</option>
+        	<option name="Date and Time (legacy) format">
+        		A global format, which is applied to all date/time (legacy) cells. To format the string the framework Moment.js is used.
+        	</option>
+        	<option name="Local Date format">
+        		A global format, which is applied to all locale date cells. To format the string the framework Moment.js is used.
+        	</option>
+			<option name="Local Date and Time format">
+        		A global format, which is applied to all local date/time cells. To format the string the framework Moment.js is used.
+        	</option>
+        	<option name="Local Time format">
+        		A global format, which is applied to all local time cells. To format the string the framework Moment.js is used.
+        	</option>
+        	<option name="Zoned Date and Time format">
+        		A global format, which is applied to all zoned date/time cells. To format the string the framework Moment.js is used.
         	</option>
         	<option name="Enable global number format (double cells)">
         		If checked the option beneath will be applied to all columns of type <i>Double</i>.
