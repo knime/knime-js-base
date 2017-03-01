@@ -16,6 +16,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicJSProcessor;
+import org.knime.js.core.JSONDataTable;
 import org.knime.base.data.filter.column.FilterColumnTable;
 
 public class SunburstProcessor implements DynamicJSProcessor {
@@ -39,27 +40,23 @@ public class SunburstProcessor implements DynamicJSProcessor {
         		.distinct()
                 .toArray(String[]::new);
 
-        FilterColumnTable ft = new FilterColumnTable(dt, includeColumns);
-        //int filteredCount = 0;
-        DataContainer dc = exec.createDataContainer(ft.getDataTableSpec());
-        for (DataRow row : ft) {
-            // Filter out rows with missing values.
+        
+		JSONDataTable table = JSONDataTable.newBuilder()
+			.setDataTable(dt)
+			.setFirstRow(1)
+			.setMaxRows(config.getMaxRows())
+			.setIncludeColumns(includeColumns)
+			.excludeRowsWithMissingValues(false)
+			// TODO: keep Columns with...
+			.build(exec);
+        
 
-        	if (row.stream().allMatch(cell -> !cell.isMissing())) {
-        		dc.addRowToTable(row);
-        		//filteredCount++;
-        	}
-        }
-        dc.close();
+		int removed = table.numberRemovedRowsWithMissingValues();
+		if (removed > 0) {
+			setWarningMessage("Table contained " + removed + " rows with missing values. These rows are ignored in the view.");
+		}
 
-        /*
-         * TODO: Show warning message
-        if (filteredCount > 0) {
-            setWarningMessage(filteredCount + " rows contain missing values and are ignored.");
-        }
-        */
-
-        return new Object[] {dc.getTable(), inObjects[1]};
+		return new Object[] {table, inObjects[1]};
     }
 
 }
