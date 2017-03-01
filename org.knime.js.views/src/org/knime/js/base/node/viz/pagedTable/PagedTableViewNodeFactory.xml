@@ -98,7 +98,11 @@
         			<li>Boolean</li>
         			<li>Number (double, integer, etc.)</li>
         			<li>String</li>
-        			<li>Date and Time</li>
+        			<li>Date and Time (legacy)</li>
+        			<li>Zoned Date and Time</li>
+					<li>Local Date and Time</li>
+					<li>Local Date</li>
+					<li>Local Time</li>
         			<li>PNG</li>
         			<li>SVG</li>
         		</ul>
