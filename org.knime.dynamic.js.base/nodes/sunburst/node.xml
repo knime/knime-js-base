@@ -18,13 +18,13 @@
     	<tab name="Options">
 	    	<options>
 				<columnFilterOption name="Included columns"
-					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.StringValue">
+					id="pathColumns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.StringValue">
 					Select the columns which you wish to include.
 				</columnFilterOption>
 
-				<columnSelectorOption name="Frequency column" id="freq"
+				<columnSelectorOption name="Frequency column" id="freqColumn"
 					inPortIndex="0" label="Frequency Column"
-					filterClasses="org.knime.core.data.DoubleValue">
+					filterClasses="org.knime.core.data.IntValue">
 					Select the column with the frequency for the chart.
 				</columnSelectorOption>
 	    	</options>
