@@ -93,5 +93,7 @@
 	</js:resources>
 	<js:dependencies>
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
-		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />	</js:dependencies>
+		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
+	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.base.sunburst.SunburstProcessor" hidesLimitRowOption="false"/>
 </js:knimeNode>
