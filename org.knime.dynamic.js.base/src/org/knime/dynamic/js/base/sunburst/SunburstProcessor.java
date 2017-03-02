@@ -1,22 +1,16 @@
 package org.knime.dynamic.js.base.sunburst;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.knime.core.data.DataRow;
 import org.knime.core.data.container.DataContainer;
-import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicJSProcessor;
-import org.knime.js.core.JSONDataTable;
 import org.knime.base.data.filter.column.FilterColumnTable;
 
 public class SunburstProcessor implements DynamicJSProcessor {
@@ -41,22 +35,32 @@ public class SunburstProcessor implements DynamicJSProcessor {
                 .toArray(String[]::new);
 
         
-		JSONDataTable table = JSONDataTable.newBuilder()
-			.setDataTable(dt)
-			.setFirstRow(1)
-			.setMaxRows(config.getMaxRows())
-			.setIncludeColumns(includeColumns)
-			.excludeRowsWithMissingValues(false)
-			// TODO: keep Columns with...
-			.build(exec);
+//		JSONDataTable table = JSONDataTable.newBuilder()
+//			.setDataTable(dt)
+//			.setFirstRow(1)
+//			.setMaxRows(config.getMaxRows())
+//			.setIncludeColumns(includeColumns)
+//			.excludeRowsWithMissingValues(false)
+//			// TODO: keep Columns with...
+//			// TODO: Can we exclude here rows where all values missing?
+//			.build(exec);
+//        
+//
+//		int removed = table.numberRemovedRowsWithMissingValues();
+//		if (removed > 0) {
+//			setWarningMessage("Table contained " + removed + " rows with missing values. These rows are ignored in the view.");
+//		}
+//
+//		return new Object[] {table, inObjects[1]};
         
-
-		int removed = table.numberRemovedRowsWithMissingValues();
-		if (removed > 0) {
-			setWarningMessage("Table contained " + removed + " rows with missing values. These rows are ignored in the view.");
-		}
-
-		return new Object[] {table, inObjects[1]};
+        // Deprecated
+        FilterColumnTable ft = new FilterColumnTable(dt, includeColumns);
+        DataContainer dc = exec.createDataContainer(ft.getDataTableSpec());
+        for (DataRow row : ft) {
+      		dc.addRowToTable(row);
+        }
+        dc.close();
+        return new Object[] {dc.getTable(), inObjects[1]};
     }
 
 }
