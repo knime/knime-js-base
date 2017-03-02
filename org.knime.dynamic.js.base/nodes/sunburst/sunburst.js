@@ -20,6 +20,8 @@
     // Load data from port 1 into knime table (adjacency matrix with weights).
     var knimeTable1 = new kt();
     knimeTable1.setDataTable(_representation.inObjects[0]);
+    
+    // TODO: those attributes have other names now: pathColumns, freqColumn
     var columnKeys = _representation.options.columns;
     var freqCol = _representation.options.freq;
 
