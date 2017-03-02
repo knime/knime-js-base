@@ -25,7 +25,10 @@
 				</columnFilterOption>
 				<columnSelectorOption name="Frequency column"
 					id="freqColumn" inPortIndex="0" label="Frequency Column"
-					filterClasses="org.knime.core.data.IntValue">
+					filterClasses="org.knime.core.data.IntValue"
+					allowNoneColumn="false"
+					optional="false"
+					>
 					Select the column with the frequency information for
 					the paths.
 				</columnSelectorOption>
@@ -110,8 +113,8 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable toggling of the breadcrumb within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable zoom toggle" id="zoomToggle"
-					label="Enable zoom toggle" defaultValue="true" enableDependency="enableViewControls"
+				<checkBoxOption name="Enable zoomable toggle" id="zoomableToggle"
+					label="Enable zoomable toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of zoom within the view.
 				</checkBoxOption>

@@ -1,15 +1,11 @@
-// used sources:
-// http://bl.ocks.org/kerryrodden/7090426
-
 (sunburst_namespace = function() {
 
   var view = {};
   var _representation, _value;
+  var knimeTable1, knimeTable2;
   var _data = {};
   var _colorMap;
   var layoutContainer;
-  var freqColIndex = [];
-  var columnIndexes = [];
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
 
@@ -17,79 +13,76 @@
     _representation = representation;
     _value = value;
 
-    // Load data from port 1 into knime table (adjacency matrix with weights).
-    var knimeTable1 = new kt();
+    // Load data from port 1 into knime table.
+    knimeTable1 = new kt();
     knimeTable1.setDataTable(_representation.inObjects[0]);
-    
-    // TODO: those attributes have other names now: pathColumns, freqColumn
-    var columnKeys = _representation.options.columns;
-    var freqCol = _representation.options.freq;
 
     // Load data from port 2 into knime table (information on each of the nodes).
-    var knimeTable2 = null;
-    if (_representation.inObjects[1] !== null) {
-      knimeTable2 = new kt();
-      knimeTable2.setDataTable(_representation.inObjects[1]);
-    }
+    // knimeTable2 = null;
+    // if (_representation.inObjects[1] !== null) {
+    //   knimeTable2 = new kt();
+    //   knimeTable2.setDataTable(_representation.inObjects[1]);
+    // }
 
-    // Compute column indexes instead of names.
-    // sequence frequency column
-    freqColIndex = knimeTable1.getColumnNames().indexOf(freqCol);
-    for (var i = 0; i < columnKeys.length; i++) {
-      // sequence columns
-      columnIndexes.push(knimeTable1.getColumnNames().indexOf(columnKeys[i]));
-    }
+    transformData();
+    setColors();
+    drawControls();
+    drawChart();
 
-    // Check if data from table2 has right format
-    if (knimeTable2) {
-      var columnTypes2 = knimeTable2.getColumnTypes();
-      if (columnTypes2[0] !== "string") {
-        alert("Expected data format at port two: Node label (string).");
-        return;
-      }
-    }
-
-    // Check if there is data in first table (this tests for string columns).
-    if (columnKeys.length === 0 || knimeTable1.getNumRows() === 0) {
-      alert("No data given.");
-      return;
-    }
-
-    _colorMap = getColors(knimeTable1, knimeTable2, _representation.options["customColors"]);
-    _data = transformData(knimeTable1, columnKeys, freqCol);
-
-    drawChart(false);
-
+    // CHECK: What does this actually do?
     if (parent !==undefined && parent.KnimePageLoader !==undefined) {
       parent.KnimePageLoader.autoResize(window.frameElement.id);
     }
   };
 
-  // Take a multi-column CSV and transform it into a hierarchical structure suitable
-  // for a partition layout. The first column is a count of how
-  // often the sequence occurred. The remaining columns give a sequence of step names, from
-  // root to leaf, one for each column.
-  transformData = function(knimeTable, columnKeys, freqCol) {
-    var rows = knimeTable.getRows();
-    var root = {
-      "name": "root",
-      "children": []
+  // Transform data from first port into a hierarchical structure suitable
+  // for a partition layout.
+  var transformData = function() {
+    // Get indices for path columns and frequency column.
+    function indexOf(column) {
+      return knimeTable1.getColumnNames().indexOf(column);
+    }
+    var pathColumns = _representation.options.pathColumns.map(indexOf);
+    var freqColumn = indexOf(_representation.options.freqColumn);
+
+    // Get unique labels from path columns.
+    function notNull(value) {
+      return value !== null;
+    }
+    function accumulate(accumulator, array) {
+      return accumulator.concat(array);
+    }
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+    var uniqueLabels =  knimeTable1.getPossibleValues()
+      .filter(notNull)
+      .reduce(accumulate, [])
+      .filter(onlyUnique);
+
+    // Initialize _data object
+    _data = {
+      name: "root",
+      children: [],
+      uniqueLabels: uniqueLabels
     };
-    // Loop over rows
+
+    // Create hierarchical structure.
+    var rows = knimeTable1.getRows();
     for (var i = 0; i < rows.length; i++) {
-      var size = +rows[i].data[freqColIndex];
+      var size = +rows[i].data[freqColumn];
       if (isNaN(size)) { // e.g. if this is a header row
         continue;
       }
 
       // Collect all user selected string cells for the current row.
       var parts = [];
-      for (var j = 0; j < columnIndexes.length; j++) {
-        parts.push(rows[i].data[columnIndexes[j]]);
+      for (var j = 0; j < pathColumns.length; j++) {
+        parts.push(rows[i].data[pathColumns[j]]);
       }
       // Loop over selected columns
       // append to hierarchical structure
-      var currentNode = root;
+      var currentNode = _data;
       for (var j = 0; j < parts.length; j++) {
         var nodeName = parts[j];
         if (nodeName === null) {
@@ -110,8 +103,8 @@
           // If we don't already have a child node for this branch, create it.
           if (!foundChild) {
             childNode = {
-              "name": nodeName,
-              "children": []
+              name: nodeName,
+              children: []
             };
             children.push(childNode);
           }
@@ -119,105 +112,183 @@
         } else {
           // Reached the end of the sequence; create a leaf node.
           childNode = {
-            "name": nodeName,
-            "size": size
+            name: nodeName,
+            size: size
           };
           children.push(childNode);
         }
       }
     }
-    return root;
   };
 
-  getColors = function(knimeTable1, knimeTable2, customColors) {
+  var setColors = function() {
     // Return a function that yields a color given a label/string.
-    var colorMap = {};
-    if (customColors && knimeTable2 !== null) {
-      // loop over rows of table2 to get all labels and corresponding colors
-      var rowColors = knimeTable2.getRowColors();
-      var rows = knimeTable2.getRows();
-      for (var i = 0; i < rows.length; i++) {
-        var name = rows[i].data[0];
-        var color = rowColors[i];
-        colorMap[name] = color;
+    // if (knimeTable2 !== null) {
+    //   // loop over rows of table2 to get all labels and corresponding colors
+    //   _colorMap = {};
+    //   var rowColors = knimeTable2.getRowColors();
+    //   var rows = knimeTable2.getRows();
+    //   for (var i = 0; i < rows.length; i++) {
+    //     var name = rows[i].data[0];
+    //     var color = rowColors[i];
+    //     colorMap[name] = color;
+    //   }
+    // } else {
+    //   // Create object with key=label, value=color.
+    // }
+
+    var scale = d3.scale.category20();
+    _colorMap = _data.uniqueLabels.reduce(function(obj, label) {
+      obj[label] = scale(label);
+      return obj;
+    }, {});
+  };
+
+  var drawControls = function() {
+    if (!knimeService || !_representation.options.enableViewControls) {
+		  // TODO: error handling?
+		  return;
+	  }
+
+    if (_representation.options.displayFullscreenButton) {
+      knimeService.allowFullscreen();
+    }
+
+    // Title / Subtitle configuration
+    var titleEdit = _representation.options.enableTitleEdit;
+    var subtitleEdit = _representation.options.enableSubtitleEdit;
+  	if (titleEdit || subtitleEdit) {
+  	  if (titleEdit) {
+  	    var chartTitleText = knimeService.createMenuTextField(
+  	        'chartTitleText', _value.options.title, function() {
+  	      if (_value.options.title != this.value) {
+  	        _value.options.title = this.value;
+  	        updateTitles(true);
+  	      }
+  	    }, true);
+  	    knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+  	  }
+  	  if (subtitleEdit) {
+  	    var chartSubtitleText = knimeService.createMenuTextField(
+  	        'chartSubtitleText', _value.options.subtitle,
+  	        function() {
+  	        	if (_value.options.subtitle != this.value) {
+  	        		_value.options.subtitle = this.value;
+  	        		updateTitles(true);
+  	        	}
+  	        }, true);
+  	    knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+  	  }
+  	}
+
+    // Legend / Interactive Guideline / Grid configuration
+    var legendToggle = _representation.options.legendToggle;
+    var breadcrumbToggle = _representation.options.breadcrumbToggle;
+    if (legendToggle || breadcrumbToggle) {
+      knimeService.addMenuDivider();
+
+      if (legendToggle) {
+        var legendCheckbox = knimeService.createMenuCheckbox(
+            'legendCheckbox', _value.options.legend,
+            function() {
+              _value.options.legend = this.checked;
+              drawChart(true);
+            });
+        knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
       }
-    } else {
-      // loop over cells of table1 to get all labels and assign colors
-      var rows = knimeTable1.getRows();
-      var colorMapping = {};
-      var scale = d3.scale.category20();
-      for (var i = 0; i < rows.length; i++) {
-        for (var j = 0; j < columnIndexes.length; j++) {
-          var index = columnIndexes[j];
-          var label = rows[i].data[index];
-          colorMap[label] = scale(label);
-        }
+
+      if (breadcrumbToggle) {
+        var breadcrumbCheckbox = knimeService.createMenuCheckbox(
+                'breadcrumbCheckbox', _value.options.breadcrumb,
+                function() {
+                  _value.options.breadcrumb = this.checked;
+                  drawChart(true);
+                });
+
+        knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
       }
     }
 
-    return colorMap;
-  };
+    // Zoomable configuration
+    var zoomableToggle = _representation.options.zoomableToggle;
+    if (zoomableToggle) {
+      knimeService.addMenuDivider();
 
-  function createControls(controlsContainer) {
-    if (_representation.options.enableViewControls) {
-
-      if (!_representation.options.multi && _representation.options.enableColumnSelection) {
-        var colSelectDiv = controlsContainer.append("div");
-        colSelectDiv.append("label").attr("for", "colSelect").text("Selected column: ");
-        var select = colSelectDiv.append("select").attr("id", "colSelect");
-        for (var i = 0; i < _representation.options.columns.length; i++) {
-          var txt = _representation.options.columns[i];
-          var o = select.append("option").text(txt).attr("value", txt);
-          if (txt === _value.options.numCol) {
-            o.property("selected", true);
-          }
-        }
-        select.on("change", function() {
-          _value.options.numCol = select.property("value");
-          drawChart();
-        });
-      }
-
-      var titleDiv;
-
-      if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) {
-        titleDiv = controlsContainer.append("div").style({"margin-top" : "5px"});
-      }
-
-      if (_representation.options.enableTitleEdit) {
-        titleDiv.append("label").attr("for", "titleIn").text("Title:").style({"display" : "inline-block", "width" : "100px"});
-        titleDiv.append("input")
-        .attr({id : "titleIn", type : "text", value : _value.options.title}).style("width", 150)
-        .on("keyup", function() {
-          var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-          _value.options.title = this.value;
-          var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-          d3.select("#title").text(this.value);
-          if (hasTitles !==hadTitles) {
+      var zoomCheckbox = knimeService.createMenuCheckbox(
+          'zoomCheckbox', _value.options.zoomable, function() {
+            _value.options.zoomable = this.checked;
             drawChart(true);
-          }
-        });
+          });
+      knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
+    }
+
+    // Inner label configuration
+    var innerLabelToggle = _representation.options.innerLabelToggle;
+    var innerLabelPercentageToggle = _representation.options.innerLabelPercentageToggle;
+    var enableInnerLabelEdit = _representation.options.enableInnerLabelEdit;
+    if (innerLabelToggle || innerLabelPercentageToggle || enableInnerLabelEdit) {
+      knimeService.addMenuDivider();
+
+      if (innerLabelToggle) {
+        var innerLabelCheckbox = knimeService.createMenuCheckbox(
+            'innerLabelCheckbox', _value.options.innerLabel,
+            function() {
+              _value.options.innerLabel = this.checked;
+              drawChart(true);
+            });
+        knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
       }
 
-      if (_representation.options.enableSubtitleEdit) {
-        titleDiv.append("label").attr("for", "subtitleIn").text("Subtitle:").style({"margin-left" : "10px", "display" : "inline-block", "width" : "100px"});
-        titleDiv.append("input")
-        .attr({id : "subtitleIn", type : "text", value : _value.options.subtitle}).style("width", 150)
-        .on("keyup", function() {
-          var hadTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-          _value.options.subtitle = this.value;
-          var hasTitles = (_value.options.title.length > 0) || (_value.options.subtitle.length > 0);
-          d3.select("#subtitle").text(this.value);
-          if (hasTitles !==hadTitles) {
-            drawChart(true);
-          }
-        });
+      if (innerLabelPercentageToggle) {
+        var innerLabelPercentageCheckbox = knimeService.createMenuCheckbox(
+                'innerLabelPercentageCheckbox', _value.options.innerLabelPercentage,
+                function() {
+                  _value.options.innerLabelPercentage = this.checked;
+                  drawChart(true);
+                });
+
+        knimeService.addMenuItem('Inner Label Percentage:', 'percent', innerLabelPercentageCheckbox);
       }
+
+      if (enableInnerLabelEdit) {
+  	    var innerLabelText = knimeService.createMenuTextField(
+  	        'innerLabelText', _value.options.innerLabelText, function() {
+    	        _value.options.innerLabelText = this.value;
+    	        drawChart(true);
+  	        }, true);
+  	    knimeService.addMenuItem('Inner Label Text:', 'header', innerLabelText);
+  	  }
+    }
+
+    // if (!_representation.options.multi && _representation.options.enableColumnSelection) {
+    //   var colSelectDiv = controlsContainer.append("div");
+    //   colSelectDiv.append("label").attr("for", "colSelect").text("Selected column: ");
+    //   var select = colSelectDiv.append("select").attr("id", "colSelect");
+    //   for (var i = 0; i < _representation.options.columns.length; i++) {
+    //     var txt = _representation.options.columns[i];
+    //     var o = select.append("option").text(txt).attr("value", txt);
+    //     if (txt === _value.options.numCol) {
+    //       o.property("selected", true);
+    //     }
+    //   }
+    //   select.on("change", function() {
+    //     _value.options.numCol = select.property("value");
+    //     drawChart();
+    //   });
+    // }
+  }
+
+  var updateTitles = function(updateChart) {
+    d3.select("#title").text(this.value);
+    d3.select("#subtitle").text(_value.options.subtitle);
+
+    if (updateChart) {
+       drawChart(true);
     }
   }
 
   // Draws the chart. If redraw is true, there are no animations.
-  function drawChart(redraw) {
+  var drawChart = function(redraw) {
     // Parse the options
 
     var optTitle = _value.options["title"];
@@ -264,20 +335,7 @@
       // Add container for user controls at the bottom if they are enabled and we are running in a view
       var controlHeight;
       if (optShowControls && runningInView) {
-        var controlsContainer = body.append("div")
-          .attr("id", "controlContainer")
-          .style({
-            "bottom" : "0px",
-            "width" : "100%",
-            "padding" : "5px",
-            "padding-left" : "60px",
-            "border-top" : "1px solid black",
-            "background-color" : "white",
-            "box-sizing" : "border-box"
-          });
-
-        createControls(controlsContainer);
-        controlHeight = controlsContainer.node().getBoundingClientRect().height;
+        controlHeight = 30; // TODO
         layoutContainer
           .style("min-height", (MIN_HEIGHT + controlHeight) + "px");
         if (optFullscreen) {
