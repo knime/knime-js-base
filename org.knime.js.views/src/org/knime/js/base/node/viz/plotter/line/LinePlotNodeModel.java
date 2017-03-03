@@ -56,6 +56,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.knime.base.data.xml.SvgCell;
 import org.knime.core.data.DataCell;
@@ -295,12 +296,18 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         if (m_config.getMaxRows() < filteredTable.size()) {
             setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
         }
-        final JSONDataTable table = JSONDataTable.newBuilder()
+
+        JSONDataTable.Builder builder = JSONDataTable.newBuilder()
                 .setDataTable(filteredTable)
                 .setId(getTableId(0))
                 .setFirstRow(1)
-                .setMaxRows(m_config.getMaxRows())
-                .build(exec.createSubProgress(0.79));
+                .setMaxRows(m_config.getMaxRows());
+        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN)) {
+            builder.excludeColumnsWithMissingValues(true)
+                .keepFilterColumns(true);
+        }
+        final JSONDataTable table = builder.build(exec.createSubProgress(0.79));
+
         JSONDataTable jsonColorTable = null;
         if (colorTable != null) {
             jsonColorTable = JSONDataTable.newBuilder()
@@ -337,6 +344,14 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         }
 
         JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);
+        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN)) {
+            // Columns with missing values which have filter handlers are not removed, but we still need to hide them in JS
+            boolean[] flags = table.getSpec().getContainsMissingValues();
+            dataset.setHiddenColumns(IntStream.range(0, flags.length)
+                .filter(i -> flags[i])
+                .mapToObj(i -> table.getSpec().getColNames()[i])
+                .toArray(String[]::new));
+        }
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
             String colColor = getColorForColumn(tableSpec.getColNames()[col], jsonColorTable);
             if (colColor != null) {
@@ -355,7 +370,11 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
         final String[] yColumns = viewValue.getyColumns();
         if (yColumns == null || !Arrays.asList(tableSpec.getColNames()).containsAll(Arrays.asList(yColumns))) {
-            viewValue.setyColumns(new String[]{tableSpec.getColNames()[tableSpec.getNumColumns() > 1 ? 1 : 0]});
+            viewValue.setyColumns(Arrays.stream(tableSpec.getColNames())
+                .filter(x -> Arrays.stream(yColumns)
+                    .anyMatch(y -> y == x)
+                 )
+                .toArray(size -> new String[size]));
         }
 
         return dataset;

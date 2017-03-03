@@ -681,6 +681,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
                 break;
             case LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN:
                 m_missingValueMethodComboBox.setSelectedIndex(2);
+                break;
             case LinePlotViewConfig.MISSING_VALUE_METHOD_NO_GAP:
             default:
                 m_missingValueMethodComboBox.setSelectedIndex(0);

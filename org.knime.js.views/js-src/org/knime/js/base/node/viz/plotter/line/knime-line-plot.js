@@ -13,6 +13,10 @@ knime_line_plot = function() {
 	var defaultFont = "sans-serif";
 	var defaultFontSize = 12;
 	
+	var MISSING_VALUE_METHOD_GAP = "gap";
+	var MISSING_VALUE_METHOD_NO_GAP = "noGap";
+	var MISSING_VALUE_METHOD_REMOVE_COLUMN = "removeColumn";
+	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
 			d3.select("body").text("Error: No data available");
@@ -86,6 +90,14 @@ knime_line_plot = function() {
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 
+			var yColumns = [];
+			_value.yColumns.forEach(function (col) {
+	    		if (_representation.keyedDataset.hiddenColumns.indexOf(col) == -1) {
+	    			yColumns.push(col);
+	    		}
+	    	});
+			_value.yColumns = yColumns;
+			
 			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
 				drawControls(layoutContainer);
 			}
@@ -385,9 +397,15 @@ knime_line_plot = function() {
 	    }
 	    
 	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {		    
-	    	if (_representation.enableXColumnChange) {
-	    		var colNames = ['<RowID>'].concat(_keyedDataset.columnKeys());
-	    		var colSelect = knimeService.createMenuSelect('xColumnSelect', _value.xColumn, colNames, function() {
+	    	var colNames = [];
+	    	_keyedDataset.columnKeys().forEach(function (key) {
+	    		if (_representation.keyedDataset.hiddenColumns.indexOf(key) == -1) {
+	    			colNames.push(key);
+	    		}
+	    	});
+	    	if (_representation.enableXColumnChange) {	    		
+	    		var xColNames = ['<RowID>'].concat(colNames);
+	    		var colSelect = knimeService.createMenuSelect('xColumnSelect', _value.xColumn, xColNames, function() {
 	    			var newXCol = this.value;
 	    			if (newXCol == "<RowID>") {
 	    				newXCol = null;
@@ -417,7 +435,7 @@ knime_line_plot = function() {
 		    	var ySelect = new twinlistMultipleSelections();	
 		    	var ySelectComponent = ySelect.getComponent().get(0);
 		    	columnChangeContainer.append("td").attr("colspan", "3").node().appendChild(ySelectComponent);
-		    	ySelect.setChoices(_keyedDataset.columnKeys());
+		    	ySelect.setChoices(colNames);
 		    	ySelect.setSelections(_value.yColumns);
 		    	ySelect.addValueChangedListener(function() {
 		    		_value.yColumns = ySelect.getSelections();
@@ -534,7 +552,7 @@ knime_line_plot = function() {
 	        var y = dataset.y(seriesIndex, i);
 	        if (y === null) {
 	            // keep the line only if noGap method and the line has been already started, i.e. connect == true
-	        	connect = _representation.missingValueMethod == "noGap" && connect ? true : false;
+	        	connect = _representation.missingValueMethod == MISSING_VALUE_METHOD_NO_GAP && connect ? true : false;
 	            continue;
 	        }
 
