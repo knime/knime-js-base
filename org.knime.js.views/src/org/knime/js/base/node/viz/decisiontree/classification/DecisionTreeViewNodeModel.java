@@ -364,6 +364,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         representation.setEnableViewConfiguration(m_config.isEnableViewConfiguration());
         representation.setNumberFormat(m_config.getNumberFormat());
         representation.setEnableZooming(m_config.getEnableZooming());
+        representation.setShowZoomResetButton(m_config.getShowZoomResetButton());
         representation.setDisplayFullscreenButton(m_config.getDisplayFullScreenButton());
         representation.setDisplaySelectionResetButton(m_config.getDisplaySelectionResetButton());
         representation.setTruncationLimit(m_config.getTruncationLimit());
@@ -448,6 +449,10 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
     public JSONLayoutViewContent getLayoutTemplate() {
         JSONLayoutViewContent view = new JSONLayoutViewContent();
         view.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
+        // ensures that scroll bars are shown when the tree is too wide
+        // or if a different resize method is used
+        // unfortunately, this introduces scrollbars during the initial animation as well..
+        view.setScrolling(true);
         return view;
     }
 }

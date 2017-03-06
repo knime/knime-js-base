@@ -84,6 +84,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
     private String m_tableId;
     private boolean m_enableZooming;
     private int m_truncationLimit;
+    private boolean m_showZoomResetButton = DecisionTreeViewConfig.DEFAULT_SHOW_ZOOM_RESET_BUTTON;
 
 
     /**
@@ -128,8 +129,10 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
         setDisplaySelectionResetButton(settings.getBoolean(DecisionTreeViewConfig.DISPLAY_SELECTION_RESET_BUTTON));
 
         //added with 3.3.2
-        setTruncationLimit(settings.getInt(DecisionTreeViewConfig.TRUNCATION_LIMIT, DecisionTreeViewConfig.DEFAULT_TRUNCATION_LIMIT));
-
+        setTruncationLimit(settings.getInt(DecisionTreeViewConfig.TRUNCATION_LIMIT,
+            DecisionTreeViewConfig.DEFAULT_TRUNCATION_LIMIT));
+        setShowZoomResetButton(settings.getBoolean(DecisionTreeViewConfig.SHOW_ZOOM_RESET_BUTTON,
+            DecisionTreeViewConfig.DEFAULT_SHOW_ZOOM_RESET_BUTTON));
     }
 
     /**
@@ -161,6 +164,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
                 .append(m_tableId, other.m_tableId)
                 .append(m_displaySelectionResetButton, other.m_displaySelectionResetButton)
                 .append(m_truncationLimit, other.m_truncationLimit)
+                .append(m_showZoomResetButton, other.m_showZoomResetButton)
                 .isEquals();
     }
 
@@ -182,6 +186,7 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
             .append(m_tableId)
             .append(m_displaySelectionResetButton)
             .append(m_truncationLimit)
+            .append(m_showZoomResetButton)
             .toHashCode();
     }
 
@@ -379,6 +384,20 @@ public class DecisionTreeViewRepresentation extends JSONViewContent {
      */
     public void setTruncationLimit(final int truncationLimit) {
         m_truncationLimit = truncationLimit;
+    }
+
+    /**
+     * @return the showZoomResetButton
+     */
+    public boolean getShowZoomResetButton() {
+        return m_showZoomResetButton;
+    }
+
+    /**
+     * @param showZoomResetButton the showZoomResetButton to set
+     */
+    public void setShowZoomResetButton(final boolean showZoomResetButton) {
+        m_showZoomResetButton = showZoomResetButton;
     }
 
 }

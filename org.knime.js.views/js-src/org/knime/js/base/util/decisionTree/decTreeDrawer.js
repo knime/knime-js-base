@@ -42,13 +42,17 @@ function DecTreeDrawer(representation, value) {
     		enableZooming : representation.enableZooming,
     		displaySelectionResetButton: representation.displaySelectionResetButton,
     		truncationLimit : representation.truncationLimit,
-    		scale : value.scale
+    		scale : value.scale,
+    		showZoomResetButton : representation.showZoomResetButton
     };
     var selection;
     var decTree = representation.tree;
     var nodeStatus = value.nodeStatus;
     var title = value.title;
     var subtitle = value.subtitle;
+    
+    // declare zoom on constructor level to access it in drawControls and drawTree
+    var zoom;
     
     var tooltipElement;
     var tooltip = d3.tip()
@@ -452,10 +456,22 @@ function DecTreeDrawer(representation, value) {
     	if (options.displayFullscreenButton) {
     		knimeService.allowFullscreen();
     	}
+    	
+    	if (options.showZoomResetButton) {
+    		knimeService.addButton('scatter-zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
+    			var dt = d3.select("#decTree");
+    			var t = d3.transform(dt.attr("transform"));
+    			options.scale = 1.0;
+    			t.scale = options.scale;
+    			zoom.scale(options.scale);
+    			dt.attr("transform", t.toString());
+    			resizeSVG()
+    		});
+    	}
 		
 	    if (!options.enableViewConfiguration) return;
 	    var pre = false;
-	    	    
+	    
 	    if (options.enableTitleChange || options.enableSubtitleChange) {
 	    	pre = true;
 	    	if (options.enableTitleChange) {
@@ -623,7 +639,7 @@ function DecTreeDrawer(representation, value) {
 		posTree = [10, topMargin];
 //		d3.select("#titles").attr("transform", "translate(0, 24)");
 		var dt = d3.select("#decTree");
-		t = dt.attr("transform");
+		t = d3.transform(dt.attr("transform"));
 		t.translate = posTree;
 		d3.select("#decTree")
 			.attr("transform", t.toString());
@@ -713,7 +729,7 @@ function DecTreeDrawer(representation, value) {
     	svg.attr("transform", t.toString());
         // zooming and panning
     	if (options.enableZooming) {
-        var zoom = d3.behavior.zoom().on("zoom", function() {
+        zoom = d3.behavior.zoom().on("zoom", function() {
         	var panVec = d3.event.translate;
         	dt = d3.select("#decTree");
         	options.scale = d3.event.scale;

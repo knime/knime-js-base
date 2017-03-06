@@ -50,13 +50,17 @@
  */
 package org.knime.js.base.node.viz.decisiontree.classification;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -119,10 +123,13 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     private final JSpinner m_truncationLimitSpinner;
 
     private final JSpinner m_expandedLevelSpinner;
-    private final JCheckBox m_resetNodeStatus;
+    private final JButton m_resetNodeStatusButton;
+    private final JLabel m_nodeStatusFromViewAlert;
     private int[] m_nodeStatus;
 
     private final JCheckBox m_enableZoomingCheckBox;
+    private final JCheckBox m_showZoomResetButton;
+    private final JSpinner m_zoomLevelSpinner;
 
     /**
      * Creates a new dialog pane.
@@ -149,14 +156,16 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
         m_expandedLevelSpinner = new JSpinner(
             new SpinnerNumberModel(DecisionTreeViewConfig.DEFAULT_EXPANDED_LEVEL, 0, Integer.MAX_VALUE, 1));
-        m_resetNodeStatus = new JCheckBox("Reset node status");
-        m_resetNodeStatus.addChangeListener(new ChangeListener() {
+        m_resetNodeStatusButton = new JButton("Reset node status");
+        m_nodeStatusFromViewAlert = new JLabel("Nodes were collapsed/expanded in the view.");
+        m_nodeStatusFromViewAlert.setForeground(Color.RED);
+        m_resetNodeStatusButton.addActionListener(new ActionListener() {
 
             @Override
-            public void stateChanged(final ChangeEvent e) {
-                if (m_resetNodeStatus.isSelected()) {
-                    m_expandedLevelSpinner.setEnabled(true);
-                }
+            public void actionPerformed(final ActionEvent e) {
+                m_expandedLevelSpinner.setEnabled(true);
+                m_resetNodeStatusButton.setEnabled(false);
+                m_nodeStatusFromViewAlert.setVisible(false);
             }
 
         });
@@ -164,6 +173,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         m_numberFormatUI = new NumberFormatNodeDialogUI();
 
         m_enableZoomingCheckBox = new JCheckBox("Enable zooming");
+        m_showZoomResetButton = new JCheckBox("Show zoom reset button");
+        m_zoomLevelSpinner = new JSpinner(new SpinnerNumberModel(DecisionTreeViewConfig.DEFAULT_SCALE, 1e-6, 1000, 0.1));
 
         m_dataAreaColorChooser =
             new DialogComponentColorChooser(new SettingsModelColor("dataAreaColor", null), "Tree area color: ", true);
@@ -228,7 +239,9 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         cc.gridx = 0;
         cc.gridy++;
         cc.gridwidth = 2;
-        nodeStatusPanel.add(m_resetNodeStatus, cc);
+        nodeStatusPanel.add(m_resetNodeStatusButton, cc);
+        cc.gridy++;
+        nodeStatusPanel.add(m_nodeStatusFromViewAlert, cc);
 
         c.gridwidth = 1;
         c.gridx = 0;
@@ -377,6 +390,13 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         cc.gridx = 0;
         cc.gridy = 0;
         zoomControlPanel.add(m_enableZoomingCheckBox, cc);
+        cc.gridx++;
+        zoomControlPanel.add(m_showZoomResetButton, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        zoomControlPanel.add(new JLabel("Zoom level:"), cc);
+        cc.gridx++;
+        zoomControlPanel.add(m_zoomLevelSpinner, cc);
         //        zoomControlPanel.add(m_allowMouseWheelZoomingCheckBox, cc);
         //        cc.gridx++;
         //        zoomControlPanel.add(m_showZoomResetCheckBox, cc);
@@ -445,11 +465,13 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
         m_expandedLevelSpinner.setValue(config.getExpandedLevel());
         m_expandedLevelSpinner.setEnabled(!config.isNodeStatusFromView());
-        m_resetNodeStatus.setEnabled(config.isNodeStatusFromView());
-        m_resetNodeStatus.setSelected(false);
+        m_resetNodeStatusButton.setEnabled(config.isNodeStatusFromView());
+        m_nodeStatusFromViewAlert.setVisible(config.isNodeStatusFromView());
         m_nodeStatus = config.getNodeStatus();
 
         m_enableZoomingCheckBox.setSelected(config.getEnableZooming());
+        m_showZoomResetButton.setSelected(config.getShowZoomResetButton());
+        m_zoomLevelSpinner.setValue(config.getScale());
 
         m_truncationLimitSpinner.setValue(config.getTruncationLimit());
 
@@ -478,12 +500,12 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
         config.setDisplaySelectionResetButton(m_displaySelectionResetButtonCheckBox.isSelected());
         config.setExpandedLevel((int)m_expandedLevelSpinner.getValue());
-        boolean resetNodeStatus = m_resetNodeStatus.isSelected();
+        boolean resetNodeStatus = !(m_resetNodeStatusButton.isEnabled());
         if (resetNodeStatus) {
             m_nodeStatus = null;
             config.setNodeStatusFromView(false);
         } else {
-            config.setNodeStatusFromView(m_resetNodeStatus.isEnabled());
+            config.setNodeStatusFromView(m_resetNodeStatusButton.isEnabled());
         }
         config.setNodeStatus(m_nodeStatus);
 
@@ -497,6 +519,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         config.setNumberFormat(m_numberFormatUI.saveSettingsTo());
 
         config.setEnableZooming(m_enableZoomingCheckBox.isSelected());
+        config.setShowZoomResetButton(m_showZoomResetButton.isSelected());
+        config.setScale((double)m_zoomLevelSpinner.getValue());
 
         config.setTruncationLimit((int)m_truncationLimitSpinner.getValue());
 
