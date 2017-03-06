@@ -302,10 +302,6 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                 .setId(getTableId(0))
                 .setFirstRow(1)
                 .setMaxRows(m_config.getMaxRows());
-        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN)) {
-            builder.excludeColumnsWithMissingValues(true)
-                .keepFilterColumns(true);
-        }
         final JSONDataTable table = builder.build(exec.createSubProgress(0.79));
 
         JSONDataTable jsonColorTable = null;
@@ -344,14 +340,21 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         }
 
         JSONKeyedValues2DDataset dataset = new JSONKeyedValues2DDataset(getTableId(0), tableSpec.getColNames(), rowValues);
-        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN)) {
-            // Columns with missing values which have filter handlers are not removed, but we still need to hide them in JS
-            boolean[] flags = table.getSpec().getContainsMissingValues();
-            dataset.setHiddenColumns(IntStream.range(0, flags.length)
-                .filter(i -> flags[i])
-                .mapToObj(i -> table.getSpec().getColNames()[i])
-                .toArray(String[]::new));
+
+        // Write which columns have missing values
+        boolean[] flags = table.getSpec().getContainsMissingValues();
+        String[] missingValueColumns = IntStream.range(0, flags.length)
+            .filter(i -> flags[i])
+            .mapToObj(i -> table.getSpec().getColNames()[i])
+            .toArray(String[]::new);
+        dataset.setMissingValueColumns(missingValueColumns);
+        if (Arrays.asList(missingValueColumns).contains(m_config.getxColumn())) {
+            setWarningMessage("Missing values of the X axis column will be removed in the view");
         }
+        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN) && missingValueColumns.length > 0) {
+            setWarningMessage("Y axis columns with missing values will not be available in the view according to the chosen handling method.");
+        }
+
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
             String colColor = getColorForColumn(tableSpec.getColNames()[col], jsonColorTable);
             if (colColor != null) {
