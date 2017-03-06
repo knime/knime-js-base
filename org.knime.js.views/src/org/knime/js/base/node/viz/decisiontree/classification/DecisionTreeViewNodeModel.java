@@ -350,6 +350,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         m_config.setNodeStatusFromView(!Arrays.equals(configuredNodeStatus, value.getNodeStatus()));
         m_config.setPublishSelection(value.getPublishSelection());
         m_config.setSubscribeSelection(value.getSubscribeSelection());
+        m_config.setScale(value.getScale());
     }
 
     private void copyConfigToView() {
@@ -381,6 +382,7 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
         value.setPublishSelection(m_config.getPublishSelection());
         value.setSubscribeSelection(m_config.getSubscribeSelection());
         value.setSelection(EMPTY_SELECTION);
+        value.setScale(m_config.getScale());
 //        int[] nodeStatus = {5, 1, 0};
 //        value.setNodeStatus(m_config.getNodeStatus());
     }

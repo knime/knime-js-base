@@ -70,6 +70,7 @@ public class DecisionTreeViewValue extends JSONViewContent {
     private String[] m_selection;
     private boolean m_publishSelection;
     private boolean m_subscribeSelection;
+    private double m_scale = 1.0;
 
     /**
      * {@inheritDoc}
@@ -82,6 +83,8 @@ public class DecisionTreeViewValue extends JSONViewContent {
         settings.addStringArray(SELECTED_KEYS, m_selection);
         settings.addBoolean(DecisionTreeViewConfig.PUBLISH_SELECTION, m_publishSelection);
         settings.addBoolean(DecisionTreeViewConfig.SUBSCRIBE_SELECTION, m_subscribeSelection);
+        // since 3.3.2
+        settings.addDouble(DecisionTreeViewConfig.SCALE, m_scale);
     }
 
     /**
@@ -95,6 +98,22 @@ public class DecisionTreeViewValue extends JSONViewContent {
         setSelection(settings.getStringArray(SELECTED_KEYS));
         setPublishSelection(settings.getBoolean(DecisionTreeViewConfig.PUBLISH_SELECTION));
         setSubscribeSelection(settings.getBoolean(DecisionTreeViewConfig.SUBSCRIBE_SELECTION));
+        // since 3.3.2
+        setScale(settings.getDouble(DecisionTreeViewConfig.SCALE, 1.0));
+    }
+
+    /**
+     * @return the zoom
+     */
+    public double getScale() {
+        return m_scale;
+    }
+
+    /**
+     * @param zoom the zoom to set
+     */
+    public void setScale(final double zoom) {
+        m_scale = zoom;
     }
 
     /**
@@ -119,6 +138,7 @@ public class DecisionTreeViewValue extends JSONViewContent {
                 .append(m_selection, other.m_selection)
                 .append(m_publishSelection, other.m_publishSelection)
                 .append(m_subscribeSelection, other.m_subscribeSelection)
+                .append(m_scale, other.m_scale)
                 .isEquals();
     }
 
@@ -134,6 +154,7 @@ public class DecisionTreeViewValue extends JSONViewContent {
                 .append(m_selection)
                 .append(m_publishSelection)
                 .append(m_subscribeSelection)
+                .append(m_scale)
                 .toHashCode();
     }
 
