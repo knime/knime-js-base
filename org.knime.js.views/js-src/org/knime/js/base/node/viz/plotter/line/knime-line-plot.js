@@ -90,13 +90,15 @@ knime_line_plot = function() {
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 
-			var yColumns = [];
-			_value.yColumns.forEach(function (col) {
-	    		if (_representation.keyedDataset.hiddenColumns.indexOf(col) == -1) {
-	    			yColumns.push(col);
-	    		}
-	    	});
-			_value.yColumns = yColumns;
+			if (_representation.missingValueMethod == MISSING_VALUE_METHOD_REMOVE_COLUMN) {
+				var yColumns = [];
+				_value.yColumns.forEach(function (col) {
+		    		if (_representation.keyedDataset.missingValueColumns.indexOf(col) == -1) {
+		    			yColumns.push(col);
+		    		}
+		    	});
+				_value.yColumns = yColumns;
+			}			
 			
 			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
 				drawControls(layoutContainer);
@@ -118,17 +120,11 @@ knime_line_plot = function() {
 	buildXYDataset = function() {
 		//console.time("Building XYDataset");
 		var xyDataset;
+		
 		if (_keyedDataset.rowCount() > 0 && _value.yColumns.length > 0) {
 			xyDataset = new jsfc.TableXYDataset(_keyedDataset, _value.xColumn, _value.yColumns);
 		} else {
-			var yCol = null;
-			if (_value.yColumns) {
-				yCol = _value.yColumns[0];
-			}
-			if (!yCol) {
-				yCol = "[EMPTY]";
-			}
-			xyDataset = jsfc.DatasetUtils.extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
+			xyDataset = new jsfc.StandardXYDataset();
 			xyDataset.data.series = [];
 		}
 		//console.timeEnd("Building XYDataset");
@@ -396,15 +392,9 @@ knime_line_plot = function() {
 	    	}
 	    }
 	    
-	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {		    
-	    	var colNames = [];
-	    	_keyedDataset.columnKeys().forEach(function (key) {
-	    		if (_representation.keyedDataset.hiddenColumns.indexOf(key) == -1) {
-	    			colNames.push(key);
-	    		}
-	    	});
+	    if (_representation.enableXColumnChange || _representation.enableYColumnChange) {
 	    	if (_representation.enableXColumnChange) {	    		
-	    		var xColNames = ['<RowID>'].concat(colNames);
+	    		var xColNames = ['<RowID>'].concat(_keyedDataset.columnKeys());
 	    		var colSelect = knimeService.createMenuSelect('xColumnSelect', _value.xColumn, xColNames, function() {
 	    			var newXCol = this.value;
 	    			if (newXCol == "<RowID>") {
@@ -429,13 +419,24 @@ knime_line_plot = function() {
 		    	.style("font-family", defaultFont)
 		    	.style("font-size", defaultFontSize+"px")
 		    	.style("border-spacing", 0)
-		    	.style("border-collapse", "collapse");			    	
+		    	.style("border-collapse", "collapse");	
+		    	
+		    	var yColNames = [];
+		    	if (_representation.missingValueMethod == MISSING_VALUE_METHOD_REMOVE_COLUMN) {
+		    		_keyedDataset.columnKeys().forEach(function (key) {
+			    		if (_representation.keyedDataset.missingValueColumns.indexOf(key) == -1) {
+			    			yColNames.push(key);
+			    		}
+			    	});
+		    	} else {
+		    		yColNames = _keyedDataset.columnKeys();
+		    	}		    	
 		    	
 		    	var columnChangeContainer = controlContainer.append("tr");		    	
 		    	var ySelect = new twinlistMultipleSelections();	
 		    	var ySelectComponent = ySelect.getComponent().get(0);
 		    	columnChangeContainer.append("td").attr("colspan", "3").node().appendChild(ySelectComponent);
-		    	ySelect.setChoices(colNames);
+		    	ySelect.setChoices(yColNames);
 		    	ySelect.setSelections(_value.yColumns);
 		    	ySelect.addValueChangedListener(function() {
 		    		_value.yColumns = ySelect.getSelections();
@@ -550,6 +551,10 @@ knime_line_plot = function() {
 	    for (var i = 0; i < itemCount; i++) {
 	        var x = dataset.x(seriesIndex, i);
 	        var y = dataset.y(seriesIndex, i);
+	        if (x === null) {
+	        	// always ignore missing values of the x column
+	        	continue;
+	        }
 	        if (y === null) {
 	            // keep the line only if noGap method and the line has been already started, i.e. connect == true
 	        	connect = _representation.missingValueMethod == MISSING_VALUE_METHOD_NO_GAP && connect ? true : false;
