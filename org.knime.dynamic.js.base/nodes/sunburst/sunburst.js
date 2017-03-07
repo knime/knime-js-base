@@ -17,6 +17,8 @@
     knimeTable1 = new kt();
     knimeTable1.setDataTable(_representation.inObjects[0]);
 
+    // TODO: handle second port: color model
+
     // Load data from port 2 into knime table (information on each of the nodes).
     // knimeTable2 = null;
     // if (_representation.inObjects[1] !== null) {
@@ -38,6 +40,8 @@
   // Transform data from first port into a hierarchical structure suitable
   // for a partition layout.
   var transformData = function() {
+    // TODO: handle missing values
+
     // Get indices for path columns and frequency column.
     function indexOf(column) {
       return knimeTable1.getColumnNames().indexOf(column);
@@ -122,6 +126,8 @@
   };
 
   var setColors = function() {
+    // TODO: handle second port: color model
+
     // Return a function that yields a color given a label/string.
     // if (knimeTable2 !== null) {
     //   // loop over rows of table2 to get all labels and corresponding colors
@@ -192,7 +198,7 @@
             'legendCheckbox', _value.options.legend,
             function() {
               _value.options.legend = this.checked;
-              drawChart(true);
+              drawChart();
             });
         knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
       }
@@ -202,7 +208,7 @@
                 'breadcrumbCheckbox', _value.options.breadcrumb,
                 function() {
                   _value.options.breadcrumb = this.checked;
-                  drawChart(true);
+                  drawChart();
                 });
 
         knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
@@ -217,7 +223,7 @@
       var zoomCheckbox = knimeService.createMenuCheckbox(
           'zoomCheckbox', _value.options.zoomable, function() {
             _value.options.zoomable = this.checked;
-            drawChart(true);
+            drawChart();
           });
       knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
     }
@@ -234,7 +240,7 @@
             'innerLabelCheckbox', _value.options.innerLabel,
             function() {
               _value.options.innerLabel = this.checked;
-              drawChart(true);
+              drawChart();
             });
         knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
       }
@@ -244,7 +250,7 @@
                 'innerLabelPercentageCheckbox', _value.options.innerLabelPercentage,
                 function() {
                   _value.options.innerLabelPercentage = this.checked;
-                  drawChart(true);
+                  drawChart();
                 });
 
         knimeService.addMenuItem('Inner Label Percentage:', 'percent', innerLabelPercentageCheckbox);
@@ -254,7 +260,7 @@
   	    var innerLabelText = knimeService.createMenuTextField(
   	        'innerLabelText', _value.options.innerLabelText, function() {
     	        _value.options.innerLabelText = this.value;
-    	        drawChart(true);
+    	        drawChart();
   	        }, true);
   	    knimeService.addMenuItem('Inner Label Text:', 'header', innerLabelText);
   	  }
@@ -278,106 +284,98 @@
     // }
   }
 
+  // TODO: in general case do not redraw!
   var updateTitles = function(updateChart) {
     d3.select("#title").text(this.value);
     d3.select("#subtitle").text(_value.options.subtitle);
 
     if (updateChart) {
-       drawChart(true);
+       drawChart();
     }
   }
 
-  // Draws the chart. If redraw is true, there are no animations.
-  var drawChart = function(redraw) {
-    // Parse the options
+  // Draws the chart
+  var drawChart = function() {
+    // Remove earlier chart.
+    d3.select("#layoutContainer").remove();
 
-    var optTitle = _value.options["title"];
-    var optSubtitle = _value.options["subtitle"];
+    /*
+     * Parse some options.
+     */
+    var optFullscreen = _representation.options.svg.fullscreen && _representation.runningInView;
+    var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
 
-    var optShowControls = _representation.options["enableViewControls"];
-    var optLegend = _representation.options["legend"];
-    var optBreadcrumb = _representation.options["breadcrumb"];
-    var runningInView = _representation.runningInView;
-    var optFullscreen = _representation.options["svg"]["fullscreen"] && runningInView;
-    var optWidth = _representation.options["svg"]["width"]
-    var optHeight = _representation.options["svg"]["height"]
-
+    d3.selectAll("html, body")
+      .style({
+        "width": "100%",
+        "height": "100%",
+        "margin": "0",
+        "padding": "0"
+      });
 
     var body = d3.select("body");
 
-    var svgContainer;
-    if (redraw) {
-      d3.select("svg").remove();
-      svgContainer = d3.select("#svgContainer");
-    } else {
-      d3.selectAll("html, body")
-        .style("width", "100%")
-        .style("height", "100%")
-        .style("margin", "0")
-        .style("padding", "0");
-
-      layoutContainer = body.append("div")
-        .attr("id", "layoutContainer")
-        .style("min-width", MIN_WIDTH + "px")
-        .style("min-height", MIN_HEIGHT + "px");
-
-      // Size layout container based on sizing settings
-      if (optFullscreen) {
-          layoutContainer
-            .style("width", "100%")
-            .style("height", "100%");
-      } else {
-          layoutContainer
-            .style("width", optWidth + "px")
-            .style("height", optHeight + "px");
-      }
-
-      // Add container for user controls at the bottom if they are enabled and we are running in a view
-      var controlHeight;
-      if (optShowControls && runningInView) {
-        controlHeight = 30; // TODO
-        layoutContainer
-          .style("min-height", (MIN_HEIGHT + controlHeight) + "px");
-        if (optFullscreen) {
-          layoutContainer
-            .style("height", "calc(100% - " + controlHeight + "px)");
-        }
-      } else {
-        controlHeight = 0;
-      }
-
-      // create container for svg
-      svgContainer = layoutContainer.append("div")
-        .attr("id", "svgContainer")
-        .style("min-width", MIN_WIDTH + "px")
-        .style("min-height", "calc(" + MIN_HEIGHT + "px - " + controlHeight + "px")
-        .style("box-sizing", "border-box")
-        .style("overflow", "hidden")
-        .style("margin", "0");
-    }
-
-
-    // Create the SVG object
-    var svg = svgContainer.append("svg");
-    svg.style("font-family", "sans-serif");
-
-    // set width / height
-    var boundingRect = layoutContainer.node().getBoundingClientRect();
-    var computedWidth = boundingRect.width;
-    var computedHeight = boundingRect.height;
-
-    var width, heigth;
+    // Determine available witdh and height.
+    // CHECK
     if (optFullscreen) {
-      width = computedWidth;
-      height = computedHeight;
+      var width = "100%";
+
+      if (isTitle || !_representation.options.enableViewControls) {
+        knimeService.floatingHeader(true);
+        var height = "100%";
+      } else {
+        knimeService.floatingHeader(false);
+        var height = "calc(100% - " + knimeService.headerHeight() + "px)"
+      }
+
     } else {
-      width = optWidth;
-      height = optHeight;
+      var width = _representation.options.svg.width + 'px';
+      var height = _representation.options.svg.height + 'px';
     }
-    svgContainer.style("width", width + "px");
-    svg.attr("width", width);
-    svgContainer.style("height", height + "px");
-    svg.attr("height", height);
+
+    layoutContainer = body.append("div")
+      .attr("id", "layoutContainer")
+      .style({
+        "width": width,
+        "height": height,
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "position": "absolute"
+      });
+
+    // create div container to hold svg
+    var svgContainer = layoutContainer.append("div")
+      .attr("id", "svgContainer")
+      .style({
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "box-sizing": "border-box",
+        "overflow": "hidden",
+        "margin": "0",
+        "width": "100%",
+        "height": "100%"
+      });
+  
+    // Create the SVG object
+    svg = svgContainer.append("svg")
+      .attr("id", "svg")
+      .style("font-family", "sans-serif")
+
+    // set width / height of svg
+    if (optFullscreen) {
+      // CHECK: Do I really need computedHeight/computedWidth ?
+      var boundingRect = svgContainer.node().getBoundingClientRect();
+      var svgWidth = boundingRect.width;
+      var svgHeight = boundingRect.height;
+    } else {
+      var svgWidth = _representation.options.svg.width;
+      var svgHeight = _representation.options.svg.height;
+    }
+    svgContainer
+      .style("width", svgWidth + "px")
+      .style("height", svgHeight + "px")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight);
 
     // Title
     svg.append("text")
@@ -396,9 +394,9 @@
       .text(_value.options.subtitle);
 
 
-    // The margins for the plot area
+    // Compute plotting options
     var margin = {
-      top : (optTitle || optSubtitle) ? 60 : 10,
+      top : isTitle ? 60 : 10,
       left : 10,
       bottom : 10,
       right : 10
@@ -408,14 +406,15 @@
       .attr("id", "plottingSurface")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Calculate size of the plot area
-    var w = Math.max(50, width - margin.left - margin.right);
-    var h = Math.max(50, height - margin.top - margin.bottom);
+    var w = Math.max(50, svgWidth - margin.left - margin.right);
+    var h = Math.max(50, svgHeight - margin.top - margin.bottom);
 
     var options = {
-      optLegend: optLegend,
-      optBreadcrumb: optBreadcrumb
+      legend: _value.options.legend,
+      breadcrumb: _value.options.breadcrumb,
+      zoomable: _value.options.zoomable
     };
+
     drawSunburst(_data, plottingSurface, w, h, options);
 
     // Set resize handler
@@ -426,8 +425,8 @@
   }
 
   function drawSunburst(data, plottingSurface, width, height, options) {
-    var marginTop = options.optBreadcrumb ? 40 : 0;
-    var marginLeft = options.optLegend ? 85 : 0;
+    var marginTop = options.breadcrumb ? 40 : 0;
+    var marginLeft = options.legend ? 85 : 0;
 
     // Dimensions of sunburst.
     var radius = Math.min(width - marginLeft, height - marginTop) / 2;
@@ -475,11 +474,11 @@
         .on("mouseover", mouseover);
 
     // Basic setup of page elements.
-    if (options.optBreadcrumb) {
+    if (options.breadcrumb) {
       initializeBreadcrumbTrail(plottingSurface);
     }
 
-    if (options.optLegend) {
+    if (options.legend) {
       drawLegend(plottingSurface);
     }
 
@@ -720,7 +719,7 @@
   };
 
   function resize(event) {
-    drawChart(true);
+    drawChart();
   }
 
   view.validate = function() {
