@@ -51,7 +51,7 @@ public class SunburstProcessor implements DynamicJSProcessor {
 //			setWarningMessage("Table contained " + removed + " rows with missing values. These rows are ignored in the view.");
 //		}
 //
-//		return new Object[] {table, inObjects[1]};
+//		return new Object[] {table}; //, inObjects[1]};
         
         // Deprecated
         FilterColumnTable ft = new FilterColumnTable(dt, includeColumns);
@@ -60,7 +60,7 @@ public class SunburstProcessor implements DynamicJSProcessor {
       		dc.addRowToTable(row);
         }
         dc.close();
-        return new Object[] {dc.getTable(), inObjects[1]};
+        return new Object[] {dc.getTable()}; //, inObjects[1]};
     }
 
 }
