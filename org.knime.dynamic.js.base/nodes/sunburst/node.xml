@@ -149,15 +149,15 @@
 			All other columns give the sequence, where the first column
 			is the first entry in the sequence.
 		</inPort>
-		<inPort portType="Data" name="Stream color data" index="1"
+		<!--<inPort portType="Data" name="Stream color data" index="1"
 			optional="true">
 			Data table containing one column with the names of the
 			entries. Each name has a color assigned to it.
-		</inPort>
-		<outPort portType="Image" name="Sequences sunburst image"
+		</inPort>-->
+		<!--<outPort portType="Image" name="Sequences sunburst image"
 			index="0">
 			SVG image of the sequences sunburst chart.
-		</outPort>
+		</outPort>-->
 	</ports>
 	<js:resources>
 		<!-- Added for inlining style rules when generating svg -->
