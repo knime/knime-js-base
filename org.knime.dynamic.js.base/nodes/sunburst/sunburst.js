@@ -74,27 +74,23 @@
     // Create hierarchical structure.
     var rows = knimeTable1.getRows();
     for (var i = 0; i < rows.length; i++) {
-      var size = +rows[i].data[freqColumn];
-      if (isNaN(size)) { // e.g. if this is a header row
+      var row = rows[i];
+      var frequency = row.data[freqColumn];
+      if (isNaN(frequency)) { // e.g. if this is a header row
         continue;
       }
 
-      // Collect all user selected string cells for the current row.
-      var parts = [];
-      for (var j = 0; j < pathColumns.length; j++) {
-        parts.push(rows[i].data[pathColumns[j]]);
-      }
       // Loop over selected columns
       // append to hierarchical structure
       var currentNode = _data;
-      for (var j = 0; j < parts.length; j++) {
-        var nodeName = parts[j];
+      for (var j = 0; j < pathColumns.length; j++) {
+        var nodeName = row.data[pathColumns[j]];
         if (nodeName === null) {
           break;
         }
         var children = currentNode["children"];
         var childNode;
-        if (j + 1 < parts.length) {
+        if (j + 1 < pathColumns.length) {
           // Not yet at the end of the sequence; move down the tree.
           var foundChild = false;
           for (var k = 0; k < children.length; k++) {
@@ -117,7 +113,7 @@
           // Reached the end of the sequence; create a leaf node.
           childNode = {
             name: nodeName,
-            size: size
+            size: frequency
           };
           children.push(childNode);
         }
