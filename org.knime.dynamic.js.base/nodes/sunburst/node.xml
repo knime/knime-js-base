@@ -38,7 +38,7 @@
 		<tab name="General Plot Options">
 			<options>
 				<stringOption name="Title" id="title" label="Title"
-					defaultValue="Chord Chart" optional="true" saveInView="true">
+					defaultValue="Sunburst Chart" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
 				<stringOption name="Subitle" id="subtitle" label="Subtitle"

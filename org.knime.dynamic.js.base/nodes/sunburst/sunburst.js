@@ -74,8 +74,8 @@
     // Create hierarchical structure.
     var rows = knimeTable1.getRows();
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i];
-      var frequency = row.data[freqColumn];
+      var row = rows[i].data;
+      var frequency = row[freqColumn];
       if (isNaN(frequency)) { // e.g. if this is a header row
         continue;
       }
@@ -84,7 +84,7 @@
       // append to hierarchical structure
       var currentNode = _data;
       for (var j = 0; j < pathColumns.length; j++) {
-        var nodeName = row.data[pathColumns[j]];
+        var nodeName = row[pathColumns[j]];
         if (nodeName === null) {
           break;
         }
@@ -367,7 +367,7 @@
       var svgWidth = _representation.options.svg.width;
       var svgHeight = _representation.options.svg.height;
     }
-    svgContainer
+    svg
       .style("width", svgWidth + "px")
       .style("height", svgHeight + "px")
       .attr("width", svgWidth)
