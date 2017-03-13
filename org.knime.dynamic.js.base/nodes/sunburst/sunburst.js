@@ -146,14 +146,19 @@
     // } else {
     //   // Create object with key=label, value=color.
     // }
-
-    var scale = d3.scale.category20();
+    
+    if (_data.uniqueLabels.length <= 10) {
+      var scale = d3.scale.category10();
+    } else {
+      var scale = d3.scale.category20();
+    }
     _colorMap = _data.uniqueLabels.reduce(function(obj, label) {
       obj[label] = scale(label);
       return obj;
     }, {});
   };
 
+  // TODO: add sorting
   var drawControls = function() {
     if (!knimeService || !_representation.options.enableViewControls) {
 		  // TODO: error handling?
@@ -480,12 +485,12 @@
         .attr("r", radius)
         .style("opacity", 0);
 
-    // TODO
     // For efficiency, filter nodes to keep only those large enough to see.
-    // var nodes = partition.nodes(data)
-    //     .filter(function(d) {
-    //       return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
-    //     });
+    // TODO: make this optional
+    var nodes = partition.nodes(data)
+        .filter(function(d) {
+          return (d.dx > 0.001); // 0.005 radians = 0.06 degrees
+        });
 
     // var path = sunburstGroup.data([data]).selectAll("path")
     //     .data(nodes)
@@ -498,7 +503,7 @@
     //     .on("mouseover", mouseover);
 
     var path = sunburstGroup.datum(data).selectAll("path")
-        .data(partition.nodes)
+        .data(nodes)
       .enter().append("path")
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
@@ -662,7 +667,7 @@
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
           .attr("y", b.h / 2)
-          .attr("width", width)
+          .attr("width", b.w)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
           .text(function(d) { return d.name; })
@@ -690,6 +695,7 @@
 
     }
 
+    // TODO: sort legend
     function drawLegend(plottingSurface) {
 
       // Dimensions of legend item: width, height, spacing, radius of rounded rect.
