@@ -8,6 +8,9 @@
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
+  var rootNodeName = "root";
+  var nullNodeName = "null";
+
   var aggregationTypes = ['count', 'size'];
   var innerLabelStyles = ['count', 'percentage'];
 
@@ -67,9 +70,18 @@
       .reduce(accumulate, [])
       .filter(onlyUnique);
 
+    // make sure that reserved names do not collide whith user given classes
+    // TODO: check if this works
+    while (uniqueLabels.indexOf(rootNodeName) > -1) {
+      rootNodeName += "_";
+    }
+    while (uniqueLabels.indexOf(nullNodeName) > -1) {
+      nullNodeName += "_";
+    }
+
     // Initialize _data object
     _data = {
-      name: "root",
+      name: rootNodeName,
       children: [],
       uniqueLabels: uniqueLabels
     };
@@ -79,8 +91,8 @@
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i].data;
       var size = row[freqColumn];
-      if (isNaN(size)) { // e.g. if this is a header row
-        continue;
+      if (size === null || isNaN(size)) {
+        size = 0;
       }
 
       // get array of path elements from current row
@@ -96,7 +108,16 @@
       for (var j = 0; j < parts.length; j++) {
         var children = currentNode["children"];
         // TODO: handle null
-        var nodeName = String(parts[j]);
+        // IDEA: have a key that identifies null-objects 
+        // PROBLEM: what if string collides with class given by user?
+        // PROBLEM: JavaScript object keys have to be sttrings
+        // PROBLEM: Same is true for root node!
+        if (parts[j] === null) {
+          var nodeName = nullNodeName;
+        } else {
+          var nodeName = parts[j];
+        }
+        
         var childNode;
         if (j + 1 < parts.length) {
           // Not yet at the end of the sequence; move down the tree.
@@ -121,7 +142,10 @@
           // Reached the end of the sequence; create a leaf node.
           childNode = {
             name: nodeName,
-            size: size
+            size: size,
+            // TODO: check if introducing the next line was a good idea, i.e. is the
+            // the layout still as expected?
+            children: []
           };
           children.push(childNode);
         }
@@ -152,10 +176,22 @@
     } else {
       var scale = d3.scale.category20();
     }
-    _colorMap = _data.uniqueLabels.reduce(function(obj, label) {
+    var colorMap = _data.uniqueLabels.reduce(function(obj, label) {
       obj[label] = scale(label);
       return obj;
     }, {});
+
+    var colorMapFunc = function(label) {
+      if (label === rootNodeName || label === nullNodeName) {
+        return "#FFFFFF";
+      } else {
+        return colorMap[label];
+      }
+    }
+    colorMapFunc.entries = d3.entries(colorMap);
+    colorMapFunc.keys = d3.keys(colorMap);
+
+    _colorMap = colorMapFunc;
   };
 
   // TODO: add sorting
@@ -250,11 +286,27 @@
       knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
     }
 
+    // Donut hole configuration
+    var donutHoleToggle = _representation.options.donutHoleToggle;
+    var donutHole = _value.options.donutHole;
+    if (donutHoleToggle) {
+      knimeService.addMenuDivider();
+
+      var donutHoleCheckbox = knimeService.createMenuCheckbox(
+          'donutHoleCheckbox', _value.options.donutHole, function() {
+            _value.options.donutHole = this.checked;
+            // TODO: hide inner label conf depending on this
+            drawChart();
+          });
+      knimeService.addMenuItem('Donut Hole:', 'search', donutHoleCheckbox);
+    }
+
     // Inner label configuration
     var innerLabelToggle = _representation.options.innerLabelToggle;
     var innerLabelStyleSelect = _representation.options.innerLabelStyleSelect;
     var enableInnerLabelEdit = _representation.options.enableInnerLabelEdit;
-    if (innerLabelToggle || innerLabelStyleSelect || enableInnerLabelEdit) {
+    if (!(!donutHoleToggle && !donutHole) &&
+        (innerLabelToggle || innerLabelStyleSelect || enableInnerLabelEdit)) {
       knimeService.addMenuDivider();
 
       if (innerLabelToggle) {
@@ -433,7 +485,8 @@
       legend: _value.options.legend,
       breadcrumb: _value.options.breadcrumb,
       zoomable: _value.options.zoomable,
-      aggregationType: _value.options.aggregationType
+      aggregationType: _value.options.aggregationType,
+      donutHole: _value.options.donutHole
     };
 
     drawSunburst(_data, plottingSurface, w, h, options);
@@ -485,6 +538,10 @@
         .attr("r", radius)
         .style("opacity", 0);
 
+    if (!options.donutHole && data.children.length === 1) {
+      data = data.children[0];
+    }
+
     // For efficiency, filter nodes to keep only those large enough to see.
     // TODO: make this optional
     var nodes = partition.nodes(data)
@@ -497,9 +554,9 @@
       .enter().append("path")
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
-        .style("fill", function(d) { return _colorMap[d.name]; })
+        .style("fill", function(d) { return _colorMap(d.name); })
         .on("mouseover", mouseover)
-        .on("click", click);
+        .on("click", options.zoomable ? click : null);
 
     // Basic setup of page elements.
     if (options.breadcrumb) {
@@ -517,15 +574,16 @@
     totalSize = path.node().__data__.value;
 
     // add explanation in the middle of the circle
-    var explanation = sunburstGroup.append("g")
-        .attr("id", "explanation");
-    explanation.append("text")
-      .attr("id", "percentage")
-      .attr("text-anchor", "middle")
-      .attr("alignment-baseline", "middle");
-    explanation.append("text")
-      .attr("id", "explanationText");
-
+    if (options.donutHole && !options.zoomable) {
+      var explanation = sunburstGroup.append("g")
+          .attr("id", "explanation");
+      explanation.append("text")
+        .attr("id", "percentage")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle");
+      explanation.append("text")
+        .attr("id", "explanationText");
+    }
     
     function click(d) {
       node = d;
@@ -651,7 +709,7 @@
 
       entering.append("svg:polygon")
           .attr("points", breadcrumbPoints)
-          .style("fill", function(d) { return _colorMap[d.name]; });
+          .style("fill", function(d) { return _colorMap(d.name); });
 
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
@@ -694,11 +752,11 @@
 
       var legend = plottingSurface.append("g")
           .attr("width", li.w)
-          .attr("height", d3.keys(_colorMap).length * (li.h + li.s))
+          .attr("height", _colorMap.keys.length * (li.h + li.s))
           .attr("transform", "translate(" + (width - li.w) + ", 0)");
 
       var g = legend.selectAll("g")
-          .data(d3.entries(_colorMap))
+          .data(_colorMap.entries)
           .enter().append("svg:g")
           .attr("transform", function(d, i) {
                   return "translate(0," + i * (li.h + li.s) + ")";
