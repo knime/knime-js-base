@@ -8,6 +8,9 @@
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
+  var aggregationTypes = ['count', 'size'];
+  var innerLabelStyles = ['count', 'percentage'];
+
 
   view.init = function(representation, value) {
     _representation = representation;
@@ -216,6 +219,19 @@
       }
     }
 
+    // Aggregation Method
+    var aggregationTypeSelect = _representation.options.aggregationTypeSelect;
+    if (aggregationTypeSelect) {
+      knimeService.addMenuDivider();
+
+      var aggregationTypeSelector =
+        knimeService.createMenuSelect('aggregationTypeSelector', _value.options.aggregationType, aggregationTypes, function() {
+          _value.options.aggregationType = this.options[this.selectedIndex].value;
+          drawChart();
+        });
+      knimeService.addMenuItem('Aggregation Type:', 'percent', aggregationTypeSelector);
+    }
+
     // Zoomable configuration
     var zoomableToggle = _representation.options.zoomableToggle;
     if (zoomableToggle) {
@@ -231,9 +247,9 @@
 
     // Inner label configuration
     var innerLabelToggle = _representation.options.innerLabelToggle;
-    var innerLabelPercentageToggle = _representation.options.innerLabelPercentageToggle;
+    var innerLabelStyleSelect = _representation.options.innerLabelStyleSelect;
     var enableInnerLabelEdit = _representation.options.enableInnerLabelEdit;
-    if (innerLabelToggle || innerLabelPercentageToggle || enableInnerLabelEdit) {
+    if (innerLabelToggle || innerLabelStyleSelect || enableInnerLabelEdit) {
       knimeService.addMenuDivider();
 
       if (innerLabelToggle) {
@@ -246,15 +262,13 @@
         knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
       }
 
-      if (innerLabelPercentageToggle) {
-        var innerLabelPercentageCheckbox = knimeService.createMenuCheckbox(
-                'innerLabelPercentageCheckbox', _value.options.innerLabelPercentage,
-                function() {
-                  _value.options.innerLabelPercentage = this.checked;
-                  drawChart();
-                });
-
-        knimeService.addMenuItem('Inner Label Percentage:', 'percent', innerLabelPercentageCheckbox);
+      if (innerLabelStyleSelect) {
+        var innerLabelStyleSelector =
+          knimeService.createMenuSelect('innerLabelStyleSelector', _value.options.innerLabelStyle, innerLabelStyles, function() {
+            _value.options.innerLabelStyle = this.options[this.selectedIndex].value;
+            drawChart();
+          });
+        knimeService.addMenuItem('Inner Label Style:', 'percent', innerLabelStyleSelector);
       }
 
       if (enableInnerLabelEdit) {
@@ -413,7 +427,8 @@
     var options = {
       legend: _value.options.legend,
       breadcrumb: _value.options.breadcrumb,
-      zoomable: _value.options.zoomable
+      zoomable: _value.options.zoomable,
+      aggregationType: _value.options.aggregationType
     };
 
     drawSunburst(_data, plottingSurface, w, h, options);
@@ -435,18 +450,25 @@
     // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
     var b = { w: 75, h: 30, s: 3, t: 10 };
 
-    // Total size of all segments; we set this later, after loading the data.
-    var totalSize = 0;
+    var x = d3.scale.linear()
+        .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.sqrt()
+        .range([0, radius]);
 
     var partition = d3.layout.partition()
-        .size([2 * Math.PI, radius * radius])
-        .value(function(d) { return d.size; });
+        .sort(null)
+        .value(
+          options.aggregationType === 'count'
+          ? function(d) { return 1; }
+          : function(d) { return d.size; }
+        )
 
     var arc = d3.svg.arc()
-        .startAngle(function(d) { return d.x; })
-        .endAngle(function(d) { return d.x + d.dx; })
-        .innerRadius(function(d) { return Math.sqrt(d.y); })
-        .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
@@ -459,20 +481,30 @@
         .style("opacity", 0);
 
     // For efficiency, filter nodes to keep only those large enough to see.
-    var nodes = partition.nodes(data)
-        .filter(function(d) {
-          return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
-        });
+    // var nodes = partition.nodes(data)
+    //     .filter(function(d) {
+    //       return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
+    //     });
 
-    var path = sunburstGroup.data([data]).selectAll("path")
-        .data(nodes)
-        .enter().append("svg:path")
-        .attr("display", function(d) { return d.depth ? null : "none"; })
+    // var path = sunburstGroup.data([data]).selectAll("path")
+    //     .data(nodes)
+    //     .enter().append("svg:path")
+    //     .attr("display", function(d) { return d.depth ? null : "none"; })
+    //     .attr("d", arc)
+    //     .attr("fill-rule", "evenodd")
+    //     .style("fill", function(d) { return _colorMap[d.name]; })
+    //     .style("opacity", 1)
+    //     .on("mouseover", mouseover);
+
+    var path = sunburstGroup.datum(data).selectAll("path")
+        .data(partition.nodes)
+      .enter().append("path")
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) { return _colorMap[d.name]; })
-        .style("opacity", 1)
-        .on("mouseover", mouseover);
+        // .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+        // .on("click", click)
+        // .each(stash);
 
     // Basic setup of page elements.
     if (options.breadcrumb) {
