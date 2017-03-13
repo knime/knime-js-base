@@ -448,7 +448,7 @@
     var radius = Math.min(width - marginLeft, height - marginTop) / 2;
 
     // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-    var b = { w: 75, h: 30, s: 3, t: 10 };
+    var b = { w: 100, h: 30, s: 3, t: 10 };
 
     var x = d3.scale.linear()
         .range([0, 2 * Math.PI]);
@@ -457,7 +457,7 @@
         .range([0, radius]);
 
     var partition = d3.layout.partition()
-        .sort(null)
+        //.sort(null)
         .value(
           options.aggregationType === 'count'
           ? function(d) { return 1; }
@@ -480,6 +480,7 @@
         .attr("r", radius)
         .style("opacity", 0);
 
+    // TODO
     // For efficiency, filter nodes to keep only those large enough to see.
     // var nodes = partition.nodes(data)
     //     .filter(function(d) {
@@ -502,8 +503,8 @@
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) { return _colorMap[d.name]; })
-        // .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-        // .on("click", click)
+        .on("mouseover", mouseover)
+        .on("click", click);
         // .each(stash);
 
     // Basic setup of page elements.
@@ -530,6 +531,26 @@
       .attr("alignment-baseline", "middle");
     explanation.append("text")
       .attr("id", "explanationText");
+
+    
+    function click(d) {
+      node = d;
+      path.transition()
+        .duration(1000)
+        .attrTween("d", arcTweenZoom(d));
+    }
+
+    // When zooming: interpolate the scales.
+    function arcTweenZoom(d) {
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+          yd = d3.interpolate(y.domain(), [d.y, 1]),
+          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      return function(d, i) {
+        return i
+            ? function(t) { return arc(d); }
+            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+      };
+    }
 
     // Fade all but the current sequence, and show it in the breadcrumb trail.
     function mouseover(d) {
@@ -641,9 +662,11 @@
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
           .attr("y", b.h / 2)
+          .attr("width", width)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
-          .text(function(d) { return d.name; });
+          .text(function(d) { return d.name; })
+          .each(wrap);
 
       // Set position for entering and updating nodes.
       g.attr("transform", function(d, i) {
@@ -659,7 +682,7 @@
           .attr("y", b.h / 2)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
-          .text(percentageString);
+          .text(percentageString)
 
       // Make the breadcrumb trail visible, if it's hidden.
       d3.select("#trail")
@@ -671,7 +694,7 @@
 
       // Dimensions of legend item: width, height, spacing, radius of rounded rect.
       var li = {
-        w: 75, h: 30, s: 3, r: 3
+        w: 100, h: 30, s: 3, r: 3
       };
 
       var legend = plottingSurface.append("g")
@@ -696,9 +719,11 @@
       g.append("svg:text")
           .attr("x", li.w / 2)
           .attr("y", li.h / 2)
+          .attr("width", li.w)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
-          .text(function(d) { return d.key; });
+          .text(function(d) { return d.key; })
+          .each(wrap);
     }
 
     function toggleLegend() {
@@ -709,6 +734,18 @@
         legend.style("visibility", "hidden");
       }
     }
+
+    function wrap() {
+      var self = d3.select(this),
+        textLength = self.node().getComputedTextLength(),
+        text = self.text(),
+        width = self.attr("width");
+      while (textLength+5 > width && text.length > 0) {
+        text = text.slice(0, -1);
+        self.text(text + '...');
+        textLength = self.node().getComputedTextLength();
+      }
+    } 
   }
 
   view.getSVG = function() {

@@ -58,7 +58,7 @@
 
 				<stringListOption name="Aggregation Type" id="aggregationType"
 					label="Aggregation Type" possibleValues="count size"
-					defaultValues="size">
+					defaultValues="size" saveInView="true">
 					Choose how partition size is aggregated.
 				</stringListOption>
 
