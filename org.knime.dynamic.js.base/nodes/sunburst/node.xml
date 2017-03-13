@@ -55,17 +55,19 @@
 					When
 					checked, a breadcrumb is displayed on mouseover.
 				</checkBoxOption>
-
 				<stringListOption name="Aggregation Type" id="aggregationType"
 					label="Aggregation Type" possibleValues="count size"
 					defaultValues="size" saveInView="true">
 					Choose how partition size is aggregated.
 				</stringListOption>
-
 				<checkBoxOption name="Enable zoom" id="zoomable"
 					label="Enable zoom" defaultValue="false" saveInView="true">
 					When checked,
 					zooming into the chart partitions is enabled.
+				</checkBoxOption>
+				<checkBoxOption name="Enable donut hole" id="donutHole"
+					label="Enable donut hole" defaultValue="true" saveInView="true">
+					When checked, the sunburst chart is displayed with a hole inside.
 				</checkBoxOption>
 				<!-- TODO: enable relationship -->
 				<checkBoxOption name="Enable inner label" id="innerLabel"
@@ -73,7 +75,6 @@
 					When
 					checked, an inner label is displayed on mouseover.
 				</checkBoxOption>
-
 				<stringListOption name="Inner label style" id="innerLabelStyle"
 					label="Inner label style" possibleValues="count percentage"
 					defaultValues="percentage">
@@ -109,7 +110,6 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the subtitle within the view.
 				</checkBoxOption>
-
 				<checkBoxOption name="Enable legend toggle" id="legendToggle"
 					label="Enable legend toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
@@ -129,6 +129,11 @@
 					label="Enable zoomable toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of zoom within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable donut hole toggle" id="donutHoleToggle"
+					label="Enable donut hole toggle" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable toggling of donut hole the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable inner label toggle" id="innerLabelToggle"
 					label="Enable inner label toggle" defaultValue="true"
