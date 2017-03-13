@@ -55,6 +55,13 @@
 					When
 					checked, a breadcrumb is displayed on mouseover.
 				</checkBoxOption>
+
+				<stringListOption name="Aggregation Type" id="aggregationType"
+					label="Aggregation Type" possibleValues="count size"
+					defaultValues="size">
+					Choose how partition size is aggregated.
+				</stringListOption>
+
 				<checkBoxOption name="Enable zoom" id="zoomable"
 					label="Enable zoom" defaultValue="false" saveInView="true">
 					When checked,
@@ -66,12 +73,12 @@
 					When
 					checked, an inner label is displayed on mouseover.
 				</checkBoxOption>
-				<checkBoxOption name="Inner label as percentage" id="innerLabelPercentage"
-					label="Inner label as percentage" defaultValue="false" saveInView="true"
-					enableDependency="innerLabel">
-					When checked, the inner label is displayed as
-					percentage, not frequency.
-				</checkBoxOption>
+
+				<stringListOption name="Inner label style" id="innerLabelStyle"
+					label="Inner label style" possibleValues="count percentage"
+					defaultValues="percentage">
+					Choose how inner label is displayed.
+				</stringListOption>
 				<stringOption name="Inner label text" id="innerLabelText"
 					label="Inner label text" optional="true" saveInView="true"
 					enableDependency="innerLabel">
@@ -113,6 +120,11 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable toggling of the breadcrumb within the view.
 				</checkBoxOption>
+				<checkBoxOption name="Enable aggregation type selection" id="aggregationTypeSelect"
+					label="Enable aggregation type selection" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable selection of aggregation type within the view.
+				</checkBoxOption>
 				<checkBoxOption name="Enable zoomable toggle" id="zoomableToggle"
 					label="Enable zoomable toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
@@ -123,11 +135,11 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable toggling of the inner label within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable inner label percentage toggle"
-					id="innerLabelPercentageToggle" label="Enable inner label percentage toggle"
+				<checkBoxOption name="Enable inner label style selection"
+					id="innerLabelStyleSelect" label="Enable inner label style selection"
 					defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
-					Check to enable toggling of inner label percentage within the view.
+					Check to enable selection of inner label style within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable inner label editing" id="enableInnerLabelEdit"
 					label="Enable inner label editing" defaultValue="true"
