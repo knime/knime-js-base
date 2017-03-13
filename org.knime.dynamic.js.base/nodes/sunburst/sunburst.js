@@ -492,16 +492,6 @@
           return (d.dx > 0.001); // 0.005 radians = 0.06 degrees
         });
 
-    // var path = sunburstGroup.data([data]).selectAll("path")
-    //     .data(nodes)
-    //     .enter().append("svg:path")
-    //     .attr("display", function(d) { return d.depth ? null : "none"; })
-    //     .attr("d", arc)
-    //     .attr("fill-rule", "evenodd")
-    //     .style("fill", function(d) { return _colorMap[d.name]; })
-    //     .style("opacity", 1)
-    //     .on("mouseover", mouseover);
-
     var path = sunburstGroup.datum(data).selectAll("path")
         .data(nodes)
       .enter().append("path")
@@ -510,7 +500,6 @@
         .style("fill", function(d) { return _colorMap[d.name]; })
         .on("mouseover", mouseover)
         .on("click", click);
-        // .each(stash);
 
     // Basic setup of page elements.
     if (options.breadcrumb) {
