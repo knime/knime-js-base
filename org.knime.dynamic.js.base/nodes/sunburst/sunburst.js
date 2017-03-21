@@ -6,7 +6,6 @@
 // have no hole if it is deselected
 // have a more standard look for legend
 // custom colors (waiting for christiabn)
-// add: "enable filtering for too small nodes"-option
 
 (sunburst_namespace = function() {
 
@@ -234,6 +233,19 @@
   	    knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
   	  }
   	}
+
+    // Filter-small-nodes configuration
+    var filterSmallNodesToggle = _representation.options.filterSmallNodesToggle;
+    if (filterSmallNodesToggle) {
+      knimeService.addMenuDivider();
+
+      var filterSmallCheckbox = knimeService.createMenuCheckbox(
+          'filterSmallNodesCheckbox', _value.options.filterSmallNodes, function() {
+            _value.options.filterSmallNodes = this.checked;
+            drawChart();
+          });
+      knimeService.addMenuItem('Filter out small nodes:', 'search', filterSmallCheckbox);
+    }
 
     // Legend / Interactive Guideline / Grid configuration
     var legendToggle = _representation.options.legendToggle;
@@ -473,6 +485,7 @@
       breadcrumb: _value.options.breadcrumb,
       zoomable: _value.options.zoomable,
       aggregationType: _value.options.aggregationType,
+      filterSmallNodes: _value.options.filterSmallNodes
     };
 
     drawSunburst(_data, plottingSurface, w, h, options);
@@ -527,11 +540,14 @@
         .style("opacity", 0);
 
     // For efficiency, filter nodes to keep only those large enough to see.
-    // TODO: make this optional
-    var nodes = partition.nodes(data)
-        .filter(function(d) {
-          return (d.dx > 0.001); // 0.005 radians = 0.06 degrees
-        });
+    if (optins.filterSmallNodes) {
+      var nodes = partition.nodes(data)
+          .filter(function(d) {
+            return (d.dx > 0.001); // 0.001 radians = 0.06 degrees
+          });
+    } else {
+      var nodes = partition.nodes(data);
+    }
 
     var path = sunburstGroup.datum(data).selectAll("path")
         .data(nodes)
