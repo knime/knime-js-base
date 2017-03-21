@@ -1,3 +1,13 @@
+// TODO:
+// selection of tunnel in graph persistent
+// display "NA" nicer in breadcrumb
+// persist zoom state
+// knime-filtering and knime-selection
+// have no hole if it is deselected
+// have a more standard look for legend
+// custom colors (waiting for christiabn)
+// add: "enable filtering for too small nodes"-option
+
 (sunburst_namespace = function() {
 
   var view = {};
@@ -9,7 +19,7 @@
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
   var rootNodeName = "root";
-  var nullNodeName = "null";
+  var nullNodeName = "NA";
 
   var aggregationTypes = ['count', 'size'];
   var innerLabelStyles = ['count', 'percentage'];
@@ -46,8 +56,6 @@
   // Transform data from first port into a hierarchical structure suitable
   // for a partition layout.
   var transformData = function() {
-    // TODO: handle missing values
-
     // Get indices for path columns and frequency column.
     function indexOf(column) {
       return knimeTable1.getColumnNames().indexOf(column);
@@ -107,11 +115,6 @@
       var currentNode = _data;
       for (var j = 0; j < parts.length; j++) {
         var children = currentNode["children"];
-        // TODO: handle null
-        // IDEA: have a key that identifies null-objects 
-        // PROBLEM: what if string collides with class given by user?
-        // PROBLEM: JavaScript object keys have to be sttrings
-        // PROBLEM: Same is true for root node!
         if (parts[j] === null) {
           var nodeName = nullNodeName;
         } else {
@@ -509,10 +512,12 @@
     var b = { w: 100, h: 30, s: 3, t: 10 };
 
     var x = d3.scale.linear()
-        .range([0, 2 * Math.PI]);
+        .range([0, 2 * Math.PI])
+        .clamp(true);
 
     var y = d3.scale.sqrt()
-        .range([0, radius]);
+        .range([0, radius])
+        .clamp(true);
 
     var partition = d3.layout.partition()
         //.sort(null)
@@ -523,10 +528,10 @@
         )
 
     var arc = d3.svg.arc()
-        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+        .startAngle(function(d) { return Math.min(2 * Math.PI, x(d.x)); })
+        .endAngle(function(d) { return Math.min(2 * Math.PI, x(d.x + d.dx)); })
+        .innerRadius(function(d) { return y(d.y); })
+        .outerRadius(function(d) { return y(d.y + d.dy); });
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
