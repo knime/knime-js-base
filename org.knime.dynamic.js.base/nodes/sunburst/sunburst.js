@@ -2,7 +2,6 @@
 // selection of tunnel in graph persistent
 // persist zoom state
 // knime-filtering and knime-selection
-// have no hole if it is deselected
 // have a more standard look for legend
 // custom colors (waiting for christiabn)
 
@@ -548,10 +547,10 @@
       var nodes = partition.nodes(data);
     }
 
-    var path = sunburstGroup.datum(data).selectAll("path")
+    var path = sunburstGroup.selectAll("path")
         .data(nodes)
       .enter().append("path")
-        .attr("d", arc)
+        .attr("d", _value.options.zoomNode ? arcTweenZoom(_value.options.zoomNode) : arc)
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) { return _colorMap(d.name); })
         .on("mouseover", mouseover)
@@ -592,6 +591,12 @@
       path.transition()
         .duration(1000)
         .attrTween("d", arcTweenZoom(d));
+
+      if (d.name === rootNodeName) {
+        delete _value.options.zoomNode;
+      } else {
+        _value.options.zoomNode = d;
+      }
     }
 
     // When zooming: interpolate the scales.
