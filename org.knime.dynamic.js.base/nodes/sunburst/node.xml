@@ -65,10 +65,6 @@
 					When checked,
 					zooming into the chart partitions is enabled.
 				</checkBoxOption>
-				<checkBoxOption name="Enable donut hole" id="donutHole"
-					label="Enable donut hole" defaultValue="true" saveInView="true">
-					When checked, the sunburst chart is displayed with a hole inside.
-				</checkBoxOption>
 				<!-- TODO: enable relationship -->
 				<checkBoxOption name="Enable inner label" id="innerLabel"
 					label="Enable inner label" defaultValue="true" saveInView="true">
@@ -129,11 +125,6 @@
 					label="Enable zoomable toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable toggling of zoom within the view.
-				</checkBoxOption>
-				<checkBoxOption name="Enable donut hole toggle" id="donutHoleToggle"
-					label="Enable donut hole toggle" defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable toggling of donut hole the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable inner label toggle" id="innerLabelToggle"
 					label="Enable inner label toggle" defaultValue="true"

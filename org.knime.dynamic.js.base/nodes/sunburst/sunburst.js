@@ -289,27 +289,11 @@
       knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
     }
 
-    // Donut hole configuration
-    var donutHoleToggle = _representation.options.donutHoleToggle;
-    var donutHole = _value.options.donutHole;
-    if (donutHoleToggle) {
-      knimeService.addMenuDivider();
-
-      var donutHoleCheckbox = knimeService.createMenuCheckbox(
-          'donutHoleCheckbox', _value.options.donutHole, function() {
-            _value.options.donutHole = this.checked;
-            // TODO: hide inner label conf depending on this
-            drawChart();
-          });
-      knimeService.addMenuItem('Donut Hole:', 'search', donutHoleCheckbox);
-    }
-
     // Inner label configuration
     var innerLabelToggle = _representation.options.innerLabelToggle;
     var innerLabelStyleSelect = _representation.options.innerLabelStyleSelect;
     var enableInnerLabelEdit = _representation.options.enableInnerLabelEdit;
-    if (!(!donutHoleToggle && !donutHole) &&
-        (innerLabelToggle || innerLabelStyleSelect || enableInnerLabelEdit)) {
+    if (innerLabelToggle || innerLabelStyleSelect || enableInnerLabelEdit) {
       knimeService.addMenuDivider();
 
       if (innerLabelToggle) {
@@ -489,7 +473,6 @@
       breadcrumb: _value.options.breadcrumb,
       zoomable: _value.options.zoomable,
       aggregationType: _value.options.aggregationType,
-      donutHole: _value.options.donutHole
     };
 
     drawSunburst(_data, plottingSurface, w, h, options);
@@ -543,10 +526,6 @@
         .attr("r", radius)
         .style("opacity", 0);
 
-    if (!options.donutHole && data.children.length === 1) {
-      data = data.children[0];
-    }
-
     // For efficiency, filter nodes to keep only those large enough to see.
     // TODO: make this optional
     var nodes = partition.nodes(data)
@@ -579,7 +558,7 @@
     totalSize = path.node().__data__.value;
 
     // add explanation in the middle of the circle
-    if (options.donutHole && !options.zoomable) {
+    if (!options.zoomable) {
       var explanation = sunburstGroup.append("g")
           .attr("id", "explanation");
       explanation.append("text")
