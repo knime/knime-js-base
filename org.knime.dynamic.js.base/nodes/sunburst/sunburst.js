@@ -1,6 +1,5 @@
 // TODO:
 // selection of tunnel in graph persistent
-// donut hole text
 // persist zoom state
 // knime-filtering and knime-selection
 // have no hole if it is deselected
@@ -582,7 +581,10 @@
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle");
       explanation.append("text")
-        .attr("id", "explanationText");
+        .attr("id", "explanationText")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("y", 30);
     }
     
     function click(d) {
@@ -607,20 +609,30 @@
     // Fade all but the current sequence, and show it in the breadcrumb trail.
     function mouseover(d) {
 
-      var percentage = (100 * d.value / totalSize).toPrecision(3);
-      var percentageString = percentage + "%";
-      if (percentage < 0.1) {
-        percentageString = "< 0.1%";
+      if (_value.options.innerLabelStyle === "percentage") {
+        var statistic = (100 * d.value / totalSize).toPrecision(3);
+        var statisticString = statistic + "%";
+        if (statistic < 0.1) {
+          statisticString = "< 0.1%";
+        }
+      } else {
+        var statistic = d.value;
+        var statisticString = d3.format("s")(statistic);
       }
 
-      d3.select("#percentage")
-          .text(percentageString);
+      if (_value.options.innerLabel) {
+        d3.select("#explanation")
+          .style("visibility", "visible");
 
-      d3.select("#explanation")
-          .style("visibility", "");
+        d3.select("#percentage")
+            .text(statisticString);
+
+        d3.select("#explanationText")
+            .text(_value.options.innerLabelText);
+      }
 
       var sequenceArray = getAncestors(d);
-      updateBreadcrumbs(sequenceArray, percentageString);
+      updateBreadcrumbs(sequenceArray, statisticString);
 
       // Fade all the segments.
       d3.selectAll("path")
@@ -697,7 +709,7 @@
     }
 
     // Update the breadcrumb trail to show the current sequence and percentage.
-    function updateBreadcrumbs(nodeArray, percentageString) {
+    function updateBreadcrumbs(nodeArray, statisticString) {
 
       // Data join; key function combines name and depth (= position in sequence).
       var g = d3.select("#trail")
@@ -735,7 +747,7 @@
           .attr("y", b.h / 2)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
-          .text(percentageString)
+          .text(statisticString)
 
       // Make the breadcrumb trail visible, if it's hidden.
       d3.select("#trail")
