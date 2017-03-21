@@ -26,8 +26,8 @@
 				<columnSelectorOption name="Frequency column"
 					id="freqColumn" inPortIndex="0" label="Frequency Column"
 					filterClasses="org.knime.core.data.IntValue"
-					allowNoneColumn="false"
-					optional="false"
+					allowNoneColumn="true"
+					optional="true"
 					>
 					Select the column with the frequency information for
 					the paths.

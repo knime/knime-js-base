@@ -3,7 +3,13 @@
 // persist zoom state
 // knime-filtering and knime-selection
 // have a more standard look for legend
-// custom colors (waiting for christiabn)
+//    - kreise statt fläche
+// filtering by clicking on legend -> do not show paths that end with x
+// custom colors (waiting for christian)
+// in dialog: let user choose threshold 
+// different mouse modi for zoom/selection - see scatterplott
+// have frequency column optional - else use just count
+// remove count option
 
 (sunburst_namespace = function() {
 
@@ -16,7 +22,7 @@
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
   var rootNodeName = "root";
-  var nullNodeName = "NA";
+  var nullNodeName = "?";
 
   var aggregationTypes = ['count', 'size'];
   var innerLabelStyles = ['count', 'percentage'];
@@ -506,12 +512,10 @@
     var b = { w: 100, h: 30, s: 3, t: 10 };
 
     var x = d3.scale.linear()
-        .range([0, 2 * Math.PI])
-        .clamp(true);
+        .range([0, 2 * Math.PI]);
 
     var y = d3.scale.sqrt()
-        .range([0, radius])
-        .clamp(true);
+        .range([0, radius]);
 
     var partition = d3.layout.partition()
         //.sort(null)
@@ -522,10 +526,10 @@
         )
 
     var arc = d3.svg.arc()
-        .startAngle(function(d) { return Math.min(2 * Math.PI, x(d.x)); })
-        .endAngle(function(d) { return Math.min(2 * Math.PI, x(d.x + d.dx)); })
-        .innerRadius(function(d) { return y(d.y); })
-        .outerRadius(function(d) { return y(d.y + d.dy); });
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
@@ -595,7 +599,8 @@
       if (d.name === rootNodeName) {
         delete _value.options.zoomNode;
       } else {
-        _value.options.zoomNode = d;
+        _value.options.zoomNode = { x: d.x, y: d.y, dx: d.dx };
+        console.log(_value.options.zoomNode);
       }
     }
 
