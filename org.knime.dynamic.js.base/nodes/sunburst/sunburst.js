@@ -1,6 +1,6 @@
 // TODO:
 // selection of tunnel in graph persistent
-// display "NA" nicer in breadcrumb
+// donut hole text
 // persist zoom state
 // knime-filtering and knime-selection
 // have no hole if it is deselected
@@ -244,7 +244,7 @@
             _value.options.filterSmallNodes = this.checked;
             drawChart();
           });
-      knimeService.addMenuItem('Filter out small nodes:', 'search', filterSmallCheckbox);
+      knimeService.addMenuItem('Filter out tiny nodes:', 'search', filterSmallCheckbox);
     }
 
     // Legend / Interactive Guideline / Grid configuration
@@ -540,7 +540,7 @@
         .style("opacity", 0);
 
     // For efficiency, filter nodes to keep only those large enough to see.
-    if (optins.filterSmallNodes) {
+    if (options.filterSmallNodes) {
       var nodes = partition.nodes(data)
           .filter(function(d) {
             return (d.dx > 0.001); // 0.001 radians = 0.06 degrees
@@ -709,7 +709,8 @@
 
       entering.append("svg:polygon")
           .attr("points", breadcrumbPoints)
-          .style("fill", function(d) { return _colorMap(d.name); });
+          .attr("fill", function(d) { return _colorMap(d.name); })
+          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
 
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
