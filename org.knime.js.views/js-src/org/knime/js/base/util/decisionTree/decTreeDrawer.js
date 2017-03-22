@@ -41,13 +41,18 @@ function DecTreeDrawer(representation, value) {
     		displayFullscreenButton: representation.displayFullscreenButton,
     		enableZooming : representation.enableZooming,
     		displaySelectionResetButton: representation.displaySelectionResetButton,
-    		truncationLimit : representation.truncationLimit
+    		truncationLimit : representation.truncationLimit,
+    		scale : value.scale,
+    		showZoomResetButton : representation.showZoomResetButton
     };
     var selection;
     var decTree = representation.tree;
     var nodeStatus = value.nodeStatus;
     var title = value.title;
     var subtitle = value.subtitle;
+    
+    // declare zoom on constructor level to access it in drawControls and drawTree
+    var zoom;
     
     var tooltipElement;
     var tooltip = d3.tip()
@@ -107,7 +112,6 @@ function DecTreeDrawer(representation, value) {
     var dtd = this;
     var numFormatter = wNumb(options.numberFormat);
     var translation = [0,0];
-	var scale = 1;
 	var scrollVector = [0,0];
     
     var fontsize = d3.select("svg");
@@ -127,7 +131,8 @@ function DecTreeDrawer(representation, value) {
     		title : title,
     		subtitle: subtitle,
     		publishSelection: options.publishSelection,
-    		subscribeSelection: options.subscribeSelection
+    		subscribeSelection: options.subscribeSelection,
+    		scale: options.scale
     	};
     }
     
@@ -451,10 +456,22 @@ function DecTreeDrawer(representation, value) {
     	if (options.displayFullscreenButton) {
     		knimeService.allowFullscreen();
     	}
+    	
+    	if (options.showZoomResetButton) {
+    		knimeService.addButton('scatter-zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
+    			var dt = d3.select("#decTree");
+    			var t = d3.transform(dt.attr("transform"));
+    			options.scale = 1.0;
+    			t.scale = options.scale;
+    			zoom.scale(options.scale);
+    			dt.attr("transform", t.toString());
+    			resizeSVG()
+    		});
+    	}
 		
 	    if (!options.enableViewConfiguration) return;
 	    var pre = false;
-	    	    
+	    
 	    if (options.enableTitleChange || options.enableSubtitleChange) {
 	    	pre = true;
 	    	if (options.enableTitleChange) {
@@ -621,8 +638,11 @@ function DecTreeDrawer(representation, value) {
 		var bbox = d3.select("#titles").node().getBBox();	
 		posTree = [10, topMargin];
 //		d3.select("#titles").attr("transform", "translate(0, 24)");
+		var dt = d3.select("#decTree");
+		t = d3.transform(dt.attr("transform"));
+		t.translate = posTree;
 		d3.select("#decTree")
-			.attr("transform", "translate(" + posTree + ")");
+			.attr("transform", t.toString());
 		resizeSVG();
 	}
 	
@@ -704,14 +724,15 @@ function DecTreeDrawer(representation, value) {
     function drawTree() {
     	
     	var svg = d3.select("#decTree");
+    	var t = d3.transform(svg.attr("transform"));
+    	t.scale = [options.scale, options.scale];
+    	svg.attr("transform", t.toString());
         // zooming and panning
     	if (options.enableZooming) {
-        var zoom = d3.behavior.zoom().on("zoom", function() {
+        zoom = d3.behavior.zoom().on("zoom", function() {
         	var panVec = d3.event.translate;
         	dt = d3.select("#decTree");
-        	t = dt.select("g");
-        	var transformation = d3.transform(t.attr("transform"));
-        	transformation.scale = d3.event.scale;
+        	options.scale = d3.event.scale;
         	decTreeTrans = d3.transform(dt.attr("transform"));
         	decTreeTrans.scale = d3.event.scale;
         	dt.attr("transform", decTreeTrans.toString());
@@ -724,6 +745,7 @@ function DecTreeDrawer(representation, value) {
         	panVec[1] = d3.max([0, panVec[1]]);
             resizeSVG();
             });
+        	zoom.scale(options.scale);
 //            .translate([width / 2, dtd.margin[1]]);
         	svg.call(zoom)
                 .on("dblclick.zoom", null);
