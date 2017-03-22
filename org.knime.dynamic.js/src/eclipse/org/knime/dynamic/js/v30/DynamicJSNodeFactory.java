@@ -166,4 +166,11 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 		return new DynamicJSNodeDialog(m_doc.getKnimeNode());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isDeprecatedInternal() {
+	    return m_doc.getKnimeNode().getDeprecated();
+	}
 }
