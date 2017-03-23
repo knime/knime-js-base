@@ -34,24 +34,19 @@ knime_line_plot = function() {
 			_keyedDataset = new jsfc.KeyedValues2DDataset();
 			//_keyedDataset.load(_representation.keyedDataset);
 
-			// workaround for https://bugs.knime.org/show_bug.cgi?id=6229, remove when solved
-			if (_representation.keyedDataset.rows.length == 1) {
-				alert("Chart with only one data sample not supported at this time. Please provide a data set with at least 2 samples.")
-			} else {
-				for (var rowIndex = 0; rowIndex < _representation.keyedDataset.rows.length; rowIndex++) {
-					var rowKey = _representation.keyedDataset.rows[rowIndex].rowKey;
-					var row = _representation.keyedDataset.rows[rowIndex];
-					var properties = row.properties;
-					for (var col = 0; col < _representation.keyedDataset.columnKeys.length; col++) {
-						var columnKey = _representation.keyedDataset.columnKeys[col];
-						_keyedDataset.add(rowKey, columnKey, row.values[col]);
-					}
-					for ( var propertyKey in properties) {
-						_keyedDataset.setRowProperty(rowKey, propertyKey,
-								properties[propertyKey]);
-					}
+			for (var rowIndex = 0; rowIndex < _representation.keyedDataset.rows.length; rowIndex++) {
+				var rowKey = _representation.keyedDataset.rows[rowIndex].rowKey;
+				var row = _representation.keyedDataset.rows[rowIndex];
+				var properties = row.properties;
+				for (var col = 0; col < _representation.keyedDataset.columnKeys.length; col++) {
+					var columnKey = _representation.keyedDataset.columnKeys[col];
+					_keyedDataset.add(rowKey, columnKey, row.values[col]);
 				}
-			}
+				for ( var propertyKey in properties) {
+					_keyedDataset.setRowProperty(rowKey, propertyKey,
+							properties[propertyKey]);
+				}
+			}			
 			
 			for (var col = 0; col < _representation.keyedDataset.columnKeys.length; col++) {
 				var columnKey = _representation.keyedDataset.columnKeys[col];
@@ -98,7 +93,20 @@ knime_line_plot = function() {
 		    		}
 		    	});
 				_value.yColumns = yColumns;
-			}			
+			}
+			
+			// Solution for a bunch of problems related to 0-width range of Y axis
+			// (one value, horizontal line, )
+			// ToDo: apply changes to the JSFreeChart 
+			var customRange = function(lowerBound, upperBound) {
+			    if (lowerBound > upperBound) {
+			        throw new Error("Requires lowerBound to be less than upperBound: " + lowerBound + ", " + upperBound);
+			    }
+			    this._lowerBound = lowerBound;
+			    this._upperBound = upperBound;
+			};
+			customRange.prototype = jsfc.Range.prototype;
+			jsfc.Range = customRange;
 			
 			if (_representation.enableViewConfiguration || _representation.showZoomResetButton) {
 				drawControls(layoutContainer);
