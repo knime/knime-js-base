@@ -96,8 +96,9 @@ knime_line_plot = function() {
 			}
 			
 			// Solution for a bunch of problems related to 0-width range of Y axis
-			// (one value, horizontal line, )
-			// ToDo: apply changes to the JSFreeChart 
+			// (one value, horizontal line, all missing values etc.)
+			// Fixed with using > insteaof >= in comparison of lowerBound with upperBound
+			// ToDo: apply changes to JSFreeChart 
 			var customRange = function(lowerBound, upperBound) {
 			    if (lowerBound > upperBound) {
 			        throw new Error("Requires lowerBound to be less than upperBound: " + lowerBound + ", " + upperBound);
@@ -130,6 +131,60 @@ knime_line_plot = function() {
 		var xyDataset;
 		
 		if (_keyedDataset.rowCount() > 0 && _value.yColumns.length > 0) {
+			
+			// Fix missing values in String x-column.
+			// ToDo: apply changes to JSFreeChart
+			// Fixed with null-checking of source.valueByIndex(r, c)
+			// /--
+			var customXYDataset = function(source, xcol, ycols) {
+			    // the source data is stored in a 2D table structure, with x-values read
+			    // from the column with the key matching the parameter 'xcol' and the 
+			    // y-values read from columns with keys matching the parameter 'ycols' (an
+			    // array of strings).
+			    this._source = source;
+			    
+			    // if xcol is null the x-values returned are the row indices and we
+			    // set up symbols from the row keys
+			    this._xcol = xcol;
+			    if (xcol === null) {
+			        var xsyms = this._extractRowSymbols(source);
+			        source.setProperty("x-symbols", xsyms);
+			    } else {
+			        var c = this._source.columnIndex(xcol);
+			        if (c < 0) {
+			            throw new Error("The column 'xcol' (" + xcol + ") is not present.");
+			        }
+			        var symbols = source.getColumnProperty(xcol, "symbols");
+			        if (symbols) {
+			            var xsyms = [];
+			            for (var r = 0; r < source.rowCount(); r++) {
+			                var s = {};
+			                s.value = r;
+			                var val = source.valueByIndex(r, c);
+			                if (val !== null) {
+				                s.symbol = symbols[val].symbol;
+				                xsyms.push(s);
+			                }
+			            }
+			            source.setProperty("x-symbols", xsyms);
+			        } else {
+			            source.setProperty("x-symbols", null);
+			        }
+			    }
+			    
+			    ycols.forEach(function(entry) {
+			        if (source.columnIndex(entry) < 0) {
+			            throw new Error("The y-column " + entry + " is not present.");
+			        }
+			    });
+			    this._ycols = ycols;
+			    this._nextRowID = 0;
+			    this._listeners = [];
+			};
+			customXYDataset.prototype = jsfc.TableXYDataset.prototype;
+			jsfc.TableXYDataset = customXYDataset;
+			// --/
+			
 			xyDataset = new jsfc.TableXYDataset(_keyedDataset, _value.xColumn, _value.yColumns);
 		} else {
 			xyDataset = new jsfc.StandardXYDataset();

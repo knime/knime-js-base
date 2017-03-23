@@ -72,8 +72,9 @@ knime_scatter_plot_selection_appender = function() {
 			//console.timeEnd("Parse and build 2DDataset");
 			
 			// Solution for a bunch of problems related to 0-width range of Y axis
-			// (one value, horizontal line, )
-			// ToDo: apply changes to the JSFreeChart 
+			// (one value, horizontal line, all missing values etc.)
+			// Fixed with using > insteaof >= in comparison of lowerBound with upperBound
+			// ToDo: apply changes to JSFreeChart
 			var customRange = function(lowerBound, upperBound) {
 			    if (lowerBound > upperBound) {
 			        throw new Error("Requires lowerBound to be less than upperBound: " + lowerBound + ", " + upperBound);
