@@ -230,7 +230,7 @@ knime_line_plot = function() {
         xAxis.setTickLabelFont(new jsfc.Font("sans-serif", 11));
         xAxis.setGridLinesVisible(_representation.showGrid, false);
         xAxis.setAutoRange(_representation.autoRangeAxes, false);
-        if (_value.xAxisMin && _value.xAxisMax) {
+        if (_value.xAxisMin != null && _value.xAxisMax != null) {
         	xAxis.setBounds(_value.xAxisMin, _value.xAxisMax, false, false);
         }
         
@@ -240,7 +240,7 @@ knime_line_plot = function() {
         yAxis.setTickLabelFont(new jsfc.Font("sans-serif", 11));
         yAxis.setGridLinesVisible(_representation.showGrid, false);
         yAxis.setAutoRange(_representation.autoRangeAxes, false);
-        if (_value.yAxisMin && _value.yAxisMax) {
+        if (_value.yAxisMin != null && _value.yAxisMax != null) {
         	yAxis.setBounds(_value.yAxisMin, _value.yAxisMax, true, false);
         }
         if (_representation.gridColor) {
