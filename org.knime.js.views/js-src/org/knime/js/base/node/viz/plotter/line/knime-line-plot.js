@@ -100,7 +100,7 @@ knime_line_plot = function() {
 			// Fixed with using > insteaof >= in comparison of lowerBound with upperBound
 			// ToDo: apply changes to JSFreeChart 
 			var customRange = function(lowerBound, upperBound) {
-			    if (lowerBound > upperBound) {
+			    if (lowerBound > upperBound) {  // <-- changed here
 			        throw new Error("Requires lowerBound to be less than upperBound: " + lowerBound + ", " + upperBound);
 			    }
 			    this._lowerBound = lowerBound;
@@ -161,7 +161,7 @@ knime_line_plot = function() {
 			                var s = {};
 			                s.value = r;
 			                var val = source.valueByIndex(r, c);
-			                if (val !== null) {
+			                if (val !== null) {  // <-- changed here
 				                s.symbol = symbols[val].symbol;
 				                xsyms.push(s);
 			                }
@@ -183,6 +183,40 @@ knime_line_plot = function() {
 			};
 			customXYDataset.prototype = jsfc.TableXYDataset.prototype;
 			jsfc.TableXYDataset = customXYDataset;
+			// --/
+			
+			// Fix autoRange problem - missing values considered as 0,
+			// therefore the axes origin was always at (0, 0) 
+			// ToDo: apply changes to JSFreeChart
+			// Fixed with null-checking
+			// /--
+			jsfc.TableXYDataset.prototype.xbounds = function() {
+			    var xmin = Number.POSITIVE_INFINITY;
+			    var xmax = Number.NEGATIVE_INFINITY;
+			    for (var r = 0; r < this._source.rowCount(); r++) {
+			        var x = this.x(0, r);
+			        if (x !== null) {  // <-- changed here
+				        xmin = Math.min(xmin, x);
+				        xmax = Math.max(xmax, x);
+			        }
+			    }
+			    return [xmin, xmax];
+			};			
+			
+			jsfc.XYDatasetUtils.ybounds = function(dataset, baseline) {
+			    var ymin = baseline ? baseline : Number.POSITIVE_INFINITY;
+			    var ymax = baseline ? baseline : Number.NEGATIVE_INFINITY;
+			    for (var s = 0; s < dataset.seriesCount(); s++) {
+			        for (var i = 0; i < dataset.itemCount(s); i++) {
+			            var y = dataset.y(s, i);
+			            if (y !== null) {  // <-- changed here
+				            ymin = Math.min(ymin, y);
+				            ymax = Math.max(ymax, y);
+			            }
+			        }
+			    }
+			    return [ymin, ymax];    
+			};
 			// --/
 			
 			xyDataset = new jsfc.TableXYDataset(_keyedDataset, _value.xColumn, _value.yColumns);
