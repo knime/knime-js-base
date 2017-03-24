@@ -153,7 +153,7 @@ final class ScatterPlotViewConfig {
     private boolean m_enableDragZooming = false;
     private boolean m_showZoomResetButton = false;
     private boolean m_enableSelection = true;
-    private boolean m_enableRectangleSelection = false;
+    private boolean m_enableRectangleSelection = true;
     private boolean m_enableLassoSelection = false;
     private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
     private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
