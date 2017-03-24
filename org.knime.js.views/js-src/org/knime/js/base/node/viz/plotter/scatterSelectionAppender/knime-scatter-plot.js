@@ -117,18 +117,7 @@ knime_scatter_plot_selection_appender = function() {
 		if (!yCol) {
 			yCol = "[EMPTY]";
 		}
-		var xyDataset = jsfc.DatasetUtils.extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
-		
-		// filter out missing values indicated as nulls
-		var series = xyDataset.data.series[0];
-		var notNullItems = [];
-		for (var i = 0; i < series.items.length; i++) {
-			var obj = series.items[i];
-			if (obj.x !== null && obj.y !== null) {
-				notNullItems.push(obj);
-			}
-		}
-		series.items = notNullItems;
+		var xyDataset = extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
 		
 		//console.timeEnd("Building XYDataset");
 		return xyDataset;
@@ -1037,6 +1026,54 @@ knime_scatter_plot_selection_appender = function() {
         } else if (info.type == RANGE_MODEL) {
         	
         }
+	    return result;
+	};
+	
+    // Fix missing values.
+	// ToDo: apply changes to JSFreeChart
+	// Fixed with null-checking and ignoring null values
+	extractXYDatasetFromColumns2D = function(dataset, xcol, 
+	        ycol, seriesKey) {
+	    jsfc.Args.requireString(xcol, "xcol");
+	    jsfc.Args.requireString(ycol, "ycol");
+	    var result = new jsfc.StandardXYDataset();
+	    seriesKey = seriesKey || "series 1";
+	    for (var r = 0; r < dataset.rowCount(); r++) {
+	        var rowKey = dataset.rowKey(r);
+	        var x = dataset.valueByKey(rowKey, xcol);
+	        var y = dataset.valueByKey(rowKey, ycol);
+	        if (x === null || y === null) {  // <-- changed here
+	        	continue;
+	        }
+	        result.add(seriesKey, x, y);
+	        var rowPropKeys = dataset.getRowPropertyKeys(rowKey);
+	        var xPropKeys = dataset.getItemPropertyKeys(rowKey, xcol);
+	        var yPropKeys = dataset.getItemPropertyKeys(rowKey, ycol);
+	        var itemIndex = result.itemCount(0) - 1;
+	        rowPropKeys.forEach(function(key) {
+	            var p = dataset.getRowProperty(rowKey, key);
+	            result.setItemPropertyByIndex(0, itemIndex, key, p);
+	        });
+	        xPropKeys.forEach(function(key) {
+	            var p = dataset.getItemProperty(rowKey, xcol, key);
+	            result.setItemPropertyByIndex(0, itemIndex, key, p); 
+	        });
+	        yPropKeys.forEach(function(key) {
+	            var p = dataset.getItemProperty(rowKey, ycol, key);
+	            result.setItemPropertyByIndex(0, itemIndex, key, p); 
+	        });
+	    }
+
+	    // special handling for 'symbols' property
+	    var xsymbols = dataset.getColumnProperty(xcol, "symbols");
+	    if (xsymbols) {
+	        result.setProperty("x-symbols", xsymbols);
+	    }
+	    var ysymbols = dataset.getColumnProperty(ycol, "symbols");
+	    if (ysymbols) {
+	        result.setProperty("y-symbols", ysymbols);
+	    }
+	    
 	    return result;
 	};
 	
