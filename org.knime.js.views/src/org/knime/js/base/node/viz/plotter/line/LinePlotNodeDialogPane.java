@@ -175,9 +175,9 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_allowRectangleSelectionCheckBox = new JCheckBox("Enable rectangular selection");
         m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
         m_missingValueMethodComboBox = new JComboBox<String>();
-        m_missingValueMethodComboBox.addItem("ignore and keep the line continuous");
-        m_missingValueMethodComboBox.addItem("leave a gap where the value is missing");
-        m_missingValueMethodComboBox.addItem("do not display the whole column");
+        m_missingValueMethodComboBox.addItem("ignore");
+        m_missingValueMethodComboBox.addItem("leave a gap");
+        m_missingValueMethodComboBox.addItem("skip column");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);

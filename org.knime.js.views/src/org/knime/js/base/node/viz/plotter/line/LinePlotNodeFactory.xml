@@ -30,9 +30,9 @@
             <option name="Choose columns for y-axis">Defines the columns that contains the values for Y coordinates. Every included column is represented by one line in the view.</option>
             <option name="How to handle missing values">Defines how to operate if the table contains missing values. Three methods are available:
 	            <ul>
-	                <li><i>ignore and keep the line continuous</i> - the plot will be displayed with continuous lines which simply ignore values;</li>
-	                <li><i>leave a gap where the value is missing</i> - line will break and have gap at corresponding places;</li>
-	                <li><i>do not display the whole column</i> - the column will not be present, if it contains missing values.</li>
+	                <li><i>ignore</i> - the plot will be displayed with continuous lines which simply ignore values;</li>
+	                <li><i>leave a gap</i> - line will break and have gap at corresponding places;</li>
+	                <li><i>skip column</i> - the whole column will not be present, if it contains missing values.</li>
 	            </ul>
             </option>
         </tab>
