@@ -276,11 +276,14 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         missingValuePanel.setBorder(BorderFactory.createTitledBorder("How to handle missing values"));
         panel.add(missingValuePanel, c);
         GridBagConstraints cc = new GridBagConstraints();
-        cc.insets = new Insets(5, 5, 5, 5);
+        cc.insets = new Insets(1, 1, 1, 1);
         cc.anchor = GridBagConstraints.NORTHWEST;
         cc.gridx = 0;
         cc.gridy = 0;
+        cc.gridwidth = 2;
+        m_missingValueMethodComboBox.setPreferredSize(new Dimension(250, 25));
         missingValuePanel.add(m_missingValueMethodComboBox, cc);
+        cc.gridwidth = 1;
         c.gridx = 0;
         c.gridy++;
 
