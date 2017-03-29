@@ -1,10 +1,11 @@
 // TODO:
+// maybe: formatter for count/percentage
 // selection of tunnel in graph persistent
 // knime-filtering and knime-selection
 // filtering by clicking on legend -> do not show paths that end with x
 // custom colors (waiting for christian)
 // different mouse modi for zoom/selection - see scatterplott
-// have donut hole option
+// when zoomed in, mouse over goes mad
 
 (sunburst_namespace = function() {
 
@@ -286,6 +287,19 @@
       knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
     }
 
+    // Donut hole configuration
+    var donutHoleToggle = _representation.options.donutHoleToggle;
+    if (donutHoleToggle) {
+      knimeService.addMenuDivider();
+
+      var donutHoleCheckbox = knimeService.createMenuCheckbox(
+          'donutHoleCheckbox', _value.options.donutHole, function() {
+            _value.options.donutHole = this.checked;
+            drawChart();
+          });
+      knimeService.addMenuItem('Donut hole:', 'search', donutHoleCheckbox);
+    }
+
     // Inner label configuration
     var innerLabelToggle = _representation.options.innerLabelToggle;
     var innerLabelStyleSelect = _representation.options.innerLabelStyleSelect;
@@ -523,6 +537,7 @@
         .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
         .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
 
+    // Set display of donut hole depending on donut-hole-configuration and zoom-configuration.
     if (_value.options.donutHole) {
       arc
         .innerRadius(function(d) { return Math.max(0, y(d.y)); })
@@ -530,8 +545,14 @@
     } else {
       var rootSegmentExtent = nodes[0].dy;
       arc
-        .innerRadius(function(d) { return Math.max(0, y(d.y - rootSegmentExtent)); })
-        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy - rootSegmentExtent)); });
+        .innerRadius(function(d) { 
+          var notZoomed = !(_value.options.zoomable && _value.options.zoomNode!=null)
+          return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
+        })
+        .outerRadius(function(d) {
+          var notZoomed = !(_value.options.zoomable && _value.options.zoomNode!=null)
+          return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
+        });
     }
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
@@ -629,10 +650,10 @@
         }
       } else {
         var statistic = d.value;
-        var statisticString = d3.format("s")(statistic);
+        var statisticString = d3.format(".6s")(statistic);
       }
 
-      if (_value.options.innerLabel) {
+      if (_value.options.innerLabel && _value.options.donutHole) {
         d3.select("#explanation")
           .style("visibility", "visible");
 
