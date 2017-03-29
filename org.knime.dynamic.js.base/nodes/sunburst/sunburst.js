@@ -1,15 +1,11 @@
 // TODO:
 // selection of tunnel in graph persistent
-// persist zoom state
 // knime-filtering and knime-selection
-// have a more standard look for legend
-//    - kreise statt fläche
 // filtering by clicking on legend -> do not show paths that end with x
 // custom colors (waiting for christian)
-// in dialog: let user choose threshold 
+// in dialog: let user choose threshold for filtering of small sections
 // different mouse modi for zoom/selection - see scatterplott
-// have frequency column optional - else use just count
-// remove count option
+// have donut hole option
 
 (sunburst_namespace = function() {
 
@@ -24,7 +20,6 @@
   var rootNodeName = "root";
   var nullNodeName = "?";
 
-  var aggregationTypes = ['count', 'size'];
   var innerLabelStyles = ['count', 'percentage'];
 
 
@@ -279,19 +274,6 @@
       }
     }
 
-    // Aggregation Method
-    var aggregationTypeSelect = _representation.options.aggregationTypeSelect;
-    if (aggregationTypeSelect) {
-      knimeService.addMenuDivider();
-
-      var aggregationTypeSelector =
-        knimeService.createMenuSelect('aggregationTypeSelector', _value.options.aggregationType, aggregationTypes, function() {
-          _value.options.aggregationType = this.options[this.selectedIndex].value;
-          drawChart();
-        });
-      knimeService.addMenuItem('Aggregation Type:', 'percent', aggregationTypeSelector);
-    }
-
     // Zoomable configuration
     var zoomableToggle = _representation.options.zoomableToggle;
     if (zoomableToggle) {
@@ -520,7 +502,7 @@
     var partition = d3.layout.partition()
         //.sort(null)
         .value(
-          options.aggregationType === 'count'
+          _representation.options.freqColumn == null
           ? function(d) { return 1; }
           : function(d) { return d.size; }
         )
@@ -554,7 +536,7 @@
     var path = sunburstGroup.selectAll("path")
         .data(nodes)
       .enter().append("path")
-        .attr("d", _value.options.zoomNode ? arcTweenZoom(_value.options.zoomNode) : arc)
+        .attr("d", arc)
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) { return _colorMap(d.name); })
         .on("mouseover", mouseover)
@@ -567,6 +549,11 @@
 
     if (options.legend) {
       drawLegend(plottingSurface);
+    }
+
+    if (_value.options.zoomNode && _value.options.zoomable) {
+      path.transition()
+        .attrTween("d", arcTweenZoom(_value.options.zoomNode));
     }
 
     // Add the mouseleave handler to the bounding circle.
@@ -599,8 +586,12 @@
       if (d.name === rootNodeName) {
         delete _value.options.zoomNode;
       } else {
-        _value.options.zoomNode = { x: d.x, y: d.y, dx: d.dx };
-        console.log(_value.options.zoomNode);
+        _value.options.zoomNode = {
+          x: d.x,
+          y: d.y,
+          dx: d.dx,
+          dy: d.dy
+        };
       }
     }
 
@@ -768,9 +759,9 @@
     // TODO: sort legend
     function drawLegend(plottingSurface) {
 
-      // Dimensions of legend item: width, height, spacing, radius of rounded rect.
+      // Dimensions of legend item: width, height, spacing.
       var li = {
-        w: 100, h: 30, s: 3, r: 3
+        w: 100, h: 15, s: 6, r: 6
       };
 
       var legend = plottingSurface.append("g")
@@ -785,19 +776,24 @@
                   return "translate(0," + i * (li.h + li.s) + ")";
                });
 
-      g.append("svg:rect")
-          .attr("rx", li.r)
-          .attr("ry", li.r)
-          .attr("width", li.w)
-          .attr("height", li.h)
+
+      g.append("svg:circle")
+          .attr("cx", 0)
+          .attr("cy", 0.5 * (li.h - li.r))
+          .attr("r", li.r)
           .style("fill", function(d) { return d.value; });
+      // g.append("svg:rect")
+      //     .attr("rx", li.r)
+      //     .attr("ry", li.r)
+      //     .attr("width", li.w)
+      //     .attr("height", li.h)
+      //     .style("fill", function(d) { return d.value; });
 
       g.append("svg:text")
-          .attr("x", li.w / 2)
-          .attr("y", li.h / 2)
+          .attr("x", li.r + 5)
+          .attr("y", li.r)
           .attr("width", li.w)
           .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
           .text(function(d) { return d.key; })
           .each(wrap);
     }
