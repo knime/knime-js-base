@@ -67,11 +67,6 @@
 					When checked,
 					a donut hole is displayed.
 				</checkBoxOption>
-				<checkBoxOption name="Enable donut hole" id="donutHole"
-					label="Enable donut hole" defaultValue="true" saveInView="true">
-					When checked,
-					a donut hole is displayed.
-				</checkBoxOption>
 				<checkBoxOption name="Enable zoom" id="zoomable"
 					label="Enable zoom" defaultValue="false" saveInView="true">
 					When checked,

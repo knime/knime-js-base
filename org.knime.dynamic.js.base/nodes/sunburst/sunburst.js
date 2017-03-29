@@ -3,7 +3,6 @@
 // knime-filtering and knime-selection
 // filtering by clicking on legend -> do not show paths that end with x
 // custom colors (waiting for christian)
-// in dialog: let user choose threshold for filtering of small sections
 // different mouse modi for zoom/selection - see scatterplott
 // have donut hole option
 
@@ -507,11 +506,33 @@
           : function(d) { return d.size; }
         )
 
+    // Create list of segment objects with cartesian orientation from data.
+    if (options.filterSmallNodes) {
+      // For efficiency, filter nodes to keep only those large enough to see.
+      var nodes = partition.nodes(data)
+          .filter(function(d) {
+            return (d.dx > _representation.options.filteringThreshold);
+          });
+    } else {
+      var nodes = partition.nodes(data);
+    }
+
+    // Functions to map cartesian orientation of partition layout into radial
+    // orientation of sunburst chart.
     var arc = d3.svg.arc()
         .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
         .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+
+    if (_value.options.donutHole) {
+      arc
         .innerRadius(function(d) { return Math.max(0, y(d.y)); })
         .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+    } else {
+      var rootSegmentExtent = nodes[0].dy;
+      arc
+        .innerRadius(function(d) { return Math.max(0, y(d.y - rootSegmentExtent)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy - rootSegmentExtent)); });
+    }
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
@@ -522,16 +543,6 @@
     sunburstGroup.append("svg:circle")
         .attr("r", radius)
         .style("opacity", 0);
-
-    // For efficiency, filter nodes to keep only those large enough to see.
-    if (options.filterSmallNodes) {
-      var nodes = partition.nodes(data)
-          .filter(function(d) {
-            return (d.dx > _representation.options.filteringThreshold);
-          });
-    } else {
-      var nodes = partition.nodes(data);
-    }
 
     var path = sunburstGroup.selectAll("path")
         .data(nodes)
