@@ -162,7 +162,8 @@ knime_paged_table = function() {
 
 				if (knimeColType == 'Local Time' && _representation.globalLocalTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).utc().format(_representation.globalLocalTimeFormat);
+					// TODO: check how many 'S' are necessary
+				    return moment(data, "hh:mm:ss.SSSSSS").utc().format(_representation.globalLocalTimeFormat);
 				  }
 				}
 

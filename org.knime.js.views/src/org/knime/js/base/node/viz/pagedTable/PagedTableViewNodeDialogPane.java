@@ -57,6 +57,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -543,6 +544,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        validateSettings();
+
         PagedTableViewConfig config = new PagedTableViewConfig();
         config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
@@ -576,14 +579,34 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setGlobalDateTimeLocale(PREDEFINED_DATE_TIME_LOCALES.inverse().get(
             ((SettingsModelString)m_globalDateTimeLocaleChooser.getModel()).getStringValue())
         );
-        config.setGlobalDateTimeFormat(((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue());
-        config.setGlobalLocalDateFormat(((SettingsModelString)m_globalLocalDateFormatChooser.getModel()).getStringValue());
-        config.setGlobalLocalDateTimeFormat(((SettingsModelString)m_globalLocalDateTimeFormatChooser.getModel()).getStringValue());
-        config.setGlobalLocalTimeFormat(((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue());
-        config.setGlobalZonedDateTimeFormat(((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue());
+        String globalDateTimeFormat = ((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue();
+        config.setGlobalDateTimeFormat(globalDateTimeFormat);
+        String globalLocalDateFormat = ((SettingsModelString)m_globalLocalDateFormatChooser.getModel()).getStringValue();
+        config.setGlobalLocalDateFormat(globalLocalDateFormat);
+        String globalLocalDateTimeFormat = ((SettingsModelString)m_globalLocalDateTimeFormatChooser.getModel()).getStringValue();
+        config.setGlobalLocalDateTimeFormat(globalLocalDateTimeFormat);
+        String globalLocalTimeFormat = ((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue();
+        config.setGlobalLocalTimeFormat(globalLocalTimeFormat);
+        String globalZonedDateTimeFormat = ((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue();
+        config.setGlobalZonedDateTimeFormat(globalZonedDateTimeFormat);
         config.setEnableGlobalNumberFormat(m_enableGlobalNumberFormatCheckbox.isSelected());
         config.setGlobalNumberFormatDecimals((Integer)m_globalNumberFormatDecimalSpinner.getValue());
+
+        StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalDateTimeFormat);
+        StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).add(globalLocalDateFormat);
+        StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalLocalDateTimeFormat);
+        StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).add(globalLocalTimeFormat);
+        StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).add(globalZonedDateTimeFormat);
+
         config.saveSettings(settings);
+    }
+
+    private void validateSettings() throws InvalidSettingsException {
+        String localTimeFormatString = ((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue();
+        String pattern = "(\\[.*\\])*((A|a|H|h|k|m|S|s|[^a-zA-Z]|\\[.*\\])+|(LT|LTS))(\\[.*\\])*";
+        if (!Pattern.matches(pattern, localTimeFormatString)) {
+            throw new InvalidSettingsException("Local Time format is not valid.");
+        }
     }
 
     private String getAllowedPageSizesString(final int[] sizes) {
@@ -653,6 +676,13 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     public static LinkedHashSet<String> createPredefinedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
+
+        // check the StringHistory first
+        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
+        for (String userFormat : userFormats) {
+            formats.add(userFormat);
+        }
+
         formats.add("YYYY-MM-DD");
         formats.add("ddd MMM DD YYYY HH:mm:ss");
         formats.add("M/D/YY");
@@ -664,11 +694,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
 
-        // check also the StringHistory....
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
         return formats;
     }
 
@@ -677,6 +702,18 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
+
+        // check the StringHistory first
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
         formats.add("YYYY-MM-DD z");
         formats.add("ddd MMM DD YYYY HH:mm:ss z");
         formats.add("M/D/YY z");
@@ -699,17 +736,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
 
-        // check also the StringHistory....
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-
         return formats;
     }
 
@@ -718,15 +744,16 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedLocalTimeFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        formats.add("HH:mm:ss");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss.SSS");
 
         // check also the StringHistory....
         formats.addAll(Arrays.asList(
             StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
         ));
+
+        formats.add("HH:mm:ss");
+        formats.add("h:mm A");
+        formats.add("h:mm:ss A");
+        formats.add("HH:mm:ss.SSS");
 
         return formats;
     }
@@ -747,7 +774,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         formats.add("HH:mm:ss");
         formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
 
-        // check also the StringHistory....
+        // check the StringHistory first
         formats.addAll(Arrays.asList(
             StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
         ));
@@ -766,16 +793,17 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
      */
     private static LinkedHashSet<String> createPredefinedLocalDateFormats() {
         LinkedHashSet<String> formats = new LinkedHashSet<String>();
+
+        // check the StringHistory first
+        formats.addAll(Arrays.asList(
+            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
+        ));
+
         formats.add("YYYY-MM-DD");
         formats.add("M/D/YY");
         formats.add("MMM D, YYYY");
         formats.add("MMMM D, YYYY");
         formats.add("dddd, MMM D, YYYY");
-
-        // check also the StringHistory....
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
-        ));
 
         return formats;
     }
