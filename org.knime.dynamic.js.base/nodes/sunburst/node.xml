@@ -36,6 +36,9 @@
 					label="Filter out tiny nodes" defaultValue="true" saveInView="true">
 					When checked, very small nodes are not displayed.
 				</checkBoxOption>
+				<doubleOption name="Threshold for filtering (radian)" id="filteringThreshold"
+					label="Threshold for filtering (radians)" minValue="0" maxValue="3.14" defaultValue="0.001" stepSize="0.001">
+				</doubleOption>
 			</options>
 		</tab>
 
@@ -58,6 +61,16 @@
 					label="Display breadcrumb" defaultValue="false" saveInView="true">
 					When
 					checked, a breadcrumb is displayed on mouseover.
+				</checkBoxOption>
+				<checkBoxOption name="Enable donut hole" id="donutHole"
+					label="Enable donut hole" defaultValue="true" saveInView="true">
+					When checked,
+					a donut hole is displayed.
+				</checkBoxOption>
+				<checkBoxOption name="Enable donut hole" id="donutHole"
+					label="Enable donut hole" defaultValue="true" saveInView="true">
+					When checked,
+					a donut hole is displayed.
 				</checkBoxOption>
 				<checkBoxOption name="Enable zoom" id="zoomable"
 					label="Enable zoom" defaultValue="false" saveInView="true">
@@ -119,6 +132,10 @@
 					label="Enable breadcrumb toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable toggling of the breadcrumb within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable donut hole toggle" id="donutHoleToggle"
+					label="Enable donut hole toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
+					Check to enable toggling of donut hole within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable zoomable toggle" id="zoomableToggle"
 					label="Enable zoomable toggle" defaultValue="true" enableDependency="enableViewControls"

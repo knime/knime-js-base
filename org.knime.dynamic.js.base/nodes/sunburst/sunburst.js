@@ -527,7 +527,7 @@
     if (options.filterSmallNodes) {
       var nodes = partition.nodes(data)
           .filter(function(d) {
-            return (d.dx > 0.001); // 0.001 radians = 0.06 degrees
+            return (d.dx > _representation.options.filteringThreshold);
           });
     } else {
       var nodes = partition.nodes(data);
