@@ -175,9 +175,9 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_allowRectangleSelectionCheckBox = new JCheckBox("Enable rectangular selection");
         m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
         m_missingValueMethodComboBox = new JComboBox<String>();
-        m_missingValueMethodComboBox.addItem("ignore");
-        m_missingValueMethodComboBox.addItem("leave a gap");
-        m_missingValueMethodComboBox.addItem("skip column");
+        m_missingValueMethodComboBox.addItem("Connect");
+        m_missingValueMethodComboBox.addItem("Gap");
+        m_missingValueMethodComboBox.addItem("Skip column");
 
         m_maxRowsSpinner = new JSpinner();
         m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
@@ -273,7 +273,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         c.gridx += 2;
         JPanel missingValuePanel = new JPanel(new GridBagLayout());
-        missingValuePanel.setBorder(BorderFactory.createTitledBorder("How to handle missing values"));
+        missingValuePanel.setBorder(BorderFactory.createTitledBorder("Missing value handling (y-axis)"));
         panel.add(missingValuePanel, c);
         GridBagConstraints cc = new GridBagConstraints();
         cc.insets = new Insets(1, 1, 1, 1);
