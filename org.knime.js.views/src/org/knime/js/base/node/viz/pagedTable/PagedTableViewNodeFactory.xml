@@ -136,7 +136,7 @@
 					<li>Z: Time zone (offset)</li>
 					<li>X: unix timestamp</li>
         		</ul>
-        		For printing an arbitrary string, wrap the string square bracket, e.g. [time].
+        		For printing an arbitrary string, wrap the string in square brackets, e.g. [time].
         	</description>
 			<option name="Locale">
         		The locale which is used to render all date/time cells.
