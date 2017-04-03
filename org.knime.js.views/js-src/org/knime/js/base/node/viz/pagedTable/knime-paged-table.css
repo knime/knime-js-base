@@ -132,3 +132,7 @@ h2 {
 #knimePagedTable td.no-break .rowKey {
 	white-space: normal;
 }
+
+#knimePagedTable td .missing-value-cell {
+	color: #d9534f;
+}

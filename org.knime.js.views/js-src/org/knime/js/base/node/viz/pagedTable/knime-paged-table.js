@@ -141,7 +141,8 @@ knime_paged_table = function() {
 				var colDef = {
 					'title': knimeTable.getColumnNames()[i],
 					'orderable' : isColumnSortable(colType),
-					'searchable': isColumnSearchable(colType)
+					'searchable': isColumnSearchable(colType),
+					'defaultContent': '<span class="missing-value-cell">?</span>'
 				}
 				if (knimeColType == 'Date and Time' && _representation.globalDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
