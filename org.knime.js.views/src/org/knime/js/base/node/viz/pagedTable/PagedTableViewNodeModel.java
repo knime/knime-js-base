@@ -330,6 +330,9 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             viewValue.setPublishFilter(m_config.getPublishFilter());
             viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
 
+            //added with 3.4
+            viewRepresentation.setDisplayMissingValueAsQuestionMark(m_config.getDisplayMissingValueAsQuestionMark());
+
             //added with 4.4
             viewRepresentation.setGlobalDateTimeLocale(m_config.getGlobalDateTimeLocale());
             viewRepresentation.setGlobalLocalDateFormat(m_config.getGlobalLocalDateFormat());

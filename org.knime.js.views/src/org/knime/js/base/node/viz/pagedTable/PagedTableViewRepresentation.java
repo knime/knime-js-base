@@ -97,6 +97,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private String m_globalZonedDateTimeFormat;
     private boolean m_enableGlobalNumberFormat;
     private int m_globalNumberFormatDecimals;
+    private boolean m_displayMissingValueAsQuestionMark;
 
     private static final String CFG_PUBLISH_FILTER_ID = "publishFilterId";
     private String m_publishFilterId;
@@ -550,6 +551,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the displayMissingValueAsQuestionMark
+     */
+    public boolean getDisplayMissingValueAsQuestionMark() {
+        return m_displayMissingValueAsQuestionMark;
+    }
+
+    /**
+     * @param displayMissingValueAsQuestionMark the displayMissingValueAsQuestionMark to set
+     */
+    public void setDisplayMissingValueAsQuestionMark(final boolean displayMissingValueAsQuestionMark) {
+        m_displayMissingValueAsQuestionMark = displayMissingValueAsQuestionMark;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -583,6 +598,9 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addString(CFG_PUBLISH_FILTER_ID, m_publishFilterId);
         settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
+
+        //added with 3.4
+        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
 
         //added with 4.4
         settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
@@ -626,6 +644,9 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         m_displayFullscreenButton = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, PagedTableViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
         m_publishFilterId = settings.getString(CFG_PUBLISH_FILTER_ID, null);
         m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
+
+        //added with 3.4
+        m_displayMissingValueAsQuestionMark = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, PagedTableViewConfig.DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
 
         //added with 4.4
         m_globalDateTimeLocale = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE);
@@ -680,6 +701,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_globalZonedDateTimeFormat, other.m_globalZonedDateTimeFormat)
                 .append(m_enableGlobalNumberFormat, other.m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals, other.m_globalNumberFormatDecimals)
+                .append(m_displayMissingValueAsQuestionMark, other.m_displayMissingValueAsQuestionMark)
                 .append(m_publishFilterId, other.m_publishFilterId)
                 .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .isEquals();
@@ -720,6 +742,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_globalZonedDateTimeFormat)
                 .append(m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals)
+                .append(m_displayMissingValueAsQuestionMark)
                 .append(m_publishFilterId)
                 .append(m_subscriptionFilterIds)
                 .toHashCode();

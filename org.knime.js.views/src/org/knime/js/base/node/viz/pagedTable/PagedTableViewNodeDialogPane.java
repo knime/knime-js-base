@@ -149,6 +149,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final DialogComponentStringSelection m_globalZonedDateTimeFormatChooser;
     private final JCheckBox m_enableGlobalNumberFormatCheckbox;
     private final JSpinner m_globalNumberFormatDecimalSpinner;
+    private final JCheckBox m_displayMissingValueAsQuestionMark;
 
     PagedTableViewNodeDialogPane() {
         m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
@@ -265,6 +266,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
             }
         });
         m_globalNumberFormatDecimalSpinner = new JSpinner(new SpinnerNumberModel(2, 0, null, 1));
+
+        m_displayMissingValueAsQuestionMark = new JCheckBox("Display missing value as red question mark");
+
         addTab("Options", initOptions());
         addTab("Interactivity", initInteractivity());
         addTab("Formatters", initFormatters());
@@ -454,12 +458,20 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalNumberFormatDecimalSpinner.setPreferredSize(new Dimension(100, TEXT_FIELD_SIZE));
         numberPanel.add(m_globalNumberFormatDecimalSpinner, gbcN);
 
+        JPanel missingValuePanel = new JPanel(new GridBagLayout());
+        missingValuePanel.setBorder(new TitledBorder("Missing value formatter"));
+        /*GridBagConstraints gbcMV = createConfiguredGridBagConstraints();
+        gbcMV.gridwidth = 2;*/
+        missingValuePanel.add(m_displayMissingValueAsQuestionMark);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(datePanel, gbc);
         gbc.gridy++;
         panel.add(numberPanel, gbc);
+        gbc.gridy++;
+        panel.add(missingValuePanel, gbc);
         return panel;
     }
 
@@ -531,6 +543,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_globalZonedDateTimeFormatChooser.replaceListItems(createPredefinedZonedDateTimeFormats(), config.getGlobalZonedDateTimeFormat());
         m_enableGlobalNumberFormatCheckbox.setSelected(config.getEnableGlobalNumberFormat());
         m_globalNumberFormatDecimalSpinner.setValue(config.getGlobalNumberFormatDecimals());
+        m_displayMissingValueAsQuestionMark.setSelected(config.getDisplayMissingValueAsQuestionMark());
         enablePagingFields();
         enableSelectionFields();
         enableSearchFields();
@@ -591,6 +604,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setGlobalZonedDateTimeFormat(globalZonedDateTimeFormat);
         config.setEnableGlobalNumberFormat(m_enableGlobalNumberFormatCheckbox.isSelected());
         config.setGlobalNumberFormatDecimals((Integer)m_globalNumberFormatDecimalSpinner.getValue());
+        config.setDisplayMissingValueAsQuestionMark(m_displayMissingValueAsQuestionMark.isSelected());
 
         StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalDateTimeFormat);
         StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).add(globalLocalDateFormat);

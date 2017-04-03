@@ -204,6 +204,10 @@ public class PagedTableViewConfig {
     private final static int DEFAULT_GLOBAL_NUMBER_FORMAT_DECIMALS = 2;
     private int m_globalNumberFormatDecimals = DEFAULT_GLOBAL_NUMBER_FORMAT_DECIMALS;
 
+    final static String CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK = "displayMissingValueAsQuestionMark";
+    final static boolean DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK = true;
+    private boolean m_displayMissingValueAsQuestionMark = DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK;
+
 
     /**
      * @return the hideInWizard
@@ -709,6 +713,21 @@ public class PagedTableViewConfig {
         m_globalNumberFormatDecimals = globalNumberFormatDecimals;
     }
 
+    /**
+     * @return the displayMissingValueAsQuestionMark
+     */
+    public boolean getDisplayMissingValueAsQuestionMark() {
+        return m_displayMissingValueAsQuestionMark;
+    }
+
+    /**
+     * @param displayMissingValueAsQuestionMark the displayMissingValueAsQuestionMark to set
+     */
+    public void setDisplayMissingValueAsQuestionMark(final boolean displayMissingValueAsQuestionMark) {
+        m_displayMissingValueAsQuestionMark = displayMissingValueAsQuestionMark;
+    }
+
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -746,6 +765,9 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
         settings.addBoolean(CFG_PUBLISH_FILTER, m_publishFilter);
         settings.addBoolean(CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
+
+        //added with 3.4
+        settings.addBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
 
         //added with 4.4
         settings.addString(CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
@@ -794,6 +816,9 @@ public class PagedTableViewConfig {
         m_publishFilter = settings.getBoolean(CFG_PUBLISH_FILTER, DEFAULT_PUBLISH_FILTER);
         m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
 
+        //added with 3.4
+        m_displayMissingValueAsQuestionMark = settings.getBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
+
         //added with 4.4
         m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
         m_globalLocalDateFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
@@ -840,6 +865,9 @@ public class PagedTableViewConfig {
         m_subscribeSelection = settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION);
         m_publishFilter = settings.getBoolean(CFG_PUBLISH_FILTER, DEFAULT_PUBLISH_FILTER);
         m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
+
+        //added with 3.4
+        m_displayMissingValueAsQuestionMark = settings.getBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
 
         //added with 4.4
         m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);

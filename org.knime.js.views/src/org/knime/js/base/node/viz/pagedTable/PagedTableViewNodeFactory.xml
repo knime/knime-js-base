@@ -162,6 +162,9 @@
         	<option name="Decimal places">
         		If number format is enabled use this value to restrict the display of decimal places for double columns in the table view.
         	</option>
+        	<option name="Display missing value as red question mark">
+        	    If checked, a missing value in the table view is represented by a red question mark. Otherwise, an empty cell is shown. 
+        	</option>
         </tab>
     </fullDescription>
     <interactiveView name="JavaScript Table View">
