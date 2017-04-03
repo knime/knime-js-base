@@ -460,8 +460,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
         JPanel missingValuePanel = new JPanel(new GridBagLayout());
         missingValuePanel.setBorder(new TitledBorder("Missing value formatter"));
-        /*GridBagConstraints gbcMV = createConfiguredGridBagConstraints();
-        gbcMV.gridwidth = 2;*/
         missingValuePanel.add(m_displayMissingValueAsQuestionMark);
 
         JPanel panel = new JPanel(new GridBagLayout());
