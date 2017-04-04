@@ -1,5 +1,77 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.dynamic.js" version="2">
+    <resource path="src/eclipse/org/knime/dynamic/js/v212/DynamicJSConfig.java" type="org.knime.dynamic.js.v212.DynamicJSConfig">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSConfig"/>
+                <message_argument value="DynamicJSConfig(DynamicJSKnimeNode)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v212/DynamicJSNodeDescription212Proxy.java" type="org.knime.dynamic.js.v212.DynamicJSNodeDescription212Proxy">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="KnimeNodeDocument"/>
+                <message_argument value="DynamicJSNodeDescription212Proxy"/>
+                <message_argument value="DynamicJSNodeDescription212Proxy(KnimeNodeDocument, File)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v212/DynamicJSNodeDialog.java" type="org.knime.dynamic.js.v212.DynamicJSNodeDialog">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSNodeDialog"/>
+                <message_argument value="DynamicJSNodeDialog(DynamicJSKnimeNode)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v212/DynamicJSNodeModel.java" type="org.knime.dynamic.js.v212.DynamicJSNodeModel">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSNodeModel"/>
+                <message_argument value="DynamicJSNodeModel(DynamicJSKnimeNode, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSConfig.java" type="org.knime.dynamic.js.v30.DynamicJSConfig">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSConfig"/>
+                <message_argument value="DynamicJSConfig(DynamicJSKnimeNode)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSNodeDescription30Proxy.java" type="org.knime.dynamic.js.v30.DynamicJSNodeDescription30Proxy">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="KnimeNodeDocument"/>
+                <message_argument value="DynamicJSNodeDescription30Proxy"/>
+                <message_argument value="DynamicJSNodeDescription30Proxy(KnimeNodeDocument, File)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSNodeDialog.java" type="org.knime.dynamic.js.v30.DynamicJSNodeDialog">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSNodeDialog"/>
+                <message_argument value="DynamicJSNodeDialog(DynamicJSKnimeNode)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSNodeModel.java" type="org.knime.dynamic.js.v30.DynamicJSNodeModel">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DynamicJSKnimeNode"/>
+                <message_argument value="DynamicJSNodeModel"/>
+                <message_argument value="DynamicJSNodeModel(DynamicJSKnimeNode, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSProcessor.java" type="org.knime.dynamic.js.v30.DynamicJSProcessor">
         <filter id="403767336">
             <message_arguments>
