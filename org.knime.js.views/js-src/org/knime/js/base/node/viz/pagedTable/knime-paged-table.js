@@ -148,24 +148,33 @@ knime_paged_table = function() {
 				}
 				if (knimeColType == 'Date and Time' && _representation.globalDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
-						return moment(data).utc().format(_representation.globalDateTimeFormat);
+						// Check if date is given as ISO-string or time stamp (legacy).
+						if (isNaN(data)) {
+							// ISO-string:
+							// date is parsed and rendered in local time. 
+							return moment(data).format(_representation.globalDateTimeFormat);
+						} else {
+							// time stamp (legacy):
+							// date is parsed and rendered in UTC.
+							return moment(data).utc().format(_representation.globalDateTimeFormat);
+						}
 					}
 				}
 				if (knimeColType == 'Local Date' && _representation.globalLocalDateFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).utc().format(_representation.globalLocalDateFormat);
+				    return moment(data).format(_representation.globalLocalDateFormat);
 				  }
 				}
 
 				if (knimeColType == 'Local Date Time' && _representation.globalLocalDateTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).utc().format(_representation.globalLocalDateTimeFormat);
+				    return moment(data).format(_representation.globalLocalDateTimeFormat);
 				  }
 				}
 
 				if (knimeColType == 'Local Time' && _representation.globalLocalTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data, "hh:mm:ss.SSSSSSSSS").utc().format(_representation.globalLocalTimeFormat);
+				    return moment(data, "hh:mm:ss.SSSSSSSSS").format(_representation.globalLocalTimeFormat);
 				  }
 				}
 
