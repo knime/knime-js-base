@@ -22,6 +22,7 @@
 
   var innerLabelStyles = ['count', 'percentage'];
 
+  var resetZoom;
 
   view.init = function(representation, value) {
     _representation = representation;
@@ -85,8 +86,11 @@
       nullNodeName += "_";
     }
 
+    var id = 0;
+
     // Initialize _data object
     _data = {
+      id: id++,
       name: rootNodeName,
       children: [],
       uniqueLabels: uniqueLabels
@@ -133,6 +137,7 @@
           // If we don't already have a child node for this branch, create it.
           if (!foundChild) {
             childNode = {
+              id: id++,
               name: nodeName,
               children: []
             };
@@ -142,10 +147,9 @@
         } else {
           // Reached the end of the sequence; create a leaf node.
           childNode = {
+            id: id++,
             name: nodeName,
             size: size,
-            // TODO: check if introducing the next line was a good idea, i.e. is the
-            // the layout still as expected?
             children: []
           };
           children.push(childNode);
@@ -204,6 +208,26 @@
 
     if (_representation.options.displayFullscreenButton) {
       knimeService.allowFullscreen();
+    }
+
+    if (_representation.options.zoomable) {
+      knimeService.addButton('zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
+        resetZoom();
+      });
+    }
+
+    // TODO
+    if (true) {
+      knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
+        _value.options.mouseMode = "zoom";
+      });
+    }
+    
+    // TODO
+    if (true) {
+      knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
+        _value.options.mouseMode = "select";
+      });
     }
 
     // Title / Subtitle configuration
@@ -272,19 +296,6 @@
 
         knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
       }
-    }
-
-    // Zoomable configuration
-    var zoomableToggle = _representation.options.zoomableToggle;
-    if (zoomableToggle) {
-      knimeService.addMenuDivider();
-
-      var zoomCheckbox = knimeService.createMenuCheckbox(
-          'zoomCheckbox', _value.options.zoomable, function() {
-            _value.options.zoomable = this.checked;
-            drawChart();
-          });
-      knimeService.addMenuItem('Zoomable:', 'search', zoomCheckbox);
     }
 
     // Donut hole configuration
@@ -482,7 +493,7 @@
     var options = {
       legend: _value.options.legend,
       breadcrumb: _value.options.breadcrumb,
-      zoomable: _value.options.zoomable,
+      zoomable: _representation.options.zoomable,
       aggregationType: _value.options.aggregationType,
       filterSmallNodes: _value.options.filterSmallNodes
     };
@@ -496,7 +507,7 @@
     }
   }
 
-  function drawSunburst(data, plottingSurface, width, height, options) {
+  var drawSunburst = function(data, plottingSurface, width, height, options) {
     var marginTop = options.breadcrumb ? 40 : 0;
     var marginLeft = options.legend ? 85 : 0;
 
@@ -546,11 +557,11 @@
       var rootSegmentExtent = nodes[0].dy;
       arc
         .innerRadius(function(d) { 
-          var notZoomed = !(_value.options.zoomable && _value.options.zoomNode!=null)
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
           return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
         })
         .outerRadius(function(d) {
-          var notZoomed = !(_value.options.zoomable && _value.options.zoomNode!=null)
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
           return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
         });
     }
@@ -572,7 +583,7 @@
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) { return _colorMap(d.name); })
         .on("mouseover", mouseover)
-        .on("click", options.zoomable ? click : null);
+        .on("click", click);
 
     // Basic setup of page elements.
     if (options.breadcrumb) {
@@ -583,7 +594,7 @@
       drawLegend(plottingSurface);
     }
 
-    if (_value.options.zoomNode && _value.options.zoomable) {
+    if (_value.options.zoomNode && _representation.options.zoomable) {
       path.transition()
         .attrTween("d", arcTweenZoom(_value.options.zoomNode));
     }
@@ -608,9 +619,28 @@
         .attr("alignment-baseline", "middle")
         .attr("y", 30);
     }
-    
+
     function click(d) {
-      node = d;
+      if (_value.options.mouseMode == "zoom" && options.zoomable) {
+        zoom(d);
+      } else if (_value.options.mouseMode == "select"){
+        _value.options.highlited = highlite(d);
+      }
+    }
+
+    function mouseover(d) {
+      if (_value.options.highlited  == null) {
+        highlite(d);
+      }
+    }
+    
+    function mouseleave(d) {
+      if (_value.options.highlited  == null) {
+        unhighlite(d);  
+      }
+    }
+
+    var zoom = function(d) {
       path.transition()
         .duration(1000)
         .attrTween("d", arcTweenZoom(d));
@@ -627,6 +657,10 @@
       }
     }
 
+    resetZoom = function() {
+      zoom(_data);
+    }
+
     // When zooming: interpolate the scales.
     function arcTweenZoom(d) {
       var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
@@ -640,8 +674,7 @@
     }
 
     // Fade all but the current sequence, and show it in the breadcrumb trail.
-    function mouseover(d) {
-
+    function highlite(d) {
       if (_value.options.innerLabelStyle === "percentage") {
         var statistic = (100 * d.value / totalSize).toPrecision(3);
         var statisticString = statistic + "%";
@@ -674,13 +707,15 @@
       // Then highlight only those that are an ancestor of the current segment.
       sunburstGroup.selectAll("path")
           .filter(function(node) {
-                    return (sequenceArray.indexOf(node) >= 0);
+                    return (sequenceArray.indexOf(node.id) >= 0);
                   })
           .style("opacity", 1);
+
+      return sequenceArray;
     }
 
     // Restore everything to full opacity when moving off the visualization.
-    function mouseleave(d) {
+    function unhighlite(d) {
 
       // Hide the breadcrumb trail
       d3.select("#trail")
@@ -708,7 +743,7 @@
       var path = [];
       var current = node;
       while (current.parent) {
-        path.unshift(current);
+        path.unshift(current.id);
         current = current.parent;
       }
       return path;
