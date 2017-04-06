@@ -78,7 +78,6 @@
       .filter(onlyUnique);
 
     // make sure that reserved names do not collide whith user given classes
-    // TODO: check if this works
     while (uniqueLabels.indexOf(rootNodeName) > -1) {
       rootNodeName += "_";
     }
@@ -216,9 +215,9 @@
       });
     }
 
-    // TODO
-    if (true) {
+    if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
+     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-zoom" == this.getAttribute('id')});
         _value.options.mouseMode = "zoom";
       });
     }
@@ -226,6 +225,7 @@
     // TODO
     if (true) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
+     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-select" == this.getAttribute('id')});
         _value.options.mouseMode = "select";
       });
     }
@@ -874,6 +874,7 @@
       }
     }
 
+    // Wrap text if too long.
     function wrap() {
       var self = d3.select(this),
         textLength = self.node().getComputedTextLength(),
