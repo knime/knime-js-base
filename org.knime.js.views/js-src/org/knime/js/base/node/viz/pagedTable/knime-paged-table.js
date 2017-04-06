@@ -333,6 +333,9 @@ knime_paged_table = function() {
 							}
 						});
 						knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
+						if (_value.publishSelection && selection && Object.keys(selection).length > 0) {
+							publishCurrentSelection();
+						}
 						var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
 						var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
 							if (this.checked) {
