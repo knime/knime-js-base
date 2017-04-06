@@ -80,7 +80,7 @@
 				</checkBoxOption>
 				<stringListOption name="Inner label style" id="innerLabelStyle"
 					label="Inner label style" possibleValues="count percentage"
-					defaultValues="percentage">
+					defaultValues="percentage" saveInView="true">
 					Choose how inner label is displayed.
 				</stringListOption>
 				<stringOption name="Inner label text" id="innerLabelText"

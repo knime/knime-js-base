@@ -13,6 +13,9 @@
   var _representation, _value;
   var knimeTable1, knimeTable2;
   var _data = {};
+  var nodes;
+  // TODO: Do we need rowId2leafId?
+  var rowId2leafId = [];
   var _colorMap;
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
@@ -92,7 +95,10 @@
       id: id++,
       name: rootNodeName,
       children: [],
-      uniqueLabels: uniqueLabels
+      uniqueLabels: uniqueLabels,
+      // TODO: Do we need table rows?
+      tableRows: [],
+      highlited: false
     };
 
     // Create hierarchical structure.
@@ -115,6 +121,7 @@
       // append to hierarchical structure
       var currentNode = _data;
       for (var j = 0; j < parts.length; j++) {
+        currentNode.tableRows.push(i);
         var children = currentNode["children"];
         if (parts[j] === null) {
           var nodeName = nullNodeName;
@@ -138,7 +145,9 @@
             childNode = {
               id: id++,
               name: nodeName,
-              children: []
+              children: [],
+              tableRows: [],
+              highlited: false
             };
             children.push(childNode);
           }
@@ -149,9 +158,14 @@
             id: id++,
             name: nodeName,
             size: size,
-            children: []
+            children: [],
+            tableRows: [i],
+            highlited: false
           };
           children.push(childNode);
+
+          // Add id of leaf to [row -> leaf]-data-structure. 
+          rowId2leafId.push(id-1);
         }
       }
     }
@@ -209,19 +223,19 @@
       knimeService.allowFullscreen();
     }
 
+    // Zoom controlls.
     if (_representation.options.zoomable) {
       knimeService.addButton('zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
         resetZoom();
       });
-    }
 
-    if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
      	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-zoom" == this.getAttribute('id')});
         _value.options.mouseMode = "zoom";
       });
     }
     
+    // Selection controlls.
     // TODO
     if (true) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
@@ -534,12 +548,12 @@
     // Create list of segment objects with cartesian orientation from data.
     if (options.filterSmallNodes) {
       // For efficiency, filter nodes to keep only those large enough to see.
-      var nodes = partition.nodes(data)
+      nodes = partition.nodes(data)
           .filter(function(d) {
             return (d.dx > _representation.options.filteringThreshold);
           });
     } else {
-      var nodes = partition.nodes(data);
+      nodes = partition.nodes(data);
     }
 
     // Functions to map cartesian orientation of partition layout into radial
@@ -606,7 +620,9 @@
     totalSize = path.node().__data__.value;
 
     // add explanation in the middle of the circle
-    if (!options.zoomable) {
+    // if (!options.zoomable ) {
+    // TODO: add other condition
+    if (true) {
       var explanation = sunburstGroup.append("g")
           .attr("id", "explanation");
       explanation.append("text")
@@ -630,6 +646,7 @@
 
     function mouseover(d) {
       if (_value.options.highlited  == null) {
+        debugger;
         highlite(d);
       }
     }
@@ -675,6 +692,8 @@
 
     // Fade all but the current sequence, and show it in the breadcrumb trail.
     function highlite(d) {
+      // Donut hole text
+      // ===============
       if (_value.options.innerLabelStyle === "percentage") {
         var statistic = (100 * d.value / totalSize).toPrecision(3);
         var statisticString = statistic + "%";
@@ -697,19 +716,57 @@
             .text(_value.options.innerLabelText);
       }
 
-      var sequenceArray = getAncestors(d);
-      updateBreadcrumbs(sequenceArray, statisticString);
 
-      // Fade all the segments.
-      d3.selectAll("path")
-          .style("opacity", 0.3);
+      // Sunburst segments // TODO!!
+      // =================
 
-      // Then highlight only those that are an ancestor of the current segment.
+      // Reset highliting.
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].highlited = false;
+      }
+
+      // Set highliting for parents.
+      var current = d;
+      while (current.parent) {
+        current.highlited = true;
+        current = current.parent;
+      }
+
+      // Set highliting for children.
+      function recursiveHighliting(node) {
+        node.highlited = true;
+        for (var i = 0; i < node.children.length; i++) {
+          recursiveHighliting(node.children[i]);
+        }
+      }
+      recursiveHighliting(d);
+
       sunburstGroup.selectAll("path")
-          .filter(function(node) {
-                    return (sequenceArray.indexOf(node.id) >= 0);
-                  })
-          .style("opacity", 1);
+        .style("opacity", function(d) { return d.highlited ? 1 : 0});
+
+      // Breadcrumb
+      // var sequenceArray = getAncestors(d);
+      // updateBreadcrumbs(sequenceArray, statisticString);
+
+      // for (var i = 0; i < d.tableRows; i++) {
+      //   var rowId = d.tableRows[i];
+      //   rowId2leafId[rowId]
+      // }
+      // d.tableRows
+
+      // Sunburst segments
+      // Fade all the segments.
+      // d3.selectAll("path")
+      //     .style("opacity", 0.3);
+
+      // debugger;
+
+      // // Then highlight only those that are an ancestor of the current segment.
+      // sunburstGroup.selectAll("path")
+      //     .filter(function(node) {
+      //               return (sequenceArray.indexOf(node.id) >= 0);
+      //             })
+      //     .style("opacity", 1);
 
       return sequenceArray;
     }
