@@ -23,6 +23,8 @@ knime_scatter_plot_selection_appender = function() {
 	
 	var hiddenItemKeys = [];
 	
+	var missingValuesCount = 0; 
+	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
 			d3.select("body").text("Error: No data available");
@@ -92,12 +94,12 @@ knime_scatter_plot_selection_appender = function() {
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 			
-			drawChart(layoutContainer);
-			drawControls(layoutContainer);
-			
 			if (representation.showWarningInView && representation.warning !== null) {
 				knimeService.setWarningMessage(representation.warning);
 			}
+			
+			drawChart(layoutContainer);
+			drawControls(layoutContainer);
 			
 			//console.timeEnd("Total init time");
 		} catch(err) {
@@ -122,6 +124,15 @@ knime_scatter_plot_selection_appender = function() {
 			yCol = "[EMPTY]";
 		}
 		var xyDataset = extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
+		if (missingValuesCount > 0) {
+			knimeService.setWarningMessage(missingValuesCount + " missing or unsupported value(s) are not shown.");
+		} else {
+			if (_representation.warning !== null) {
+				knimeService.setWarningMessage(_representation.warning);
+			} else {
+				knimeService.clearWarningMessage();
+			}
+		}
 		
 		//console.timeEnd("Building XYDataset");
 		return xyDataset;
@@ -1038,6 +1049,7 @@ knime_scatter_plot_selection_appender = function() {
 	// Fixed with null-checking and ignoring null values
 	extractXYDatasetFromColumns2D = function(dataset, xcol, 
 	        ycol, seriesKey) {
+		missingValuesCount = 0;
 	    jsfc.Args.requireString(xcol, "xcol");
 	    jsfc.Args.requireString(ycol, "ycol");
 	    var result = new jsfc.StandardXYDataset();
@@ -1047,6 +1059,7 @@ knime_scatter_plot_selection_appender = function() {
 	        var x = dataset.valueByKey(rowKey, xcol);
 	        var y = dataset.valueByKey(rowKey, ycol);
 	        if (x === null || y === null) {  // <-- changed here
+	        	missingValuesCount++;
 	        	continue;
 	        }
 	        result.add(seriesKey, x, y);
