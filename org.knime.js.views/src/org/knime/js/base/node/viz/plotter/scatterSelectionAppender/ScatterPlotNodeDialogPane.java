@@ -139,6 +139,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final DialogComponentColorChooser m_gridColorChooser;
     private final DialogComponentColorChooser m_dataAreaColorChooser;
     private final DialogComponentColorChooser m_backgroundColorChooser;
+    private final JCheckBox m_showWarningInViewCheckBox;
 
     /**
      * Creates a new dialog pane.
@@ -198,6 +199,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
             new SettingsModelColor("dataAreaColor", null), "Data area color: ", true);
         m_backgroundColorChooser = new DialogComponentColorChooser(
             new SettingsModelColor("backgroundColor", null), "Background color: ", true);
+
+        m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -401,6 +404,10 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         colorsPanel.add(m_dataAreaColorChooser.getComponentPanel(), cc);
         cc.gridy++;
         colorsPanel.add(m_gridColorChooser.getComponentPanel(), cc);
+
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_showWarningInViewCheckBox, c);
 
         /*c.gridx = 0;
         c.gridy++;
@@ -639,6 +646,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_gridColorChooser.setColor(config.getGridColor());
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
 
+        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+
         enableViewControls();
         enableCrosshairControls();
         enableSelectionControls();
@@ -700,6 +709,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setBackgroundColor(m_backgroundColorChooser.getColor());
         config.setDataAreaColor(m_dataAreaColorChooser.getColor());
         config.setGridColor(m_gridColorChooser.getColor());
+
+        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
 
         config.saveSettings(settings);
     }

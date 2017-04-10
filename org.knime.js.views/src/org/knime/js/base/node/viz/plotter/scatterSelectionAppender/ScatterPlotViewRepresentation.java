@@ -111,6 +111,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
     private boolean m_enableStaggeredRendering = true;
 
+    private boolean m_showWarningInView;
+    private String m_warning;
+
 
     /**
      * @return the keyedDataset
@@ -589,6 +592,34 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
+    /**
+     * @return the warning
+     */
+    public String getWarning() {
+        return m_warning;
+    }
+
+    /**
+     * @param warning the warning to set
+     */
+    public void setWarning(final String warning) {
+        m_warning = warning;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -639,6 +670,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         // added with 3.4
         settings.addBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
+        settings.addBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        settings.addString("warning", getWarning());
     }
 
     /**
@@ -694,6 +727,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, true));
+        setShowWarningInView(settings.getBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, ScatterPlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
+        setWarning(settings.getString("warning", null));
     }
 
     /**
@@ -746,6 +781,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_gridColor, other.m_gridColor)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
+                .append(m_showWarningInView, other.m_showWarningInView)
+                .append(m_warning, other.m_warning)
                 .isEquals();
     }
 
@@ -789,6 +826,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_dataAreaColor)
                 .append(m_gridColor)
                 .append(m_enableStaggeredRendering)
+                .append(m_showWarningInView)
+                .append(m_warning)
                 .toHashCode();
     }
 }

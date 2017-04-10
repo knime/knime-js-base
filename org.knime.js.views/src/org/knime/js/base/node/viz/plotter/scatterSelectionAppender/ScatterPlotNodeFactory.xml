@@ -49,6 +49,7 @@
             <option name="Background color">The color of the background of the image.</option>
             <option name="Data area color">The background color of the data area, within the axes.</option>
             <option name="Grid color">The color of the grid.</option>
+            <option name="Show warnings in view">If checked, occurred warning messages will be displayed in the view.</option>
 		</tab>
 		<tab name="View Controls">
 		    <option name="Enable view edit controls">If checked all edit controls selected below will be rendered in the view. Unchecking this option disables all edit controls.</option>

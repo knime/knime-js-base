@@ -78,6 +78,7 @@ final class ScatterPlotViewConfig {
     final static boolean DEFAULT_ENABLE_SHOW_SELECTED_ONLY = true;
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
+    final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
@@ -128,6 +129,7 @@ final class ScatterPlotViewConfig {
     static final String BACKGROUND_COLOR = "backgroundColor";
     static final String DATA_AREA_COLOR = "dataAreaColor";
     static final String GRID_COLOR = "gridColor";
+    static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -178,6 +180,7 @@ final class ScatterPlotViewConfig {
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
+    private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
 
     /**
      * @return the hideInWizard
@@ -887,6 +890,20 @@ final class ScatterPlotViewConfig {
         m_dateFormat = dateFormat;
     }
 
+    /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -948,6 +965,7 @@ final class ScatterPlotViewConfig {
 
         //added with 3.4
         settings.addBoolean(ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
+        settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
     }
 
     /** Loads parameters in NodeModel.
@@ -1021,6 +1039,7 @@ final class ScatterPlotViewConfig {
 
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 
     /** Loads parameters in Dialog.
@@ -1106,5 +1125,6 @@ final class ScatterPlotViewConfig {
 
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 }
