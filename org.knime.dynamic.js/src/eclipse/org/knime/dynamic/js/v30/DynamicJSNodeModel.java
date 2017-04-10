@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -810,8 +811,16 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 .setMaxRows(m_config.getMaxRows())
                 .build(exec);
         if (m_config.getMaxRows() < inTable.size()) {
-            setWarningMessage("Only the first "
-                    + m_config.getMaxRows() + " rows are displayed.");
+            String warning = "Only the first "
+                    + m_config.getMaxRows() + " rows are displayed.";
+            setWarningMessage(warning);
+            DynamicJSViewRepresentation rep = getViewRepresentation();
+            if (rep != null) {
+                if (StringUtils.isNotEmpty(rep.getWarnMessage())) {
+                    warning = rep.getWarnMessage() + "\n" + warning;
+                }
+                rep.setWarnMessage(warning);
+            }
         }
         return table;
     }
