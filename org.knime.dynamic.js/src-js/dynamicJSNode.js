@@ -3,8 +3,13 @@ dynamicJSNode = function() {
 	var node = {}
 	var _innerNamespace;
 	var VAADIN_PREFIX = "./VAADIN/src-js/";
+	var errorRendered = false;
 		
 	node.init = function(representation, value) {
+		if (representation.errorMessage) {
+			renderError(representation.errorMessage);
+			return;
+		}
 		if (!representation.jsNamespace) {
 			document.body.innerHTML = 'No data to display.';
 			return;
@@ -100,6 +105,21 @@ dynamicJSNode = function() {
 		});
 	};
 	
+	renderError = function(errorMessage) {
+		var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		document.getElementsByTagName("body")[0].appendChild(svg);
+		svg.setAttribute("width", "600px");
+		svg.setAttribute("height", "40px");
+		var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+		svg.appendChild(text);
+		text.setAttribute("x", "0");
+		text.setAttribute("y", "20");
+		text.setAttribute("font-family", "sans-serif");
+		text.setAttribute("font-size", "12");
+		text.appendChild(document.createTextNode(errorMessage));
+		errorRendered = true;
+	}
+	
 	node.validate = function() {
 		if (!window[_innerNamespace]) {
 			return false;
@@ -120,8 +140,19 @@ dynamicJSNode = function() {
 	}
 	
 	node.getSVG = function() {
-		if (window[_innerNamespace]) {
-			return window[_innerNamespace].getSVG();
+		var svg;
+		if (errorRendered) {
+			svg = document.getElementsByTagName("svg")[0];
+		} else if (window[_innerNamespace]) {
+			svg = window[_innerNamespace].getSVG();
+		}
+		if (svg) {
+			if (typeof svg === "string") {
+				return svg;
+			}
+			if (typeof svg === "object" && svg.nodeType > 0) {
+				return (new XMLSerializer()).serializeToString(svg);
+			}
 		}
 	}
 	

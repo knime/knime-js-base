@@ -21,6 +21,9 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
         if (catCol == null) {
             throw new InvalidSettingsException("No category column given");
         }
+        if (dt.getSpec().getColumnSpec(catCol) == null) {
+        	throw new InvalidSettingsException("Configured category column '" + catCol + "' is not available anymore.");
+        }
         String[] numColumns = ((SettingsModelColumnFilter2)config.getModel("columns")).applyTo(dt.getDataTableSpec()).getIncludes();
         if (numColumns.length == 0) {
             throw new InvalidSettingsException("No numeric columns given");

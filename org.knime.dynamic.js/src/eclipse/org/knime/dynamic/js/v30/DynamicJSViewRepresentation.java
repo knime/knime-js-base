@@ -101,6 +101,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     static final String JSON_VALUE = "jsonValue";
     private static final String NEW = "new";
     private static final String IN_VIEW = "inView";
+    private static final String WARN_MESSAGE = "warnMessage";
+    private static final String ERROR_MESSAGE = "errorMessage";
 
     private String m_jsNamespace = new String();
     private String[] m_jsCode = new String[0];
@@ -112,6 +114,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private Map<String, String> m_flowVariables = new HashMap<String, String>();
     private Map<String, Object> m_options = new HashMap<String, Object>();
     private Map<String, String> m_binaryFiles = new HashMap<String, String>();
+    private String m_warnMessage = new String();
+    private String m_errorMessage = new String();
 
     private boolean m_new = true;
     private boolean m_runningInView = true;
@@ -227,6 +231,38 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 		m_binaryFiles = binaryFiles;
 	}
 
+    /**
+     * @since 3.4
+     */
+    @JsonProperty("warnMessage")
+    public String getWarnMessage() {
+        return m_warnMessage;
+    }
+
+    /**
+     * @since 3.4
+     */
+    @JsonProperty("warnMessage")
+    public void setWarnMessage(final String warnMessage) {
+        m_warnMessage = warnMessage;
+    }
+
+    /**
+     * @since 3.4
+     */
+    @JsonProperty("errorMessage")
+    public String getErrorMessage() {
+        return m_errorMessage;
+    }
+
+    /**
+     * @since 3.4
+     */
+    @JsonProperty("errorMessage")
+    public void setErrorMessage(final String errorMessage) {
+        m_errorMessage = errorMessage;
+    }
+
     @JsonIgnore
     public boolean isNew() {
         return m_new;
@@ -290,6 +326,10 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 objectSettings.addString(JSON_VALUE, jsonString);
             }
         }
+
+        //added with 3.4
+        settings.addString(WARN_MESSAGE, m_warnMessage);
+        settings.addString(ERROR_MESSAGE, m_errorMessage);
 	}
 
     static void saveMap(final NodeSettingsWO settings, final Map<String, ?> map, final boolean objectMap) {
@@ -364,9 +404,6 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
         m_new = settings.getBoolean(NEW);
         m_runningInView = settings.getBoolean(IN_VIEW);
 
-        // ids added with 3.3
-        m_tableIds = settings.getStringArray(TABLE_IDS, new String[0]);
-
         m_flowVariables = (Map<String, String>) loadMap(settings.getNodeSettings(FLOW_VARIABLES));
         m_binaryFiles = (Map<String, String>) loadMap(settings.getNodeSettings(BINARY_FILES));
         m_options = (Map<String, Object>) loadMap(settings.getNodeSettings(OPTIONS));
@@ -396,6 +433,13 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 m_inObjects[i] = jsonObject;
             }
         }
+
+        // ids added with 3.3
+        m_tableIds = settings.getStringArray(TABLE_IDS, new String[0]);
+
+        // added with 3.4
+        m_warnMessage = settings.getString(WARN_MESSAGE, new String());
+        m_errorMessage = settings.getString(ERROR_MESSAGE, new String());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -493,6 +537,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 //TODO: deal with string arrays, all other types are fine
                 .append(m_options, other.m_options)
                 .append(m_binaryFiles, other.m_binaryFiles)
+                .append(m_warnMessage, other.m_warnMessage)
+                .append(m_errorMessage, other.m_errorMessage)
                 .append(m_new, other.m_new)
                 .append(m_runningInView, other.m_runningInView)
                 .isEquals();
@@ -515,6 +561,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 //TODO: deal with string arrays, all other types are fine
                 .append(m_options)
                 .append(m_binaryFiles)
+                .append(m_warnMessage)
+                .append(m_errorMessage)
                 .append(m_new)
                 .append(m_runningInView)
                 .toHashCode();

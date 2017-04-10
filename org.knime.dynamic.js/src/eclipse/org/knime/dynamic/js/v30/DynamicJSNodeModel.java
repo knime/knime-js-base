@@ -450,58 +450,65 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		synchronized (getLock()) {
 			DynamicJSViewRepresentation viewRepresentation = getViewRepresentation();
             if (viewRepresentation.isNew()) {
-                // try pre-processing input
-                Object[] processedInputs = inObjects;
-                if (m_processor != null) {
-                    processedInputs = m_processor.processInputObjects(inObjects, exec, m_config);
-                    String warnMessage = m_processor.getWarningMessage();
-                    if (warnMessage != null) {
-                        setWarningMessage(warnMessage);
+                try {
+                    // try pre-processing input
+                    Object[] processedInputs = inObjects;
+                    if (m_processor != null) {
+                        processedInputs = m_processor.processInputObjects(inObjects, exec, m_config);
+                        String warnMessage = m_processor.getWarningMessage();
+                        if (warnMessage != null) {
+                            viewRepresentation.setWarnMessage(warnMessage);
+                            setWarningMessage(warnMessage);
+                        }
                     }
-                }
 
-                List<Object> viewInObjects = new ArrayList<Object>();
-                String[] tableIdsForProcessed = new String[processedInputs.length];
-                double remainingProgress = 1d - exec.getProgressMonitor().getProgress();
-                double subProgress = remainingProgress / inObjects.length;
-                for (int i = 0; i < processedInputs.length; i++) {
-                    Object processedObject = processedInputs[i];
-                    String tableId = getTableId(i);
-                    // unprocessed inObjects
-                    if (processedObject instanceof PortObject) {
-                        // only data in ports supported atm
-                        if (processedObject instanceof BufferedDataTable) {
-                            viewInObjects.add(createJSONTableFromBufferedDataTable(
-                                exec.createSubExecutionContext(subProgress),
-                                (BufferedDataTable)processedObject, tableId));
+                    List<Object> viewInObjects = new ArrayList<Object>();
+                    String[] tableIdsForProcessed = new String[processedInputs.length];
+                    double remainingProgress = 1d - exec.getProgressMonitor().getProgress();
+                    double subProgress = remainingProgress / inObjects.length;
+                    for (int i = 0; i < processedInputs.length; i++) {
+                        Object processedObject = processedInputs[i];
+                        String tableId = getTableId(i);
+                        // unprocessed inObjects
+                        if (processedObject instanceof PortObject) {
+                            // only data in ports supported atm
+                            if (processedObject instanceof BufferedDataTable) {
+                                viewInObjects.add(createJSONTableFromBufferedDataTable(
+                                    exec.createSubExecutionContext(subProgress),
+                                    (BufferedDataTable)processedObject, tableId));
+                            } else {
+                                // add null for all other unprocessed in port types
+                                viewInObjects.addAll(null);
+                                exec.setProgress(exec.getProgressMonitor().getProgress() + subProgress);
+                            }
                         } else {
-                            // add null for all other unprocessed in port types
-                            viewInObjects.addAll(null);
-                            exec.setProgress(exec.getProgressMonitor().getProgress() + subProgress);
-                        }
-                    } else {
-                        // processed inObjects, assume they are directly serializable to JSON
-                        viewInObjects.add(processedObject);
-                        if (inObjects[i] instanceof BufferedDataTable) {
-                            tableIdsForProcessed[i] = tableId;
+                            // processed inObjects, assume they are directly serializable to JSON
+                            viewInObjects.add(processedObject);
+                            if (inObjects[i] instanceof BufferedDataTable) {
+                                tableIdsForProcessed[i] = tableId;
+                            }
                         }
                     }
-                }
-                viewRepresentation.setInObjects(viewInObjects.toArray(new Object[0]));
-                viewRepresentation.setTableIds(tableIdsForProcessed);
+                    viewRepresentation.setInObjects(viewInObjects.toArray(new Object[0]));
+                    viewRepresentation.setTableIds(tableIdsForProcessed);
 
-                Map<String, String> vStringMap = new HashMap<String, String>();
-                for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
-                    vStringMap.put(vEntry.getKey(), vEntry.getValue().getValueAsString());
-                }
-                viewRepresentation.setFlowVariables(vStringMap);
+                    Map<String, String> vStringMap = new HashMap<String, String>();
+                    for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
+                        vStringMap.put(vEntry.getKey(), vEntry.getValue().getValueAsString());
+                    }
+                    viewRepresentation.setFlowVariables(vStringMap);
 
-                readResourceContents();
-                viewRepresentation.setJsNamespace(m_node.getJsNamespace());
-                List<DynamicJSDependency> dependencies = setPathsFromLibNames(getDependencies(true));
-                dependencies.addAll(getDependencies(false));
-                viewRepresentation.setJsDependencies(dependencies.toArray(new DynamicJSDependency[0]));
-                setOptionsOnViewContent(inObjects);
+                    readResourceContents();
+                    viewRepresentation.setJsNamespace(m_node.getJsNamespace());
+                    List<DynamicJSDependency> dependencies = setPathsFromLibNames(getDependencies(true));
+                    dependencies.addAll(getDependencies(false));
+                    viewRepresentation.setJsDependencies(dependencies.toArray(new DynamicJSDependency[0]));
+                    setOptionsOnViewContent(inObjects);
+                } catch (InvalidSettingsException e) {
+                    //don't fail on invalid settings thrown from processor, but show an error message in the view and image
+                    viewRepresentation.setErrorMessage(e.getMessage());
+                    setWarningMessage(e.getMessage());
+                }
                 viewRepresentation.setInitialized();
             }
             viewRepresentation.setRunningInView(false);
