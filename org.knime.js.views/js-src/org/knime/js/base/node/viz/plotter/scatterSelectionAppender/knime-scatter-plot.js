@@ -95,6 +95,10 @@ knime_scatter_plot_selection_appender = function() {
 			drawChart(layoutContainer);
 			drawControls(layoutContainer);
 			
+			if (representation.showWarningInView && representation.warning !== null) {
+				knimeService.setWarningMessage(representation.warning);
+			}
+			
 			//console.timeEnd("Total init time");
 		} catch(err) {
 			if (err.stack) {

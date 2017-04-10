@@ -304,7 +304,11 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         exec.setProgress(0.1);
         //construct dataset
         if (m_config.getMaxRows() < filteredTable.size()) {
-            setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
+            String msg = "Only the first " + m_config.getMaxRows() + " rows are displayed.";
+            setWarningMessage(msg);
+            if (m_config.getShowWarningInView()) {
+                getViewRepresentation().setWarning(msg);
+            }
         }
         final JSONDataTable table = JSONDataTable.newBuilder()
                 .setDataTable(filteredTable)
@@ -484,6 +488,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
+        representation.setShowWarningInView(m_config.getShowWarningInView());
 
         ScatterPlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());
