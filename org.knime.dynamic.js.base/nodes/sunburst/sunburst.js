@@ -1,11 +1,10 @@
 // TODO:
 // maybe: formatter for count/percentage
-// selection of tunnel in graph persistent
-// knime-filtering and knime-selection
-// filtering by clicking on legend -> do not show paths that end with x
 // custom colors (waiting for christian)
 // different mouse modi for zoom/selection - see scatterplott
 // when zoomed in, mouse over goes mad
+// use isInteractivityAvailable
+// reset highliting
 
 (sunburst_namespace = function() {
 
@@ -14,6 +13,8 @@
   var knimeTable1, knimeTable2;
   var _data = {};
   var nodes;
+  var selectedRows = [];
+  var highlitedNode;
   // TODO: Do we need rowId2leafId?
   var rowId2leafId = [];
   var _colorMap;
@@ -95,10 +96,11 @@
       id: id++,
       name: rootNodeName,
       children: [],
+      // TODO: uniqueLabels should be it's own object.
       uniqueLabels: uniqueLabels,
-      // TODO: Do we need table rows?
-      tableRows: [],
-      highlited: false
+      active: false,
+      highlited: false,
+      selected: false
     };
 
     // Create hierarchical structure.
@@ -121,7 +123,6 @@
       // append to hierarchical structure
       var currentNode = _data;
       for (var j = 0; j < parts.length; j++) {
-        currentNode.tableRows.push(i);
         var children = currentNode["children"];
         if (parts[j] === null) {
           var nodeName = nullNodeName;
@@ -146,8 +147,9 @@
               id: id++,
               name: nodeName,
               children: [],
-              tableRows: [],
-              highlited: false
+              active: false,
+              highlited: false,
+              selected: false
             };
             children.push(childNode);
           }
@@ -159,8 +161,10 @@
             name: nodeName,
             size: size,
             children: [],
-            tableRows: [i],
-            highlited: false
+            rowKey: [row.rowkey],
+            active: false,
+            highlited: false,
+            selected: false
           };
           children.push(childNode);
 
@@ -223,20 +227,42 @@
       knimeService.allowFullscreen();
     }
 
-    // Zoom controlls.
+   	knimeService.addNavSpacer();
+
+
+    // Reset controlls.
     if (_representation.options.zoomable) {
       knimeService.addButton('zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
         resetZoom();
       });
+    }
+    if (true) {
+      knimeService.addButton('highlite-reset-button', 'search-minus', 'Reset Highlite', function() {
+        resetZoom();
+      });
+    }
+    if (true) {
+      knimeService.addButton('selection-reset-button', 'search-minus', 'Reset Selection', function() {
+        resetZoom();
+      });
+    }
 
+   	knimeService.addNavSpacer();
+
+    // mouse mode controlls.
+    if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
      	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-zoom" == this.getAttribute('id')});
         _value.options.mouseMode = "zoom";
       });
     }
-    
-    // Selection controlls.
     // TODO
+    if (true) {
+      knimeService.addButton('mouse-mode-highlite', 'check-square-o', 'Mouse Mode "highlite"', function() {
+     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-highlite" == this.getAttribute('id')});
+        _value.options.mouseMode = "highlite";
+      });
+    }
     if (true) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
      	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-select" == this.getAttribute('id')});
@@ -359,6 +385,69 @@
   	        }, true);
   	    knimeService.addMenuItem('Inner Label Text:', 'header', innerLabelText);
   	  }
+    }
+
+    if (knimeService.isInteractivityAvailable()) {
+      // Selection / Filter configuration
+      var publishSelectionToggle = _representation.options.publishSelectionToggle;
+      var subscribeSelectionToggle = _representation.options.subscribeSelectionToggle;
+      var subscribeFilterToggle = _representation.options.subscribeFilterToggle;
+      if (publishSelectionToggle || subscribeSelectionToggle || subscribeFilterToggle) {
+          knimeService.addMenuDivider();
+
+          if (publishSelectionToggle) {
+              var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+              var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.options.publishSelection, function() {
+                  if (this.checked) {
+                      _value.options.publishSelection = true;
+                  } else {
+                      _value.options.publishSelection = false;
+                  }
+              });
+
+              knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
+          }
+
+          if (subscribeSelectionToggle) {
+              var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+              var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.options.subscribeSelection, function() {
+                  if (this.checked) {
+                      _value.options.subscribeSelection = true;
+                      // TODO
+                      // knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+                  } else {
+                      _value.options.subscribeSelection = false;
+                      // TODO
+                      // knimeService.unsubscribeSelection(_representation.keyedDataset.id, selectionChanged);
+                  }
+              });
+              knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
+              // TODO
+              // if (_value.options.subscribeSelection) {
+              //     knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+              // }
+          }
+
+          if (subscribeFilterToggle) {
+              var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+              var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.options.subscribeFilter, function() {
+                  if (this.checked) {
+                      _value.options.subscribeSelection = true;
+                      // TODO
+                      // knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
+                  } else {
+                      _value.options.subscribeSelection = true;
+                      // TODO
+                      // knimeService.unsubscribeFilter(_representation.keyedDataset.id, filterChanged);
+                  }
+              });
+              knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
+              // TODO
+              // if (_value.subscribeFilter) {
+              //     knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
+              // }
+          }
+      }
     }
 
     // if (!_representation.options.multi && _representation.options.enableColumnSelection) {
@@ -582,7 +671,8 @@
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
-        .attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")");
+        .attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")")
+        .attr("id", "sunburstGroup");
 
     // Bounding circle underneath the sunburst, to make it easier to detect
     // when the mouse leaves the plottingSurface g.
@@ -637,24 +727,83 @@
     }
 
     function click(d) {
-      if (_value.options.mouseMode == "zoom" && options.zoomable) {
+      if (_value.options.mouseMode == "zoom") {
         zoom(d);
       } else if (_value.options.mouseMode == "select"){
-        _value.options.highlited = highlite(d);
+        select(d);
+      } else {
+        highlite(d);
       }
     }
 
     function mouseover(d) {
-      if (_value.options.highlited  == null) {
-        debugger;
-        highlite(d);
-      }
+      setPropAllNodes('active', false);
+      setPropsBackward(d, 'active', true);
+      sunburstGroup.selectAll("path")
+        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+
+      // TODO
+      drawBreadcrumb(d);
+      drawInnerLabel(d);
     }
     
     function mouseleave(d) {
-      if (_value.options.highlited  == null) {
-        unhighlite(d);  
+      setPropAllNodes('active', true);
+      sunburstGroup.selectAll("path")
+        .style("opacity", function(d) { return ((highlitedNode != null) || d.highlited) ? 1 : 0.3; });
+
+      // TODO: breadcrumb // innerlabel
+    }
+
+    function highlite(d) {
+      setPropAllNodes('highlited', false);
+      setPropsBackward(d, 'highlited', true);
+      sunburstGroup.selectAll("path")
+        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+
+      // TODO
+      drawBreadcrumb(d);
+      drawInnerLabel(d);
+    }
+
+    function select(d) {
+      if (d3.event.shiftKey) {
+        if (d.selected) {
+          // Remove element from selection.
+          var leafs = setPropsForward(d, 'selected', false);
+          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+          for (var i = 0; i < rowKeys.length; i++) {
+            var index = selectedRows.indexOf(rowKeys[i]);
+            if (index > -1) {
+              selectedRows.splice(index, 1);
+            }
+          }
+
+          knimeService.removeRowsFromSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+        } else {
+          // Add element to selection.
+          var leafs = setPropsForward(d, 'selected', true);
+          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+          for (var i = 0; i < rowKeys.length; i++) {
+            var index = selectedRows.indexOf(rowKeys[i]);
+            if (index == -1) {
+              selectedRows.push(rowKeys[i]);
+            }
+          }
+
+          knimeService.addRowsToSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+        }
+      } else {
+        // Set selection.
+        setPropAllNodes('selected', false);
+        setPropsBackward(d, 'selected', true);
+        var leafs = setPropsForward(d, 'selected', true);
+        var rowKeys =  leafs.map(function(leaf) { return leaf.rowKey; });
+        knimeService.setSelectedRows(knimeTable1.getTableId(), rowKeys, selectionChanged);
       }
+      
+      sunburstGroup.selectAll("path")
+        .attr("stroke-dasharray", function(d) { return d.selected ? "10, 10" : "0, 0"});
     }
 
     var zoom = function(d) {
@@ -690,10 +839,8 @@
       };
     }
 
-    // Fade all but the current sequence, and show it in the breadcrumb trail.
-    function highlite(d) {
-      // Donut hole text
-      // ===============
+    // TODO: argument should be list
+    function drawInnerLabel(d) {
       if (_value.options.innerLabelStyle === "percentage") {
         var statistic = (100 * d.value / totalSize).toPrecision(3);
         var statisticString = statistic + "%";
@@ -715,34 +862,14 @@
         d3.select("#explanationText")
             .text(_value.options.innerLabelText);
       }
+    }
 
+    function hideInnerLabel() {
+      // TODO
+    }
 
-      // Sunburst segments // TODO!!
-      // =================
-
-      // Reset highliting.
-      for (var i = 0; i < nodes.length; i++) {
-        nodes[i].highlited = false;
-      }
-
-      // Set highliting for parents.
-      var current = d;
-      while (current.parent) {
-        current.highlited = true;
-        current = current.parent;
-      }
-
-      // Set highliting for children.
-      function recursiveHighliting(node) {
-        node.highlited = true;
-        for (var i = 0; i < node.children.length; i++) {
-          recursiveHighliting(node.children[i]);
-        }
-      }
-      recursiveHighliting(d);
-
-      sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return d.highlited ? 1 : 0});
+    function drawBreadcrumb(d) {
+      // TODO
 
       // Breadcrumb
       // var sequenceArray = getAncestors(d);
@@ -768,11 +895,55 @@
       //             })
       //     .style("opacity", 1);
 
-      return sequenceArray;
+      // TODO: what was this for?
+      // return sequenceArray;
+
+      // Fade all but the current sequence, and show it in the breadcrumb trail.
+    }
+
+    function hideBreadcrumb() {
+      // TODO
+    }
+
+    function setPropsForward(start, prop, val) {
+      var stack = [start];
+      var leafs = [];
+
+      while (stack.length > 0) {
+        start = stack.pop();
+        if (prop != null && val != null) {
+          start[prop] = val;
+        }
+
+        if (start.children.length === 0) {
+          leafs.push(start);
+        } else {
+          for (var i = 0; i < start.children.length; i++) {
+            stack.push(start.children[i]);
+          }
+        }
+      }
+
+      return leafs;
+    }
+
+    function setPropsBackward(start, prop, val) {
+      while (start.parent) {
+        start[prop] = val;
+        start = start.parent;
+      }
+    }
+
+    function setPropAllNodes(prop, val) {
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i][prop] = val;
+      }
     }
 
     // Restore everything to full opacity when moving off the visualization.
     function unhighlite(d) {
+
+      setPropAllNodes('active', false);
 
       // Hide the breadcrumb trail
       d3.select("#trail")
@@ -944,6 +1115,18 @@
       }
     } 
   }
+
+  var publishSelection = function() {
+		if (_value.options.publishSelection) {
+      // TODO: what selection to publish?
+      // TODO: knimeTable1.getTableId() richtig?
+			knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
+		}
+	};
+
+  var selectionChanged = function(data) {
+    // TODO
+  };
 
   view.getSVG = function() {
     // inline global style declarations for SVG export
