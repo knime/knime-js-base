@@ -357,6 +357,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         }
         if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN) && missingValueColumns.length > 0) {
             setWarningMessage("Y axis columns with missing values will not be available in the view according to the chosen handling method.");
+            if (m_config.getShowWarningInView()) {
+                getViewRepresentation().setWarning("Y axis columns with missing values are not be available");
+            }
         }
 
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
