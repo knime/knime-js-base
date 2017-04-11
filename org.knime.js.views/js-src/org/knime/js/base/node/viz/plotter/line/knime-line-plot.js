@@ -17,6 +17,9 @@ knime_line_plot = function() {
 	var MISSING_VALUE_METHOD_NO_GAP = "noGap";
 	var MISSING_VALUE_METHOD_REMOVE_COLUMN = "removeColumn";
 	
+	var xMissingValuesCount = 0;
+	var yMissingValues = [];
+	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
 			d3.select("body").text("Error: No data available");
@@ -387,6 +390,9 @@ knime_line_plot = function() {
         	chartManager.addAuxiliaryHandler(crosshairHandler);
         }
         
+        xMissingValuesCount = 0;
+    	yMissingValues = [];
+        
         setChartDimensions();
         //console.timeEnd("Building chart");
         //console.time("Refreshing Display");
@@ -397,6 +403,22 @@ knime_line_plot = function() {
         	var win = document.defaultView || document.parentWindow;
         	win.onresize = resize;
         }
+        
+        var msg = '';        
+        if (xMissingValuesCount > 0) {
+        	msg = xMissingValuesCount + ' missing value(s) on the X axis are not shown.';
+        }
+        if (yMissingValues.length > 0) {
+        	if (msg) {
+        		msg += '\n';
+        	}
+        	msg += 'Column(s) with corresponding number of missing values: ' + yMissingValues.join(', ') + '.';
+        }
+        if (msg) {        	
+			knimeService.setWarningMessage(msg);
+		} else {
+			clearWarningMessage();
+		}
         
         initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
 	};
@@ -672,7 +694,8 @@ knime_line_plot = function() {
 	    if (itemCount == 0) {
 	        return;
 	    }
-	    var xMissingValueCount = 0;
+	    xMissingValuesCount = 0;
+	    var yMissingValuesCount = 0;
 	    var connect = false;
 	    ctx.beginPath();
 	    for (var i = 0; i < itemCount; i++) {
@@ -680,12 +703,13 @@ knime_line_plot = function() {
 	        var y = dataset.y(seriesIndex, i);
 	        if (x === null) {
 	        	// always ignore missing values of the x column
-	        	xMissingValueCount++;
+	        	xMissingValuesCount++;
 	        	continue;
 	        }
 	        if (y === null) {
 	            // keep the line only if noGap method and the line has been already started, i.e. connect == true
 	        	connect = _representation.missingValueMethod == MISSING_VALUE_METHOD_NO_GAP && connect ? true : false;
+	        	yMissingValuesCount++;
 	            continue;
 	        }
 
@@ -705,11 +729,9 @@ knime_line_plot = function() {
 	    ctx.setLineStroke(this._strokeSource.getStroke(seriesIndex, 0));
 	    ctx.stroke();
 	    
-	    if (xMissingValueCount > 0) {
-			knimeService.setWarningMessage(xMissingValueCount + " missing value(s) on the X axis are not shown");
-		} else {
-			clearWarningMessage();
-		}
+	    if (yMissingValuesCount > 0) {
+	    	yMissingValues.push("'" + dataset._ycols[seriesIndex] + "': " + yMissingValuesCount);
+	    }
 	};
 	
 	clearWarningMessage = function() {
