@@ -223,6 +223,32 @@ knime_line_plot = function() {
 			};
 			// --/
 			
+			// Fix the missing String values on X axis
+			// ToDo: apply changes to JSFreeChart
+			// /--
+			jsfc.TableXYDataset.prototype.x = function(seriesIndex, itemIndex) {
+			    if (this._xcol === null) {
+			        return itemIndex;
+			    }
+			    
+			    var col = this._source.columnIndex(this._xcol);
+			    var value = this._source.valueByIndex(itemIndex, col);
+			    
+			    // when there are symbols defined for the axis, we want this dataset
+			    // to return ordinal x-values
+			    // changed: actually only if the value is not null
+			    if (this.getProperty("x-symbols")) {
+			    	if (value !== null) {
+			    		return itemIndex;
+			    	} else {
+			    		return null;  // <-- changed here
+			    	}
+			    }			    
+			    
+			    return value;
+			};
+			// --/
+			
 			xyDataset = new jsfc.TableXYDataset(_keyedDataset, _value.xColumn, _value.yColumns);
 		} else {
 			xyDataset = new jsfc.StandardXYDataset();
