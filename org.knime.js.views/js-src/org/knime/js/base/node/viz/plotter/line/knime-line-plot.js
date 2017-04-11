@@ -420,7 +420,7 @@ knime_line_plot = function() {
 			w = Math.max(minWidth, container.clientWidth);
 			h = Math.max(minHeight, container.clientHeight);
 		}
-        chartManager.getChart().setSize(w, h);
+        chartManager.getChart().setSize(w, h, false);
 	};
 	
 	updateChart = function() {
