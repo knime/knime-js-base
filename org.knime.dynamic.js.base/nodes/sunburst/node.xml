@@ -88,7 +88,18 @@
 					enableDependency="innerLabel">
 					The inner label text.
 				</stringOption>
-
+				<checkBoxOption name="Publish Selection" id="publishSelection"
+					label="Enable publishing of selection" defaultValue="true" saveInView="true">
+					Check to enable publishing of selection events.
+				</checkBoxOption>
+				<checkBoxOption name="Subscribe to selection events" id="subscribeSelection"
+					label="Enable subscription of selection" defaultValue="true" saveInView="true">
+					Check to enable subscription fo selection events.
+				</checkBoxOption>
+				<checkBoxOption name="Subscribe to filter events" id="subscribeFilter"
+					label="Enable subscription of filter" defaultValue="true" saveInView="true">
+					Check to enable subscription fo filter events.
+				</checkBoxOption>
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="500" defaultWidth="600" defaultHeight="400"
 					defaultFullscreen="true">
@@ -147,6 +158,21 @@
 					label="Enable inner label editing" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the inner label within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable publish selection toggle" id="publishSelectionToggle"
+					label="Enable publish selection toggle" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable toggling of publishing of selection events within view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable subscribe to selection toggle" id="subscribeSelectionToggle"
+					label="Enable subscribe to selection toggle" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable toggling of subscription of selection events within view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable subscribe to filter toggle" id="subscribeFilterToggle"
+					label="Enable subscribe to filter toggle" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable toggling of subscription of filter events within view.
 				</checkBoxOption>
 			</options>
 		</tab>
