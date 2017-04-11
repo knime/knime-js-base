@@ -294,7 +294,11 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         exec.setProgress(0.1);
         //construct dataset
         if (m_config.getMaxRows() < filteredTable.size()) {
-            setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
+            String msg = "Only the first " + m_config.getMaxRows() + " rows are displayed.";
+            setWarningMessage(msg);
+            if (m_config.getShowWarningInView()) {
+                getViewRepresentation().setWarning(msg);
+            }
         }
 
         JSONDataTable.Builder builder = JSONDataTable.newBuilder()

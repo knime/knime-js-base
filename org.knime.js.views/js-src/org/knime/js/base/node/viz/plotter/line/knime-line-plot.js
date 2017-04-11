@@ -84,6 +84,10 @@ knime_line_plot = function() {
 			d3.select("body").attr("id", "body").append("div").attr("id", layoutContainer)
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
+			
+			if (representation.showWarningInView && representation.warning !== null) {
+				knimeService.setWarningMessage(representation.warning);
+			}
 
 			if (_representation.missingValueMethod == MISSING_VALUE_METHOD_REMOVE_COLUMN) {
 				var yColumns = [];
