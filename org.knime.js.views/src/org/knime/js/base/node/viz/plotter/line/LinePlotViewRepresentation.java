@@ -108,6 +108,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
     private String m_missingValueMethod;
 
+    private boolean m_showWarningInView;
+    private String m_warning;
+
     /**
      * @return the keyedDataset
      */
@@ -557,6 +560,34 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
+    /**
+     * @return the warning
+     */
+    public String getWarning() {
+        return m_warning;
+    }
+
+    /**
+     * @param warning the warning to set
+     */
+    public void setWarning(final String warning) {
+        m_warning = warning;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -568,8 +599,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.SHOW_CROSSHAIR, getShowCrosshair());
         settings.addBoolean(LinePlotViewConfig.SNAP_TO_POINTS, getSnapToPoints());
         settings.addBoolean(LinePlotViewConfig.RESIZE_TO_WINDOW, getResizeToWindow());
-        // added with 3.3
-        settings.addBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
 
         settings.addBoolean(LinePlotViewConfig.ENABLE_CONFIG, getEnableViewConfiguration());
         settings.addBoolean(LinePlotViewConfig.ENABLE_TTILE_CHANGE, getEnableTitleChange());
@@ -589,9 +618,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.ENABLE_RECTANGLE_SELECTION, getEnableRectangleSelection());
         settings.addBoolean(LinePlotViewConfig.ENABLE_LASSO_SELECTION, getEnableLassoSelection());
 
-        // added with 3.4
-        settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
-
         settings.addInt(LinePlotViewConfig.IMAGE_WIDTH, getImageWidth());
         settings.addInt(LinePlotViewConfig.IMAGE_HEIGHT, getImageHeight());
         settings.addString(LinePlotViewConfig.DATE_FORMAT, getDateTimeFormat());
@@ -604,6 +630,14 @@ public class LinePlotViewRepresentation extends JSONViewContent {
             NodeSettingsWO datasetSettings = settings.addNodeSettings("dataset");
             m_keyedDataset.saveToNodeSettings(datasetSettings);
         }
+
+        // added with 3.3
+        settings.addBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
+
+        // added with 3.4
+        settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
+        settings.addBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        settings.addString("warning", getWarning());
     }
 
     /**
@@ -618,8 +652,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setShowCrosshair(settings.getBoolean(LinePlotViewConfig.SHOW_CROSSHAIR));
         setSnapToPoints(settings.getBoolean(LinePlotViewConfig.SNAP_TO_POINTS));
         setResizeToWindow(settings.getBoolean(LinePlotViewConfig.RESIZE_TO_WINDOW));
-        //added with 3.3
-        setDisplayFullscreenButton(settings.getBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, LinePlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(LinePlotViewConfig.ENABLE_CONFIG));
         setEnableTitleChange(settings.getBoolean(LinePlotViewConfig.ENABLE_TTILE_CHANGE));
@@ -639,9 +671,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setEnableRectangleSelection(settings.getBoolean(LinePlotViewConfig.ENABLE_RECTANGLE_SELECTION));
         setEnableLassoSelection(settings.getBoolean(LinePlotViewConfig.ENABLE_LASSO_SELECTION));
 
-        //added with 3.4
-        setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
-
         setImageWidth(settings.getInt(LinePlotViewConfig.IMAGE_WIDTH));
         setImageHeight(settings.getInt(LinePlotViewConfig.IMAGE_HEIGHT));
         setDateTimeFormat(settings.getString(LinePlotViewConfig.DATE_FORMAT));
@@ -656,6 +685,14 @@ public class LinePlotViewRepresentation extends JSONViewContent {
             m_keyedDataset = new JSONKeyedValues2DDataset();
             m_keyedDataset.loadFromNodeSettings(datasetSettings);
         }
+
+        // added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(LinePlotViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, LinePlotViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+
+        // added with 3.4
+        setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
+        setShowWarningInView(settings.getBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, LinePlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
+        setWarning(settings.getString("warning", null));
     }
 
     /**
@@ -706,6 +743,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_gridColor, other.m_gridColor)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_missingValueMethod, other.m_missingValueMethod)
+                .append(m_showWarningInView, other.m_showWarningInView)
+                .append(m_warning, other.m_warning)
                 .isEquals();
     }
 
@@ -747,6 +786,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_gridColor)
                 .append(m_enableStaggeredRendering)
                 .append(m_missingValueMethod)
+                .append(m_showWarningInView)
+                .append(m_warning)
                 .toHashCode();
     }
 }

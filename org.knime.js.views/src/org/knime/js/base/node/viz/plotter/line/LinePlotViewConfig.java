@@ -80,6 +80,7 @@ public final class LinePlotViewConfig {
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    static final boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
@@ -126,6 +127,7 @@ public final class LinePlotViewConfig {
     static final String DATA_AREA_COLOR = "dataAreaColor";
     static final String GRID_COLOR = "gridColor";
     static final String MISSING_VALUE_METHOD = "missingValueMethod";
+    static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -172,6 +174,7 @@ public final class LinePlotViewConfig {
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private String m_missingValueMethod = MISSING_VALUE_METHOD;
+    private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
 
     /**
      * The line will break and have gaps, if the value is missing
@@ -864,6 +867,20 @@ public final class LinePlotViewConfig {
         m_missingValueMethod = missingValueMethod;
     }
 
+    /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -922,8 +939,6 @@ public final class LinePlotViewConfig {
         settings.addBoolean(SHOW_CROSSHAIR, getShowCrosshair());
         settings.addBoolean(SNAP_TO_POINTS, getSnapToPoints());
         settings.addBoolean(RESIZE_TO_WINDOW, getResizeToWindow());
-        //added with 3.3
-        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
 
         settings.addBoolean(ENABLE_CONFIG, getEnableViewConfiguration());
         settings.addBoolean(ENABLE_TTILE_CHANGE, getEnableTitleChange());
@@ -940,8 +955,6 @@ public final class LinePlotViewConfig {
         settings.addBoolean(ENABLE_SELECTION, getEnableSelection());
         settings.addBoolean(ENABLE_RECTANGLE_SELECTION, getEnableRectangleSelection());
         settings.addBoolean(ENABLE_LASSO_SELECTION, getEnableLassoSelection());
-        // added with 3.4
-        settings.addString(MISSING_VALUE_METHOD, getMissingValueMethod());
 
         settings.addString(CHART_TITLE, getChartTitle());
         settings.addString(CHART_SUBTITLE, getChartSubtitle());
@@ -963,6 +976,13 @@ public final class LinePlotViewConfig {
         settings.addString(BACKGROUND_COLOR, getBackgroundColorString());
         settings.addString(DATA_AREA_COLOR, getDataAreaColorString());
         settings.addString(GRID_COLOR, getGridColorString());
+
+        //added with 3.3
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, getDisplayFullscreenButton());
+
+        // added with 3.4
+        settings.addString(MISSING_VALUE_METHOD, getMissingValueMethod());
+        settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
     }
 
     /** Loads parameters in NodeModel.
@@ -980,8 +1000,6 @@ public final class LinePlotViewConfig {
         setShowCrosshair(settings.getBoolean(SHOW_CROSSHAIR));
         setSnapToPoints(settings.getBoolean(SNAP_TO_POINTS));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW));
-        //added with 3.3
-        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(ENABLE_CONFIG));
         setEnableTitleChange(settings.getBoolean(ENABLE_TTILE_CHANGE));
@@ -998,8 +1016,6 @@ public final class LinePlotViewConfig {
         setEnableSelection(settings.getBoolean(ENABLE_SELECTION));
         setEnableRectangleSelection(settings.getBoolean(ENABLE_RECTANGLE_SELECTION));
         setEnableLassoSelection(settings.getBoolean(ENABLE_LASSO_SELECTION));
-        // added with 3.4
-        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
 
         setChartTitle(settings.getString(CHART_TITLE));
         setChartSubtitle(settings.getString(CHART_SUBTITLE));
@@ -1030,6 +1046,13 @@ public final class LinePlotViewConfig {
         setDataAreaColor(getColorFromString(dataColorString));
         String gridColorString = settings.getString(GRID_COLOR);
         setGridColor(getColorFromString(gridColorString));
+
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+
+        // added with 3.4
+        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 
     /** Loads parameters in Dialog.
@@ -1047,8 +1070,6 @@ public final class LinePlotViewConfig {
         setShowCrosshair(settings.getBoolean(SHOW_CROSSHAIR, false));
         setSnapToPoints(settings.getBoolean(SNAP_TO_POINTS, false));
         setResizeToWindow(settings.getBoolean(RESIZE_TO_WINDOW, true));
-        //added with 3.3
-        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
 
         setEnableViewConfiguration(settings.getBoolean(ENABLE_CONFIG, false));
         setEnableTitleChange(settings.getBoolean(ENABLE_TTILE_CHANGE, false));
@@ -1065,8 +1086,6 @@ public final class LinePlotViewConfig {
         setEnableSelection(settings.getBoolean(ENABLE_SELECTION, true));
         setEnableRectangleSelection(settings.getBoolean(ENABLE_RECTANGLE_SELECTION, false));
         setEnableLassoSelection(settings.getBoolean(ENABLE_LASSO_SELECTION, false));
-        // added with 3.4
-        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
 
         setChartTitle(settings.getString(CHART_TITLE, null));
         setChartSubtitle(settings.getString(CHART_SUBTITLE, null));
@@ -1110,6 +1129,13 @@ public final class LinePlotViewConfig {
             gridColor = getColorFromString(gridColorString);
         } catch (InvalidSettingsException e) { /* do nothing */ }
         setGridColor(gridColor);
+
+        //added with 3.3
+        setDisplayFullscreenButton(settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON));
+
+        // added with 3.4
+        setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 
     public static void setDateFormatHistory(final String format) {
