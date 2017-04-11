@@ -134,8 +134,7 @@ knime_line_plot = function() {
 		//console.time("Building XYDataset");
 		var xyDataset;
 		
-		if (_keyedDataset.rowCount() > 0 && _value.yColumns.length > 0) {
-			
+		if (_keyedDataset.rowCount() > 0 && _value.yColumns.length > 0) {			
 			// Fix missing values in String x-column.
 			// ToDo: apply changes to JSFreeChart
 			// Fixed with null-checking of source.valueByIndex(r, c)
@@ -668,11 +667,12 @@ knime_line_plot = function() {
 	};
 	
 	drawSeries = function(ctx, dataArea, plot,
-	        dataset, seriesIndex) {
+	        dataset, seriesIndex) {		
 	    var itemCount = dataset.itemCount(seriesIndex);
 	    if (itemCount == 0) {
 	        return;
 	    }
+	    var xMissingValueCount = 0;
 	    var connect = false;
 	    ctx.beginPath();
 	    for (var i = 0; i < itemCount; i++) {
@@ -680,6 +680,7 @@ knime_line_plot = function() {
 	        var y = dataset.y(seriesIndex, i);
 	        if (x === null) {
 	        	// always ignore missing values of the x column
+	        	xMissingValueCount++;
 	        	continue;
 	        }
 	        if (y === null) {
@@ -703,7 +704,21 @@ knime_line_plot = function() {
 	    ctx.setLineColor(this.lookupLineColor(dataset, seriesIndex, i));
 	    ctx.setLineStroke(this._strokeSource.getStroke(seriesIndex, 0));
 	    ctx.stroke();
+	    
+	    if (xMissingValueCount > 0) {
+			knimeService.setWarningMessage(xMissingValueCount + " missing value(s) on the X axis are not shown");
+		} else {
+			clearWarningMessage();
+		}
 	};
+	
+	clearWarningMessage = function() {
+		if (_representation.warning !== null) {
+			knimeService.setWarningMessage(_representation.warning);
+		} else {
+			knimeService.clearWarningMessage();
+		}
+	}
 	
 	return view;
 }();
