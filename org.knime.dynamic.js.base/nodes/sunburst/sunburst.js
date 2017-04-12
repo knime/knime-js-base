@@ -16,7 +16,7 @@
   var selectedRows = [];
   var highlitedNode;
   // TODO: Do we need rowId2leafId?
-  var rowId2leafId = [];
+  var rowKey2leaf = {};
   var _colorMap;
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
@@ -168,7 +168,7 @@
           children.push(childNode);
 
           // Add id of leaf to [row -> leaf]-data-structure. 
-          rowId2leafId.push(id-1);
+          rowKey2leaf[rows[i].rowKey] = childNode;
         }
       }
     }
@@ -428,18 +428,18 @@
                   if (this.checked) {
                       _value.options.subscribeSelection = true;
                       // TODO
-                      // knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+                      knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
                   } else {
                       _value.options.subscribeSelection = false;
                       // TODO
-                      // knimeService.unsubscribeSelection(_representation.keyedDataset.id, selectionChanged);
+                      knimeService.unsubscribeSelection(knimeTable1.getTableId(), selectionChanged);
                   }
               });
               knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
               // TODO
-              // if (_value.options.subscribeSelection) {
-              //     knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
-              // }
+              if (_value.options.subscribeSelection) {
+              //  knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
+              }
           }
 
           if (subscribeFilterToggle) {
@@ -805,7 +805,9 @@
 
     function renderSelection() {
       sunburstGroup.selectAll("path")
-        .attr("stroke-dasharray", function(d) { return d.selected ? "10, 10" : "0, 0"});
+        .attr("stroke-dasharray", function(d) {
+          return d.selected ? "10, 10" : "none"
+        });
     }
 
     function select(d) {
@@ -854,8 +856,63 @@
     }
 
     selectionChanged = function(data) {
-      // TODO
+      if (data.changeSet) {
+        if (data.changeSet.removed) {
+          for (var i = 0; i < data.changeSet.removed.length; i++) {
+            var removedKey = data.changeSet.removed[i];
+            var index = selectedRows.indexOf(removedKey);
+            if (index > -1) {
+              selectedRows.splice(index, 1);
+            }           
+          }
+        }
+        if (data.changeSet.added) {
+          for (var i = 0; i < data.changeSet.added.length; i++) {
+            var addedKey = data.changeSet.added[i];
+            var index = selectedRows.indexOf(addedKey);
+            if (index == -1) {
+              selectedRows.push(addedKey);
+            }           
+          }
+        }
+      } else if (data.elements) {
+        // selectedRows = 
+      }
+      setSelectionFromSelectedRows();
     };
+
+    function setSelectionFromSelectedRows() {
+      // Sections should be selected up to lowest common ancestor of
+      // selected rows/leafs.
+
+      setPropAllNodes("selected", false);
+      var nodesOnSameLevel = selectedRows.map(function(key) { return rowKey2leaf[key]; });
+      nodesOnSameLevel.forEach(function(n) { n.selected = true; });
+
+      while (nodesOnSameLevel.length > 0) {
+        var stack = nodesOnSameLevel;
+        nodesOnSameLevel = [];
+        while (stack.length > 0) {
+          var current = stack.pop();
+          var parent = current.parent;
+          var siblings = parent.children;
+          var selectParent = siblings.every(function(s) { return s.selected; });
+          if (selectParent) {
+            parent.selected = true;
+            // Remove siblings from stack to rule out redundant execution.
+            siblings.forEach(function(s) { 
+              var index = stack.indexOf(s);
+              if (index > -1) {
+                stack.splice(index, 1);
+              }
+            })
+
+            nodesOnSameLevel.push(current.parent);
+          }
+        }
+      }
+      renderSelection();
+    }
 
     var zoom = function(d) {
       path.transition()
