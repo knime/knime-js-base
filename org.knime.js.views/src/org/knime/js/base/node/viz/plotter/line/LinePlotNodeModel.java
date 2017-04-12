@@ -111,6 +111,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
     private BufferedDataTable m_table;
 
+    static final String ROWS_LIMITATION_WARNING_ID = "rowsLimitation";
+    static final String SKIP_Y_COLUMNS_WARNING_ID = "skipYColumns";
+
     /**
      * Creates a new model instance.
      */
@@ -297,7 +300,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             String msg = "Only the first " + m_config.getMaxRows() + " rows are displayed.";
             setWarningMessage(msg);
             if (m_config.getShowWarningInView()) {
-                getViewRepresentation().setWarning(msg);
+                getViewRepresentation().getWarnings().setWarningMessage(msg, ROWS_LIMITATION_WARNING_ID);
             }
         }
 
@@ -358,7 +361,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN) && missingValueColumns.length > 0) {
             setWarningMessage("Y axis columns with missing values will not be available in the view according to the chosen handling method.");
             if (m_config.getShowWarningInView()) {
-                getViewRepresentation().setWarning("Column(s) '" + String.join("', '", missingValueColumns) + "' have missing values and are not available");
+                getViewRepresentation().getWarnings().setWarningMessage(
+                    "Column(s) '" + String.join("', '", missingValueColumns) + "' have missing values and are not available", SKIP_Y_COLUMNS_WARNING_ID);
             }
         }
 

@@ -57,6 +57,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
+import org.knime.js.core.warnings.JSONWarnings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -109,8 +110,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private String m_missingValueMethod;
 
     private boolean m_showWarningInView;
-    private static final String CFG_WARNING = "warning";
-    private String m_warning;
+    private JSONWarnings m_warnings = new JSONWarnings();
 
     /**
      * @return the keyedDataset
@@ -575,17 +575,17 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the warning
+     * @return the warnings
      */
-    public String getWarning() {
-        return m_warning;
+    public JSONWarnings getWarnings() {
+        return m_warnings;
     }
 
     /**
-     * @param warning the warning to set
+     * @param warnings the warnings to set
      */
-    public void setWarning(final String warning) {
-        m_warning = warning;
+    public void setWarnings(final JSONWarnings warnings) {
+        m_warnings = warnings;
     }
 
     /**
@@ -638,7 +638,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
         settings.addBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
-        settings.addString(CFG_WARNING, getWarning());
+        m_warnings.saveToNodeSettings(settings);
     }
 
     /**
@@ -693,7 +693,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, LinePlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
-        setWarning(settings.getString(CFG_WARNING, null));
+        m_warnings.loadFromNodeSettings(settings);
     }
 
     /**
@@ -745,7 +745,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_missingValueMethod, other.m_missingValueMethod)
                 .append(m_showWarningInView, other.m_showWarningInView)
-                .append(m_warning, other.m_warning)
+                .append(m_warnings, other.m_warnings)
                 .isEquals();
     }
 
@@ -788,7 +788,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering)
                 .append(m_missingValueMethod)
                 .append(m_showWarningInView)
-                .append(m_warning)
+                .append(m_warnings)
                 .toHashCode();
     }
 }
