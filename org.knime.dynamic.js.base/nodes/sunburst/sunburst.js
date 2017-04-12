@@ -106,14 +106,13 @@
     // Create hierarchical structure.
     var rows = knimeTable1.getRows();
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i].data;
-      var size = row[freqColumn];
+      var size = rows[i].data[freqColumn];
       if (size === null || isNaN(size)) {
         size = 0;
       }
 
       // get array of path elements from current row
-      var parts = pathColumns.map(function(col) { return row[col]; });
+      var parts = pathColumns.map(function(col) { return rows[i].data[col]; });
       // Remove trailing nulls
       while(parts[parts.length-1] === null) {
         parts.pop();
@@ -161,7 +160,7 @@
             name: nodeName,
             size: size,
             children: [],
-            rowKey: [row.rowkey],
+            rowKey: rows[i].rowKey,
             active: false,
             highlited: false,
             selected: false
@@ -237,38 +236,53 @@
       });
     }
     if (true) {
-      knimeService.addButton('highlite-reset-button', 'search-minus', 'Reset Highlite', function() {
-        resetZoom();
+      knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function() {
+        clearSelection();
       });
     }
     if (true) {
-      knimeService.addButton('selection-reset-button', 'search-minus', 'Reset Selection', function() {
-        resetZoom();
+      knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Highlite', function() {
+        clearHighliting();
       });
     }
 
    	knimeService.addNavSpacer();
 
+
+    // TODO
+    if (_value.options.mouseMode == null) {
+      _value.options.mouseMode = "highlite";
+    }
+
+    function toggleButton() {
+      var targetID = "mouse-mode-" + _value.options.mouseMode;
+      d3.selectAll("#knime-service-header .service-button")
+        .classed("active", function() {
+          return targetID == this.getAttribute("id");
+        });
+     }
+
     // mouse mode controlls.
     if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
-     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-zoom" == this.getAttribute('id')});
         _value.options.mouseMode = "zoom";
+     	  toggleButton();
       });
     }
     // TODO
     if (true) {
-      knimeService.addButton('mouse-mode-highlite', 'check-square-o', 'Mouse Mode "highlite"', function() {
-     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-highlite" == this.getAttribute('id')});
-        _value.options.mouseMode = "highlite";
+      knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
+        _value.options.mouseMode = "select";
+     	  toggleButton();
       });
     }
     if (true) {
-      knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
-     	  d3.selectAll('#knime-service-header .service-button').classed('active', function() {return "mouse-mode-select" == this.getAttribute('id')});
-        _value.options.mouseMode = "select";
+      knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
+        _value.options.mouseMode = "highlite";
+     	  toggleButton();
       });
     }
+    toggleButton();
 
     // Title / Subtitle configuration
     var titleEdit = _representation.options.enableTitleEdit;
@@ -737,25 +751,32 @@
     }
 
     function mouseover(d) {
-      setPropAllNodes('active', false);
-      setPropsBackward(d, 'active', true);
-      sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+      if (_value.options.mouseMode == "highlite") {
+        setPropAllNodes('active', false);
+        setPropsBackward(d, 'active', true);
+        sunburstGroup.selectAll("path")
+          .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
 
-      // TODO
-      drawBreadcrumb(d);
-      drawInnerLabel(d);
+        // TODO
+        drawBreadcrumb(d);
+        drawInnerLabel(d);
+      }
     }
     
     function mouseleave(d) {
+      if (_value.options.mouseMode == "highlite") {
+
       setPropAllNodes('active', true);
       sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return ((highlitedNode != null) || d.highlited) ? 1 : 0.3; });
+        .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
 
       // TODO: breadcrumb // innerlabel
+
+      }
     }
 
     function highlite(d) {
+      highlitedNode = d.id;
       setPropAllNodes('highlited', false);
       setPropsBackward(d, 'highlited', true);
       sunburstGroup.selectAll("path")
@@ -766,11 +787,33 @@
       drawInnerLabel(d);
     }
 
+    // Restore everything to full opacity when moving off the visualization.
+    clearHighliting = function(d) {
+      highlitedNode = null;
+      setPropAllNodes('highlited', false);
+
+      // Hide the breadcrumb trail
+      // d3.select("#trail")
+      //     .style("visibility", "hidden");
+
+      sunburstGroup.selectAll("path")
+        .style("opacity", 1);
+
+      // d3.select("#explanation")
+      //     .style("visibility", "hidden");
+    }
+
+    function renderSelection() {
+      sunburstGroup.selectAll("path")
+        .attr("stroke-dasharray", function(d) { return d.selected ? "10, 10" : "0, 0"});
+    }
+
     function select(d) {
       if (d3.event.shiftKey) {
         if (d.selected) {
-          // Remove element from selection.
-          var leafs = setPropsForward(d, 'selected', false);
+          // Remove elements from selection.
+          setPropsForward(d, "selected", false);
+          var leafs = setPropsForward(d, "selected", false);
           var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
           for (var i = 0; i < rowKeys.length; i++) {
             var index = selectedRows.indexOf(rowKeys[i]);
@@ -796,15 +839,23 @@
       } else {
         // Set selection.
         setPropAllNodes('selected', false);
-        setPropsBackward(d, 'selected', true);
         var leafs = setPropsForward(d, 'selected', true);
         var rowKeys =  leafs.map(function(leaf) { return leaf.rowKey; });
         knimeService.setSelectedRows(knimeTable1.getTableId(), rowKeys, selectionChanged);
       }
-      
-      sunburstGroup.selectAll("path")
-        .attr("stroke-dasharray", function(d) { return d.selected ? "10, 10" : "0, 0"});
+      renderSelection();
     }
+
+    clearSelection = function() {
+      setPropAllNodes('selected', false);
+      renderSelection();
+      selectedRows = [];
+      knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
+    }
+
+    selectionChanged = function(data) {
+      // TODO
+    };
 
     var zoom = function(d) {
       path.transition()
@@ -938,31 +989,6 @@
       for (var i = 0; i < nodes.length; i++) {
         nodes[i][prop] = val;
       }
-    }
-
-    // Restore everything to full opacity when moving off the visualization.
-    function unhighlite(d) {
-
-      setPropAllNodes('active', false);
-
-      // Hide the breadcrumb trail
-      d3.select("#trail")
-          .style("visibility", "hidden");
-
-      // Deactivate all segments during transition.
-      d3.selectAll("path").on("mouseover", null);
-
-      // Transition each segment to full opacity and then reactivate it.
-      d3.selectAll("path")
-          .transition()
-          .duration(200)
-          .style("opacity", 1)
-          .each("end", function() {
-                  d3.select(this).on("mouseover", mouseover);
-                });
-
-      d3.select("#explanation")
-          .style("visibility", "hidden");
     }
 
     // Given a node in a partition layout, return an array of all of its ancestor
@@ -1115,18 +1141,6 @@
       }
     } 
   }
-
-  var publishSelection = function() {
-		if (_value.options.publishSelection) {
-      // TODO: what selection to publish?
-      // TODO: knimeTable1.getTableId() richtig?
-			knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
-		}
-	};
-
-  var selectionChanged = function(data) {
-    // TODO
-  };
 
   view.getSVG = function() {
     // inline global style declarations for SVG export
