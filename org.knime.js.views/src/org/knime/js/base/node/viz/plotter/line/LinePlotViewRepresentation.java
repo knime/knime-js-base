@@ -109,6 +109,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private String m_missingValueMethod;
 
     private boolean m_showWarningInView;
+    private static final String CFG_WARNING = "warning";
     private String m_warning;
 
     /**
@@ -637,7 +638,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
         settings.addBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
-        settings.addString("warning", getWarning());
+        settings.addString(CFG_WARNING, getWarning());
     }
 
     /**
@@ -692,7 +693,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, LinePlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
-        setWarning(settings.getString("warning", null));
+        setWarning(settings.getString(CFG_WARNING, null));
     }
 
     /**

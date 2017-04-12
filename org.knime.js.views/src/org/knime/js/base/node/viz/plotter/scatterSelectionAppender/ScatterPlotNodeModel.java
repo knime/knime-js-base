@@ -351,6 +351,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
             datasetExecutionMonitor.setProgress(((double)rowID) / rowValues.length, "Creating dataset, processing row "
                 + rowID + " of " + rowValues.length + ".");
         }
+
         if (hasUnsupportedValues) {
             setWarningMessage("Table contains missing or unsupported values - these values will be omitted.");
         }

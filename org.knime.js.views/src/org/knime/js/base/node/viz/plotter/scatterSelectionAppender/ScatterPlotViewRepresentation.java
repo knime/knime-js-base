@@ -112,6 +112,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_enableStaggeredRendering = true;
 
     private boolean m_showWarningInView;
+    private static final String CFG_WARNING = "warning";
     private String m_warning;
 
 
@@ -671,7 +672,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
         settings.addBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
-        settings.addString("warning", getWarning());
+        settings.addString(CFG_WARNING, getWarning());
     }
 
     /**
@@ -728,7 +729,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, ScatterPlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
-        setWarning(settings.getString("warning", null));
+        setWarning(settings.getString(CFG_WARNING, null));
     }
 
     /**
