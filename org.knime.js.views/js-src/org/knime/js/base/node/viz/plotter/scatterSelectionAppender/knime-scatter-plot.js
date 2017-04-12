@@ -23,7 +23,9 @@ knime_scatter_plot_selection_appender = function() {
 	
 	var hiddenItemKeys = [];
 	
-	var missingValuesCount = 0; 
+	var missingValuesCount = 0;
+	
+	var MISSING_VALUES_NOT_SHOWN_WARNING_ID = "missingValuesNotShown";
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
@@ -94,8 +96,14 @@ knime_scatter_plot_selection_appender = function() {
 				.style("width", "100%").style("height", "100%")
 				.style("min-width", minWidth + "px").style("min-height", minHeight + "px");
 			
-			if (representation.showWarningInView && representation.warning !== null) {
-				knimeService.setWarningMessage(representation.warning);
+			// Setting up warning messages from the Java side, if any
+			if (representation.showWarningInView && representation.warnings !== null) {
+				var map = representation.warnings.warningMap;
+				for (var id in map) {
+			        if (map.hasOwnProperty(id)) {
+			        	knimeService.setWarningMessage(map[id], id);			           
+			        }
+			    }
 			}
 			
 			drawChart(layoutContainer);
@@ -125,13 +133,9 @@ knime_scatter_plot_selection_appender = function() {
 		}
 		var xyDataset = extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
 		if (missingValuesCount > 0) {
-			knimeService.setWarningMessage(missingValuesCount + " missing or unsupported value(s) are not shown.");
+			knimeService.setWarningMessage(missingValuesCount + " missing or unsupported value(s) are not shown.", MISSING_VALUES_NOT_SHOWN_WARNING_ID);
 		} else {
-			if (_representation.warning !== null) {
-				knimeService.setWarningMessage(_representation.warning);
-			} else {
-				knimeService.clearWarningMessage();
-			}
+			knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN_WARNING_ID);
 		}
 		
 		//console.timeEnd("Building XYDataset");

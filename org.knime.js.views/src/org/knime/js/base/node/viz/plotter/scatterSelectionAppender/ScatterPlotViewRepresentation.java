@@ -57,6 +57,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
+import org.knime.js.core.warnings.JSONWarnings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -112,9 +113,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_enableStaggeredRendering = true;
 
     private boolean m_showWarningInView;
-    private static final String CFG_WARNING = "warning";
-    private String m_warning;
-
+    private JSONWarnings m_warnings = new JSONWarnings();
 
     /**
      * @return the keyedDataset
@@ -607,17 +606,17 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the warning
+     * @return the warnings
      */
-    public String getWarning() {
-        return m_warning;
+    public JSONWarnings getWarnings() {
+        return m_warnings;
     }
 
     /**
-     * @param warning the warning to set
+     * @param warnings the warnings to set
      */
-    public void setWarning(final String warning) {
-        m_warning = warning;
+    public void setWarnings(final JSONWarnings warnings) {
+        m_warnings = warnings;
     }
 
     /**
@@ -672,7 +671,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
         settings.addBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
-        settings.addString(CFG_WARNING, getWarning());
+        m_warnings.saveToNodeSettings(settings);
     }
 
     /**
@@ -729,7 +728,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, ScatterPlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
-        setWarning(settings.getString(CFG_WARNING, null));
+        m_warnings.loadFromNodeSettings(settings);
     }
 
     /**
@@ -783,7 +782,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_gridColor, other.m_gridColor)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_showWarningInView, other.m_showWarningInView)
-                .append(m_warning, other.m_warning)
+                .append(m_warnings, other.m_warnings)
                 .isEquals();
     }
 
@@ -828,7 +827,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_gridColor)
                 .append(m_enableStaggeredRendering)
                 .append(m_showWarningInView)
-                .append(m_warning)
+                .append(m_warnings)
                 .toHashCode();
     }
 }

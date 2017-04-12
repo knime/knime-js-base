@@ -110,6 +110,8 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
     private BufferedDataTable m_table;
 
+    static final String ROWS_LIMITATION_WARNING_ID = "rowsLimitation";
+
     /**
      * Creates a new model instance.
      * @param viewName the view name
@@ -307,7 +309,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
             String msg = "Only the first " + m_config.getMaxRows() + " rows are displayed.";
             setWarningMessage(msg);
             if (m_config.getShowWarningInView()) {
-                getViewRepresentation().setWarning(msg);
+                getViewRepresentation().getWarnings().setWarningMessage(msg, ROWS_LIMITATION_WARNING_ID);
             }
         }
         final JSONDataTable table = JSONDataTable.newBuilder()
