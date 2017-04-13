@@ -72,6 +72,16 @@
 					When checked,
 					zooming into the chart partitions is enabled.
 				</checkBoxOption>
+				<checkBoxOption name="Enable Selection" id="selection"
+					label="Enable Selection" defaultValue="true">
+					When checked,
+					selecting sections is enabled.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Highliting" id="highliting"
+					label="Enable Highliting" defaultValue="true">
+					When checked,
+					highliting sections is enabled.
+				</checkBoxOption>
 				<!-- TODO: enable relationship -->
 				<checkBoxOption name="Enable inner label" id="innerLabel"
 					label="Enable inner label" defaultValue="true" saveInView="true">

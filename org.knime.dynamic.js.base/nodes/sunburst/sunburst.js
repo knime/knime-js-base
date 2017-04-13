@@ -12,12 +12,13 @@
   var _representation, _value;
   var knimeTable1, knimeTable2;
   var _data = {};
+  var uniqueLabels;
   var nodes;
   var selectedRows = [];
   var highlitedNode;
-  // TODO: Do we need rowId2leafId?
   var rowKey2leaf = {};
   var _colorMap;
+
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
 
@@ -25,8 +26,6 @@
   var nullNodeName = "?";
 
   var innerLabelStyles = ['count', 'percentage'];
-
-  var resetZoom;
 
   view.init = function(representation, value) {
     _representation = representation;
@@ -49,6 +48,10 @@
     setColors();
     drawControls();
     drawChart();
+
+    if (_value.options.subscribeSelection) {
+      knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
+    }
 
     // CHECK: What does this actually do?
     if (parent !==undefined && parent.KnimePageLoader !==undefined) {
@@ -76,7 +79,7 @@
     function onlyUnique(value, index, self) {
       return self.indexOf(value) === index;
     }
-    var uniqueLabels =  knimeTable1.getPossibleValues()
+    uniqueLabels = knimeTable1.getPossibleValues()
       .filter(notNull)
       .reduce(accumulate, [])
       .filter(onlyUnique);
@@ -96,8 +99,6 @@
       id: id++,
       name: rootNodeName,
       children: [],
-      // TODO: uniqueLabels should be it's own object.
-      uniqueLabels: uniqueLabels,
       active: false,
       highlited: false,
       selected: false
@@ -160,10 +161,10 @@
             name: nodeName,
             size: size,
             children: [],
-            rowKey: rows[i].rowKey,
             active: false,
             highlited: false,
-            selected: false
+            selected: false,
+            rowKey: rows[i].rowKey
           };
           children.push(childNode);
 
@@ -192,30 +193,26 @@
     //   // Create object with key=label, value=color.
     // }
     
-    if (_data.uniqueLabels.length <= 10) {
+    if (uniqueLabels.length <= 10) {
       var scale = d3.scale.category10();
     } else {
       var scale = d3.scale.category20();
     }
-    var colorMap = _data.uniqueLabels.reduce(function(obj, label) {
-      obj[label] = scale(label);
-      return obj;
-    }, {});
 
-    var colorMapFunc = function(label) {
+    var colorMap = {};
+    uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); })
+
+    _colorMap = function(label) {
       if (label === rootNodeName || label === nullNodeName) {
         return "#FFFFFF";
       } else {
         return colorMap[label];
       }
     }
-    colorMapFunc.entries = d3.entries(colorMap);
-    colorMapFunc.keys = d3.keys(colorMap);
-
-    _colorMap = colorMapFunc;
+    _colorMap.entries = d3.entries(colorMap);
+    _colorMap.keys = d3.keys(colorMap);
   };
 
-  // TODO: add sorting
   var drawControls = function() {
     if (!knimeService || !_representation.options.enableViewControls) {
 		  // TODO: error handling?
@@ -235,12 +232,12 @@
         resetZoom();
       });
     }
-    if (true) {
+    if (_representation.options.selection) {
       knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function() {
         clearSelection();
       });
     }
-    if (true) {
+    if (_representation.options.highliting) {
       knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Highlite', function() {
         clearHighliting();
       });
@@ -248,8 +245,6 @@
 
    	knimeService.addNavSpacer();
 
-
-    // TODO
     if (_value.options.mouseMode == null) {
       _value.options.mouseMode = "highlite";
     }
@@ -269,14 +264,13 @@
      	  toggleButton();
       });
     }
-    // TODO
-    if (true) {
+    if (_representation.options.selection) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
         _value.options.mouseMode = "select";
      	  toggleButton();
       });
     }
-    if (true) {
+    if (_representation.options.highliting) {
       knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
         _value.options.mouseMode = "highlite";
      	  toggleButton();
@@ -427,19 +421,13 @@
               var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.options.subscribeSelection, function() {
                   if (this.checked) {
                       _value.options.subscribeSelection = true;
-                      // TODO
                       knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
                   } else {
                       _value.options.subscribeSelection = false;
-                      // TODO
                       knimeService.unsubscribeSelection(knimeTable1.getTableId(), selectionChanged);
                   }
               });
               knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
-              // TODO
-              if (_value.options.subscribeSelection) {
-              //  knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
-              }
           }
 
           if (subscribeFilterToggle) {
@@ -699,7 +687,8 @@
       .enter().append("path")
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
-        .style("fill", function(d) { return _colorMap(d.name); })
+        .attr("fill", function(d) { return _colorMap(d.name); })
+        .attr("stroke",function(d) { return d.selected ? "black" : "white" })
         .on("mouseover", mouseover)
         .on("click", click);
 
@@ -805,17 +794,20 @@
 
     function renderSelection() {
       sunburstGroup.selectAll("path")
-        .attr("stroke-dasharray", function(d) {
-          return d.selected ? "10, 10" : "none"
-        });
-    }
+        .attr("stroke-width", function(d) {
+          return d.selected ? 2 : 1;
+        })
+        .attr("stroke",function(d) {
+          return d.selected ? "black" : "white"
+        })
+      };
 
-    function select(d) {
+    function select(node) {
       if (d3.event.shiftKey) {
-        if (d.selected) {
+        if (node.selected) {
           // Remove elements from selection.
-          setPropsForward(d, "selected", false);
-          var leafs = setPropsForward(d, "selected", false);
+          setPropsBackward(node, "selected", false);
+          var leafs = setPropsForward(node, "selected", false);
           var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
           for (var i = 0; i < rowKeys.length; i++) {
             var index = selectedRows.indexOf(rowKeys[i]);
@@ -824,10 +816,13 @@
             }
           }
 
-          knimeService.removeRowsFromSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          if (_value.options.publishSelection) {
+            knimeService.removeRowsFromSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          }
         } else {
           // Add element to selection.
-          var leafs = setPropsForward(d, 'selected', true);
+          var leafs = setPropsForward(node, 'selected', true);
+          addNodeToSelectionBackward(node);
           var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
           for (var i = 0; i < rowKeys.length; i++) {
             var index = selectedRows.indexOf(rowKeys[i]);
@@ -836,14 +831,20 @@
             }
           }
 
-          knimeService.addRowsToSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          if (_value.options.publishSelection) {
+            knimeService.addRowsToSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          }
         }
       } else {
         // Set selection.
         setPropAllNodes('selected', false);
-        var leafs = setPropsForward(d, 'selected', true);
+        var leafs = setPropsForward(node, 'selected', true);
+        addNodeToSelectionBackward(node);
         var rowKeys =  leafs.map(function(leaf) { return leaf.rowKey; });
-        knimeService.setSelectedRows(knimeTable1.getTableId(), rowKeys, selectionChanged);
+
+        if (_value.options.publishSelection) {
+          knimeService.setSelectedRows(knimeTable1.getTableId(), rowKeys, selectionChanged);
+        }
       }
       renderSelection();
     }
@@ -860,6 +861,7 @@
         if (data.changeSet.removed) {
           for (var i = 0; i < data.changeSet.removed.length; i++) {
             var removedKey = data.changeSet.removed[i];
+            removeSelectedRow(removedKey)
             var index = selectedRows.indexOf(removedKey);
             if (index > -1) {
               selectedRows.splice(index, 1);
@@ -869,49 +871,45 @@
         if (data.changeSet.added) {
           for (var i = 0; i < data.changeSet.added.length; i++) {
             var addedKey = data.changeSet.added[i];
+            var leaf = rowKey2leaf[addedKey];
+            addNodeToSelectionBackward(leaf);
             var index = selectedRows.indexOf(addedKey);
             if (index == -1) {
               selectedRows.push(addedKey);
             }           
           }
         }
-      } else if (data.elements) {
-        // selectedRows = 
-      }
-      setSelectionFromSelectedRows();
-    };
-
-    function setSelectionFromSelectedRows() {
-      // Sections should be selected up to lowest common ancestor of
-      // selected rows/leafs.
-
-      setPropAllNodes("selected", false);
-      var nodesOnSameLevel = selectedRows.map(function(key) { return rowKey2leaf[key]; });
-      nodesOnSameLevel.forEach(function(n) { n.selected = true; });
-
-      while (nodesOnSameLevel.length > 0) {
-        var stack = nodesOnSameLevel;
-        nodesOnSameLevel = [];
-        while (stack.length > 0) {
-          var current = stack.pop();
-          var parent = current.parent;
-          var siblings = parent.children;
-          var selectParent = siblings.every(function(s) { return s.selected; });
-          if (selectParent) {
-            parent.selected = true;
-            // Remove siblings from stack to rule out redundant execution.
-            siblings.forEach(function(s) { 
-              var index = stack.indexOf(s);
-              if (index > -1) {
-                stack.splice(index, 1);
-              }
-            })
-
-            nodesOnSameLevel.push(current.parent);
-          }
+      } else if (data.reevaluate) {
+        selectedRows = knimeService.getAllRowsForSelection(knimeTable1.getTableId());
+        setPropAllNodes("selected", false);
+        for (var i = 0; i < selectedRows.length; i++) {
+          var leaf = rowKey2leaf[rowKey];
+          addNodeToSelectionBackward(leaf);
         }
       }
       renderSelection();
+    };
+
+    var addNodeToSelectionBackward = function(node) {
+      node.selected = true;
+      var parent = node.parent;
+      while (parent != null) {
+        var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
+        if (allChildrenSelected) {
+          parent.selected = true;
+        } else {
+          break;
+        }
+        parent = parent.parent;
+      }
+    }
+
+    var removeSelectedRow = function(rowKey) {
+      var parent = rowKey2leaf[rowKey];
+      while (parent != null) {
+        parent.selected = false;
+        parent = parent.parent;
+      }
     }
 
     var zoom = function(d) {
@@ -1036,7 +1034,7 @@
     }
 
     function setPropsBackward(start, prop, val) {
-      while (start.parent) {
+      while (start) {
         start[prop] = val;
         start = start.parent;
       }

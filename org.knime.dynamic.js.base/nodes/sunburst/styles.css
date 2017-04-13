@@ -17,10 +17,6 @@ body {
   position: relative;
 }
 
-#plottingSurface path {
-  stroke: #fff;
-}
-
 #explanation {
   position: absolute;
   top: 260px;
