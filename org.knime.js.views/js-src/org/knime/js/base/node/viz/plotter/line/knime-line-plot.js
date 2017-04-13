@@ -735,7 +735,7 @@ knime_line_plot = function() {
 	    ctx.stroke();
 	    
 	    if (yMissingValuesCount > 0) {
-	    	yMissingValues.push("'" + dataset._ycols[seriesIndex] + "': " + yMissingValuesCount);
+	    	yMissingValues.push("'" + dataset._ycols[seriesIndex] + "' - " + yMissingValuesCount + " missing value(s)");
 	    }
 	};
 	
@@ -746,7 +746,7 @@ knime_line_plot = function() {
         	knimeService.clearWarningMessage(MISSING_VALUES_X_AXIS_NOT_SHOWN);
         }
         if (yMissingValues.length > 0) {
-        	knimeService.setWarningMessage('Column(s) with corresponding number of missing values: ' + yMissingValues.join(', ') + '.', MISSING_VALUES_NOT_SHOWN);
+        	knimeService.setWarningMessage('Missing values of the following columns are not shown:\n    ' + yMissingValues.join('\n    ') + '.', MISSING_VALUES_NOT_SHOWN);
         } else {
         	knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
         }
