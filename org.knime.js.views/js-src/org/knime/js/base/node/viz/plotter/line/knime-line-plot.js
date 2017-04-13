@@ -706,6 +706,9 @@ knime_line_plot = function() {
 	        if (x === null) {
 	        	// always ignore missing values of the x column
 	        	xMissingValuesCount++;
+	        	if (y === null) {
+	        		yMissingValuesCount++;
+	        	}
 	        	continue;
 	        }
 	        if (y === null) {
