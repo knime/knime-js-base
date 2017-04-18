@@ -421,11 +421,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         datePanel.add(m_globalDateTimeLocaleChooser.getComponentPanel(), gbcD);
         gbcD.gridx = 0;
         gbcD.gridy++;
-        datePanel.add(new JLabel("Date&Time (legacy) format: "), gbcD);
-        gbcD.gridx++;
-        datePanel.add(m_globalDateTimeFormatChooser.getComponentPanel(), gbcD);
-        gbcD.gridx = 0;
-        gbcD.gridy++;
         datePanel.add(new JLabel("Local Date format: "), gbcD);
         gbcD.gridx++;
         datePanel.add(m_globalLocalDateFormatChooser.getComponentPanel(), gbcD);
@@ -444,6 +439,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         datePanel.add(new JLabel("Zoned Date&Time format: "), gbcD);
         gbcD.gridx++;
         datePanel.add(m_globalZonedDateTimeFormatChooser.getComponentPanel(), gbcD);
+        gbcD.gridx = 0;
+        gbcD.gridy++;
+        datePanel.add(new JLabel("Date&Time (legacy) format: "), gbcD);
+        gbcD.gridx++;
+        datePanel.add(m_globalDateTimeFormatChooser.getComponentPanel(), gbcD);
         gbcD.gridx = 0;
 
         JPanel numberPanel = new JPanel(new GridBagLayout());

@@ -112,8 +112,9 @@
         		<b>Date and Time types</b>
         		Date and Time values are converted into string using the selected or entered conversion pattern as defined by <a href="http://momentjs.com/docs/#/displaying/format/">moment.js</a>. Examples:
         		<ul>
-        			<li>"dddd, MMMM Do YYYY, h:mm:ss a" parses dates like "Sunday, February 14th 2010, 3:25:50 pm"</li>
-        			<li>"ddd, hA" parses dates like "Sun, 3PM"</li>
+        			<li>"dddd, MMMM Do YYYY, h:mm:ss a" formats dates like "Sunday, February 14th 2010, 3:25:50 pm"</li>
+        			<li>"ddd, hA" formats dates like "Sun, 3PM"</li>
+        			<li>"YYYY-MM-DDTHH:mm:ssZ" formats dates as defined by <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>.</li>
         		</ul>
         		Some valid pattern elements are:
         		<ul>
@@ -136,7 +137,20 @@
 					<li>Z: Time zone (offset)</li>
 					<li>X: unix timestamp</li>
         		</ul>
-        		For printing an arbitrary string, wrap the string in square brackets, e.g. [time].
+        		Localized formats:
+        		<ul>
+        			<li>LT: Time (e.g. 8:30 PM)</li>
+        			<li>LTS: Time with seconds (e.g. 8:30:25 PM)</li>
+        			<li>L: Month numeral (0 padded), day of month (0 padded), year (e.g. 09/04/1986)</li>
+        			<li>l: Month numeral, day of month, year (e.g. 9/4/1986)</li>
+        			<li>LL: Month name, day of month, year (e.g. September 4 1986)</li>
+        			<li>ll: Month name (short), day of month, year (e.g. Sep 4 1986)</li>
+        			<li>LLL: Month name, day of month, year, time (e.g. September 4 1986 8:30 PM)</li>
+        			<li>lll: Month name (short), day of month, year, time (e.g. Sep 4 1986 8:30 PM)</li>
+        			<li>LLLL: Month name, day of month, day of week, year, time (e.g. Thursday, September 4 1986 8:30 PM)</li>
+        			<li>llll: Month name (short), day of month, day of week (short), year, time (e.g. Thu, Sep 4 1986 8:30 PM)</li>
+        		</ul>
+        		For printing an arbitrary string, wrap the string in square brackets, e.g. '[today] dddd'.
         	</description>
 			<option name="Locale">
         		The locale which is used to render all date/time cells.

@@ -152,29 +152,29 @@ knime_paged_table = function() {
 						if (isNaN(data)) {
 							// ISO-string:
 							// date is parsed and rendered in local time. 
-							return moment(data).format(_representation.globalDateTimeFormat);
+							return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalDateTimeFormat);
 						} else {
 							// time stamp (legacy):
 							// date is parsed and rendered in UTC.
-							return moment(data).utc().format(_representation.globalDateTimeFormat);
+							return moment(data).utc().format(type === 'sort' || type === 'type' ? 'x' : _representation.globalDateTimeFormat);
 						}
 					}
 				}
 				if (knimeColType == 'Local Date' && _representation.globalLocalDateFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).format(_representation.globalLocalDateFormat);
+				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalDateFormat);
 				  }
 				}
 
 				if (knimeColType == 'Local Date Time' && _representation.globalLocalDateTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).format(_representation.globalLocalDateTimeFormat);
+				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalDateTimeFormat);
 				  }
 				}
 
 				if (knimeColType == 'Local Time' && _representation.globalLocalTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data, "hh:mm:ss.SSSSSSSSS").format(_representation.globalLocalTimeFormat);
+				    return moment(data, "hh:mm:ss.SSSSSSSSS").format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalTimeFormat);
 				  }
 				}
 
@@ -196,7 +196,7 @@ knime_paged_table = function() {
 							}
 						}
 
-						return date.format(_representation.globalZonedDateTimeFormat);
+						return date.format(type === 'sort' || type === 'type' ? 'x' : _representation.globalZonedDateTimeFormat);
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
