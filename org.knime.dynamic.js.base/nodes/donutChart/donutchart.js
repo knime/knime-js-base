@@ -261,7 +261,7 @@
 				
 				var plotStream = {
 					"label" : label,
-					"value" : value
+					"value" : Math.abs(value)  // take abs value to prevent a damaged plot
 				};				
 				plotData.push(plotStream);
 			}

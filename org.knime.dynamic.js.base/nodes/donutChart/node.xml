@@ -35,7 +35,7 @@
 	    			filterClasses="org.knime.core.data.DoubleValue"
 	    			enableDependency="aggr" enableValue="Sum Average">
 	    			Select the column with the frequency for the chart.
-	    			<n:i>Note:</n:i> missing values in the frequency column are always ignored. If a category has only missing values on the frequency column,
+	    			<n:i>Note:</n:i> negative values will be taken with their absolute magnitude. Missing values in the frequency column are always ignored. If a category has only missing values on the frequency column,
 	    			this category will be excluded from the view with the corresponding warning message.
 	    		</columnSelectorOption>
 	    	</options>
