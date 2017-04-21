@@ -17,6 +17,10 @@
 	pie.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
+		
+		if (_representation.warnMessage) {
+			knimeService.setWarningMessage(_representation.warnMessage);
+		}
 
 		if (_representation.options.enableViewControls) {
 			drawControls();
