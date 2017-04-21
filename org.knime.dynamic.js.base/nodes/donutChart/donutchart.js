@@ -6,6 +6,13 @@
 	var MIN_HEIGHT = 200, MIN_WIDTH = 300;
 	var chart, svg;
 	var knimeTable;
+	
+	var plotData;
+	var colorRange;
+	var excludeCat;
+	var missValCatValue;
+	
+	var MISSING_VALUES_ONLY = "missingValuesOnly";
 
 	pie.init = function(representation, value) {
 		_representation = representation;
@@ -19,18 +26,13 @@
 
 	function drawChart(redraw) {		
 		// Parse the options
-
-		var optMethod = _representation.options["aggr"];
-		var optCat = _representation.options["cat"];
-		var optFreqCol = _value.options["freq"];
 		var optTitle = _value.options["title"];
 		var optSubtitle = _value.options["subtitle"];
 
 		var showLabels = _value.options["showLabels"];
 		var labelThreshold = _representation.options["labelThreshold"];
 		var labelType = _value.options["labelType"].toLowerCase();
-		var customColors = _representation.options["customColors"];
-		
+				
 		var optDonutChart = _value.options["togglePie"];
 		var holeSize = _value.options["holeSize"];
 		var optInsideTitle = _value.options["insideTitle"];
@@ -88,48 +90,10 @@
 		// Add the data from the input port to the knimeTable.
 		var port0dataTable = _representation.inObjects[0];
 		knimeTable.setDataTable(port0dataTable);
-
-		var categories = knimeTable.getColumn(optCat);
 		
-		// Default color scale
-		var colorScale = [];
-		if (!customColors) {
-			colorScale = d3.scale.category10();
-			if (categories.length > 10) {
-				colorScale = d3.scale.category20();
-			}
-		}
-
-		var valCol;
-		if (optMethod == "Occurence\u00A0Count") {
-			valCol = knimeTable.getColumn(1);
-		} else {
-			valCol = knimeTable.getColumn(optFreqCol);
-		}
-
-		var plot_data = [];
-
-		if (valCol.length > 0) {
-			numDataPoints = valCol.length;
-
-			for (var i = 0; i < numDataPoints; i++) {
-				var plot_stream = {
-					"label" : categories[i],
-					"value" : valCol[i]
-				};
-				plot_data.push(plot_stream);
-				
-				if (customColors) {
-					var color = knimeTable.getRowColors()[i];
-					if (!color) {
-						color = "#7C7C7C";
-					}
-					colorScale.push(color);
-				}
-			}
-
-		}
-
+		processData(true);	
+		setColorRange();
+		
 		// Create the SVG object
 		var svg1 = document
 				.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -156,9 +120,7 @@
 			svg.attr("width", "100%");
 			svg.attr("height", "100%");
 		}
-
-		var colorRange = customColors ? colorScale : colorScale.range();
-		
+	
 		// Pie chart
 		nv.addGraph(function() {
 			chart = nv.models.pieChart()
@@ -185,7 +147,7 @@
 			}
 			updateTitles(false);
 
-			svg.datum(plot_data).transition().duration(300).call(chart);
+			svg.datum(plotData).transition().duration(300).call(chart);
 			nv.utils.windowResize(chart.update);
 
 			return chart;
@@ -193,28 +155,7 @@
 	}
 	
 	function updateData(updateChart) {
-		var categories = knimeTable.getColumn(_representation.options["cat"]);
-		var valCol;
-		if (_representation.options["aggr"] == "Occurence\u00A0Count") {
-			valCol = knimeTable.getColumn(1);
-		} else {
-			valCol = knimeTable.getColumn(_value.options["freq"]);
-		}
-
-		var plot_data = [];
-
-		if (valCol.length > 0) {
-			numDataPoints = valCol.length;
-
-			for (var i = 0; i < numDataPoints; i++) {
-				var plot_stream = {
-					"label" : categories[i],
-					"value" : valCol[i]
-				};
-				plot_data.push(plot_stream);
-			}
-		}
-		svg.datum(plot_data);
+		processData();
 		if (updateChart) {
 			chart.update();
 		}
@@ -282,6 +223,114 @@
 		}
 	}
 	
+	processData = function(setColorRange) {
+		var optMethod = _representation.options["aggr"];
+		var optCat = _representation.options["cat"];
+		var optFreqCol = _value.options["freq"];
+		
+		var categories = knimeTable.getColumn(optCat);
+		
+		var valCol;
+		if (optMethod == "Occurrence\u00A0Count") {
+			valCol = knimeTable.getColumn(1);
+		} else {
+			valCol = knimeTable.getColumn(optFreqCol);
+		}
+		
+		plotData = [];
+		excludeCat = [];
+		missValCatValue = undefined;
+		if (valCol.length > 0) {
+			var numDataPoints = valCol.length;
+			for (var i = 0; i < numDataPoints; i++) {
+				var label = categories[i];
+				var value = valCol[i];
+				
+				if (label === null) {
+					// missing values category					
+					// save the value to append as the last item						
+					missValCatValue = value;					
+					continue;
+				}
+				
+				if (value === null) {
+					// category has only missing values - exclude it
+					excludeCat.push(label);					
+					continue;
+				}
+				
+				var plotStream = {
+					"label" : label,
+					"value" : value
+				};				
+				plotData.push(plotStream);
+			}
+		}
+		
+		processMissingValues(false);
+	}
+	
+	setColorRange = function() {
+		var numCat = plotData.length;
+		if (missValCatValue !== undefined && missValCatValue !== null) {
+			// We don't want the option "includeMissValCat" to influence on the number of categories,
+			// because the option can be changed in the view and the color scale then can also be changed (if a border case) - and we don't want this.
+			// Hence, only the real value matters.
+			numCat++;
+		}
+		if (_representation.options.customColors) {
+			colorRange = [];
+			for (var i = 0; i < numCat; i++) {
+				var color = knimeTable.getRowColors()[i];
+				if (!color) {
+					color = "#7C7C7C";
+				}
+				colorRange.push(color);
+			}
+		} else {
+			var colorScale;
+			if (numCat > 10) {
+				colorScale = d3.scale.category20();
+			} else {
+				colorScale = d3.scale.category10();
+			}
+			colorRange = colorScale.range();
+		}
+	}
+	
+	/**
+	 * switched - if the chart update was triggered by changing the "include 'Missing values' category" option in the view
+	 */
+	processMissingValues = function(switched) {
+		// Missing values post-processing	
+		if (missValCatValue !== undefined) {  // undefined means there's no missing value in the category column at all
+			if (_value.options.includeMissValCat) {
+				// add missing values category
+				var label = "Missing values";
+				if (missValCatValue !== null) {
+					plotData.push({"label": label, "value": missValCatValue});
+				} else {
+					excludeCat.push(label);
+				}
+			} else if (switched) {
+				// remove missing values category, but only if we have triggered switch from the view
+				// otherwise there's nothing to remove yet
+				if (missValCatValue !== null) {
+					plotData.pop();
+				} else {
+					excludeCat.pop();
+				}
+			}
+		}
+
+		// Set warning message
+		if (excludeCat.length > 0) {
+			knimeService.setWarningMessage("Categories '" + excludeCat.join("', '") + "' have only missing values and were excluded from the view.", MISSING_VALUES_ONLY)
+		} else {
+			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
+		}	
+	}
+		
 	drawControls = function() {		
 		if (!knimeService) {
 			// TODO: error handling?
@@ -301,6 +350,7 @@
 		//var insideTitleEdit = _representation.options.enableInsideTitleEdit;
 		//var colChooser = _representation.options.enableColumnChooser;
 		var labelEdit = _representation.options.enableLabelEdit;
+		var switchMissValCat = _representation.options.enableSwitchMissValCat;
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -369,7 +419,22 @@
 	    	});
 	    	knimeService.addMenuItem('Label type:', 'commenting-o', labelTypeRadio);
 	    	
-		    if (donutToggle || holeEdit || insideTitleEdit) {
+		    if (switchMissValCat || donutToggle || holeEdit || insideTitleEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+	    
+	    if (switchMissValCat) {
+	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
+	    		if (_value.options.includeMissValCat != this.checked) {
+	    			_value.options.includeMissValCat = this.checked;
+	    			processMissingValues(true);
+	    			chart.update();
+	    		}
+	    	});
+	    	knimeService.addMenuItem("Include 'Missing values' category: ", 'question', switchMissValCatCbx);
+	    	
+	    	if (donutToggle || holeEdit || insideTitleEdit) {
 	    		knimeService.addMenuDivider();
 	    	}
 	    }

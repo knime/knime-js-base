@@ -103,7 +103,8 @@ public class GroupedProcessor implements DynamicJSProcessor {
 				colAggregators[i] = new ColumnAggregator(table.getDataTableSpec().getColumnSpec(freqColumns[i]), operator);
 			}
 		} else {
-			AggregationOperator operator = new CountOperator(GlobalSettings.DEFAULT, OperatorColumnSettings.DEFAULT_EXCL_MISSING);
+            AggregationOperator operator =
+                new CountOperator(GlobalSettings.DEFAULT, OperatorColumnSettings.DEFAULT_INCL_MISSING);
 			colAggregators = new ColumnAggregator[]{new ColumnAggregator(table.getDataTableSpec().getColumnSpec(catColName), operator)};
 		}
 		

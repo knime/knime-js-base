@@ -24,12 +24,19 @@
 					Select the aggregation method used on the selected frequency column. In case of <n:i>Occurrence Count</n:i> the occurrence of the unique values
 					of the selected category columns are determined.
 				</radioButtonOption>
+				
+				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
+				    defaultValue="true" saveInView="true" loadDefaults="true">
+				    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.				     
+				</checkBoxOption>
 	    		
 	    		<columnSelectorOption name="Frequency column" id="freq" 
 	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
 	    			filterClasses="org.knime.core.data.DoubleValue"
 	    			enableDependency="aggr" enableValue="Sum Average">
 	    			Select the column with the frequency for the chart.
+	    			<n:i>Note:</n:i> missing values in the frequency column are always ignored. If a category has only missing values on the frequency column,
+	    			this category will be excluded from the view with the corresponding warning message.
 	    		</columnSelectorOption>
 	    	</options>
     	</tab>
@@ -113,6 +120,9 @@
 				<checkBoxOption name="Enable label editing" id="enableLabelEdit"
                    label="Enable label editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the chart labels within the view.
+               </checkBoxOption>
+               <checkBoxOption name="Enable switching 'Missing values' category" id="enableSwitchMissValCat"
+                    label="Enable switching 'Missing values' category" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
                </checkBoxOption>
            </options>
         </tab>
