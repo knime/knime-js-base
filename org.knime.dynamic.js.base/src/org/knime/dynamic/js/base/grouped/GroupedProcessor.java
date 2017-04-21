@@ -25,7 +25,7 @@ import org.knime.dynamic.js.v30.DynamicJSProcessor;
 
 public class GroupedProcessor implements DynamicJSProcessor {
 	
-	private static final String COUNT = "Occurence\u00A0Count";
+    private static final String COUNT = "Occurrence\u00A0Count";
 	private static final String SUM = "Sum";
 	private static final String AVG = "Average";
 	private static final String[] AVAILABLE_METHODS = new String[]{COUNT, SUM, AVG};

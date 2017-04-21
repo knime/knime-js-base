@@ -20,8 +20,8 @@
 	    		</columnSelectorOption>
 	    		
 	    		<radioButtonOption name="Aggregation Method" id="aggr" 
-					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">
-					Select the aggregation method used on the selected frequency column. In case of <n:i>Occurence Count</n:i> the occurence of the unique values
+					possibleValues="Occurrence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurrence&#160;Count">
+					Select the aggregation method used on the selected frequency column. In case of <n:i>Occurrence Count</n:i> the occurrence of the unique values
 					of the selected category columns are determined.
 				</radioButtonOption>
 	    		
@@ -38,7 +38,7 @@
 	    	    <stringOption name="Title" id="title" label="Title" defaultValue="Pie Chart" optional="true" saveInView="true">
     				The chart title.
     			</stringOption>
-    			<stringOption name="Subitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
+    			<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
     				The chart subtitle.
     			</stringOption>
 		    	<checkBoxOption name="Chart type" id="togglePie" label="Plot donut chart" defaultValue="false" saveInView="true">
