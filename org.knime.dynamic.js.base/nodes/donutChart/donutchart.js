@@ -22,10 +22,10 @@
 			knimeService.setWarningMessage(_representation.warnMessage);
 		}
 
+		drawChart(false);
 		if (_representation.options.enableViewControls) {
 			drawControls();
 		}
-		drawChart(false);
 	}
 
 	function drawChart(redraw) {		
@@ -329,7 +329,7 @@
 
 		// Set warning message
 		if (excludeCat.length > 0) {
-			knimeService.setWarningMessage("Categories '" + excludeCat.join("', '") + "' have only missing values and were excluded from the view.", MISSING_VALUES_ONLY)
+			knimeService.setWarningMessage("Categories '" + excludeCat.join("', '") + "' have only missing values in the frequency column and were excluded from the view.", MISSING_VALUES_ONLY)
 		} else {
 			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
 		}	
@@ -428,7 +428,7 @@
 	    	}
 	    }
 	    
-	    if (switchMissValCat) {
+	    if (switchMissValCat && missValCatValue !== undefined) {
 	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
 	    		if (_value.options.includeMissValCat != this.checked) {
 	    			_value.options.includeMissValCat = this.checked;
