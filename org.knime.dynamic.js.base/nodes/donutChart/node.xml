@@ -20,7 +20,7 @@
 	    		</columnSelectorOption>
 	    		
 	    		<radioButtonOption name="Aggregation Method" id="aggr" 
-					possibleValues="Occurrence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurrence&#160;Count">
+					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">
 					Select the aggregation method used on the selected frequency column. In case of <n:i>Occurrence Count</n:i> the occurrence of the unique values
 					of the selected category columns are determined.
 				</radioButtonOption>

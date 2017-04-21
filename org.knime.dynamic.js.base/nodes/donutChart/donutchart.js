@@ -231,7 +231,7 @@
 		var categories = knimeTable.getColumn(optCat);
 		
 		var valCol;
-		if (optMethod == "Occurrence\u00A0Count") {
+		if (optMethod == "Occurence\u00A0Count") {
 			valCol = knimeTable.getColumn(1);
 		} else {
 			valCol = knimeTable.getColumn(optFreqCol);
