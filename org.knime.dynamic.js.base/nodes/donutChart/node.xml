@@ -147,5 +147,5 @@
 	<js:dependencies>
 		<js:dependency name="nvd3" path="NVD3_1.8.1_Debug" type="local" exports="nv" />
 	</js:dependencies>
-	<js:javaProcessor className="org.knime.dynamic.js.base.grouped.GroupedProcessor" />
+	<js:javaProcessor className="org.knime.dynamic.js.base.grouped.GroupedProcessor" hidesLimitRowOption="true"/>
 </js:knimeNode>
