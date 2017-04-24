@@ -9,7 +9,11 @@
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
-		_representation = representation;		
+		_representation = representation;
+		
+		if (_representation.warnMessage) {
+			knimeService.setWarningMessage(_representation.warnMessage);
+		}
 				
 		if (_representation.options.enableViewControls) {
 			drawControls();
