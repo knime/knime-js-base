@@ -6,6 +6,14 @@
 	var _representation, _value;
 	var chart, svg;
 	var staggerCheckbox;
+	var knimeTable;
+		
+	var plotData;
+	var colorRange;
+	var exclude;
+
+	var MISSING_VALUES_ONLY = "missingValuesOnly";
+	var FREQ_COLUMN_MISSING_VALUES_ONLY = "freqColumnMissingValuesOnly";
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
@@ -48,10 +56,6 @@
 		var optFullscreen = _representation.options["svg"]["fullscreen"] && _representation.runningInView;
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
-
-		var optMethod = _representation.options["aggr"];
-		var optFreqCol = _representation.options["freq"];
-		var optCat = _representation.options["cat"];
 		
 		var isTitle = optTitle || optSubtitle;
 
@@ -121,8 +125,56 @@
 		
 		/* 
 		 * Process data
+		 */		
+		knimeTable = new kt();
+		// Add the data from the input port to the knimeTable.
+		var port0dataTable = _representation.inObjects[0];
+		knimeTable.setDataTable(port0dataTable);
+		
+		processData();
+
+		
+		/*
+		 * Plot chart
 		 */
-    	var customColors, colorScale;
+		nv.addGraph(function() {
+			if (optOrientation) {
+				chart = nv.models.multiBarHorizontalChart();
+			} else {
+				chart = nv.models.multiBarChart();
+				chart.reduceXTicks(false);
+			}
+			
+			chart.stacked(_value.options.chartType == 'Stacked');
+			
+			chart
+				.color(colorRange)
+				.duration(300)
+				.margin({right: 20, top: 60})
+				.groupSpacing(0.1);
+			
+			updateTitles(false);
+
+	        chart.showControls(false);  // all the controls moved to Settings menu
+			chart.showLegend(optLegend);
+
+			updateAxisLabels(false);
+
+			svg.datum(plotData)
+				.transition().duration(300)
+				.call(chart);
+			nv.utils.windowResize(chart.update);
+			
+			return chart;
+		})	
+	}
+	
+	processData = function() {
+		var optMethod = _representation.options["aggr"];
+		var optFreqCol = _representation.options["freq"];
+		var optCat = _representation.options["cat"];
+		
+		var customColors, colorScale;
 		if (_representation.inObjects[1]) {
 			// Custom color scale
 			var colorTable = new kt();
@@ -137,11 +189,6 @@
 			}
 		}
 		
-		var knimeTable = new kt();
-		// Add the data from the input port to the knimeTable.
-		var port0dataTable = _representation.inObjects[0];
-		knimeTable.setDataTable(port0dataTable);
-
 		var categories = knimeTable.getColumn(optCat);
 		
 		// Default color scale
@@ -158,29 +205,21 @@
 
 		// Get the frequency columns
 		var valCols = [];
-		var hasNull = false;
 		var isDuplicate = false;
 		var retained = [];
 
 		for (var k = 0; k < optFreqCol.length; k++) {
-			var colHasNull = false;
-			
 			var valCol = knimeTable.getColumn(optFreqCol[k]);
-			for (var j=0; j < valCol.length; j++) {
-				if (valCol[j] == null) {
-					hasNull = true;
-					colHasNull = true;
-				};
-				
-			}
-			// Add an isDuplicate test here...
-			if ((colHasNull != true) && (isDuplicate != true)) {
+			// ToDo: Add an isDuplicate test here...
+			if (isDuplicate != true) {
 				valCols.push( valCol );
 				retained.push(optFreqCol[k]);
 			}
 		}
 		
-		var plot_data = [];
+		plotData = [];
+		var excludeCols = [];
+		exclude = [];
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
 			for (var j = 0; j < retained.length; j++) {	
@@ -190,6 +229,7 @@
 					key = "Occurence Count";
 				}
 				var values = [];
+				var onlyMissValCol = true;
 
 				for (var i = 0; i < numDataPoints; i++) {
 					var dataObj = {};
@@ -200,27 +240,32 @@
 							return "duplicate";
 						}
 						
-						if (categories[i] == null) {
-							alert("Missing values in category column are not permitted.");
-							return "missing";
-						} else {
-							dataObj["x"] = categories[i];
-							dataObj["y"] = valCols[j][i];
-							/*dataObj["color"] = colorScale(j);*/
+						dataObj["x"] = categories[i];
+						dataObj["y"] = valCols[j][i];						
+						if (dataObj["y"] !== null) {
 							values.push(dataObj);
-						} 						
+							onlyMissValCol = false;
+						} else {
+							// the bar is null <=> the (category, key) pair has only missing values -> exclude
+							exclude.push({"cat": categories[i], "key": key});
+							
+						}
 					}
-
 				}
-				var plot_stream = {"key": key, "values": values};
-				plot_data[j] = plot_stream;
 				
-				if (customColors) {
-					var color = customColors[key];
-					if (!color) {
-						color = "#7C7C7C";
+				if (onlyMissValCol) {
+					excludeCols.push(key);
+				} else {				
+					var plot_stream = {"key": key, "values": values};
+					plotData.push(plot_stream);
+				
+					if (customColors) {
+						var color = customColors[key];
+						if (!color) {
+							color = "#7C7C7C";
+						}
+						colorScale.push(color);
 					}
-					colorScale.push(color);
 				}
 			}
 		} else {
@@ -234,43 +279,26 @@
 
 		}
 		
-		//console.log('td', plot_data);
-
-		/*
-		 * Plot chart
-		 */
-		nv.addGraph(function() {
-			if (optOrientation) {
-				chart = nv.models.multiBarHorizontalChart();
-			} else {
-				chart = nv.models.multiBarChart();
-				chart.reduceXTicks(false);
-			}
-			
-			chart.stacked(_value.options.chartType == 'Stacked');
-			
-			var colorRange = customColors ? colorScale : colorScale.range();
-			
-			chart
-				.color(colorRange)
-				.duration(300)
-				.margin({right: 20, top: 60})
-				.groupSpacing(0.1);
-			
-			updateTitles(false);
-
-	        chart.showControls(false);  // all the controls moved to Settings menu
-			chart.showLegend(optLegend);
-
-			updateAxisLabels(false);
-
-			svg.datum(plot_data)
-				.transition().duration(300)
-				.call(chart);
-			nv.utils.windowResize(chart.update);
-			
-			return chart;
-		})	
+		colorRange = customColors ? colorScale : colorScale.range();
+		
+		// Process missing values
+		if (excludeCols.length > 0) {
+			knimeService.setWarningMessage("Following frequency columns contain only missing values and were excluded from the view: " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
+		}
+		
+		processMissingValues();
+	}
+	
+	processMissingValues = function() {
+		// Set warning message
+		if (exclude.length > 0) {
+			var bars = exclude.map(function(item) {
+				return "    " + item.cat + " - " + item.key;
+			}).sort().join("\n");
+			knimeService.setWarningMessage("The following bars contain only missing values in the frequency column and were excluded from the view:\n" + bars, MISSING_VALUES_ONLY);
+		} else {
+			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
+		}
 	}
 	
 	function updateTitles(updateChart) {
