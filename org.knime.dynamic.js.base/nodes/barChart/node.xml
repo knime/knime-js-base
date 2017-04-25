@@ -23,6 +23,11 @@
 					Select the aggregation method used on the selected frequency columns. In case of <n:i>Occurence Count</n:i> the occurence of the unique values
 					of the selected category columns are determined.
 				</radioButtonOption>
+				
+				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
+                    defaultValue="true" saveInView="true" loadDefaults="true">
+                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
+                </checkBoxOption>
 
 				<columnFilterOption name="Frequency columns"
 					id="freq" inPortIndex="0" label="Frequency columns" filterClasses="org.knime.core.data.DoubleValue"
@@ -122,6 +127,9 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the axis titles within the view.
 				</checkBoxOption>
+				<checkBoxOption name="Enable switching 'Missing values' category" id="enableSwitchMissValCat"
+                    label="Enable switching 'Missing values' category" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
+                </checkBoxOption>
 				<!-- <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
 					label="Enable Category Chooser" defaultValue="false"
 					enableDependency="enableViewControls" enableValue="true">
