@@ -60,7 +60,7 @@ public class SunburstProcessor implements DynamicJSProcessor {
       		dc.addRowToTable(row);
         }
         dc.close();
-        return new Object[] {dc.getTable()}; //, inObjects[1]};
+        return new Object[] {dc.getTable(), inObjects[1]}; //, inObjects[1]};
     }
 
 }

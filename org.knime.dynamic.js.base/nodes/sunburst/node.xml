@@ -199,6 +199,9 @@
 			All other columns give the sequence, where the first column
 			is the first entry in the sequence.
 		</inPort>
+		<inPort portType="Color" name="Color model" index="1" optional="true">
+			TODO: comment
+		</inPort>
 		<!--<inPort portType="Data" name="Stream color data" index="1"
 			optional="true">
 			Data table containing one column with the names of the

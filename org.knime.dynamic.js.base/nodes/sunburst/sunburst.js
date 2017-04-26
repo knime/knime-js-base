@@ -6,6 +6,10 @@
 // use isInteractivityAvailable
 // reset highliting
 // Check: selection rowID or index? use rowID!!!!
+// do not change _value if nothinge changed
+// image out, slection out (see parallel coordinates)
+// Todo: add variable for selectionfilter in xml
+// selectionfilter without subscribe selection
 
 (sunburst_namespace = function() {
 
@@ -230,15 +234,24 @@
     // } else {
     //   // Create object with key=label, value=color.
     // }
-    
-    if (uniqueLabels.length <= 10) {
-      var scale = d3.scale.category10();
-    } else {
-      var scale = d3.scale.category20();
-    }
+    if (_representation.inObjects[1] == null) {
+      if (uniqueLabels.length <= 10) {
+        var scale = d3.scale.category10();
+      } else {
+        var scale = d3.scale.category20();
+      }
 
-    var colorMap = {};
-    uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); })
+      var colorMap = {};
+      uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); })
+    } else {
+      // TODO: check if nominal
+      var colors = _representation.inObjects[1].colors;
+      var labels = _representation.inObjects[1].labels;
+      var colorMap = {}
+      for (var i = 0; i < colors.length; i++) {
+        colorMap[labels[i]] = colors[i];
+      }
+    }
 
     _colorMap = function(label) {
       if (label === rootNodeName || label === nullNodeName) {
@@ -1162,6 +1175,10 @@
     // TODO: sort legend
     function drawLegend(plottingSurface) {
 
+      var entries = uniqueLabels.map(function(label) {
+        return { key: label, value: _colorMap(label) };
+      }); 
+
       // Dimensions of legend item: width, height, spacing.
       var li = {
         w: 100, h: 15, s: 6, r: 6
@@ -1169,11 +1186,11 @@
 
       var legend = plottingSurface.append("g")
           .attr("width", li.w)
-          .attr("height", _colorMap.keys.length * (li.h + li.s))
+          .attr("height", entries.length * (li.h + li.s))
           .attr("transform", "translate(" + (width - li.w) + ", 0)");
 
       var g = legend.selectAll("g")
-          .data(_colorMap.entries)
+          .data(entries)
           .enter().append("svg:g")
           .attr("transform", function(d, i) {
                   return "translate(0," + i * (li.h + li.s) + ")";
