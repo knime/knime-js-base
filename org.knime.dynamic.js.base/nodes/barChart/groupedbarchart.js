@@ -11,6 +11,7 @@
 	var plotData;
 	var colorRange;
 	var categories;
+	var freqCols;
 	var missValFreqCols;
 	var missValPairs;
 	var missValCatValues;
@@ -18,6 +19,7 @@
 	var MISSING_VALUES_LABEL = "Missing values";
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
 	var FREQ_COLUMN_MISSING_VALUES_ONLY = "freqColumnMissingValuesOnly";
+	var CATEGORY_MISSING_VALUES_ONLY = "categoryMissingValuesOnly";
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
@@ -212,16 +214,16 @@
 		// Get the frequency columns
 		var valCols = [];
 		var isDuplicate = false;
-		var retained = [];
+		freqCols = [];
 
 		for (var k = 0; k < optFreqCol.length; k++) {
 			var valCol = knimeTable.getColumn(optFreqCol[k]);
 			// ToDo: Add an isDuplicate test here...
 			if (isDuplicate != true) {
 				valCols.push( valCol );
-				retained.push(optFreqCol[k]);
+				freqCols.push(optFreqCol[k]);
 			}
-		}
+		}		
 		
 		plotData = [];
 		missValFreqCols = [];
@@ -232,9 +234,9 @@
 		missValCatValues = [];
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
-			for (var j = 0; j < retained.length; j++) {	
+			for (var j = 0; j < freqCols.length; j++) {	
 
-				var key = retained[j];
+				var key = freqCols[j];
 				if (optMethod == "Occurence\u00A0Count") {
 					key = "Occurence Count";
 				}
@@ -314,24 +316,39 @@
 			}			
 		}
 		
-		// Make a list of excluded bars per category
+		// Make a list of excluded bars per category or whole categories
 		var excludeBars = [];
+		var excludeCats = [];
+		var numLeftCols = freqCols.length - excludeCols.length;
 		var missValCat;
+		var excludeWholeMissValCat = false;
 		for (var i = 0; i < missValPairs.length; i++) {
 			var cat = categories[i];
-			var cols = missValPairs[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });
+			var cols = missValPairs[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });			
 			if (cols.length > 0) {
-				var label = cat !== null ? cat : MISSING_VALUES_LABEL;
-				var str = label + " - " + cols.join(", ");
-				if (cat !== null) {
-					excludeBars.push(str);
+				if (cols.length == numLeftCols) {
+					if (cat !== null) {
+						excludeCats.push(cat);
+					} else {
+						excludeWholeMissValCat = true;
+					}					
 				} else {
-					missValCat = str;
+					var label = cat !== null ? cat : MISSING_VALUES_LABEL;
+					var str = label + " - " + cols.join(", ");
+					if (cat !== null) {
+						excludeBars.push(str);
+					} else {
+						missValCat = str;
+					}
 				}
 			}
 		}
-		if (missValCat !== undefined && _value.options.includeMissValCat) {
-			excludeBars.push(missValCat);
+		if (_value.options.includeMissValCat) {
+			if (missValCat !== undefined) {
+				excludeBars.push(missValCat);
+			} else if (excludeWholeMissValCat) {
+				excludeCats.push(MISSING_VALUES_LABEL);
+			}
 		}
 		
 		for (var i = 0; i < missValCatValues.length; i++) {
@@ -370,6 +387,12 @@
 			knimeService.setWarningMessage("Following frequency columns contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
 		} else {
 			knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
+		}
+		
+		if (excludeCats.length > 0) {
+			knimeService.setWarningMessage("Following categories contain only missing values and were excluded from the view:\n    " + excludeCats.join(", "), CATEGORY_MISSING_VALUES_ONLY);
+		} else {
+			knimeService.clearWarningMessage(CATEGORY_MISSING_VALUES_ONLY);
 		}
 		
 		if (excludeBars.length > 0) {
