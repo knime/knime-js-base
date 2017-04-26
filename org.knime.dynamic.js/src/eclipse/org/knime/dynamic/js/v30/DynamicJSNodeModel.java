@@ -107,6 +107,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.node.port.viewproperty.ColorHandlerPortObject;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
@@ -133,6 +134,7 @@ import org.knime.dynamicnode.v30.FlowVariableType;
 import org.knime.dynamicnode.v30.PortType.Enum;
 import org.knime.js.core.CSSUtils;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.color.JSONColorModel;
 import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
@@ -217,6 +219,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.DATABASE)) {
 			return optional ? DatabasePortObject.TYPE_OPTIONAL : DatabasePortObject.TYPE;
 		}
+		if (portType.equals(org.knime.dynamicnode.v30.PortType.COLOR)) {
+		    return optional ? PortObject.TYPE_OPTIONAL : ColorHandlerPortObject.TYPE;
+		}
 		return null;
 	}
 
@@ -262,6 +267,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	        } else {
 	            return InactiveBranchPortObjectSpec.INSTANCE;
 	        }
+		}
+		if (portType.equals(org.knime.dynamicnode.v30.PortType.COLOR)) {
+		    //TODO: create output option and fill with default settings for color output port
 		}
 		return null;
 	}
@@ -321,6 +329,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		}
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObject.INSTANCE;
+		}
+		if (portType.equals(org.knime.dynamicnode.v30.PortType.COLOR)) {
+		    // TODO: create color port object for output port, currently will be inactive and not supported
 		}
 		LOGGER.warn("Port object of type " + portType + " not supported.");
 		return InactiveBranchPortObject.INSTANCE;
@@ -477,9 +488,16 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                                 viewInObjects.add(createJSONTableFromBufferedDataTable(
                                     exec.createSubExecutionContext(subProgress),
                                     (BufferedDataTable)processedObject, tableId));
+                            } else if (processedObject instanceof ColorHandlerPortObject) {
+                                DataTableSpec colorTableSpec = ((ColorHandlerPortObject)processedObject).getSpec();
+                                if (colorTableSpec.getNumColumns() == 1 && colorTableSpec.getColumnSpec(0).getColorHandler() != null) {
+                                    viewInObjects.add(JSONColorModel.createFromColorModel(colorTableSpec.getColumnSpec(0).getColorHandler().getColorModel()));
+                                } else {
+                                    viewInObjects.add(null);
+                                }
                             } else {
                                 // add null for all other unprocessed in port types
-                                viewInObjects.addAll(null);
+                                viewInObjects.add(null);
                                 exec.setProgress(exec.getProgressMonitor().getProgress() + subProgress);
                             }
                         } else {

@@ -78,6 +78,7 @@
 	  <xs:enumeration value="Image" />
 	  <xs:enumeration value="PMML" />
 	  <xs:enumeration value="Database" />
+	  <xs:enumeration value="Color" />
 	</xs:restriction>
   </xs:simpleType>
 
