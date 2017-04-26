@@ -75,7 +75,13 @@
 				<checkBoxOption name="Enable Selection" id="selection"
 					label="Enable Selection" defaultValue="true">
 					When checked,
-					selecting sections is enabled.
+					selecting selections are enabled.
+				</checkBoxOption>
+				<checkBoxOption name="Show selection only" id="showSelectedOnly"
+					label="Show selection only" defaultValue="false" saveInView="true"
+					enableDependency="selection" enableValue="true">
+					When checked,
+					only selected objects are displayed.
 				</checkBoxOption>
 				<checkBoxOption name="Enable Highliting" id="highliting"
 					label="Enable Highliting" defaultValue="true">
@@ -111,7 +117,7 @@
 					Check to enable subscription fo filter events.
 				</checkBoxOption>
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
-					additionalWait="500" defaultWidth="600" defaultHeight="400"
+					additionalWait="1000" defaultWidth="600" defaultHeight="400"
 					defaultFullscreen="true">
 					Settings for image generation.
 				</svgOption>
@@ -169,6 +175,11 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the inner label within the view.
 				</checkBoxOption>
+				<checkBoxOption name="Enable selection only toggle" id="showSelectedOnlyToggle"
+					label="Enable selection only toggle" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable toggling of selection-only within view.
+				</checkBoxOption>
 				<checkBoxOption name="Enable publish selection toggle" id="publishSelectionToggle"
 					label="Enable publish selection toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
@@ -188,6 +199,9 @@
 		</tab>
 
 	</fullDescription>
+	<outputOptions> 
+		<dataOutputOption outPortIndex="1" id="selection" additionalColumnName="Sunburst Chart Selection" additionalColumnType="BOOLEAN" inPortIndex="0" />
+	</outputOptions>
 	<interactiveView name="JavaScript Sunburst Chart">
 		A d3.js implementation of a sunburst chart.
 	</interactiveView>
@@ -200,17 +214,15 @@
 			is the first entry in the sequence.
 		</inPort>
 		<inPort portType="Color" name="Color model" index="1" optional="true">
-			TODO: comment
+			TODO
 		</inPort>
-		<!--<inPort portType="Data" name="Stream color data" index="1"
-			optional="true">
-			Data table containing one column with the names of the
-			entries. Each name has a color assigned to it.
-		</inPort>-->
-		<!--<outPort portType="Image" name="Sequences sunburst image"
+		<outPort portType="Image" name="Sequences sunburst image"
 			index="0">
 			SVG image of the sequences sunburst chart.
-		</outPort>-->
+		</outPort>
+		<outPort portType="Data" name="Input Data + View Selection" index="1">
+			Data table containing the input data appended with a column, that represents the selection made in the parallel coordinates plot view.
+		</outPort>
 	</ports>
 	<js:resources>
 		<!-- Added for inlining style rules when generating svg -->

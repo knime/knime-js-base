@@ -1,15 +1,17 @@
-// TODO:
-// maybe: formatter for count/percentage
-// custom colors (waiting for christian)
-// different mouse modi for zoom/selection - see scatterplott
-// when zoomed in, mouse over goes mad
-// use isInteractivityAvailable
-// reset highliting
-// Check: selection rowID or index? use rowID!!!!
-// do not change _value if nothinge changed
-// image out, slection out (see parallel coordinates)
-// Todo: add variable for selectionfilter in xml
-// selectionfilter without subscribe selection
+/*
+# TODO:
+
+* Reset highliting on selection
+* Do not change _value if no attributes changed ()
+    * possible problem: filterselection variable not defined in xml
+* there are many unnecessary redraws
+* code is a bit messy
+* add option: zoomable
+* revise breadcrumb / innerlabel (concerning filter/selection, too)
+* add comments to the functions in drawSunburst
+* check node documentation
+* don't use styles.css
+*/
 
 (sunburst_namespace = function() {
 
@@ -41,15 +43,6 @@
     knimeTable1 = new kt();
     knimeTable1.setDataTable(_representation.inObjects[0]);
 
-    // TODO: handle second port: color model
-
-    // Load data from port 2 into knime table (information on each of the nodes).
-    // knimeTable2 = null;
-    // if (_representation.inObjects[1] !== null) {
-    //   knimeTable2 = new kt();
-    //   knimeTable2.setDataTable(_representation.inObjects[1]);
-    // }
-
     transformData();
     setColors();
     drawControls();
@@ -59,6 +52,8 @@
     if (_value.options.subscribeSelection) {
       knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
     }
+
+    outputSelectionColumn();
 
     // CHECK: What does this actually do?
     if (parent !==undefined && parent.KnimePageLoader !==undefined) {
@@ -79,20 +74,14 @@
     // Check which rows are included by the filter/selection.
     var includedRows = knimeTable1.getRows().filter(function(row) {
       var includedInFilter = !currentFilter || knimeTable1.isRowIncludedInFilter(row.rowKey, currentFilter);
-      var includedInSelection = !_value.options.showSelectedOnly || !_value.options.subscribeSelection || selectedRows.indexOf(row.rowKey) != -1;
+      var includedInSelection = !_value.options.showSelectedOnly || selectedRows.length == 0 || selectedRows.indexOf(row.rowKey) != -1;
       return includedInFilter && includedInSelection;
     });
     
-    // Get unique labels from path columns.
-    function notNull(value) {
-      return value !== null;
-    }
-    function accumulate(accumulator, array) {
-      return accumulator.concat(array);
-    }
-    function onlyUnique(value, index, self) {
-      return self.indexOf(value) === index;
-    }
+    // Get all unique labels from path columns.
+    var notNull = function(value) { return value !== null; };
+    var accumulate = function(accumulator, array) { return accumulator.concat(array); };
+    var onlyUnique = function(value, index, self) { return self.indexOf(value) === index; };
 
     uniqueLabels = pathColumns
       .map(function(columnId) {
@@ -201,6 +190,12 @@
     }
   };
 
+  var updateChart = function() {
+    transformData();
+    setColors();
+    drawChart();
+  }
+
   var toggleFilter = function() {
     if (_value.options.subscribeFilter) {
       knimeService.subscribeToFilter(
@@ -218,22 +213,6 @@
   }
 
   var setColors = function() {
-    // TODO: handle second port: color model
-
-    // Return a function that yields a color given a label/string.
-    // if (knimeTable2 !== null) {
-    //   // loop over rows of table2 to get all labels and corresponding colors
-    //   _colorMap = {};
-    //   var rowColors = knimeTable2.getRowColors();
-    //   var rows = knimeTable2.getRows();
-    //   for (var i = 0; i < rows.length; i++) {
-    //     var name = rows[i].data[0];
-    //     var color = rowColors[i];
-    //     colorMap[name] = color;
-    //   }
-    // } else {
-    //   // Create object with key=label, value=color.
-    // }
     if (_representation.inObjects[1] == null) {
       if (uniqueLabels.length <= 10) {
         var scale = d3.scale.category10();
@@ -286,6 +265,9 @@
     if (_representation.options.selection) {
       knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function() {
         clearSelection();
+        if (_value.options.showSelectedOnly) {
+          updateChart();
+        }
       });
     }
     if (_representation.options.highliting) {
@@ -446,6 +428,16 @@
   	  }
     }
 
+    // show selection only
+    if (_representation.options.selection && _representation.options.showSelectedOnlyToggle) {
+      knimeService.addMenuDivider();
+      var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
+        _value.options.showSelectedOnly = this.checked;
+        updateChart();
+      });
+      knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
+    }
+    
     if (knimeService.isInteractivityAvailable()) {
       // Selection / Filter configuration
       var publishSelectionToggle = _representation.options.publishSelectionToggle;
@@ -491,26 +483,8 @@
           }
       }
     }
-
-    // if (!_representation.options.multi && _representation.options.enableColumnSelection) {
-    //   var colSelectDiv = controlsContainer.append("div");
-    //   colSelectDiv.append("label").attr("for", "colSelect").text("Selected column: ");
-    //   var select = colSelectDiv.append("select").attr("id", "colSelect");
-    //   for (var i = 0; i < _representation.options.columns.length; i++) {
-    //     var txt = _representation.options.columns[i];
-    //     var o = select.append("option").text(txt).attr("value", txt);
-    //     if (txt === _value.options.numCol) {
-    //       o.property("selected", true);
-    //     }
-    //   }
-    //   select.on("change", function() {
-    //     _value.options.numCol = select.property("value");
-    //     drawChart();
-    //   });
-    // }
   }
 
-  // TODO: in general case do not redraw!
   var updateTitles = function(updateChart) {
     d3.select("#title").text(this.value);
     d3.select("#subtitle").text(_value.options.subtitle);
@@ -542,7 +516,6 @@
     var body = d3.select("body");
 
     // Determine available witdh and height.
-    // CHECK
     if (optFullscreen) {
       var width = "100%";
 
@@ -589,7 +562,7 @@
 
     // set width / height of svg
     if (optFullscreen) {
-      // CHECK: Do I really need computedHeight/computedWidth ?
+      // TODO CHECK: Do I really need computedHeight/computedWidth ?
       var boundingRect = svgContainer.node().getBoundingClientRect();
       var svgWidth = boundingRect.width;
       var svgHeight = boundingRect.height;
@@ -669,7 +642,6 @@
         .range([0, radius]);
 
     var partition = d3.layout.partition()
-        //.sort(null)
         .value(
           _representation.options.freqColumn == null
           ? function(d) { return 1; }
@@ -680,9 +652,9 @@
     if (options.filterSmallNodes) {
       // For efficiency, filter nodes to keep only those large enough to see.
       nodes = partition.nodes(data)
-          .filter(function(d) {
-            return (d.dx > _representation.options.filteringThreshold);
-          });
+        .filter(function(d) {
+          return (d.dx > _representation.options.filteringThreshold);
+        });
     } else {
       nodes = partition.nodes(data);
     }
@@ -774,6 +746,11 @@
         zoom(d);
       } else if (_value.options.mouseMode == "select"){
         select(d);
+        if (_value.options.showSelectedOnly) {
+          transformData();
+          setColors();
+          drawChart();
+        } 
       } else {
         highlite(d);
       }
@@ -880,10 +857,10 @@
         setPropAllNodes('selected', false);
         var leafs = setPropsForward(node, 'selected', true);
         addNodeToSelectionBackward(node);
-        var rowKeys =  leafs.map(function(leaf) { return leaf.rowKey; });
+        selectedRows =  leafs.map(function(leaf) { return leaf.rowKey; });
 
         if (_value.options.publishSelection) {
-          knimeService.setSelectedRows(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          knimeService.setSelectedRows(knimeTable1.getTableId(), selectedRows, selectionChanged);
         }
       }
       renderSelection();
@@ -926,6 +903,10 @@
           var leaf = rowKey2leaf[rowKey];
           addNodeToSelectionBackward(leaf);
         }
+      }
+
+      if (_value.options.showSelectedOnly) {
+        updateChart();
       }
       renderSelection();
     };
@@ -1172,7 +1153,6 @@
 
     }
 
-    // TODO: sort legend
     function drawLegend(plottingSurface) {
 
       var entries = uniqueLabels.map(function(label) {
@@ -1242,40 +1222,31 @@
   }
 
   view.getSVG = function() {
-    // inline global style declarations for SVG export
-    var styles = document.styleSheets;
-    for (i = 0; i < styles.length; i++) {
-      if (!styles[i].cssRules && styles[i].rules) {
-        styles[i].cssRules = styles[i].rules;
-      }
-      // empty style declaration
-      if (!styles[i].cssRules) continue;
+    // // inline global style declarations for SVG export
+    // var styles = document.styleSheets;
+    // for (i = 0; i < styles.length; i++) {
+    //   if (!styles[i].cssRules && styles[i].rules) {
+    //     styles[i].cssRules = styles[i].rules;
+    //   }
+    //   // empty style declaration
+    //   if (!styles[i].cssRules) continue;
 
-      for (var j = 0; j < styles[i].cssRules.length; j++) {
-        var rule = styles[i].cssRules[j];
-        d3.selectAll(rule.selectorText).each(function() {
-          for (var k = 0; k < rule.style.length; k++) {
-            var curStyle = this.style.getPropertyValue(rule.style[k]);
-            var curPrio = this.style.getPropertyPriority(rule.style[k]);
-            var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
-            //only overwrite style if not set or priority is overruled
-            if (!curStyle || (curPrio !=="important" && rulePrio == "important")) {
-              d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
-            }
-          }
-        });
-      }
-    }
-    // correct faulty rect elements
-    d3.selectAll("rect").each(function() {
-      var rect = d3.select(this);
-      if (!rect.attr("width")) {
-        rect.attr("width", 0);
-      }
-      if (!rect.attr("height")) {
-        rect.attr("height", 0);
-      }
-    });
+    //   for (var j = 0; j < styles[i].cssRules.length; j++) {
+    //     var rule = styles[i].cssRules[j];
+    //     d3.selectAll(rule.selectorText).each(function() {
+    //       for (var k = 0; k < rule.style.length; k++) {
+    //         var curStyle = this.style.getPropertyValue(rule.style[k]);
+    //         var curPrio = this.style.getPropertyPriority(rule.style[k]);
+    //         var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
+    //         //only overwrite style if not set or priority is overruled
+    //         if (!curStyle || (curPrio !=="important" && rulePrio == "important")) {
+    //           d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
+    //         }
+    //       }
+    //     });
+    //   }
+    // }
+
     var svgElement = d3.select("svg")[0][0];
     // Return the SVG as a string.
     return (new XMLSerializer()).serializeToString(svgElement);
@@ -1285,11 +1256,25 @@
     drawChart();
   }
 
+  function outputSelectionColumn(){
+    _value.outColumns.selection = {};
+    // set selected = false for every row
+    knimeTable1.getRows().forEach(function(row) {
+      _value.outColumns.selection[row.rowKey] = false;
+    });
+    // set selected = true for every selected row
+    selectedRows.forEach(function(rowKey) {
+      _value.outColumns.selection[rowKey] = true;
+    });
+  };
+
+
   view.validate = function() {
     return true;
   };
 
   view.getComponentValue = function() {
+    outputSelectionColumn();
     return _value;
   };
 
