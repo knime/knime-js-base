@@ -5,6 +5,7 @@
 // when zoomed in, mouse over goes mad
 // use isInteractivityAvailable
 // reset highliting
+// Check: selection rowID or index? use rowID!!!!
 
 (sunburst_namespace = function() {
 
@@ -17,6 +18,7 @@
   var selectedRows = [];
   var highlitedNode;
   var rowKey2leaf = {};
+  var currentFilter = null;
   var _colorMap;
 
   var layoutContainer;
@@ -48,6 +50,7 @@
     setColors();
     drawControls();
     drawChart();
+    toggleFilter();
 
     if (_value.options.subscribeSelection) {
       knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
@@ -69,6 +72,13 @@
     var pathColumns = _representation.options.pathColumns.map(indexOf);
     var freqColumn = indexOf(_representation.options.freqColumn);
 
+    // Check which rows are included by the filter/selection.
+    var includedRows = knimeTable1.getRows().filter(function(row) {
+      var includedInFilter = !currentFilter || knimeTable1.isRowIncludedInFilter(row.rowKey, currentFilter);
+      var includedInSelection = !_value.options.showSelectedOnly || !_value.options.subscribeSelection || selectedRows.indexOf(row.rowKey) != -1;
+      return includedInFilter && includedInSelection;
+    });
+    
     // Get unique labels from path columns.
     function notNull(value) {
       return value !== null;
@@ -79,10 +89,20 @@
     function onlyUnique(value, index, self) {
       return self.indexOf(value) === index;
     }
-    uniqueLabels = knimeTable1.getPossibleValues()
-      .filter(notNull)
+
+    uniqueLabels = pathColumns
+      .map(function(columnId) {
+        var uniqueLabelsOfColumn = includedRows.map(function(row) {
+          return row.data[columnId];
+        })
+        .filter(notNull)
+        .filter(onlyUnique);
+
+        return uniqueLabelsOfColumn;
+      })
       .reduce(accumulate, [])
       .filter(onlyUnique);
+
 
     // make sure that reserved names do not collide whith user given classes
     while (uniqueLabels.indexOf(rootNodeName) > -1) {
@@ -104,16 +124,18 @@
       selected: false
     };
 
+
+
     // Create hierarchical structure.
-    var rows = knimeTable1.getRows();
-    for (var i = 0; i < rows.length; i++) {
-      var size = rows[i].data[freqColumn];
+    for (var i = 0; i < includedRows.length; i++) {
+
+      var size = includedRows[i].data[freqColumn];
       if (size === null || isNaN(size)) {
         size = 0;
       }
 
       // get array of path elements from current row
-      var parts = pathColumns.map(function(col) { return rows[i].data[col]; });
+      var parts = pathColumns.map(function(col) { return includedRows[i].data[col]; });
       // Remove trailing nulls
       while(parts[parts.length-1] === null) {
         parts.pop();
@@ -164,16 +186,32 @@
             active: false,
             highlited: false,
             selected: false,
-            rowKey: rows[i].rowKey
+            rowKey: includedRows[i].rowKey
           };
           children.push(childNode);
 
           // Add id of leaf to [row -> leaf]-data-structure. 
-          rowKey2leaf[rows[i].rowKey] = childNode;
+          rowKey2leaf[includedRows[i].rowKey] = childNode;
         }
       }
     }
   };
+
+  var toggleFilter = function() {
+    if (_value.options.subscribeFilter) {
+      knimeService.subscribeToFilter(
+        knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
+      );
+    } else {
+      knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
+    }
+  }
+
+  var filterChanged = function(filter) {
+    currentFilter = filter;
+    transformData();
+    drawChart();
+  }
 
   var setColors = function() {
     // TODO: handle second port: color model
@@ -433,21 +471,10 @@
           if (subscribeFilterToggle) {
               var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
               var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.options.subscribeFilter, function() {
-                  if (this.checked) {
-                      _value.options.subscribeSelection = true;
-                      // TODO
-                      // knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
-                  } else {
-                      _value.options.subscribeSelection = true;
-                      // TODO
-                      // knimeService.unsubscribeFilter(_representation.keyedDataset.id, filterChanged);
-                  }
+                _value.options.subscribeSelection = this.checked;
+                toggleFilter();
               });
               knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
-              // TODO
-              // if (_value.subscribeFilter) {
-              //     knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
-              // }
           }
       }
     }
