@@ -10,8 +10,12 @@
 		
 	var plotData;
 	var colorRange;
-	var exclude;
+	var categories;
+	var missValFreqCols;
+	var missValPairs;
+	var missValCatValues;
 
+	var MISSING_VALUES_LABEL = "Missing values";
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
 	var FREQ_COLUMN_MISSING_VALUES_ONLY = "freqColumnMissingValuesOnly";
 	
@@ -151,6 +155,7 @@
 				.color(colorRange)
 				.duration(300)
 				.margin({right: 20, top: 60})
+				.hideable(true)
 				.groupSpacing(0.1);
 			
 			updateTitles(false);
@@ -189,7 +194,8 @@
 			}
 		}
 		
-		var categories = knimeTable.getColumn(optCat);
+		categories = knimeTable.getColumn(optCat);
+		var numCat = categories.length;
 		
 		// Default color scale
 		if (!customColors) {
@@ -218,8 +224,12 @@
 		}
 		
 		plotData = [];
-		var excludeCols = [];
-		exclude = [];
+		missValFreqCols = [];
+		missValPairs = new Array(numCat);
+		for (var i = 0; i < numCat; i++) {
+			missValPairs[i] = [];
+		}
+		missValCatValues = [];
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
 			for (var j = 0; j < retained.length; j++) {	
@@ -230,34 +240,42 @@
 				}
 				var values = [];
 				var onlyMissValCol = true;
+				var valueOnMissValCat = false;
 
 				for (var i = 0; i < numDataPoints; i++) {
-					var dataObj = {};
-
 					if (categories != undefined) {
 						if (isDuplicate == true)  {
 							alert("Duplicate categories found in column.");
 							return "duplicate";
 						}
 						
-						dataObj["x"] = categories[i];
-						dataObj["y"] = valCols[j][i];						
-						if (dataObj["y"] !== null) {
-							values.push(dataObj);
-							onlyMissValCol = false;
+						var cat = categories[i];
+						var val = valCols[j][i];
+						
+						if (cat !== null) {							
+							if (val !== null) {
+								onlyMissValCol = false;
+								values.push({"x": cat, "y": val});								
+							}
 						} else {
-							// the bar is null <=> the (category, key) pair has only missing values -> exclude
-							exclude.push({"cat": categories[i], "key": key});
+							// Missing values category
+							if (val !== null) {
+								missValCatValues.push({"col": key, "value": val});
+								valueOnMissValCat = true;
+							}
+						}
+						
+						if (val !== null) {
 							
+						} else {
+							missValPairs[i].push(key);
 						}
 					}
 				}
 				
-				if (onlyMissValCol) {
-					excludeCols.push(key);
-				} else {				
-					var plot_stream = {"key": key, "values": values};
-					plotData.push(plot_stream);
+				if (!onlyMissValCol) {			
+					var plotStream = {"key": key, "values": values};
+					plotData.push(plotStream);
 				
 					if (customColors) {
 						var color = customColors[key];
@@ -266,6 +284,8 @@
 						}
 						colorScale.push(color);
 					}
+				} else {
+					missValFreqCols.push({"col": key, "valueOnMissValCat": valueOnMissValCat});
 				}
 			}
 		} else {
@@ -281,21 +301,79 @@
 		
 		colorRange = customColors ? colorScale : colorScale.range();
 		
-		// Process missing values
-		if (excludeCols.length > 0) {
-			knimeService.setWarningMessage("Following frequency columns contain only missing values and were excluded from the view: " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
-		}
-		
 		processMissingValues();
 	}
 	
-	processMissingValues = function() {
-		// Set warning message
-		if (exclude.length > 0) {
-			var bars = exclude.map(function(item) {
-				return "    " + item.cat + " - " + item.key;
-			}).sort().join("\n");
-			knimeService.setWarningMessage("The following bars contain only missing values in the frequency column and were excluded from the view:\n" + bars, MISSING_VALUES_ONLY);
+	processMissingValues = function(switched) {
+		// Make a list of freq columns to exclude
+		var excludeCols = [];
+		for (var i = 0; i < missValFreqCols.length; i++) {
+			var col = missValFreqCols[i];
+			if (!col.valueOnMissValCat || col.valueOnMissValCat && !_value.options.includeMissValCat) {
+				excludeCols.push(col.col);				
+			}			
+		}
+		
+		// Make a list of excluded bars per category
+		var excludeBars = [];
+		var missValCat;
+		for (var i = 0; i < missValPairs.length; i++) {
+			var cat = categories[i];
+			var cols = missValPairs[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });
+			if (cols.length > 0) {
+				var label = cat !== null ? cat : MISSING_VALUES_LABEL;
+				var str = label + " - " + cols.join(", ");
+				if (cat !== null) {
+					excludeBars.push(str);
+				} else {
+					missValCat = str;
+				}
+			}
+		}
+		if (missValCat !== undefined && _value.options.includeMissValCat) {
+			excludeBars.push(missValCat);
+		}
+		
+		for (var i = 0; i < missValCatValues.length; i++) {
+			var item = missValCatValues[i];
+			if (excludeCols.indexOf(item.col) != -1 && !(!_value.options.includeMissValCat && switched)) {
+				continue;
+			}
+			var data = undefined;
+			var dataInd;
+			for (var j = 0; j < plotData.length; j++) {
+				if (plotData[j].key == item.col) {
+					data = plotData[j];
+					dataInd = j;
+					break;
+				}	
+			}			
+			if (_value.options.includeMissValCat) {
+				var val = {"x": MISSING_VALUES_LABEL, "y": item.value};
+				if (data !== undefined) {
+					data.values.push(val);
+				} else {
+					plotData.push({"key": item.col, "values": [val]})
+				}				
+			} else if (switched) {
+				if (data !== undefined) {
+					data.values.pop();
+					if (data.values.length == 0) {
+						plotData.splice(dataInd, 1);
+					}
+				}			
+			}
+		}
+		
+		// Set warning messages
+		if (excludeCols.length > 0) {
+			knimeService.setWarningMessage("Following frequency columns contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
+		} else {
+			knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
+		}
+		
+		if (excludeBars.length > 0) {
+			knimeService.setWarningMessage("Following bars contain only missing values in frequency column and were excluded from the view:\n    " + excludeBars.join("\n    "), MISSING_VALUES_ONLY);
 		} else {
 			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
 		}
@@ -440,7 +518,7 @@
 	    var chartTypeEdit =  _representation.options.enableStackedEdit;
 	    var orientationEdit = _representation.options.enableHorizontalToggle;
 		var staggerLabels = _representation.options.enableStaggerToggle;
-		
+		var switchMissValCat = _representation.options.enableSwitchMissValCat;
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -479,10 +557,25 @@
     		}, true);    		
     		knimeService.addMenuItem('Frequency axis label:', 'ellipsis-v', freqAxisText);
     		
-    		if (orientationEdit || staggerLabels || chartTypeEdit) {
+    		if (switchMissValCat || orientationEdit || staggerLabels || chartTypeEdit) {
     			knimeService.addMenuDivider();
     		}
     	}
+	    
+	    if (switchMissValCat /*&& missValCatValue !== undefined*/) {
+	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
+	    		if (_value.options.includeMissValCat != this.checked) {
+	    			_value.options.includeMissValCat = this.checked;
+	    			processMissingValues(true);
+	    			chart.update();
+	    		}
+	    	});
+	    	knimeService.addMenuItem("Include 'Missing values' category: ", 'question', switchMissValCatCbx);
+	    	
+	    	if (orientationEdit || staggerLabels || chartTypeEdit) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
 	    
 	    if (chartTypeEdit) {
 	    	var groupedRadio = knimeService.createMenuRadioButton('groupedRadio', 'chartType', 'Grouped', updateChartType);	    	
