@@ -207,14 +207,6 @@
 		categories = knimeTable.getColumn(optCat);
 		var numCat = categories.length;
 		
-		// Default color scale
-		if (!customColors) {
-			colorScale = d3.scale.category10();
-			if (categories.length > 10) {
-				colorScale = d3.scale.category20();
-			}
-		}
-		
 		if (optMethod == "Occurence\u00A0Count") {
 			optFreqCol = [knimeTable.getColumnNames()[1]];
 		}
@@ -241,6 +233,7 @@
 		}
 		isMissValCat = false;
 		missValCatValues = [];
+		var numFreqColsNoMissVal = 0;
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
 			for (var j = 0; j < freqCols.length; j++) {	
@@ -296,8 +289,12 @@
 						}
 						colorScale.push(color);
 					}
+					numFreqColsNoMissVal++;
 				} else {
 					missValFreqCols.push({"col": key, "valueOnMissValCat": valueOnMissValCat});
+					if (valueOnMissValCat) {
+						numFreqColsNoMissVal++;
+					}
 				}
 			}
 		} else {
@@ -311,7 +308,17 @@
 
 		}
 		
-		colorRange = customColors ? colorScale : colorScale.range();
+		if (customColors) {
+			colorRange = customColors;
+		} else {
+			// Default color scale
+			if (numFreqColsNoMissVal > 10) {
+				colorScale = d3.scale.category20();
+			} else {			
+				colorScale = d3.scale.category10();
+			}
+			colorRange = colorScale.range();
+		}		
 		
 		processMissingValues();
 	}
