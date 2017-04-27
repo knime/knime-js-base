@@ -15,6 +15,7 @@
 	var missValFreqCols;
 	var missValPairs;
 	var missValCatValues;
+	var excludeDataCatMap;
 
 	var MISSING_VALUES_LABEL = "Missing values";
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
@@ -151,7 +152,12 @@
 				chart.reduceXTicks(false);
 			}
 			
-			chart.stacked(_value.options.chartType == 'Stacked');
+			var stacked = _value.options.chartType == 'Stacked';
+			if (stacked) {
+				fixStackedData(true);
+			}
+			chart.stacked(stacked);			
+			
 			
 			chart
 				.color(colorRange)
@@ -322,6 +328,7 @@
 		var numLeftCols = freqCols.length - excludeCols.length;
 		var missValCat;
 		var excludeWholeMissValCat = false;
+		excludeDataCatMap = {};
 		for (var i = 0; i < missValPairs.length; i++) {
 			var cat = categories[i];
 			var cols = missValPairs[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });			
@@ -336,9 +343,18 @@
 					var label = cat !== null ? cat : MISSING_VALUES_LABEL;
 					var str = label + " - " + cols.join(", ");
 					if (cat !== null) {
-						excludeBars.push(str);
+						excludeBars.push(str);						
 					} else {
 						missValCat = str;
+					}
+					if (cat !== null || _value.options.includeMissValCat) {
+						cols.forEach(function(col) {
+							if (excludeDataCatMap[col] != undefined) {
+								excludeDataCatMap[col].push(cat);
+							} else {
+								excludeDataCatMap[col] = [cat];
+							}
+						});
 					}
 				}
 			}
@@ -384,7 +400,7 @@
 		
 		// Set warning messages
 		if (excludeCols.length > 0) {
-			knimeService.setWarningMessage("Following frequency columns contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
+			knimeService.setWarningMessage("Following frequency columns are not present or contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
 		} else {
 			knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
 		}
@@ -400,6 +416,42 @@
 		} else {
 			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
 		}
+	}
+	
+	fixStackedData = function(addDummy) {
+		plotData.forEach(function(dataValues) {
+			var excludeCats = excludeDataCatMap[dataValues.key];
+			if (excludeCats == undefined) {
+				return;
+			}
+			if (addDummy) {
+				var i = 0, j = 0;
+				var values = dataValues.values;
+				var newValues = [];
+				categories.forEach(function(cat) {
+					if (cat == null) {
+						return;
+					}
+					if (i < values.length && values[i].x == cat) {
+						newValues.push(values[i]);
+						i++;
+					} else if (j < excludeCats.length && excludeCats[j] == cat) {
+						newValues.push({"x": cat, "y": null});
+						j++;
+					}
+				});
+				if (i < values.length && values[i].x == MISSING_VALUES_LABEL) {
+					newValues.push(values[i]);
+				} else if (j < excludeCats.length && excludeCats[j] == null) {
+					newValues.push({"x": MISSING_VALUES_LABEL, "y": null});					
+				}
+				dataValues.values = newValues;
+			} else {
+				dataValues.values = dataValues.values.filter(function(value) {
+					return value.y !== null;
+				});
+			}
+		});
 	}
 	
 	function updateTitles(updateChart) {
@@ -517,8 +569,10 @@
 	
 	function updateChartType() {
 		if (this.value != _value.options.chartType) {
-			_value.options.chartType = this.value;			
-			chart.stacked(this.value == 'Stacked');
+			_value.options.chartType = this.value;
+			var stacked = this.value == 'Stacked';
+			fixStackedData(stacked);
+			chart.stacked(stacked);									
 			chart.update();
 		}		
 	}
@@ -589,7 +643,14 @@
 	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
 	    		if (_value.options.includeMissValCat != this.checked) {
 	    			_value.options.includeMissValCat = this.checked;
+	    			var stacked = _value.options.chartType == 'Stacked';
+	    			if (stacked) {
+	    				fixStackedData(false);
+	    			}
 	    			processMissingValues(true);
+	    			if (stacked) {
+	    				fixStackedData(true);
+	    			}
 	    			chart.update();
 	    		}
 	    	});
