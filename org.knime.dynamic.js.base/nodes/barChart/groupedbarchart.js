@@ -130,15 +130,17 @@
 			svg.attr("height", "100%");
 		}
 		
-		/* 
-		 * Process data
-		 */		
-		knimeTable = new kt();
-		// Add the data from the input port to the knimeTable.
-		var port0dataTable = _representation.inObjects[0];
-		knimeTable.setDataTable(port0dataTable);
-		
-		processData();
+		if (!redraw) {		
+			/* 
+			 * Process data
+			 */		
+			knimeTable = new kt();
+			// Add the data from the input port to the knimeTable.
+			var port0dataTable = _representation.inObjects[0];
+			knimeTable.setDataTable(port0dataTable);
+			
+			processData();
+		}
 
 		
 		/*
@@ -163,7 +165,6 @@
 				.color(colorRange)
 				.duration(300)
 				.margin({right: 20, top: 60})
-				.hideable(true)
 				.groupSpacing(0.1);
 			
 			updateTitles(false);
