@@ -1,14 +1,10 @@
 /*
 # TODO:
-
-* Do not change _value if no attributes changed ()
-    * possible problem: filterselection variable not defined in xml
 * there are many unnecessary redraws
-* code is a bit messy
-* add option: zoomable
-* add comments to the functions in drawSunburst
 * check node documentation
-* don't use styles.css
+* check zoom and selection function
+* check donut hole
+* when zooming: show breadcrumb for zoom...
 */
 
 (sunburst_namespace = function() {
@@ -24,6 +20,8 @@
   var rowKey2leaf = {};
   var currentFilter = null;
   var _colorMap;
+  var mouseMode = "highlite";
+  var totalSize;
 
   var layoutContainer;
   var MIN_HEIGHT = 300, MIN_WIDTH = 400;
@@ -41,12 +39,26 @@
     knimeTable1 = new kt();
     knimeTable1.setDataTable(_representation.inObjects[0]);
 
+    if (_value.options.mouseMode) {
+      mouseMode = _value.options.mouseMode;
+    }
+    if (_value.options.selectedRows) {
+      selectedRows = _value.options.selectedRows;
+    }
+    if (_value.options.highlitedNode) {
+      highlitedNode = _value.options.highlitedNode;
+    }
+
     transformData();
     setColors();
     drawControls();
     drawChart();
     toggleFilter();
 
+    if (_representation.warnMessage != "") {
+      knimeService.setWarningMessage(_representation.warnMessage);
+    }
+   
     if (_value.options.subscribeSelection) {
       knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
     }
@@ -188,28 +200,6 @@
     }
   };
 
-  var updateChart = function() {
-    transformData();
-    setColors();
-    drawChart();
-  }
-
-  var toggleFilter = function() {
-    if (_value.options.subscribeFilter) {
-      knimeService.subscribeToFilter(
-        knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
-      );
-    } else {
-      knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
-    }
-  }
-
-  var filterChanged = function(filter) {
-    currentFilter = filter;
-    transformData();
-    drawChart();
-  }
-
   var setColors = function() {
     if (_representation.inObjects[1] == null) {
       if (uniqueLabels.length <= 10) {
@@ -239,6 +229,712 @@
     }
     _colorMap.entries = d3.entries(colorMap);
     _colorMap.keys = d3.keys(colorMap);
+  };
+
+  var updateChart = function() {
+    transformData();
+    setColors();
+    drawChart();
+  };
+
+  var updateTitles = function(updateChart) {
+    d3.select("#title").text(this.value);
+    d3.select("#subtitle").text(_value.options.subtitle);
+
+    if (updateChart) {
+       drawChart();
+    }
+  };
+
+  var drawChart = function() {
+    // Remove earlier chart.
+    d3.select("#layoutContainer").remove();
+
+    /*
+     * Parse some options.
+     */
+    var optFullscreen = _representation.options.svg.fullscreen && _representation.runningInView;
+    var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
+
+    d3.selectAll("html, body")
+      .style({
+        "width": "100%",
+        "height": "100%",
+        "margin": "0",
+        "padding": "0"
+      });
+
+    var body = d3.select("body");
+    body.style({
+      "font-family": "'Open Sans', sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+    })
+
+    // Determine available witdh and height.
+    if (optFullscreen) {
+      var width = "100%";
+
+      if (isTitle || !_representation.options.enableViewControls) {
+        knimeService.floatingHeader(true);
+        var height = "100%";
+      } else {
+        knimeService.floatingHeader(false);
+        var height = "calc(100% - " + knimeService.headerHeight() + "px)"
+      }
+
+    } else {
+      var width = _representation.options.svg.width + 'px';
+      var height = _representation.options.svg.height + 'px';
+    }
+
+    layoutContainer = body.append("div")
+      .attr("id", "layoutContainer")
+      .style({
+        "width": width,
+        "height": height,
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "position": "absolute"
+      });
+
+    // create div container to hold svg
+    var svgContainer = layoutContainer.append("div")
+      .attr("id", "svgContainer")
+      .style({
+        "min-width": MIN_WIDTH + "px",
+        "min-height": MIN_HEIGHT + "px",
+        "box-sizing": "border-box",
+        "overflow": "hidden",
+        "margin": "0",
+        "width": "100%",
+        "height": "100%"
+      });
+  
+    // Create the SVG object
+    svg = svgContainer.append("svg")
+      .attr("id", "svg")
+      .style("font-family", "sans-serif")
+
+    // set width / height of svg
+    if (optFullscreen) {
+      // TODO CHECK: Do I really need computedHeight/computedWidth ?
+      var boundingRect = svgContainer.node().getBoundingClientRect();
+      var svgWidth = boundingRect.width;
+      var svgHeight = boundingRect.height;
+    } else {
+      var svgWidth = _representation.options.svg.width;
+      var svgHeight = _representation.options.svg.height;
+    }
+    svg
+      .style("width", svgWidth + "px")
+      .style("height", svgHeight + "px")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight);
+
+    // Title
+    svg.append("text")
+      .attr("id", "title")
+      .attr("font-size", 24)
+      .attr("x", 20)
+      .attr("y", 30)
+      .text(_value.options.title);
+
+    // Subtitle
+    svg.append("text")
+      .attr("id", "subtitle")
+      .attr("font-size", 12)
+      .attr("x", 20)
+      .attr("y", 46)
+      .text(_value.options.subtitle);
+
+
+    // Compute plotting options
+    var margin = {
+      top : isTitle ? 60 : 10,
+      left : 10,
+      bottom : 10,
+      right : 10
+    };
+
+    var plottingSurface = svg.append("g")
+      .attr("id", "plottingSurface")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var w = Math.max(50, svgWidth - margin.left - margin.right);
+    var h = Math.max(50, svgHeight - margin.top - margin.bottom);
+
+    var options = {
+      legend: _value.options.legend,
+      breadcrumb: _value.options.breadcrumb,
+      zoomable: _representation.options.zoomable,
+      donutHole: _value.options.donutHole,
+      aggregationType: _value.options.aggregationType,
+      filterSmallNodes: _value.options.filterSmallNodes
+    };
+
+    drawSunburst(_data, plottingSurface, w, h, options);
+
+    // Set resize handler
+    if (optFullscreen) {
+      var win = document.defaultView || document.parentWindow;
+      win.onresize = resize;
+    }
+  };
+
+  var drawSunburst = function(data, plottingSurface, width, height, options) {
+    var marginTop = options.breadcrumb ? 40 : 0;
+    var marginLeft = options.legend ? 85 : 0;
+
+    // Dimensions of sunburst.
+    var radius = Math.min(width - marginLeft, height - marginTop) / 2;
+
+    // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
+    var b = { w: 100, h: 30, s: 3, t: 10 };
+
+    var x = d3.scale.linear()
+        .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.sqrt()
+        .range([0, radius]);
+
+    var partition = d3.layout.partition()
+        .value(
+          _representation.options.freqColumn == null
+          ? function(d) { return 1; }
+          : function(d) { return d.size; }
+        )
+
+    // Create list of segment objects with cartesian orientation from data.
+    if (options.filterSmallNodes) {
+      // For efficiency, filter nodes to keep only those large enough to see.
+      nodes = partition.nodes(data)
+        .filter(function(d) {
+          return (d.dx > _representation.options.filteringThreshold);
+        });
+    } else {
+      nodes = partition.nodes(data);
+    }
+
+    // Functions to map cartesian orientation of partition layout into radial
+    // orientation of sunburst chart.
+    var arc = d3.svg.arc()
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+
+    // Set display of donut hole depending on donut-hole-configuration and zoom-configuration.
+    if (options.donutHole) {
+      arc
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+    } else {
+      var rootSegmentExtent = nodes[0].dy;
+      arc
+        .innerRadius(function(d) { 
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
+          return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
+        })
+        .outerRadius(function(d) {
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
+          return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
+        });
+    }
+
+    // create new group for the sunburst plot (not legend, not breadcrumb)
+    var sunburstGroup = plottingSurface.append("g")
+        .attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")")
+        .attr("id", "sunburstGroup");
+
+    // Bounding circle underneath the sunburst, to make it easier to detect
+    // when the mouse leaves the plottingSurface g.
+    sunburstGroup.append("svg:circle")
+        .attr("r", radius)
+        .style("opacity", 0);
+
+    var path = sunburstGroup.selectAll("path")
+        .data(nodes)
+      .enter().append("path")
+        .attr("d", arc)
+        .attr("fill-rule", "evenodd")
+        .attr("fill", function(d) { return _colorMap(d.name); })
+        .attr("stroke",function(d) { return d.selected ? "black" : "white" })
+        .on("mouseover", mouseover)
+        .on("click", click);
+
+    // Basic setup of page elements.
+    if (options.breadcrumb) {
+      initializeBreadcrumbTrail(plottingSurface);
+    }
+
+    if (options.legend) {
+      drawLegend(plottingSurface);
+    }
+
+    // add explanation in the middle of the circle
+    var explanation = sunburstGroup.append("g")
+      .attr("id", "explanation")
+      .style({
+        "position": "absolute",
+        "top": "260px",
+        "left": "305px",
+        "width": "140px",
+        "text-align": "center",
+        "color": "#666",
+        "z-index": "-1",
+      })
+      .style("display", (options.donutHole && !options.zoom) ? "initial" : "none");
+
+    explanation.append("text")
+      .attr("id", "percentage")
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .style("font-size", "2.5em");
+    explanation.append("text")
+      .attr("id", "explanationText")
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .attr("y", 30)
+      .style("font-size", "1.8em")
+      .style("font-weight", "lighter");
+
+    // Get total size of the tree = value of root node from partition.
+    totalSize = path.node().__data__.value;
+    
+    // Set highliting
+    if (_representation.options.highliting && mouseMode != "zoom" && highlitedNode != null) {
+      var d = nodes.filter(function(node) { return node.id == highlitedNode })[0];
+      if (d != null) {
+        highlite(d);
+      }
+    }
+
+    // Set selection
+    if (!_value.options.showSelectedOnly && selectedRows.length > 0 ) {
+      selectedRows.forEach(function(rowKey) { rowKey2leaf[rowKey].selected = true; });
+      renderSelection();
+    }
+
+    // Set zoom
+    if (_value.options.zoomNode && _representation.options.zoomable) {
+      if (_value.options.breadcrumb) {
+        updateBreadcrumb(d);
+        toggleBreadCrumb(true);
+      }
+
+      path.transition()
+        .attrTween("d", arcTweenZoom(_value.options.zoomNode));
+    }
+
+    // Add the mouseleave handler to the bounding circle.
+    sunburstGroup.on("mouseleave", mouseleave);
+
+    // Handle clicks on sunburst segments
+    function click(d) {
+      if (mouseMode == "zoom") {
+        zoom(d);
+      } else if (mouseMode == "select"){
+        select(d);
+        if (_value.options.showSelectedOnly) {
+          highlitedNode = null;
+          transformData();
+          setColors();
+          drawChart();
+        } 
+      } else {
+        clearHighliting();
+        highlite(d);
+      }
+    }
+
+    // Handle mouseover on sunburst segments
+    function mouseover(d) {
+      if ((mouseMode == "highlite") && highlitedNode == null) {
+        // set sunburst segment properties
+        setPropAllNodes('active', false);
+        setPropsBackward(d, 'active', true);
+        sunburstGroup.selectAll("path")
+          .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+
+        updateStatisticIndicators(d);
+        toggleBreadCrumb(true);
+        toggleInnerLabel(true);
+      }
+    }
+    
+    // Handle mouseleave on sunburst segments
+    function mouseleave(d) {
+      if ((mouseMode == "highlite") && highlitedNode == null) {
+        // set sunburst segment properties
+        setPropAllNodes('active', true);
+        sunburstGroup.selectAll("path")
+          .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
+
+        toggleBreadCrumb(false);
+        toggleInnerLabel(false);
+      }
+    }
+
+    // Highliting one node and it's ancestors, show inner label / breadcrumb.
+    function highlite(d) {
+      highlitedNode = d.id;
+      setPropAllNodes('highlited', false);
+      setPropsBackward(d, 'highlited', true);
+      sunburstGroup.selectAll("path")
+        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+
+      updateStatisticIndicators(d);
+      toggleBreadCrumb(true);
+      toggleInnerLabel(true);
+    }
+
+    function select(node) {
+      if (d3.event.shiftKey) {
+        if (node.selected) {
+          // Remove elements from selection.
+          setPropsBackward(node, "selected", false);
+          var leafs = setPropsForward(node, "selected", false);
+          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+          for (var i = 0; i < rowKeys.length; i++) {
+            var index = selectedRows.indexOf(rowKeys[i]);
+            if (index > -1) {
+              selectedRows.splice(index, 1);
+            }
+          }
+
+          if (_value.options.publishSelection) {
+            knimeService.removeRowsFromSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          }
+        } else {
+          // Add element to selection.
+          var leafs = setPropsForward(node, 'selected', true);
+          addNodeToSelectionBackward(node);
+          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+          for (var i = 0; i < rowKeys.length; i++) {
+            var index = selectedRows.indexOf(rowKeys[i]);
+            if (index == -1) {
+              selectedRows.push(rowKeys[i]);
+            }
+          }
+
+          if (_value.options.publishSelection) {
+            knimeService.addRowsToSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
+          }
+        }
+      } else {
+        // Set selection.
+        setPropAllNodes('selected', false);
+        var leafs = setPropsForward(node, 'selected', true);
+        addNodeToSelectionBackward(node);
+        selectedRows =  leafs.map(function(leaf) { return leaf.rowKey; });
+
+        if (_value.options.publishSelection) {
+          knimeService.setSelectedRows(knimeTable1.getTableId(), selectedRows, selectionChanged);
+        }
+      }
+      renderSelection();
+    }
+
+    // Restore everything to full opacity when moving off the visualization.
+    clearHighliting = function(d) {
+      highlitedNode = null;
+      setPropAllNodes('highlited', false);
+
+      sunburstGroup.selectAll("path")
+        .style("opacity", 1);
+
+      toggleBreadCrumb(false);
+      toggleInnerLabel(false);
+    }
+
+    // Draw border around all selected segments.
+    renderSelection = function() {
+      if (_value.options.showSelectedOnly) {
+        sunburstGroup.selectAll("path")
+          .attr("stroke-width", 1)
+          .attr("stroke", "white");
+      } else {
+        sunburstGroup.selectAll("path")
+          .attr("stroke-width", function(d) {
+            return d.selected ? 2 : 1;
+          })
+          .attr("stroke",function(d) {
+            return d.selected ? "black" : "white";
+          });
+      }
+
+    }
+
+    clearSelection = function() {
+      selectedRows = [];
+      setPropAllNodes('selected', false);
+      renderSelection();
+      if (_value.options.publishSelection) {
+        knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
+      }
+    }
+
+    // Traverse through tree and add nodes to selection.
+    addNodeToSelectionBackward = function(node) {
+      node.selected = true;
+      var parent = node.parent;
+      while (parent != null) {
+        var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
+        if (allChildrenSelected) {
+          parent.selected = true;
+        } else {
+          break;
+        }
+        parent = parent.parent;
+      }
+    }
+
+    var zoom = function(d) {
+      path.transition()
+        .duration(1000)
+        .attrTween("d", arcTweenZoom(d));
+
+      if (_value.options.breadcrumb) {
+        updateBreadcrumb(d);
+        toggleBreadCrumb(true);
+      }
+
+      if (d.name === rootNodeName) {
+        delete _value.options.zoomNode;
+      } else {
+        _value.options.zoomNode = {
+          x: d.x,
+          y: d.y,
+          dx: d.dx,
+          dy: d.dy
+        };
+      }
+    }
+
+    resetZoom = function() {
+      zoom(_data);
+    }
+
+    // When zooming: interpolate the scales.
+    function arcTweenZoom(d) {
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+          yd = d3.interpolate(y.domain(), [d.y, 1]),
+          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      return function(d, i) {
+        return i
+            ? function(t) { return arc(d); }
+            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+      };
+    }
+
+    // Updates inner label and breadcrumb
+    function updateStatisticIndicators(d) {
+      if (_value.options.innerLabelStyle === "percentage") {
+        var statistic = (100 * d.value / totalSize).toPrecision(3);
+        var statisticString = statistic + "%";
+        if (statistic < 0.1) {
+          statisticString = "< 0.1%";
+        }
+      } else {
+        var statistic = d.value;
+        var statisticString = d3.format(".6s")(statistic);
+      }
+
+      // set inner label and breadcrumb
+      updateInnerLabel(statisticString);
+      updateBreadcrumb(d, statisticString);
+    }
+
+    function updateInnerLabel(statisticString) {
+      d3.select("#percentage")
+        .text(statisticString);
+
+      d3.select("#explanationText")
+        .text(_value.options.innerLabelText);
+    }
+
+    // Update the breadcrumb trail to show the current sequence and percentage.
+    function updateBreadcrumb(d, statisticString) {
+      // Get Ancestors
+      var nodeArray = [];
+      var current = d;
+      while (current.parent) {
+        nodeArray.unshift(current);
+        current = current.parent;
+      }
+ 
+      // Data join; key function combines name and depth (= position in sequence).
+      var g = d3.select("#trail")
+          .selectAll("g")
+          .data(nodeArray, function(d) { return d.name + d.depth; });
+
+      // Add breadcrumb and label for entering nodes.
+      var entering = g.enter().append("svg:g");
+
+      entering.append("svg:polygon")
+          .attr("points", breadcrumbPoints)
+          .attr("fill", function(d) { return _colorMap(d.name); })
+          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
+
+      entering.append("svg:text")
+          .attr("x", (b.w + b.t) / 2)
+          .attr("y", b.h / 2)
+          .attr("width", b.w)
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .text(function(d) { return d.name; })
+          .each(wrap);
+
+      // Set position for entering and updating nodes.
+      g.attr("transform", function(d, i) {
+        return "translate(" + i * (b.w + b.s) + ", 0)";
+      });
+
+      // Remove exiting nodes.
+      g.exit().remove();
+
+      // Now move and update the percentage at the end.
+      d3.select("#trail").select("#endlabel")
+          .attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
+          .attr("y", b.h / 2)
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .text(statisticString)
+
+      // Make the breadcrumb trail visible, if it's hidden.
+      d3.select("#trail")
+          .style("visibility", "");
+    }
+
+    // Generate a string that describes the points of a breadcrumb polygon.
+    function breadcrumbPoints(d, i) {
+      var points = [];
+      points.push("0,0");
+      points.push(b.w + ",0");
+      points.push(b.w + b.t + "," + (b.h / 2));
+      points.push(b.w + "," + b.h);
+      points.push("0," + b.h);
+      if (i > 0) { // Leftmost breadcrumb; don't include 6th vertex.
+        points.push(b.t + "," + (b.h / 2));
+      }
+      return points.join(" ");
+    }
+
+    // Show/hide inner label
+    function toggleInnerLabel(visible) {
+      if (_value.options.innerLabel && _value.options.donutHole) {
+        d3.select("#explanation")
+          .style("display", visible ? "initial" : "none");
+      }
+    }
+
+    // Show/hide inner breadcrumb
+    function toggleBreadCrumb(visible) {
+      if (_value.options.breadcrumb)  {
+        d3.select("#trail")
+          .style("display", visible ? "initial" : "none");
+      }
+    }
+
+    // Travers through tree and set property of nodes.
+    function setPropsForward(start, prop, val) {
+      var stack = [start];
+      var leafs = [];
+
+      while (stack.length > 0) {
+        start = stack.pop();
+        if (prop != null && val != null) {
+          start[prop] = val;
+        }
+
+        if (start.children.length === 0) {
+          leafs.push(start);
+        } else {
+          for (var i = 0; i < start.children.length; i++) {
+            stack.push(start.children[i]);
+          }
+        }
+      }
+
+      return leafs;
+    }
+
+    // Travers through tree and set property of nodes.
+    function setPropsBackward(start, prop, val) {
+      while (start) {
+        start[prop] = val;
+        start = start.parent;
+      }
+    }
+
+    function setPropAllNodes(prop, val) {
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i][prop] = val;
+      }
+    }
+
+    function initializeBreadcrumbTrail(plottingSurface) {
+      // Add the svg area.
+      var trail = plottingSurface.append("svg:svg")
+          .attr("width", width)
+          .attr("height", 50)
+          .attr("id", "trail")
+
+      // Add the label at the end, for the percentage.
+      trail.append("svg:text")
+        .attr("id", "endlabel")
+        .style("fill", "#000");
+    }
+
+    function drawLegend(plottingSurface) {
+      var entries = uniqueLabels.map(function(label) {
+        return { key: label, value: _colorMap(label) };
+      }); 
+
+      // Dimensions of legend item: width, height, spacing.
+      var li = {
+        w: 100, h: 15, s: 6, r: 6
+      };
+
+      var legend = plottingSurface.append("g")
+          .attr("width", li.w)
+          .attr("height", entries.length * (li.h + li.s))
+          .attr("transform", "translate(" + (width - li.w) + ", 0)");
+
+      var g = legend.selectAll("g")
+          .data(entries)
+          .enter().append("svg:g")
+          .attr("transform", function(d, i) {
+                  return "translate(0," + i * (li.h + li.s) + ")";
+               });
+
+
+      g.append("svg:circle")
+          .attr("cx", 0)
+          .attr("cy", 0.5 * (li.h - li.r))
+          .attr("r", li.r)
+          .style("fill", function(d) { return d.value; });
+
+      g.append("svg:text")
+          .attr("x", li.r + 5)
+          .attr("y", li.r)
+          .attr("width", li.w)
+          .attr("dy", "0.35em")
+          .text(function(d) { return d.key; })
+          .each(wrap);
+    }
+
+    // Wrap text if too long.
+    function wrap() {
+      var self = d3.select(this),
+        textLength = self.node().getComputedTextLength(),
+        text = self.text(),
+        width = self.attr("width");
+      while (textLength+5 > width && text.length > 0) {
+        text = text.slice(0, -1);
+        self.text(text + '...');
+        textLength = self.node().getComputedTextLength();
+      }
+    } 
   };
 
   var drawControls = function() {
@@ -276,12 +972,12 @@
 
    	knimeService.addNavSpacer();
 
-    if (_value.options.mouseMode == null) {
-      _value.options.mouseMode = "highlite";
+    if (mouseMode == null) {
+      mouseMode = "highlite";
     }
 
     function toggleButton() {
-      var targetID = "mouse-mode-" + _value.options.mouseMode;
+      var targetID = "mouse-mode-" + mouseMode;
       d3.selectAll("#knime-service-header .service-button")
         .classed("active", function() {
           return targetID == this.getAttribute("id");
@@ -291,13 +987,14 @@
     // mouse mode controlls.
     if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
-        _value.options.mouseMode = "zoom";
+        clearHighliting();
+        mouseMode = "zoom";
      	  toggleButton();
       });
     }
     if (_representation.options.selection) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
-        _value.options.mouseMode = "select";
+        mouseMode = "select";
         if (_value.options.showSelectedOnly) {
           highlitedNode = null;
           transformData();
@@ -309,7 +1006,7 @@
     }
     if (_representation.options.highliting) {
       knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
-        _value.options.mouseMode = "highlite";
+        mouseMode = "highlite";
      	  toggleButton();
       });
     }
@@ -444,6 +1141,7 @@
         if (this.checked) {
           highlitedNode = null;
         }
+        highlitedNode = null;
         updateChart();
       });
       knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
@@ -496,783 +1194,84 @@
     }
   }
 
-  var updateTitles = function(updateChart) {
-    d3.select("#title").text(this.value);
-    d3.select("#subtitle").text(_value.options.subtitle);
-
-    if (updateChart) {
-       drawChart();
-    }
-  }
-
-  // Draws the chart
-  var drawChart = function() {
-    // Remove earlier chart.
-    d3.select("#layoutContainer").remove();
-
-    /*
-     * Parse some options.
-     */
-    var optFullscreen = _representation.options.svg.fullscreen && _representation.runningInView;
-    var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
-
-    d3.selectAll("html, body")
-      .style({
-        "width": "100%",
-        "height": "100%",
-        "margin": "0",
-        "padding": "0"
-      });
-
-    var body = d3.select("body");
-    body.style({
-      "font-family": "'Open Sans', sans-serif",
-      "font-size": "12px",
-      "font-weight": "400",
-    })
-
-    // Determine available witdh and height.
-    if (optFullscreen) {
-      var width = "100%";
-
-      if (isTitle || !_representation.options.enableViewControls) {
-        knimeService.floatingHeader(true);
-        var height = "100%";
-      } else {
-        knimeService.floatingHeader(false);
-        var height = "calc(100% - " + knimeService.headerHeight() + "px)"
-      }
-
-    } else {
-      var width = _representation.options.svg.width + 'px';
-      var height = _representation.options.svg.height + 'px';
-    }
-
-    layoutContainer = body.append("div")
-      .attr("id", "layoutContainer")
-      .style({
-        "width": width,
-        "height": height,
-        "min-width": MIN_WIDTH + "px",
-        "min-height": MIN_HEIGHT + "px",
-        "position": "absolute"
-      });
-
-    // create div container to hold svg
-    var svgContainer = layoutContainer.append("div")
-      .attr("id", "svgContainer")
-      .style({
-        "min-width": MIN_WIDTH + "px",
-        "min-height": MIN_HEIGHT + "px",
-        "box-sizing": "border-box",
-        "overflow": "hidden",
-        "margin": "0",
-        "width": "100%",
-        "height": "100%"
-      });
-  
-    // Create the SVG object
-    svg = svgContainer.append("svg")
-      .attr("id", "svg")
-      .style("font-family", "sans-serif")
-
-    // set width / height of svg
-    if (optFullscreen) {
-      // TODO CHECK: Do I really need computedHeight/computedWidth ?
-      var boundingRect = svgContainer.node().getBoundingClientRect();
-      var svgWidth = boundingRect.width;
-      var svgHeight = boundingRect.height;
-    } else {
-      var svgWidth = _representation.options.svg.width;
-      var svgHeight = _representation.options.svg.height;
-    }
-    svg
-      .style("width", svgWidth + "px")
-      .style("height", svgHeight + "px")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-
-    // Title
-    svg.append("text")
-      .attr("id", "title")
-      .attr("font-size", 24)
-      .attr("x", 20)
-      .attr("y", 30)
-      .text(_value.options.title);
-
-    // Subtitle
-    svg.append("text")
-      .attr("id", "subtitle")
-      .attr("font-size", 12)
-      .attr("x", 20)
-      .attr("y", 46)
-      .text(_value.options.subtitle);
-
-
-    // Compute plotting options
-    var margin = {
-      top : isTitle ? 60 : 10,
-      left : 10,
-      bottom : 10,
-      right : 10
-    };
-
-    var plottingSurface = svg.append("g")
-      .attr("id", "plottingSurface")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var w = Math.max(50, svgWidth - margin.left - margin.right);
-    var h = Math.max(50, svgHeight - margin.top - margin.bottom);
-
-    var options = {
-      legend: _value.options.legend,
-      breadcrumb: _value.options.breadcrumb,
-      zoomable: _representation.options.zoomable,
-      aggregationType: _value.options.aggregationType,
-      filterSmallNodes: _value.options.filterSmallNodes
-    };
-
-    drawSunburst(_data, plottingSurface, w, h, options);
-
-    // Set resize handler
-    if (optFullscreen) {
-      var win = document.defaultView || document.parentWindow;
-      win.onresize = resize;
-    }
-  }
-
-  var drawSunburst = function(data, plottingSurface, width, height, options) {
-    var marginTop = options.breadcrumb ? 40 : 0;
-    var marginLeft = options.legend ? 85 : 0;
-
-    // Dimensions of sunburst.
-    var radius = Math.min(width - marginLeft, height - marginTop) / 2;
-
-    // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-    var b = { w: 100, h: 30, s: 3, t: 10 };
-
-    var x = d3.scale.linear()
-        .range([0, 2 * Math.PI]);
-
-    var y = d3.scale.sqrt()
-        .range([0, radius]);
-
-    var partition = d3.layout.partition()
-        .value(
-          _representation.options.freqColumn == null
-          ? function(d) { return 1; }
-          : function(d) { return d.size; }
-        )
-
-    // Create list of segment objects with cartesian orientation from data.
-    if (options.filterSmallNodes) {
-      // For efficiency, filter nodes to keep only those large enough to see.
-      nodes = partition.nodes(data)
-        .filter(function(d) {
-          return (d.dx > _representation.options.filteringThreshold);
-        });
-    } else {
-      nodes = partition.nodes(data);
-    }
-
-    // Functions to map cartesian orientation of partition layout into radial
-    // orientation of sunburst chart.
-    var arc = d3.svg.arc()
-        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-
-    // Set display of donut hole depending on donut-hole-configuration and zoom-configuration.
-    if (_value.options.donutHole) {
-      arc
-        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
-    } else {
-      var rootSegmentExtent = nodes[0].dy;
-      arc
-        .innerRadius(function(d) { 
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
-          return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
-        })
-        .outerRadius(function(d) {
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
-          return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
-        });
-    }
-
-    // create new group for the sunburst plot (not legend, not breadcrumb)
-    var sunburstGroup = plottingSurface.append("g")
-        .attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")")
-        .attr("id", "sunburstGroup");
-
-    // Bounding circle underneath the sunburst, to make it easier to detect
-    // when the mouse leaves the plottingSurface g.
-    sunburstGroup.append("svg:circle")
-        .attr("r", radius)
-        .style("opacity", 0);
-
-    var path = sunburstGroup.selectAll("path")
-        .data(nodes)
-      .enter().append("path")
-        .attr("d", arc)
-        .attr("fill-rule", "evenodd")
-        .attr("fill", function(d) { return _colorMap(d.name); })
-        .attr("stroke",function(d) { return d.selected ? "black" : "white" })
-        .on("mouseover", mouseover)
-        .on("click", click);
-
-    // Basic setup of page elements.
-    if (options.breadcrumb) {
-      initializeBreadcrumbTrail(plottingSurface);
-    }
-
-    if (options.legend) {
-      drawLegend(plottingSurface);
-    }
-
-    if (_value.options.zoomNode && _representation.options.zoomable) {
-      path.transition()
-        .attrTween("d", arcTweenZoom(_value.options.zoomNode));
-    }
-
-    // Add the mouseleave handler to the bounding circle.
-    sunburstGroup.on("mouseleave", mouseleave);
-
-    // Get total size of the tree = value of root node from partition.
-    totalSize = path.node().__data__.value;
-
-    // add explanation in the middle of the circle
-    // if (!options.zoomable ) {
-    // TODO: add other condition
-    if (true) {
-      var explanation = sunburstGroup.append("g")
-        .attr("id", "explanation")
-        .style({
-          "position": "absolute",
-          "top": "260px",
-          "left": "305px",
-          "width": "140px",
-          "text-align": "center",
-          "color": "#666",
-          "z-index": "-1",
-        })
-
-      explanation.append("text")
-        .attr("id", "percentage")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .style("font-size", "2.5em");
-      explanation.append("text")
-        .attr("id", "explanationText")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .attr("y", 30)
-        .style("font-size", "1.8em")
-        .style("font-weight", "lighter");
-    }
-
-    function click(d) {
-      if (_value.options.mouseMode == "zoom") {
-        zoom(d);
-      } else if (_value.options.mouseMode == "select"){
-        select(d);
-        if (_value.options.showSelectedOnly) {
-          transformData();
-          setColors();
-          drawChart();
-        } 
-      } else {
-        highlite(d);
-      }
-    }
-
-    // TOOD: extract new functions for following three function
-    function mouseover(d) {
-      var mouseMode = _value.options.mouseMode;
-      if ((mouseMode == "highlite") && highlitedNode == null) {
-        // set sunburst segment properties
-        setPropAllNodes('active', false);
-        setPropsBackward(d, 'active', true);
-        sunburstGroup.selectAll("path")
-          .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
-
-        updateStatisticIndicators(d);
-        toggleBreadCrumb(true);
-        toggleInnerLabel(true);
-      }
-    }
-    
-    function mouseleave(d) {
-      var mouseMode = _value.options.mouseMode;
-      if ((mouseMode == "highlite") && highlitedNode == null) {
-        // set sunburst segment properties
-        setPropAllNodes('active', true);
-        sunburstGroup.selectAll("path")
-          .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
-
-        toggleBreadCrumb(false);
-        toggleInnerLabel(false);
-      }
-    }
-
-    // Highliting one node and it's ancestors, show inner label / breadcrumb.
-    function highlite(d) {
-      highlitedNode = d.id;
-      setPropAllNodes('highlited', false);
-      setPropsBackward(d, 'highlited', true);
-      sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
-
-      updateStatisticIndicators(d);
-      toggleBreadCrumb(true);
-      toggleInnerLabel(true);
-    }
-
-    // Restore everything to full opacity when moving off the visualization.
-    clearHighliting = function(d) {
-      highlitedNode = null;
-      setPropAllNodes('highlited', false);
-
-      sunburstGroup.selectAll("path")
-        .style("opacity", 1);
-
-      toggleBreadCrumb(false);
-      toggleInnerLabel(false);
-    }
-
-    function renderSelection() {
-      sunburstGroup.selectAll("path")
-        .attr("stroke-width", function(d) {
-          return d.selected ? 2 : 1;
-        })
-        .attr("stroke",function(d) {
-          return d.selected ? "black" : "white"
-        })
-      };
-
-    function select(node) {
-      if (d3.event.shiftKey) {
-        if (node.selected) {
-          // Remove elements from selection.
-          setPropsBackward(node, "selected", false);
-          var leafs = setPropsForward(node, "selected", false);
-          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
-          for (var i = 0; i < rowKeys.length; i++) {
-            var index = selectedRows.indexOf(rowKeys[i]);
-            if (index > -1) {
-              selectedRows.splice(index, 1);
-            }
+  var selectionChanged = function(data) {
+    if (data.changeSet) {
+      if (data.changeSet.removed) {
+        for (var i = 0; i < data.changeSet.removed.length; i++) {
+          var removedKey = data.changeSet.removed[i];
+          var parent = rowKey2leaf[removedKey];
+          while (parent != null) {
+            parent.selected = false;
+            parent = parent.parent;
           }
-
-          if (_value.options.publishSelection) {
-            knimeService.removeRowsFromSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
-          }
-        } else {
-          // Add element to selection.
-          var leafs = setPropsForward(node, 'selected', true);
-          addNodeToSelectionBackward(node);
-          var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
-          for (var i = 0; i < rowKeys.length; i++) {
-            var index = selectedRows.indexOf(rowKeys[i]);
-            if (index == -1) {
-              selectedRows.push(rowKeys[i]);
-            }
-          }
-
-          if (_value.options.publishSelection) {
-            knimeService.addRowsToSelection(knimeTable1.getTableId(), rowKeys, selectionChanged);
-          }
-        }
-      } else {
-        // Set selection.
-        setPropAllNodes('selected', false);
-        var leafs = setPropsForward(node, 'selected', true);
-        addNodeToSelectionBackward(node);
-        selectedRows =  leafs.map(function(leaf) { return leaf.rowKey; });
-
-        if (_value.options.publishSelection) {
-          knimeService.setSelectedRows(knimeTable1.getTableId(), selectedRows, selectionChanged);
+          var index = selectedRows.indexOf(removedKey);
+          if (index > -1) {
+            selectedRows.splice(index, 1);
+          }           
         }
       }
-      renderSelection();
-    }
-
-    clearSelection = function() {
-      setPropAllNodes('selected', false);
-      renderSelection();
-      selectedRows = [];
-      knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
-    }
-
-    selectionChanged = function(data) {
-      if (data.changeSet) {
-        if (data.changeSet.removed) {
-          for (var i = 0; i < data.changeSet.removed.length; i++) {
-            var removedKey = data.changeSet.removed[i];
-            removeSelectedRow(removedKey)
-            var index = selectedRows.indexOf(removedKey);
-            if (index > -1) {
-              selectedRows.splice(index, 1);
-            }           
-          }
-        }
-        if (data.changeSet.added) {
-          for (var i = 0; i < data.changeSet.added.length; i++) {
-            var addedKey = data.changeSet.added[i];
-            var leaf = rowKey2leaf[addedKey];
-            addNodeToSelectionBackward(leaf);
-            var index = selectedRows.indexOf(addedKey);
-            if (index == -1) {
-              selectedRows.push(addedKey);
-            }           
-          }
-        }
-      } else if (data.reevaluate) {
-        selectedRows = knimeService.getAllRowsForSelection(knimeTable1.getTableId());
-        setPropAllNodes("selected", false);
-        for (var i = 0; i < selectedRows.length; i++) {
-          var leaf = rowKey2leaf[rowKey];
+      if (data.changeSet.added) {
+        for (var i = 0; i < data.changeSet.added.length; i++) {
+          var addedKey = data.changeSet.added[i];
+          var leaf = rowKey2leaf[addedKey];
           addNodeToSelectionBackward(leaf);
+          var index = selectedRows.indexOf(addedKey);
+          if (index == -1) {
+            selectedRows.push(addedKey);
+          }           
         }
       }
-
-      if (_value.options.showSelectedOnly) {
-        highlitedNode = null;
-        updateChart();
-      }
-      renderSelection();
-    };
-
-    var addNodeToSelectionBackward = function(node) {
-      node.selected = true;
-      var parent = node.parent;
-      while (parent != null) {
-        var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
-        if (allChildrenSelected) {
-          parent.selected = true;
-        } else {
-          break;
-        }
-        parent = parent.parent;
+    } else if (data.reevaluate) {
+      selectedRows = knimeService.getAllRowsForSelection(knimeTable1.getTableId());
+      setPropAllNodes("selected", false);
+      for (var i = 0; i < selectedRows.length; i++) {
+        var leaf = rowKey2leaf[rowKey];
+        addNodeToSelectionBackward(leaf);
       }
     }
 
-    var removeSelectedRow = function(rowKey) {
-      var parent = rowKey2leaf[rowKey];
-      while (parent != null) {
-        parent.selected = false;
-        parent = parent.parent;
-      }
+    if (_value.options.showSelectedOnly) {
+      highlitedNode = null;
+      updateChart();
     }
-
-    var zoom = function(d) {
-      path.transition()
-        .duration(1000)
-        .attrTween("d", arcTweenZoom(d));
-
-      if (d.name === rootNodeName) {
-        delete _value.options.zoomNode;
-      } else {
-        _value.options.zoomNode = {
-          x: d.x,
-          y: d.y,
-          dx: d.dx,
-          dy: d.dy
-        };
-      }
-    }
-
-    resetZoom = function() {
-      zoom(_data);
-    }
-
-    // When zooming: interpolate the scales.
-    function arcTweenZoom(d) {
-      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          yd = d3.interpolate(y.domain(), [d.y, 1]),
-          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-      return function(d, i) {
-        return i
-            ? function(t) { return arc(d); }
-            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-      };
-    }
-
-    // Updates inner label and breadcrumb
-    function updateStatisticIndicators(d) {
-      if (_value.options.innerLabelStyle === "percentage") {
-        var statistic = (100 * d.value / totalSize).toPrecision(3);
-        var statisticString = statistic + "%";
-        if (statistic < 0.1) {
-          statisticString = "< 0.1%";
-        }
-      } else {
-        var statistic = d.value;
-        var statisticString = d3.format(".6s")(statistic);
-      }
-
-      // set inner label and breadcrumb
-      updateInnerLabel(statisticString);
-      updateBreadcrumb(d, statisticString);
-    }
-
-    function updateInnerLabel(statisticString) {
-      d3.select("#percentage")
-        .text(statisticString);
-
-      d3.select("#explanationText")
-        .text(_value.options.innerLabelText);
-    }
-
-    // Update the breadcrumb trail to show the current sequence and percentage.
-    function updateBreadcrumb(d, statisticString) {
-      var nodeArray = getAncestors(d);
-      // Data join; key function combines name and depth (= position in sequence).
-      var g = d3.select("#trail")
-          .selectAll("g")
-          .data(nodeArray, function(d) { return d.name + d.depth; });
-
-      // Add breadcrumb and label for entering nodes.
-      var entering = g.enter().append("svg:g");
-
-      entering.append("svg:polygon")
-          .attr("points", breadcrumbPoints)
-          .attr("fill", function(d) { return _colorMap(d.name); })
-          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
-
-      entering.append("svg:text")
-          .attr("x", (b.w + b.t) / 2)
-          .attr("y", b.h / 2)
-          .attr("width", b.w)
-          .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
-          .text(function(d) { return d.name; })
-          .each(wrap);
-
-      // Set position for entering and updating nodes.
-      g.attr("transform", function(d, i) {
-        return "translate(" + i * (b.w + b.s) + ", 0)";
-      });
-
-      // Remove exiting nodes.
-      g.exit().remove();
-
-      // Now move and update the percentage at the end.
-      d3.select("#trail").select("#endlabel")
-          .attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
-          .attr("y", b.h / 2)
-          .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
-          .text(statisticString)
-
-      // Make the breadcrumb trail visible, if it's hidden.
-      d3.select("#trail")
-          .style("visibility", "");
-    }
-
-    // Generate a string that describes the points of a breadcrumb polygon.
-    function breadcrumbPoints(d, i) {
-      var points = [];
-      points.push("0,0");
-      points.push(b.w + ",0");
-      points.push(b.w + b.t + "," + (b.h / 2));
-      points.push(b.w + "," + b.h);
-      points.push("0," + b.h);
-      if (i > 0) { // Leftmost breadcrumb; don't include 6th vertex.
-        points.push(b.t + "," + (b.h / 2));
-      }
-      return points.join(" ");
-    }
-
-    // Show/hide inner label and breadcrumb
-    function toggleInnerLabel(visible) {
-      if (_value.options.innerLabel && _value.options.donutHole) {
-        d3.select("#explanation")
-          .style("display", visible ? "initial" : "none");
-      }
-    }
-
-    function toggleBreadCrumb(visible) {
-      if (_value.options.breadcrumb)  {
-        d3.select("#trail")
-          .style("display", visible ? "initial" : "none");
-      }
-    }
-
-    function showStatisticIndicators() {
-      if (_value.options.innerLabel && _value.options.donutHole) {
-
-      }
-
-      if (_value.options.breadcrumb)  {
-
-      }
-    }
-
-    function setPropsForward(start, prop, val) {
-      var stack = [start];
-      var leafs = [];
-
-      while (stack.length > 0) {
-        start = stack.pop();
-        if (prop != null && val != null) {
-          start[prop] = val;
-        }
-
-        if (start.children.length === 0) {
-          leafs.push(start);
-        } else {
-          for (var i = 0; i < start.children.length; i++) {
-            stack.push(start.children[i]);
-          }
-        }
-      }
-
-      return leafs;
-    }
-
-    function setPropsBackward(start, prop, val) {
-      while (start) {
-        start[prop] = val;
-        start = start.parent;
-      }
-    }
-
-    function setPropAllNodes(prop, val) {
-      for (var i = 0; i < nodes.length; i++) {
-        nodes[i][prop] = val;
-      }
-    }
-
-    // Given a node in a partition layout, return an array of all of its ancestor
-    // nodes, highest first, but excluding the root.
-    function getAncestors(node) {
-      var path = [];
-      var current = node;
-      while (current.parent) {
-        path.unshift(current);
-        current = current.parent;
-      }
-      return path;
-    }
-
-    function initializeBreadcrumbTrail(plottingSurface) {
-      // Add the svg area.
-      var trail = plottingSurface.append("svg:svg")
-          .attr("width", width)
-          .attr("height", 50)
-          .attr("id", "trail")
-
-      // Add the label at the end, for the percentage.
-      trail.append("svg:text")
-        .attr("id", "endlabel")
-        .style("fill", "#000");
-    }
-
-    function drawLegend(plottingSurface) {
-      var entries = uniqueLabels.map(function(label) {
-        return { key: label, value: _colorMap(label) };
-      }); 
-
-      // Dimensions of legend item: width, height, spacing.
-      var li = {
-        w: 100, h: 15, s: 6, r: 6
-      };
-
-      var legend = plottingSurface.append("g")
-          .attr("width", li.w)
-          .attr("height", entries.length * (li.h + li.s))
-          .attr("transform", "translate(" + (width - li.w) + ", 0)");
-
-      var g = legend.selectAll("g")
-          .data(entries)
-          .enter().append("svg:g")
-          .attr("transform", function(d, i) {
-                  return "translate(0," + i * (li.h + li.s) + ")";
-               });
-
-
-      g.append("svg:circle")
-          .attr("cx", 0)
-          .attr("cy", 0.5 * (li.h - li.r))
-          .attr("r", li.r)
-          .style("fill", function(d) { return d.value; });
-      // g.append("svg:rect")
-      //     .attr("rx", li.r)
-      //     .attr("ry", li.r)
-      //     .attr("width", li.w)
-      //     .attr("height", li.h)
-      //     .style("fill", function(d) { return d.value; });
-
-      g.append("svg:text")
-          .attr("x", li.r + 5)
-          .attr("y", li.r)
-          .attr("width", li.w)
-          .attr("dy", "0.35em")
-          .text(function(d) { return d.key; })
-          .each(wrap);
-    }
-
-    // Wrap text if too long.
-    function wrap() {
-      var self = d3.select(this),
-        textLength = self.node().getComputedTextLength(),
-        text = self.text(),
-        width = self.attr("width");
-      while (textLength+5 > width && text.length > 0) {
-        text = text.slice(0, -1);
-        self.text(text + '...');
-        textLength = self.node().getComputedTextLength();
-      }
-    } 
-  }
-
-  view.getSVG = function() {
-    // // inline global style declarations for SVG export
-    // var styles = document.styleSheets;
-    // for (i = 0; i < styles.length; i++) {
-    //   if (!styles[i].cssRules && styles[i].rules) {
-    //     styles[i].cssRules = styles[i].rules;
-    //   }
-    //   // empty style declaration
-    //   if (!styles[i].cssRules) continue;
-
-    //   for (var j = 0; j < styles[i].cssRules.length; j++) {
-    //     var rule = styles[i].cssRules[j];
-    //     d3.selectAll(rule.selectorText).each(function() {
-    //       for (var k = 0; k < rule.style.length; k++) {
-    //         var curStyle = this.style.getPropertyValue(rule.style[k]);
-    //         var curPrio = this.style.getPropertyPriority(rule.style[k]);
-    //         var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
-    //         //only overwrite style if not set or priority is overruled
-    //         if (!curStyle || (curPrio !=="important" && rulePrio == "important")) {
-    //           d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
-    //         }
-    //       }
-    //     });
-    //   }
-    // }
-
-    var svgElement = d3.select("svg")[0][0];
-    // Return the SVG as a string.
-    return (new XMLSerializer()).serializeToString(svgElement);
+    renderSelection();
   };
 
-  function resize(event) {
+  var toggleFilter = function() {
+    clearHighliting();
+    if (_value.options.subscribeFilter) {
+      knimeService.subscribeToFilter(
+        knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
+      );
+    } else {
+      knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
+    }
+  };
+
+  var filterChanged = function(filter) {
+    currentFilter = filter;
+    highlitedNode = null;
+    transformData();
     drawChart();
-  }
-
-  function outputSelectionColumn(){
-    _value.outColumns.selection = {};
-    // set selected = false for every row
-    knimeTable1.getRows().forEach(function(row) {
-      _value.outColumns.selection[row.rowKey] = false;
-    });
-    // set selected = true for every selected row
-    selectedRows.forEach(function(rowKey) {
-      _value.outColumns.selection[rowKey] = true;
-    });
   };
 
+  var resize = function(event) {
+    drawChart();
+  };
+
+  var outputSelectionColumn = function() {
+    if (_representation.options.selection) {
+      _value.outColumns.selection = {};
+      // set selected = false for every row
+      knimeTable1.getRows().forEach(function(row) {
+        _value.outColumns.selection[row.rowKey] = false;
+      });
+      // set selected = true for every selected row
+      selectedRows.forEach(function(rowKey) {
+        _value.outColumns.selection[rowKey] = true;
+      });
+    }
+  };
 
   view.validate = function() {
     return true;
@@ -1280,9 +1279,29 @@
 
   view.getComponentValue = function() {
     outputSelectionColumn();
+
+    // Save mousemode unless its default mode.
+    _value.options.mouseMode = mouseMode;
+    if (_value.options.mouseMode == "highlite") {
+      delete _value.options.mouseMode;
+    }
+    _value.options.selectedRows = selectedRows;
+    if (_value.options.selectedRows.length == 0) {
+      delete _value.options.selectedRows;
+    }
+    _value.options.highlitedNode = highlitedNode;
+    if (_value.options.highlitedNode == null) {
+      delete _value.options.highlitedNode;
+    }
+
     return _value;
   };
 
-  return view;
+  view.getSVG = function() {
+    var svgElement = d3.select("svg")[0][0];
+    // Return the SVG as a string.
+    return (new XMLSerializer()).serializeToString(svgElement);
+  };
 
+  return view;
 }());
