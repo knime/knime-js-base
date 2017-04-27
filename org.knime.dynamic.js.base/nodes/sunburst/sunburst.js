@@ -1,13 +1,11 @@
 /*
 # TODO:
 
-* Reset highliting on selection
 * Do not change _value if no attributes changed ()
     * possible problem: filterselection variable not defined in xml
 * there are many unnecessary redraws
 * code is a bit messy
 * add option: zoomable
-* revise breadcrumb / innerlabel (concerning filter/selection, too)
 * add comments to the functions in drawSunburst
 * check node documentation
 * don't use styles.css
@@ -300,6 +298,12 @@
     if (_representation.options.selection) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
         _value.options.mouseMode = "select";
+        if (_value.options.showSelectedOnly) {
+          highlitedNode = null;
+          transformData();
+          setColors();
+          drawChart();
+        }
      	  toggleButton();
       });
     }
@@ -351,7 +355,7 @@
       knimeService.addMenuItem('Filter out tiny nodes:', 'search', filterSmallCheckbox);
     }
 
-    // Legend / Interactive Guideline / Grid configuration
+    // Legend / Breacdcrumb
     var legendToggle = _representation.options.legendToggle;
     var breadcrumbToggle = _representation.options.breadcrumbToggle;
     if (legendToggle || breadcrumbToggle) {
@@ -373,6 +377,9 @@
                 function() {
                   _value.options.breadcrumb = this.checked;
                   drawChart();
+                  if (this.checked && highlitedNode != null) {
+                    toggleBreadCrumb(true);
+                  }
                 });
 
         knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
@@ -404,6 +411,7 @@
             'innerLabelCheckbox', _value.options.innerLabel,
             function() {
               _value.options.innerLabel = this.checked;
+              // TODO: do not redraw fucking chart here!
               drawChart();
             });
         knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
@@ -433,6 +441,9 @@
       knimeService.addMenuDivider();
       var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
         _value.options.showSelectedOnly = this.checked;
+        if (this.checked) {
+          highlitedNode = null;
+        }
         updateChart();
       });
       knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
@@ -514,6 +525,11 @@
       });
 
     var body = d3.select("body");
+    body.style({
+      "font-family": "'Open Sans', sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+    })
 
     // Determine available witdh and height.
     if (optFullscreen) {
@@ -729,16 +745,29 @@
     // TODO: add other condition
     if (true) {
       var explanation = sunburstGroup.append("g")
-          .attr("id", "explanation");
+        .attr("id", "explanation")
+        .style({
+          "position": "absolute",
+          "top": "260px",
+          "left": "305px",
+          "width": "140px",
+          "text-align": "center",
+          "color": "#666",
+          "z-index": "-1",
+        })
+
       explanation.append("text")
         .attr("id", "percentage")
         .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle");
+        .attr("alignment-baseline", "middle")
+        .style("font-size", "2.5em");
       explanation.append("text")
         .attr("id", "explanationText")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("y", 30);
+        .attr("y", 30)
+        .style("font-size", "1.8em")
+        .style("font-weight", "lighter");
     }
 
     function click(d) {
@@ -756,31 +785,36 @@
       }
     }
 
+    // TOOD: extract new functions for following three function
     function mouseover(d) {
-      if (_value.options.mouseMode == "highlite") {
+      var mouseMode = _value.options.mouseMode;
+      if ((mouseMode == "highlite") && highlitedNode == null) {
+        // set sunburst segment properties
         setPropAllNodes('active', false);
         setPropsBackward(d, 'active', true);
         sunburstGroup.selectAll("path")
           .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
 
-        // TODO
-        drawBreadcrumb(d);
-        drawInnerLabel(d);
+        updateStatisticIndicators(d);
+        toggleBreadCrumb(true);
+        toggleInnerLabel(true);
       }
     }
     
     function mouseleave(d) {
-      if (_value.options.mouseMode == "highlite") {
+      var mouseMode = _value.options.mouseMode;
+      if ((mouseMode == "highlite") && highlitedNode == null) {
+        // set sunburst segment properties
+        setPropAllNodes('active', true);
+        sunburstGroup.selectAll("path")
+          .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
 
-      setPropAllNodes('active', true);
-      sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
-
-      // TODO: breadcrumb // innerlabel
-
+        toggleBreadCrumb(false);
+        toggleInnerLabel(false);
       }
     }
 
+    // Highliting one node and it's ancestors, show inner label / breadcrumb.
     function highlite(d) {
       highlitedNode = d.id;
       setPropAllNodes('highlited', false);
@@ -788,9 +822,9 @@
       sunburstGroup.selectAll("path")
         .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
 
-      // TODO
-      drawBreadcrumb(d);
-      drawInnerLabel(d);
+      updateStatisticIndicators(d);
+      toggleBreadCrumb(true);
+      toggleInnerLabel(true);
     }
 
     // Restore everything to full opacity when moving off the visualization.
@@ -798,15 +832,11 @@
       highlitedNode = null;
       setPropAllNodes('highlited', false);
 
-      // Hide the breadcrumb trail
-      // d3.select("#trail")
-      //     .style("visibility", "hidden");
-
       sunburstGroup.selectAll("path")
         .style("opacity", 1);
 
-      // d3.select("#explanation")
-      //     .style("visibility", "hidden");
+      toggleBreadCrumb(false);
+      toggleInnerLabel(false);
     }
 
     function renderSelection() {
@@ -906,6 +936,7 @@
       }
 
       if (_value.options.showSelectedOnly) {
+        highlitedNode = null;
         updateChart();
       }
       renderSelection();
@@ -966,8 +997,8 @@
       };
     }
 
-    // TODO: argument should be list
-    function drawInnerLabel(d) {
+    // Updates inner label and breadcrumb
+    function updateStatisticIndicators(d) {
       if (_value.options.innerLabelStyle === "percentage") {
         var statistic = (100 * d.value / totalSize).toPrecision(3);
         var statisticString = statistic + "%";
@@ -979,57 +1010,102 @@
         var statisticString = d3.format(".6s")(statistic);
       }
 
+      // set inner label and breadcrumb
+      updateInnerLabel(statisticString);
+      updateBreadcrumb(d, statisticString);
+    }
+
+    function updateInnerLabel(statisticString) {
+      d3.select("#percentage")
+        .text(statisticString);
+
+      d3.select("#explanationText")
+        .text(_value.options.innerLabelText);
+    }
+
+    // Update the breadcrumb trail to show the current sequence and percentage.
+    function updateBreadcrumb(d, statisticString) {
+      var nodeArray = getAncestors(d);
+      // Data join; key function combines name and depth (= position in sequence).
+      var g = d3.select("#trail")
+          .selectAll("g")
+          .data(nodeArray, function(d) { return d.name + d.depth; });
+
+      // Add breadcrumb and label for entering nodes.
+      var entering = g.enter().append("svg:g");
+
+      entering.append("svg:polygon")
+          .attr("points", breadcrumbPoints)
+          .attr("fill", function(d) { return _colorMap(d.name); })
+          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
+
+      entering.append("svg:text")
+          .attr("x", (b.w + b.t) / 2)
+          .attr("y", b.h / 2)
+          .attr("width", b.w)
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .text(function(d) { return d.name; })
+          .each(wrap);
+
+      // Set position for entering and updating nodes.
+      g.attr("transform", function(d, i) {
+        return "translate(" + i * (b.w + b.s) + ", 0)";
+      });
+
+      // Remove exiting nodes.
+      g.exit().remove();
+
+      // Now move and update the percentage at the end.
+      d3.select("#trail").select("#endlabel")
+          .attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
+          .attr("y", b.h / 2)
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .text(statisticString)
+
+      // Make the breadcrumb trail visible, if it's hidden.
+      d3.select("#trail")
+          .style("visibility", "");
+    }
+
+    // Generate a string that describes the points of a breadcrumb polygon.
+    function breadcrumbPoints(d, i) {
+      var points = [];
+      points.push("0,0");
+      points.push(b.w + ",0");
+      points.push(b.w + b.t + "," + (b.h / 2));
+      points.push(b.w + "," + b.h);
+      points.push("0," + b.h);
+      if (i > 0) { // Leftmost breadcrumb; don't include 6th vertex.
+        points.push(b.t + "," + (b.h / 2));
+      }
+      return points.join(" ");
+    }
+
+    // Show/hide inner label and breadcrumb
+    function toggleInnerLabel(visible) {
       if (_value.options.innerLabel && _value.options.donutHole) {
         d3.select("#explanation")
-          .style("visibility", "visible");
-
-        d3.select("#percentage")
-            .text(statisticString);
-
-        d3.select("#explanationText")
-            .text(_value.options.innerLabelText);
+          .style("display", visible ? "initial" : "none");
       }
     }
 
-    function hideInnerLabel() {
-      // TODO
+    function toggleBreadCrumb(visible) {
+      if (_value.options.breadcrumb)  {
+        d3.select("#trail")
+          .style("display", visible ? "initial" : "none");
+      }
     }
 
-    function drawBreadcrumb(d) {
-      // TODO
+    function showStatisticIndicators() {
+      if (_value.options.innerLabel && _value.options.donutHole) {
 
-      // Breadcrumb
-      // var sequenceArray = getAncestors(d);
-      // updateBreadcrumbs(sequenceArray, statisticString);
+      }
 
-      // for (var i = 0; i < d.tableRows; i++) {
-      //   var rowId = d.tableRows[i];
-      //   rowId2leafId[rowId]
-      // }
-      // d.tableRows
+      if (_value.options.breadcrumb)  {
 
-      // Sunburst segments
-      // Fade all the segments.
-      // d3.selectAll("path")
-      //     .style("opacity", 0.3);
-
-      // debugger;
-
-      // // Then highlight only those that are an ancestor of the current segment.
-      // sunburstGroup.selectAll("path")
-      //     .filter(function(node) {
-      //               return (sequenceArray.indexOf(node.id) >= 0);
-      //             })
-      //     .style("opacity", 1);
-
-      // TODO: what was this for?
-      // return sequenceArray;
-
-      // Fade all but the current sequence, and show it in the breadcrumb trail.
-    }
-
-    function hideBreadcrumb() {
-      // TODO
+      }
     }
 
     function setPropsForward(start, prop, val) {
@@ -1073,7 +1149,7 @@
       var path = [];
       var current = node;
       while (current.parent) {
-        path.unshift(current.id);
+        path.unshift(current);
         current = current.parent;
       }
       return path;
@@ -1092,69 +1168,7 @@
         .style("fill", "#000");
     }
 
-    // Generate a string that describes the points of a breadcrumb polygon.
-    function breadcrumbPoints(d, i) {
-      var points = [];
-      points.push("0,0");
-      points.push(b.w + ",0");
-      points.push(b.w + b.t + "," + (b.h / 2));
-      points.push(b.w + "," + b.h);
-      points.push("0," + b.h);
-      if (i > 0) { // Leftmost breadcrumb; don't include 6th vertex.
-        points.push(b.t + "," + (b.h / 2));
-      }
-      return points.join(" ");
-    }
-
-    // Update the breadcrumb trail to show the current sequence and percentage.
-    function updateBreadcrumbs(nodeArray, statisticString) {
-
-      // Data join; key function combines name and depth (= position in sequence).
-      var g = d3.select("#trail")
-          .selectAll("g")
-          .data(nodeArray, function(d) { return d.name + d.depth; });
-
-      // Add breadcrumb and label for entering nodes.
-      var entering = g.enter().append("svg:g");
-
-      entering.append("svg:polygon")
-          .attr("points", breadcrumbPoints)
-          .attr("fill", function(d) { return _colorMap(d.name); })
-          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
-
-      entering.append("svg:text")
-          .attr("x", (b.w + b.t) / 2)
-          .attr("y", b.h / 2)
-          .attr("width", b.w)
-          .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
-          .text(function(d) { return d.name; })
-          .each(wrap);
-
-      // Set position for entering and updating nodes.
-      g.attr("transform", function(d, i) {
-        return "translate(" + i * (b.w + b.s) + ", 0)";
-      });
-
-      // Remove exiting nodes.
-      g.exit().remove();
-
-      // Now move and update the percentage at the end.
-      d3.select("#trail").select("#endlabel")
-          .attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
-          .attr("y", b.h / 2)
-          .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
-          .text(statisticString)
-
-      // Make the breadcrumb trail visible, if it's hidden.
-      d3.select("#trail")
-          .style("visibility", "");
-
-    }
-
     function drawLegend(plottingSurface) {
-
       var entries = uniqueLabels.map(function(label) {
         return { key: label, value: _colorMap(label) };
       }); 
@@ -1196,15 +1210,6 @@
           .attr("dy", "0.35em")
           .text(function(d) { return d.key; })
           .each(wrap);
-    }
-
-    function toggleLegend() {
-      var legend = d3.select("#legend");
-      if (legend.style("visibility") == "hidden") {
-        legend.style("visibility", "");
-      } else {
-        legend.style("visibility", "hidden");
-      }
     }
 
     // Wrap text if too long.
