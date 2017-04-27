@@ -14,6 +14,7 @@
 	var freqCols;
 	var missValFreqCols;
 	var missValPairs;
+	var isMissValCat;
 	var missValCatValues;
 	var excludeDataCatMap;
 
@@ -30,10 +31,10 @@
 			knimeService.setWarningMessage(_representation.warnMessage);
 		}
 				
+		drawChart();
 		if (_representation.options.enableViewControls) {
 			drawControls();
 		}
-		drawChart();
 		
 		if (parent != undefined && parent.KnimePageLoader != undefined) {
 			parent.KnimePageLoader.autoResize(window.frameElement.id);
@@ -238,6 +239,7 @@
 		for (var i = 0; i < numCat; i++) {
 			missValPairs[i] = [];
 		}
+		isMissValCat = false;
 		missValCatValues = [];
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
@@ -268,6 +270,7 @@
 							}
 						} else {
 							// Missing values category
+							isMissValCat = true;
 							if (val !== null) {
 								missValCatValues.push({"col": key, "value": val});
 								valueOnMissValCat = true;
@@ -640,7 +643,7 @@
     		}
     	}
 	    
-	    if (switchMissValCat /*&& missValCatValue !== undefined*/) {
+	    if (switchMissValCat && isMissValCat) {
 	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
 	    		if (_value.options.includeMissValCat != this.checked) {
 	    			_value.options.includeMissValCat = this.checked;
