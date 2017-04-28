@@ -61,6 +61,7 @@
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
 	var FREQ_COLUMN_MISSING_VALUES_ONLY = "freqColumnMissingValuesOnly";
 	var CATEGORY_MISSING_VALUES_ONLY = "categoryMissingValuesOnly";
+	var NO_DATA_AVAILABLE = "noDataAvailable";
 	
 	barchart.init = function(representation, value) {  
 		_value = value;
@@ -478,23 +479,35 @@
 			}
 		}
 		
-		// Set warning messages
-		if (excludeCols.length > 0) {
-			knimeService.setWarningMessage("Following frequency columns are not present or contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
+		// Set warning messages		
+		if (plotData.length == 0) {
+			// No data available warnings
+			var str;
+			if (missValCatValues.length != 0) {
+				str = "No chart was generated since all frequency columns have only missing values.\nThere are values where the category name is missing.\nTo see them switch on the option \"Include 'Missing values' category\" in the view settings.";
+			} else {
+				str = "No chart was generated since all frequency columns have only missing values or empty.\nRe-run the workflow with different data.";
+			}
+			knimeService.setWarningMessage(str, NO_DATA_AVAILABLE);
 		} else {
-			knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
-		}
-		
-		if (excludeCats.length > 0) {
-			knimeService.setWarningMessage("Following categories contain only missing values and were excluded from the view:\n    " + excludeCats.join(", "), CATEGORY_MISSING_VALUES_ONLY);
-		} else {
-			knimeService.clearWarningMessage(CATEGORY_MISSING_VALUES_ONLY);
-		}
-		
-		if (excludeBars.length > 0) {
-			knimeService.setWarningMessage("Following bars contain only missing values in frequency column and were excluded from the view:\n    " + excludeBars.join("\n    "), MISSING_VALUES_ONLY);
-		} else {
-			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
+			// All other warnings
+			if (excludeCols.length > 0) {
+				knimeService.setWarningMessage("Following frequency columns are not present or contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
+			} else {
+				knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
+			}
+			
+			if (excludeCats.length > 0) {
+				knimeService.setWarningMessage("Following categories contain only missing values and were excluded from the view:\n    " + excludeCats.join(", "), CATEGORY_MISSING_VALUES_ONLY);
+			} else {
+				knimeService.clearWarningMessage(CATEGORY_MISSING_VALUES_ONLY);
+			}
+			
+			if (excludeBars.length > 0) {
+				knimeService.setWarningMessage("Following bars contain only missing values in frequency column and were excluded from the view:\n    " + excludeBars.join("\n    "), MISSING_VALUES_ONLY);
+			} else {
+				knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
+			}
 		}
 	}
 	
