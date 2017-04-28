@@ -2,9 +2,7 @@
 # TODO:
 * there are many unnecessary redraws
 * check node documentation
-* check zoom and selection function
 * check donut hole
-* when zooming: show breadcrumb for zoom...
 */
 
 (sunburst_namespace = function() {
@@ -16,7 +14,7 @@
   var uniqueLabels;
   var nodes;
   var selectedRows = [];
-  var highlitedNode;
+  var highlitedPath;
   var rowKey2leaf = {};
   var currentFilter = null;
   var _colorMap;
@@ -29,9 +27,10 @@
   var rootNodeName = "root";
   var nullNodeName = "?";
 
-  var innerLabelStyles = ['count', 'percentage'];
+  var innerLabelStyles = ['sum', 'percentage'];
 
   view.init = function(representation, value) {
+    debugger;
     _representation = representation;
     _value = value;
 
@@ -45,8 +44,8 @@
     if (_value.options.selectedRows) {
       selectedRows = _value.options.selectedRows;
     }
-    if (_value.options.highlitedNode) {
-      highlitedNode = _value.options.highlitedNode;
+    if (_value.options.highlitedPath) {
+      highlitedPath = _value.options.highlitedPath;
     }
 
     transformData();
@@ -56,7 +55,7 @@
     toggleFilter();
 
     if (_representation.warnMessage != "") {
-      knimeService.setWarningMessage(_representation.warnMessage);
+      knimeService.setWarningMessage(_representation.warnMessage, "representation_warnMessage");
     }
    
     if (_value.options.subscribeSelection) {
@@ -129,19 +128,28 @@
 
 
 
+    var missingSizeCount = 0;
+    var missingPathCount = 0;
+
     // Create hierarchical structure.
     for (var i = 0; i < includedRows.length; i++) {
 
       var size = includedRows[i].data[freqColumn];
       if (size === null || isNaN(size)) {
+        missingSizeCount++;
         size = 0;
       }
+      size = Math.abs(size);
 
       // get array of path elements from current row
       var parts = pathColumns.map(function(col) { return includedRows[i].data[col]; });
       // Remove trailing nulls
       while(parts[parts.length-1] === null) {
         parts.pop();
+      }
+
+      if (parts.length === 0) {
+        missingPathCount++;
       }
 
       // Loop over path elements,
@@ -198,19 +206,24 @@
         }
       }
     }
+
+    if (missingPathCount > 0) {
+      knimeService.setWarningMessage(missingPathCount + " rows are not display because of missing path.", "missingPathCount");
+    }
+    if ((_representation.options.freqColumn != null) && (missingSizeCount > 0) ) {
+      knimeService.setWarningMessage(missingSizeCount + " have a missing numeric value. The value defaults to zero.", "missingSizeCount");
+    }
   };
 
   var setColors = function() {
-    if (_representation.inObjects[1] == null) {
-      if (uniqueLabels.length <= 10) {
-        var scale = d3.scale.category10();
-      } else {
-        var scale = d3.scale.category20();
-      }
+    var useCustomColors = (_representation.inObjects[1] != null) && (_representation.inObjects[1].labels != null);
+    var showWarning = (_representation.inObjects[1] != null) && (_representation.inObjects[1].labels == null);
 
-      var colorMap = {};
-      uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); })
-    } else {
+    if (showWarning) {
+      knimeService.setWarningMessage("Your color model does not provide a 'label' attribute.", "colormodel");
+    }
+
+    if (useCustomColors) {
       // TODO: check if nominal
       var colors = _representation.inObjects[1].colors;
       var labels = _representation.inObjects[1].labels;
@@ -218,13 +231,26 @@
       for (var i = 0; i < colors.length; i++) {
         colorMap[labels[i]] = colors[i];
       }
+    } else {
+      if (uniqueLabels.length <= 10) {
+        var scale = d3.scale.category10();
+      } else {
+        var scale = d3.scale.category20();
+      }
+
+      var colorMap = {};
+      uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); });
     }
 
     _colorMap = function(label) {
       if (label === rootNodeName || label === nullNodeName) {
         return "#FFFFFF";
       } else {
-        return colorMap[label];
+        if (colorMap.hasOwnProperty(label)) {
+          return colorMap[label];
+        } else {
+          return "#000000";
+        }
       }
     }
     _colorMap.entries = d3.entries(colorMap);
@@ -431,11 +457,11 @@
       var rootSegmentExtent = nodes[0].dy;
       arc
         .innerRadius(function(d) { 
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomedPath!=null)
           return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
         })
         .outerRadius(function(d) {
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomNode!=null)
+          var notZoomed = !(_representation.options.zoomable && _value.options.zoomedPath!=null)
           return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
         });
     }
@@ -501,8 +527,8 @@
     totalSize = path.node().__data__.value;
     
     // Set highliting
-    if (_representation.options.highliting && mouseMode != "zoom" && highlitedNode != null) {
-      var d = nodes.filter(function(node) { return node.id == highlitedNode })[0];
+    if (_representation.options.highliting && mouseMode != "zoom" && highlitedPath != null) {
+      var d = getNodeFromPath(highlitedPath); // nodes.filter(function(node) { return node.id == highlitedPath })[0];
       if (d != null) {
         highlite(d);
       }
@@ -515,14 +541,15 @@
     }
 
     // Set zoom
-    if (_value.options.zoomNode && _representation.options.zoomable) {
+    if (_value.options.zoomedPath && _representation.options.zoomable) {
       if (_value.options.breadcrumb) {
         updateBreadcrumb(d);
         toggleBreadCrumb(true);
       }
 
+      var zoomNode = getNodeFromPath(_value.options.zoomedPath);
       path.transition()
-        .attrTween("d", arcTweenZoom(_value.options.zoomNode));
+        .attrTween("d", arcTweenZoom(zoomNode));
     }
 
     // Add the mouseleave handler to the bounding circle.
@@ -531,24 +558,27 @@
     // Handle clicks on sunburst segments
     function click(d) {
       if (mouseMode == "zoom") {
+        clearHighliting();
         zoom(d);
       } else if (mouseMode == "select"){
         select(d);
         if (_value.options.showSelectedOnly) {
-          highlitedNode = null;
+          highlitedPath = null;
           transformData();
           setColors();
           drawChart();
         } 
       } else {
         clearHighliting();
+        setPropAllNodes('active', false);
+        debugger;
         highlite(d);
       }
     }
 
     // Handle mouseover on sunburst segments
     function mouseover(d) {
-      if ((mouseMode == "highlite") && highlitedNode == null) {
+      if ((mouseMode == "highlite") && highlitedPath == null) {
         // set sunburst segment properties
         setPropAllNodes('active', false);
         setPropsBackward(d, 'active', true);
@@ -563,11 +593,11 @@
     
     // Handle mouseleave on sunburst segments
     function mouseleave(d) {
-      if ((mouseMode == "highlite") && highlitedNode == null) {
+      if ((mouseMode == "highlite") && highlitedPath == null) {
         // set sunburst segment properties
         setPropAllNodes('active', true);
         sunburstGroup.selectAll("path")
-          .style("opacity", function(d) { return ((highlitedNode == null) || d.highlited) ? 1 : 0.3; });
+          .style("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
 
         toggleBreadCrumb(false);
         toggleInnerLabel(false);
@@ -575,14 +605,15 @@
     }
 
     // Highliting one node and it's ancestors, show inner label / breadcrumb.
-    function highlite(d) {
-      highlitedNode = d.id;
+    function highlite(node) {
+      highlitedPath = getUniquePathToNode(node);
+      setPropAllNodes('active', false);
       setPropAllNodes('highlited', false);
-      setPropsBackward(d, 'highlited', true);
+      setPropsBackward(node, 'highlited', true);
       sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+        .style("opacity", function(d) { return d.highlited ? 1 : 0.3; });
 
-      updateStatisticIndicators(d);
+      updateStatisticIndicators(node);
       toggleBreadCrumb(true);
       toggleInnerLabel(true);
     }
@@ -636,7 +667,7 @@
 
     // Restore everything to full opacity when moving off the visualization.
     clearHighliting = function(d) {
-      highlitedNode = null;
+      highlitedPath = null;
       setPropAllNodes('highlited', false);
 
       sunburstGroup.selectAll("path")
@@ -699,14 +730,9 @@
       }
 
       if (d.name === rootNodeName) {
-        delete _value.options.zoomNode;
+        delete _value.options.zoomedPath;
       } else {
-        _value.options.zoomNode = {
-          x: d.x,
-          y: d.y,
-          dx: d.dx,
-          dy: d.dy
-        };
+        _value.options.zoomedPath = getUniquePathToNode(d);
       }
     }
 
@@ -872,6 +898,31 @@
       }
     }
 
+    function getUniquePathToNode(d) {
+      var sequence = [] ;
+      var parent = d;
+      while (parent != null) {
+        sequence.unshift(parent.name);
+        parent = parent.parent;
+      }
+      var path = {sequence: sequence, isLeaf: d.children.length == 0};
+      return path;
+    }
+
+    function getNodeFromPath(path) {
+      debugger;
+      var current = nodes[0];
+      for (var i = 1; i < path.sequence.length-1; i++) {
+        current = current.children
+          .filter(function(child) { return child.name == path.sequence[i]; })[0];
+      }
+      var node = current.children
+        .filter(function(child) { return child.name == path.sequence[path.sequence.length-1]; })
+        .filter(function(child) { return (child.children.length == 0) == path.isLeaf; })[0];
+
+      return node;
+    }
+
     function initializeBreadcrumbTrail(plottingSurface) {
       // Add the svg area.
       var trail = plottingSurface.append("svg:svg")
@@ -987,7 +1038,6 @@
     // mouse mode controlls.
     if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
-        clearHighliting();
         mouseMode = "zoom";
      	  toggleButton();
       });
@@ -996,7 +1046,7 @@
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
         mouseMode = "select";
         if (_value.options.showSelectedOnly) {
-          highlitedNode = null;
+          highlitedPath = null;
           transformData();
           setColors();
           drawChart();
@@ -1074,7 +1124,7 @@
                 function() {
                   _value.options.breadcrumb = this.checked;
                   drawChart();
-                  if (this.checked && highlitedNode != null) {
+                  if (this.checked && highlitedPath != null) {
                     toggleBreadCrumb(true);
                   }
                 });
@@ -1108,8 +1158,7 @@
             'innerLabelCheckbox', _value.options.innerLabel,
             function() {
               _value.options.innerLabel = this.checked;
-              // TODO: do not redraw fucking chart here!
-              drawChart();
+              toggleInnerLabel(true);
             });
         knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
       }
@@ -1139,9 +1188,9 @@
       var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
         _value.options.showSelectedOnly = this.checked;
         if (this.checked) {
-          highlitedNode = null;
+          highlitedPath = null;
         }
-        highlitedNode = null;
+        highlitedPath = null;
         updateChart();
       });
       knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
@@ -1231,14 +1280,13 @@
     }
 
     if (_value.options.showSelectedOnly) {
-      highlitedNode = null;
+      highlitedPath = null;
       updateChart();
     }
     renderSelection();
   };
 
   var toggleFilter = function() {
-    clearHighliting();
     if (_value.options.subscribeFilter) {
       knimeService.subscribeToFilter(
         knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
@@ -1250,7 +1298,7 @@
 
   var filterChanged = function(filter) {
     currentFilter = filter;
-    highlitedNode = null;
+    highlitedPath = null;
     transformData();
     drawChart();
   };
@@ -1289,9 +1337,9 @@
     if (_value.options.selectedRows.length == 0) {
       delete _value.options.selectedRows;
     }
-    _value.options.highlitedNode = highlitedNode;
-    if (_value.options.highlitedNode == null) {
-      delete _value.options.highlitedNode;
+    _value.options.highlitedPath = highlitedPath;
+    if (_value.options.highlitedPath == null) {
+      delete _value.options.highlitedPath;
     }
 
     return _value;
