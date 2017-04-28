@@ -8,15 +8,54 @@
 	var staggerCheckbox;
 	var knimeTable;
 		
-	var plotData;
+	var plotData; 
 	var colorRange;
 	var categories;
 	var freqCols;
-	var missValFreqCols;
-	var missValPairs;
-	var isMissValCat;
+	
+	/**
+	 * 2d-array where for each category (indexing follows categories array) we store an array of those frequency columns, which have a missing value in the current category.
+	 * This allows to exclude specific bars or even the whole category.
+	 * Storing by category helps to group warnings also by category. 
+	 * Required for missing values handling.
+	 */
+	var missValInCat;
+
+	/**
+	 * Array where for each frequency column, which has in all other categories only missing values, we store whether it has a value in the Missing values category.
+	 * This allows to decide, if we should keep this freq column (if it has a value in MissValCat and the option "include MissValCat" is on) or exclude it.
+	 * Each item has the fields:
+	 *     col - name of freq column
+	 *     hasValueOnMissValCat - whether the column has a non-missing value in the Missing values category (true/false)
+	 * Required for missing values handling.
+	 */
+	var freqColValueOnMissValCat;
+	
+	/**
+	 * Array where for each frequency column, which has non-missing value in the Missing values category, we store this value.
+	 * We need to store it separately to quickly add/remove them to the plot data, when the option "include MissValCat" is getting switched.
+	 * Each item has the fields:
+	 *   col - name of freq column
+	 *   value - non-missing value, this freq column has in the Missing values category
+	 * Required for missing values handling.
+	 */
 	var missValCatValues;
-	var excludeDataCatMap;
+	
+	/**
+	 * Boolean flag - is the Missing values category present in the dataset.
+	 * Required for missing values handling.
+	 */
+	var isMissValCat;
+	
+	/**
+	 * Map where 
+	 *    keys - frequency column names,
+	 *    values - array of those categories for which the bar, specified by the corresponding freq column and the category, was excluded from the view.
+	 * There excluded bars actually specify those dummy null values, we have to add to the stacked chart to fix it.
+	 * Choosing freq cols as keys helps adding dummy nulls since the plot dataset has to be key->values. 
+	 * Required for missing values handling.
+	 */
+	var excludeFreqColCatMap;
 
 	var MISSING_VALUES_LABEL = "Missing values";
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
@@ -156,12 +195,11 @@
 			}
 			
 			var stacked = _value.options.chartType == 'Stacked';
-			if (stacked) {
-				fixStackedData(true);
+			if (stacked) {				
+				fixStackedData(true);  // add dummy nulls
 			}
 			chart.stacked(stacked);			
-			
-			
+						
 			chart
 				.color(colorRange)
 				.duration(300)
@@ -226,25 +264,25 @@
 		}		
 		
 		plotData = [];
-		missValFreqCols = [];
-		missValPairs = new Array(numCat);
+		freqColValueOnMissValCat = [];
+		missValInCat = new Array(numCat);
 		for (var i = 0; i < numCat; i++) {
-			missValPairs[i] = [];
+			missValInCat[i] = [];
 		}
 		isMissValCat = false;
 		missValCatValues = [];
-		var numFreqColsNoMissVal = 0;
+		var numFreqColsNoMissVal = 0;  // number of freq columns which have non-missing values (needed for color scale)
 		if (valCols.length > 0) {
 			var numDataPoints = valCols[0].length;
 			for (var j = 0; j < freqCols.length; j++) {	
 
-				var key = freqCols[j];
+				var col = freqCols[j];
 				if (optMethod == "Occurence\u00A0Count") {
-					key = "Occurence Count";
+					col = "Occurence Count";
 				}
 				var values = [];
-				var onlyMissValCol = true;
-				var valueOnMissValCat = false;
+				var onlyMissValInCats = true;  // whether the freq col has only missing values in non-"Missing values" categories
+				var hasValueOnMissValCat = false;  // whether the freq col has a non-missing value in the Missing values category
 
 				for (var i = 0; i < numDataPoints; i++) {
 					if (categories != undefined) {
@@ -258,32 +296,35 @@
 						
 						if (cat !== null) {							
 							if (val !== null) {
-								onlyMissValCol = false;
+								// if both cat and value are not null - normal case, just add the value
+								onlyMissValInCats = false;
 								values.push({"x": cat, "y": val});								
 							}
 						} else {
 							// Missing values category
 							isMissValCat = true;
 							if (val !== null) {
-								missValCatValues.push({"col": key, "value": val});
-								valueOnMissValCat = true;
+								// save the non-missing value for the corresponding freq col								
+								missValCatValues.push({"col": col, "value": val});
+								// this freq col has non-missing value in the Missing value category
+								hasValueOnMissValCat = true;
 							}
 						}
 						
-						if (val !== null) {
-							
-						} else {
-							missValPairs[i].push(key);
+						if (val === null) {	
+							// this freq col has a missing value in the current category - save this info 
+							missValInCat[i].push(col);
 						}
 					}
 				}
 				
-				if (!onlyMissValCol) {			
-					var plotStream = {"key": key, "values": values};
+				if (!onlyMissValInCats) {
+					// the freq col has non-missing values in normal categories - add this column to the view
+					var plotStream = {"key": col, "values": values};
 					plotData.push(plotStream);
 				
 					if (customColors) {
-						var color = customColors[key];
+						var color = customColors[col];
 						if (!color) {
 							color = "#7C7C7C";
 						}
@@ -291,8 +332,16 @@
 					}
 					numFreqColsNoMissVal++;
 				} else {
-					missValFreqCols.push({"col": key, "valueOnMissValCat": valueOnMissValCat});
-					if (valueOnMissValCat) {
+					// The freq col has only missing values in normal categories - 
+					//   we save whether it has a non-missing value in the Missing values category.
+					// Whether this column is going to be displayed in the view depends on the "includeMissValCat" option.
+					// So we don't add the column to the plot at this moment - wait for processMissingValues()
+					// Note: a non-missing value (if there is) is stored in missValCatValues - hence, enough to store only a boolean flag
+					freqColValueOnMissValCat.push({"col": col, "hasValueOnMissValCat": hasValueOnMissValCat});
+					if (hasValueOnMissValCat) {
+						// If there is a non-missing value, then the presence of the column depends on the "includeMissValCat" option,
+						//   which can be switched in the view on the fly.
+						// We do not want this switch to influence on the color scale, so we count it
 						numFreqColsNoMissVal++;
 					}
 				}
@@ -305,7 +354,6 @@
 				alert("Numeric columns detected, but contains missing values.");
 				return "missing";
 			}
-
 		}
 		
 		if (customColors) {
@@ -323,69 +371,88 @@
 		processMissingValues();
 	}
 	
+	/**
+	 * switched - if the chart update was triggered by changing the "include 'Missing values' category" option in the view
+	 */
 	processMissingValues = function(switched) {
 		// Make a list of freq columns to exclude
-		var excludeCols = [];
-		for (var i = 0; i < missValFreqCols.length; i++) {
-			var col = missValFreqCols[i];
-			if (!col.valueOnMissValCat || col.valueOnMissValCat && !_value.options.includeMissValCat) {
+		var excludeCols = [];  // column names to exclude
+		// Go through the list of those freq cols which have only missing values in normal categories
+		// and exclude those which either 1) has a missing value in the Missing values category, or
+		// 2) has a non-missing value there but the option is set to Don't include missing values
+		for (var i = 0; i < freqColValueOnMissValCat.length; i++) {
+			var col = freqColValueOnMissValCat[i];
+			if (!col.hasValueOnMissValCat || col.hasValueOnMissValCat && !_value.options.includeMissValCat) {				
 				excludeCols.push(col.col);				
 			}			
 		}
 		
 		// Make a list of excluded bars per category or whole categories
-		var excludeBars = [];
-		var excludeCats = [];
-		var numLeftCols = freqCols.length - excludeCols.length;
-		var missValCat;
+		var excludeBars = [];  // bars (in string representation) to exclude
+		var excludeCats = [];  // category names to exclude
+		var numLeftCols = freqCols.length - excludeCols.length;  // how many columns left after excluded ones
+		var missValCatBars;  // bars for Missing values category we add to the end, so we store them separately
 		var excludeWholeMissValCat = false;
-		excludeDataCatMap = {};
-		for (var i = 0; i < missValPairs.length; i++) {
+		excludeFreqColCatMap = {};
+		// We group the warnings by category, so we iterate over categories
+		for (var i = 0; i < missValInCat.length; i++) {
 			var cat = categories[i];
-			var cols = missValPairs[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });			
+			// take only those freq cols which have missing values in the current category and were not whole excluded
+			var cols = missValInCat[i].filter(function(x) { return excludeCols.indexOf(x) == -1 });			
 			if (cols.length > 0) {
 				if (cols.length == numLeftCols) {
+					// if all the left freq cols have missing values - exclude the whole category
 					if (cat !== null) {
 						excludeCats.push(cat);
 					} else {
-						excludeWholeMissValCat = true;
+						excludeWholeMissValCat = true;  // Missing values category will be appended to the end
 					}					
 				} else {
+					// build a string of excluded bars (cat - col1, col2 ...)
 					var label = cat !== null ? cat : MISSING_VALUES_LABEL;
 					var str = label + " - " + cols.join(", ");
 					if (cat !== null) {
 						excludeBars.push(str);						
 					} else {
-						missValCat = str;
+						missValCatBars = str;  // Missing values category will be appended to the end
 					}
+					// for normal categories and also for the Missing values category (if it's included in the view)
+					// we fill the map of excluded bars (grouped by freq cols) - needed for Stacked plot
 					if (cat !== null || _value.options.includeMissValCat) {
 						cols.forEach(function(col) {
-							if (excludeDataCatMap[col] != undefined) {
-								excludeDataCatMap[col].push(cat);
+							if (excludeFreqColCatMap[col] != undefined) {
+								excludeFreqColCatMap[col].push(cat);
 							} else {
-								excludeDataCatMap[col] = [cat];
+								excludeFreqColCatMap[col] = [cat];
 							}
 						});
 					}
 				}
 			}
 		}
+		// exclude smth from Missing values category, if it's included in the view
 		if (_value.options.includeMissValCat) {
-			if (missValCat !== undefined) {
-				excludeBars.push(missValCat);
-			} else if (excludeWholeMissValCat) {
+			if (excludeWholeMissValCat) {
 				excludeCats.push(MISSING_VALUES_LABEL);
+			} else if (missValCatBars !== undefined) {
+				excludeBars.push(missValCatBars);
 			}
 		}
 		
+		// Add or remove the non-missing values of the Missing values category
 		for (var i = 0; i < missValCatValues.length; i++) {
 			var item = missValCatValues[i];
 			if (excludeCols.indexOf(item.col) != -1 && !(!_value.options.includeMissValCat && switched)) {
+				// Fact that the freq col is in missValCatValues means it has a non-missing value in Missing values category.
+				// If this col was excluded, that means it has only missing values in all other categories AND we "don't include MissValCat".
+				// In case it's the first time the plot is building, we don't need to do anything - call continue.
+				// But if a user switched the option "includeMissValCat" from 'on' to 'off', we need to remove the value of MissValCat from the plot further below. 
 				continue;
 			}
+			// find if the plot has already the data (key->values) for the current  freq col == key
 			var data = undefined;
 			var dataInd;
-			for (var j = 0; j < plotData.length; j++) {
+			for (var j = 0; j < plotData.length; j++) {  // many thanks to IE - we cannot use find() or findIndex() here 
 				if (plotData[j].key == item.col) {
 					data = plotData[j];
 					dataInd = j;
@@ -393,6 +460,7 @@
 				}	
 			}			
 			if (_value.options.includeMissValCat) {
+				// if we include Missing values category to the view, we need to add its values
 				var val = {"x": MISSING_VALUES_LABEL, "y": item.value};
 				if (data !== undefined) {
 					data.values.push(val);
@@ -400,6 +468,7 @@
 					plotData.push({"key": item.col, "values": [val]})
 				}				
 			} else if (switched) {
+				// if we don't include Missing values category to the view AND this option was switched in the view, we need to remove its value
 				if (data !== undefined) {
 					data.values.pop();
 					if (data.values.length == 0) {
@@ -429,13 +498,26 @@
 		}
 	}
 	
+	/**
+	 * This is a workaround for the stacked plot problem coming from the nvd3 library implementation.
+	 * They do not really support missing values in the Stacked option:
+	 *   (https://github.com/novus/nvd3/issues/1941 - "The solution is to adjust your data before handing it to nvd3." - nice answer)
+	 * The implementation uses a simple d3.layout.stack which requires all data have the same length (https://github.com/d3/d3-3.x-api-reference/blob/master/Stack-Layout.md#_stack)
+	 * Missing values may lead to different lengths.
+	 * A workaround here is to add dummy null values in place of excluded bars before drawing to Stacked plot. And remove them before switching to Grouped plot. 
+	 */
 	fixStackedData = function(addDummy) {
 		plotData.forEach(function(dataValues) {
-			var excludeCats = excludeDataCatMap[dataValues.key];
+			var excludeCats = excludeFreqColCatMap[dataValues.key];
 			if (excludeCats == undefined) {
+				// if this freq col does not have excluded bars at all - nothing to do
 				return;
 			}
 			if (addDummy) {
+				// Another implementation thing is that the categories in every freq col must follow the same order.
+				// So we cannot simply append dummy nulls to the end.
+				// Instead we need to replace the whole "values" array.
+				// We go over the categories and add either a real value or a dummy null depending on what's present. 
 				var i = 0, j = 0;
 				var values = dataValues.values;
 				var newValues = [];
@@ -458,6 +540,7 @@
 				}
 				dataValues.values = newValues;
 			} else {
+				// remove dummy null values (basically any null values as there can be no other nulls)
 				dataValues.values = dataValues.values.filter(function(value) {
 					return value.y !== null;
 				});
