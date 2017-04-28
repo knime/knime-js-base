@@ -13,6 +13,7 @@
 	var missValCatValue;
 	
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
+	var NO_DATA_AVAILABLE = "noDataAvailable";
 
 	pie.init = function(representation, value) {
 		_representation = representation;
@@ -327,8 +328,17 @@
 			}
 		}
 
-		// Set warning message
-		if (excludeCat.length > 0) {
+		// Set warning messages
+		if (plotData.length == 0) {
+			// No data available warnings
+			var str;
+			if (missValCatValue !== undefined && missValCatValue !== null) {
+				str = "No chart was generated since the frequency column has only missing values.\nThere are values where the category name is missing.\nTo see them switch on the option \"Include 'Missing values' category\" in the view settings.";
+			} else {
+				str = "No chart was generated since the frequency column has only missing values or empty.\nRe-run the workflow with different data.";
+			}
+			knimeService.setWarningMessage(str, NO_DATA_AVAILABLE);
+		} else if (excludeCat.length > 0) {
 			knimeService.setWarningMessage("Categories '" + excludeCat.join("', '") + "' have only missing values in the frequency column and were excluded from the view.", MISSING_VALUES_ONLY)
 		} else {
 			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
