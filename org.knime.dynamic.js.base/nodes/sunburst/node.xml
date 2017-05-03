@@ -10,27 +10,47 @@
 	<fullDescription>
 		<intro>
 			<n:p>
-				In this chart hierarchical data is displayed in a radial layout.
-				The further inside an arc is, the higher it is in the hierarchy.
-				The
-				area of each arcs is proportional to it's value.
+				This chart displayes hierarchical data in a radial layout: 
+				The circle in the chart center represents the hierarchy's root node.
+				Sections further outside represent nodes that are located deeper in the hierarchy.
+				Each leaf node has a attached value attribute.
+				A section's area is derived from the corresponding leaf node's value or accumulated value for non-leaf nodes.
 			</n:p>
+
+			<n:p>
+				This node expects a data structure that satisfies certain requirements:
+				<n:ul>
+					<n:li>Each row represents the path from the root node to a leaf node.</n:li>
+					<n:li>User selected path columns each give the labels for a respective hierarchy level.</n:li>
+					<n:li>Paths shorter then the maximal depth (as implied by the number of path columns) need to be filled up with missing values.</n:li>
+					<n:li>The user selected value column gives the leaf node's attached value attribute.</n:li>
+				</n:ul>
+			</n:p>
+			
+			<n:p>The following table gives an example for such a data structure:</n:p>
+			<n:table>
+				<n:tr><n:th>level0</n:th><n:th>level1</n:th><n:th>level2</n:th><n:th>value</n:th></n:tr>
+				
+				<n:tr><n:td>Carnivora</n:td><n:td>Felidae</n:td><n:td>Panthera</n:td><n:td>10</n:td></n:tr>
+				<n:tr><n:td>Carnivora</n:td><n:td>Mustelidae</n:td><n:td>Mephitis</n:td><n:td>6</n:td></n:tr>
+				<n:tr><n:td>Carnivora</n:td><n:td>Mustelidae</n:td><n:td>Lutra</n:td><n:td>7</n:td></n:tr>
+				<n:tr><n:td>Carnivora</n:td><n:td>Canidae</n:td><n:td>?</n:td><n:td>14</n:td></n:tr>
+			</n:table>			
 		</intro>
 		<tab name="Options">
 			<options>
 				<columnFilterOption name="Path columns" id="pathColumns"
 					inPortIndex="0" label="Path columns" filterClasses="org.knime.core.data.StringValue">
-					Select the
-					columns which you wish to include for the paths.
+					Select the columns which indicate the leaf nodes' paths.
 				</columnFilterOption>
 				<columnSelectorOption name="Frequency column"
-					id="freqColumn" inPortIndex="0" label="Frequency Column"
-					filterClasses="org.knime.core.data.IntValue"
+					id="freqColumn" inPortIndex="0" label="Value Column"
+					filterClasses="org.knime.core.data.DoubleValue"
 					allowNoneColumn="true"
 					optional="true"
 					>
-					Select the column with the frequency information for
-					the paths.
+					Select the column with the value information for
+					the leaf nodes.
 				</columnSelectorOption>
 				<checkBoxOption name="Filter out small nodes" id="filterSmallNodes"
 					label="Filter out small nodes" defaultValue="true" saveInView="true">
@@ -55,12 +75,11 @@
 				<checkBoxOption name="Display legend" id="legend"
 					label="Display legend" defaultValue="true" saveInView="true">
 					When checked,
-					the sunburst chart legend is displayed.
+					the chart's legend is displayed.
 				</checkBoxOption>
 				<checkBoxOption name="Display breadcrumb" id="breadcrumb"
 					label="Display breadcrumb" defaultValue="false" saveInView="true">
-					When
-					checked, a breadcrumb is displayed on mouseover.
+					When checked, a breadcrumb is displayed (on mouseover, etc.). The breadcrumb depicts a (sub-)path in the hierarchy.
 				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole" id="donutHole"
 					label="Enable donut hole" defaultValue="true" saveInView="true">
@@ -75,7 +94,7 @@
 				<checkBoxOption name="Enable Selection" id="selection"
 					label="Enable Selection" defaultValue="true">
 					When checked,
-					selecting selections are enabled.
+					user selections are enabled.
 				</checkBoxOption>
 				<checkBoxOption name="Show selection only" id="showSelectedOnly"
 					label="Show selection only" defaultValue="false" saveInView="true"
@@ -92,17 +111,17 @@
 				<checkBoxOption name="Enable inner label" id="innerLabel"
 					label="Enable inner label" defaultValue="true" saveInView="true">
 					When
-					checked, an inner label is displayed on mouseover.
+					checked, an inner label is displayed (on mouseover, etc.).
 				</checkBoxOption>
 				<stringListOption name="Inner label style" id="innerLabelStyle"
 					label="Inner label style" possibleValues="sum percentage"
 					defaultValues="percentage" saveInView="true">
-					Choose how inner label is displayed.
+					Choose what accumulation type is used for the inner label.
 				</stringListOption>
 				<stringOption name="Inner label text" id="innerLabelText"
 					label="Inner label text" optional="true" saveInView="true"
-					enableDependency="innerLabel">
-					The inner label text.
+					enableDependency="innerLabel" enableValue="true">
+					The inner label's text.
 				</stringOption>
 				<checkBoxOption name="Publish Selection" id="publishSelection"
 					label="Enable publishing of selection" defaultValue="true" saveInView="true">
@@ -110,11 +129,11 @@
 				</checkBoxOption>
 				<checkBoxOption name="Subscribe to selection events" id="subscribeSelection"
 					label="Enable subscription of selection" defaultValue="true" saveInView="true">
-					Check to enable subscription fo selection events.
+					Check to enable subscription of selection events.
 				</checkBoxOption>
 				<checkBoxOption name="Subscribe to filter events" id="subscribeFilter"
 					label="Enable subscription of filter" defaultValue="true" saveInView="true">
-					Check to enable subscription fo filter events.
+					Check to enable subscription of filter events.
 				</checkBoxOption>
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="1000" defaultWidth="600" defaultHeight="400"
@@ -143,7 +162,7 @@
 				<checkBoxOption name="Enable filter tiny nodes toggle" id="filterSmallNodesToggle"
 					label="Enable filter tiny nodes toggle" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
-					Check to enable toggling of filtering for tiny nodes within the view.
+					Check to enable toggling of filtering for small nodes within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable legend toggle" id="legendToggle"
 					label="Enable legend toggle" defaultValue="true" enableDependency="enableViewControls"
@@ -157,7 +176,7 @@
 				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole toggle" id="donutHoleToggle"
 					label="Enable donut hole toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-					Check to enable toggling of donut hole within the view.
+					Check to enable toggling of the donut hole within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable inner label toggle" id="innerLabelToggle"
 					label="Enable inner label toggle" defaultValue="true"
@@ -173,7 +192,7 @@
 				<checkBoxOption name="Enable inner label editing" id="enableInnerLabelEdit"
 					label="Enable inner label editing" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
-					Check to enable the editing of the inner label within the view.
+					Check to enable editing of the inner label within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable selection only toggle" id="showSelectedOnlyToggle"
 					label="Enable selection only toggle" defaultValue="true"
@@ -183,17 +202,17 @@
 				<checkBoxOption name="Enable publish selection toggle" id="publishSelectionToggle"
 					label="Enable publish selection toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
-					Check to enable toggling of publishing of selection events within view.
+					Check to enable toggling of selection publishing within view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable subscribe to selection toggle" id="subscribeSelectionToggle"
 					label="Enable subscribe to selection toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
-					Check to enable toggling of subscription of selection events within view.
+					Check to enable toggling of selection subscription within view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable subscribe to filter toggle" id="subscribeFilterToggle"
 					label="Enable subscribe to filter toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
-					Check to enable toggling of subscription of filter events within view.
+					Check to enable toggling of filter subscription within view.
 				</checkBoxOption>
 			</options>
 		</tab>
@@ -207,21 +226,19 @@
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">
-			Data table
-			containing one column for the frequency of the corresponding
-			sequence.
-			All other columns give the sequence, where the first column
-			is the first entry in the sequence.
+			Data table containing one row for each leaf node in the hierarchy.
+			Path columns each give the labels for a respective hierarchy level.
+			The value column gives the leaf node's attached value attribute.
 		</inPort>
 		<inPort portType="Color" name="Color model" index="1" optional="true">
-			TODO
+			Color model indicating the colors used for the sunburst chart.
 		</inPort>
-		<outPort portType="Image" name="Sequences sunburst image"
+		<outPort portType="Image" name="Sunburst image"
 			index="0">
-			SVG image of the sequences sunburst chart.
+			SVG image of the sunburst chart.
 		</outPort>
 		<outPort portType="Data" name="Input Data + View Selection" index="1">
-			Data table containing the input data appended with a column, that represents the selection made in the parallel coordinates plot view.
+			Input table plus a new column that gives the selections made in the view.
 		</outPort>
 	</ports>
 	<js:resources>

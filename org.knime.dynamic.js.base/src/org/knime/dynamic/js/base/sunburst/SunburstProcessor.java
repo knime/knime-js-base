@@ -11,6 +11,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicJSProcessor;
+import org.knime.js.core.JSONDataTable;
 import org.knime.base.data.filter.column.FilterColumnTable;
 
 public class SunburstProcessor implements DynamicJSProcessor {
@@ -23,6 +24,17 @@ public class SunburstProcessor implements DynamicJSProcessor {
 
         // Get columns selected for path.
         String[] pathColumns = ((SettingsModelColumnFilter2)config.getModel("pathColumns")).applyTo(dt.getDataTableSpec()).getIncludes();
+        
+        if (pathColumns.length == 0) {
+        	setWarningMessage("No string columns selected. An empty chart is created.");
+
+    		JSONDataTable emptyTable = JSONDataTable.newBuilder()
+				.setDataTable(dt)
+				.setMaxRows(0)
+				.build(exec);
+
+            return new Object[] {emptyTable, null};
+        }
         
         // Get column selected for frequency.
         String freqColumn = ((SettingsModelString)config.getModel("freqColumn")).getStringValue();

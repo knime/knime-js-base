@@ -1,8 +1,10 @@
 /*
 # TODO:
-* there are many unnecessary redraws
-* check node documentation
-* check donut hole
+* check donut hole / zoom
+  * is this because of artificial root element?
+* label nicht über donut hole
+* formatter: no trailing zeros
+* check shitty node
 */
 
 (sunburst_namespace = function() {
@@ -292,7 +294,7 @@
 
     var body = d3.select("body");
     body.style({
-      "font-family": "'Open Sans', sans-serif",
+      "font-family": "sans-serif",
       "font-size": "12px",
       "font-weight": "400",
     })
@@ -340,7 +342,11 @@
     // Create the SVG object
     svg = svgContainer.append("svg")
       .attr("id", "svg")
-      .style("font-family", "sans-serif")
+      .style({
+        "font-family": "sans-serif",
+        "font-size": "12px",
+        "font-weight": "400",
+      });
 
     // set width / height of svg
     if (optFullscreen) {
@@ -390,17 +396,28 @@
     var w = Math.max(50, svgWidth - margin.left - margin.right);
     var h = Math.max(50, svgHeight - margin.top - margin.bottom);
 
-    var options = {
-      legend: _value.options.legend,
-      breadcrumb: _value.options.breadcrumb,
-      zoomable: _representation.options.zoomable,
-      donutHole: _value.options.donutHole,
-      aggregationType: _value.options.aggregationType,
-      filterSmallNodes: _value.options.filterSmallNodes
-    };
+    if (_data.children.length == 0) {
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "central")
+        .attr("x", w/2)
+        .attr("y", h/2)
+        .attr("id", "errorMsg")
+        .text("Error: No data available")
 
-    drawSunburst(_data, plottingSurface, w, h, options);
+    } else {
+      var options = {
+        legend: _value.options.legend,
+        breadcrumb: _value.options.breadcrumb,
+        zoomable: _representation.options.zoomable,
+        donutHole: _value.options.donutHole,
+        aggregationType: _value.options.aggregationType,
+        filterSmallNodes: _value.options.filterSmallNodes
+      };
 
+      drawSunburst(_data, plottingSurface, w, h, options);
+    }
+    
     // Set resize handler
     if (optFullscreen) {
       var win = document.defaultView || document.parentWindow;
@@ -418,6 +435,12 @@
     // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
     var b = { w: 100, h: 30, s: 3, t: 10 };
 
+    // The partition layout returns a rectengular hierarchical layout in
+    // a cartesian coordinate space. That is, nodes of the tree get the
+    // attributes x, y, dx, dy (dx,dy = extent of node position).
+    // In its original form the layout has a size of 1x1.
+    // x maps the node's x and dx attribute to an angle.
+    // y maps the node's y and dy attribute to vector length.
     var x = d3.scale.linear()
         .range([0, 2 * Math.PI]);
 
@@ -477,6 +500,7 @@
         .attr("r", radius)
         .style("opacity", 0);
 
+
     var path = sunburstGroup.selectAll("path")
         .data(nodes)
       .enter().append("path")
@@ -484,6 +508,7 @@
         .attr("fill-rule", "evenodd")
         .attr("fill", function(d) { return _colorMap(d.name); })
         .attr("stroke",function(d) { return d.selected ? "black" : "white" })
+        .attr("stroke-width", 1)
         .on("mouseover", mouseover)
         .on("click", click);
 
@@ -493,7 +518,7 @@
     }
 
     if (options.legend) {
-      drawLegend(plottingSurface);
+      drawLegend(plottingSurface, options.breadcrumb, b.h);
     }
 
     // add explanation in the middle of the circle
@@ -549,6 +574,7 @@
 
       var zoomNode = getNodeFromPath(_value.options.zoomedPath);
       path.transition()
+        .duration(0)
         .attrTween("d", arcTweenZoom(zoomNode));
     }
 
@@ -564,14 +590,11 @@
         select(d);
         if (_value.options.showSelectedOnly) {
           highlitedPath = null;
-          transformData();
-          setColors();
-          drawChart();
+          updateChart();
         } 
       } else {
         clearHighliting();
         setPropAllNodes('active', false);
-        debugger;
         highlite(d);
       }
     }
@@ -720,9 +743,16 @@
     }
 
     var zoom = function(d) {
-      path.transition()
-        .duration(1000)
-        .attrTween("d", arcTweenZoom(d));
+      if (_value.options.donutHole && (d.name != rootNodeName)) {
+        path.transition()
+          .duration(750)
+          .attrTween("d", arcTweenZoomWithHole(d));
+      } else {
+        path.transition()
+          .duration(750)
+          .attrTween("d", arcTweenZoom(d));
+      }
+
 
       if (_value.options.breadcrumb) {
         updateBreadcrumb(d);
@@ -752,6 +782,28 @@
       };
     }
 
+    // When zooming: interpolate the scales.
+    function arcTweenZoomWithHole(d) {
+      var rootRadius = d3.scale.sqrt().range([0, radius])(nodes[0].dy );
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+          // d is the zoomed node. d.y is the new minimal "starting value" in cartesia system
+          yd = d3.interpolate(y.domain(), [d.y, 1]),
+          // This is the vector length range in the zoomed state
+          yr = d3.interpolate(y.range(), [rootRadius, radius]);
+          // We need clamping here
+      return function(d, i) {
+        return i
+            // t has values between 0 and 1
+            // 0: start animation, 1: stop animation
+            // this function should then give
+            // for t=0 the layout before animation
+            // for t=1 the layout after animation
+            ? function(t) { return arc(d); }
+            : function(t) { debugger; x.domain(xd(t)); y.domain(yd(t)).range(yr(t)).clamp(true); return arc(d); };
+            // TODO: set clamping at different position
+      };
+    }
+
     // Updates inner label and breadcrumb
     function updateStatisticIndicators(d) {
       if (_value.options.innerLabelStyle === "percentage") {
@@ -762,7 +814,7 @@
         }
       } else {
         var statistic = d.value;
-        var statisticString = d3.format(".6s")(statistic);
+        var statisticString = d3.format(".4s")(statistic);
       }
 
       // set inner label and breadcrumb
@@ -910,7 +962,6 @@
     }
 
     function getNodeFromPath(path) {
-      debugger;
       var current = nodes[0];
       for (var i = 1; i < path.sequence.length-1; i++) {
         current = current.children
@@ -936,7 +987,7 @@
         .style("fill", "#000");
     }
 
-    function drawLegend(plottingSurface) {
+    function drawLegend(plottingSurface, breadcrumb, breadcrumbHeight) {
       var entries = uniqueLabels.map(function(label) {
         return { key: label, value: _colorMap(label) };
       }); 
@@ -949,7 +1000,7 @@
       var legend = plottingSurface.append("g")
           .attr("width", li.w)
           .attr("height", entries.length * (li.h + li.s))
-          .attr("transform", "translate(" + (width - li.w) + ", 0)");
+          .attr("transform", "translate(" + (width - li.w) + ", " + (breadcrumb * breadcrumbHeight + 10) + ")");
 
       var g = legend.selectAll("g")
           .data(entries)
@@ -969,6 +1020,7 @@
           .attr("x", li.r + 5)
           .attr("y", li.r)
           .attr("width", li.w)
+          .attr("font-size", 12)
           .attr("dy", "0.35em")
           .text(function(d) { return d.key; })
           .each(wrap);
@@ -1047,9 +1099,7 @@
         mouseMode = "select";
         if (_value.options.showSelectedOnly) {
           highlitedPath = null;
-          transformData();
-          setColors();
-          drawChart();
+          updateChart();
         }
      	  toggleButton();
       });
@@ -1099,7 +1149,7 @@
             _value.options.filterSmallNodes = this.checked;
             drawChart();
           });
-      knimeService.addMenuItem('Filter out tiny nodes:', 'search', filterSmallCheckbox);
+      knimeService.addMenuItem('Filter out small nodes:', 'search', filterSmallCheckbox);
     }
 
     // Legend / Breacdcrumb
