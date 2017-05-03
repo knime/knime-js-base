@@ -24,8 +24,13 @@
       </node>
       <node
             category-path="/flowcontrol/quickforms/input"
-            factory-class="org.knime.js.base.node.quickform.input.date.DateInputQuickFormNodeFactory"
-            >
+            deprecated="true"
+            factory-class="org.knime.js.base.node.quickform.input.date.DateInputQuickFormNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/quickforms/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.quickform.input.date2.DateInput2QuickFormNodeFactory">
       </node>
       <node
             category-path="/flowcontrol/quickforms/input"
