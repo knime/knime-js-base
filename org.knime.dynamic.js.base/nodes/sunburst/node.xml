@@ -13,16 +13,19 @@
 				This chart displayes hierarchical data in a radial layout: 
 				The circle in the chart center represents the hierarchy's root node.
 				Sections further outside represent nodes that are located deeper in the hierarchy.
+				<n:br/>
 				Each leaf node has a attached value attribute.
-				A section's area is derived from the corresponding leaf node's value or accumulated value for non-leaf nodes.
+				For sections corresponding to leaf nodes, the area is derived from the leaf node's value attribute.
+				For sections not corresponding to leaf nodes, the area is derived from the accumulated value of all descending leaf nodes.
 			</n:p>
 
 			<n:p>
 				This node expects a data structure that satisfies certain requirements:
 				<n:ul>
 					<n:li>Each row represents the path from the root node to a leaf node.</n:li>
-					<n:li>User selected path columns each give the labels for a respective hierarchy level.</n:li>
-					<n:li>Paths shorter then the maximal depth (as implied by the number of path columns) need to be filled up with missing values.</n:li>
+					<n:li>The user selects multiple path columns. Each path column gives the labels for a respective hierarchy level.</n:li>
+					<n:li>The number of path columns corresponds to the maximal depth of the hierarchy.</n:li>
+					<n:li>Paths shorter then the maximal depth need to be filled up with missing values.</n:li>
 					<n:li>The user selected value column gives the leaf node's attached value attribute.</n:li>
 				</n:ul>
 			</n:p>

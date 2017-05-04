@@ -23,8 +23,6 @@
   var innerLabelStyles = ['sum', 'percentage'];
 
   view.init = function(representation, value) {
-    debugger;
-
     _representation = representation;
     _value = value;
 
@@ -119,7 +117,6 @@
       highlited: false,
       selected: false
     };
-
 
 
     var missingSizeCount = 0;
@@ -218,7 +215,6 @@
     }
 
     if (useCustomColors) {
-      // TODO: check if nominal
       var colors = _representation.inObjects[1].colors;
       var labels = _representation.inObjects[1].labels;
       var colorMap = {}
@@ -342,7 +338,6 @@
 
     // set width / height of svg
     if (optFullscreen) {
-      // TODO CHECK: Do I really need computedHeight/computedWidth ?
       var boundingRect = svgContainer.node().getBoundingClientRect();
       var svgWidth = boundingRect.width;
       var svgHeight = boundingRect.height;
@@ -466,16 +461,8 @@
     // Functions to map cartesian orientation of partition layout into radial
     // orientation of sunburst chart.
     var arc = d3.svg.arc()
-        .startAngle(function(d) { 
-          var angle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-          if (d.id == 1701) { console.log("start: ", angle); }
-          return angle;
-        })
-        .endAngle(function(d) {
-          var angle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-          if (d.id == 1701) { console.log("end: ", angle); }
-          return angle;
-        })
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
         .innerRadius(function(d) { return Math.max(0, y(d.y)); })
         .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
@@ -932,7 +919,7 @@
           start[prop] = val;
         }
 
-        if (start.children.length === 0) {
+        if ((start.children == null) || (start.children.length === 0)) {
           leafs.push(start);
         } else {
           for (var i = 0; i < start.children.length; i++) {
@@ -965,7 +952,7 @@
         sequence.unshift(parent.name);
         parent = parent.parent;
       }
-      var path = {sequence: sequence, isLeaf: d.children.length == 0};
+      var path = {sequence: sequence, isLeaf: ((d.children == null) || (d.children.length == 0))};
       return path;
     }
 
@@ -977,7 +964,7 @@
       }
       var node = current.children
         .filter(function(child) { return child.name == path.sequence[path.sequence.length-1]; })
-        .filter(function(child) { return (child.children.length == 0) == path.isLeaf; })[0];
+        .filter(function(child) { return ((d.children == null) || (d.children.length == 0)) == path.isLeaf; })[0];
 
       return node;
     }
@@ -1386,7 +1373,7 @@
   view.getComponentValue = function() {
     outputSelectionColumn();
 
-    // Save mousemode unless its default mode.
+    // Save mousemode unless it is default mode.
     _value.options.mouseMode = mouseMode;
     if (_value.options.mouseMode == "highlite") {
       delete _value.options.mouseMode;
