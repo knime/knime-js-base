@@ -1,12 +1,3 @@
-/*
-# TODO:
-* check donut hole / zoom
-  * is this because of artificial root element?
-* label nicht über donut hole
-* formatter: no trailing zeros
-* check shitty node
-*/
-
 (sunburst_namespace = function() {
 
   var view = {};
@@ -33,6 +24,7 @@
 
   view.init = function(representation, value) {
     debugger;
+
     _representation = representation;
     _value = value;
 
@@ -435,18 +427,6 @@
     // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
     var b = { w: 100, h: 30, s: 3, t: 10 };
 
-    // The partition layout returns a rectengular hierarchical layout in
-    // a cartesian coordinate space. That is, nodes of the tree get the
-    // attributes x, y, dx, dy (dx,dy = extent of node position).
-    // In its original form the layout has a size of 1x1.
-    // x maps the node's x and dx attribute to an angle.
-    // y maps the node's y and dy attribute to vector length.
-    var x = d3.scale.linear()
-        .range([0, 2 * Math.PI]);
-
-    var y = d3.scale.sqrt()
-        .range([0, radius]);
-
     var partition = d3.layout.partition()
         .value(
           _representation.options.freqColumn == null
@@ -465,29 +445,39 @@
       nodes = partition.nodes(data);
     }
 
+    // The partition layout returns a rectengular hierarchical layout in
+    // a cartesian coordinate space. That is, nodes of the tree get the
+    // attributes x, y, dx, dy (dx,dy = extent of node position).
+    // In its original form the layout has a size of 1x1.
+    // x maps the node's x and dx attribute to an angle.
+    // y maps the node's y and dy attribute to vector length.
+    var x = d3.scale.linear()
+        .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.sqrt()
+        .range([0, radius])
+
+    if (options.donutHole) {
+      y.domain([0, 1]);
+    } else {
+      y.domain([nodes[0].dy, 1]);
+    }
+
     // Functions to map cartesian orientation of partition layout into radial
     // orientation of sunburst chart.
     var arc = d3.svg.arc()
-        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-
-    // Set display of donut hole depending on donut-hole-configuration and zoom-configuration.
-    if (options.donutHole) {
-      arc
+        .startAngle(function(d) { 
+          var angle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+          if (d.id == 1701) { console.log("start: ", angle); }
+          return angle;
+        })
+        .endAngle(function(d) {
+          var angle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+          if (d.id == 1701) { console.log("end: ", angle); }
+          return angle;
+        })
         .innerRadius(function(d) { return Math.max(0, y(d.y)); })
         .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
-    } else {
-      var rootSegmentExtent = nodes[0].dy;
-      arc
-        .innerRadius(function(d) { 
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomedPath!=null)
-          return Math.max(0, y(d.y - notZoomed * rootSegmentExtent));
-        })
-        .outerRadius(function(d) {
-          var notZoomed = !(_representation.options.zoomable && _value.options.zoomedPath!=null)
-          return Math.max(0, y(d.y + d.dy - notZoomed * rootSegmentExtent));
-        });
-    }
 
     // create new group for the sunburst plot (not legend, not breadcrumb)
     var sunburstGroup = plottingSurface.append("g")
@@ -521,14 +511,16 @@
       drawLegend(plottingSurface, options.breadcrumb, b.h);
     }
 
+    var rootRadius = d3.scale.sqrt().range([0, radius])(nodes[0].dy);
+
     // add explanation in the middle of the circle
     var explanation = sunburstGroup.append("g")
       .attr("id", "explanation")
+      .attr("width", rootRadius * 2)
       .style({
         "position": "absolute",
         "top": "260px",
-        "left": "305px",
-        "width": "140px",
+        "left": "0",
         "text-align": "center",
         "color": "#666",
         "z-index": "-1",
@@ -539,12 +531,15 @@
       .attr("id", "percentage")
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
-      .style("font-size", "2.5em");
+      .attr("width", rootRadius * 2)
+      .style("font-size", "2.5em")
+
     explanation.append("text")
       .attr("id", "explanationText")
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
       .attr("y", 30)
+      .attr("width", rootRadius * 2)
       .style("font-size", "1.8em")
       .style("font-weight", "lighter");
 
@@ -573,9 +568,16 @@
       }
 
       var zoomNode = getNodeFromPath(_value.options.zoomedPath);
-      path.transition()
-        .duration(0)
-        .attrTween("d", arcTweenZoom(zoomNode));
+
+      if (_value.options.donutHole && (zoomNode.name != rootNodeName)) {
+        path.transition()
+          .duration(0)
+          .attrTween("d", arcTweenZoomWithHole(zoomNode));
+      } else {
+        path.transition()
+          .duration(0)
+          .attrTween("d", arcTweenZoom(zoomNode));
+      }
     }
 
     // Add the mouseleave handler to the bounding circle.
@@ -601,7 +603,9 @@
 
     // Handle mouseover on sunburst segments
     function mouseover(d) {
-      if ((mouseMode == "highlite") && highlitedPath == null) {
+      if ((d.name != rootNodeName) &&
+          (mouseMode == "highlite") && highlitedPath == null) {
+
         // set sunburst segment properties
         setPropAllNodes('active', false);
         setPropsBackward(d, 'active', true);
@@ -743,7 +747,7 @@
     }
 
     var zoom = function(d) {
-      if (_value.options.donutHole && (d.name != rootNodeName)) {
+      if (_value.options.donutHole) {   // && (d.name != rootNodeName)) {
         path.transition()
           .duration(750)
           .attrTween("d", arcTweenZoomWithHole(d));
@@ -753,10 +757,12 @@
           .attrTween("d", arcTweenZoom(d));
       }
 
-
       if (_value.options.breadcrumb) {
-        updateBreadcrumb(d);
-        toggleBreadCrumb(true);
+        var parent = d.parent;
+        if (parent != null) {
+          updateBreadcrumb(parent);
+          toggleBreadCrumb(true);
+        }
       }
 
       if (d.name === rootNodeName) {
@@ -767,14 +773,18 @@
     }
 
     resetZoom = function() {
-      zoom(_data);
+      zoom(nodes[0]);
     }
 
     // When zooming: interpolate the scales.
     function arcTweenZoom(d) {
+      y.clamp(false);
+
+      var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName); 
+
       var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          yd = d3.interpolate(y.domain(), [d.y, 1]),
-          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+          yd = d3.interpolate(y.domain(), [zoomToStart ? nodes[0].dy : d.y, 1]),
+          yr = d3.interpolate(y.range(), [zoomToStart ? 0 : 20, radius]);
       return function(d, i) {
         return i
             ? function(t) { return arc(d); }
@@ -784,23 +794,17 @@
 
     // When zooming: interpolate the scales.
     function arcTweenZoomWithHole(d) {
-      var rootRadius = d3.scale.sqrt().range([0, radius])(nodes[0].dy );
+      y.clamp(true);
+
+      var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName); 
+
       var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          // d is the zoomed node. d.y is the new minimal "starting value" in cartesia system
-          yd = d3.interpolate(y.domain(), [d.y, 1]),
-          // This is the vector length range in the zoomed state
-          yr = d3.interpolate(y.range(), [rootRadius, radius]);
-          // We need clamping here
+          yd = d3.interpolate(y.domain(), [zoomToStart ? 0 : d.y, 1]),
+          yr = d3.interpolate(y.range(), [zoomToStart ? 0 : rootRadius, radius]);
       return function(d, i) {
         return i
-            // t has values between 0 and 1
-            // 0: start animation, 1: stop animation
-            // this function should then give
-            // for t=0 the layout before animation
-            // for t=1 the layout after animation
             ? function(t) { return arc(d); }
-            : function(t) { debugger; x.domain(xd(t)); y.domain(yd(t)).range(yr(t)).clamp(true); return arc(d); };
-            // TODO: set clamping at different position
+            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
       };
     }
 
@@ -814,7 +818,7 @@
         }
       } else {
         var statistic = d.value;
-        var statisticString = d3.format(".4s")(statistic);
+        var statisticString = d3.format("s")(statistic);
       }
 
       // set inner label and breadcrumb
@@ -824,10 +828,12 @@
 
     function updateInnerLabel(statisticString) {
       d3.select("#percentage")
-        .text(statisticString);
+        .text(statisticString)
+        .each(wrap)
 
       d3.select("#explanationText")
-        .text(_value.options.innerLabelText);
+        .text(_value.options.innerLabelText)
+        .each(wrap);
     }
 
     // Update the breadcrumb trail to show the current sequence and percentage.

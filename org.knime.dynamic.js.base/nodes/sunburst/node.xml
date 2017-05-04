@@ -78,7 +78,7 @@
 					the chart's legend is displayed.
 				</checkBoxOption>
 				<checkBoxOption name="Display breadcrumb" id="breadcrumb"
-					label="Display breadcrumb" defaultValue="false" saveInView="true">
+					label="Display breadcrumb" defaultValue="true" saveInView="true">
 					When checked, a breadcrumb is displayed (on mouseover, etc.). The breadcrumb depicts a (sub-)path in the hierarchy.
 				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole" id="donutHole"
@@ -245,7 +245,7 @@
 		<js:resource type="js" path="sunburst.js" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="D3" path="D3_3.2.8" type="local" />
+		<js:dependency name="D3" path="D3_3.5.5" type="local" />
 		<js:dependency name="jQuery" path="jQuery_1.11.0" type="local" />
 	</js:dependencies>
 	<js:javaProcessor
