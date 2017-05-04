@@ -762,6 +762,8 @@
         if (parent != null) {
           updateBreadcrumb(parent);
           toggleBreadCrumb(true);
+        } else {
+          toggleBreadCrumb(false);
         }
       }
 
