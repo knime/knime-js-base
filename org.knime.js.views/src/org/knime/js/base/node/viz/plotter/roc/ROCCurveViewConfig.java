@@ -76,6 +76,7 @@ public final class ROCCurveViewConfig {
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
+    final static boolean DEFAULT_IGNORE_MISSING_VALUES = false;
 
     static final String TITLE = "title";
     static final String SUBTITLE = "subtitle";
@@ -101,6 +102,7 @@ public final class ROCCurveViewConfig {
     static final String SHOW_AREA = "showArea";
     static final String SHOW_LEGEND = "showLegend";
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
+    static final String IGNORE_MISSING_VALUES = "ignoreMissingValues";
 
     static final String ENABLE_CONTROLS = "enableControls";
     static final String ENABLE_EDIT_TITLE = "enableEditTitle";
@@ -122,6 +124,7 @@ public final class ROCCurveViewConfig {
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private int m_lineWidth = DEFAULT_LINE_WIDTH;
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
+    private boolean m_ignoreMissingValues = DEFAULT_IGNORE_MISSING_VALUES;
 
     private boolean m_enableControls = true;
     private boolean m_enableEditTitle = true;
@@ -488,6 +491,20 @@ public final class ROCCurveViewConfig {
         m_showWarningInView = showWarningInView;
     }
 
+    /**
+     * @return the ignoreMissingValues
+     */
+    public boolean getIgnoreMissingValues() {
+        return m_ignoreMissingValues;
+    }
+
+    /**
+     * @param ignoreMissingValues the ignoreMissingValues to set
+     */
+    public void setIgnoreMissingValues(final boolean ignoreMissingValues) {
+        m_ignoreMissingValues = ignoreMissingValues;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -564,6 +581,7 @@ public final class ROCCurveViewConfig {
 
         //added with 3.4
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        settings.addBoolean(IGNORE_MISSING_VALUES, getIgnoreMissingValues());
 
         m_rocSettings.saveSettings(settings);
     }
@@ -605,6 +623,7 @@ public final class ROCCurveViewConfig {
 
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
     }
 
     /** Loads parameters in Dialog.
@@ -656,5 +675,6 @@ public final class ROCCurveViewConfig {
         m_showLegend = settings.getBoolean(SHOW_LEGEND, true);
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
     }
 }

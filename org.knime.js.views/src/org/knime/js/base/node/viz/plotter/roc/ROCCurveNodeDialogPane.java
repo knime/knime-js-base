@@ -120,6 +120,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
 
     private final JCheckBox m_showWarningInViewCheckBox;
 
+    private final JCheckBox m_ignoreMissingValuesCheckBox;
+
     private DataTableSpec m_spec;
 
     @SuppressWarnings("unchecked")
@@ -182,6 +184,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
             new SettingsModelColor("backgroundColor", null), "Background color: ", true);
 
         m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
+
+        m_ignoreMissingValuesCheckBox = new JCheckBox("Ignore missing values");
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -250,6 +254,10 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridwidth = 3;
         p.add(m_sortColumns, c);
+
+        c.gridx = 0;
+        c.gridy++;
+        p.add(m_ignoreMissingValuesCheckBox, c);
 
         addTab("ROC Curve Settings", p);
         addTab("General Plot Options", initGeneralPanel());
@@ -519,6 +527,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
 
         m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
 
+        m_ignoreMissingValuesCheckBox.setSelected(config.getIgnoreMissingValues());
+
         DataColumnSpecFilterConfiguration cfg = config.getRocSettings().getNumericCols();
         cfg.loadConfigurationInDialog(settings, specs[0]);
         m_sortColumns.loadConfiguration(cfg, specs[0]);
@@ -563,6 +573,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         config.getRocSettings().setMaxPoints((Integer) m_maxPoints.getValue());
 
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+
+        config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
 
         m_sortColumns.saveConfiguration(config.getRocSettings().getNumericCols());
 

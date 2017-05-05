@@ -211,7 +211,8 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
 
                 ROCCalculator calc = new ROCCalculator(Arrays.asList(res.getIncludes()),
                     m_config.getRocSettings().getClassColumn(), m_config.getRocSettings().getMaxPoints(),
-                    m_config.getRocSettings().getPositiveClass().toString());
+                    m_config.getRocSettings().getPositiveClass().toString(),
+                    m_config.getIgnoreMissingValues());
 
                 calc.calculateCurveData(table, exec);
 

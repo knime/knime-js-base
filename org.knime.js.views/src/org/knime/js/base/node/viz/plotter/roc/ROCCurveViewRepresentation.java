@@ -108,6 +108,8 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     private boolean m_showWarningInView;
     private JSONWarnings m_warnings = new JSONWarnings();
 
+    private boolean m_ignoreMissingValues;
+
     /**
      * @return the enableControls
      */
@@ -389,6 +391,20 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the ignoreMissingValues
+     */
+    public boolean getIgnoreMissingValues() {
+        return m_ignoreMissingValues;
+    }
+
+    /**
+     * @param ignoreMissingValues the ignoreMissingValues to set
+     */
+    public void setIgnoreMissingValues(final boolean ignoreMissingValues) {
+        m_ignoreMissingValues = ignoreMissingValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -423,6 +439,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addBoolean(ROCCurveViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
+        settings.addBoolean(ROCCurveViewConfig.IGNORE_MISSING_VALUES, getIgnoreMissingValues());
     }
 
     /**
@@ -466,6 +483,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         //added with 3.4
         setShowWarningInView(settings.getBoolean(ROCCurveViewConfig.SHOW_WARNING_IN_VIEW, ROCCurveViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
+        setIgnoreMissingValues(settings.getBoolean(ROCCurveViewConfig.IGNORE_MISSING_VALUES, ROCCurveViewConfig.DEFAULT_IGNORE_MISSING_VALUES));
     }
 
     /**
@@ -535,6 +553,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_enableEditYAxisLabel, other.m_enableEditYAxisLabel)
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
+                .append(m_ignoreMissingValues,  other.m_ignoreMissingValues)
                 .isEquals();
     }
 
@@ -566,6 +585,7 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_enableEditYAxisLabel)
                 .append(m_showWarningInView)
                 .append(m_warnings)
+                .append(m_ignoreMissingValues)
                 .toHashCode();
     }
 }
