@@ -105,6 +105,8 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     private boolean m_showWarningInView;
     private JSONWarnings m_warnings = new JSONWarnings();
 
+    private boolean m_ignoreMissingValues;
+
     /**
      * @return the id
      */
@@ -456,6 +458,20 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the ignoreMissingValues
+     */
+    public boolean getIgnoreMissingValues() {
+        return m_ignoreMissingValues;
+    }
+
+    /**
+     * @param ignoreMissingValues the ignoreMissingValues to set
+     */
+    public void setIgnoreMissingValues(final boolean ignoreMissingValues) {
+        m_ignoreMissingValues = ignoreMissingValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -488,6 +504,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         // added with 3.4
         settings.addBoolean(LiftChartViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
+        settings.addBoolean(LiftChartViewConfig.IGNORE_MISSING_VALUES, getIgnoreMissingValues());
     }
 
     /**
@@ -525,6 +542,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         //added with 3.4
         setShowWarningInView(settings.getBoolean(LiftChartViewConfig.SHOW_WARNING_IN_VIEW, LiftChartViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
+        setIgnoreMissingValues(settings.getBoolean(LiftChartViewConfig.IGNORE_MISSING_VALUES, LiftChartViewConfig.DEFAULT_IGNORE_MISSING_VALUES));
     }
 
     /**
@@ -568,6 +586,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
+                .append(m_ignoreMissingValues,  other.m_ignoreMissingValues)
                 .isEquals();
     }
 
@@ -602,6 +621,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering)
                 .append(m_showWarningInView)
                 .append(m_warnings)
+                .append(m_ignoreMissingValues)
                 .toHashCode();
     }
 }

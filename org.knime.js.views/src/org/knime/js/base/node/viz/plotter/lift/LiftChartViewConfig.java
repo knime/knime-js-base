@@ -116,6 +116,7 @@ public final class LiftChartViewConfig {
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
+    final static boolean DEFAULT_IGNORE_MISSING_VALUES = false;
 
     static final String TITLE_LIFT = "titleLift";
     static final String SUBTITLE_LIFT = "subtitleLift";
@@ -145,6 +146,7 @@ public final class LiftChartViewConfig {
     static final String SHOW_LEGEND = "showLegend";
     static final String SHOW_GAIN_CHART = "showGain";
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
+    static final String IGNORE_MISSING_VALUES = "ignoreMissingValues";
 
     static final String ENABLE_CONTROLS = "enableControls";
     static final String ENABLE_VIEW_TOGGLE = "enableViewToggle";
@@ -183,6 +185,7 @@ public final class LiftChartViewConfig {
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private String m_smoothing = "linear";
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
+    private boolean m_ignoreMissingValues = DEFAULT_IGNORE_MISSING_VALUES;
 
     private boolean m_enableControls = true;
     private boolean m_enableViewToggle = true;
@@ -669,6 +672,20 @@ public final class LiftChartViewConfig {
     }
 
     /**
+     * @return the ignoreMissingValues
+     */
+    public boolean getIgnoreMissingValues() {
+        return m_ignoreMissingValues;
+    }
+
+    /**
+     * @param ignoreMissingValues the ignoreMissingValues to set
+     */
+    public void setIgnoreMissingValues(final boolean ignoreMissingValues) {
+        m_ignoreMissingValues = ignoreMissingValues;
+    }
+
+    /**
      * @param showWarningInView the showWarningInView to set
      */
     public void setShowWarningInView(final boolean showWarningInView) {
@@ -764,6 +781,7 @@ public final class LiftChartViewConfig {
 
         //added with 3.4
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        settings.addBoolean(IGNORE_MISSING_VALUES, getIgnoreMissingValues());
     }
 
     /** Loads parameters in NodeModel.
@@ -813,6 +831,7 @@ public final class LiftChartViewConfig {
 
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
     }
 
     /** Loads parameters in Dialog.
@@ -879,5 +898,6 @@ public final class LiftChartViewConfig {
 
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
     }
 }

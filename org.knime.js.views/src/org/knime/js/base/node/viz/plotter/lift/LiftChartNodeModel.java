@@ -238,7 +238,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
             if (representation.getLiftValues() == null) {
                 copyConfigToView();
                 LiftCalculator calc = new LiftCalculator(m_config.getResponseColumn(), m_config.getProbabilityColumn(),
-                                                     m_config.getResponseLabel(), m_config.getIntervalWidth());
+                                                     m_config.getResponseLabel(), m_config.getIntervalWidth(), m_config.getIgnoreMissingValues());
                 String warnMsg = calc.calculateLiftTables(table, exec);
                 m_table = calc.getSortedInput();
                 representation.setBaseline(1.0);

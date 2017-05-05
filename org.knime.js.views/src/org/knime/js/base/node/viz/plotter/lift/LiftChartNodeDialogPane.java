@@ -154,6 +154,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
     private final JCheckBox m_showWarningInViewCheckBox;
 
+    private final JCheckBox m_ignoreMissingValuesCheckBox;
+
     /**
      * Creates a new dialog pane.
      */
@@ -235,6 +237,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         });
 
         m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
+
+        m_ignoreMissingValuesCheckBox = new JCheckBox("Ignore missing values");
 
         addTab("Data Options", initLiftSettingsPanel());
         addTab("General Plot Options", initGeneralPanel());
@@ -369,6 +373,10 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
             "Interval width in %:",
             "0.5", "1", "2", "2.5", "5", "10", "12.5", "20", "25");
         panel.add(intervalWidth.getComponentPanel(), c);
+
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_ignoreMissingValuesCheckBox, c);
 
         return panel;
     }
@@ -546,6 +554,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         m_smoothing.setSelectedItem(LiftChartViewConfig.mapSmoothingValueToInput(config.getSmoothing()));
 
         m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+
+        m_ignoreMissingValuesCheckBox.setSelected(config.getIgnoreMissingValues());
     }
 
     private List<String> getPossibleLabels(final String resColumn) {
@@ -618,6 +628,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         config.setSmoothing(LiftChartViewConfig.mapSmoothingInputToValue(m_smoothing.getSelectedItem().toString()));
 
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+
+        config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
 
         config.saveSettings(settings);
     }
