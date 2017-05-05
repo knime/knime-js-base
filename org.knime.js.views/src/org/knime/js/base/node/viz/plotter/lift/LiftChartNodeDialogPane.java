@@ -152,6 +152,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
     private final JComboBox<String> m_smoothing;
 
+    private final JCheckBox m_showWarningInViewCheckBox;
+
     /**
      * Creates a new dialog pane.
      */
@@ -231,6 +233,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
             }
         });
+
+        m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
 
         addTab("Data Options", initLiftSettingsPanel());
         addTab("General Plot Options", initGeneralPanel());
@@ -449,6 +453,10 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         cc.gridy++;
         backgroundPanel.add(m_gridColorChooser.getComponentPanel(), cc);
 
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_showWarningInViewCheckBox, c);
+
         return panel;
     }
 
@@ -536,6 +544,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         m_enableViewToggleCheckBox.setSelected(config.getEnableViewToggle());
         m_enableSmoothingCheckBox.setSelected(config.getEnableSmoothing());
         m_smoothing.setSelectedItem(LiftChartViewConfig.mapSmoothingValueToInput(config.getSmoothing()));
+
+        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
     }
 
     private List<String> getPossibleLabels(final String resColumn) {
@@ -606,6 +616,9 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         config.setEnableViewToggle(m_enableViewToggleCheckBox.isSelected());
         config.setEnableSmoothing(m_enableSmoothingCheckBox.isSelected());
         config.setSmoothing(LiftChartViewConfig.mapSmoothingInputToValue(m_smoothing.getSelectedItem().toString()));
+
+        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+
         config.saveSettings(settings);
     }
 }

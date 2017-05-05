@@ -57,6 +57,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.warnings.JSONWarnings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -100,6 +101,9 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     private boolean m_enableSmoothingEdit = true;
 
     private boolean m_enableStaggeredRendering = true;
+
+    private boolean m_showWarningInView;
+    private JSONWarnings m_warnings = new JSONWarnings();
 
     /**
      * @return the id
@@ -424,6 +428,34 @@ public class LiftChartViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
+    /**
+     * @return the warnings
+     */
+    public JSONWarnings getWarnings() {
+        return m_warnings;
+    }
+
+    /**
+     * @param warnings the warnings to set
+     */
+    public void setWarnings(final JSONWarnings warnings) {
+        m_warnings = warnings;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -452,6 +484,10 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         settings.addBoolean(LiftChartViewConfig.ENABLE_EDIT_X_AXIS_LABEL, m_enableEditXAxisLabel);
         settings.addBoolean(LiftChartViewConfig.ENABLE_EDIT_Y_AXIS_LABEL, m_enableEditYAxisLabel);
         settings.addBoolean(LiftChartViewConfig.ENABLE_EDIT_SMOOTHING, m_enableSmoothingEdit);
+
+        // added with 3.4
+        settings.addBoolean(LiftChartViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        m_warnings.saveToNodeSettings(settings);
     }
 
     /**
@@ -485,6 +521,10 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         m_enableEditXAxisLabel = settings.getBoolean(LiftChartViewConfig.ENABLE_EDIT_X_AXIS_LABEL);
         m_enableEditYAxisLabel = settings.getBoolean(LiftChartViewConfig.ENABLE_EDIT_Y_AXIS_LABEL);
         m_enableSmoothingEdit = settings.getBoolean(LiftChartViewConfig.ENABLE_EDIT_SMOOTHING);
+
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(LiftChartViewConfig.SHOW_WARNING_IN_VIEW, LiftChartViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
+        m_warnings.loadFromNodeSettings(settings);
     }
 
     /**
@@ -526,6 +566,8 @@ public class LiftChartViewRepresentation extends JSONViewContent {
                 .append(m_enableEditYAxisLabel, other.m_enableEditYAxisLabel)
                 .append(m_enableSmoothingEdit, other.m_enableSmoothingEdit)
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
+                .append(m_showWarningInView, other.m_showWarningInView)
+                .append(m_warnings, other.m_warnings)
                 .isEquals();
     }
 
@@ -558,6 +600,8 @@ public class LiftChartViewRepresentation extends JSONViewContent {
                 .append(m_enableEditYAxisLabel)
                 .append(m_enableSmoothingEdit)
                 .append(m_enableStaggeredRendering)
+                .append(m_showWarningInView)
+                .append(m_warnings)
                 .toHashCode();
     }
 }

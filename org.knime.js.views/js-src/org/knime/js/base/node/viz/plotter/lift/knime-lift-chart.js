@@ -36,7 +36,17 @@ knime_lift_chart = function() {
         	.attr("id", layoutContainerID)
         	.style("width", "100%")
         	.style("height", minWidth + "px")
-        	.style("min-width", minWidth + "px");        
+        	.style("min-width", minWidth + "px");   
+        
+        // Setting up warning messages from the Java side, if any
+		if (representation.showWarningInView && representation.warnings !== null) {
+			var map = representation.warnings.warningMap;
+			for (var id in map) {
+		        if (map.hasOwnProperty(id)) {
+		        	knimeService.setWarningMessage(map[id], id);			           
+		        }
+		    }
+		}
         
        
         if (_representation.enableControls) {

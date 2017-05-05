@@ -115,6 +115,7 @@ public final class LiftChartViewConfig {
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
 
     static final String TITLE_LIFT = "titleLift";
     static final String SUBTITLE_LIFT = "subtitleLift";
@@ -143,6 +144,7 @@ public final class LiftChartViewConfig {
     static final String INTERVAL_WIDTH = "intervalWidth";
     static final String SHOW_LEGEND = "showLegend";
     static final String SHOW_GAIN_CHART = "showGain";
+    static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
 
     static final String ENABLE_CONTROLS = "enableControls";
     static final String ENABLE_VIEW_TOGGLE = "enableViewToggle";
@@ -180,6 +182,7 @@ public final class LiftChartViewConfig {
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private String m_smoothing = "linear";
+    private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
 
     private boolean m_enableControls = true;
     private boolean m_enableViewToggle = true;
@@ -658,6 +661,20 @@ public final class LiftChartViewConfig {
         m_gridColor = gridColor;
     }
 
+    /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -744,6 +761,9 @@ public final class LiftChartViewConfig {
         settings.addBoolean(ENABLE_EDIT_SMOOTHING, m_enableSmoothing);
 
         settings.addString(SMOOTHING, m_smoothing);
+
+        //added with 3.4
+        settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
     }
 
     /** Loads parameters in NodeModel.
@@ -790,6 +810,9 @@ public final class LiftChartViewConfig {
         m_enableEditYAxisLabel = settings.getBoolean(ENABLE_EDIT_Y_AXIS_LABEL);
         m_enableSmoothing = settings.getBoolean(ENABLE_EDIT_SMOOTHING);
         m_smoothing = settings.getString(SMOOTHING);
+
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 
     /** Loads parameters in Dialog.
@@ -853,5 +876,8 @@ public final class LiftChartViewConfig {
         m_enableEditYAxisLabel = settings.getBoolean(ENABLE_EDIT_Y_AXIS_LABEL, true);
         m_enableSmoothing = settings.getBoolean(ENABLE_EDIT_SMOOTHING, true);
         m_smoothing = settings.getString(SMOOTHING, "none");
+
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 }

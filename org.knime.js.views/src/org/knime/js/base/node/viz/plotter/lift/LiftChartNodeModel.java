@@ -87,6 +87,8 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
 
     private BufferedDataTable m_table;
 
+    static final String LIFT_CALCULATOR_WARNING_ID = "LiftCalculatorWarning";
+
     /**
      * Creates a new model instance.
      */
@@ -237,7 +239,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
                 copyConfigToView();
                 LiftCalculator calc = new LiftCalculator(m_config.getResponseColumn(), m_config.getProbabilityColumn(),
                                                      m_config.getResponseLabel(), m_config.getIntervalWidth());
-                calc.calculateLiftTables(table, exec);
+                String warnMsg = calc.calculateLiftTables(table, exec);
                 m_table = calc.getSortedInput();
                 representation.setBaseline(1.0);
                 double[] lift = new double[calc.getLiftTable().getRowCount()];
@@ -255,6 +257,14 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
                     response[counter] = ((DoubleValue)row.getCell(0)).getDoubleValue();
                     counter++;
                 }
+
+                if (warnMsg != null) {
+                    setWarningMessage(warnMsg);
+                    if (m_config.getShowWarningInView()) {
+                        getViewRepresentation().getWarnings().setWarningMessage(warnMsg, LIFT_CALCULATOR_WARNING_ID);
+                    }
+                }
+
                 representation.setId(getTableId(0));
                 representation.setResponse(response);
                 representation.setCumulativeLift(cumLift);
@@ -348,6 +358,9 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
         representation.setEnableEditYAxisLabel(m_config.getEnableEditYAxisLabel());
         representation.setEnableViewToggle(m_config.getEnableViewToggle());
         representation.setEnableSmoothingEdit(m_config.getEnableSmoothing());
+        // added with 3.4
+        representation.setShowWarningInView(m_config.getShowWarningInView());
+
         LiftChartPlotViewValue value = getViewValue();
         value.setTitleLift(m_config.getTitleLift());
         value.setSubtitleLift(m_config.getSubtitleLift());
@@ -360,6 +373,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
         value.setyAxisTitleGain(m_config.getyAxisTitleGain());
         value.setShowGainChart(m_config.getShowGainChart());
         value.setSmoothing(m_config.getSmoothing());
+
     }
 
     /**
