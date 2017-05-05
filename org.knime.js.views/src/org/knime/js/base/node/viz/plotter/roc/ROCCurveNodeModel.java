@@ -100,6 +100,8 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
 
     private BufferedDataTable m_table;
 
+    static final String ROC_CALCULATOR_WARNING_ID = "RocCalculatorWarning";
+
     /**
      * Creates a new model instance.
      */
@@ -240,6 +242,14 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
                 m_table = calc.getOutputTable();
                 copyConfigToView();
 
+                String warnMsg = calc.getWarningMessage();
+                if (warnMsg != null) {
+                    setWarningMessage(warnMsg);
+                    if (m_config.getShowWarningInView()) {
+                        getViewRepresentation().getWarnings().setWarningMessage(warnMsg, ROC_CALCULATOR_WARNING_ID);
+                    }
+                }
+
                 // don't use staggered rendering and resizing for image creation
                 representation.setId(getTableId(0));
                 representation.setEnableStaggeredRendering(false);
@@ -268,6 +278,9 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
         representation.setEnableEditTitle(m_config.getEnableEditTitle());
         representation.setEnableEditXAxisLabel(m_config.getEnableEditXAxisLabel());
         representation.setEnableEditYAxisLabel(m_config.getEnableEditYAxisLabel());
+
+        // added with 3.4
+        representation.setShowWarningInView(m_config.getShowWarningInView());
 
         ROCCurveViewValue value = getViewValue();
         value.setTitle(m_config.getTitle());

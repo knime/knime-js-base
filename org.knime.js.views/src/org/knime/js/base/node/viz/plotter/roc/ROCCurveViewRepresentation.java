@@ -59,6 +59,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.warnings.JSONWarnings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -103,6 +104,9 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     private boolean m_enableEditSubtitle = true;
     private boolean m_enableEditXAxisLabel = true;
     private boolean m_enableEditYAxisLabel = true;
+
+    private boolean m_showWarningInView;
+    private JSONWarnings m_warnings = new JSONWarnings();
 
     /**
      * @return the enableControls
@@ -357,6 +361,34 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
+    /**
+     * @return the warnings
+     */
+    public JSONWarnings getWarnings() {
+        return m_warnings;
+    }
+
+    /**
+     * @param warnings the warnings to set
+     */
+    public void setWarnings(final JSONWarnings warnings) {
+        m_warnings = warnings;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -387,6 +419,10 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         settings.addBoolean(ROCCurveViewConfig.ENABLE_EDIT_SUBTITLE, m_enableEditSubtitle);
         settings.addBoolean(ROCCurveViewConfig.ENABLE_EDIT_X_AXIS_LABEL, m_enableEditXAxisLabel);
         settings.addBoolean(ROCCurveViewConfig.ENABLE_EDIT_Y_AXIS_LABEL, m_enableEditYAxisLabel);
+
+        // added with 3.4
+        settings.addBoolean(ROCCurveViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        m_warnings.saveToNodeSettings(settings);
     }
 
     /**
@@ -426,6 +462,10 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         m_enableEditSubtitle = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_SUBTITLE);
         m_enableEditXAxisLabel = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_X_AXIS_LABEL);
         m_enableEditYAxisLabel = settings.getBoolean(ROCCurveViewConfig.ENABLE_EDIT_Y_AXIS_LABEL);
+
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(ROCCurveViewConfig.SHOW_WARNING_IN_VIEW, ROCCurveViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
+        m_warnings.loadFromNodeSettings(settings);
     }
 
     /**
@@ -493,6 +533,8 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_enableEditSubtitle, other.m_enableEditSubtitle)
                 .append(m_enableEditXAxisLabel, other.m_enableEditXAxisLabel)
                 .append(m_enableEditYAxisLabel, other.m_enableEditYAxisLabel)
+                .append(m_showWarningInView, other.m_showWarningInView)
+                .append(m_warnings, other.m_warnings)
                 .isEquals();
     }
 
@@ -522,6 +564,8 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
                 .append(m_enableEditSubtitle)
                 .append(m_enableEditXAxisLabel)
                 .append(m_enableEditYAxisLabel)
+                .append(m_showWarningInView)
+                .append(m_warnings)
                 .toHashCode();
     }
 }

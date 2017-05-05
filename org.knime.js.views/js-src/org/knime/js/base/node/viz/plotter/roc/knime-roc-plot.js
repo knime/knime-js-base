@@ -28,6 +28,16 @@ knime_roc_curve = function() {
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px");
         
+        // Setting up warning messages from the Java side, if any
+		if (representation.showWarningInView && representation.warnings !== null) {
+			var map = representation.warnings.warningMap;
+			for (var id in map) {
+		        if (map.hasOwnProperty(id)) {
+		        	knimeService.setWarningMessage(map[id], id);			           
+		        }
+		    }
+		}
+        
         //var colors = ["red", "green", "blue", "yellow", "brown", "lime", "orange"];
         var catCol = d3.scale.category10();
         if (_representation.curves.length > 10) {

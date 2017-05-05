@@ -118,6 +118,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableTitleChangeCheckBox;
     private final JCheckBox m_enableSubtitleChangeCheckBox;
 
+    private final JCheckBox m_showWarningInViewCheckBox;
+
     private DataTableSpec m_spec;
 
     @SuppressWarnings("unchecked")
@@ -178,6 +180,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
             new SettingsModelColor("dataAreaColor", null), "Data area color: ", true);
         m_backgroundColorChooser = new DialogComponentColorChooser(
             new SettingsModelColor("backgroundColor", null), "Background color: ", true);
+
+        m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -433,6 +437,10 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         cc.gridy++;
         backgroundPanel.add(m_gridColorChooser.getComponentPanel(), cc);
 
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_showWarningInViewCheckBox, c);
+
         return panel;
     }
 
@@ -509,6 +517,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         m_enableYAxisLabelEditCheckBox.setSelected(config.getEnableEditYAxisLabel());
         m_maxPoints.setValue(config.getRocSettings().getMaxPoints());
 
+        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+
         DataColumnSpecFilterConfiguration cfg = config.getRocSettings().getNumericCols();
         cfg.loadConfigurationInDialog(settings, specs[0]);
         m_sortColumns.loadConfiguration(cfg, specs[0]);
@@ -551,6 +561,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         config.getRocSettings()
                 .setPositiveClass((DataCell)m_positiveClass.getSelectedItem());
         config.getRocSettings().setMaxPoints((Integer) m_maxPoints.getValue());
+
+        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
 
         m_sortColumns.saveConfiguration(config.getRocSettings().getNumericCols());
 

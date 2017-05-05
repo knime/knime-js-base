@@ -75,6 +75,7 @@ public final class ROCCurveViewConfig {
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
 
     static final String TITLE = "title";
     static final String SUBTITLE = "subtitle";
@@ -99,6 +100,7 @@ public final class ROCCurveViewConfig {
     static final String GRID_COLOR = "gridColor";
     static final String SHOW_AREA = "showArea";
     static final String SHOW_LEGEND = "showLegend";
+    static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
 
     static final String ENABLE_CONTROLS = "enableControls";
     static final String ENABLE_EDIT_TITLE = "enableEditTitle";
@@ -119,6 +121,7 @@ public final class ROCCurveViewConfig {
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private int m_lineWidth = DEFAULT_LINE_WIDTH;
+    private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
 
     private boolean m_enableControls = true;
     private boolean m_enableEditTitle = true;
@@ -471,6 +474,20 @@ public final class ROCCurveViewConfig {
         m_gridColor = gridColor;
     }
 
+    /**
+     * @return the showWarningInView
+     */
+    public boolean getShowWarningInView() {
+        return m_showWarningInView;
+    }
+
+    /**
+     * @param showWarningInView the showWarningInView to set
+     */
+    public void setShowWarningInView(final boolean showWarningInView) {
+        m_showWarningInView = showWarningInView;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -545,6 +562,9 @@ public final class ROCCurveViewConfig {
         settings.addBoolean(ENABLE_EDIT_X_AXIS_LABEL, m_enableEditXAxisLabel);
         settings.addBoolean(ENABLE_EDIT_Y_AXIS_LABEL, m_enableEditYAxisLabel);
 
+        //added with 3.4
+        settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
+
         m_rocSettings.saveSettings(settings);
     }
 
@@ -582,6 +602,9 @@ public final class ROCCurveViewConfig {
         m_enableEditXAxisLabel = settings.getBoolean(ENABLE_EDIT_X_AXIS_LABEL);
         m_enableEditYAxisLabel = settings.getBoolean(ENABLE_EDIT_Y_AXIS_LABEL);
         m_rocSettings.loadSettings(settings);
+
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 
     /** Loads parameters in Dialog.
@@ -631,5 +654,7 @@ public final class ROCCurveViewConfig {
         m_enableEditXAxisLabel = settings.getBoolean(ENABLE_EDIT_X_AXIS_LABEL, true);
         m_enableEditYAxisLabel = settings.getBoolean(ENABLE_EDIT_Y_AXIS_LABEL, true);
         m_showLegend = settings.getBoolean(SHOW_LEGEND, true);
+        //added with 3.4
+        setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
     }
 }
