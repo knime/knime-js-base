@@ -1,3 +1,9 @@
+// TODO
+// breadcrumb click <-> zoom
+// css attributes to svg attributes where possible
+// Can I filter out tiny nodes dynamically?
+// donut hole + zooming: zoom out on click in middle
+
 (sunburst_namespace = function() {
 
   var view = {};
@@ -23,6 +29,7 @@
   var innerLabelStyles = ['sum', 'percentage'];
 
   view.init = function(representation, value) {
+    debugger;
     _representation = representation;
     _value = value;
 
@@ -249,7 +256,7 @@
 
   var updateChart = function() {
     transformData();
-    setColors();
+    // setColors();
     drawChart();
   };
 
@@ -512,7 +519,7 @@
         "color": "#666",
         "z-index": "-1",
       })
-      .style("display", (options.donutHole && !options.zoom) ? "initial" : "none");
+      .attr("display", (options.donutHole && !options.zoom) ? "inline" : "none");
 
     explanation.append("text")
       .attr("id", "percentage")
@@ -549,12 +556,13 @@
 
     // Set zoom
     if (_value.options.zoomedPath && _representation.options.zoomable) {
+      debugger;
+      var zoomNode = getNodeFromPath(_value.options.zoomedPath);
+
       if (_value.options.breadcrumb) {
-        updateBreadcrumb(d);
+        updateBreadcrumb(zoomNode);
         toggleBreadCrumb(true);
       }
-
-      var zoomNode = getNodeFromPath(_value.options.zoomedPath);
 
       if (_value.options.donutHole && (zoomNode.name != rootNodeName)) {
         path.transition()
@@ -896,7 +904,7 @@
     function toggleInnerLabel(visible) {
       if (_value.options.innerLabel && _value.options.donutHole) {
         d3.select("#explanation")
-          .style("display", visible ? "initial" : "none");
+          .attr("display", visible ? "inline" : "none");
       }
     }
 
@@ -904,7 +912,7 @@
     function toggleBreadCrumb(visible) {
       if (_value.options.breadcrumb)  {
         d3.select("#trail")
-          .style("display", visible ? "initial" : "none");
+          .attr("display", visible ? "inline" : "none");
       }
     }
 
@@ -964,7 +972,7 @@
       }
       var node = current.children
         .filter(function(child) { return child.name == path.sequence[path.sequence.length-1]; })
-        .filter(function(child) { return ((d.children == null) || (d.children.length == 0)) == path.isLeaf; })[0];
+        .filter(function(child) { return ((child.children == null) || (child.children.length == 0)) == path.isLeaf; })[0];
 
       return node;
     }
