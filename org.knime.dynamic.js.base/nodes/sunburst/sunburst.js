@@ -565,8 +565,8 @@
     if (_value.options.zoomedPath && _representation.options.zoomable) {
       zoomNode = getNodeFromPath(_value.options.zoomedPath);
 
-      if (_value.options.breadcrumb) {
-        updateBreadcrumb(zoomNode);
+      if (_value.options.breadcrumb && zoomNode.parent != null) {
+        updateBreadcrumb(zoomNode.parent);
         toggleBreadCrumb(true);
       }
 
