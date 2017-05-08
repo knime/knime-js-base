@@ -845,7 +845,12 @@
       entering.append("svg:polygon")
           .attr("points", breadcrumbPoints)
           .attr("fill", function(d) { return _colorMap(d.name); })
-          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; });
+          .attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; })
+          .on("click", function(d) {
+            if (mouseMode == "zoom" && zoomNode != null) {
+              zoom(d);
+            }
+          });
 
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
@@ -853,6 +858,7 @@
           .attr("width", b.w)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
+          .attr("pointer-events", "none")
           .text(function(d) { return d.name; })
           .each(wrap);
 
