@@ -2,7 +2,6 @@
 // breadcrumb click <-> zoom
 // css attributes to svg attributes where possible
 // Can I filter out tiny nodes dynamically?
-// donut hole + zooming: zoom out on click in middle
 
 (sunburst_namespace = function() {
 
@@ -14,6 +13,7 @@
   var nodes;
   var selectedRows = [];
   var highlitedPath;
+  var zoomNode;
   var rowKey2leaf = {};
   var currentFilter = null;
   var _colorMap;
@@ -251,12 +251,6 @@
     }
     _colorMap.entries = d3.entries(colorMap);
     _colorMap.keys = d3.keys(colorMap);
-  };
-
-  var updateChart = function() {
-    transformData();
-    // setColors();
-    drawChart();
   };
 
   var updateTitles = function(updateChart) {
@@ -536,6 +530,21 @@
       .style("font-size", "1.8em")
       .style("font-weight", "lighter");
 
+
+    // Add transparent circle on top. This is used for clicking / zooming out when donut hole is enabbled.
+    sunburstGroup.append("svg:circle")
+      .attr("id", "donut_hole_zoom_out_circle")
+      .attr("r", rootRadius)
+      .attr("fill", "none")
+      .attr("pointer-events", "all")
+      .attr("display", mouseMode == "zoom" ? "inline" : "none")
+      .on('click', function() {
+        if (zoomNode != null && zoomNode.parent != null) {
+          zoom(zoomNode.parent);
+        }
+      });
+      
+
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
     
@@ -555,22 +564,17 @@
 
     // Set zoom
     if (_value.options.zoomedPath && _representation.options.zoomable) {
-      var zoomNode = getNodeFromPath(_value.options.zoomedPath);
+      zoomNode = getNodeFromPath(_value.options.zoomedPath);
 
       if (_value.options.breadcrumb) {
         updateBreadcrumb(zoomNode);
         toggleBreadCrumb(true);
       }
 
-      if (_value.options.donutHole && (zoomNode.name != rootNodeName)) {
-        path.transition()
-          .duration(0)
-          .attrTween("d", arcTweenZoomWithHole(zoomNode));
-      } else {
-        path.transition()
-          .duration(0)
-          .attrTween("d", arcTweenZoom(zoomNode));
-      }
+
+      path.transition()
+        .duration(0)
+        .attrTween("d", arcTweenZoom(zoomNode));
     }
 
     // Add the mouseleave handler to the bounding circle.
@@ -585,7 +589,8 @@
         select(d);
         if (_value.options.showSelectedOnly) {
           highlitedPath = null;
-          updateChart();
+          transformData();
+          drawChart();
         } 
       } else {
         clearHighliting();
@@ -740,15 +745,9 @@
     }
 
     var zoom = function(d) {
-      if (_value.options.donutHole) {   // && (d.name != rootNodeName)) {
-        path.transition()
-          .duration(750)
-          .attrTween("d", arcTweenZoomWithHole(d));
-      } else {
-        path.transition()
-          .duration(750)
-          .attrTween("d", arcTweenZoom(d));
-      }
+      path.transition()
+        .duration(750)
+        .attrTween("d", arcTweenZoom(d));
 
       if (_value.options.breadcrumb) {
         var parent = d.parent;
@@ -761,8 +760,10 @@
       }
 
       if (d.name === rootNodeName) {
+        zoomNode = null;
         delete _value.options.zoomedPath;
       } else {
+        zoomNode = d;
         _value.options.zoomedPath = getUniquePathToNode(d);
       }
     }
@@ -773,33 +774,26 @@
 
     // When zooming: interpolate the scales.
     function arcTweenZoom(d) {
-      y.clamp(false);
-
       var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName); 
 
-      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          yd = d3.interpolate(y.domain(), [zoomToStart ? nodes[0].dy : d.y, 1]),
-          yr = d3.interpolate(y.range(), [zoomToStart ? 0 : 20, radius]);
+      if (_value.options.donutHole) {
+        y.clamp(true);
+        var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+            yd = d3.interpolate(y.domain(), [zoomToStart ? 0 : d.y, 1]),
+            yr = d3.interpolate(y.range(), [zoomToStart ? 0 : rootRadius, radius]);
+      } else {
+        y.clamp(false);
+        var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+            yd = d3.interpolate(y.domain(), [zoomToStart ? nodes[0].dy : d.y, 1]),
+            yr = d3.interpolate(y.range(), [zoomToStart ? 0 : 20, radius]);
+      }
+     
       return function(d, i) {
-        return i
-            ? function(t) { return arc(d); }
-            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-      };
-    }
-
-    // When zooming: interpolate the scales.
-    function arcTweenZoomWithHole(d) {
-      y.clamp(true);
-
-      var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName); 
-
-      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          yd = d3.interpolate(y.domain(), [zoomToStart ? 0 : d.y, 1]),
-          yr = d3.interpolate(y.range(), [zoomToStart ? 0 : rootRadius, radius]);
-      return function(d, i) {
-        return i
-            ? function(t) { return arc(d); }
-            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+        if (i) {
+          return function(t) { return arc(d); };
+        } else {
+          return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+        }
       };
     }
 
@@ -1064,7 +1058,8 @@
       knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function() {
         clearSelection();
         if (_value.options.showSelectedOnly) {
-          updateChart();
+          transformData();
+          drawChart();
         }
       });
     }
@@ -1092,15 +1087,20 @@
     if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
         mouseMode = "zoom";
+        d3.select("#donut_hole_zoom_out_circle")
+          .attr("display", "inline");
      	  toggleButton();
       });
     }
     if (_representation.options.selection) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
         mouseMode = "select";
+        d3.select("#donut_hole_zoom_out_circle")
+          .attr("display", "none");
         if (_value.options.showSelectedOnly) {
           highlitedPath = null;
-          updateChart();
+          transformData();
+          drawChart();
         }
      	  toggleButton();
       });
@@ -1108,6 +1108,8 @@
     if (_representation.options.highliting) {
       knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
         mouseMode = "highlite";
+        d3.select("#donut_hole_zoom_out_circle")
+          .attr("display", "none");
      	  toggleButton();
       });
     }
@@ -1242,7 +1244,8 @@
           highlitedPath = null;
         }
         highlitedPath = null;
-        updateChart();
+        transformData();
+        drawChart();
       });
       knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
     }
@@ -1332,7 +1335,8 @@
 
     if (_value.options.showSelectedOnly) {
       highlitedPath = null;
-      updateChart();
+      transformData();
+      drawChart();
     }
     renderSelection();
   };
