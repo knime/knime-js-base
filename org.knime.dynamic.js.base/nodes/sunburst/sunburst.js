@@ -1,6 +1,5 @@
 // TODO
 // breadcrumb click <-> zoom
-// css attributes to svg attributes where possible
 // Can I filter out tiny nodes dynamically?
 
 (sunburst_namespace = function() {
@@ -329,8 +328,8 @@
   
     // Create the SVG object
     svg = svgContainer.append("svg")
-      .attr("id", "svg")
-      .style({
+      .attr({
+        "id": "svg",
         "font-family": "sans-serif",
         "font-size": "12px",
         "font-weight": "400",
@@ -475,7 +474,7 @@
     // when the mouse leaves the plottingSurface g.
     sunburstGroup.append("svg:circle")
         .attr("r", radius)
-        .style("opacity", 0);
+        .attr("opacity", 0);
 
 
     var path = sunburstGroup.selectAll("path")
@@ -519,7 +518,7 @@
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
       .attr("width", rootRadius * 2)
-      .style("font-size", "2.5em")
+      .attr("font-size", "2.5em")
 
     explanation.append("text")
       .attr("id", "explanationText")
@@ -527,8 +526,8 @@
       .attr("alignment-baseline", "middle")
       .attr("y", 30)
       .attr("width", rootRadius * 2)
-      .style("font-size", "1.8em")
-      .style("font-weight", "lighter");
+      .attr("font-size", "1.8em")
+      .attr("font-weight", "lighter");
 
 
     // Add transparent circle on top. This is used for clicking / zooming out when donut hole is enabbled.
@@ -608,7 +607,7 @@
         setPropAllNodes('active', false);
         setPropsBackward(d, 'active', true);
         sunburstGroup.selectAll("path")
-          .style("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+          .attr("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
 
         updateStatisticIndicators(d);
         toggleBreadCrumb(true);
@@ -622,7 +621,7 @@
         // set sunburst segment properties
         setPropAllNodes('active', true);
         sunburstGroup.selectAll("path")
-          .style("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
+          .attr("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
 
         toggleBreadCrumb(false);
         toggleInnerLabel(false);
@@ -636,7 +635,7 @@
       setPropAllNodes('highlited', false);
       setPropsBackward(node, 'highlited', true);
       sunburstGroup.selectAll("path")
-        .style("opacity", function(d) { return d.highlited ? 1 : 0.3; });
+        .attr("opacity", function(d) { return d.highlited ? 1 : 0.3; });
 
       updateStatisticIndicators(node);
       toggleBreadCrumb(true);
@@ -696,7 +695,7 @@
       setPropAllNodes('highlited', false);
 
       sunburstGroup.selectAll("path")
-        .style("opacity", 1);
+        .attr("opacity", 1);
 
       toggleBreadCrumb(false);
       toggleInnerLabel(false);
@@ -875,7 +874,7 @@
 
       // Make the breadcrumb trail visible, if it's hidden.
       d3.select("#trail")
-          .style("visibility", "");
+          .attr("visibility", "visible");
     }
 
     // Generate a string that describes the points of a breadcrumb polygon.
@@ -979,7 +978,7 @@
       // Add the label at the end, for the percentage.
       trail.append("svg:text")
         .attr("id", "endlabel")
-        .style("fill", "#000");
+        .attr("fill", "#000");
     }
 
     function drawLegend(plottingSurface, breadcrumb, breadcrumbHeight) {
@@ -1009,7 +1008,7 @@
           .attr("cx", 0)
           .attr("cy", 0.5 * (li.h - li.r))
           .attr("r", li.r)
-          .style("fill", function(d) { return d.value; });
+          .attr("fill", function(d) { return d.value; });
 
       g.append("svg:text")
           .attr("x", li.r + 5)
