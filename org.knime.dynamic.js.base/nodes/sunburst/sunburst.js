@@ -29,7 +29,6 @@
   var innerLabelStyles = ['sum', 'percentage'];
 
   view.init = function(representation, value) {
-    debugger;
     _representation = representation;
     _value = value;
 
@@ -556,7 +555,6 @@
 
     // Set zoom
     if (_value.options.zoomedPath && _representation.options.zoomable) {
-      debugger;
       var zoomNode = getNodeFromPath(_value.options.zoomedPath);
 
       if (_value.options.breadcrumb) {
