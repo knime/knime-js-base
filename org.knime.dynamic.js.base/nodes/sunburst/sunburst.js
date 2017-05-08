@@ -29,7 +29,6 @@
   var innerLabelStyles = ['sum', 'percentage'];
 
   view.init = function(representation, value) {
-    debugger;
     _representation = representation;
     _value = value;
 
