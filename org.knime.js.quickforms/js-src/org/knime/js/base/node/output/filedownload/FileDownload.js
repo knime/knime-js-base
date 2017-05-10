@@ -59,19 +59,21 @@ org_knime_js_base_node_output_filedownload = function() {
 		}
 		
 		var messageNotFound = "File download not available. Native component not found.";
-		var messageNotStandalone = "File download not available in standalone mode.";
+		var messageNotStandalone = "File download only available on server.";
 		insertNativeComponent(representation, messageNotFound, messageNotStandalone);
 		
 		var link = document.getElementsByTagName('a')[0];
-		//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
-		link.setAttribute('download', '');
+		if (link) {
+			//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
+			link.setAttribute('download', '');
 		
-		// for IE just open in new tab
-		var ua = window.navigator.userAgent;
-	    var msie = ua.indexOf("MSIE ");
-	    if (msie > -1 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-	    	link.setAttribute("target", "_blank");
-	    }
+			// for IE just open in new tab
+			var ua = window.navigator.userAgent;
+			var msie = ua.indexOf("MSIE ");
+			if (msie > -1 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+				link.setAttribute("target", "_blank");
+			}
+		}
 		
 		resizeParent();
 		viewValid = true;

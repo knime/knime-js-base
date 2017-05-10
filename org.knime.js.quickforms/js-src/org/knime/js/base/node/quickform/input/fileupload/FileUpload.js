@@ -63,7 +63,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		
 		//add native component
 		var messageNotFound = 'File upload not available. Native component not found.';
-		var messageNotStandalone = 'File upload not available in standalone mode.';
+		var messageNotStandalone = 'File upload only available on server.';
 		m_component = insertNativeComponent(representation, messageNotFound, messageNotStandalone);
 		
 		//add error field

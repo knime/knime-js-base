@@ -97,8 +97,8 @@ insertNativeComponent = function(representation, messageNotFound, messageNotStan
 	div.setAttribute("aria-label", representation.label);
 	div.setAttribute("tabindex", 0);
 	var placeHolder = null;
-	// check if parent frame present
-	if (parent && window.frameElement) {
+	// check if running on webportal
+	if (knimeService && knimeService.isRunningInWebportal()) {
 		//set correct class attributes on body element
 		var bodyClass = parent.document.getElementsByTagName("body")[0].getAttribute("class");
 		body.setAttribute("class", bodyClass);

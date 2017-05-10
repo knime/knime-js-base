@@ -158,15 +158,23 @@
                relativePathSource="js-src/org/knime/ext/js/node/quickform/input/molecule/"
                relativePathTarget="org/knime/ext/js/node/quickform/input/molecule/">
          </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher/"
+               relativePathTarget="js-lib/ketcher/">
+         </webResource>
          <importResource
                relativePath="org/knime/ext/js/node/quickform/input/molecule/MoleculeStringInput.js"
                type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="js-lib/ketcher/ketcher.css"
+               type="CSS">
          </importResource>
          <webDependency
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
          <webDependency
-               webResourceBundleID="Ketcher_1.1">
+               webResourceBundleID="RequireJS_2.3.3">
          </webDependency>
       </webResourceBundle>
    </extension>

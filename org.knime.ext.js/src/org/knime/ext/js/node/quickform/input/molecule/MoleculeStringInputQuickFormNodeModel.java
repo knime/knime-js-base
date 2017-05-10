@@ -64,6 +64,9 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.ext.phantomjs.PhantomJSImageGenerator;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.openqa.selenium.TimeoutException;
 
 /**
@@ -75,7 +78,7 @@ public class MoleculeStringInputQuickFormNodeModel
         extends QuickFormFlowVariableNodeModel
         <MoleculeStringInputQuickFormRepresentation,
         MoleculeStringInputQuickFormValue,
-        MoleculeStringInputQuickFormConfig> {
+        MoleculeStringInputQuickFormConfig> implements LayoutTemplateProvider {
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(MoleculeStringInputQuickFormNodeModel.class);
 
@@ -236,6 +239,13 @@ public class MoleculeStringInputQuickFormNodeModel
     @Override
     protected MoleculeStringInputQuickFormRepresentation getRepresentation() {
         return new MoleculeStringInputQuickFormRepresentation(getRelevantValue(), getConfig());
+    }
+    
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+    	 JSONLayoutViewContent view = new JSONLayoutViewContent();
+         view.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
+         return view;
     }
 
 }
