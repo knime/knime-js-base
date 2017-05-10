@@ -44,7 +44,7 @@ knime_generic_view = function() {
 			if (!libs) {
 				libs = [];
 			}
-			if (parent != undefined && parent.KnimePageLoader != undefined) {
+			if (knimeService && knimeService.isRunningInWebportal()) {
 				for (var i = 0; i < libs.length; i++) {
 					libs[i] = "./VAADIN/src-js/" + libs[i];
 				}
