@@ -44,23 +44,32 @@
  */
 package org.knime.js.base.node.quickform.input.date2;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+import java.util.Optional;
 
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
+import org.knime.js.base.node.quickform.ValueOverwriteMode;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
+import org.knime.time.util.DateTimeType;
 
 /**
  * The model for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
-public class DateInput2QuickFormNodeModel
-        extends QuickFormFlowVariableNodeModel
-        <DateInput2QuickFormRepresentation,
-        DateInput2QuickFormValue,
-        DateInput2QuickFormConfig> {
+public class DateInput2QuickFormNodeModel extends
+    QuickFormFlowVariableNodeModel<DateInput2QuickFormRepresentation, DateInput2QuickFormValue, DateTimeInputQuickFormConfig>
+    implements LayoutTemplateProvider {
 
     /**
      * @param viewName
@@ -70,14 +79,24 @@ public class DateInput2QuickFormNodeModel
     }
 
     /**
-     * Format string for the date to string and string to date operations.
+     * Formatter for the date to string and string to date operations.
      */
-    static final String DATE_FORMAT = "yyyy-MM-dd";
+    static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     /**
-     * Format string for the date to string and string to date operations.
+     * Formatter for the date to string and string to date operations.
      */
-    static final String DATE_TIME_FORMAT = "yyyy-MM-dd;HH:mm";
+    static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ISO_TIME;
+
+    /**
+     * Formatter for the date to string and string to date operations.
+     */
+    static final DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+
+    /**
+     * Formatter for the date to string and string to date operations.
+     */
+    static final DateTimeFormatter ZONED_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME;
 
     /**
      * {@inheritDoc}
@@ -92,7 +111,49 @@ public class DateInput2QuickFormNodeModel
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org_knime_js_base_node_quickform_input_date";
+        return "org_knime_js_base_node_quickform_input_date2";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        final ZonedDateTime value;
+        final ZonedDateTime now = ZonedDateTime.now();
+        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
+            value = getConfig().getUseDefaultExecTime() ? now : getRelevantValue().getDate();
+        } else {
+            value = getRelevantValue().getDate();
+        }
+        final Optional<String> validationResult = validateMinMaxByConfig(value, now);
+        if (validationResult.isPresent()) {
+            if (getConfig().getUseDefaultExecTime()) {
+                setWarningMessage("The current time is either before the earliest or latest allowed time!");
+            } else if (getConfig().getUseMinExecTime()) {
+                setWarningMessage("The selected time is before the current time!");
+            } else if (getConfig().getUseMaxExecTime()) {
+                setWarningMessage("The selected time is after the current time!");
+            } else {
+                throw new InvalidSettingsException(validationResult.get());
+            }
+        }
+        return super.configure(inSpecs);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        final ZonedDateTime value;
+        final ZonedDateTime now = ZonedDateTime.now();
+        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
+            value = getConfig().getUseDefaultExecTime() ? now : getRelevantValue().getDate();
+        } else {
+            value = getRelevantValue().getDate();
+        }
+        final Optional<String> validationResult = validateMinMaxByConfig(value, now);
+        if (validationResult.isPresent()) {
+            throw new InvalidSettingsException(validationResult.get());
+        }
+        return super.execute(inObjects, exec);
     }
 
     /**
@@ -100,15 +161,29 @@ public class DateInput2QuickFormNodeModel
      */
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        Date value = getRelevantValue().getDate();
-        ValidationError error = validateViewValue(getRelevantValue());
-        if (error != null) {
-            throw new InvalidSettingsException(error.getError());
+        final ZonedDateTime value;
+        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
+            value = getConfig().getUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+        } else {
+            value = getRelevantValue().getDate();
         }
-        SimpleDateFormat sdf =
-                new SimpleDateFormat(getConfig().getWithTime() ? DATE_TIME_FORMAT : DATE_FORMAT);
-        pushFlowVariableString(getConfig().getFlowVariableName(),
-                sdf.format(value));
+        final DateTimeType type = getConfig().getType();
+        final DateTimeFormatter formatter;
+        final Temporal temporal;
+        if (type == DateTimeType.LOCAL_DATE) {
+            formatter = LOCAL_DATE_FORMATTER;
+            temporal = value.toLocalDate();
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            formatter = LOCAL_TIME_FORMATTER;
+            temporal = value.toLocalTime();
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            formatter = LOCAL_DATE_TIME_FORMATTER;
+            temporal = value.toLocalDateTime();
+        } else {
+            formatter = ZONED_DATE_TIME_FORMATTER;
+            temporal = value;
+        }
+        pushFlowVariableString(getConfig().getFlowVariableName(), formatter.format(temporal));
     }
 
     /**
@@ -123,8 +198,8 @@ public class DateInput2QuickFormNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DateInput2QuickFormConfig createEmptyConfig() {
-        return new DateInput2QuickFormConfig();
+    public DateTimeInputQuickFormConfig createEmptyConfig() {
+        return new DateTimeInputQuickFormConfig();
     }
 
     /**
@@ -140,24 +215,70 @@ public class DateInput2QuickFormNodeModel
      */
     @Override
     public ValidationError validateViewValue(final DateInput2QuickFormValue viewContent) {
-        Date value = getRelevantValue().getDate();
-        Date min = getConfig().getMin();
-        Date max = getConfig().getMax();
-        if (!getConfig().getWithTime()) {
-            // Set time to midnight for value, min and max
-            value = new Date(value.getYear(), value.getMonth(), value.getDate());
-            min = new Date(min.getYear(), min.getMonth(), min.getDate());
-            max = new Date(max.getYear(), max.getMonth(), max.getDate());
-        }
-        if (getConfig().getUseMin() && value.before(min)) {
-            return new ValidationError("The set date " + value
-                    + " is before the earliest allowed date " + min);
-        }
-        if (getConfig().getUseMax() && value.after(max)) {
-            return new ValidationError("The set date " + value
-                    + " is after the latest allowed date " + max);
+        final Optional<String> validationResult = validateMinMaxByConfig(viewContent.getDate(), ZonedDateTime.now());
+        if (validationResult.isPresent()) {
+            return new ValidationError(validationResult.get());
         }
         return super.validateViewValue(viewContent);
+    }
+
+    private Optional<String> validateMinMaxByConfig(final ZonedDateTime value, final ZonedDateTime now) {
+        final ZonedDateTime min = getConfig().getUseMinExecTime() ? now : getConfig().getMin();
+        final ZonedDateTime max = getConfig().getUseMaxExecTime() ? now : getConfig().getMax();
+        final DateTimeType type = getConfig().getType();
+
+        return validateMinMax(value, getConfig().getUseMin(), getConfig().getUseMax(), min, max, type);
+    }
+
+    static Optional<String> validateMinMax(final ZonedDateTime value, final boolean useMin, final boolean useMax,
+        final ZonedDateTime min, final ZonedDateTime max, final DateTimeType type) {
+        final boolean checkMin;
+        final boolean checkMax;
+        final Temporal valueTemporal;
+        final Temporal minTemporal;
+        final Temporal maxTemporal;
+        if (type == DateTimeType.LOCAL_DATE) {
+            checkMin = value.toLocalDate().isBefore(min.toLocalDate());
+            checkMax = value.toLocalDate().isAfter(max.toLocalDate());
+            valueTemporal = value.toLocalDate();
+            minTemporal = min.toLocalDate();
+            maxTemporal = max.toLocalDate();
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            checkMin = value.toLocalTime().isBefore(min.toLocalTime());
+            checkMax = value.toLocalTime().isAfter(max.toLocalTime());
+            valueTemporal = value.toLocalTime();
+            minTemporal = min.toLocalTime();
+            maxTemporal = max.toLocalTime();
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            checkMin = value.toLocalDateTime().isBefore(min.toLocalDateTime());
+            checkMax = value.toLocalDateTime().isAfter(max.toLocalDateTime());
+            valueTemporal = value.toLocalDateTime();
+            minTemporal = min.toLocalDateTime();
+            maxTemporal = max.toLocalDateTime();
+        } else {
+            checkMin = value.isBefore(min);
+            checkMax = value.isAfter(max);
+            valueTemporal = value;
+            minTemporal = min;
+            maxTemporal = max;
+        }
+        if (useMin && checkMin) {
+            return Optional.of("The set date&time '" + valueTemporal + "' must not be before '" + minTemporal + "'.");
+        }
+        if (useMax && checkMax) {
+            return Optional.of("The set date&time '" + valueTemporal + "' must not be after '" + maxTemporal + "'.");
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent template = new JSONLayoutViewContent();
+        template.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
+        return template;
     }
 
 }

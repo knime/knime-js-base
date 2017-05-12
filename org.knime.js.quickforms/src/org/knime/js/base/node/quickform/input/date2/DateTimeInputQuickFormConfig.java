@@ -48,9 +48,8 @@
  */
 package org.knime.js.base.node.quickform.input.date2;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -58,29 +57,83 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
+import org.knime.time.util.DateTimeType;
 
 /**
  * The config for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
-public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateInput2QuickFormValue> {
+public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<DateInput2QuickFormValue> {
+
+    private static final String CFG_SHOW_NOW_BUTTON = "show_now";
+
+    private static final boolean DEFAULT_SHOW_NOW_BUTTON = true;
+
+    private boolean m_showNowButton = DEFAULT_SHOW_NOW_BUTTON;
 
     private static final String CFG_USE_MIN = "use_min";
+
     private static final boolean DEFAULT_USE_MIN = false;
+
     private boolean m_useMin = DEFAULT_USE_MIN;
+
     private static final String CFG_USE_MAX = "use_max";
+
     private static final boolean DEFAULT_USE_MAX = false;
+
     private boolean m_useMax = DEFAULT_USE_MAX;
+
+    private static final String CFG_USE_MIN_EXEC_TIME = "use_min_exec_time";
+
+    private static final boolean DEFAULT_USE_MIN_EXEC_TIME = false;
+
+    private boolean m_useMinExecTime = DEFAULT_USE_MIN_EXEC_TIME;
+
+    private static final String CFG_USE_MAX_EXEC_TIME = "use_max_exec_time";
+
+    private static final boolean DEFAULT_USE_MAX_EXEC_TIME = false;
+
+    private boolean m_useMaxExecTime = DEFAULT_USE_MAX_EXEC_TIME;
+
+    private static final String CFG_USE_DEFAULT_EXEC_TIME = "use_default_exec_time";
+
+    private static final boolean DEFAULT_USE_DEFAULT_EXEC_TIME = false;
+
+    private boolean m_useDefaultExecTime = DEFAULT_USE_DEFAULT_EXEC_TIME;
+
     private static final String CFG_MIN = "min";
-    private static final Date DEFAULT_MIN = DateInput2QuickFormValue.DEFAULT_DATE;
-    private Date m_min = DEFAULT_MIN;
+
+    private static final ZonedDateTime DEFAULT_MIN = DateInput2QuickFormValue.DEFAULT_ZDT;
+
+    private ZonedDateTime m_min = DEFAULT_MIN;
+
     private static final String CFG_MAX = "max";
-    private static final Date DEFAULT_MAX = DateInput2QuickFormValue.DEFAULT_DATE;
-    private Date m_max = DEFAULT_MAX;
-    private static final String CFG_WITH_TIME = "with_time";
-    private static final boolean DEFAULT_WITH_TIME = true;
-    private boolean m_withTime = DEFAULT_WITH_TIME;
+
+    private static final ZonedDateTime DEFAULT_MAX = DateInput2QuickFormValue.DEFAULT_ZDT;
+
+    private ZonedDateTime m_max = DEFAULT_MAX;
+
+    private static final String CFG_TYPE = "date_time_type";
+
+    private static final DateTimeType DEFAULT_TYPE = DateTimeType.LOCAL_DATE_TIME;
+
+    private DateTimeType m_type = DEFAULT_TYPE;
+
+    /**
+     * @return the showNow
+     */
+    public boolean getShowNowButton() {
+        return m_showNowButton;
+    }
+
+    /**
+     * @param showNow the showNow to set
+     */
+    public void setShowNowButton(final boolean showNow) {
+        m_showNowButton = showNow;
+    }
 
     /**
      * @return the useMin
@@ -111,45 +164,87 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
     }
 
     /**
+     * @return the useMinExecTime
+     */
+    boolean getUseMinExecTime() {
+        return m_useMinExecTime;
+    }
+
+    /**
+     * @param useMinExecTime the useMinExecTime to set
+     */
+    void setUseMinExecTime(final boolean useMinExecTime) {
+        m_useMinExecTime = useMinExecTime;
+    }
+
+    /**
+     * @return the useMaxExecTime
+     */
+    boolean getUseMaxExecTime() {
+        return m_useMaxExecTime;
+    }
+
+    /**
+     * @param useMaxExecTime the useMaxExecTime to set
+     */
+    void setUseMaxExecTime(final boolean useMaxExecTime) {
+        m_useMaxExecTime = useMaxExecTime;
+    }
+
+    /**
+     * @return the useDefaultExecTime
+     */
+    boolean getUseDefaultExecTime() {
+        return m_useDefaultExecTime;
+    }
+
+    /**
+     * @param useDefaultExecTime the useDefaultExecTime to set
+     */
+    void setUseDefaultExecTime(final boolean useDefaultExecTime) {
+        m_useDefaultExecTime = useDefaultExecTime;
+    }
+
+    /**
      * @return the min
      */
-    Date getMin() {
+    ZonedDateTime getMin() {
         return m_min;
     }
 
     /**
      * @param min the min to set
      */
-    void setMin(final Date min) {
+    void setMin(final ZonedDateTime min) {
         m_min = min;
     }
 
     /**
      * @return the max
      */
-    Date getMax() {
+    ZonedDateTime getMax() {
         return m_max;
     }
 
     /**
      * @param max the max to set
      */
-    void setMax(final Date max) {
+    void setMax(final ZonedDateTime max) {
         m_max = max;
     }
 
     /**
-     * @return the withTime
+     * @return the type
      */
-    boolean getWithTime() {
-        return m_withTime;
+    DateTimeType getType() {
+        return m_type;
     }
 
     /**
      * @param withTime the withTime to set
      */
-    void setWithTime(final boolean withTime) {
-        m_withTime = withTime;
+    void setType(final DateTimeType withTime) {
+        m_type = withTime;
     }
 
     /**
@@ -158,12 +253,15 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        SimpleDateFormat sdf = new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT);
+        settings.addBoolean(CFG_SHOW_NOW_BUTTON, m_showNowButton);
         settings.addBoolean(CFG_USE_MIN, m_useMin);
         settings.addBoolean(CFG_USE_MAX, m_useMax);
-        settings.addString(CFG_MIN, sdf.format(m_min));
-        settings.addString(CFG_MAX, sdf.format(m_max));
-        settings.addBoolean(CFG_WITH_TIME, m_withTime);
+        settings.addBoolean(CFG_USE_MIN_EXEC_TIME, m_useMinExecTime);
+        settings.addBoolean(CFG_USE_MAX_EXEC_TIME, m_useMaxExecTime);
+        settings.addBoolean(CFG_USE_DEFAULT_EXEC_TIME, getUseDefaultExecTime());
+        settings.addString(CFG_MIN, m_min.toString());
+        settings.addString(CFG_MAX, m_max.toString());
+        settings.addString(CFG_TYPE, m_type.name());
     }
 
     /**
@@ -172,15 +270,18 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-        SimpleDateFormat sdf = new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT);
+        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON);
         m_useMin = settings.getBoolean(CFG_USE_MIN);
         m_useMax = settings.getBoolean(CFG_USE_MAX);
-        m_withTime = settings.getBoolean(CFG_WITH_TIME);
+        m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME);
+        m_useMaxExecTime = settings.getBoolean(CFG_USE_MAX_EXEC_TIME);
+        setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME));
+        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE));
         try {
-            m_min = sdf.parse(settings.getString(CFG_MIN));
-            m_max = sdf.parse(settings.getString(CFG_MAX));
-        } catch (ParseException e) {
-            throw new InvalidSettingsException("Could not parse date format", e);
+            m_min = ZonedDateTime.parse(settings.getString(CFG_MIN));
+            m_max = ZonedDateTime.parse(settings.getString(CFG_MAX));
+        } catch (DateTimeParseException e) {
+            throw e;
         }
     }
 
@@ -190,14 +291,17 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        SimpleDateFormat sdf = new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT);
+        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON, DEFAULT_SHOW_NOW_BUTTON);
         m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
         m_useMax = settings.getBoolean(CFG_USE_MAX, DEFAULT_USE_MAX);
-        m_withTime = settings.getBoolean(CFG_WITH_TIME, DEFAULT_WITH_TIME);
+        m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME, DEFAULT_USE_MIN_EXEC_TIME);
+        m_useMaxExecTime = settings.getBoolean(CFG_USE_MAX_EXEC_TIME, DEFAULT_USE_MAX_EXEC_TIME);
+        setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME, DEFAULT_USE_DEFAULT_EXEC_TIME));
+        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE, DEFAULT_TYPE.toString()));
         try {
-            m_min = sdf.parse(settings.getString(CFG_MIN, sdf.format(DEFAULT_MIN)));
-            m_max = sdf.parse(settings.getString(CFG_MAX, sdf.format(DEFAULT_MAX)));
-        } catch (ParseException e) {
+            m_min = ZonedDateTime.parse(settings.getString(CFG_MIN, DEFAULT_MIN.toString()));
+            m_max = ZonedDateTime.parse(settings.getString(CFG_MAX, DEFAULT_MAX.toString()));
+        } catch (DateTimeParseException e) {
             m_min = DEFAULT_MIN;
             m_max = DEFAULT_MAX;
         }
@@ -219,24 +323,36 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
+        sb.append("showNowButton=");
+        sb.append(m_showNowButton);
+        sb.append(", ");
         sb.append("useMin=");
         sb.append(m_useMin);
         sb.append(", ");
         sb.append("useMax=");
         sb.append(m_useMax);
         sb.append(", ");
+        sb.append("useMinExecTime=");
+        sb.append(m_useMinExecTime);
+        sb.append(", ");
+        sb.append("useMaxExecTime=");
+        sb.append(m_useMaxExecTime);
+        sb.append(", ");
+        sb.append("useDefaultExecTime=");
+        sb.append(getUseDefaultExecTime());
+        sb.append(", ");
         sb.append("min=");
         sb.append("{");
-        sb.append(m_min);
+        sb.append(m_min.toString());
         sb.append("}");
         sb.append(", ");
         sb.append("max=");
         sb.append("{");
-        sb.append(m_max);
+        sb.append(m_max.toString());
         sb.append("}");
         sb.append(", ");
         sb.append("withTime=");
-        sb.append(m_withTime);
+        sb.append(m_type.name());
         return sb.toString();
     }
 
@@ -245,13 +361,9 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_useMin)
-                .append(m_useMax)
-                .append(m_min)
-                .append(m_max)
-                .append(m_withTime)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_useMin)
+            .append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime).append(getUseDefaultExecTime())
+            .append(m_min).append(m_max).append(m_type).toHashCode();
     }
 
     /**
@@ -268,14 +380,12 @@ public class DateInput2QuickFormConfig extends QuickFormFlowVariableConfig<DateI
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateInput2QuickFormConfig other = (DateInput2QuickFormConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
-                .append(m_withTime, other.m_withTime)
-                .isEquals();
+        DateTimeInputQuickFormConfig other = (DateTimeInputQuickFormConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_showNowButton, other.m_showNowButton)
+            .append(m_useMin, other.m_useMin).append(m_useMax, other.m_useMax)
+            .append(m_useMinExecTime, other.m_useMinExecTime).append(m_useMaxExecTime, other.m_useMaxExecTime)
+            .append(getUseDefaultExecTime(), other.getUseDefaultExecTime()).append(m_min, other.m_min)
+            .append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
     }
 
 }

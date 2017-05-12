@@ -47,8 +47,11 @@
  */
 package org.knime.js.base.node.quickform.input.date2;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -64,6 +67,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.core.JSONViewContent;
+import org.knime.time.util.DateTimeUtils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -74,6 +78,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * The value for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -82,13 +87,11 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
     /**
      * The default date for all date settings.
      */
-    static final Date DEFAULT_DATE = new Date();
+    static final ZonedDateTime DEFAULT_ZDT = ZonedDateTime.now().withNano(0);
 
-    private static final String CFG_DATE = "date";
+    private static final String CFG_DATE = "date&time";
 
-    private Date m_date = DEFAULT_DATE;
-
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT);
+    private ZonedDateTime m_date = DEFAULT_ZDT;
 
     /**
      * {@inheritDoc}
@@ -96,8 +99,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        String dateString =
-            m_date != null ? dateFormat.format(m_date) : null;
+        String dateString = m_date != null ? m_date.toString() : null;
         settings.addString(CFG_DATE, dateString);
     }
 
@@ -112,7 +114,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
             m_date = null;
         } else {
             try {
-                setDate(dateFormat.parse(value));
+                setDate(ZonedDateTime.parse(value));
             } catch (Exception e) {
                 throw new InvalidSettingsException("Can't parse date: " + value, e);
             }
@@ -125,32 +127,56 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
     @Override
     @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        String value = settings.getString(CFG_DATE, new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT).format(DEFAULT_DATE));
+        String value = settings.getString(CFG_DATE, DEFAULT_ZDT.toString());
         if (value == null) {
             m_date = null;
         } else {
             try {
-                setDate(new SimpleDateFormat(DateInput2QuickFormNodeModel.DATE_TIME_FORMAT).parse(value));
+                setDate(ZonedDateTime.parse(value));
             } catch (Exception e) {
-                m_date = DEFAULT_DATE;
+                m_date = DEFAULT_ZDT;
             }
         }
     }
 
     /**
+     * @return the date
+     */
+    @JsonIgnore
+    public ZonedDateTime getDate() {
+        return m_date;
+    }
+
+    /**
      * @return the string
      */
-    @JsonProperty("date")
-    public Date getDate() {
-        return m_date;
+    @JsonProperty("datestring")
+    public String getDateAsString() {
+        return m_date.toString();
     }
 
     /**
      * @param date the date to set
      */
-    @JsonProperty("date")
-    public void setDate(final Date date) {
+    @JsonIgnore
+    public void setDate(final ZonedDateTime date) {
         m_date = date;
+    }
+
+    /**
+     * @param zdtString the zoned date time to set
+     */
+    @JsonProperty("datestring")
+    public void setDateTimeComponent(final String zdtString) {
+        m_date = ZonedDateTime.of(LocalDateTime.parse(zdtString), m_date.getZone());
+    }
+
+    /**
+     * @param zone the zone to set
+     */
+    @JsonProperty("zonestring")
+    public void setTimeZoneComponent(final String zone) {
+        m_date = ZonedDateTime.of(m_date.toLocalDateTime(), ZoneId.of(zone));
     }
 
     /**
@@ -171,9 +197,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_date)
-                .toHashCode();
+        return new HashCodeBuilder().append(m_date).toHashCode();
     }
 
     /**
@@ -191,9 +215,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
             return false;
         }
         DateInput2QuickFormValue other = (DateInput2QuickFormValue)obj;
-        return new EqualsBuilder()
-                .append(m_date, other.m_date)
-                .isEquals();
+        return new EqualsBuilder().append(m_date, other.m_date).isEquals();
     }
 
     /**
@@ -202,14 +224,29 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
     @Override
     public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
         try {
-            if (fromCmdLine == null || fromCmdLine.isEmpty()) {
-                m_date = null;
+            if (fromCmdLine == null) {
+                throw new UnsupportedOperationException("Input must not be null!");
             } else {
-                m_date = dateFormat.parse(fromCmdLine);
+                updateDateByStringInput(fromCmdLine);
             }
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Could not parse '" + fromCmdLine + "' as dateTime in format '"
-                + DateInput2QuickFormNodeModel.DATE_TIME_FORMAT + "'.");
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedOperationException(e.getMessage());
+        }
+    }
+
+    private void updateDateByStringInput(final String string) throws IllegalArgumentException {
+        if (DateTimeUtils.asZonedDateTime(string).isPresent()) {
+            m_date = ZonedDateTime.parse(string);
+        } else if (DateTimeUtils.asLocalDateTime(string).isPresent()) {
+            m_date = ZonedDateTime.of(LocalDateTime.parse(string), m_date.getZone());
+        } else if (DateTimeUtils.asLocalDate(string).isPresent()) {
+            m_date = ZonedDateTime.of(LocalDate.parse(string), m_date.toLocalTime(), m_date.getZone());
+        } else if (DateTimeUtils.asLocalTime(string).isPresent()) {
+            m_date = ZonedDateTime.of(m_date.toLocalDate(), LocalTime.parse(string), m_date.getZone());
+        } else if (DateTimeUtils.asTimezone(string).isPresent()) {
+            m_date = ZonedDateTime.of(m_date.toLocalDateTime(), ZoneId.of(string));
+        } else {
+            throw new IllegalArgumentException(string + " cannot be parsed as any date&time type or time zone!");
         }
     }
 
@@ -219,22 +256,22 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
     @Override
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
+            loadFromString(((JsonString)json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_DATE);
+                JsonValue val = ((JsonObject)json).get(CFG_DATE);
                 if (JsonValue.NULL.equals(val)) {
-                    m_date = null;
+                    throw new IllegalArgumentException("Input must not be null!");
                 }
-                String dateVal = ((JsonObject) json).getString(CFG_DATE);
-                if (dateVal == null || dateVal.trim().isEmpty()) {
-                    m_date = null;
+                String dateVal = ((JsonObject)json).getString(CFG_DATE);
+                if (dateVal == null) {
+                    throw new IllegalArgumentException("Input must not be null!");
                 } else {
-                    m_date = dateFormat.parse(dateVal);
+                    updateDateByStringInput(dateVal);
                 }
             } catch (Exception e) {
-                throw new JsonException("Expected string value for key '" + CFG_DATE + "' in format '"
-                    + DateInput2QuickFormNodeModel.DATE_TIME_FORMAT + "'.", e);
+                throw new JsonException("Expected string value for key '" + CFG_DATE
+                    + "' to be a date, time, date&time, zoned date&time or a time zone in ISO format.", e);
             }
         } else {
             throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
@@ -250,7 +287,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
         if (m_date == null) {
             builder.addNull(CFG_DATE);
         } else {
-            builder.add(CFG_DATE, dateFormat.format(m_date));
+            builder.add(CFG_DATE, m_date.toString());
         }
         return builder.build();
     }

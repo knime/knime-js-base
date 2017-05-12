@@ -53,6 +53,7 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
  * The factory for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
 public class DateInput2QuickFormNodeFactory
         extends NodeFactory<DateInput2QuickFormNodeModel>

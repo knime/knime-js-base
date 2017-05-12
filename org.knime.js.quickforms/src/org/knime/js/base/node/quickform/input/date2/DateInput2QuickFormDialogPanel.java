@@ -47,36 +47,46 @@
  */
 package org.knime.js.base.node.quickform.input.date2;
 
-import java.util.Date;
-
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
+import java.time.ZonedDateTime;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.quickform.QuickFormDialogPanel;
+import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DialogComponentDateTimeSelection;
+import org.knime.time.util.DialogComponentDateTimeSelection.DisplayOption;
+import org.knime.time.util.SettingsModelDateTime;
 
 /**
  * The sub node dialog panel for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
 @SuppressWarnings("serial")
 public class DateInput2QuickFormDialogPanel extends QuickFormDialogPanel<DateInput2QuickFormValue> {
 
-    private JSpinner m_component;
+    private final SettingsModelDateTime m_model;
 
     /**
      * @param representation Representation to get the date format
      */
     public DateInput2QuickFormDialogPanel(final DateInput2QuickFormRepresentation representation) {
         super(representation.getDefaultValue());
-        String format =
-                representation.getWithTime() ? DateInput2QuickFormNodeModel.DATE_TIME_FORMAT
-                        : DateInput2QuickFormNodeModel.DATE_FORMAT;
-        m_component = new JSpinner(new SpinnerDateModel());
-        m_component.setEditor(new JSpinner.DateEditor(m_component, format));
-        m_component.setValue(representation.getDefaultValue().getDate());
-        setComponent(m_component);
+        final DateTimeType type = representation.getType();
+        final DisplayOption displayOption;
+        if (type == DateTimeType.LOCAL_DATE) {
+            displayOption = DisplayOption.SHOW_DATE_ONLY;
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            displayOption = DisplayOption.SHOW_TIME_ONLY;
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            displayOption = DisplayOption.SHOW_DATE_AND_TIME;
+        } else {
+            displayOption = DisplayOption.SHOW_DATE_AND_TIME_AND_TIMEZONE;
+        }
+        m_model = new SettingsModelDateTime("temp", representation.getUseDefaultExecTime()
+            ? ZonedDateTime.now().withNano(0) : representation.getDefaultValue().getDate());
+        final DialogComponentDateTimeSelection dc = new DialogComponentDateTimeSelection(m_model, null, displayOption);
+        setComponent(dc.getComponentPanel());
     }
 
     /**
@@ -85,7 +95,7 @@ public class DateInput2QuickFormDialogPanel extends QuickFormDialogPanel<DateInp
     @Override
     protected DateInput2QuickFormValue createNodeValue() throws InvalidSettingsException {
         DateInput2QuickFormValue value = new DateInput2QuickFormValue();
-        value.setDate((Date)m_component.getValue());
+        value.setDate(m_model.getZonedDateTime());
         return value;
     }
 
@@ -96,7 +106,7 @@ public class DateInput2QuickFormDialogPanel extends QuickFormDialogPanel<DateInp
     public void loadNodeValue(final DateInput2QuickFormValue value) {
         super.loadNodeValue(value);
         if (value != null) {
-            m_component.setValue(value.getDate());
+            m_model.setZonedDateTime(value.getDate());
         }
     }
 
@@ -106,7 +116,7 @@ public class DateInput2QuickFormDialogPanel extends QuickFormDialogPanel<DateInp
     @Override
     public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
-        m_component.setEnabled(enabled);
+        m_model.setEnabled(enabled);
     }
 
     /**
@@ -114,7 +124,7 @@ public class DateInput2QuickFormDialogPanel extends QuickFormDialogPanel<DateInp
      */
     @Override
     protected void resetToDefault() {
-        m_component.setValue(getDefaultValue().getDate());
+        m_model.setZonedDateTime(getDefaultValue().getDate());
     }
 
 }

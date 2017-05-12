@@ -221,6 +221,30 @@
       </webResourceBundle>
       <webResourceBundle
             debug="true"
+            name="DateTime Input Quickform"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.quickform.input.date2.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/quickform/input/date2/"
+               relativePathTarget="org/knime/js/base/node/quickform/input/date2/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/quickform/input/date2/DateInput2.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/quickform/input/date2/DateInput2.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_2_17">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
             name="Credentials Input Quickform"
             version="1.0.0"
             webResourceBundleID="org.knime.js.base.node.quickform.input.credentials.bundle">
@@ -628,6 +652,16 @@
             javascriptComponentID="org_knime_js_base_node_quickform_input_date"
             name="Date Input Quickform"
             namespace="org_knime_js_base_node_quickform_input_date">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.quickform.input.date2.bundle"
+            init-method-name="init"
+            javascriptComponentID="org_knime_js_base_node_quickform_input_date2"
+            name="DateTime Input Quickform"
+            namespace="org_knime_js_base_node_quickform_input_date2"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"

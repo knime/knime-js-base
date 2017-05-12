@@ -47,19 +47,16 @@ package org.knime.js.base.node.quickform.input.date2;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+import java.util.Optional;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -67,73 +64,91 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.quickform.QuickFormNodeDialog;
+import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DialogComponentDateTimeSelection;
+import org.knime.time.util.DialogComponentDateTimeSelection.DisplayOption;
+import org.knime.time.util.SettingsModelDateTime;
 
 /**
  * The dialog for the date input quick form node.
  *
  * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
 public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
+
+    private final JCheckBox m_showNowButton;
 
     private final JCheckBox m_useMin;
 
     private final JCheckBox m_useMax;
 
-    private final JSpinner m_min;
+    private final JCheckBox m_useMinExecTime;
 
-    private final JSpinner m_max;
+    private final JCheckBox m_useMaxExecTime;
 
-    private final JSpinner m_defaultField;
+    private final DialogComponentDateTimeSelection m_min;
 
-    private final ButtonGroup m_withTime;
+    private final DialogComponentDateTimeSelection m_max;
 
-    private final JRadioButton m_date;
+    private final DialogComponentDateTimeSelection m_defaultField;
 
-    private final JRadioButton m_dateAndTime;
+    private final JCheckBox m_useDefaultExecTime;
 
-    private DateInput2QuickFormConfig m_config;
+    private final JComboBox<DateTimeType> m_type;
 
-    private String m_format = DateInput2QuickFormNodeModel.DATE_TIME_FORMAT;
+    private DateTimeInputQuickFormConfig m_config;
+
+    private DateTimeFormatter m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_TIME_FORMATTER;
+
+    private NodeSettingsRO m_settings;
 
     /** Constructors, inits fields calls layout routines. */
     DateInput2QuickFormNodeDialog() {
-        m_config = new DateInput2QuickFormConfig();
-        m_date = new JRadioButton("Date");
-        m_date.setActionCommand("date");
-        m_dateAndTime = new JRadioButton("Date and Time");
-        m_dateAndTime.setActionCommand("dateandtime");
-        m_date.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                updateFormat();
-            }
-        });
-        m_dateAndTime.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                updateFormat();
-            }
-        });
+        m_config = new DateTimeInputQuickFormConfig();
+        m_type = new JComboBox<DateTimeType>(DateTimeType.values());
+        m_type.addActionListener(e -> updateDateTimeComponents());
+
+        m_showNowButton = new JCheckBox();
+
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
-        m_withTime = new ButtonGroup();
-        m_min = new JSpinner(new SpinnerDateModel());
-        m_max = new JSpinner(new SpinnerDateModel());
-        m_defaultField = new JSpinner(new SpinnerDateModel());
-        m_useMin.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                m_min.setEnabled(m_useMin.isSelected());
-            }
-        });
-        m_useMax.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                m_max.setEnabled(m_useMax.isSelected());
-            }
-        });
-        m_min.setEnabled(m_useMin.isSelected());
-        m_max.setEnabled(m_useMax.isSelected());
+
+        m_useMinExecTime = new JCheckBox("Use execution time");
+        m_useMaxExecTime = new JCheckBox("Use execution time");
+        m_useDefaultExecTime = new JCheckBox("Use execution time");
+
+        SettingsModelDateTime minModel = new SettingsModelDateTime("min_date_time", LocalDateTime.now().withNano(0));
+        m_min = new DialogComponentDateTimeSelection(minModel, null, DisplayOption.SHOW_DATE_AND_TIME_AND_TIMEZONE);
+        SettingsModelDateTime maxModel = new SettingsModelDateTime("min_date_time", LocalDateTime.now().withNano(0));
+        m_max = new DialogComponentDateTimeSelection(maxModel, null, DisplayOption.SHOW_DATE_AND_TIME_AND_TIMEZONE);
+        SettingsModelDateTime defaultModel =
+            new SettingsModelDateTime("min_date_time", LocalDateTime.now().withNano(0));
+        m_defaultField =
+            new DialogComponentDateTimeSelection(defaultModel, null, DisplayOption.SHOW_DATE_AND_TIME_AND_TIMEZONE);
+        m_useDefaultExecTime.addItemListener(l -> defaultModel.setEnabled(!m_useDefaultExecTime.isSelected()));
+
+        final ItemListener minListener = e -> {
+            minModel.setEnabled(m_useMin.isSelected() && !m_useMinExecTime.isSelected());
+            m_useMinExecTime.setEnabled(m_useMin.isSelected());
+
+        };
+        final ItemListener maxListener = e -> {
+            maxModel.setEnabled(m_useMax.isSelected() && !m_useMaxExecTime.isSelected());
+            m_useMaxExecTime.setEnabled(m_useMax.isSelected());
+
+        };
+        m_useMin.addItemListener(minListener);
+        m_useMinExecTime.addItemListener(minListener);
+
+        m_useMax.addItemListener(maxListener);
+        m_useMaxExecTime.addItemListener(maxListener);
+
+        minModel.setEnabled(m_useMin.isSelected() && !m_useMinExecTime.isSelected());
+        maxModel.setEnabled(m_useMax.isSelected() && !m_useMaxExecTime.isSelected());
+        defaultModel.setEnabled(!m_useDefaultExecTime.isSelected());
+        m_useMinExecTime.setEnabled(m_useMin.isSelected());
+        m_useMaxExecTime.setEnabled(m_useMax.isSelected());
         createAndAddTab();
     }
 
@@ -142,66 +157,124 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
-        m_withTime.add(m_date);
-        m_withTime.add(m_dateAndTime);
-        JPanel dateAndTimePanel = new JPanel();
-        dateAndTimePanel.setLayout(new GridBagLayout());
+        // typePanel
+        JPanel typePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc4 = new GridBagConstraints();
         gbc4.insets = new Insets(0, 0, 0, 0);
         gbc4.anchor = GridBagConstraints.NORTHWEST;
-        gbc4.fill = GridBagConstraints.BOTH;
-        gbc4.weightx = 0;
+        gbc4.fill = GridBagConstraints.VERTICAL;
+        gbc4.weightx = 1;
         gbc4.weighty = 0;
         gbc4.gridx = 0;
         gbc4.gridy = 0;
-        dateAndTimePanel.add(m_date, gbc4);
-        gbc4.gridx++;
-        gbc4.weightx = 1;
-        dateAndTimePanel.add(m_dateAndTime, gbc4);
-        JPanel minPanel = new JPanel();
-        minPanel.setLayout(new GridBagLayout());
+        gbc4.insets = new Insets(3, 5, 10, 5);
+        typePanel.add(m_type, gbc4);
+        // minPanel
+        JPanel minPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.insets = new Insets(0, 0, 0, 0);
         gbc2.anchor = GridBagConstraints.NORTHWEST;
-        gbc2.fill = GridBagConstraints.BOTH;
+        gbc2.fill = GridBagConstraints.VERTICAL;
         gbc2.weightx = 0;
         gbc2.weighty = 0;
         gbc2.gridx = 0;
         gbc2.gridy = 0;
+        gbc2.insets = new Insets(9, 1, 0, 0);
         minPanel.add(m_useMin, gbc2);
         gbc2.weightx = 1;
+        gbc2.gridheight = 2;
         gbc2.gridx++;
-        gbc2.insets = new Insets(0, 5, 0, 0);
-        minPanel.add(m_min, gbc2);
-        JPanel maxPanel = new JPanel();
-        maxPanel.setLayout(new GridBagLayout());
+        gbc2.insets = new Insets(0, 0, 0, 0);
+        minPanel.add(m_min.getComponentPanel(), gbc2);
+        gbc2.insets = new Insets(0, 7, 10, 0);
+        gbc2.gridy += 2;
+        minPanel.add(m_useMinExecTime, gbc2);
+        // maxPanel
+        JPanel maxPanel = new JPanel(new GridBagLayout());
+        gbc2.gridheight = 1;
+        gbc2.weightx = 0;
+        gbc2.gridx = 0;
+        gbc2.insets = new Insets(9, 1, 0, 0);
+        maxPanel.add(m_useMax, gbc2);
+        gbc2.weightx = 1;
+        gbc2.gridheight = 2;
+        gbc2.gridx++;
+        gbc2.insets = new Insets(0, 0, 0, 0);
+        maxPanel.add(m_max.getComponentPanel(), gbc2);
+        gbc2.insets = new Insets(0, 7, 10, 0);
+        gbc2.gridy += 2;
+        maxPanel.add(m_useMaxExecTime, gbc2);
+        // defaultPanel
+        JPanel defaultPanel = new JPanel(new GridBagLayout());
+        gbc2.gridheight = 1;
         gbc2.weightx = 0;
         gbc2.gridx = 0;
         gbc2.insets = new Insets(0, 0, 0, 0);
-        maxPanel.add(m_useMax, gbc2);
-        gbc2.weightx = 1;
-        gbc2.gridx++;
-        gbc2.insets = new Insets(0, 5, 0, 0);
-        maxPanel.add(m_max, gbc2);
+        defaultPanel.add(m_defaultField.getComponentPanel(), gbc2);
+        gbc2.gridy++;
+        gbc2.insets = new Insets(0, 7, 5, 0);
+        defaultPanel.add(m_useDefaultExecTime, gbc2);
         GridBagConstraints gbc3 = (GridBagConstraints)gbc.clone();
+        gbc3.anchor = GridBagConstraints.NORTHWEST;
+        gbc3.fill = GridBagConstraints.VERTICAL;
+        gbc3.insets = new Insets(0, 1, 5, 0);
+        addPairToPanel("Now Button in Wizard: ", m_showNowButton, panelWithGBLayout, gbc3);
         gbc3.insets = new Insets(0, 0, 0, 0);
-        addPairToPanel("Selection: ", dateAndTimePanel, panelWithGBLayout, gbc3);
+        addPairToPanel("Type: ", typePanel, panelWithGBLayout, gbc3);
+        gbc3.insets = new Insets(-8, 0, 0, 0);
         addPairToPanel("Earliest: ", minPanel, panelWithGBLayout, gbc3);
         addPairToPanel("Latest: ", maxPanel, panelWithGBLayout, gbc3);
-        addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
+        gbc3.insets = new Insets(-8, 22, 0, 0);
+        addPairToPanel("Default Value: ", defaultPanel, panelWithGBLayout, gbc3);
     }
 
     /**
-     * Updates the format used to select time to either {@link DateInput2QuickFormNodeModel.DATE_FORMAT} or
-     * {@link DateInput2QuickFormNodeModel.DATE_TIME_FORMAT}, depending on the selected option.
+     * Updates the date&time dialog components depending on the selected type.
      */
-    private void updateFormat() {
-        m_format =
-                m_dateAndTime.isSelected() ? DateInput2QuickFormNodeModel.DATE_TIME_FORMAT
-                        : DateInput2QuickFormNodeModel.DATE_FORMAT;
-        m_min.setEditor(new JSpinner.DateEditor(m_min, m_format));
-        m_max.setEditor(new JSpinner.DateEditor(m_max, m_format));
-        m_defaultField.setEditor(new JSpinner.DateEditor(m_defaultField, m_format));
+    private void updateDateTimeComponents() {
+        final DateTimeType type = (DateTimeType)m_type.getSelectedItem();
+        if (type == DateTimeType.LOCAL_DATE) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_FORMATTER;
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_TIME_FORMATTER;
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_TIME_FORMATTER;
+        } else {
+            m_formatter = DateInput2QuickFormNodeModel.ZONED_DATE_TIME_FORMATTER;
+        }
+
+        final boolean useDate = !(type == DateTimeType.LOCAL_TIME);
+        final boolean useTime = !(type == DateTimeType.LOCAL_DATE);
+        final boolean useZone = type == DateTimeType.ZONED_DATE_TIME;
+        ((SettingsModelDateTime)m_min.getModel()).setUseDate(useDate);
+        ((SettingsModelDateTime)m_min.getModel()).setUseTime(useTime);
+        ((SettingsModelDateTime)m_min.getModel()).setUseZone(useZone);
+
+        ((SettingsModelDateTime)m_max.getModel()).setUseDate(useDate);
+        ((SettingsModelDateTime)m_max.getModel()).setUseTime(useTime);
+        ((SettingsModelDateTime)m_max.getModel()).setUseZone(useZone);
+
+        ((SettingsModelDateTime)m_defaultField.getModel()).setUseDate(useDate);
+        ((SettingsModelDateTime)m_defaultField.getModel()).setUseTime(useTime);
+        ((SettingsModelDateTime)m_defaultField.getModel()).setUseZone(useZone);
+
+        // load current value and update warning label
+        if (m_settings != null) {
+            try {
+                loadCurrentValue(m_settings);
+            } catch (InvalidSettingsException e) {
+                // nothing to do
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadCurrentValue(final NodeSettingsRO value) throws InvalidSettingsException {
+        m_settings = value;
+        super.loadCurrentValue(value);
     }
 
     /**
@@ -209,22 +282,23 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-            throws NotConfigurableException {
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
-        m_defaultField.setValue(m_config.getDefaultValue().getDate());
+        ((SettingsModelDateTime)m_defaultField.getModel()).setZonedDateTime(m_config.getDefaultValue().getDate());
+        m_showNowButton.setSelected(m_config.getShowNowButton());
         m_useMin.setSelected(m_config.getUseMin());
         m_useMax.setSelected(m_config.getUseMax());
-        m_min.setValue(m_config.getMin());
-        m_max.setValue(m_config.getMax());
-        m_min.setEnabled(m_useMin.isSelected());
-        m_max.setEnabled(m_useMax.isSelected());
-        if (m_config.getWithTime()) {
-            m_dateAndTime.setSelected(true);
-        } else {
-            m_date.setSelected(true);
-        }
-        updateFormat();
+        m_useMinExecTime.setSelected(m_config.getUseMinExecTime());
+        m_useMaxExecTime.setSelected(m_config.getUseMaxExecTime());
+        m_useDefaultExecTime.setSelected(m_config.getUseDefaultExecTime());
+        ((SettingsModelDateTime)m_min.getModel()).setZonedDateTime(m_config.getMin());
+        ((SettingsModelDateTime)m_max.getModel()).setZonedDateTime(m_config.getMax());
+        m_defaultField.getModel().setEnabled(!m_useDefaultExecTime.isSelected());
+        m_min.getModel().setEnabled(m_useMin.isSelected() && !m_useMinExecTime.isSelected());
+        m_max.getModel().setEnabled(m_useMax.isSelected() && !m_useMaxExecTime.isSelected());
+        m_type.setSelectedItem(m_config.getType());
+        updateDateTimeComponents();
     }
 
     /**
@@ -232,13 +306,37 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        // check if min is before max
+        final Optional<String> validationResult =
+            DateInput2QuickFormNodeModel.validateMinMax(((SettingsModelDateTime)m_max.getModel()).getZonedDateTime(),
+                true, false, ((SettingsModelDateTime)m_min.getModel()).getZonedDateTime(),
+                ((SettingsModelDateTime)m_max.getModel()).getZonedDateTime(), (DateTimeType)m_type.getSelectedItem());
+        if (validationResult.isPresent()) {
+            throw new InvalidSettingsException("The latest date must not be before the earliest date!");
+        }
+        // check if default is inside min/max
+        if (!m_useDefaultExecTime.isSelected()) {
+            final Optional<String> validationResult2 = DateInput2QuickFormNodeModel.validateMinMax(
+                ((SettingsModelDateTime)m_defaultField.getModel()).getZonedDateTime(),
+                m_useMin.isSelected() && !m_useMinExecTime.isSelected(),
+                m_useMax.isSelected() && !m_useMaxExecTime.isSelected(),
+                ((SettingsModelDateTime)m_min.getModel()).getZonedDateTime(),
+                ((SettingsModelDateTime)m_max.getModel()).getZonedDateTime(), (DateTimeType)m_type.getSelectedItem());
+            if (validationResult2.isPresent()) {
+                throw new InvalidSettingsException(validationResult2.get());
+            }
+        }
         saveSettingsTo(m_config);
-        m_config.getDefaultValue().setDate((Date)m_defaultField.getValue());
+        m_config.getDefaultValue().setDate(((SettingsModelDateTime)m_defaultField.getModel()).getZonedDateTime());
+        m_config.setShowNowButton(m_showNowButton.isSelected());
         m_config.setUseMin(m_useMin.isSelected());
         m_config.setUseMax(m_useMax.isSelected());
-        m_config.setMin((Date)m_min.getValue());
-        m_config.setMax((Date)m_max.getValue());
-        m_config.setWithTime(m_dateAndTime.isSelected());
+        m_config.setUseMinExecTime(m_useMinExecTime.isSelected());
+        m_config.setUseMaxExecTime(m_useMaxExecTime.isSelected());
+        m_config.setUseDefaultExecTime(m_useDefaultExecTime.isSelected());
+        m_config.setMin(((SettingsModelDateTime)m_min.getModel()).getZonedDateTime());
+        m_config.setMax(((SettingsModelDateTime)m_max.getModel()).getZonedDateTime());
+        m_config.setType((DateTimeType)m_type.getSelectedItem());
         m_config.saveSettings(settings);
     }
 
@@ -249,7 +347,23 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
         DateInput2QuickFormValue value = new DateInput2QuickFormValue();
         value.loadFromNodeSettings(settings);
-        return new SimpleDateFormat(m_format).format(value.getDate());
+        final ZonedDateTime zdt = m_useDefaultExecTime.isSelected() ? ZonedDateTime.now() : value.getDate();
+        final DateTimeType type = (DateTimeType)m_type.getSelectedItem();
+        final Temporal temporal;
+        if (type == DateTimeType.LOCAL_DATE) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_FORMATTER;
+            temporal = zdt.toLocalDate();
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_TIME_FORMATTER;
+            temporal = zdt.toLocalTime();
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_TIME_FORMATTER;
+            temporal = zdt.toLocalDateTime();
+        } else {
+            m_formatter = DateInput2QuickFormNodeModel.ZONED_DATE_TIME_FORMATTER;
+            temporal = zdt;
+        }
+        return m_formatter.format(temporal);
     }
 
 }
