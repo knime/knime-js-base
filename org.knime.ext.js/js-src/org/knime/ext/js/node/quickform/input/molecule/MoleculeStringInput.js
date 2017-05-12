@@ -1156,7 +1156,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
                 format = "SDF";
             }
             if (typeof k != 'undefined') {
-            	if (format.toLowerCase() === "rxn" || format.toLowerCase() === "sdf")
+            	if (format.toLowerCase() === "rxn" || format.toLowerCase() === "sdf" || format.toLowerCase() === "mol")
             		molecule = k.getMolfile();
             	else	
             		molecule = k.getSmiles();
