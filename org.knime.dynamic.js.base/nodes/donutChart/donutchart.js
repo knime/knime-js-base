@@ -12,6 +12,8 @@
 	var excludeCat;
 	var missValCatValue;
 	
+	var showWarnings;
+	
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
 
@@ -19,7 +21,9 @@
 		_representation = representation;
 		_value = value;
 		
-		if (_representation.warnMessage) {
+		showWarnings = _representation.options.showWarnings;
+		
+		if (_representation.warnMessage && showWarnings) {
 			knimeService.setWarningMessage(_representation.warnMessage);
 		}
 
@@ -329,6 +333,9 @@
 		}
 
 		// Set warning messages
+		if (!showWarnings) {
+			return;
+		}
 		if (plotData.length == 0) {
 			// No data available warnings
 			var str;

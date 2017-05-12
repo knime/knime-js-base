@@ -82,6 +82,9 @@
 				<svgOption name="Image" id="svg" portIndex="0" label="Image" additionalWait="500" defaultWidth="600" defaultHeight="400" defaultFullscreen="true">
 					Settings for image generation.
 				</svgOption>
+				<checkBoxOption name="Show warnings in view" id="showWarnings" label="Show warnings in view" defaultValue="true" loadDefaults="true">
+				    If checked, warning messages will be displayed in the view when they occur.
+				</checkBoxOption>
     		</options>
     	</tab>
 
