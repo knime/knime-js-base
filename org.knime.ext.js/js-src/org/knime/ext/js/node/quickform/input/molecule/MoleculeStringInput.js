@@ -1113,10 +1113,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 				return false;
 			}
 		} else {
-			var k = ketcher;
-			if (inWebportal) {
-				k = sketcherFrame.get(0).contentWindow.ketcher;
-			}
+			var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
             if (typeof k == 'undefined') {
             	errorMessage.text("Ketcher object not defined.");
 				errorMessage.css('display', 'block');
@@ -1154,10 +1151,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 				molecule = null;
 			}
 		} else {
-			var k = ketcher;
-			if (inWebportal) {
-				k = sketcherFrame.get(0).contentWindow.ketcher;
-			}
+			var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
 			if (!format) {
                 format = "SDF";
             }

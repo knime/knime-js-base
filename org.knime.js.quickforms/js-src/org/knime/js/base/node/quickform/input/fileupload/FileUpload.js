@@ -115,6 +115,9 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 				fileUpload.setValidationErrorMessage(null);
 				return true;
 			}
+		} else {
+			// if native component is not present there can be no validation
+			return true;
 		}
 		var errorMessage = 'No file selected';
 		if (m_representation.label) {
