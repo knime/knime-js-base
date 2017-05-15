@@ -1,7 +1,3 @@
-// TODO
-// breadcrumb click <-> zoom
-// Can I filter out tiny nodes dynamically?
-
 (sunburst_namespace = function() {
 
   var view = {};
@@ -859,6 +855,19 @@
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
           .attr("pointer-events", "none")
+          .attr("fill", function() {
+            var polygonElement = this.previousElementSibling;
+            var fill = getComputedStyle(polygonElement).fill;
+            var rgb = d3.rgb(fill);
+            // brightness formula taken from: https://www.w3.org/TR/AERT#color-contrast
+            // brightness range: 0-255
+            var brightness = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
+            if (brightness <= 127) {
+              return "white";
+            } else {
+              return "black";
+            }
+          })
           .text(function(d) { return d.name; })
           .each(wrap);
 
@@ -877,10 +886,6 @@
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
           .text(statisticString)
-
-      // Make the breadcrumb trail visible, if it's hidden.
-      d3.select("#trail")
-          .attr("visibility", "visible");
     }
 
     // Generate a string that describes the points of a breadcrumb polygon.
@@ -975,10 +980,10 @@
     }
 
     function initializeBreadcrumbTrail(plottingSurface) {
-      // Add the svg area.
-      var trail = plottingSurface.append("svg:svg")
-          .attr("width", width)
-          .attr("height", 50)
+      // var trail = plottingSurface.append("svg:svg")
+      //    .attr("width", width)
+      //    .attr("height", 50)
+      var trail = plottingSurface.append("svg:g")
           .attr("id", "trail")
 
       // Add the label at the end, for the percentage.
@@ -993,9 +998,7 @@
       }); 
 
       // Dimensions of legend item: width, height, spacing.
-      var li = {
-        w: 100, h: 15, s: 6, r: 6
-      };
+      var li = { w: 100, h: 15, s: 6, r: 6 };
 
       var legend = plottingSurface.append("g")
           .attr("width", li.w)
