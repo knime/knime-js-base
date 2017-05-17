@@ -76,7 +76,8 @@
     // Check which rows are included by the filter/selection.
     var includedRows = knimeTable1.getRows().filter(function(row) {
       var includedInFilter = !currentFilter || knimeTable1.isRowIncludedInFilter(row.rowKey, currentFilter);
-      var includedInSelection = !_value.options.showSelectedOnly || selectedRows.length == 0 || selectedRows.indexOf(row.rowKey) != -1;
+      // var includedInSelection = !_value.options.showSelectedOnly || selectedRows.length == 0 || selectedRows.indexOf(row.rowKey) != -1;
+      var includedInSelection = !_value.options.showSelectedOnly || selectedRows.indexOf(row.rowKey) != -1;
       return includedInFilter && includedInSelection;
     });
     
@@ -378,16 +379,22 @@
     var w = Math.max(50, svgWidth - margin.left - margin.right);
     var h = Math.max(50, svgHeight - margin.top - margin.bottom);
 
+    // Check if there is data.
     if (_data.children.length == 0) {
-      svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "central")
-        .attr("x", w/2)
-        .attr("y", h/2)
-        .attr("id", "errorMsg")
-        .text("Error: No data available")
-
+      if (knimeTable1.getNumRows() == 0) {
+        svg.append("text")
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "central")
+          .attr("x", w/2)
+          .attr("y", h/2)
+          .attr("id", "errorMsg")
+          .text("Error: No data available");
+      } else {   
+        knimeService.setWarningMessage("There is no data to display due to a filter or selection.", "filter_warnMessage");
+      }
     } else {
+      knimeService.setWarningMessage(null, "filter_warnMessage");
+
       var options = {
         legend: _value.options.legend,
         breadcrumb: _value.options.breadcrumb,
@@ -527,18 +534,45 @@
 
 
     // Add transparent circle on top. This is used for clicking / zooming out when donut hole is enabbled.
-    sunburstGroup.append("svg:circle")
-      .attr("id", "donut_hole_zoom_out_circle")
-      .attr("r", rootRadius)
-      .attr("fill", "none")
-      .attr("pointer-events", "all")
-      .attr("display", mouseMode == "zoom" ? "inline" : "none")
-      .on('click', function() {
-        if (zoomNode != null && zoomNode.parent != null) {
-          zoom(zoomNode.parent);
-        }
-      });
-      
+    if (options.donutHole) {
+      sunburstGroup.append("svg:circle")
+        .attr("id", "donut_hole_button")
+        .attr("r", rootRadius)
+        .attr("fill", "none")
+        .attr("pointer-events", "all")
+        .on('click', function() {
+          if (mouseMode == "zoom") {
+            if (zoomNode != null && zoomNode.parent != null) {
+              zoom(zoomNode.parent);
+            }
+          }
+          if (mouseMode == "select") {
+            if (zoomNode != null) {
+              select(zoomNode);
+            } else {
+              select(nodes[0]);
+            }
+            if (_value.options.showSelectedOnly) {
+              highlitedPath = null;
+              transformData();
+              drawChart();
+            } 
+          }
+          if (mouseMode == "highlite") {
+            clearHighliting();
+          }
+        })
+        .on("mouseover", function() {
+          if (mouseMode == "highlite" && highlitedPath == null) {
+            setPropAllNodes('active', true);
+            sunburstGroup.selectAll("path")
+              .attr("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
+
+            toggleBreadCrumb(false);
+            toggleInnerLabel(false);
+          }
+        });
+    }
 
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
@@ -871,6 +905,9 @@
           .text(function(d) { return d.name; })
           .each(wrap);
 
+      g.selectAll("polygon")
+        .style("cursor", mouseMode == 'zoom' ? "pointer" : "default")
+
       // Set position for entering and updating nodes.
       g.attr("transform", function(d, i) {
         return "translate(" + i * (b.w + b.s) + ", 0)";
@@ -1095,29 +1132,18 @@
     if (_representation.options.zoomable) {
       knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
         mouseMode = "zoom";
-        d3.select("#donut_hole_zoom_out_circle")
-          .attr("display", "inline");
      	  toggleButton();
       });
     }
     if (_representation.options.selection) {
       knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
         mouseMode = "select";
-        d3.select("#donut_hole_zoom_out_circle")
-          .attr("display", "none");
-        if (_value.options.showSelectedOnly) {
-          highlitedPath = null;
-          transformData();
-          drawChart();
-        }
      	  toggleButton();
       });
     }
     if (_representation.options.highliting) {
       knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
         mouseMode = "highlite";
-        d3.select("#donut_hole_zoom_out_circle")
-          .attr("display", "none");
      	  toggleButton();
       });
     }
@@ -1251,7 +1277,6 @@
         if (this.checked) {
           highlitedPath = null;
         }
-        highlitedPath = null;
         transformData();
         drawChart();
       });
