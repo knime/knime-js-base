@@ -93,7 +93,7 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		if (representation.separator==null || representation.separator.length==0) {
 			separator = null;
 		} else {
-			separator = new RegExp(representation.separator);
+			separator = new RegExp(getSeperatorRegex());
 		}
 		omitEmpty = representation.omitempty;
 		input.blur(callUpdate);
@@ -155,7 +155,50 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		var viewValue = new Object();
 		viewValue.string = input.val();
 		return viewValue;
-	};
+	}
+	
+	function getSeperatorRegex() {
+		var sep = viewRepresentation.separator;
+		var sepRegex = '';
+		if (viewRepresentation.separateeachcharacter || typeof sep == 'undefined' || sep == null || sep == '') {
+			return sepRegex;
+		}
+		
+		for (var i = 0; i < sep.length; i++) {
+			if (i > 0) {
+				sepRegex += '|';
+			}
+			var c = sep.charAt(i);
+			if (c == '\\') {
+				if (i + 1 < sep.length) {
+					var c1 = sep.charAt(i + 1);
+					if (c1 == 'n') {
+						sepRegex += '\\n';
+                        i++;
+                    } else if (c1 == 't') {
+                    	sepRegex += '\\t';
+                        i++;
+                    } else {
+                    	var errorMessage = 'A back slash must not be followed by a char other than n or t; ignoring the separator: ' + c + c1;
+                    	if (knimeService) {
+                    		knimeService.setWarningMessage(errorMessage, 'invalidSeparator' + i);
+                    	} else {
+                    		setValidationErrorMessage(errorMessage);
+                    	}
+                    }
+				} else {
+					sepRegex += '\\\\';
+				}
+			} else if (c == '[' || c == '^') {
+                // these symbols are not allowed in [] (see the else-block below)
+				sepRegex += '\\' + c;
+            } else {
+                // a real, non-specific char
+            	sepRegex += '[' + c + ']';
+            }
+		}
+		return sepRegex;
+	}
 	
 	function matchExact(r, str) {
 		var match = str.match(r);
