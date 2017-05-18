@@ -113,6 +113,10 @@
                     format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255" enableDependency="applyColors" enableValue="false">
                     The filling color of the boxes. Not available if the previous option is checked. 
                 </colorOption>
+                
+                <checkBoxOption name="Show warnings in view" id="showWarnings" label="Show warnings in view" defaultValue="true" loadDefaults="true">
+                    If checked, warning messages will be displayed in the view when they occur.
+                </checkBoxOption>
 			</options>
 		</tab>
 		

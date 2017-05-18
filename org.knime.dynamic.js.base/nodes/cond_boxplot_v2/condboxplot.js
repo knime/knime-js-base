@@ -550,6 +550,10 @@
     }
     
     processMissingValues = function() {
+    	if (!_representation.options.showWarnings) {
+        	return;
+        }
+    	
     	knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
     	knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
     	knimeService.clearWarningMessage(IGNORED_MISSING_VALUES);

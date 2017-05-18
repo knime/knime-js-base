@@ -540,6 +540,10 @@
     };
     
     processMissingValues = function() {
+        if (!_representation.options.showWarnings) {
+        	return;
+        }
+    	
     	knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
     	knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
     	knimeService.clearWarningMessage(IGNORED_MISSING_VALUES);
@@ -567,6 +571,7 @@
 	    		}
 	    	}
     	} else {
+    		// plot a box for only one data column
     		if (excludedDataCols.indexOf(_value.options.numCol) != -1) {
     			knimeService.setWarningMessage("No chart was generated since the selected data column has only missing values.\nChoose another data column or re-run the workflow with different data.", NO_DATA_AVAILABLE);
     		} else if (numMissValPerCol[_value.options.numCol] !== undefined) {
