@@ -8,6 +8,15 @@
 	var defaultFontSize = 12;
     var _representation, _value;
     
+    var _switchMissValClassCbx;
+    var _missValClass;
+    
+    var MISSING_VALUES_CLASS = "Missing values";  
+    
+    var MISSING_VALUES_ONLY = "missingValuesOnly";
+    var IGNORED_MISSING_VALUES = "ignoredMissingValues";
+	var NO_DATA_AVAILABLE = "noDataAvailable";
+    
     input.init = function(representation, value) { 
     	// Store value and representation for later        
         _value = value;
@@ -93,10 +102,10 @@
             .text(_value.options.subtitle);
         // y attr is set in drawChart
         
-        drawChart();
         if (_representation.options.enableViewControls) {
-			drawControls();
-		}
+        	drawControls();
+        }
+        drawChart();
         
         if (parent != undefined && parent.KnimePageLoader != undefined) {
             parent.KnimePageLoader.autoResize(window.frameElement.id);
@@ -133,11 +142,25 @@
     	
     	if (_representation.options.enableColumnSelection) {
     		var colSelect = knimeService.createMenuSelect('columnSelect', _value.options.numCol, _representation.options.columns, function() {
-    			_value.options.numCol = this.value;
+    			_value.options.numCol = this.value;    			
                 drawChart();
     		});
     		knimeService.addMenuItem('Selected column:', 'minus-square fa-rotate-90', colSelect);
+    		
+    		if (_representation.options.enableSwitchMissValClass) {
+	    		knimeService.addMenuDivider();
+	    	}  
         }
+    	
+    	if (_representation.options.enableSwitchMissValClass) {
+    		_switchMissValClassCbx = knimeService.createMenuCheckbox('switchMissValClassCbx', _value.options.includeMissValClass, function() {
+	    		if (_value.options.includeMissValClass != this.checked) {
+	    			_value.options.includeMissValClass = this.checked;	
+	    			drawChart();
+	    		}
+	    	});
+	    	knimeService.addMenuItem("Include 'Missing values' class: ", 'question', _switchMissValClassCbx);
+	    }
 	};
     
     updateTitle = function() {
@@ -165,7 +188,14 @@
     // Draws the chart. If resizing is true, there are no animations.
     function drawChart(resizing) {
         // Select the data to show
-    	_data = _representation.inObjects[0][_value.options.numCol];
+    	_data = _representation.inObjects[0].stats[_value.options.numCol];
+    	
+        _missValClass = undefined;
+        if (!_value.options.includeMissValClass && _data[MISSING_VALUES_CLASS] !== undefined) {
+        	_missValClass = _data[MISSING_VALUES_CLASS];
+        	delete _data[MISSING_VALUES_CLASS];
+        }
+    	
         // Find the maximum y-value for the axis
         maxY = Number.NEGATIVE_INFINITY;
         minY = Number.POSITIVE_INFINITY;
@@ -505,12 +535,75 @@
        
        // Fade out outliers
        exoutl.exit().transition().style("opacity", 0).each("end", function() { d3.select(this).remove(); });
+       
+       processMissingValues();
+       
+       if (!_value.options.includeMissValClass && _missValClass !== undefined) {
+     	   _data[MISSING_VALUES_CLASS] = _missValClass;       	
+       }       
 
        // Set resize handler
        if (_representation.options.svg.fullscreen) {
     	   var win = document.defaultView || document.parentWindow;
     	   win.onresize = resize;
        }  
+    }
+    
+    processMissingValues = function() {
+    	knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
+    	knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
+    	knimeService.clearWarningMessage(IGNORED_MISSING_VALUES);
+    	
+    	var excludedClasses = _representation.inObjects[0].excludedClasses[_value.options.numCol];
+    	var ignoredMissVals = _representation.inObjects[0].ignoredMissVals[_value.options.numCol];
+   	
+    	if (_switchMissValClassCbx !== undefined && _missValClass === undefined && _data[MISSING_VALUES_CLASS] === undefined && excludedClasses.indexOf(MISSING_VALUES_CLASS) == -1 && ignoredMissVals[MISSING_VALUES_CLASS] === undefined) {
+    		// there's no missing values in class column - disable the control
+    		_switchMissValClassCbx.disabled = true;
+    		_switchMissValClassCbx.checked = false;
+    	} else {
+    		// restore the state
+    		_switchMissValClassCbx.disabled = false;
+    		_switchMissValClassCbx.checked = _value.options.includeMissValClass;
+    	}
+    	
+    	// if option "Include 'Missing values'" is off, we don't show a warning about them
+    	if (!_value.options.includeMissValClass) {			
+			excludedClasses = excludedClasses.filter(function(x) {
+				return x != MISSING_VALUES_CLASS;
+			});
+			
+			var missValClass = undefined;
+	        if (!_value.options.includeMissValClass && ignoredMissVals[MISSING_VALUES_CLASS] !== undefined) {
+	        	missValClass = ignoredMissVals[MISSING_VALUES_CLASS];
+	        	delete ignoredMissVals[MISSING_VALUES_CLASS];
+	        }
+		}
+    	
+    	if (Object.keys(_data).length == 0) {
+    		if (_missValClass !== undefined) {
+    			knimeService.setWarningMessage("No chart was generated since all classes have only missing values.\nThere are values where the class name is missing.\nTo see them switch on the option \"Include 'Missing values' class\" in the view settings.", NO_DATA_AVAILABLE);    			
+    		} else {    			
+    			knimeService.setWarningMessage("No chart was generated since all classes have only missing values.\nChoose another data column or re-run the workflow with different data.", NO_DATA_AVAILABLE);
+    		}
+    	} else {
+    		if (excludedClasses.length > 0) {    			
+    			knimeService.setWarningMessage("Following classes contain only missing values and were excluded from the view:\n    " + excludedClasses.join("\n    "), MISSING_VALUES_ONLY);
+    		}
+    		if (Object.keys(ignoredMissVals).length > 0) {
+    			var str = '';
+    			for (var key in ignoredMissVals){
+    			    if (ignoredMissVals.hasOwnProperty(key) && (_value.options.includeMissValClass || key != MISSING_VALUES_CLASS)) {  // if option "Include 'Missing values'" is off, we don't show a warning about them
+    			        str += "    " + key + " - " + ignoredMissVals[key] + " missing value(s)\n";
+    			    }
+    			}
+    			knimeService.setWarningMessage("Missing values ignored during statistics calculations per class:\n" + str, IGNORED_MISSING_VALUES);    			
+    		}
+    	}
+    	
+    	if (!_value.options.includeMissValClass && missValClass !== undefined) {
+    		ignoredMissVals[MISSING_VALUES_CLASS] = missValClass;       	
+         }
     }
     
     input.getSVG = function() {

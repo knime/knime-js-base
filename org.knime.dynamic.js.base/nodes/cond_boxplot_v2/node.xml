@@ -65,6 +65,11 @@
                     id="numCol" inPortIndex="0" label="Selected Column" filterClasses="org.knime.core.data.DoubleValue">
                     Select the column that contains the numeric values.
                 </columnSelectorOption>
+                
+                <checkBoxOption name="Include 'Missing values' class" id="includeMissValClass" label="Include 'Missing values' class" 
+                    defaultValue="true" saveInView="true" loadDefaults="true">
+                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
+                </checkBoxOption>
 			</options>
 		</tab>
 		<tab name="General Plot Options">
@@ -128,6 +133,10 @@
                <checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
                    label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
                    Check to enable the editing of the subtitle within the view.
+               </checkBoxOption>
+               <checkBoxOption name="Enable switching 'Missing values' class" id="enableSwitchMissValClass"
+                    label="Enable switching 'Missing values' class" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
+                    Check to enable to show and hide 'Missing values' class in the view.
                </checkBoxOption>
            </options>
         </tab>

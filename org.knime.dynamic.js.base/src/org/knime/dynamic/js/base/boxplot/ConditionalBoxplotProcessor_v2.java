@@ -1,5 +1,9 @@
 package org.knime.dynamic.js.base.boxplot;
+
+import java.util.LinkedHashMap;
+
 import org.knime.base.node.viz.plotter.box.BoxplotCalculator;
+import org.knime.base.node.viz.plotter.box.BoxplotStatistics;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -8,6 +12,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicJSProcessor;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
              
@@ -29,8 +35,77 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
             throw new InvalidSettingsException("No numeric columns given");
         }
 
-        Object stats = bc.calculateMultipleConditional(dt, catCol, numColumns, exec);
-        return new Object[] {stats, inObjects[1]};
+        LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats =
+            bc.calculateMultipleConditional(dt, catCol, numColumns, exec);
+        CondBoxPlotResult res = new CondBoxPlotResult(stats, bc.getExcludedClasses(), bc.getIgnoredMissVals());
+        return new Object[]{res, inObjects[1]};
     }
 
+    @JsonAutoDetect
+    public static class CondBoxPlotResult {
+        private LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> m_stats;
+
+        private LinkedHashMap<String, String[]> m_excludedClasses;
+
+        private LinkedHashMap<String, LinkedHashMap<String, Long>> m_ignoredMissVals;
+
+        /**
+         * @return the stats
+         */
+        public LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> getStats() {
+            return m_stats;
+        }
+
+        /**
+         * @param stats the stats to set
+         */
+        public void setStats(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats) {
+            m_stats = stats;
+        }
+
+        /**
+         * @return the excludedClasses
+         */
+        public LinkedHashMap<String, String[]> getExcludedClasses() {
+            return m_excludedClasses;
+        }
+
+        /**
+         * @param excludedClasses the excludedClasses to set
+         */
+        public void setExcludedClasses(LinkedHashMap<String, String[]> excludedClasses) {
+            m_excludedClasses = excludedClasses;
+        }
+
+        /**
+         * @return the ignoredMissVals
+         */
+        public LinkedHashMap<String, LinkedHashMap<String, Long>> getIgnoredMissVals() {
+            return m_ignoredMissVals;
+        }
+
+        /**
+         * @param ignoredMissVals the ignoredMissVals to set
+         */
+        public void setIgnoredMissVals(LinkedHashMap<String, LinkedHashMap<String, Long>> ignoredMissVals) {
+            m_ignoredMissVals = ignoredMissVals;
+        }
+
+        /**
+         * @param stats
+         * @param excludedClasses
+         * @param ignoredMissVals
+         */
+        public CondBoxPlotResult(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats,
+            LinkedHashMap<String, String[]> excludedClasses,
+            LinkedHashMap<String, LinkedHashMap<String, Long>> ignoredMissVals) {
+            m_stats = stats;
+            m_excludedClasses = excludedClasses;
+            m_ignoredMissVals = ignoredMissVals;
+        }
+
+        public CondBoxPlotResult() {
+
+        }
+    }
 }
