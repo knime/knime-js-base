@@ -258,7 +258,7 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
                     counter++;
                 }
 
-                if (warnMsg != null) {
+                if (warnMsg != null && !warnMsg.isEmpty()) {
                     setWarningMessage(warnMsg);
                     if (m_config.getShowWarningInView()) {
                         getViewRepresentation().getWarnings().setWarningMessage(warnMsg, LIFT_CALCULATOR_WARNING_ID);

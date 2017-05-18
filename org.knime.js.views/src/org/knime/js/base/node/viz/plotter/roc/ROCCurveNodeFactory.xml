@@ -44,7 +44,8 @@
             <option name="Columns containing the positive class probabilities">Select the
             column(s) that contain the probabilities for the a row being from the positive class.        
             </option>
-            <option name="Ignore missing values">If checked, the missing values in class or positive class probabilities columns will be ignored with a corresponding warning message.</option>
+            <option name="Ignore missing values">If checked, the missing values in Class or Positive Class Probabilities columns will be ignored with a corresponding warning message. 
+            Otherwise, missing values in the Class Column will be treated as incorrect predictions; missing values in the Positive Class Probabilities columns will be sorted to the end (low probability) of the curves.</option>
         </tab>
 		<tab name="General Plot Options">
 		    <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>

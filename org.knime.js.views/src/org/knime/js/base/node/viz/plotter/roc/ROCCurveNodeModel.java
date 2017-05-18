@@ -244,7 +244,7 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
                 copyConfigToView();
 
                 String warnMsg = calc.getWarningMessage();
-                if (warnMsg != null) {
+                if (warnMsg != null && !warnMsg.isEmpty()) {
                     setWarningMessage(warnMsg);
                     if (m_config.getShowWarningInView()) {
                         getViewRepresentation().getWarnings().setWarningMessage(warnMsg, ROC_CALCULATOR_WARNING_ID);
