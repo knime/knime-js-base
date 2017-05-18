@@ -1,6 +1,8 @@
 package org.knime.dynamic.js.base.grouped;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.knime.base.data.aggregation.AggregationOperator;
 import org.knime.base.data.aggregation.ColumnAggregator;
@@ -11,7 +13,6 @@ import org.knime.base.data.aggregation.numerical.MeanOperator;
 import org.knime.base.data.aggregation.numerical.SumOperator;
 import org.knime.base.node.preproc.groupby.BigGroupByTable;
 import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
-import org.knime.base.node.preproc.groupby.GroupByTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
@@ -108,7 +109,20 @@ public class GroupedProcessor implements DynamicJSProcessor {
 			colAggregators = new ColumnAggregator[]{new ColumnAggregator(table.getDataTableSpec().getColumnSpec(catColName), operator)};
 		}
 		
-		GroupByTable groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}), colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, true);
+        BigGroupByTable groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
+            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, true);
+
+        // Missing values processing
+        Map<String, Long> missingValuesMap = groupTable.getMissingValuesMap();
+        if (missingValuesMap.size() > 0) {
+            String warning =
+                "The following data columns have missing values, which were ignored during the aggregation:\n"
+                    + missingValuesMap.entrySet().stream()
+                        .map(x -> "    " + x.getKey() + " - " + x.getValue().toString() + " missing value(s)")
+                        .collect(Collectors.joining(",\n"));
+            setWarningMessage(warning);
+        }
+
 		PortObject[] processedObjects = new PortObject[inObjects.length];
 		processedObjects[0] = groupTable.getBufferedTable();
 		System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
