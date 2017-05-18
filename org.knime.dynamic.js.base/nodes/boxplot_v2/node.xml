@@ -45,6 +45,7 @@
 				<columnFilterOption name="Included columns"
 					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
 					Select the columns for which you wish to plot boxes.
+					Missing values in data columns will be ignored with a corresponding warning messages.
 				</columnFilterOption>
 				
 				<checkBoxOption name="Plot multiple boxes" id="multi"
