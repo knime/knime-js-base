@@ -33,7 +33,7 @@
 					id="freq" inPortIndex="0" label="Frequency columns" filterClasses="org.knime.core.data.DoubleValue"
 					enableDependency="aggr" enableValue="Sum Average">
 					Select the columns with frequencies for which you wish to plot bars.
-					<n:i>Note:</n:i> Missing values in the frequency column will be ignored with a corresponding warning message.<n:br/>.
+					<n:i>Note:</n:i> Missing values in the frequency column will be ignored with a corresponding warning message.<n:br/>
 					If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.
 				</columnFilterOption>
 			</options>

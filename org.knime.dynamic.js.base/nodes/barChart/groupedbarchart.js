@@ -56,6 +56,8 @@
 	 * Required for missing values handling.
 	 */
 	var excludeFreqColCatMap;
+	
+	var showWarnings;
 
 	var MISSING_VALUES_LABEL = "Missing values";
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
@@ -67,7 +69,9 @@
 		_value = value;
 		_representation = representation;
 		
-		if (_representation.warnMessage) {
+		showWarnings = _representation.options.showWarnings;
+        
+        if (_representation.warnMessage && showWarnings) {
 			knimeService.setWarningMessage(_representation.warnMessage);
 		}
 				
@@ -477,9 +481,12 @@
 					}
 				}			
 			}
-		}
+		}		
 		
-		// Set warning messages		
+		// Set warning messages
+        if (!showWarnings) {
+            return;
+        }
 		if (plotData.length == 0) {
 			// No data available warnings
 			var str;
