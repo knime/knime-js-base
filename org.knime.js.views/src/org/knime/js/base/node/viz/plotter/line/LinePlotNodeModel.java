@@ -376,7 +376,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                 dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
             }
             if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
-                dataset.setDateTimeFormat(m_config.getDateFormat(), col);
+                //dataset.setDateTimeFormat(m_config.getDateFormat(), col);
+                dataset.setDateTimeFormat(m_config.getGlobalDateTimeFormat(), col);
             }
         }
 
@@ -518,7 +519,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
         representation.setImageWidth(m_config.getImageWidth());
         representation.setImageHeight(m_config.getImageHeight());
-        representation.setDateTimeFormat(m_config.getDateFormat());
+        representation.setGlobalDateTimeFormat(m_config.getGlobalDateTimeFormat());
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
@@ -529,6 +530,11 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         // added with 3.4
         representation.setMissingValueMethod(m_config.getMissingValueMethod());
         representation.setShowWarningInView(m_config.getShowWarningInView());
+        representation.setGlobalDateTimeLocale(m_config.getGlobalDateTimeLocale());
+        representation.setGlobalLocalDateFormat(m_config.getGlobalLocalDateFormat());
+        representation.setGlobalLocalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
+        representation.setGlobalLocalTimeFormat(m_config.getGlobalLocalTimeFormat());
+        representation.setGlobalZonedDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
 
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());

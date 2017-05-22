@@ -234,7 +234,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
         m_dateFormatChooser =
             new DialogComponentStringSelection(new SettingsModelString(ScatterPlotViewConfig.DATE_FORMAT, null),
-                "Date format: ", LinePlotNodeDialogPane.PREDEFINED_FORMATS, true);
+                "Date format: ", LinePlotNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS, true);
 
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
@@ -637,7 +637,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_dotSize.setValue(config.getDotSize());
         m_maxRowsSpinner.setValue(config.getMaxRows());
 
-        m_dateFormatChooser.replaceListItems(LinePlotNodeDialogPane.createPredefinedFormats(),
+        m_dateFormatChooser.replaceListItems(LinePlotNodeDialogPane.createPredefinedDateTimeFormats(),
             config.getDateFormat());
         m_imageWidthSpinner.setValue(config.getImageWidth());
         m_imageHeightSpinner.setValue(config.getImageHeight());
