@@ -796,4 +796,47 @@ propagated with or for interoperation with KNIME.
          version="0.0.0"
          fragment="true"/>
 
+   <plugin
+         id="org.knime.ext.seleniumdrivers.multios"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.knime.ext.seleniumdrivers.multios.bin.linux.x86"
+         os="linux"
+         arch="x86"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.knime.ext.seleniumdrivers.multios.bin.linux.x86_64"
+         os="linux"
+         arch="x86_64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.knime.ext.seleniumdrivers.multios.bin.macosx.x86_64"
+         os="macosx"
+         arch="x86,x86_64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.knime.ext.seleniumdrivers.multios.bin.win32.x86"
+         os="win32"
+         arch="x86,x86_64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
 </feature>
