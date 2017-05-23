@@ -50,6 +50,11 @@
  */
 package org.knime.js.base.node.viz.plotter.line;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -337,7 +342,19 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                 } else if (tableData[colID] instanceof Long) {
                     rowData[colID] = ((Long)tableData[colID]).doubleValue();
                 } else if (tableData[colID] instanceof String) {
-                    rowData[colID] = ((Integer)getOrdinalFromStringValue((String)tableData[colID], table, colID)).doubleValue();
+                    String data = (String) tableData[colID];
+                    if (tableSpec.getKnimeTypes()[colID].equals("Local Date Time")) {
+                        rowData[colID] = ((Long)LocalDateTime.parse(data).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Date")) {
+                        rowData[colID] = ((Long)LocalDate.parse(data).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Time")) {
+                        rowData[colID] = ((Long)LocalTime.parse(data).atDate(LocalDate.now()).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Zoned Date Time")) {
+                        rowData[colID] = ((Long)ZonedDateTime.parse(data).toInstant().toEpochMilli()).doubleValue();
+                    } else {
+                        // String
+                        rowData[colID] = ((Integer)getOrdinalFromStringValue(data, table, colID)).doubleValue();
+                    }
                 }
             }
             rowValues[rowID] = new JSONKeyedValuesRow(currentRow.getRowKey(), rowData);
@@ -376,8 +393,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                 dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
             }
             if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
-                //dataset.setDateTimeFormat(m_config.getDateFormat(), col);
-                dataset.setDateTimeFormat(m_config.getGlobalDateTimeFormat(), col);
+                dataset.setDateTimeFormat(tableSpec.getKnimeTypes()[col], col);
+                //dataset.setDateTimeFormat(m_config.getGlobalDateTimeFormat(), col);
             }
         }
 

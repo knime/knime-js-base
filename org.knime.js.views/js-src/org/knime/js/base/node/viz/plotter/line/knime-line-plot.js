@@ -82,7 +82,11 @@ knime_line_plot = function() {
 					}
 				}
 			}
-			//console.timeEnd("Parse and build 2DDataset");
+			
+			// Set locale for moment.js.
+			if (_representation.globalDateTimeLocale !== 'en') {
+				moment.locale(_representation.globalDateTimeLocale);
+			}
 
 			d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
 			d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
@@ -327,7 +331,7 @@ knime_line_plot = function() {
 		if (_value.xColumn) {
 			var dateProp = dataset.getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
-				plot.getXAxis().setTickLabelFormatOverride(new jsfc.UniversalDateFormat(dateProp));
+				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp));
 			} else {
 				plot.getXAxis().setTickLabelFormatOverride(null);
 			}
@@ -446,7 +450,7 @@ knime_line_plot = function() {
 		if (_value.xColumn) {
 			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
-				plot.getXAxis().setTickLabelFormatOverride(new jsfc.DateFormat(dateProp), false);
+				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
 			} else {
 				plot.getXAxis().setTickLabelFormatOverride(null, false);
 			}
@@ -751,6 +755,41 @@ knime_line_plot = function() {
         	knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
         }
 	}
+	
+	createDateFormatter = function(knimeColType) {
+		var format;
+		switch (knimeColType) {
+		case 'Date and Time':
+			format = _representation.globalDateTimeFormat;
+			break;
+		case 'Local Date':
+			format = _representation.globalLocalDateFormat;
+			break;
+		case 'Local Date Time':
+			format = _representation.globalLocalDateTimeFormat;
+			break;
+		case 'Local Time':
+			format = _representation.globalLocalTimeFormat;
+			break;
+		case 'Zoned Date Time':
+			format = _representation.globalZonedDateTimeFormat;
+			break;
+		}
+		return new DateFormat(format, knimeColType);
+	}
+	
+	DateFormat = function(format, knimeColType) {
+		this._format = format;
+		this._knimeColType = knimeColType;
+	}
+	
+	DateFormat.prototype.format = function(n) {				
+		if (this._knimeColType == 'Date and Time' || this._knimeColType == 'Local Date' || this._knimeColType == 'Local Date Time' || this._knimeColType == 'Local Time') {
+			return moment(n).utc().format(this._format);
+		} else if (this._knimeColType == 'Zoned Date Time') {
+			return moment(n).tz("Europe/Berlin").format(this._format);
+		}		
+	};
 	
 	return view;
 }();
