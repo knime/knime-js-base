@@ -51,6 +51,7 @@
 package org.knime.js.base.node.viz.plotter.line;
 
 import java.awt.Color;
+import java.util.TimeZone;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
@@ -87,6 +88,7 @@ public final class LinePlotViewConfig {
     static final String DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_LOCAL_DATE_TIME_FORMATS.iterator().next();
     static final String DEFAULT_GLOBAL_LOCAL_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_LOCAL_TIME_FORMATS.iterator().next();
     static final String DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_ZONED_DATE_TIME_FORMATS.iterator().next();
+    static final String DEFAULT_TIMEZONE = TimeZone.getDefault().getID();
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
@@ -140,6 +142,7 @@ public final class LinePlotViewConfig {
     static final String GLOBAL_LOCAL_DATE_TIME_FORMAT = "globalLocalDateTimeFormat";
     static final String GLOBAL_LOCAL_TIME_FORMAT = "globalLocalTimeFormat";
     static final String GLOBAL_ZONED_DATE_TIME_FORMAT = "globalZonedDateTimeFormat";
+    static final String TIMEZONE = "timezone";
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -192,6 +195,7 @@ public final class LinePlotViewConfig {
     private String m_globalLocalDateTimeFormat = DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT;
     private String m_globalLocalTimeFormat = DEFAULT_GLOBAL_LOCAL_TIME_FORMAT;
     private String m_globalZonedDateTimeFormat = DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT;
+    private String m_timezone = DEFAULT_TIMEZONE;
 
     /**
      * The line will break and have gaps, if the value is missing
@@ -968,6 +972,20 @@ public final class LinePlotViewConfig {
         m_globalZonedDateTimeFormat = globalZonedDateTimeFormat;
     }
 
+    /**
+     * @return the timezone
+     */
+    public String getTimezone() {
+        return m_timezone;
+    }
+
+    /**
+     * @param timezone the timezone to set
+     */
+    public void setTimezone(final String timezone) {
+        m_timezone = timezone;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -1071,11 +1089,12 @@ public final class LinePlotViewConfig {
         settings.addString(MISSING_VALUE_METHOD, getMissingValueMethod());
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
 
-        settings.addString(GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
-        settings.addString(GLOBAL_LOCAL_DATE_FORMAT, m_globalLocalDateFormat);
-        settings.addString(GLOBAL_LOCAL_DATE_TIME_FORMAT, m_globalLocalDateTimeFormat);
-        settings.addString(GLOBAL_LOCAL_TIME_FORMAT, m_globalLocalTimeFormat);
-        settings.addString(GLOBAL_ZONED_DATE_TIME_FORMAT, m_globalZonedDateTimeFormat);
+        settings.addString(GLOBAL_DATE_TIME_LOCALE, getGlobalDateTimeLocale());
+        settings.addString(GLOBAL_LOCAL_DATE_FORMAT, getGlobalLocalDateFormat());
+        settings.addString(GLOBAL_LOCAL_DATE_TIME_FORMAT, getGlobalLocalDateTimeFormat());
+        settings.addString(GLOBAL_LOCAL_TIME_FORMAT, getGlobalLocalTimeFormat());
+        settings.addString(GLOBAL_ZONED_DATE_TIME_FORMAT, getGlobalZonedDateTimeFormat());
+        settings.addString(TIMEZONE, getTimezone());
     }
 
     /** Loads parameters in NodeModel.
@@ -1131,7 +1150,7 @@ public final class LinePlotViewConfig {
 
         //setDateFormat(settings.getString(DATE_FORMAT));
         //setDateFormat(getDateFormat());
-        m_globalDateTimeFormat = settings.getString(GLOBAL_DATE_TIME_FORMAT);
+        setGlobalDateTimeFormat(settings.getString(GLOBAL_DATE_TIME_FORMAT));
         setImageWidth(settings.getInt(IMAGE_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT));
         String bgColorString = settings.getString(BACKGROUND_COLOR);
@@ -1148,11 +1167,12 @@ public final class LinePlotViewConfig {
         setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
 
-        m_globalDateTimeLocale = settings.getString(GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
-        m_globalLocalDateFormat = settings.getString(GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalLocalDateTimeFormat = settings.getString(GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalLocalTimeFormat = settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalZonedDateTimeFormat = settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
+        setGlobalDateTimeLocale(settings.getString(GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE));
+        setGlobalLocalDateFormat(settings.getString(GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT));
+        setGlobalLocalDateTimeFormat(settings.getString(GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT));
+        setGlobalLocalTimeFormat(settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
+        setGlobalZonedDateTimeFormat(settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
+        setTimezone(settings.getString(TIMEZONE, DEFAULT_TIMEZONE));
     }
 
     /** Loads parameters in Dialog.
@@ -1206,7 +1226,7 @@ public final class LinePlotViewConfig {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
-        m_globalDateTimeFormat = settings.getString(GLOBAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_DATE_TIME_FORMAT);
+        setGlobalDateTimeFormat(settings.getString(GLOBAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_DATE_TIME_FORMAT));
         //setDateFormat(settings.getString(DATE_FORMAT, LinePlotNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
         //setDateFormatHistory(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));
@@ -1238,17 +1258,11 @@ public final class LinePlotViewConfig {
         setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
 
-        m_globalDateTimeLocale = settings.getString(GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
-        m_globalLocalDateFormat = settings.getString(GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalLocalDateTimeFormat = settings.getString(GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalLocalTimeFormat = settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalZonedDateTimeFormat = settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
-    }
-
-    public static void setDateFormatHistory(final String format) {
-        // if it is not a predefined one -> store it
-        if (format != null && !LinePlotNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.contains(format)) {
-            //StringHistory.getInstance(LinePlotNodeDialogPane.FORMAT_HISTORY_KEY).add(format);
-        }
+        setGlobalDateTimeLocale(settings.getString(GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE));
+        setGlobalLocalDateFormat(settings.getString(GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT));
+        setGlobalLocalDateTimeFormat(settings.getString(GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT));
+        setGlobalLocalTimeFormat(settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
+        setGlobalZonedDateTimeFormat(settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
+        setTimezone(settings.getString(TIMEZONE, DEFAULT_TIMEZONE));
     }
 }

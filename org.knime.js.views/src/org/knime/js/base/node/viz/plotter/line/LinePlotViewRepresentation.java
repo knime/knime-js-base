@@ -117,6 +117,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private String m_globalLocalDateTimeFormat;
     private String m_globalLocalTimeFormat;
     private String m_globalZonedDateTimeFormat;
+    private String m_timezone;
 
     /**
      * @return the keyedDataset
@@ -665,6 +666,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the timezone
+     */
+    public String getTimezone() {
+        return m_timezone;
+    }
+
+    /**
+     * @param timezone the timezone to set
+     */
+    public void setTimezone(final String timezone) {
+        m_timezone = timezone;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -721,6 +736,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_TIME_FORMAT, getGlobalLocalDateTimeFormat());
         settings.addString(LinePlotViewConfig.GLOBAL_LOCAL_TIME_FORMAT, getGlobalLocalTimeFormat());
         settings.addString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT, getGlobalZonedDateTimeFormat());
+        settings.addString(LinePlotViewConfig.TIMEZONE, getTimezone());
     }
 
     /**
@@ -781,6 +797,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setGlobalLocalDateTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT));
         setGlobalLocalTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_LOCAL_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
         setGlobalZonedDateTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
+        setTimezone(settings.getString(LinePlotViewConfig.TIMEZONE, LinePlotViewConfig.DEFAULT_TIMEZONE));
     }
 
     /**
@@ -831,6 +848,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_globalLocalDateTimeFormat, other.m_globalLocalDateTimeFormat)
                 .append(m_globalLocalTimeFormat, other.m_globalLocalTimeFormat)
                 .append(m_globalZonedDateTimeFormat, other.m_globalZonedDateTimeFormat)
+                .append(m_timezone, other.m_timezone)
                 .append(m_backgroundColor, other.m_backgroundColor)
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_gridColor, other.m_gridColor)
@@ -879,6 +897,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_globalLocalDateTimeFormat)
                 .append(m_globalLocalTimeFormat)
                 .append(m_globalZonedDateTimeFormat)
+                .append(m_timezone)
                 .append(m_backgroundColor)
                 .append(m_dataAreaColor)
                 .append(m_gridColor)

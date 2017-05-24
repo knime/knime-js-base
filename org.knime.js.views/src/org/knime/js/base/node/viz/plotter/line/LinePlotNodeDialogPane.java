@@ -60,6 +60,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
@@ -172,6 +173,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final DialogComponentStringSelection m_globalLocalDateTimeFormatChooser;
     private final DialogComponentStringSelection m_globalLocalTimeFormatChooser;
     private final DialogComponentStringSelection m_globalZonedDateTimeFormatChooser;
+    private final DialogComponentStringSelection m_timezoneChooser;
 
     /**
      * Creates a new dialog pane.
@@ -292,6 +294,16 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT,
                 LinePlotViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
         m_globalZonedDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
+        m_globalZonedDateTimeFormatChooser.getModel().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                setTimezoneChooserState();
+            }
+        });
+
+        m_timezoneChooser = new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.TIMEZONE, LinePlotViewConfig.DEFAULT_TIMEZONE), "",
+           new LinkedHashSet<String>(Arrays.asList(TimeZone.getAvailableIDs())), false);
+        m_timezoneChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
 
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
@@ -412,6 +424,11 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         formatPanel.add(new JLabel("Zoned Date&Time format: "), cc);
         cc.gridx++;
         formatPanel.add(m_globalZonedDateTimeFormatChooser.getComponentPanel(), cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        formatPanel.add(new JLabel("Time zone (for zoned format): "), cc);
+        cc.gridx++;
+        formatPanel.add(m_timezoneChooser.getComponentPanel(), cc);
         cc.gridx = 0;
         cc.gridy++;
         formatPanel.add(new JLabel("Date&Time (legacy) format: "), cc);
@@ -683,6 +700,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_globalLocalDateTimeFormatChooser.replaceListItems(createPredefinedLocalDateTimeFormats(), config.getGlobalLocalDateTimeFormat());
         m_globalLocalTimeFormatChooser.replaceListItems(createPredefinedLocalTimeFormats(), config.getGlobalLocalTimeFormat());
         m_globalZonedDateTimeFormatChooser.replaceListItems(createPredefinedZonedDateTimeFormats(), config.getGlobalZonedDateTimeFormat());
+        ((SettingsModelString)m_timezoneChooser.getModel()).setStringValue(config.getTimezone());
 
         m_imageWidthSpinner.setValue(config.getImageWidth());
         m_imageHeightSpinner.setValue(config.getImageHeight());
@@ -763,6 +781,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalLocalDateTimeFormat);
         StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).add(globalLocalTimeFormat);
         StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).add(globalZonedDateTimeFormat);
+        String timezone = ((SettingsModelString)m_timezoneChooser.getModel()).getStringValue();
+        config.setTimezone(timezone);
 
         config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
         config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
@@ -776,6 +796,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     }
 
     private void validateSettings() throws InvalidSettingsException {
+        // validate only local time to prevent date related symbols (otherwise a dat will be displayed for the time only)
+        // all other formats are free to have any other symbols
         String localTimeFormatString = ((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue();
         String pattern = "(\\[.*\\])*((A|a|H|h|k|m|S|s|[^a-zA-Z]|\\[.*\\])+|(LT|LTS))(\\[.*\\])*";
         if (!Pattern.matches(pattern, localTimeFormatString)) {
@@ -974,4 +996,11 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         return null;
     }
 
+    private void setTimezoneChooserState() {
+        String zonedValue = ((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue();
+        boolean enabled = zonedValue.indexOf('z') != -1 || zonedValue.indexOf('Z') != -1;
+        m_timezoneChooser.getModel().setEnabled(enabled);
+        String tooltip = enabled ? "" : "Zone date&time format must contain a zone symbol ('z' or 'Z') to enable the time zone selector";
+        m_timezoneChooser.setToolTipText(tooltip);
+    }
 }

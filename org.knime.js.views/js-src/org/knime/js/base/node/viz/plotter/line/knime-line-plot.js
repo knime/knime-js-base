@@ -787,7 +787,7 @@ knime_line_plot = function() {
 		if (this._knimeColType == 'Date and Time' || this._knimeColType == 'Local Date' || this._knimeColType == 'Local Date Time' || this._knimeColType == 'Local Time') {
 			return moment(n).utc().format(this._format);
 		} else if (this._knimeColType == 'Zoned Date Time') {
-			return moment(n).tz("Europe/Berlin").format(this._format);
+			return moment(n).tz(_representation.timezone).format(this._format);
 		}		
 	};
 	

@@ -552,6 +552,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         representation.setGlobalLocalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
         representation.setGlobalLocalTimeFormat(m_config.getGlobalLocalTimeFormat());
         representation.setGlobalZonedDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
+        representation.setTimezone(m_config.getTimezone());
 
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());

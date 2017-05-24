@@ -1093,7 +1093,7 @@ final class ScatterPlotViewConfig {
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
         setDateFormat(settings.getString(DATE_FORMAT, LinePlotNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
-        LinePlotViewConfig.setDateFormatHistory(getDateFormat());
+        //LinePlotViewConfig.setDateFormatHistory(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT, DEFAULT_HEIGHT));
 
