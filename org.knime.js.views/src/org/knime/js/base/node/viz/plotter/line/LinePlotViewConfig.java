@@ -1287,7 +1287,7 @@ public final class LinePlotViewConfig {
      * @param oldFormat
      * @return string in the new date&time format
      */
-    public String convertDateTimeFormat(final String oldFormat) {
+    public static String convertDateTimeFormat(final String oldFormat) {
         Map<String, String> conversionMap = getConversionDateTimeFormatMap();
         String[] oldFormatMasks = conversionMap.keySet().toArray(new String[conversionMap.size()]);
         String[] newFormatMasks = conversionMap.values().toArray(new String[conversionMap.size()]);
@@ -1330,7 +1330,7 @@ public final class LinePlotViewConfig {
         m_conversionDateTimeFormatMap.put("l", "SSS");
         m_conversionDateTimeFormatMap.put("L", "SS");
         m_conversionDateTimeFormatMap.put("t", "a");
-        m_conversionDateTimeFormatMap.put("tt", "aa");
+        m_conversionDateTimeFormatMap.put("tt", "a");
         m_conversionDateTimeFormatMap.put("T", "A");
         m_conversionDateTimeFormatMap.put("TT", "A");
         m_conversionDateTimeFormatMap.put("Z", "z");
