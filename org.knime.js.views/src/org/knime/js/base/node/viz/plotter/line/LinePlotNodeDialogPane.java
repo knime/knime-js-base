@@ -1003,7 +1003,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         String zonedValue = ((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue();
         boolean enabled = zonedValue.indexOf('z') != -1 || zonedValue.indexOf('Z') != -1;
         m_timezoneChooser.getModel().setEnabled(enabled);
-        String tooltip = enabled ? "" : "Zone date&time format must contain a zone symbol ('z' or 'Z') to enable the time zone selector";
+        String tooltip = enabled ? "" : "Zoned Date&Time format must contain a zone mask symbol ('z' or 'Z') to enable the time zone selector";
         m_timezoneChooser.setToolTipText(tooltip);
     }
 }
