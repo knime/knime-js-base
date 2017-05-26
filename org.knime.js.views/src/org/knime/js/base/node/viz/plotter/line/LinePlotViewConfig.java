@@ -51,8 +51,12 @@
 package org.knime.js.base.node.viz.plotter.line;
 
 import java.awt.Color;
+import java.util.Collections;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -61,6 +65,7 @@ import org.knime.core.data.StringValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.util.filter.InputFilter;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeDialogPane;
@@ -196,6 +201,8 @@ public final class LinePlotViewConfig {
     private String m_globalLocalTimeFormat = DEFAULT_GLOBAL_LOCAL_TIME_FORMAT;
     private String m_globalZonedDateTimeFormat = DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT;
     private String m_timezone = DEFAULT_TIMEZONE;
+
+    private static Map<String, String> m_conversionDateTimeFormatMap = null;
 
     /**
      * The line will break and have gaps, if the value is missing
@@ -1148,9 +1155,6 @@ public final class LinePlotViewConfig {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
-        //setDateFormat(settings.getString(DATE_FORMAT));
-        //setDateFormat(getDateFormat());
-        setGlobalDateTimeFormat(settings.getString(GLOBAL_DATE_TIME_FORMAT));
         setImageWidth(settings.getInt(IMAGE_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT));
         String bgColorString = settings.getString(BACKGROUND_COLOR);
@@ -1173,6 +1177,17 @@ public final class LinePlotViewConfig {
         setGlobalLocalTimeFormat(settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
         setGlobalZonedDateTimeFormat(settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
         setTimezone(settings.getString(TIMEZONE, DEFAULT_TIMEZONE));
+
+        String globalDateTimeFormat = settings.getString(GLOBAL_DATE_TIME_FORMAT, null);
+        if (globalDateTimeFormat != null) {
+            setGlobalDateTimeFormat(globalDateTimeFormat);
+        } else {
+            String oldDateFormat = settings.getString(DATE_FORMAT);
+            String newDateFormat = convertDateTimeFormat(oldDateFormat);
+            setGlobalDateTimeFormat(newDateFormat);
+            setGlobalLocalDateTimeFormat(newDateFormat);
+            StringHistory.getInstance(LinePlotNodeDialogPane.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateFormat);
+        }
     }
 
     /** Loads parameters in Dialog.
@@ -1227,6 +1242,7 @@ public final class LinePlotViewConfig {
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
         setGlobalDateTimeFormat(settings.getString(GLOBAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_DATE_TIME_FORMAT));
+        convertDateTimeFormat("");
         //setDateFormat(settings.getString(DATE_FORMAT, LinePlotNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
         //setDateFormatHistory(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));
@@ -1264,5 +1280,61 @@ public final class LinePlotViewConfig {
         setGlobalLocalTimeFormat(settings.getString(GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
         setGlobalZonedDateTimeFormat(settings.getString(GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
         setTimezone(settings.getString(TIMEZONE, DEFAULT_TIMEZONE));
+    }
+
+    /**
+     * Converts a string in old date&time format to the new one
+     * @param oldFormat
+     * @return string in the new date&time format
+     */
+    public String convertDateTimeFormat(final String oldFormat) {
+        Map<String, String> conversionMap = getConversionDateTimeFormatMap();
+        String[] oldFormatMasks = conversionMap.keySet().toArray(new String[conversionMap.size()]);
+        String[] newFormatMasks = conversionMap.values().toArray(new String[conversionMap.size()]);
+        return StringUtils.replaceEach(oldFormat, oldFormatMasks, newFormatMasks);
+    }
+
+    /**
+     * Gets a conversion map for masks from the old date&time format to the new
+     * @return conversion map
+     */
+    public static Map<String, String> getConversionDateTimeFormatMap() {
+        if (m_conversionDateTimeFormatMap == null) {
+            initConversionDateTimeFormatMap();
+        }
+        return m_conversionDateTimeFormatMap;
+    }
+
+    private static void initConversionDateTimeFormatMap() {
+        m_conversionDateTimeFormatMap = new TreeMap<String, String>(Collections.reverseOrder());
+        // we have to sort desc, otherwise "d" will be processed before "dd" and break the pattern
+
+        m_conversionDateTimeFormatMap.put("d", "D");
+        m_conversionDateTimeFormatMap.put("dd", "DD");
+        m_conversionDateTimeFormatMap.put("ddd", "ddd");
+        m_conversionDateTimeFormatMap.put("dddd", "dddd");
+        m_conversionDateTimeFormatMap.put("m", "M");
+        m_conversionDateTimeFormatMap.put("mm", "MM");
+        m_conversionDateTimeFormatMap.put("mmm", "MMM");
+        m_conversionDateTimeFormatMap.put("mmmm", "MMMM");
+        m_conversionDateTimeFormatMap.put("yy", "YY");
+        m_conversionDateTimeFormatMap.put("yyyy", "YYYY");
+        m_conversionDateTimeFormatMap.put("h", "h");
+        m_conversionDateTimeFormatMap.put("hh", "hh");
+        m_conversionDateTimeFormatMap.put("H", "H");
+        m_conversionDateTimeFormatMap.put("HH", "HH");
+        m_conversionDateTimeFormatMap.put("M", "m");
+        m_conversionDateTimeFormatMap.put("MM", "mm");
+        m_conversionDateTimeFormatMap.put("s", "s");
+        m_conversionDateTimeFormatMap.put("ss", "ss");
+        m_conversionDateTimeFormatMap.put("l", "SSS");
+        m_conversionDateTimeFormatMap.put("L", "SS");
+        m_conversionDateTimeFormatMap.put("t", "a");
+        m_conversionDateTimeFormatMap.put("tt", "aa");
+        m_conversionDateTimeFormatMap.put("T", "A");
+        m_conversionDateTimeFormatMap.put("TT", "A");
+        m_conversionDateTimeFormatMap.put("Z", "z");
+        m_conversionDateTimeFormatMap.put("o", "ZZ");
+        m_conversionDateTimeFormatMap.put("S", "o");
     }
 }
