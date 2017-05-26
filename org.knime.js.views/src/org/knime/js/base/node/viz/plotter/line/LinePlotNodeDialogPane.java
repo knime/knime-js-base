@@ -839,6 +839,9 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         // check the StringHistory first
         formats.addAll(Arrays.asList(
+            StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
+        ));
+        formats.addAll(Arrays.asList(
             StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
         ));
         formats.addAll(Arrays.asList(
