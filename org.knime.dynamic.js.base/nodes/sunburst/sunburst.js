@@ -745,6 +745,18 @@
 				.attr("stroke",function(d) {
 					return d.selected ? "#333333" : "white";
 				});
+
+        // Resort elements in dom so that selected elements
+        // are drawn last.
+        sunburstGroup.selectAll("path").sort(function(a, b) {
+          if (a.selected == b.selected) {
+            return 0;
+          }
+          if (a.selected) {
+            return 1;
+          }
+          return -1;
+        });
 			}
 
 		}
