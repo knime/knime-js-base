@@ -105,10 +105,10 @@
 					When checked,
 					only selected objects are displayed.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Highliting" id="highliting"
-					label="Enable Highliting" defaultValue="true">
+				<checkBoxOption name="Enable Focus" id="highliting"
+					label="Enable Focus" defaultValue="true">
 					When checked,
-					highliting sections is enabled.
+					focus on sections is enabled.
 				</checkBoxOption>
 				<!-- TODO: enable relationship -->
 				<checkBoxOption name="Enable inner label" id="innerLabel"

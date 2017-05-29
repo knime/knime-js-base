@@ -1116,7 +1116,7 @@
 			});
 		}
 		if (_representation.options.highliting) {
-			knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Highlite', function() {
+			knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Focus', function() {
 				clearHighliting();
 			});
 		}
@@ -1150,7 +1150,7 @@
 			});
 		}
 		if (_representation.options.highliting) {
-			knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Highlite"', function() {
+			knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Focus"', function() {
 				mouseMode = "highlite";
 				toggleButton();
 			});
