@@ -14,7 +14,7 @@
 	var _colorMap;
 	var mouseMode = "highlite";
 	var totalSize;
-  var selectionChangedFlag = false;
+  	var selectionChangedFlag = false;
 
 
 	var layoutContainer;
@@ -762,6 +762,8 @@
 		}
 
 		clearSelection = function() {
+			selectionChangedFlag = true;
+
 			selectedRows = [];
 			setPropAllNodes('selected', false);
 			renderSelection();
