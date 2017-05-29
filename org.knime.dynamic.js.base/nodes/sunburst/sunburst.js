@@ -14,6 +14,8 @@
 	var _colorMap;
 	var mouseMode = "highlite";
 	var totalSize;
+  var selectionChangedFlag = false;
+
 
 	var layoutContainer;
 	var MIN_HEIGHT = 300, MIN_WIDTH = 400;
@@ -673,6 +675,8 @@
 		}
 
 		function select(node) {
+      selectionChangedFlag = true;
+
 			if (d3.event.shiftKey) {
 				if (node.selected) {
 					// Remove elements from selection.
@@ -1418,7 +1422,9 @@
 	};
 
 	view.getComponentValue = function() {
-		outputSelectionColumn();
+    if (selectionChangedFlag) {
+		  outputSelectionColumn();
+    }
 
 		// Save mousemode unless it is default mode.
 		_value.options.mouseMode = mouseMode;
