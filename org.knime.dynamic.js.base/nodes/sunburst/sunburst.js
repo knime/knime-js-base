@@ -549,11 +549,7 @@
 					}
 				}
 				if (mouseMode == "select") {
-					if (zoomNode != null) {
-						select(zoomNode);
-					} else {
-						select(nodes[0]);
-					}
+          clearSelection();
 					if (_value.options.showSelectedOnly) {
 						highlitedPath = null;
 						transformData();
