@@ -747,7 +747,7 @@
 					return d.selected ? 2 : 1;
 				})
 				.attr("stroke",function(d) {
-					return d.selected ? "black" : "white";
+					return d.selected ? "#333333" : "white";
 				});
 			}
 
