@@ -97,6 +97,8 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JComboBox<DateTimeType> m_type;
 
+    private final JComboBox<GranularityTime> m_granularity;
+
     private DateTimeInputQuickFormConfig m_config;
 
     private DateTimeFormatter m_formatter = DateInput2QuickFormNodeModel.LOCAL_DATE_TIME_FORMATTER;
@@ -110,6 +112,8 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
         m_type.addActionListener(e -> updateDateTimeComponents());
 
         m_showNowButton = new JCheckBox();
+
+        m_granularity = new JComboBox<GranularityTime>(GranularityTime.values());
 
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
@@ -218,7 +222,11 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
         gbc3.anchor = GridBagConstraints.NORTHWEST;
         gbc3.fill = GridBagConstraints.VERTICAL;
         gbc3.insets = new Insets(0, 1, 5, 0);
-        addPairToPanel("Now Button in Wizard: ", m_showNowButton, panelWithGBLayout, gbc3);
+        addPairToPanel("\"Now\" Button in Wizard: ", m_showNowButton, panelWithGBLayout, gbc3);
+        gbc3.insets = new Insets(0, 5, 5, 0);
+        gbc3.ipadx = 19;
+        addPairToPanel("Granularity in Wizard: ", m_granularity, panelWithGBLayout, gbc3);
+        gbc3.ipadx = 0;
         gbc3.insets = new Insets(0, 0, 0, 0);
         addPairToPanel("Type: ", typePanel, panelWithGBLayout, gbc3);
         gbc3.insets = new Insets(-8, 0, 0, 0);
@@ -287,6 +295,7 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
         loadSettingsFrom(m_config);
         ((SettingsModelDateTime)m_defaultField.getModel()).setZonedDateTime(m_config.getDefaultValue().getDate());
         m_showNowButton.setSelected(m_config.getShowNowButton());
+        m_granularity.setSelectedItem(m_config.getGranularity());
         m_useMin.setSelected(m_config.getUseMin());
         m_useMax.setSelected(m_config.getUseMax());
         m_useMinExecTime.setSelected(m_config.getUseMinExecTime());
@@ -329,6 +338,7 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setDate(((SettingsModelDateTime)m_defaultField.getModel()).getZonedDateTime());
         m_config.setShowNowButton(m_showNowButton.isSelected());
+        m_config.setGranularity((GranularityTime)m_granularity.getSelectedItem());
         m_config.setUseMin(m_useMin.isSelected());
         m_config.setUseMax(m_useMax.isSelected());
         m_config.setUseMinExecTime(m_useMinExecTime.isSelected());

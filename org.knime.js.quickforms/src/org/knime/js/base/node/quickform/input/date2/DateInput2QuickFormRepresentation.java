@@ -79,6 +79,7 @@ public class DateInput2QuickFormRepresentation
         final DateTimeInputQuickFormConfig config) {
         super(currentValue, config);
         m_showNowButton = config.getShowNowButton();
+        m_granularity = config.getGranularity();
         m_useMin = config.getUseMin();
         m_useMax = config.getUseMax();
         m_useMinExecTime = config.getUseMinExecTime();
@@ -90,6 +91,8 @@ public class DateInput2QuickFormRepresentation
     }
 
     private final boolean m_showNowButton;
+
+    private final GranularityTime m_granularity;
 
     private final boolean m_useMin;
 
@@ -126,6 +129,20 @@ public class DateInput2QuickFormRepresentation
     @JsonProperty("shownowbutton")
     public boolean getShowNowButton() {
         return m_showNowButton;
+    }
+
+    /**
+     * @return the showNowButton
+     */
+    @JsonProperty("granularity")
+    public String getGranularity() {
+        if (m_granularity == GranularityTime.SHOW_MINUTES) {
+            return "show_minutes";
+        } else if (m_granularity == GranularityTime.SHOW_SECONDS) {
+            return "show_seconds";
+        } else {
+            return "show_millis";
+        }
     }
 
     /**
@@ -243,6 +260,9 @@ public class DateInput2QuickFormRepresentation
         sb.append("showNowButton=");
         sb.append(m_showNowButton);
         sb.append(", ");
+        sb.append("granularity=");
+        sb.append(m_granularity);
+        sb.append(", ");
         sb.append("useMin=");
         sb.append(m_useMin);
         sb.append(", ");
@@ -278,9 +298,9 @@ public class DateInput2QuickFormRepresentation
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_useMin)
-            .append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime).append(m_useDefaultExecTime)
-            .append(m_min).append(m_max).append(m_type).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_granularity)
+            .append(m_useMin).append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime)
+            .append(m_useDefaultExecTime).append(m_min).append(m_max).append(m_type).toHashCode();
     }
 
     /**
@@ -299,10 +319,10 @@ public class DateInput2QuickFormRepresentation
         }
         DateInput2QuickFormRepresentation other = (DateInput2QuickFormRepresentation)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_showNowButton, other.m_showNowButton)
-            .append(m_useMin, other.m_useMin).append(m_useMax, other.m_useMax)
-            .append(m_useMinExecTime, other.m_useMinExecTime).append(m_useMaxExecTime, other.m_useMaxExecTime)
-            .append(m_useDefaultExecTime, other.m_useDefaultExecTime).append(m_min, other.m_min)
-            .append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
+            .append(m_granularity, other.m_granularity).append(m_useMin, other.m_useMin)
+            .append(m_useMax, other.m_useMax).append(m_useMinExecTime, other.m_useMinExecTime)
+            .append(m_useMaxExecTime, other.m_useMaxExecTime).append(m_useDefaultExecTime, other.m_useDefaultExecTime)
+            .append(m_min, other.m_min).append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
     }
 
 }

@@ -66,6 +66,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 	var maxDate;
 	var viewValid = false;
 	var format;
+	var granularity;
 
 	dateInput.init = function(representation) {
 		if (checkMissingData(representation)) {
@@ -96,6 +97,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 			maxZone = null;
 		}
 		var type = representation.type;
+		granularity = representation.granularity;
 		if (type == "LT") {
 			format = "HH:mm:ss";
 		} else if (type == "LD") {
@@ -213,10 +215,12 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		});
 
 		// add seconds field to time spinner
-		timeElement.append(' <b>:</b> ');
 		secInput = $('<input>');
+		if (granularity != "show_minutes") {
+			timeElement.append(' <b>:</b> ');
+			timeElement.append(secInput);
+		}
 		secInput.attr("aria-label", "Seconds");
-		timeElement.append(secInput);
 		secInput.spinner({
 			spin : function(event, ui) {
 				date.set('second', ui.value);
@@ -232,11 +236,13 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		});
 
 		// add milliseconds field to time spinner
-		timeElement.append(' <b>.</b> ');
 		milliInput = $('<input>');
+		if (granularity == "show_millis") {
+			timeElement.append(' <b>.</b> ');
+			timeElement.append(milliInput);
+		}
 		milliInput.attr('id', 'millis');
 		milliInput.attr("aria-label", "Milliseconds");
-		timeElement.append(milliInput);
 		milliInput.spinner({
 			spin : function(event, ui) {
 				date.set('millisecond', ui.value);
@@ -375,6 +381,12 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 	}
 
 	function refreshTime() {
+		if (granularity == "show_minutes") {
+			date.set('second', 0);
+		}
+		if (granularity != "show_millis") {
+			date.set('millisecond', 0);
+		}
 		validateMinMax();
 		// If datepicker is not disabled setDate will reopen the picker in IE
 		dateInput.datepicker('disable');

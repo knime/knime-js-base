@@ -121,6 +121,12 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
 
     private DateTimeType m_type = DEFAULT_TYPE;
 
+    private static final String CFG_GRANULARITY = "granularity";
+
+    private static final GranularityTime DEFAULT_GRANULARITY = GranularityTime.SHOW_MINUTES;
+
+    private GranularityTime m_granularity = DEFAULT_GRANULARITY;
+
     /**
      * @return the showNow
      */
@@ -133,6 +139,20 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
      */
     public void setShowNowButton(final boolean showNow) {
         m_showNowButton = showNow;
+    }
+
+    /**
+     * @return the granularity
+     */
+    public GranularityTime getGranularity() {
+        return m_granularity;
+    }
+
+    /**
+     * @param granularity the granularity to set
+     */
+    public void setGranularity(final GranularityTime granularity) {
+        m_granularity = granularity;
     }
 
     /**
@@ -254,6 +274,7 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         settings.addBoolean(CFG_SHOW_NOW_BUTTON, m_showNowButton);
+        settings.addString(CFG_GRANULARITY, m_granularity.name());
         settings.addBoolean(CFG_USE_MIN, m_useMin);
         settings.addBoolean(CFG_USE_MAX, m_useMax);
         settings.addBoolean(CFG_USE_MIN_EXEC_TIME, m_useMinExecTime);
@@ -271,6 +292,7 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON);
+        m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY));
         m_useMin = settings.getBoolean(CFG_USE_MIN);
         m_useMax = settings.getBoolean(CFG_USE_MAX);
         m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME);
@@ -292,12 +314,13 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON, DEFAULT_SHOW_NOW_BUTTON);
+        m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY, DEFAULT_GRANULARITY.name()));
         m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
         m_useMax = settings.getBoolean(CFG_USE_MAX, DEFAULT_USE_MAX);
         m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME, DEFAULT_USE_MIN_EXEC_TIME);
         m_useMaxExecTime = settings.getBoolean(CFG_USE_MAX_EXEC_TIME, DEFAULT_USE_MAX_EXEC_TIME);
         setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME, DEFAULT_USE_DEFAULT_EXEC_TIME));
-        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE, DEFAULT_TYPE.toString()));
+        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE, DEFAULT_TYPE.name()));
         try {
             m_min = ZonedDateTime.parse(settings.getString(CFG_MIN, DEFAULT_MIN.toString()));
             m_max = ZonedDateTime.parse(settings.getString(CFG_MAX, DEFAULT_MAX.toString()));
@@ -325,6 +348,9 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
         sb.append(", ");
         sb.append("showNowButton=");
         sb.append(m_showNowButton);
+        sb.append(", ");
+        sb.append("granularity=");
+        sb.append(m_granularity);
         sb.append(", ");
         sb.append("useMin=");
         sb.append(m_useMin);
@@ -361,9 +387,9 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_useMin)
-            .append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime).append(getUseDefaultExecTime())
-            .append(m_min).append(m_max).append(m_type).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_granularity)
+            .append(m_useMin).append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime)
+            .append(getUseDefaultExecTime()).append(m_min).append(m_max).append(m_type).toHashCode();
     }
 
     /**
@@ -382,8 +408,9 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
         }
         DateTimeInputQuickFormConfig other = (DateTimeInputQuickFormConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_showNowButton, other.m_showNowButton)
-            .append(m_useMin, other.m_useMin).append(m_useMax, other.m_useMax)
-            .append(m_useMinExecTime, other.m_useMinExecTime).append(m_useMaxExecTime, other.m_useMaxExecTime)
+            .append(m_granularity, other.m_granularity).append(m_useMin, other.m_useMin)
+            .append(m_useMax, other.m_useMax).append(m_useMinExecTime, other.m_useMinExecTime)
+            .append(m_useMaxExecTime, other.m_useMaxExecTime)
             .append(getUseDefaultExecTime(), other.getUseDefaultExecTime()).append(m_min, other.m_min)
             .append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
     }

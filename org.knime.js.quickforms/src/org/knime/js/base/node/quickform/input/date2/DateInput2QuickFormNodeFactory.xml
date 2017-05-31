@@ -25,8 +25,9 @@
 		<option name="Variable Name">Variable identifier.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization
 			(e.g. batch execution).</option>
-	    <option name="Now Button in Wizard">If a button with the label <i>Now</i> to insert 
+	    <option name="&quot;Now&quot; Button in Wizard">If a button with the label <i>Now</i> to insert 
 	        the current time shall be shown in the wizard.</option>
+	    <option name="Granularity in Wizard">In which granularity the time should be displayed in the wizard.</option>
 		<option name="Type">Which date&amp;time type should be selectable.</option>
 		<option name="Earliest">The earliest allowed date&amp;time. The execution time can be used.</option>
 		<option name="Latest">The latest allowed date&amp;time. The execution time can be used.</option>
