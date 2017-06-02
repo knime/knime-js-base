@@ -210,7 +210,11 @@
             _data = _representation.inObjects[0];
         } else {
             _data = {};
-            _data[_value.options.numCol] = _representation.inObjects[0][_value.options.numCol];
+            var numCol = _value.options.numCol;
+            _data[numCol] = _representation.inObjects[0][numCol];
+            if (_data[numCol] === undefined) {
+            	delete _data[numCol];
+            }
         }
         
         // Find the maximum y-value for the axis
