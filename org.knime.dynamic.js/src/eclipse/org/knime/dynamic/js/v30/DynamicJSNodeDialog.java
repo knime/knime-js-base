@@ -48,10 +48,13 @@
 package org.knime.dynamic.js.v30;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -90,6 +93,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.DataValueColumnFilter;
+import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.dynamic.js.DialogComponentSVGOptions;
@@ -127,6 +131,8 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private DialogComponentBoolean m_hideInWizardComponent;
 	private DialogComponentNumber m_maxRowsComponent;
 	private DialogComponentBoolean m_generateImageComponent;
+
+	private Map<String, String> m_stringHistoryMap = new HashMap<String, String>();
 
 	private String m_firstTab = "Options";
 	private boolean m_showMaxRows = true;
@@ -190,8 +196,15 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			} else if (option instanceof StringListOption) {
 			    StringListOption sO = (StringListOption)option;
 			    DialogComponent sComp;
+			    Set<String> possibleValues = new LinkedHashSet<String>();
+			    if (sO.isSetStringHistoryKey()) {
+			        StringHistory history = StringHistory.getInstance(sO.getStringHistoryKey());
+			        possibleValues.addAll(Arrays.asList(history.getHistory()));
+			        m_stringHistoryMap.put(sO.getId(), sO.getStringHistoryKey());
+			    }
 			    @SuppressWarnings("unchecked")
-			    List<String> possibleValues = sO.getPossibleValues();
+                List<String> valuesFromOptions = sO.getPossibleValues();
+			    possibleValues.addAll(valuesFromOptions);
 			    if (sO.getAllowMultipleSelection()) {
 			        SettingsModelStringArray model = (SettingsModelStringArray)m_config.getModel(sO.getId());
 			        int numRows = -1;
@@ -390,6 +403,15 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
             m_config.setGenerateImage(((SettingsModelBoolean)m_generateImageComponent.getModel()).getBooleanValue());
         }
         m_config.saveAdditionalSettings(settings);
+        m_stringHistoryMap.forEach((id, historyKey) -> {
+            StringHistory history = StringHistory.getInstance(historyKey);
+            SettingsModel model = m_components.get(id).getModel();
+            if (model instanceof SettingsModelString) {
+                history.add(((SettingsModelString)model).getStringValue());
+            } else if (model instanceof SettingsModelStringArray) {
+                Arrays.stream(((SettingsModelStringArray)model).getStringArrayValue()).forEachOrdered(value -> history.add(value));
+            }
+        });
         super.saveAdditionalSettingsTo(settings);
 	}
 }
