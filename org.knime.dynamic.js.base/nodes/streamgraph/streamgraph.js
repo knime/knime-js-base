@@ -203,6 +203,10 @@
     if (typeof xAxisColumn !== "undefined") {
       var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
       xAxisType = knimeTable1.getColumnTypes()[columnIndex];
+      if (xAxisType == "dateTime") {
+    	  // need to get which exactly date&time type it is
+    	  xAxisType = knimeTable1.getKnimeColumnTypes()[columnIndex];
+      }
       xAxisData = knimeTable1.getColumn(columnIndex);
     } else {
       // If undefined: The user selected RowId as x-Axis.
@@ -243,7 +247,7 @@
 				    function(i) {
 				      d = currentColumn[i];
 
-			        if (xAxisType === 'dateTime' || xAxisType === 'number') {
+			        if (xAxisType === 'number') {
 			          // If data type of x-axis column can be interpreted as numeric,
 			          // use the data for the x-axis.
 			          return [xAxisData[i], d]
@@ -304,11 +308,43 @@
   // Return a function to format the x-axis-ticks.
   var createXAxisFormatter = function() {
     switch (xAxisType) {
-      case "dateTime":
-        var dateFormat = _representation.options.dateFormat;
-        return function(timestamp) {
-          return moment(timestamp).format(dateFormat);
+      case "Date and Time":
+        return function(i) {
+          return moment(xAxisData[i]).format(_representation.options.dateFormat);
         };
+      case "Local Date":
+    	  return function(i) {
+              return moment(xAxisData[i]).format(_representation.options.localDateFormat);
+          };
+      case "Local Date Time":
+    	  return function(i) {
+              return moment(xAxisData[i]).format(_representation.options.localDateTimeFormat);
+          };
+      case "Local Time":
+    	  return function(i) {
+              return moment(xAxisData[i], "hh:mm:ss.SSSSSSSSS").format(_representation.options.localTimeFormat);
+          };
+      case "Zoned Date Time":
+    	  return function(i) {
+    	  		var data = xAxisData[i];
+    	  		var regex = /(.*)\[(.*)\]$/
+				var match = regex.exec(data);
+
+				if (match == null) {
+					var date = moment.tz(data, "");
+				} else {
+					dateTimeOffset = match[1];
+					zone = match[2];
+
+					if (moment.tz.zone(zone) == null) {
+						var date = moment.tz(dateTimeOffset, "");
+					} else {
+						var date = moment.tz(dateTimeOffset, zone);
+					}
+				}
+
+				return date.format(_representation.options.zonedDateTimeFormat);
+          };
       case "string":
         return function(i) { return xAxisData[i]; };
       case "number":

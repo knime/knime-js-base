@@ -178,7 +178,7 @@
 		</tab>
 
 	</fullDescription>
-	<interactiveView name="Stacked Area Chart">
+	<interactiveView name="JavaScript Stacked Area Chart">
 		A NVD3.js implementation of a Stacked Area Chart.
 	</interactiveView>
 	<ports>
@@ -189,8 +189,8 @@
 			Data table containing one column with the column names of the first
 			table. Each column name has a color assigned.
 		</inPort>
-		<outPort portType="Image" name="Streamgraph image" index="0">
-			SVG image of the pie chart.
+		<outPort portType="Image" name="Stacked Area Chart image" index="0">
+			SVG image of the Stacked Area Chart chart.
 		</outPort>
 	</ports>
 	<js:resources>
@@ -199,9 +199,9 @@
 		<js:resource type="js" path="streamgraph.js" />
 	</js:resources>
 	<js:dependencies>
-		<js:dependency name="nvd3" path="NVD3_1.8.4_Debug" type="local"
+		<js:dependency name="nvd3" path="NVD3_1.8.4" type="local"
 			exports="nv" />
-		<js:dependency name="moment" path="moment_2_13_Debug"
+		<js:dependency name="moment" path="moment_timezone_locales_2_17"
 			type="local" exports="moment" />
 	</js:dependencies>
 	<js:javaProcessor className="org.knime.dynamic.js.base.stackedarea.StackedAreaProcessor" hidesLimitRowOption="false"/>
