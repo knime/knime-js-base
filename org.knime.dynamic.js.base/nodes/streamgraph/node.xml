@@ -175,7 +175,7 @@
 		</tab>
 
 	</fullDescription>
-	<interactiveView name="JavaScript Streamgraph">
+	<interactiveView name="Stacked Area Chart">
 		A NVD3.js implementation of a Stacked Area Chart.
 	</interactiveView>
 	<ports>

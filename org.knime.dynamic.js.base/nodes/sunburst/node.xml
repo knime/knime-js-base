@@ -224,8 +224,8 @@
 	<outputOptions> 
 		<dataOutputOption outPortIndex="1" id="selection" additionalColumnName="Sunburst Chart Selection" additionalColumnType="BOOLEAN" inPortIndex="0" />
 	</outputOptions>
-	<interactiveView name="JavaScript Sunburst Chart">
-		A d3.js implementation of a sunburst chart.
+	<interactiveView name="Sunburst Chart">
+		A D3.js implementation of a sunburst chart.
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">

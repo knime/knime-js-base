@@ -157,8 +157,8 @@
 	<outputOptions>
 		<dataOutputOption outPortIndex="0" id="chartImage" />
 	</outputOptions>
-	<interactiveView name="D3 Box Plot">
-		A D3.js implementation of a Box Plot.
+	<interactiveView name="Box Plot">
+		A JavaScript implementation of a Box Plot.
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Input Data" index="0">

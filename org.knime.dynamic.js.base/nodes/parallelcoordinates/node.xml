@@ -158,7 +158,7 @@
 	<outputOptions> 
 		<dataOutputOption outPortIndex="1" id="selection" additionalColumnName="Parallel Coordinates Selection" additionalColumnType="BOOLEAN" inPortIndex="0" />
 	</outputOptions>
-	<interactiveView name="D3 Parallel Coordinates Plot">
+	<interactiveView name="Parallel Coordinates Plot">
 		A D3.js implementation of a Parallel Coordinates Plot.
 	</interactiveView>
 	<ports>
