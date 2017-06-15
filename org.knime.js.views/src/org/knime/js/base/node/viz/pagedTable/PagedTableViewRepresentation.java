@@ -54,6 +54,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -89,12 +90,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_enableHideUnselected;
     private boolean m_enableSorting;
     private boolean m_enableClearSortButton;
-    private String m_globalDateTimeLocale;
-    private String m_globalDateTimeFormat;
-    private String m_globalLocalDateFormat;
-    private String m_globalLocalDateTimeFormat;
-    private String m_globalLocalTimeFormat;
-    private String m_globalZonedDateTimeFormat;
+    private JSONDateTimeOptions m_dateTimeFormats;
     private boolean m_enableGlobalNumberFormat;
     private int m_globalNumberFormatDecimals;
     private boolean m_displayMissingValueAsQuestionMark;
@@ -411,87 +407,17 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the globalDateTimeLocale
+     * @return the dateTimeFormats
      */
-    public String getGlobalDateTimeLocale() {
-        return m_globalDateTimeLocale;
+    public JSONDateTimeOptions getDateTimeFormats() {
+        return m_dateTimeFormats;
     }
 
     /**
-     * @param globalDateTimeLocale the globalDateTimeLocale to set
+     * @param dateTimeFormats the dateTimeFormats to set
      */
-    public void setGlobalDateTimeLocale(final String globalDateTimeLocale) {
-        m_globalDateTimeLocale = globalDateTimeLocale;
-    }
-
-    /**
-     * @return the globalDateTimeFormat
-     */
-    public String getGlobalDateTimeFormat() {
-        return m_globalDateTimeFormat;
-    }
-
-    /**
-     * @param globalDateTimeFormat the globalDateTimeFormat to set
-     */
-    public void setGlobalDateTimeFormat(final String globalDateTimeFormat) {
-        m_globalDateTimeFormat = globalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalDateFormat
-    */
-    public String getGlobalLocalDateFormat() {
-        return m_globalLocalDateFormat;
-    }
-
-    /**
-    * @param globalLocalDateFormat the globalLocalDateFormat to set
-    */
-    public void setGlobalLocalDateFormat(final String globalLocalDateFormat) {
-        m_globalLocalDateFormat = globalLocalDateFormat;
-    }
-
-    /**
-    * @return the globalLocalDateTimeFormat
-    */
-    public String getGlobalLocalDateTimeFormat() {
-        return m_globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @param globalLocalDateTimeFormat the globalLocalDateTimeFormat to set
-    */
-    public void setGlobalLocalDateTimeFormat(final String globalLocalDateTimeFormat) {
-        m_globalLocalDateTimeFormat = globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalTimeFormat
-    */
-    public String getGlobalLocalTimeFormat() {
-        return m_globalLocalTimeFormat;
-    }
-
-    /**
-    * @param globalLocalTimeFormat the globalLocalTimeFormat to set
-    */
-    public void setGlobalLocalTimeFormat(final String globalLocalTimeFormat) {
-        m_globalLocalTimeFormat = globalLocalTimeFormat;
-    }
-
-    /**
-    * @return the globalZonedDateTimeFormat
-    */
-    public String getGlobalZonedDateTimeFormat() {
-        return m_globalZonedDateTimeFormat;
-    }
-
-    /**
-    * @param globalZonedDateTimeFormat the globalZonedDateTimeFormat to set
-    */
-    public void setGlobalZonedDateTimeFormat(final String globalZonedDateTimeFormat) {
-        m_globalZonedDateTimeFormat = globalZonedDateTimeFormat;
+    public void setDateTimeFormats(final JSONDateTimeOptions dateTimeFormats) {
+        m_dateTimeFormats = dateTimeFormats;
     }
 
     /**
@@ -589,7 +515,6 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING, m_enableColumnSearching);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING, m_enableSorting);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_FORMAT, m_globalDateTimeFormat);
         settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
 
@@ -601,13 +526,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
 
         //added with 3.4
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
-
-        //added with 4.4
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT, m_globalLocalDateFormat);
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, m_globalLocalDateTimeFormat);
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT, m_globalLocalTimeFormat);
-        settings.addString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, m_globalZonedDateTimeFormat);
+        m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
     }
 
     /**
@@ -635,7 +554,6 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         m_enableColumnSearching = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING);
         m_enableClearSortButton = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON);
-        m_globalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
 
@@ -647,13 +565,9 @@ public class PagedTableViewRepresentation extends JSONViewContent {
 
         //added with 3.4
         m_displayMissingValueAsQuestionMark = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, PagedTableViewConfig.DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
-
-        //added with 4.4
-        m_globalDateTimeLocale = settings.getString(PagedTableViewConfig.CFG_GLOBAL_DATE_TIME_LOCALE, PagedTableViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE);
-        m_globalLocalDateFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalLocalDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalLocalTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_LOCAL_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalZonedDateTimeFormat = settings.getString(PagedTableViewConfig.CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, PagedTableViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
+        if (settings.containsKey(PagedTableViewConfig.CFG_DATE_TIME_FORMATS)) {
+            m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
+        }
     }
 
     /**
@@ -693,12 +607,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_enableHideUnselected, other.m_enableHideUnselected)
                 .append(m_enableSorting, other.m_enableSorting)
                 .append(m_enableClearSortButton, other.m_enableClearSortButton)
-                .append(m_globalDateTimeLocale, other.m_globalDateTimeLocale)
-                .append(m_globalDateTimeFormat, other.m_globalDateTimeFormat)
-                .append(m_globalLocalDateFormat, other.m_globalLocalDateFormat)
-                .append(m_globalLocalDateTimeFormat, other.m_globalLocalDateTimeFormat)
-                .append(m_globalLocalTimeFormat, other.m_globalLocalTimeFormat)
-                .append(m_globalZonedDateTimeFormat, other.m_globalZonedDateTimeFormat)
+                .append(m_dateTimeFormats, other.m_dateTimeFormats)
                 .append(m_enableGlobalNumberFormat, other.m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals, other.m_globalNumberFormatDecimals)
                 .append(m_displayMissingValueAsQuestionMark, other.m_displayMissingValueAsQuestionMark)
@@ -734,12 +643,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_enableHideUnselected)
                 .append(m_enableSorting)
                 .append(m_enableClearSortButton)
-                .append(m_globalDateTimeLocale)
-                .append(m_globalDateTimeFormat)
-                .append(m_globalLocalDateFormat)
-                .append(m_globalLocalDateTimeFormat)
-                .append(m_globalLocalTimeFormat)
-                .append(m_globalZonedDateTimeFormat)
+                .append(m_dateTimeFormats)
                 .append(m_enableGlobalNumberFormat)
                 .append(m_globalNumberFormatDecimals)
                 .append(m_displayMissingValueAsQuestionMark)

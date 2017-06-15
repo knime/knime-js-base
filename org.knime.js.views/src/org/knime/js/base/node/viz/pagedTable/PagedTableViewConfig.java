@@ -53,6 +53,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
  *
@@ -172,29 +173,10 @@ public class PagedTableViewConfig {
     private final static boolean DEFAULT_ENABLE_CLEAR_SORT_BUTTON = false;
     private boolean m_enableClearSortButton = DEFAULT_ENABLE_CLEAR_SORT_BUTTON;
 
-    final static String CFG_GLOBAL_DATE_TIME_LOCALE = "globalDateTimeLocale";
-    final static String DEFAULT_GLOBAL_DATE_TIME_LOCALE = "en";
-    private String m_globalDateTimeLocale = DEFAULT_GLOBAL_DATE_TIME_LOCALE;
+    final static String CFG_DATE_TIME_FORMATS = "dateTimeFormats";
+    private SettingsModelDateTimeOptions m_dateTimeFormats = new SettingsModelDateTimeOptions(CFG_DATE_TIME_FORMATS);
 
     final static String CFG_GLOBAL_DATE_TIME_FORMAT = "globalDateFormat";
-    final static String DEFAULT_GLOBAL_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_DATE_TIME_FORMATS.iterator().next();
-    private String m_globalDateTimeFormat = DEFAULT_GLOBAL_DATE_TIME_FORMAT;
-
-    final static String CFG_GLOBAL_LOCAL_DATE_FORMAT = "globalLocalDateFormat";
-    final static String DEFAULT_GLOBAL_LOCAL_DATE_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_LOCAL_DATE_FORMATS.iterator().next();
-    private String m_globalLocalDateFormat = DEFAULT_GLOBAL_LOCAL_DATE_FORMAT;
-
-    final static String CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT = "globalLocalDateTimeFormat";
-    final static String DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_LOCAL_DATE_TIME_FORMATS.iterator().next();
-    private String m_globalLocalDateTimeFormat = DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT;
-
-    final static String CFG_GLOBAL_LOCAL_TIME_FORMAT = "globalLocalTimeFormat";
-    final static String DEFAULT_GLOBAL_LOCAL_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_LOCAL_TIME_FORMATS.iterator().next();
-    private String m_globalLocalTimeFormat = DEFAULT_GLOBAL_LOCAL_TIME_FORMAT;
-
-    final static String CFG_GLOBAL_ZONED_DATE_TIME_FORMAT = "globalZonedDateTimeFormat";
-    final static String DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT = PagedTableViewNodeDialogPane.PREDEFINED_ZONED_DATE_TIME_FORMATS.iterator().next();
-    private String m_globalZonedDateTimeFormat = DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT;
 
     final static String CFG_ENABLE_GLOBAL_NUMBER_FORMAT = "enableGlobalNumberFormat";
     private final static boolean DEFAULT_ENABLE_GLOBAL_NUMBER_FORMAT = false;
@@ -602,87 +584,17 @@ public class PagedTableViewConfig {
     }
 
     /**
-     * @return the globalDateTimeLocale
+     * @return the dateTimeFormats
      */
-    public String getGlobalDateTimeLocale() {
-        return m_globalDateTimeLocale;
+    public SettingsModelDateTimeOptions getDateTimeFormats() {
+        return m_dateTimeFormats;
     }
 
     /**
-     * @param globalDateTimeLocale the globalDateTimeLocale to set
+     * @param dateTimeFormats the dateTimeFormats to set
      */
-    public void setGlobalDateTimeLocale(final String globalDateTimeLocale) {
-        m_globalDateTimeLocale = globalDateTimeLocale;
-    }
-
-    /**
-     * @return the globalDateTimeFormat
-     */
-    public String getGlobalDateTimeFormat() {
-        return m_globalDateTimeFormat;
-    }
-
-    /**
-     * @param globalDateTimeFormat the globalDateTimeFormat to set
-     */
-    public void setGlobalDateTimeFormat(final String globalDateTimeFormat) {
-        m_globalDateTimeFormat = globalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalDateFormat
-    */
-    public String getGlobalLocalDateFormat() {
-        return m_globalLocalDateFormat;
-    }
-
-    /**
-    * @param globalLocalDateFormat the globalLocalDateFormat to set
-    */
-    public void setGlobalLocalDateFormat(final String globalLocalDateFormat) {
-        m_globalLocalDateFormat = globalLocalDateFormat;
-    }
-
-    /**
-    * @return the globalLocalDateTimeFormat
-    */
-    public String getGlobalLocalDateTimeFormat() {
-        return m_globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @param globalLocalDateTimeFormat the globalLocalDateTimeFormat to set
-    */
-    public void setGlobalLocalDateTimeFormat(final String globalLocalDateTimeFormat) {
-        m_globalLocalDateTimeFormat = globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalTimeFormat
-    */
-    public String getGlobalLocalTimeFormat() {
-        return m_globalLocalTimeFormat;
-    }
-
-    /**
-    * @param globalLocalTimeFormat the globalLocalTimeFormat to set
-    */
-    public void setGlobalLocalTimeFormat(final String globalLocalTimeFormat) {
-        m_globalLocalTimeFormat = globalLocalTimeFormat;
-    }
-
-    /**
-    * @return the globalZonedDateTimeFormat
-    */
-    public String getGlobalZonedDateTimeFormat() {
-        return m_globalZonedDateTimeFormat;
-    }
-
-    /**
-    * @param globalZonedDateTimeFormat the globalZonedDateTimeFormat to set
-    */
-    public void setGlobalZonedDateTimeFormat(final String globalZonedDateTimeFormat) {
-        m_globalZonedDateTimeFormat = globalZonedDateTimeFormat;
+    public void setDateTimeFormats(final SettingsModelDateTimeOptions dateTimeFormats) {
+        m_dateTimeFormats = dateTimeFormats;
     }
 
     /**
@@ -754,7 +666,6 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_ENABLE_COLUMN_SEARCHING, m_enableColumnSearching);
         settings.addBoolean(CFG_ENABLE_SORTING, m_enableSorting);
         settings.addBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
-        settings.addString(CFG_GLOBAL_DATE_TIME_FORMAT, m_globalDateTimeFormat);
         settings.addBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
 
@@ -768,13 +679,7 @@ public class PagedTableViewConfig {
 
         //added with 3.4
         settings.addBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
-
-        //added with 4.4
-        settings.addString(CFG_GLOBAL_DATE_TIME_LOCALE, m_globalDateTimeLocale);
-        settings.addString(CFG_GLOBAL_LOCAL_DATE_FORMAT, m_globalLocalDateFormat);
-        settings.addString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, m_globalLocalDateTimeFormat);
-        settings.addString(CFG_GLOBAL_LOCAL_TIME_FORMAT, m_globalLocalTimeFormat);
-        settings.addString(CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, m_globalZonedDateTimeFormat);
+        m_dateTimeFormats.saveSettingsTo(settings);
     }
 
     /** Loads parameters in NodeModel.
@@ -804,7 +709,6 @@ public class PagedTableViewConfig {
         m_enableColumnSearching = settings.getBoolean(CFG_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(CFG_ENABLE_SORTING);
         m_enableClearSortButton = settings.getBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON);
-        m_globalDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
 
@@ -819,12 +723,12 @@ public class PagedTableViewConfig {
         //added with 3.4
         m_displayMissingValueAsQuestionMark = settings.getBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
 
-        //added with 4.4
-        m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
-        m_globalLocalDateFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalLocalDateTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalLocalTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalZonedDateTimeFormat = settings.getString(CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
+        if (settings.containsKey(CFG_DATE_TIME_FORMATS)) {
+            m_dateTimeFormats.loadSettingsFrom(settings);
+        } else {
+            String legacyDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT);
+            m_dateTimeFormats.setGlobalDateTimeFormat(legacyDateTimeFormat);
+        }
     }
 
     /** Loads parameters in Dialog.
@@ -854,7 +758,6 @@ public class PagedTableViewConfig {
         m_enableColumnSearching = settings.getBoolean(CFG_ENABLE_COLUMN_SEARCHING, DEFAULT_ENABLE_COLUMN_SEARCHING);
         m_enableSorting = settings.getBoolean(CFG_ENABLE_SORTING, DEFAULT_ENABLE_SORTING);
         m_enableClearSortButton = settings.getBoolean(CFG_ENABLE_CLEAR_SORT_BUTTON, DEFAULT_ENABLE_CLEAR_SORT_BUTTON);
-        m_globalDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_DATE_TIME_FORMAT);
         m_enableGlobalNumberFormat = settings.getBoolean(CFG_ENABLE_GLOBAL_NUMBER_FORMAT, DEFAULT_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, DEFAULT_GLOBAL_NUMBER_FORMAT_DECIMALS);
 
@@ -868,13 +771,18 @@ public class PagedTableViewConfig {
 
         //added with 3.4
         m_displayMissingValueAsQuestionMark = settings.getBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
-
-        //added with 4.4
-        m_globalDateTimeLocale = settings.getString(CFG_GLOBAL_DATE_TIME_LOCALE, DEFAULT_GLOBAL_DATE_TIME_LOCALE);
-        m_globalLocalDateFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_FORMAT);
-        m_globalLocalDateTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_DATE_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT);
-        m_globalLocalTimeFormat = settings.getString(CFG_GLOBAL_LOCAL_TIME_FORMAT, DEFAULT_GLOBAL_LOCAL_TIME_FORMAT);
-        m_globalZonedDateTimeFormat = settings.getString(CFG_GLOBAL_ZONED_DATE_TIME_FORMAT, DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT);
+        if (settings.containsKey(CFG_DATE_TIME_FORMATS)) {
+            try {
+                m_dateTimeFormats.loadSettingsFrom(settings);
+            } catch (InvalidSettingsException e) {
+                // return default
+            }
+        } else {
+            String legacyDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT, null);
+            if (legacyDateTimeFormat != null) {
+                m_dateTimeFormats.setGlobalDateTimeFormat(legacyDateTimeFormat);
+            }
+        }
     }
 
 }
