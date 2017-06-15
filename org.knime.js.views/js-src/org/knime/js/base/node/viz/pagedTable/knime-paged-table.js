@@ -43,8 +43,8 @@ knime_paged_table = function() {
 	
 	drawTable = function() {
 		// Set locale for moment.js.
-		if (_representation.globalDateTimeLocale !== 'en') {
-			moment.locale(_representation.globalDateTimeLocale);
+		if (_representation.dateTimeFormats.globalDateTimeLocale !== 'en') {
+			moment.locale(_representation.dateTimeFormats.globalDateTimeLocale);
 		}
 		
 		var body = $('body');
@@ -146,39 +146,39 @@ knime_paged_table = function() {
 				if (_representation.displayMissingValueAsQuestionMark) {
 					colDef.defaultContent = '<span class="missing-value-cell">?</span>';
 				}
-				if (knimeColType == 'Date and Time' && _representation.globalDateTimeFormat) {
+				if (knimeColType == 'Date and Time' && _representation.dateTimeFormats.globalDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
 						// Check if date is given as ISO-string or time stamp (legacy).
 						if (isNaN(data)) {
 							// ISO-string:
 							// date is parsed and rendered in local time. 
-							return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalDateTimeFormat);
+							return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalDateTimeFormat);
 						} else {
 							// time stamp (legacy):
 							// date is parsed and rendered in UTC.
-							return moment(data).utc().format(type === 'sort' || type === 'type' ? 'x' : _representation.globalDateTimeFormat);
+							return moment(data).utc().format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalDateTimeFormat);
 						}
 					}
 				}
-				if (knimeColType == 'Local Date' && _representation.globalLocalDateFormat) {
+				if (knimeColType == 'Local Date' && _representation.dateTimeFormats.globalLocalDateFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalDateFormat);
+				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalLocalDateFormat);
 				  }
 				}
 
-				if (knimeColType == 'Local Date Time' && _representation.globalLocalDateTimeFormat) {
+				if (knimeColType == 'Local Date Time' && _representation.dateTimeFormats.globalLocalDateTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalDateTimeFormat);
+				    return moment(data).format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalLocalDateTimeFormat);
 				  }
 				}
 
-				if (knimeColType == 'Local Time' && _representation.globalLocalTimeFormat) {
+				if (knimeColType == 'Local Time' && _representation.dateTimeFormats.globalLocalTimeFormat) {
 				  colDef.render = function (data, type, full, meta) {
-				    return moment(data, "hh:mm:ss.SSSSSSSSS").format(type === 'sort' || type === 'type' ? 'x' : _representation.globalLocalTimeFormat);
+				    return moment(data, "hh:mm:ss.SSSSSSSSS").format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalLocalTimeFormat);
 				  }
 				}
 
-				if (knimeColType == 'Zoned Date Time' && _representation.globalZonedDateTimeFormat) {
+				if (knimeColType == 'Zoned Date Time' && _representation.dateTimeFormats.globalZonedDateTimeFormat) {
 					colDef.render = function (data, type, full, meta) {
 						var regex = /(.*)\[(.*)\]$/
 						var match = regex.exec(data);
@@ -196,7 +196,7 @@ knime_paged_table = function() {
 							}
 						}
 
-						return date.format(type === 'sort' || type === 'type' ? 'x' : _representation.globalZonedDateTimeFormat);
+						return date.format(type === 'sort' || type === 'type' ? 'x' : _representation.dateTimeFormats.globalZonedDateTimeFormat);
 					}
 				}
 				if (colType == 'number' && _representation.enableGlobalNumberFormat) {
