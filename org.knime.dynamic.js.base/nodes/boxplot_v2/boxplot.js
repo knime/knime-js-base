@@ -11,6 +11,7 @@
     var MISSING_VALUES_ONLY = "missingValuesOnly";
     var IGNORED_MISSING_VALUES = "ignoredMissingValues";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
+	var NO_DATA_COLUMN = "noDataColumn";
     
     input.init = function(representation, value) {
     	// Store value and representation for later
@@ -547,10 +548,17 @@
     	knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
     	knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
     	knimeService.clearWarningMessage(IGNORED_MISSING_VALUES);
+    	knimeService.clearWarningMessage(NO_DATA_COLUMN);
     	
     	var excludedDataCols = _representation.inObjects[0].excludedDataCols;
     	var numMissValPerCol = _representation.inObjects[0].numMissValPerCol;
     	var dataCols = _representation.options.columns;
+    	
+    	// temporary workaround for being able to select a data column which was not included in the node settings
+    	if (dataCols.indexOf(_value.options.numCol) == -1) {
+    		knimeService.setWarningMessage("No chart was generated since the selected data column was filtered our in the node configuration dialog.\nPlease choose another column, or change the node settings.", NO_DATA_COLUMN);
+    		return;
+    	}
     	
     	if (_representation.options.multi) {
     		// plot multiple boxes

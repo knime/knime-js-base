@@ -16,7 +16,8 @@
     var MISSING_VALUES_ONLY = "missingValuesOnly";
     var IGNORED_MISSING_VALUES = "ignoredMissingValues";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
-    
+    var NO_DATA_COLUMN = "noDataColumn";
+	
     input.init = function(representation, value) { 
     	// Store value and representation for later        
         _value = value;
@@ -191,7 +192,7 @@
     	_data = _representation.inObjects[0].stats[_value.options.numCol];
     	
         _missValClass = undefined;
-        if (!_value.options.includeMissValClass && _data[MISSING_VALUES_CLASS] !== undefined) {
+        if (!_value.options.includeMissValClass && _data !== undefined && _data[MISSING_VALUES_CLASS] !== undefined) {
         	_missValClass = _data[MISSING_VALUES_CLASS];
         	delete _data[MISSING_VALUES_CLASS];
         }
@@ -557,6 +558,13 @@
     	knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
     	knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
     	knimeService.clearWarningMessage(IGNORED_MISSING_VALUES);
+    	knimeService.clearWarningMessage(NO_DATA_COLUMN);
+    	
+    	// temporary workaround for being able to select a data column which was not included in the node settings
+    	if (_data === undefined) {
+    		knimeService.setWarningMessage("No chart was generated since the selected data column was filtered our in the node configuration dialog.\nPlease choose another column, or change the node settings.", NO_DATA_COLUMN);
+    		return;
+    	}
     	
     	var excludedClasses = _representation.inObjects[0].excludedClasses[_value.options.numCol];
     	var ignoredMissVals = _representation.inObjects[0].ignoredMissVals[_value.options.numCol];
