@@ -56,6 +56,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.warnings.JSONWarnings;
 
@@ -111,13 +112,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private boolean m_showWarningInView;
     private JSONWarnings m_warnings = new JSONWarnings();
 
-    private String m_globalDateTimeLocale;
-    private String m_globalDateTimeFormat;
-    private String m_globalLocalDateFormat;
-    private String m_globalLocalDateTimeFormat;
-    private String m_globalLocalTimeFormat;
-    private String m_globalZonedDateTimeFormat;
-    private String m_timezone;
+    private JSONDateTimeOptions m_dateTimeFormats;
 
     /**
      * @return the keyedDataset
@@ -582,101 +577,17 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the globalDateTimeLocale
+     * @return the dateTimeFormats
      */
-    public String getGlobalDateTimeLocale() {
-        return m_globalDateTimeLocale;
+    public JSONDateTimeOptions getDateTimeFormats() {
+        return m_dateTimeFormats;
     }
 
     /**
-     * @param globalDateTimeLocale the globalDateTimeLocale to set
+     * @param dateTimeFormats the dateTimeFormats to set
      */
-    public void setGlobalDateTimeLocale(final String globalDateTimeLocale) {
-        m_globalDateTimeLocale = globalDateTimeLocale;
-    }
-
-    /**
-     * @return the globalDateTimeFormat
-     */
-    public String getGlobalDateTimeFormat() {
-        return m_globalDateTimeFormat;
-    }
-
-    /**
-     * @param globalDateTimeFormat the globalDateTimeFormat to set
-     */
-    public void setGlobalDateTimeFormat(final String globalDateTimeFormat) {
-        m_globalDateTimeFormat = globalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalDateFormat
-    */
-    public String getGlobalLocalDateFormat() {
-        return m_globalLocalDateFormat;
-    }
-
-    /**
-    * @param globalLocalDateFormat the globalLocalDateFormat to set
-    */
-    public void setGlobalLocalDateFormat(final String globalLocalDateFormat) {
-        m_globalLocalDateFormat = globalLocalDateFormat;
-    }
-
-    /**
-    * @return the globalLocalDateTimeFormat
-    */
-    public String getGlobalLocalDateTimeFormat() {
-        return m_globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @param globalLocalDateTimeFormat the globalLocalDateTimeFormat to set
-    */
-    public void setGlobalLocalDateTimeFormat(final String globalLocalDateTimeFormat) {
-        m_globalLocalDateTimeFormat = globalLocalDateTimeFormat;
-    }
-
-    /**
-    * @return the globalLocalTimeFormat
-    */
-    public String getGlobalLocalTimeFormat() {
-        return m_globalLocalTimeFormat;
-    }
-
-    /**
-    * @param globalLocalTimeFormat the globalLocalTimeFormat to set
-    */
-    public void setGlobalLocalTimeFormat(final String globalLocalTimeFormat) {
-        m_globalLocalTimeFormat = globalLocalTimeFormat;
-    }
-
-    /**
-    * @return the globalZonedDateTimeFormat
-    */
-    public String getGlobalZonedDateTimeFormat() {
-        return m_globalZonedDateTimeFormat;
-    }
-
-    /**
-    * @param globalZonedDateTimeFormat the globalZonedDateTimeFormat to set
-    */
-    public void setGlobalZonedDateTimeFormat(final String globalZonedDateTimeFormat) {
-        m_globalZonedDateTimeFormat = globalZonedDateTimeFormat;
-    }
-
-    /**
-     * @return the timezone
-     */
-    public String getTimezone() {
-        return m_timezone;
-    }
-
-    /**
-     * @param timezone the timezone to set
-     */
-    public void setTimezone(final String timezone) {
-        m_timezone = timezone;
+    public void setDateTimeFormats(final JSONDateTimeOptions dateTimeFormats) {
+        m_dateTimeFormats = dateTimeFormats;
     }
 
     /**
@@ -712,7 +623,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         settings.addInt(LinePlotViewConfig.IMAGE_WIDTH, getImageWidth());
         settings.addInt(LinePlotViewConfig.IMAGE_HEIGHT, getImageHeight());
-        settings.addString(LinePlotViewConfig.GLOBAL_DATE_TIME_FORMAT, getGlobalDateTimeFormat());
         settings.addString(LinePlotViewConfig.BACKGROUND_COLOR, getBackgroundColor());
         settings.addString(LinePlotViewConfig.DATA_AREA_COLOR, getDataAreaColor());
         settings.addString(LinePlotViewConfig.GRID_COLOR, getGridColor());
@@ -731,12 +641,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
 
-        settings.addString(LinePlotViewConfig.GLOBAL_DATE_TIME_LOCALE, getGlobalDateTimeLocale());
-        settings.addString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_FORMAT, getGlobalLocalDateFormat());
-        settings.addString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_TIME_FORMAT, getGlobalLocalDateTimeFormat());
-        settings.addString(LinePlotViewConfig.GLOBAL_LOCAL_TIME_FORMAT, getGlobalLocalTimeFormat());
-        settings.addString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT, getGlobalZonedDateTimeFormat());
-        settings.addString(LinePlotViewConfig.TIMEZONE, getTimezone());
+        m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
     }
 
     /**
@@ -772,7 +677,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         setImageWidth(settings.getInt(LinePlotViewConfig.IMAGE_WIDTH));
         setImageHeight(settings.getInt(LinePlotViewConfig.IMAGE_HEIGHT));
-        setGlobalDateTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_DATE_TIME_FORMAT));
         setBackgroundColor(settings.getString(LinePlotViewConfig.BACKGROUND_COLOR));
         setDataAreaColor(settings.getString(LinePlotViewConfig.DATA_AREA_COLOR));
         setGridColor(settings.getString(LinePlotViewConfig.GRID_COLOR));
@@ -792,12 +696,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, LinePlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
-        setGlobalDateTimeLocale(settings.getString(LinePlotViewConfig.GLOBAL_DATE_TIME_LOCALE, LinePlotViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE));
-        setGlobalLocalDateFormat(settings.getString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT));
-        setGlobalLocalDateTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT));
-        setGlobalLocalTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_LOCAL_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT));
-        setGlobalZonedDateTimeFormat(settings.getString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT, LinePlotViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT));
-        setTimezone(settings.getString(LinePlotViewConfig.TIMEZONE, LinePlotViewConfig.DEFAULT_TIMEZONE));
+        if (settings.containsKey(LinePlotViewConfig.DATE_TIME_FORMATS)) {
+            m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
+        }
     }
 
     /**
@@ -842,13 +743,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_enableLassoSelection, other.m_enableLassoSelection)
                 .append(m_imageWidth, other.m_imageWidth)
                 .append(m_imageHeight, other.m_imageHeight)
-                .append(m_globalDateTimeLocale, other.m_globalDateTimeLocale)
-                .append(m_globalDateTimeFormat, other.m_globalDateTimeFormat)
-                .append(m_globalLocalDateFormat, other.m_globalLocalDateFormat)
-                .append(m_globalLocalDateTimeFormat, other.m_globalLocalDateTimeFormat)
-                .append(m_globalLocalTimeFormat, other.m_globalLocalTimeFormat)
-                .append(m_globalZonedDateTimeFormat, other.m_globalZonedDateTimeFormat)
-                .append(m_timezone, other.m_timezone)
+                .append(m_dateTimeFormats, other.m_dateTimeFormats)
                 .append(m_backgroundColor, other.m_backgroundColor)
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_gridColor, other.m_gridColor)
@@ -891,13 +786,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_enableLassoSelection)
                 .append(m_imageWidth)
                 .append(m_imageHeight)
-                .append(m_globalDateTimeLocale)
-                .append(m_globalDateTimeFormat)
-                .append(m_globalLocalDateFormat)
-                .append(m_globalLocalDateTimeFormat)
-                .append(m_globalLocalTimeFormat)
-                .append(m_globalZonedDateTimeFormat)
-                .append(m_timezone)
+                .append(m_dateTimeFormats)
                 .append(m_backgroundColor)
                 .append(m_dataAreaColor)
                 .append(m_gridColor)

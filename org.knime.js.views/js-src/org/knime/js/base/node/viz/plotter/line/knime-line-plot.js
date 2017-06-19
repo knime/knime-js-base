@@ -84,8 +84,8 @@ knime_line_plot = function() {
 			}
 			
 			// Set locale for moment.js.
-			if (_representation.globalDateTimeLocale !== 'en') {
-				moment.locale(_representation.globalDateTimeLocale);
+			if (_representation.dateTimeFormats.globalDateTimeLocale !== 'en') {
+				moment.locale(_representation.dateTimeFormats.globalDateTimeLocale);
 			}
 
 			d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
@@ -760,19 +760,19 @@ knime_line_plot = function() {
 		var format;
 		switch (knimeColType) {
 		case 'Date and Time':
-			format = _representation.globalDateTimeFormat;
+			format = _representation.dateTimeFormats.globalDateTimeFormat;
 			break;
 		case 'Local Date':
-			format = _representation.globalLocalDateFormat;
+			format = _representation.dateTimeFormats.globalLocalDateFormat;
 			break;
 		case 'Local Date Time':
-			format = _representation.globalLocalDateTimeFormat;
+			format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
 			break;
 		case 'Local Time':
-			format = _representation.globalLocalTimeFormat;
+			format = _representation.dateTimeFormats.globalLocalTimeFormat;
 			break;
 		case 'Zoned Date Time':
-			format = _representation.globalZonedDateTimeFormat;
+			format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
 			break;
 		}
 		return new DateFormat(format, knimeColType);
@@ -787,7 +787,7 @@ knime_line_plot = function() {
 		if (this._knimeColType == 'Date and Time' || this._knimeColType == 'Local Date' || this._knimeColType == 'Local Date Time' || this._knimeColType == 'Local Time') {
 			return moment(n).utc().format(this._format);
 		} else if (this._knimeColType == 'Zoned Date Time') {
-			return moment(n).tz(_representation.timezone).format(this._format);
+			return moment(n).tz(_representation.dateTimeFormats.timezone).format(this._format);
 		}		
 	};
 	

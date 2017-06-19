@@ -536,7 +536,6 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
         representation.setImageWidth(m_config.getImageWidth());
         representation.setImageHeight(m_config.getImageHeight());
-        representation.setGlobalDateTimeFormat(m_config.getGlobalDateTimeFormat());
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
@@ -547,12 +546,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         // added with 3.4
         representation.setMissingValueMethod(m_config.getMissingValueMethod());
         representation.setShowWarningInView(m_config.getShowWarningInView());
-        representation.setGlobalDateTimeLocale(m_config.getGlobalDateTimeLocale());
-        representation.setGlobalLocalDateFormat(m_config.getGlobalLocalDateFormat());
-        representation.setGlobalLocalDateTimeFormat(m_config.getGlobalLocalDateTimeFormat());
-        representation.setGlobalLocalTimeFormat(m_config.getGlobalLocalTimeFormat());
-        representation.setGlobalZonedDateTimeFormat(m_config.getGlobalZonedDateTimeFormat());
-        representation.setTimezone(m_config.getTimezone());
+        representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
 
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());

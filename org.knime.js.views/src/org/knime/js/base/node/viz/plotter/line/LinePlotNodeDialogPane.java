@@ -55,13 +55,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -84,46 +77,19 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
-import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.core.node.util.DataValueColumnFilter;
-import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
-import org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeDialogPane;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableBiMap.Builder;
+import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland, University of Konstanz
  */
 public class LinePlotNodeDialogPane extends NodeDialogPane {
-
-    /** BiMap of locale keys and locale values as supported by moment.js */
-    public static final BiMap<String, String> PREDEFINED_DATE_TIME_LOCALES = loadDateTimeLocales();
-
-    /**
-     * Keys for the string history to re-use user entered date formats.
-     */
-    public static final String DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-date-formats";
-    public static final String DATE_FORMAT_HISTORY_KEY = "momentjs-date-new-formats";
-    public static final String TIME_FORMAT_HISTORY_KEY = "momentjs-time-formats";
-    public static final String ZONED_DATE_TIME_FORMAT_HISTORY_KEY = "momentjs-zoned-date-time-formats";
-
-    /** Sets of predefined date and time formats for JavaScript processing with moment.js. */
-    public static final LinkedHashSet<String> PREDEFINED_DATE_TIME_FORMATS = createPredefinedDateTimeFormats();
-    public static final LinkedHashSet<String> PREDEFINED_LOCAL_DATE_FORMATS = createPredefinedLocalDateFormats();
-    public static final LinkedHashSet<String> PREDEFINED_LOCAL_DATE_TIME_FORMATS = createPredefinedLocalDateTimeFormats();
-    public static final LinkedHashSet<String> PREDEFINED_LOCAL_TIME_FORMATS = createPredefinedLocalTimeFormats();
-    public static final LinkedHashSet<String> PREDEFINED_ZONED_DATE_TIME_FORMATS = createPredefinedZonedDateTimeFormats();
-
     private static final int TEXT_FIELD_SIZE = 20;
-    private static final int FORMAT_CHOOSER_WIDTH = 235;
-    private static final int FORMAT_CHOOSER_HEIGHT = 17;
 
     private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
@@ -167,13 +133,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final DialogComponentColorChooser m_gridColorChooser;
     private final DialogComponentColorChooser m_dataAreaColorChooser;
     private final DialogComponentColorChooser m_backgroundColorChooser;
-    private final DialogComponentStringSelection m_globalDateTimeLocaleChooser;
-    private final DialogComponentStringSelection m_globalDateTimeFormatChooser;
-    private final DialogComponentStringSelection m_globalLocalDateFormatChooser;
-    private final DialogComponentStringSelection m_globalLocalDateTimeFormatChooser;
-    private final DialogComponentStringSelection m_globalLocalTimeFormatChooser;
-    private final DialogComponentStringSelection m_globalZonedDateTimeFormatChooser;
-    private final DialogComponentStringSelection m_timezoneChooser;
+    private final DialogComponentDateTimeOptions m_dateTimeFormats;
 
     /**
      * Creates a new dialog pane.
@@ -262,48 +222,10 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             }
         });
 
-        m_globalDateTimeLocaleChooser =
-                new DialogComponentStringSelection(
-                    new SettingsModelString(
-                        LinePlotViewConfig.GLOBAL_DATE_TIME_LOCALE,
-                        PREDEFINED_DATE_TIME_LOCALES.get(LinePlotViewConfig.DEFAULT_GLOBAL_DATE_TIME_LOCALE)
-                    ),
-                    "", PREDEFINED_DATE_TIME_LOCALES.values(), true);
-
-        m_globalDateTimeFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_DATE_TIME_FORMAT,
-                LinePlotViewConfig.DEFAULT_GLOBAL_DATE_TIME_FORMAT), "", PREDEFINED_DATE_TIME_FORMATS, true);
-        m_globalDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
-
-        m_globalLocalDateFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_FORMAT,
-                LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_FORMAT), "", PREDEFINED_LOCAL_DATE_FORMATS, true);
-        m_globalLocalDateFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
-
-        m_globalLocalDateTimeFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_LOCAL_DATE_TIME_FORMAT,
-                LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_DATE_TIME_FORMAT), "", PREDEFINED_LOCAL_DATE_TIME_FORMATS, true);
-        m_globalLocalDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
-
-        m_globalLocalTimeFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_LOCAL_TIME_FORMAT,
-                LinePlotViewConfig.DEFAULT_GLOBAL_LOCAL_TIME_FORMAT), "", PREDEFINED_LOCAL_TIME_FORMATS, true);
-        m_globalLocalTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
-
-        m_globalZonedDateTimeFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.GLOBAL_ZONED_DATE_TIME_FORMAT,
-                LinePlotViewConfig.DEFAULT_GLOBAL_ZONED_DATE_TIME_FORMAT), "", PREDEFINED_ZONED_DATE_TIME_FORMATS, true);
-        m_globalZonedDateTimeFormatChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
-        m_globalZonedDateTimeFormatChooser.getModel().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                setTimezoneChooserState();
-            }
-        });
-
-        m_timezoneChooser = new DialogComponentStringSelection(new SettingsModelString(LinePlotViewConfig.TIMEZONE, LinePlotViewConfig.DEFAULT_TIMEZONE), "",
-           new LinkedHashSet<String>(Arrays.asList(TimeZone.getAvailableIDs())), false);
-        m_timezoneChooser.setSizeComponents(FORMAT_CHOOSER_WIDTH, FORMAT_CHOOSER_HEIGHT);
+        DialogComponentDateTimeOptions.Config dateTimeFormatsConfig = new DialogComponentDateTimeOptions.Config();
+        dateTimeFormatsConfig.setShowTimezoneChooser(false);
+        m_dateTimeFormats = new DialogComponentDateTimeOptions(
+            new SettingsModelDateTimeOptions(LinePlotViewConfig.DATE_TIME_FORMATS), "Formatter", dateTimeFormatsConfig);
 
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
@@ -396,45 +318,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy++;
 
-        JPanel formatPanel = new JPanel(new GridBagLayout());
-        formatPanel.setBorder(BorderFactory.createTitledBorder("Formatter"));
-        panel.add(formatPanel, c);
-        cc.gridx = 0;
-        cc.gridy = 0;
-        formatPanel.add(new JLabel("Locale: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalDateTimeLocaleChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Local Date format: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalLocalDateFormatChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Local Date&Time format: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalLocalDateTimeFormatChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Local Time format: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalLocalTimeFormatChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Zoned Date&Time format: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalZonedDateTimeFormatChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Time zone (for zoned format): "), cc);
-        cc.gridx++;
-        formatPanel.add(m_timezoneChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
-        cc.gridy++;
-        formatPanel.add(new JLabel("Date&Time (legacy) format: "), cc);
-        cc.gridx++;
-        formatPanel.add(m_globalDateTimeFormatChooser.getComponentPanel(), cc);
-        cc.gridx = 0;
+        panel.add(m_dateTimeFormats.getPanel(), c);
         c.gridx = 0;
         c.gridy++;
 
@@ -693,14 +577,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_dotSize.setValue(config.getDotSize());
         m_maxRowsSpinner.setValue(config.getMaxRows());
 
-        m_globalDateTimeLocaleChooser.replaceListItems(loadDateTimeLocales().values(),
-            PREDEFINED_DATE_TIME_LOCALES.get(config.getGlobalDateTimeLocale()));
-        m_globalDateTimeFormatChooser.replaceListItems(createPredefinedDateTimeFormats(), config.getGlobalDateTimeFormat());
-        m_globalLocalDateFormatChooser.replaceListItems(createPredefinedLocalDateFormats(), config.getGlobalLocalDateFormat());
-        m_globalLocalDateTimeFormatChooser.replaceListItems(createPredefinedLocalDateTimeFormats(), config.getGlobalLocalDateTimeFormat());
-        m_globalLocalTimeFormatChooser.replaceListItems(createPredefinedLocalTimeFormats(), config.getGlobalLocalTimeFormat());
-        m_globalZonedDateTimeFormatChooser.replaceListItems(createPredefinedZonedDateTimeFormats(), config.getGlobalZonedDateTimeFormat());
-        ((SettingsModelString)m_timezoneChooser.getModel()).setStringValue(config.getTimezone());
+        m_dateTimeFormats.loadSettingsFromModel(config.getDateTimeFormats());
 
         m_imageWidthSpinner.setValue(config.getImageWidth());
         m_imageHeightSpinner.setValue(config.getImageHeight());
@@ -721,7 +598,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        validateSettings();
+        m_dateTimeFormats.validateSettings();
 
         LinePlotViewConfig config = new LinePlotViewConfig();
         config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
@@ -763,26 +640,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setDotSize((Integer)m_dotSize.getValue());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
-        config.setGlobalDateTimeLocale(PREDEFINED_DATE_TIME_LOCALES.inverse().get(
-            ((SettingsModelString)m_globalDateTimeLocaleChooser.getModel()).getStringValue())
-        );
-        String globalDateTimeFormat = ((SettingsModelString)m_globalDateTimeFormatChooser.getModel()).getStringValue();
-        config.setGlobalDateTimeFormat(globalDateTimeFormat);
-        String globalLocalDateFormat = ((SettingsModelString)m_globalLocalDateFormatChooser.getModel()).getStringValue();
-        config.setGlobalLocalDateFormat(globalLocalDateFormat);
-        String globalLocalDateTimeFormat = ((SettingsModelString)m_globalLocalDateTimeFormatChooser.getModel()).getStringValue();
-        config.setGlobalLocalDateTimeFormat(globalLocalDateTimeFormat);
-        String globalLocalTimeFormat = ((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue();
-        config.setGlobalLocalTimeFormat(globalLocalTimeFormat);
-        String globalZonedDateTimeFormat = ((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue();
-        config.setGlobalZonedDateTimeFormat(globalZonedDateTimeFormat);
-        StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalDateTimeFormat);
-        StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).add(globalLocalDateFormat);
-        StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).add(globalLocalDateTimeFormat);
-        StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).add(globalLocalTimeFormat);
-        StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).add(globalZonedDateTimeFormat);
-        String timezone = ((SettingsModelString)m_timezoneChooser.getModel()).getStringValue();
-        config.setTimezone(timezone);
+        config.setDateTimeFormats((SettingsModelDateTimeOptions)m_dateTimeFormats.getModel());
 
         config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
         config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
@@ -793,183 +651,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
 
         config.saveSettings(settings);
-    }
-
-    private void validateSettings() throws InvalidSettingsException {
-        // validate only local time to prevent date related symbols (otherwise a dat will be displayed for the time only)
-        // all other formats are free to have any other symbols
-        String localTimeFormatString = ((SettingsModelString)m_globalLocalTimeFormatChooser.getModel()).getStringValue();
-        String pattern = "(\\[.*\\])*((A|a|H|h|k|m|S|s|[^a-zA-Z]|\\[.*\\])+|(LT|LTS))(\\[.*\\])*";
-        if (!Pattern.matches(pattern, localTimeFormatString)) {
-            throw new InvalidSettingsException("Local Time format is not valid.");
-        }
-    }
-
-    /**
-     * @return a list of predefined formats for use in a date format with moment.js
-     */
-    public static LinkedHashSet<String> createPredefinedDateTimeFormats() {
-        LinkedHashSet<String> formats = new LinkedHashSet<String>();
-
-        // check the StringHistory first
-        String[] userFormats = StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory();
-        for (String userFormat : userFormats) {
-            formats.add(userFormat);
-        }
-
-        formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
-
-        return formats;
-    }
-
-    /**
-     * @return a list of predefined formats for use in a date format with moment.js
-     */
-    private static LinkedHashSet<String> createPredefinedZonedDateTimeFormats() {
-        LinkedHashSet<String> formats = new LinkedHashSet<String>();
-
-        // check the StringHistory first
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(ZONED_DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-
-        formats.add("YYYY-MM-DD z");
-        formats.add("ddd MMM DD YYYY HH:mm:ss z");
-        formats.add("M/D/YY z");
-        formats.add("MMM D, YYYY z");
-        formats.add("MMMM D, YYYY z");
-        formats.add("dddd, MMM D, YYYY z");
-        formats.add("h:mm A z");
-        formats.add("h:mm:ss A z");
-        formats.add("HH:mm:ss z");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS z");
-
-        formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
-
-        return formats;
-    }
-
-    /**
-     * @return a list of predefined formats for use in a date format with moment.js
-     */
-    private static LinkedHashSet<String> createPredefinedLocalTimeFormats() {
-        LinkedHashSet<String> formats = new LinkedHashSet<String>();
-
-        // check also the StringHistory....
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-
-        formats.add("HH:mm:ss");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss.SSS");
-
-        return formats;
-    }
-
-    /**
-     * @return a list of predefined formats for use in a date format with moment.js
-     */
-    private static LinkedHashSet<String> createPredefinedLocalDateTimeFormats() {
-        LinkedHashSet<String> formats = new LinkedHashSet<String>();
-        formats.add("YYYY-MM-DD");
-        formats.add("ddd MMM DD YYYY HH:mm:ss");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
-        formats.add("h:mm A");
-        formats.add("h:mm:ss A");
-        formats.add("HH:mm:ss");
-        formats.add("YYYY-MM-DD;HH:mm:ss.SSS");
-
-        // check the StringHistory first
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
-        ));
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(TIME_FORMAT_HISTORY_KEY).getHistory()
-        ));
-
-        return formats;
-    }
-
-    /**
-     * @return a list of predefined formats for use in a date format with moment.js
-     */
-    private static LinkedHashSet<String> createPredefinedLocalDateFormats() {
-        LinkedHashSet<String> formats = new LinkedHashSet<String>();
-
-        // check the StringHistory first
-        formats.addAll(Arrays.asList(
-            StringHistory.getInstance(DATE_FORMAT_HISTORY_KEY).getHistory()
-        ));
-
-        formats.add("YYYY-MM-DD");
-        formats.add("M/D/YY");
-        formats.add("MMM D, YYYY");
-        formats.add("MMMM D, YYYY");
-        formats.add("dddd, MMM D, YYYY");
-
-        return formats;
-    }
-
-    /**
-     * @return a BiMap of locale keys and locale values as supported by moment.js
-     * @throws IOException
-     */
-    private static BiMap<String, String> loadDateTimeLocales() {
-        Builder<String, String> biMapBuilder = ImmutableBiMap.builder();
-
-        Properties props = new Properties();
-        InputStream input = PagedTableViewNodeDialogPane.class.getResourceAsStream("locales.properties");
-
-        try {
-            props.load(input);
-            props.entrySet().stream()
-                .sorted(
-                    (e1, e2) -> ((String)e1.getValue()).toLowerCase().compareTo(((String)e2.getValue()).toLowerCase())
-                )
-                .forEach(
-                    (entry) -> biMapBuilder.put((String)entry.getKey(), (String)entry.getValue())
-                );
-
-        } catch (IOException e) {
-            biMapBuilder.put("en", "English (United States)");
-        }
-
-        return biMapBuilder.build();
     }
 
     private void setMissingValueMethod(final String method) {
@@ -997,13 +678,5 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
                 return LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN;
         }
         return null;
-    }
-
-    private void setTimezoneChooserState() {
-        String zonedValue = ((SettingsModelString)m_globalZonedDateTimeFormatChooser.getModel()).getStringValue();
-        boolean enabled = zonedValue.indexOf('z') != -1 || zonedValue.indexOf('Z') != -1;
-        m_timezoneChooser.getModel().setEnabled(enabled);
-        String tooltip = enabled ? "" : "Zoned Date&Time format must contain a zone mask symbol ('z' or 'Z') to enable the time zone selector";
-        m_timezoneChooser.setToolTipText(tooltip);
     }
 }
