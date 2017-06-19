@@ -727,7 +727,7 @@ public class PagedTableViewConfig {
             m_dateTimeFormats.loadSettingsFrom(settings);
         } else {
             String legacyDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT);
-            m_dateTimeFormats.setGlobalDateTimeFormat(legacyDateTimeFormat);
+            m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(legacyDateTimeFormat);
         }
     }
 
@@ -780,7 +780,7 @@ public class PagedTableViewConfig {
         } else {
             String legacyDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT, null);
             if (legacyDateTimeFormat != null) {
-                m_dateTimeFormats.setGlobalDateTimeFormat(legacyDateTimeFormat);
+                m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(legacyDateTimeFormat);
             }
         }
     }
