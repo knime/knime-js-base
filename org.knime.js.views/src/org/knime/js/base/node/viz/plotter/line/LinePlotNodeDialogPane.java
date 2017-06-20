@@ -222,10 +222,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             }
         });
 
-        DialogComponentDateTimeOptions.Config dateTimeFormatsConfig = new DialogComponentDateTimeOptions.Config();
-        dateTimeFormatsConfig.setShowTimezoneChooser(false);
         m_dateTimeFormats = new DialogComponentDateTimeOptions(
-            new SettingsModelDateTimeOptions(LinePlotViewConfig.DATE_TIME_FORMATS), "Formatter", dateTimeFormatsConfig);
+            new SettingsModelDateTimeOptions(LinePlotViewConfig.DATE_TIME_FORMATS), "Formatter");
 
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
