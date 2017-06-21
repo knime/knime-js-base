@@ -565,6 +565,9 @@
 	    	if (excludedDataCols.length == dataCols.length) {
 	    		knimeService.setWarningMessage("No chart was generated since all data columns have only missing values.\nRe-run the workflow with different data.", NO_DATA_AVAILABLE);
 	    	} else {
+	    		if (!_representation.options.reportOnMissingValues) {
+	    			return;
+	    		}
 	    		if (excludedDataCols.length > 0) {
 	    			knimeService.setWarningMessage("Following data columns contain only missing values and were excluded from the view:\n    " + excludedDataCols.join("\n    "), MISSING_VALUES_ONLY);
 	    		}
@@ -582,7 +585,7 @@
     		// plot a box for only one data column
     		if (excludedDataCols.indexOf(_value.options.numCol) != -1) {
     			knimeService.setWarningMessage("No chart was generated since the selected data column has only missing values.\nChoose another data column or re-run the workflow with different data.", NO_DATA_AVAILABLE);
-    		} else if (numMissValPerCol[_value.options.numCol] !== undefined) {
+    		} else if (numMissValPerCol[_value.options.numCol] !== undefined && _representation.options.reportOnMissingValues) {
     			knimeService.setWarningMessage("Missing values ignored during statistics calculations:\n" + numMissValPerCol[_value.options.numCol] + " missing value(s).", IGNORED_MISSING_VALUES);
     		}
     	}
