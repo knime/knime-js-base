@@ -79,6 +79,7 @@ final class ScatterPlotViewConfig {
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
+    final static boolean DEFAULT_REPORT_ON_MISSING_VALUES = true;
 
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
@@ -130,6 +131,7 @@ final class ScatterPlotViewConfig {
     static final String DATA_AREA_COLOR = "dataAreaColor";
     static final String GRID_COLOR = "gridColor";
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
+    static final String REPORT_ON_MISSING_VALUES = "reportOnMissingValues";
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -181,6 +183,7 @@ final class ScatterPlotViewConfig {
     private Color m_dataAreaColor = DEFAULT_DATA_AREA_COLOR;
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
+    private boolean m_reportOnMissingValues = DEFAULT_REPORT_ON_MISSING_VALUES;
 
     /**
      * @return the hideInWizard
@@ -904,6 +907,20 @@ final class ScatterPlotViewConfig {
         m_showWarningInView = showWarningInView;
     }
 
+    /**
+     * @return the reportOnMissingValues
+     */
+    public boolean getReportOnMissingValues() {
+        return m_reportOnMissingValues;
+    }
+
+    /**
+     * @param reportOnMissingValues the reportOnMissingValues to set
+     */
+    public void setReportOnMissingValues(final boolean reportOnMissingValues) {
+        m_reportOnMissingValues = reportOnMissingValues;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -966,6 +983,7 @@ final class ScatterPlotViewConfig {
         //added with 3.4
         settings.addBoolean(ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
+        settings.addBoolean(REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
     }
 
     /** Loads parameters in NodeModel.
@@ -1040,6 +1058,7 @@ final class ScatterPlotViewConfig {
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
     }
 
     /** Loads parameters in Dialog.
@@ -1126,5 +1145,6 @@ final class ScatterPlotViewConfig {
         //added with 3.4
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
     }
 }

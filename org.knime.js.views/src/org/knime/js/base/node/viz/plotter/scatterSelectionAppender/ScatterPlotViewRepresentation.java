@@ -115,6 +115,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_showWarningInView;
     private JSONWarnings m_warnings = new JSONWarnings();
 
+    private boolean m_reportOnMissingValues;
+
     /**
      * @return the keyedDataset
      */
@@ -620,6 +622,20 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the reportOnMissingValues
+     */
+    public boolean getReportOnMissingValues() {
+        return m_reportOnMissingValues;
+    }
+
+    /**
+     * @param reportOnMissingValues the reportOnMissingValues to set
+     */
+    public void setReportOnMissingValues(final boolean reportOnMissingValues) {
+        m_reportOnMissingValues = reportOnMissingValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -672,6 +688,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
         settings.addBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
+        settings.addBoolean(ScatterPlotViewConfig.REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
     }
 
     /**
@@ -729,6 +746,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         setEnableSwitchLegend(settings.getBoolean(ScatterPlotViewConfig.ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, ScatterPlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
+        setReportOnMissingValues(settings.getBoolean(ScatterPlotViewConfig.REPORT_ON_MISSING_VALUES, ScatterPlotViewConfig.DEFAULT_REPORT_ON_MISSING_VALUES));
     }
 
     /**
@@ -783,6 +801,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering, other.m_enableStaggeredRendering)
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
+                .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
                 .isEquals();
     }
 
@@ -828,6 +847,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_enableStaggeredRendering)
                 .append(m_showWarningInView)
                 .append(m_warnings)
+                .append(m_reportOnMissingValues)
                 .toHashCode();
     }
 }

@@ -24,8 +24,10 @@ knime_scatter_plot_selection_appender = function() {
 	var hiddenItemKeys = [];
 	
 	var missingValuesCount = 0;
+	var isEmptyPlot = false;
 	
 	var MISSING_VALUES_NOT_SHOWN_WARNING_ID = "missingValuesNotShown";
+	var NO_DATA_AVAILABLE = "noDataAvailable";
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
@@ -131,12 +133,21 @@ knime_scatter_plot_selection_appender = function() {
 		if (!yCol) {
 			yCol = "[EMPTY]";
 		}
+		isEmptyPlot = false;
 		var xyDataset = extractXYDatasetFromColumns2D(_keyedDataset, _value.xColumn, yCol);
-		if (missingValuesCount > 0) {
-			knimeService.setWarningMessage(missingValuesCount + " missing or unsupported value(s) are not shown.", MISSING_VALUES_NOT_SHOWN_WARNING_ID);
-		} else {
-			knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN_WARNING_ID);
+		
+		if (_representation.showWarningInView) {
+			if (isEmptyPlot) {
+				knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN_WARNING_ID);
+				knimeService.setWarningMessage("No chart was generated since the selected pair of data columns has only missing values.\nChoose another data columns or re-run the workflow with different data.", NO_DATA_AVAILABLE);				
+			} else {
+				knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
+				if (missingValuesCount > 0 && _representation.reportOnMissingValues) {
+					knimeService.setWarningMessage(missingValuesCount + " missing or unsupported value(s) are not shown.", MISSING_VALUES_NOT_SHOWN_WARNING_ID);
+				}
+			}	
 		}
+				
 		
 		//console.timeEnd("Building XYDataset");
 		return xyDataset;
@@ -1093,6 +1104,10 @@ knime_scatter_plot_selection_appender = function() {
 	    var ysymbols = dataset.getColumnProperty(ycol, "symbols");
 	    if (ysymbols) {
 	        result.setProperty("y-symbols", ysymbols);
+	    }
+	    
+	    if (missingValuesCount == dataset.rowCount()) {
+	    	isEmptyPlot = true;
 	    }
 	    
 	    return result;

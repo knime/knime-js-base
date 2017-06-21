@@ -354,7 +354,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 + rowID + " of " + rowValues.length + ".");
         }
 
-        if (hasUnsupportedValues) {
+        if (hasUnsupportedValues && getViewRepresentation().getReportOnMissingValues()) {
             setWarningMessage("Table contains missing or unsupported values - these values will be omitted.");
         }
 
@@ -491,7 +491,6 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
-        representation.setShowWarningInView(m_config.getShowWarningInView());
 
         ScatterPlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());
@@ -551,6 +550,8 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         // added with 3.4
         representation.setEnableSwitchLegend(m_config.getEnableSwitchLegend());
         viewValue.setShowLegend(m_config.getShowLegend());
+        representation.setShowWarningInView(m_config.getShowWarningInView());
+        representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
     }
 
     private void copyValueToConfig() {

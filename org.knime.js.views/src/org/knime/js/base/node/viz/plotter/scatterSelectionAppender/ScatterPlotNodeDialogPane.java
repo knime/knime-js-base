@@ -140,6 +140,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final DialogComponentColorChooser m_dataAreaColorChooser;
     private final DialogComponentColorChooser m_backgroundColorChooser;
     private final JCheckBox m_showWarningInViewCheckBox;
+    private final JCheckBox m_reportOnMissingValuesCheckBox;
 
     /**
      * Creates a new dialog pane.
@@ -201,6 +202,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
             new SettingsModelColor("backgroundColor", null), "Background color: ", true);
 
         m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
+        m_reportOnMissingValuesCheckBox = new JCheckBox("Report on missing values");
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -276,6 +278,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         c.gridy++;
         m_yColComboBox.setPreferredSize(new Dimension(260, 50));
         panel.add(m_yColComboBox, c);
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_reportOnMissingValuesCheckBox, c);
 
         return panel;
     }
@@ -647,6 +652,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
 
         m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+        m_reportOnMissingValuesCheckBox.setSelected(config.getReportOnMissingValues());
 
         enableViewControls();
         enableCrosshairControls();
@@ -711,6 +717,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setGridColor(m_gridColorChooser.getColor());
 
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+        config.setReportOnMissingValues(m_reportOnMissingValuesCheckBox.isSelected());
 
         config.saveSettings(settings);
     }

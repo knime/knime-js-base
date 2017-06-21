@@ -29,6 +29,8 @@
 		    <option name="Selection column name">Name of the appended column containing boolean values to indicate, whether a point was selected in the view or not.</option>
             <option name="Choose column for x axis">Defines the column that contains the values for X coordinates.</option>
 		    <option name="Choose column for y axis">Defines the column that contains the values for Y coordinates.</option>
+		    <option name="Report on missing values">Check to get the warning messages about missing and unsupported values.
+                    If not checked, missing and unsupported values will be ignored without raising a warning.</option>
 		</tab>
 		<tab name="Axis Configuration">
             <option name="Label for x axis" optional="true">The label for the x-axis. If left blank, the selected column name is displayed.</option>
