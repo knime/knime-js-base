@@ -25,8 +25,8 @@
 	        <option name="Probability Column">Numeric column containing the predicted score in probabilities of the model</option>
 	        <option name="Positive label (hits)">The label for a positive value (hit).</option>
 	        <option name="Interval width in %">The width in which the data is separated before counting.</option>
-	        <option name="Ignore missing values">If checked, the missing values in Probability columns will be ignored with a corresponding warning message. 
-	        Otherwise, they will be sorted to the end of the curves.<br/>
+	        <option name="Ignore missing values">If checked, the missing values in Probability columns will be ignored without a warning message. 
+	        Otherwise, they will be sorted to the end of the curves with a corresponding warning message.<br/>
 	        Missing values in Response column are ignored in any case.</option>
         </tab>
         <tab name="General Plot Options">
