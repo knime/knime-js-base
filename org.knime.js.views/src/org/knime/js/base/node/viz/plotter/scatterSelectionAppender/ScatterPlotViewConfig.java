@@ -56,7 +56,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.viz.plotter.line.LinePlotViewConfig;
-import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
  *
@@ -174,7 +174,7 @@ final class ScatterPlotViewConfig {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize = DEFAULT_DOT_SIZE;
-    private String m_dateFormat = DialogComponentDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next();
+    private String m_dateFormat = SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next();
     private int m_imageWidth = DEFAULT_WIDTH;
     private int m_imageHeight = DEFAULT_HEIGHT;
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
@@ -1092,7 +1092,7 @@ final class ScatterPlotViewConfig {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
-        setDateFormat(settings.getString(DATE_FORMAT, DialogComponentDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
+        setDateFormat(settings.getString(DATE_FORMAT, SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
         //LinePlotViewConfig.setDateFormatHistory(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT, DEFAULT_HEIGHT));

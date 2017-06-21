@@ -67,7 +67,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.util.filter.InputFilter;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
-import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
@@ -1068,7 +1067,7 @@ public final class LinePlotViewConfig {
             String newDateTimeFormat = convertDateTimeFormat(legacyDateTimeFormat);
             m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
             m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
-            StringHistory.getInstance(DialogComponentDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
+            StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
         }
     }
 
@@ -1164,7 +1163,7 @@ public final class LinePlotViewConfig {
                 String newDateTimeFormat = convertDateTimeFormat(legacyDateTimeFormat);
                 m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
                 m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
-                StringHistory.getInstance(DialogComponentDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
+                StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
             }
         }
     }
