@@ -889,6 +889,12 @@ public final class LinePlotViewConfig {
         m_dateTimeFormats = dateTimeFormats;
     }
 
+    /**
+     * @return the reportOnMissingValues
+     */
+    public boolean getReportOnMissingValues() {
+        return m_reportOnMissingValues;
+    }
 
     /**
      * @param reportOnMissingValues the reportOnMissingValues to set
