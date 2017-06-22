@@ -62,7 +62,7 @@
                 <checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
                     label="Report on missing values" defaultValue="true" loadDefaults="true">
                     Check to get the detailed warning messages in the view about missing values.
-                    If not checked, missing values will be ignored and without raising a warning.
+                    If not checked, missing values will be ignored without raising a warning.
                 </checkBoxOption>
 			</options>
 		</tab>

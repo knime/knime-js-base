@@ -66,9 +66,15 @@
                     id="numCol" inPortIndex="0" label="Selected Column" filterClasses="org.knime.core.data.DoubleValue">
                     Select the column that contains the numeric values.
                 </columnSelectorOption>
+
+                <checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
+                    label="Report on missing values" defaultValue="true" loadDefaults="true">
+                    Check to get the detailed warning messages in the view about missing values and enable 'Missing values' class.
+                    If not checked, missing values will be ignored without raising a warning. 'Missing values' class will not be present.
+                </checkBoxOption>
                 
                 <checkBoxOption name="Include 'Missing values' class" id="includeMissValClass" label="Include 'Missing values' class" 
-                    defaultValue="true" saveInView="true" loadDefaults="true">
+                    defaultValue="true" saveInView="true" loadDefaults="true" enableDependency="reportOnMissingValues" enableValue="true">
                     If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
                 </checkBoxOption>
 			</options>
