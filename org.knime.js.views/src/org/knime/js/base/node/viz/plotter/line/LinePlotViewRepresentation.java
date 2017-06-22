@@ -112,6 +112,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private boolean m_showWarningInView;
     private JSONWarnings m_warnings = new JSONWarnings();
 
+    private boolean m_reportOnMissingValues;
+
     private JSONDateTimeOptions m_dateTimeFormats;
 
     /**
@@ -591,6 +593,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the reportOnMissingValues
+     */
+    public boolean getReportOnMissingValues() {
+        return m_reportOnMissingValues;
+    }
+
+    /**
+     * @param reportOnMissingValues the reportOnMissingValues to set
+     */
+    public void setReportOnMissingValues(final boolean reportOnMissingValues) {
+        m_reportOnMissingValues = reportOnMissingValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -640,6 +656,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addString(LinePlotViewConfig.MISSING_VALUE_METHOD, getMissingValueMethod());
         settings.addBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
+        settings.addBoolean(LinePlotViewConfig.REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
 
         m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
     }
@@ -696,6 +713,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setMissingValueMethod(settings.getString(LinePlotViewConfig.MISSING_VALUE_METHOD, LinePlotViewConfig.MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(LinePlotViewConfig.SHOW_WARNING_IN_VIEW, LinePlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
+        setReportOnMissingValues(settings.getBoolean(LinePlotViewConfig.REPORT_ON_MISSING_VALUES, LinePlotViewConfig.DEFAULT_REPORT_ON_MISSING_VALUES));
+
         if (settings.containsKey(LinePlotViewConfig.DATE_TIME_FORMATS)) {
             m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
         }
@@ -751,6 +770,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_missingValueMethod, other.m_missingValueMethod)
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
+                .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
                 .isEquals();
     }
 
@@ -794,6 +814,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_missingValueMethod)
                 .append(m_showWarningInView)
                 .append(m_warnings)
+                .append(m_reportOnMissingValues)
                 .toHashCode();
     }
 }

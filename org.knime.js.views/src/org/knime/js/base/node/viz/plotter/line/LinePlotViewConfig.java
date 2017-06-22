@@ -86,7 +86,7 @@ public final class LinePlotViewConfig {
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     static final boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
-
+    static final boolean DEFAULT_REPORT_ON_MISSING_VALUES = true;
     static final String HIDE_IN_WIZARD = "hideInWizard";
     static final String GENERATE_IMAGE = "generateImage";
     static final String SHOW_LEGEND = "showLegend";
@@ -134,7 +134,7 @@ public final class LinePlotViewConfig {
     static final String MISSING_VALUE_METHOD = "missingValueMethod";
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
     static final String DATE_TIME_FORMATS = "dateTimeFormats";  // new date&time formats
-
+    static final String REPORT_ON_MISSING_VALUES = "reportOnMissingValues";
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
     private boolean m_showLegend = true;
@@ -181,7 +181,7 @@ public final class LinePlotViewConfig {
     private String m_missingValueMethod = MISSING_VALUE_METHOD;
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
     private SettingsModelDateTimeOptions m_dateTimeFormats = new SettingsModelDateTimeOptions(DATE_TIME_FORMATS);
-
+    private boolean m_reportOnMissingValues = DEFAULT_REPORT_ON_MISSING_VALUES;
     private static Map<String, String> m_conversionDateTimeFormatMap = null;
 
     /**
@@ -889,6 +889,14 @@ public final class LinePlotViewConfig {
         m_dateTimeFormats = dateTimeFormats;
     }
 
+
+    /**
+     * @param reportOnMissingValues the reportOnMissingValues to set
+     */
+    public void setReportOnMissingValues(final boolean reportOnMissingValues) {
+        m_reportOnMissingValues = reportOnMissingValues;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -991,6 +999,7 @@ public final class LinePlotViewConfig {
         settings.addString(MISSING_VALUE_METHOD, getMissingValueMethod());
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_dateTimeFormats.saveSettingsTo(settings);
+        settings.addBoolean(REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
     }
 
     /** Loads parameters in NodeModel.
@@ -1059,6 +1068,7 @@ public final class LinePlotViewConfig {
         // added with 3.4
         setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
 
         if (settings.containsKey(DATE_TIME_FORMATS)) {
             m_dateTimeFormats.loadSettingsFrom(settings);
@@ -1150,6 +1160,7 @@ public final class LinePlotViewConfig {
         // added with 3.4
         setMissingValueMethod(settings.getString(MISSING_VALUE_METHOD, MISSING_VALUE_METHOD_DEFAULT));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
+        setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
 
         if (settings.containsKey(DATE_TIME_FORMATS)) {
             try {

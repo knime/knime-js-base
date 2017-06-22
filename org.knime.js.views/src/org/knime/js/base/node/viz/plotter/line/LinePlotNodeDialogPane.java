@@ -118,6 +118,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_allowLassoSelectionCheckBox;
     private final JComboBox<String> m_missingValueMethodComboBox;
     private final JCheckBox m_showWarningInViewCheckBox;
+    private final JCheckBox m_reportOnMissingValuesCheckBox;
 
     private final JSpinner m_maxRowsSpinner;
     private final JTextField m_appendedColumnName;
@@ -191,6 +192,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             new SettingsModelColor("backgroundColor", null), "Background color: ", true);
 
         m_showWarningInViewCheckBox = new JCheckBox("Show warnings in view");
+        m_reportOnMissingValuesCheckBox = new JCheckBox("Report on missing values");
 
         m_enableViewConfigCheckBox.addChangeListener(new ChangeListener() {
 
@@ -225,6 +227,17 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_dateTimeFormats = new DialogComponentDateTimeOptions(
             new SettingsModelDateTimeOptions(LinePlotViewConfig.DATE_TIME_FORMATS), "Formatter");
 
+        m_reportOnMissingValuesCheckBox.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                boolean isReportOnMissingValues = m_reportOnMissingValuesCheckBox.isSelected();
+                m_missingValueMethodComboBox.setEnabled(isReportOnMissingValues);
+                if (!isReportOnMissingValues) {
+                    m_missingValueMethodComboBox.setSelectedItem("Connect");
+                }
+            }
+        });
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
         addTab("General Plot Options", initGeneralPanel());
@@ -262,7 +275,16 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_xColComboBox.setPreferredSize(new Dimension(260, 50));
         panel.add(m_xColComboBox, c);
 
-        c.gridx += 2;
+        c.gridx = 0;
+        panel.add(new JLabel("Choose column for y axis: "), c);
+        c.gridy++;
+        c.gridwidth = 4;
+        panel.add(m_yColFilter, c);
+        c.gridx = 0;
+        c.gridy++;
+
+        panel.add(m_reportOnMissingValuesCheckBox, c);
+        c.gridy++;
         JPanel missingValuePanel = new JPanel(new GridBagLayout());
         missingValuePanel.setBorder(BorderFactory.createTitledBorder("Missing value handling (y-axis)"));
         panel.add(missingValuePanel, c);
@@ -277,12 +299,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         cc.gridwidth = 1;
         c.gridx = 0;
         c.gridy++;
-
-        c.gridx = 0;
-        panel.add(new JLabel("Choose column for y axis: "), c);
-        c.gridy++;
-        c.gridwidth = 4;
-        panel.add(m_yColFilter, c);
 
         return panel;
     }
@@ -585,6 +601,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
 
         m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+        m_reportOnMissingValuesCheckBox.setSelected(config.getReportOnMissingValues());
 
         enableViewControls();
         enableCrosshairControls();
@@ -647,6 +664,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setGridColor(m_gridColorChooser.getColor());
 
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+        config.setReportOnMissingValues(m_reportOnMissingValuesCheckBox.isSelected());
 
         config.saveSettings(settings);
     }

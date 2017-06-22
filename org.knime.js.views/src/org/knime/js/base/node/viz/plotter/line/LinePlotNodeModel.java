@@ -372,12 +372,12 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             .mapToObj(i -> table.getSpec().getColNames()[i])
             .toArray(String[]::new);
         dataset.setMissingValueColumns(missingValueColumns);
-        if (Arrays.asList(missingValueColumns).contains(m_config.getxColumn())) {
+        if (Arrays.asList(missingValueColumns).contains(m_config.getxColumn()) && getViewRepresentation().getReportOnMissingValues()) {
             setWarningMessage("Missing values of the X axis column will be removed in the view");
         }
-        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN) && missingValueColumns.length > 0) {
+        if (m_config.getMissingValueMethod().equals(LinePlotViewConfig.MISSING_VALUE_METHOD_REMOVE_COLUMN) && missingValueColumns.length > 0 && getViewRepresentation().getReportOnMissingValues()) {
             setWarningMessage("Y axis columns with missing values will not be available in the view according to the chosen handling method.");
-            if (m_config.getShowWarningInView()) {
+            if (m_config.getShowWarningInView() && getViewRepresentation().getReportOnMissingValues()) {
                 getViewRepresentation().getWarnings().setWarningMessage(
                     "Column(s) '" + String.join("', '", missingValueColumns) + "' have missing values and are not available", SKIP_Y_COLUMNS_WARNING_ID);
             }
@@ -394,7 +394,6 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             }
             if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
                 dataset.setDateTimeFormat(tableSpec.getKnimeTypes()[col], col);
-                //dataset.setDateTimeFormat(m_config.getGlobalDateTimeFormat(), col);
             }
         }
 
@@ -547,7 +546,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         representation.setMissingValueMethod(m_config.getMissingValueMethod());
         representation.setShowWarningInView(m_config.getShowWarningInView());
         representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
-
+        representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
         LinePlotViewValue viewValue = getViewValue();
         viewValue.setChartTitle(m_config.getChartTitle());
         viewValue.setChartSubtitle(m_config.getChartSubtitle());

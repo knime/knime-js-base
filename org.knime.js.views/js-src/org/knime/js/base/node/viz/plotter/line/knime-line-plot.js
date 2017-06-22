@@ -19,9 +19,11 @@ knime_line_plot = function() {
 	
 	var xMissingValuesCount = 0;
 	var yMissingValues = [];
+	var isEmptyPlot = true;
 	
 	var MISSING_VALUES_X_AXIS_NOT_SHOWN = "missingValuesXAxisNotShown";
 	var MISSING_VALUES_NOT_SHOWN = "missingValuesNotShown";
+	var NO_DATA_AVAILABLE = "noDataAvailable";
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
@@ -281,6 +283,8 @@ knime_line_plot = function() {
 		var xAxisLabel = _value.xAxisLabel ? _value.xAxisLabel : _value.xColumn;
 		var yAxisLabel = _value.yAxisLabel ? _value.yAxisLabel : "";
 		
+		isEmptyPlot = true;
+		
 		var dataset = buildXYDataset();
 
 		//console.time("Building chart");
@@ -445,6 +449,7 @@ knime_line_plot = function() {
 	};
 	
 	updateChart = function() {
+		isEmptyPlot = true;
 		var plot = chartManager.getChart().getPlot();
 		plot.setDataset(buildXYDataset(), false);
 		if (_value.xColumn) {
@@ -732,6 +737,7 @@ knime_line_plot = function() {
 	            connect = true;
 	        } else {
 	            ctx.lineTo(xx, yy);
+	            isEmptyPlot = false;
 	        }
 	    }
 	    ctx.setLineColor(this.lookupLineColor(dataset, seriesIndex, i));
@@ -744,16 +750,26 @@ knime_line_plot = function() {
 	};
 	
 	checkWarningMessages = function() {
-		if (xMissingValuesCount > 0) {
-        	knimeService.setWarningMessage(xMissingValuesCount + ' missing value(s) on the X axis are not shown.', MISSING_VALUES_X_AXIS_NOT_SHOWN);        	
-        } else {
-        	knimeService.clearWarningMessage(MISSING_VALUES_X_AXIS_NOT_SHOWN);
-        }
-        if (yMissingValues.length > 0) {
-        	knimeService.setWarningMessage('Missing values of the following columns are not shown:\n    ' + yMissingValues.join('\n    ') + '.', MISSING_VALUES_NOT_SHOWN);
-        } else {
-        	knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
-        }
+		if (_representation.showWarningInView) {
+			var plot = chartManager.getChart().getPlot();
+			if (isEmptyPlot) {
+				knimeService.clearWarningMessage(MISSING_VALUES_X_AXIS_NOT_SHOWN);
+				knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
+				knimeService.setWarningMessage("No chart was generated since data columns have only missing values.\nChoose another data columns or re-run the workflow with different data.", NO_DATA_AVAILABLE);
+			} else {
+				knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
+				if (xMissingValuesCount > 0 && _representation.reportOnMissingValues) {
+		        	knimeService.setWarningMessage(xMissingValuesCount + ' missing value(s) on the X axis are not shown.', MISSING_VALUES_X_AXIS_NOT_SHOWN);        	
+		        } else {
+		        	knimeService.clearWarningMessage(MISSING_VALUES_X_AXIS_NOT_SHOWN);
+		        }
+		        if (yMissingValues.length > 0 && _representation.reportOnMissingValues) {
+		        	knimeService.setWarningMessage('Missing values of the following columns are not shown:\n    ' + yMissingValues.join('\n    ') + '.', MISSING_VALUES_NOT_SHOWN);
+		        } else {
+		        	knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
+		        }
+			}
+		}
 	}
 	
 	createDateFormatter = function(knimeColType) {
