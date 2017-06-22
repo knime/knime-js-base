@@ -17,6 +17,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
@@ -112,15 +113,17 @@ public class GroupedProcessor implements DynamicJSProcessor {
         BigGroupByTable groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
             colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, true);
 
-        // Missing values processing
-        Map<String, Long> missingValuesMap = groupTable.getMissingValuesMap();
-        if (missingValuesMap.size() > 0) {
-            String warning =
-                "The following data columns have missing values, which were ignored during the aggregation:\n"
-                    + missingValuesMap.entrySet().stream()
-                        .map(x -> "    " + x.getKey() + " - " + x.getValue().toString() + " missing value(s)")
-                        .collect(Collectors.joining(",\n"));
-            setWarningMessage(warning);
+        // Missing values processing        
+        if (((SettingsModelBoolean)config.getModel("reportOnMissingValues")).getBooleanValue()) {
+            Map<String, Long> missingValuesMap = groupTable.getMissingValuesMap();
+            if (missingValuesMap.size() > 0) {
+                String warning =
+                    "The following data columns have missing values, which were ignored during the aggregation:\n"
+                        + missingValuesMap.entrySet().stream()
+                            .map(x -> "    " + x.getKey() + " - " + x.getValue().toString() + " missing value(s)")
+                            .collect(Collectors.joining(",\n"));
+                setWarningMessage(warning);
+            }
         }
 
 		PortObject[] processedObjects = new PortObject[inObjects.length];

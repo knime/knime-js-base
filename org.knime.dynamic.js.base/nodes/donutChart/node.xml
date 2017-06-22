@@ -25,8 +25,14 @@
 					of the selected category columns are determined.
 				</radioButtonOption>
 				
+				<checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
+                    label="Report on missing values" defaultValue="true" loadDefaults="true">
+                    Check to get the detailed warning messages in the view about missing values and enable 'Missing values' category.
+                    If not checked, missing values will be ignored without raising a warning. 'Missing values' category will not be present.
+                </checkBoxOption>
+				
 				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
-				    defaultValue="true" saveInView="true" loadDefaults="true">
+				    defaultValue="true" saveInView="true" loadDefaults="true" enableDependency="reportOnMissingValues" enableValue="true">
 				    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.				     
 				</checkBoxOption>
 	    		

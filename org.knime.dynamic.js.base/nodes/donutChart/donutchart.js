@@ -313,7 +313,7 @@
 	processMissingValues = function(switched) {
 		// Missing values post-processing	
 		if (missValCatValue !== undefined) {  // undefined means there's no missing value in the category column at all
-			if (_value.options.includeMissValCat) {
+			if (_value.options.includeMissValCat && _representation.options.reportOnMissingValues) {
 				// add missing values category
 				var label = "Missing values";
 				if (missValCatValue !== null) {
@@ -339,13 +339,13 @@
 		if (plotData.length == 0) {
 			// No data available warnings
 			var str;
-			if (missValCatValue !== undefined && missValCatValue !== null) {
+			if (missValCatValue !== undefined && missValCatValue !== null && _representation.options.reportOnMissingValues) {
 				str = "No chart was generated since the frequency column has only missing values.\nThere are values where the category name is missing.\nTo see them switch on the option \"Include 'Missing values' category\" in the view settings.";
 			} else {
 				str = "No chart was generated since the frequency column has only missing values or empty.\nRe-run the workflow with different data.";
 			}
 			knimeService.setWarningMessage(str, NO_DATA_AVAILABLE);
-		} else if (excludeCat.length > 0) {
+		} else if (excludeCat.length > 0 && _representation.options.reportOnMissingValues) {
 			knimeService.setWarningMessage("Categories '" + excludeCat.join("', '") + "' have only missing values in the frequency column and were excluded from the view.", MISSING_VALUES_ONLY)
 		} else {
 			knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
@@ -445,7 +445,7 @@
 	    	}
 	    }
 	    
-	    if (switchMissValCat && missValCatValue !== undefined) {
+	    if (switchMissValCat && missValCatValue !== undefined && _representation.options.reportOnMissingValues) {
 	    	var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function() {
 	    		if (_value.options.includeMissValCat != this.checked) {
 	    			_value.options.includeMissValCat = this.checked;
