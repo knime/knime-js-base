@@ -23,11 +23,6 @@
 					Select the aggregation method used on the selected frequency columns. In case of <n:i>Occurence Count</n:i> the occurence of the unique values
 					of the selected category columns are determined.
 				</radioButtonOption>
-				
-				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
-                    defaultValue="true" saveInView="true" loadDefaults="true">
-                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
-                </checkBoxOption>
 
 				<columnFilterOption name="Frequency columns"
 					id="freq" inPortIndex="0" label="Frequency columns" filterClasses="org.knime.core.data.DoubleValue"
@@ -36,6 +31,17 @@
 					<n:i>Note:</n:i> Missing values in the frequency column will be ignored with a corresponding warning message.<n:br/>
 					If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.
 				</columnFilterOption>
+				
+				<checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
+                    label="Report on missing values" defaultValue="true" loadDefaults="true">
+                    Check to get the detailed warning messages in the view about missing values and enable 'Missing values' category.
+                    If not checked, missing values will be ignored without raising a warning. 'Missing values' category will not be present.
+                </checkBoxOption>
+				
+				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
+                    defaultValue="true" saveInView="true" loadDefaults="true" enableDependency="reportOnMissingValues" enableValue="true">
+                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
+                </checkBoxOption>
 			</options>
 		</tab>
 		<tab name="General Plot Options">
