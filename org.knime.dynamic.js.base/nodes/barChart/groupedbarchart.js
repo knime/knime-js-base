@@ -497,7 +497,7 @@
 			}
 			knimeService.setWarningMessage(str, NO_DATA_AVAILABLE);
 		} else {
-			knimeService.clearWarningMessage(str, NO_DATA_AVAILABLE);
+			knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
 			// All other warnings
 			if (excludeCols.length > 0 && _representation.options.reportOnMissingValues) {
 				knimeService.setWarningMessage("Following frequency columns are not present or contain only missing values and were excluded from the view:\n    " + excludeCols.join(", "), FREQ_COLUMN_MISSING_VALUES_ONLY);
