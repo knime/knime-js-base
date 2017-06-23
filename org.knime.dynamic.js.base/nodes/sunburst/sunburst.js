@@ -14,7 +14,7 @@
 	var _colorMap;
 	var mouseMode = "highlite";
 	var totalSize;
-  	var selectionChangedFlag = false;
+	var selectionChangedFlag = false;
 
 
 	var layoutContainer;
@@ -59,10 +59,6 @@
 
 		outputSelectionColumn();
 
-		// CHECK: What does this actually do?
-		if (parent !==undefined && parent.KnimePageLoader !==undefined) {
-			parent.KnimePageLoader.autoResize(window.frameElement.id);
-		}
 	};
 
 	// Transform data from first port into a hierarchical structure suitable
@@ -549,7 +545,7 @@
 					}
 				}
 				if (mouseMode == "select") {
-          clearSelection();
+					clearSelection();
 					if (_value.options.showSelectedOnly) {
 						highlitedPath = null;
 						transformData();
@@ -585,7 +581,7 @@
 
 		// Set selection
 		if (!_value.options.showSelectedOnly && selectedRows.length > 0 ) {
-			selectedRows.forEach(function(rowKey) { rowKey2leaf[rowKey].selected = true; });
+			selectedRows.forEach(function(rowKey) { rowKey2leaf[rowKey].selected = true; addNodeToSelectionBackward(rowKey2leaf[rowKey]); });
 			renderSelection();
 		}
 
@@ -671,7 +667,7 @@
 		}
 
 		function select(node) {
-      selectionChangedFlag = true;
+			selectionChangedFlag = true;
 
 			if (d3.event.shiftKey) {
 				if (node.selected) {
@@ -732,7 +728,7 @@
 		}
 
 		// Draw border around all selected segments.
-		renderSelection = function() {
+		function renderSelection() {
 			if (_value.options.showSelectedOnly) {
 				sunburstGroup.selectAll("path")
 				.attr("stroke-width", 1)
@@ -746,22 +742,21 @@
 					return d.selected ? "#333333" : "white";
 				});
 
-        // Resort elements in dom so that selected elements
-        // are drawn last.
-        sunburstGroup.selectAll("path").sort(function(a, b) {
-          if (a.selected == b.selected) {
-            return 0;
-          }
-          if (a.selected) {
-            return 1;
-          }
-          return -1;
-        });
+				// Resort elements in dom so that selected elements
+				// are drawn last.
+				sunburstGroup.selectAll("path").sort(function(a, b) {
+					if (a.selected == b.selected) {
+						return 0;
+					}
+					if (a.selected) {
+						return 1;
+					}
+					return -1;
+				});
 			}
-
 		}
 
-		clearSelection = function() {
+		function clearSelection() {
 			selectionChangedFlag = true;
 
 			selectedRows = [];
@@ -773,7 +768,7 @@
 		}
 
 		// Traverse through tree and add nodes to selection.
-		addNodeToSelectionBackward = function(node) {
+		function addNodeToSelectionBackward(node) {
 			node.selected = true;
 			var parent = node.parent;
 			while (parent != null) {
@@ -1092,7 +1087,7 @@
 			}
 		} 
 	};
-	
+
 	function setBreadcrumbCursor() {
 		d3.selectAll("#trail g polygon").style("cursor", mouseMode == 'zoom' ? "pointer" : "default");
 	}
@@ -1432,9 +1427,9 @@
 	};
 
 	view.getComponentValue = function() {
-    if (selectionChangedFlag) {
-		  outputSelectionColumn();
-    }
+		if (selectionChangedFlag) {
+			outputSelectionColumn();
+		}
 
 		// Save mousemode unless it is default mode.
 		_value.options.mouseMode = mouseMode;
