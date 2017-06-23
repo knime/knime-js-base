@@ -556,7 +556,7 @@
     	
     	// temporary workaround for being able to select a data column which was not included in the node settings
     	if (dataCols.indexOf(_value.options.numCol) == -1) {
-    		knimeService.setWarningMessage("No chart was generated since the selected data column was filtered our in the node configuration dialog.\nPlease choose another column, or change the node settings.", NO_DATA_COLUMN);
+    		knimeService.setWarningMessage("No chart was generated since the Selected Column was not included in the node configuration dialog.\nPlease choose another column or add the Selected Column to the list of included columns.", NO_DATA_COLUMN);
     		return;
     	}
     	
