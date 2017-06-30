@@ -19,6 +19,6 @@ Require-Bundle: org.knime.core;bundle-version="[3.0.0,4.0.0)",
  org.apache.commons.codec;bundle-version="[1.6.0,2.0.0)",
  org.knime.ext.svg;bundle-version="[3.0.0,4.0.0)",
  org.apache.commons.lang;bundle-version="[2.6.0,3.0.0)"
-Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-BuddyPolicy: dependent
 Bundle-ActivationPolicy: lazy
