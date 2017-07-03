@@ -146,7 +146,7 @@
                </checkBoxOption>
                <checkBoxOption name="Enable column selection" id="enableColumnSelection"
                    label="Enable column selection" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
-                   Check to enable the selection of the numeric column to show the box plot for.
+                   Check to enable the selection of the numeric column to show the box plot for. Note that this only has an effect if the 'Plot multiple boxes' option is not checked.
                </checkBoxOption>
                <checkBoxOption name="Enable Title editing" id="enableTitleEdit"
                    label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
