@@ -1,11 +1,5 @@
 (streamgraph_namespace = function() {
 
-//  TODO
-//  - wait for christian's number-formatter-component for x- and y-axis
-//  - wait for christian's date-format-selector-component
-//  - Check for other date/time types in new knime release
-
-
   var view = {};
   var _representation, _value;
   var _data;
@@ -22,6 +16,8 @@
     "Percentage-Area-Chart": "expand",
     "Stream-Graph": "stream-center"
   }
+  
+  var TOOLTIP_WARNING = 'basisTooltip';
 
 
   view.init = function(representation, value) {
@@ -129,6 +125,12 @@
       svg.attr("width", width)
       svg.attr("height", height);
     }
+    
+    if (_value.options.interpolation == 'basis' && _value.options.interactiveGuideline) {
+    	knimeService.setWarningMessage('Displaying a tooltip is not supported, when interpolation is set to "basis"', TOOLTIP_WARNING);
+    } else {
+    	knimeService.clearWarningMessage(TOOLTIP_WARNING);
+    }
 
     // create the stacked area chart
     nv.addGraph(function() {
@@ -141,7 +143,7 @@
         .style(stackStyle)
         .showControls(false)
         .showLegend(true)
-        .useInteractiveGuideline(_value.options.interactiveGuideline)
+        .useInteractiveGuideline(_value.options.interpolation == 'basis' ? false : _value.options.interactiveGuideline)
         .interactive(false)
         .duration(0);
 
@@ -518,9 +520,16 @@
         var interpolationMethods = [ 'basis', 'linear', 'step' ];
         var interpolationMethodSelector =
           knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function() {
+        	var changedToBasis = this.options[this.selectedIndex].value == 'basis' && _value.options.interpolation != 'basis'; 
             _value.options.interpolation = this.options[this.selectedIndex].value;
-            chart.interpolate(_value.options.interpolation);
-            chart.update();
+            if (changedToBasis && _value.options.interactiveGuideline) {
+            	 drawChart();
+            } else {
+            	knimeService.clearWarningMessage(TOOLTIP_WARNING);
+            	chart.interpolate(_value.options.interpolation);
+            	chart.useInteractiveGuideline(_value.options.interpolation == 'basis' ? false : _value.options.interactiveGuideline);
+            	chart.update();
+            }
           });
         // CHECK: Should we use line-chart here?
         knimeService.addMenuItem('Interpolation:', 'bar-chart', interpolationMethodSelector);
