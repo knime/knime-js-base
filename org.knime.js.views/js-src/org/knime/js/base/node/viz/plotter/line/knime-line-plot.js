@@ -306,7 +306,13 @@ knime_line_plot = function() {
 			.style("margin", "0");
 		
 		var plot = new jsfc.XYPlot(dataset);
-		plot.setStaggerRendering(_representation.enableStaggeredRendering);
+		// We comment this out and set the value always to false, as anyway the current chunk mechanism
+		// does not behave as we want (no real chunk-by-chunk drawing)
+		// Setting it to true will affect the missing values counting as the drawing methods will be called
+		// asynchronously, which might lead to incorrect warning messages.
+		// If we want to turn it on, we also need to take care of missing values.
+		// plot.setStaggerRendering(_representation.enableStaggeredRendering);
+		plot.setStaggerRendering(false);
 		var xAxis = plot.getXAxis();
         xAxis.setLabel(xAxisLabel);
         xAxis.setLabelFont(new jsfc.Font(defaultFont, defaultFontSize, true));
