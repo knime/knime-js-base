@@ -135,6 +135,7 @@ import org.knime.dynamicnode.v30.PortType.Enum;
 import org.knime.js.core.CSSUtils;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.color.JSONColorModel;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
@@ -256,7 +257,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		        return rearranger.createSpec();
 		    }
 		    // otherwise the spec is unknown at this point
-			return null;
+			return new DataTableSpec();
 		}
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObjectSpec.INSTANCE;
@@ -635,6 +636,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			    value = ((SettingsModelDouble)model).getDoubleValue();
 			} else if (model instanceof SettingsModelDate) {
 			    value = ((SettingsModelDate)model).getTimeInMillis();
+			} else if (model instanceof SettingsModelDateTimeOptions) {
+			    value = ((SettingsModelDateTimeOptions)model).getJSONSerializableObject();
 			} else if (model instanceof SettingsModelColor) {
 			    Color color = ((SettingsModelColor)model).getColorValue();
 			    org.knime.dynamicnode.v30.ColorFormat.Enum colorFormat = ((ColorOption)option).getFormat();

@@ -99,6 +99,7 @@
       <xs:element name="radioButtonOption" type="RadioButtonOption" />
       <xs:element name="stringListOption" type="StringListOption" />
       <xs:element name="dateOption" type="DateOption" />
+      <xs:element name="dateFormatOption" type="DateFormatOption" />     
       <xs:element name="columnFilterOption" type="ColumnFilterOption" />
       <xs:element name="columnSelectorOption" type="ColumnSelectorOption" />
       <xs:element name="fileOption" type="FileOption" />
@@ -266,6 +267,20 @@
     </xs:restriction>
   </xs:simpleType>
   
+  <xs:complexType name="DateFormatOption">
+  	<xs:complexContent>
+  		<xs:extension base="DynamicOption">
+			<xs:attribute name="showLocaleChooser" type="xs:boolean" default="true" />
+			<xs:attribute name="showDateTimeFormatChooser" type="xs:boolean" default="true" />
+			<xs:attribute name="showDateFormatChooser" type="xs:boolean" default="true" />
+			<xs:attribute name="showTimeFormatChooser" type="xs:boolean" default="true" />
+			<xs:attribute name="showZonedDateTimeFormatChooser" type="xs:boolean" default="true" />
+			<xs:attribute name="showLegacyDateTimeFormatChooser" type="xs:boolean" default="false" />
+			<xs:attribute name="showTimezoneChooser" type="xs:boolean" default="true" />
+  		</xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+  
   <xs:complexType name="FileOption">
     <xs:complexContent>
 	  <xs:extension base="DynamicOption">
@@ -305,6 +320,7 @@
     <xs:attribute name="inPortIndex" type="xs:int" />
     <xs:attribute name="additionalColumnType" type="ColumnType" default="STRING" />
     <xs:attribute name="additionalColumnName" type="xs:string" />
+    <xs:attribute name="outputDefault" type="DataOutputDefault" default="EMPTY" />
   </xs:complexType>
   
   <xs:complexType name="FlowVariableOutOption">
@@ -331,6 +347,14 @@
       <xs:enumeration value="BOOLEAN" />
       <xs:enumeration value="DATETIME" />
     </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="DataOutputDefault">
+  	<xs:restriction base="xs:token">
+  		<xs:enumeration value="EMPTY" />
+  		<xs:enumeration value="EMPTY_WITH_SPEC" />
+  		<xs:enumeration value="INPUT_TABLE" />
+  	</xs:restriction>
   </xs:simpleType>
   
   <xs:simpleType name="StringList">

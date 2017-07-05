@@ -5,8 +5,8 @@
 	targetNamespace="http://knime.org/dynamicjsnode/v3.0"
 	elementFormDefault="qualified">
 
-	<xs:import schemaLocation="http://www.knime.org/node/dynamicNode_v3.0.xsd" namespace="http://knime.org/dynamicnode/v3.0" />
-	<!-- <xs:import schemaLocation="../org.knime.dynamic.node.generation/dynamicNode_v3.0.xsd" namespace="http://knime.org/dynamicnode/v3.0" /> -->
+	<!-- <xs:import schemaLocation="http://www.knime.org/node/dynamicNode_v3.0.xsd" namespace="http://knime.org/dynamicnode/v3.0" /> -->
+	<xs:import schemaLocation="../org.knime.dynamic.node.generation/dynamicNode_v3.0.xsd" namespace="http://knime.org/dynamicnode/v3.0" />
 	
 	<xs:element name="knimeNode" type="DynamicJSKnimeNode" />
 

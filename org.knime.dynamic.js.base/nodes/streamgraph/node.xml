@@ -107,14 +107,17 @@
 					defaultValue=",.2f" optional="true">
 					d3-Format string for numbers on the y-Axis.
 				</stringOption>
-				<stringListOption name="Date Format" id="dateFormat"
+				<!-- <stringListOption name="Date Format" id="dateFormat"
 					label="Date Format" possibleValues="YYYY-MM-DD M/D/YY" editable="true"
 					optional="true" defaultValues="YYYY-MM-DD">
 					Choose how to format x-Axis ticks if the
 					associated
 					column is of type
 					Date/Time.
-				</stringListOption>
+				</stringListOption> -->
+				<dateFormatOption name="Date Format" id="dateFormat" label="Date Format" showLegacyDateTimeFormatChooser="true">
+					Choose how to format x-Axis ticks if the associated column is of any date or time type.
+				</dateFormatOption>
 			</options>
 		</tab>
 		<tab name="Control Options">

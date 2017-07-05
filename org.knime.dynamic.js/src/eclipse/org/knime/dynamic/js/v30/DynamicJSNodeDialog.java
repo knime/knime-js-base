@@ -103,6 +103,7 @@ import org.knime.dynamicnode.v30.CheckBoxOption;
 import org.knime.dynamicnode.v30.ColorOption;
 import org.knime.dynamicnode.v30.ColumnFilterOption;
 import org.knime.dynamicnode.v30.ColumnSelectorOption;
+import org.knime.dynamicnode.v30.DateFormatOption;
 import org.knime.dynamicnode.v30.DateOption;
 import org.knime.dynamicnode.v30.DynamicFullDescription;
 import org.knime.dynamicnode.v30.DynamicOptions;
@@ -116,6 +117,8 @@ import org.knime.dynamicnode.v30.RadioButtonOption;
 import org.knime.dynamicnode.v30.StringListOption;
 import org.knime.dynamicnode.v30.StringOption;
 import org.knime.dynamicnode.v30.SvgOption;
+import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
  *
@@ -226,6 +229,21 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    dComp.setToolTipText(dO.getTooltip());
 			    m_components.put(dO.getId(), dComp);
 			    addDialogComponent(dComp);
+			} else if (option instanceof DateFormatOption) {
+			    DateFormatOption dfO = (DateFormatOption)option;
+			    SettingsModelDateTimeOptions model = (SettingsModelDateTimeOptions)m_config.getModel(dfO.getId());
+			    DialogComponentDateTimeOptions.Config config = new DialogComponentDateTimeOptions.Config();
+			    config.setShowLocaleChooser(dfO.getShowLocaleChooser());
+			    config.setShowDateFormatChooser(dfO.getShowDateFormatChooser());
+			    config.setShowDateTimeFormatChooser(dfO.getShowDateTimeFormatChooser());
+			    config.setShowTimeFormatChooser(dfO.getShowTimeFormatChooser());
+			    config.setShowZonedDateTimeFormatChooser(dfO.getShowZonedDateTimeFormatChooser());
+			    config.setShowLegacyDateTimeFormatChooser(dfO.getShowLegacyDateTimeFormatChooser());
+			    config.setShowTimezoneChooser(dfO.getShowTimezoneChooser());
+			    DialogComponentDateTimeOptions dfComp = new DialogComponentDateTimeOptions(model, dfO.getLabel(), config);
+			    dfComp.setToolTipText(dfO.getTooltip());
+			    m_components.put(dfO.getId(), dfComp);
+			    addDialogComponent(dfComp);
 			} else if (option instanceof ColorOption) {
 			    ColorOption cO = (ColorOption)option;
 			    SettingsModelColor model = (SettingsModelColor)m_config.getModel(cO.getId());

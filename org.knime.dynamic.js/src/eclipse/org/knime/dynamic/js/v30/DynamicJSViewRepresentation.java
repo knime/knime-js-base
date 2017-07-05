@@ -65,6 +65,7 @@ import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -377,6 +378,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
             ((JSONDataTable)value).saveJSONToNodeSettings(settings.addNodeSettings(valueKey));
         } else if (value instanceof JSONSVGOptions) {
             ((JSONSVGOptions)value).saveToNodeSettings(settings.addNodeSettings(valueKey));
+        } else if (value instanceof JSONDateTimeOptions) {
+            ((JSONDateTimeOptions)value).saveToNodeSettings(settings.addNodeSettings(valueKey));
         } else if (value instanceof List<?>) {
             saveList(settings.addNodeSettings(valueKey), (List<?>)value);
         } else if (value instanceof Map<?,?>) {
@@ -500,6 +503,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
             value = JSONDataTable.loadFromNodeSettings(settings.getNodeSettings(valueKey));
         } else if (JSONSVGOptions.class.equals(clazz)) {
             value = JSONSVGOptions.loadFromNodeSettings(settings.getNodeSettings(valueKey));
+        } else if (JSONDateTimeOptions.class.equals(clazz)) {
+            value = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(valueKey));
         } else if (List.class.isAssignableFrom(clazz)) {
             value = loadList(settings.getNodeSettings(valueKey));
 	    } else if (Map.class.isAssignableFrom(clazz)) {

@@ -79,6 +79,7 @@ import org.knime.dynamicnode.v30.CheckBoxOption;
 import org.knime.dynamicnode.v30.ColorOption;
 import org.knime.dynamicnode.v30.ColumnFilterOption;
 import org.knime.dynamicnode.v30.ColumnSelectorOption;
+import org.knime.dynamicnode.v30.DateFormatOption;
 import org.knime.dynamicnode.v30.DateOption;
 import org.knime.dynamicnode.v30.DoubleOption;
 import org.knime.dynamicnode.v30.DynamicInPort;
@@ -94,6 +95,7 @@ import org.knime.dynamicnode.v30.RadioButtonOption;
 import org.knime.dynamicnode.v30.StringListOption;
 import org.knime.dynamicnode.v30.StringOption;
 import org.knime.dynamicnode.v30.SvgOption;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
  *
@@ -275,6 +277,10 @@ public class DynamicJSConfig {
                     dModel.setSelectedFields(dO.getMode().intValue()-1);
                 }
                 m_models.put(dO.getId(), dModel);
+            } else if (option instanceof DateFormatOption) {
+                DateFormatOption dfO = (DateFormatOption)option;
+                SettingsModelDateTimeOptions dfModel = new SettingsModelDateTimeOptions(dfO.getId());
+                m_models.put(dfO.getId(), dfModel);
             } else if (option instanceof ColorOption) {
                 ColorOption cO = (ColorOption)option;
                 int r,g,b,a;
