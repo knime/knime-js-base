@@ -283,7 +283,7 @@
 
 				var col = freqCols[j];
 				if (optMethod == "Occurence\u00A0Count") {
-					col = "Occurence Count";
+					col = "Occurrence Count";
 				}
 				var values = [];
 				var onlyMissValInCats = true;  // whether the freq col has only missing values in non-"Missing values" categories

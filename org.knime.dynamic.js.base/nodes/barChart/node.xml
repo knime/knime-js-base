@@ -168,6 +168,7 @@
 		</inPort>
 		<inPort portType="Data" name="Bar color data" index="1" optional="true">
 			Data table containing one column with the column names of table which has in addition a color assigned.
+			<n:b>Note:</n:b> for the "Occurrence Count" aggregation method the column name in the color table should be also "Occurrence Count".
 		</inPort>
 		<outPort portType="Image" name="Bar chart image" index="0">
 			SVG image of the bar chart.
