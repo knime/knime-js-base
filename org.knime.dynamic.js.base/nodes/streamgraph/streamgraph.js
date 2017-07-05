@@ -36,6 +36,11 @@
       knimeTable2 = new kt();
       knimeTable2.setDataTable(_representation.inObjects[1]);
     }
+    
+    // Set locale for moment.js.
+	if (_representation.options.dateTimeFormats.globalDateTimeLocale !== 'en') {
+		moment.locale(_representation.options.dateTimeFormats.globalDateTimeLocale);
+	}
 
 
     if (_representation.options.enableViewControls) {
@@ -310,22 +315,22 @@
     switch (xAxisType) {
       case "Date and Time":
         return function(i) {
-          return moment(xAxisData[i]).format(_representation.options.dateFormat);
+          return moment(xAxisData[i]).utc().format(_representation.options.dateTimeFormats.globalDateTimeFormat);
         };
       case "Local Date":
     	  return function(i) {
-              return moment(xAxisData[i]).format(_representation.options.localDateFormat);
+              return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateFormat);
           };
       case "Local Date Time":
     	  return function(i) {
-              return moment(xAxisData[i]).format(_representation.options.localDateTimeFormat);
+              return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateTimeFormat);
           };
       case "Local Time":
     	  return function(i) {
-              return moment(xAxisData[i], "hh:mm:ss.SSSSSSSSS").format(_representation.options.localTimeFormat);
+              return moment(xAxisData[i], "hh:mm:ss.SSSSSSSSS").format(_representation.options.dateTimeFormats.globalLocalTimeFormat);
           };
       case "Zoned Date Time":
-    	  return function(i) {
+    	  return function(i) {    	 
     	  		var data = xAxisData[i];
     	  		var regex = /(.*)\[(.*)\]$/
 				var match = regex.exec(data);
@@ -334,16 +339,10 @@
 					var date = moment.tz(data, "");
 				} else {
 					dateTimeOffset = match[1];
-					zone = match[2];
-
-					if (moment.tz.zone(zone) == null) {
-						var date = moment.tz(dateTimeOffset, "");
-					} else {
-						var date = moment.tz(dateTimeOffset, zone);
-					}
+					var date = moment.tz(dateTimeOffset, _representation.options.dateTimeFormats.timezone);
 				}
 
-				return date.format(_representation.options.zonedDateTimeFormat);
+				return date.format(_representation.options.dateTimeFormats.globalZonedDateTimeFormat);
           };
       case "string":
         return function(i) { return xAxisData[i]; };

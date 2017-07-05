@@ -115,7 +115,7 @@
 					column is of type
 					Date/Time.
 				</stringListOption> -->
-				<dateFormatOption name="Date Format" id="dateFormat" label="Date Format" showLegacyDateTimeFormatChooser="true">
+				<dateFormatOption name="Date Format" id="dateTimeFormats" label="Date Format" showLegacyDateTimeFormatChooser="true">
 					Choose how to format x-Axis ticks if the associated column is of any date or time type.
 				</dateFormatOption>
 			</options>
