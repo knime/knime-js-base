@@ -362,7 +362,7 @@
 		}
 		
 		if (customColors) {
-			colorRange = customColors;
+			colorRange = colorScale;
 		} else {
 			// Default color scale
 			if (numFreqColsNoMissVal > 10) {
