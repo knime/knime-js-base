@@ -127,7 +127,7 @@
     }
     
     if (_value.options.interpolation == 'basis' && _value.options.interactiveGuideline) {
-    	knimeService.setWarningMessage('Displaying a tooltip is not supported, when interpolation is set to "basis"', TOOLTIP_WARNING);
+    	knimeService.setWarningMessage('Displaying a tooltip is not supported when interpolation is set to "basis".', TOOLTIP_WARNING);
     } else {
     	knimeService.clearWarningMessage(TOOLTIP_WARNING);
     }
