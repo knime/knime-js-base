@@ -316,11 +316,11 @@
   
   <xs:complexType name="DataOutOption">
     <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="outputType" type="DataOutputType" default="APPEND_COLUMN" />
     <xs:attribute name="outPortIndex" type="xs:int" use="required" />
     <xs:attribute name="inPortIndex" type="xs:int" />
     <xs:attribute name="additionalColumnType" type="ColumnType" default="STRING" />
     <xs:attribute name="additionalColumnName" type="xs:string" />
-    <xs:attribute name="outputDefault" type="DataOutputDefault" default="EMPTY" />
   </xs:complexType>
   
   <xs:complexType name="FlowVariableOutOption">
@@ -349,9 +349,10 @@
     </xs:restriction>
   </xs:simpleType>
   
-  <xs:simpleType name="DataOutputDefault">
+  <xs:simpleType name="DataOutputType">
   	<xs:restriction base="xs:token">
-  		<xs:enumeration value="EMPTY" />
+  		<xs:enumeration value="APPEND_COLUMN" />
+  		<xs:enumeration value="EMPTY_TABLE" />
   		<xs:enumeration value="EMPTY_WITH_SPEC" />
   		<xs:enumeration value="INPUT_TABLE" />
   	</xs:restriction>
