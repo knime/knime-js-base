@@ -80,6 +80,7 @@ import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -123,6 +124,7 @@ import org.knime.dynamicnode.v30.ColorOption;
 import org.knime.dynamicnode.v30.ColumnFilterOption;
 import org.knime.dynamicnode.v30.ColumnType;
 import org.knime.dynamicnode.v30.DataOutOption;
+import org.knime.dynamicnode.v30.DataOutputType;
 import org.knime.dynamicnode.v30.DynamicInPort;
 import org.knime.dynamicnode.v30.DynamicOption;
 import org.knime.dynamicnode.v30.DynamicOptions;
@@ -230,34 +232,71 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.DATA)) {
 		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
 		    Integer inSpecIndex = null;
+		    boolean portIndexIsAppendColumn = false;
+		    DataOutOption newTableOption = null;
             if (m_node.getOutputOptions() != null) {
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
                     if (option.getOutPortIndex() == portIndex) {
-                        // if an inport index is given a column is appended to the incoming data table
-                        if (option.isSetInPortIndex()) {
+                        org.knime.dynamicnode.v30.DataOutputType.Enum oType = option.getOutputType();
+                        if (DataOutputType.APPEND_COLUMN.equals(oType)) {
+                            // column appended
+                            if (!option.isSetInPortIndex()) {
+                                throw new IllegalArgumentException("Output option " + option.getId() + " was defined as APPEND_COLUMN but no inport index defined.");
+                            }
+                            if (newTableOption != null) {
+                                throw new IllegalArgumentException("Multiple data output options for whole tables defined for output port " + portIndex);
+                            }
                             if (inSpecIndex == null) {
                                 inSpecIndex = option.getInPortIndex();
                                 if (!(inSpecs[inSpecIndex] instanceof DataTableSpec)) {
                                     throw new IllegalArgumentException(
-                                        "in port index spec for additional column definition should be of type DataTableSpec but was"
-                                            + inSpecs[inSpecIndex].getClass().getSimpleName());
+                                        "In port index spec for additional column definition should be of type DataTableSpec but was "
+                                                + inSpecs[inSpecIndex].getClass().getSimpleName());
                                 }
                             }
                             if (!inSpecIndex.equals(option.getInPortIndex())) {
                                 throw new IllegalArgumentException("Several additional columns for data out port "
-                                    + portIndex + " were defined but in port indices do not match (only one allowed).");
+                                        + portIndex + " were defined but in port indices do not match (only one allowed).");
                             }
+                            portIndexIsAppendColumn = true;
                             optionList.add(option);
+                        } else {
+                            // new or edited table
+                            if (newTableOption != null || portIndexIsAppendColumn) {
+                                throw new IllegalArgumentException("Multiple data output options for whole tables defined for output port " + portIndex);
+                            }
+                            newTableOption = option;
+                            if (DataOutputType.EMPTY_WITH_SPEC.equals(oType) || DataOutputType.INPUT_TABLE.equals(oType)) {
+                                if (!option.isSetInPortIndex()) {
+                                    throw new IllegalArgumentException("Output option " + option.getId() + " does not have inport index defined.");
+                                }
+                                inSpecIndex = option.getInPortIndex();
+                                if (!(inSpecs[inSpecIndex] instanceof DataTableSpec)) {
+                                    throw new IllegalArgumentException(
+                                        "In port index spec for output table needs to be DataTableSpec but was "
+                                                + inSpecs[inSpecIndex].getClass().getSimpleName());
+                                }
+                            }
                         }
                     }
                 }
             }
 		    if (optionList.size() > 0 && inSpecIndex != null) {
+		        // create appended column spec
 		        ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null);
 		        return rearranger.createSpec();
 		    }
-		    // otherwise the spec is unknown at this point
-			return new DataTableSpec();
+		    if (newTableOption != null) {
+		        // create/retrieve spec for new/edited table
+		        org.knime.dynamicnode.v30.DataOutputType.Enum oType = newTableOption.getOutputType();
+		        if (DataOutputType.EMPTY_TABLE.equals(oType)) {
+		            return new DataTableSpec();
+		        } else if (DataOutputType.EMPTY_WITH_SPEC.equals(oType) || DataOutputType.INPUT_TABLE.equals(oType)) {
+		            return inSpecs[newTableOption.getInPortIndex()];
+		        }
+            }
+		    // Otherwise spec is unknown at this point
+		    return null;
 		}
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObjectSpec.INSTANCE;
@@ -285,7 +324,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
             if (m_node.getOutputOptions() != null) {
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
                     if (option.getOutPortIndex() == outPortIndex) {
-                        if (option.isSetInPortIndex()) {
+                        if (DataOutputType.APPEND_COLUMN.equals(option.getOutputType())) {
                             optionList.add(option);
                             inSpecIndex = option.getInPortIndex();
                         } else {
@@ -322,10 +361,23 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			if (newTableOption != null) {
 			    JSONDataTable table = getViewValue().getTables().get(newTableOption.getId());
 			    if (table != null) {
+			        //table is set on value already
 			        return table.createBufferedDataTable(exec);
+			    } else {
+			        if (DataOutputType.INPUT_TABLE.equals(newTableOption.getOutputType())) {
+			            return inObjects[newTableOption.getInPortIndex()];
+			        }
+			        DataTableSpec outSpec = new DataTableSpec();
+			        if (DataOutputType.EMPTY_WITH_SPEC.equals(newTableOption.getOutputType())) {
+			            outSpec = (DataTableSpec)inObjects[newTableOption.getInPortIndex()].getSpec();
+			        }
+			        BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
+			        cont.close();
+			        return cont.getTable();
 			    }
-			    LOGGER.error("Table with id " + newTableOption.getId() + " expected but not found. Possible implementation error.");
-			    return InactiveBranchPortObject.INSTANCE;
+			    //TODO detect if table was expected on value after re-execute?
+			    /*LOGGER.error("Table with id " + newTableOption.getId() + " expected but not found. Possible implementation error.");
+			    return InactiveBranchPortObject.INSTANCE;*/
 			}
 		}
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
