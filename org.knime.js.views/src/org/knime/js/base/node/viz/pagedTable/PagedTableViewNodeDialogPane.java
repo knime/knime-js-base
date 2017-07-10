@@ -209,9 +209,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         addTab("Formatters", initFormatters());
     }
 
-    /**
-     * @return
-     */
     private JPanel initOptions() {
         JPanel generalPanel = new JPanel(new GridBagLayout());
         generalPanel.setBorder(new TitledBorder("General Options"));
@@ -503,9 +500,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         return builder.toString();
     }
 
-    /**
-     * @return
-     */
     private int[] getAllowedPageSizes() throws InvalidSettingsException {
         String[] sizesArray = m_allowedPageSizesField.getText().split(",");
         int[] allowedPageSizes = new int[sizesArray.length];

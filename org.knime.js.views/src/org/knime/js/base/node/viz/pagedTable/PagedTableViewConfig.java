@@ -670,7 +670,7 @@ public class PagedTableViewConfig {
         settings.addInt(CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
 
         //added with 3.3
-        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addBoolean(CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
         settings.addBoolean(CFG_PUBLISH_SELECTION, m_publishSelection);
         settings.addBoolean(CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
