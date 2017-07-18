@@ -63,14 +63,21 @@ org_knime_js_base_node_quickform_input_string = function() {
 		var body = $('body');
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
-		input = $('<input>');
-		input.attr("aria-label", representation.label);
-		input.attr("type", "text");
-		if (representation.regex) {
-			input.attr("pattern", representation.regex);
+		if (representation.editorType == "Multi line") {
+			// Text area (multi line)
+			input = $('<textarea>');
+			input.attr('cols', representation.multilineEditorWidth);
+			input.attr('rows', representation.multilineEditorHeight);
+		} else {
+			// Text input (single line)
+			input = $('<input>');
+			input.attr("type", "text");
+			if (representation.regex) {
+				input.attr("pattern", representation.regex);
+			}
+			input.attr("class", "standard-sizing");
 		}
-		input.attr("class", "standard-sizing");
-		//input.width(400);
+		input.attr("aria-label", representation.label);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
 		qfdiv.attr("title", representation.description);

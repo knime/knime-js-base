@@ -62,12 +62,35 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
  */
 public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<StringInputQuickFormValue> {
 
+    /**
+     * Single line editor (text input)
+     */
+    public static final String EDITOR_TYPE_SINGLE_LINE_STRING = "Single-line";
+
+    /**
+     * Multi line editor (text area)
+     */
+    public static final String EDITOR_TYPE_MULTI_LINE_STRING = "Multiline";
+
     private static final String CFG_REGEX = "regex";
     private static final String DEFAULT_REGEX = "";
     private String m_regex = DEFAULT_REGEX;
     private static final String CFG_ERROR_MESSAGE = "error_message";
     private static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
+
+    // added with 3.5
+
+    private static final String CFG_EDITOR_TYPE = "editorType";
+    private static final String DEFAULT_EDITOR_TYPE = EDITOR_TYPE_SINGLE_LINE_STRING;
+    private String m_editorType = DEFAULT_ERROR_MESSAGE;
+
+    private static final String CFG_MULTI_LINE_EDITOR_WIDTH = "multilineEditorWidth";
+    private static final int DEFAULT_MULTI_LINE_EDITOR_WIDTH = 60;
+    private int m_multilineEditorWidth = DEFAULT_MULTI_LINE_EDITOR_WIDTH;
+    private static final String CFG_MULTI_LINE_EDITOR_HEIGHT = "multilineEditorHeight";
+    private static final int DEFAULT_MULTI_LINE_EDITOR_HEIGHT = 5;
+    private int m_multilineEditorHeight = DEFAULT_MULTI_LINE_EDITOR_HEIGHT;
 
     /**
      * @return the regex
@@ -98,6 +121,48 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
     }
 
     /**
+     * @return the editorType
+     */
+    public String getEditorType() {
+        return m_editorType;
+    }
+
+    /**
+     * @param editorType the editorType to set
+     */
+    public void setEditorType(final String editorType) {
+        m_editorType = editorType;
+    }
+
+    /**
+     * @return the multilineEditorWidth
+     */
+    public int getMultilineEditorWidth() {
+        return m_multilineEditorWidth;
+    }
+
+    /**
+     * @param multilineEditorWidth the multilineEditorWidth to set
+     */
+    public void setMultilineEditorWidth(final int multilineEditorWidth) {
+        m_multilineEditorWidth = multilineEditorWidth;
+    }
+
+    /**
+     * @return the multilineEditorHeight
+     */
+    public int getMultilineEditorHeight() {
+        return m_multilineEditorHeight;
+    }
+
+    /**
+     * @param multilineEditorHeight the multilineEditorHeight to set
+     */
+    public void setMultilineEditorHeight(final int multilineEditorHeight) {
+        m_multilineEditorHeight = multilineEditorHeight;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -105,6 +170,10 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         super.saveSettings(settings);
         settings.addString(CFG_REGEX, m_regex);
         settings.addString(CFG_ERROR_MESSAGE, m_errorMessage);
+        // added with 3.5
+        settings.addString(CFG_EDITOR_TYPE, m_editorType);
+        settings.addInt(CFG_MULTI_LINE_EDITOR_WIDTH, m_multilineEditorWidth);
+        settings.addInt(CFG_MULTI_LINE_EDITOR_HEIGHT, m_multilineEditorHeight);
     }
 
     /**
@@ -115,6 +184,10 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         super.loadSettings(settings);
         m_regex = settings.getString(CFG_REGEX);
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE);
+        // added with 3.5
+        m_editorType = settings.getString(CFG_EDITOR_TYPE, DEFAULT_EDITOR_TYPE);
+        m_multilineEditorWidth = settings.getInt(CFG_MULTI_LINE_EDITOR_WIDTH, DEFAULT_MULTI_LINE_EDITOR_WIDTH);
+        m_multilineEditorHeight = settings.getInt(CFG_MULTI_LINE_EDITOR_HEIGHT, DEFAULT_MULTI_LINE_EDITOR_HEIGHT);
     }
 
     /**
@@ -125,6 +198,10 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         super.loadSettingsInDialog(settings);
         m_regex = settings.getString(CFG_REGEX, DEFAULT_REGEX);
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE);
+        // added with 3.5
+        m_editorType = settings.getString(CFG_EDITOR_TYPE, DEFAULT_EDITOR_TYPE);
+        m_multilineEditorWidth = settings.getInt(CFG_MULTI_LINE_EDITOR_WIDTH, DEFAULT_MULTI_LINE_EDITOR_WIDTH);
+        m_multilineEditorHeight = settings.getInt(CFG_MULTI_LINE_EDITOR_HEIGHT, DEFAULT_MULTI_LINE_EDITOR_HEIGHT);
     }
 
     /**
@@ -148,6 +225,12 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         sb.append(", ");
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
+        sb.append("editorType=");
+        sb.append(m_editorType);
+        sb.append("multilineEditorWidth=");
+        sb.append(m_multilineEditorWidth);
+        sb.append("multilineEditorHeight=");
+        sb.append(m_multilineEditorHeight);
         return sb.toString();
     }
 
@@ -159,6 +242,9 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_regex)
                 .append(m_errorMessage)
+                .append(m_editorType)
+                .append(m_multilineEditorWidth)
+                .append(m_multilineEditorHeight)
                 .toHashCode();
     }
 
@@ -180,6 +266,9 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)
+                .append(m_editorType, other.m_editorType)
+                .append(m_multilineEditorWidth, other.m_multilineEditorWidth)
+                .append(m_multilineEditorHeight, other.m_multilineEditorHeight)
                 .isEquals();
     }
 

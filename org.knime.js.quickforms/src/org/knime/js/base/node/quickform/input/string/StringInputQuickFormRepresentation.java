@@ -73,11 +73,21 @@ public class StringInputQuickFormRepresentation extends
         super(currentValue, config);
         m_regex = config.getRegex();
         m_errorMessage = config.getErrorMessage();
+        // added with 3.5
+        m_editorType = config.getEditorType();
+        m_multilineEditorWidth = config.getMultilineEditorWidth();
+        m_multilineEditorHeight = config.getMultilineEditorHeight();
+
     }
 
     private final String m_regex;
 
     private final String m_errorMessage;
+
+    // added with 3.5
+    private final String m_editorType;
+    private final int m_multilineEditorWidth;
+    private final int m_multilineEditorHeight;
 
     /**
      * @return the regex
@@ -93,6 +103,30 @@ public class StringInputQuickFormRepresentation extends
     @JsonProperty("errormessage")
     public String getErrorMessage() {
         return m_errorMessage;
+    }
+
+    /**
+     * @return the editorType
+     */
+    @JsonProperty("editorType")
+    public String getEditorType() {
+        return m_editorType;
+    }
+
+    /**
+     * @return the multilineEditorWidth
+     */
+    @JsonProperty("multilineEditorWidth")
+    public int getMultilineEditorWidth() {
+        return m_multilineEditorWidth;
+    }
+
+    /**
+     * @return the multilineEditorHeight
+     */
+    @JsonProperty("multilineEditorHeight")
+    public int getMultilineEditorHeight() {
+        return m_multilineEditorHeight;
     }
 
     /**
@@ -119,6 +153,12 @@ public class StringInputQuickFormRepresentation extends
         sb.append(", ");
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
+        sb.append("editorType=");
+        sb.append(m_editorType);
+        sb.append("multilineEditorWidth=");
+        sb.append(m_multilineEditorWidth);
+        sb.append("multilineEditorHeight=");
+        sb.append(m_multilineEditorHeight);
         return sb.toString();
     }
 
@@ -130,6 +170,9 @@ public class StringInputQuickFormRepresentation extends
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_regex)
                 .append(m_errorMessage)
+                .append(m_editorType)
+                .append(m_multilineEditorWidth)
+                .append(m_multilineEditorHeight)
                 .toHashCode();
     }
 
@@ -151,6 +194,9 @@ public class StringInputQuickFormRepresentation extends
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)
+                .append(m_editorType, other.m_editorType)
+                .append(m_multilineEditorWidth, other.m_multilineEditorWidth)
+                .append(m_multilineEditorHeight, other.m_multilineEditorHeight)
                 .isEquals();
     }
 

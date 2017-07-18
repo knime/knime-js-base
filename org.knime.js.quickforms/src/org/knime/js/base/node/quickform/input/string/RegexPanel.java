@@ -74,6 +74,7 @@ public class RegexPanel {
     private JTextField m_errorMessage = new JTextField();
 
     private JComboBox m_commonRegexes = new JComboBox();
+    private JButton m_assign = new JButton("Assign");
 
     private JPanel m_commonRegexesPanel = new JPanel();
 
@@ -81,9 +82,8 @@ public class RegexPanel {
      * create regex panel.
      */
     public RegexPanel() {
-        JButton assign = new JButton("Assign");
         m_regex.setBold(false);
-        assign.addActionListener(new ActionListener() {
+        m_assign.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 CommonRegex commonRegex = (CommonRegex) m_commonRegexes.getSelectedItem();
@@ -105,7 +105,7 @@ public class RegexPanel {
         gbc.insets = new Insets(0, 5, 0, 0);
         gbc.gridx++;
         gbc.weightx = 0;
-        m_commonRegexesPanel.add(assign, gbc);
+        m_commonRegexesPanel.add(m_assign, gbc);
         createCommonRegexes();
     }
 
@@ -164,6 +164,39 @@ public class RegexPanel {
      */
     public JComponent getCommonRegexesPanel() {
         return m_commonRegexesPanel;
+    }
+
+    /**
+     * Determines whether the panel's components are enabled
+     * @return true if the components are enabled, false otherwise
+     */
+    public boolean isEnabled() {
+        return m_regex.isEnabled() && m_commonRegexesPanel.isEnabled() && m_errorMessage.isEnabled();
+    }
+
+    /**
+     * Set the enabled state of the panel's components
+     * @param enabled
+     */
+    public void setEnabled(final boolean enabled) {
+        m_regex.setEnabled(enabled);
+        m_errorMessage.setEnabled(enabled);
+        m_commonRegexesPanel.setEnabled(enabled);
+        m_commonRegexes.setEnabled(enabled);
+        m_assign.setEnabled(enabled);
+    }
+
+    /**
+     * Registers the text to display in a tool tip.
+     * @param text
+     */
+    public void setToolTipText(final String text) {
+        m_regex.setToolTipText(text);
+        m_regex.getComboBox().setToolTipText(text);
+        m_errorMessage.setToolTipText(text);
+        m_commonRegexesPanel.setToolTipText(text);
+        m_commonRegexes.setToolTipText(text);
+        m_assign.setToolTipText(text);
     }
 
     private void createCommonRegexes() {

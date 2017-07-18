@@ -45,9 +45,14 @@
 package org.knime.js.base.node.quickform.input.string;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -67,6 +72,11 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JTextField m_defaultField;
 
+    // added with 3.5
+    private final JComboBox<String> m_editorTypeComboBox;
+    private final JSpinner m_multilineEditorWidthSpinner;
+    private final JSpinner m_multilineEditorHeightSpinner;
+
     private StringInputQuickFormConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
@@ -74,6 +84,21 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config = new StringInputQuickFormConfig();
         m_regexField = new RegexPanel();
         m_defaultField = new JTextField(DEF_TEXTFIELD_WIDTH);
+
+        // added with 3.5
+        m_editorTypeComboBox = new JComboBox<String>();
+        m_editorTypeComboBox.addItem(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
+        m_editorTypeComboBox.addItem(StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
+        m_multilineEditorWidthSpinner = new JSpinner(new SpinnerNumberModel(60, 10, Integer.MAX_VALUE, 10));
+        m_multilineEditorHeightSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
+
+        m_editorTypeComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                updateComponents();
+            }
+        });
+
         createAndAddTab();
     }
 
@@ -82,6 +107,12 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        // added with 3.5
+        addPairToPanel("Editor type: ", m_editorTypeComboBox, panelWithGBLayout, gbc);
+        addPairToPanel("Multiline editor width: ", m_multilineEditorWidthSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Multiline editor height: ", m_multilineEditorHeightSpinner, panelWithGBLayout, gbc);
+
+        // original ones
         addPairToPanel("Regular Expression: ", m_regexField.getRegexPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Validation Error Message: ", m_regexField.getErrorMessagePanel(), panelWithGBLayout, gbc);
         addPairToPanel("Common Regular Expressions: ",
@@ -100,6 +131,11 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_regexField.setRegex(m_config.getRegex());
         m_regexField.setErrorMessage(m_config.getErrorMessage());
         m_defaultField.setText(m_config.getDefaultValue().getString());
+        // added with 3.5
+        m_editorTypeComboBox.setSelectedItem(m_config.getEditorType());
+        m_multilineEditorWidthSpinner.setValue(m_config.getMultilineEditorWidth());
+        m_multilineEditorHeightSpinner.setValue(m_config.getMultilineEditorHeight());
+        updateComponents();
     }
 
     /**
@@ -112,6 +148,11 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.setRegex(m_regexField.getRegex());
         m_config.setErrorMessage(m_regexField.getErrorMessage());
         m_config.getDefaultValue().setString(m_defaultField.getText());
+        // added with 3.5
+        m_config.setEditorType((String)m_editorTypeComboBox.getSelectedItem());
+        m_config.setMultilineEditorWidth((int)m_multilineEditorWidthSpinner.getValue());
+        m_config.setMultilineEditorHeight((int) m_multilineEditorHeightSpinner.getValue());
+
         m_config.saveSettings(settings);
     }
 
@@ -125,4 +166,20 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         return value.getString();
     }
 
+    /**
+     * Update the components state
+     */
+    protected void updateComponents() {
+        boolean isMultiEditor = m_editorTypeComboBox.getSelectedItem().equals(StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
+
+        m_multilineEditorWidthSpinner.setEnabled(isMultiEditor);
+        m_multilineEditorHeightSpinner.setEnabled(isMultiEditor);
+        String multiLineTooltip = isMultiEditor ? "" : "To enable the control choose the " + StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING + " editor type";
+        m_multilineEditorWidthSpinner.setToolTipText(multiLineTooltip);
+        m_multilineEditorHeightSpinner.setToolTipText(multiLineTooltip);
+
+        m_regexField.setEnabled(!isMultiEditor);
+        String regexTooltip = isMultiEditor ? "To enable the control choose the " + StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING + " editor type" : "";
+        m_regexField.setToolTipText(regexTooltip);
+    }
 }

@@ -18,14 +18,20 @@
         </option>
 		<option name="Variable Name">Variable identifier.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
+		<option name="Editor type">
+		  <i>Single-line</i> editor supports only one line text data and is represented with a text input component. It also comes with a validation based on regular expressions.<br/>
+		  <i>Multiline</i> editor supports many lines of text data and is represented with a text area component. Its sizes can be parameterized (see the options below) and the scroll bar will automatically appear, if the text is too long.		  
+		</option>
+		<option name="Multiline editor width">The width of the editor in number of characters per line. Multiline editor only.</option>
+		<option name="Multiline editor height">The height of the editor in number of text lines. Multiline editor only.</option>
 		<option name="Regular Expression">
-			Regular expression defining valid values.
+			Regular expression defining valid values. Single-line editor only.
 		</option>
 		<option name="Validation Error Message">
-			Message that will be shown if one of the values is not valid. The character ? will be replaced by the invalid value.
+			Message that will be shown if one of the values is not valid. The character ? will be replaced by the invalid value. Single-line editor only.
 		</option>
 		<option name="Common Regular Expressions">
-			A set of regular expression templates for common inputs. With the assign button you assign the regular expression and the corresponding error message to be the current settings.
+			A set of regular expression templates for common inputs. With the assign button you assign the regular expression and the corresponding error message to be the current settings. Single-line editor only.
 		</option>
         <option name="Default Value">
           The value that is selected by default.
