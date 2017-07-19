@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.quickform.legacy"
       label="KNIME Quick Forms (legacy)"
-      version="3.4.0.qualifier"
+      version="3.5.0.qualifier"
       provider-name="KNIME.com, Zurich, Switzerland">
 
    <description url="http://www.knime.org/">
