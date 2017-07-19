@@ -20,10 +20,10 @@
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).</option>
 		<option name="Editor type">
 		  <i>Single-line</i> editor supports only one line text data and is represented with a text input component. It also comes with a validation based on regular expressions.<br/>
-		  <i>Multiline</i> editor supports many lines of text data and is represented with a text area component. Its sizes can be parameterized (see the options below) and the scroll bar will automatically appear, if the text is too long.		  
+		  <i>Multi-line</i> editor supports many lines of text data and is represented with a text area component. Its sizes can be parameterized (see the options below) and the scroll bar will automatically appear, if the text is too long.		  
 		</option>
-		<option name="Multiline editor width">The width of the editor in number of characters per line. Multiline editor only.</option>
-		<option name="Multiline editor height">The height of the editor in number of text lines. Multiline editor only.</option>
+		<option name="Multi-line editor width">The width of the editor in number of characters per line. Multi-line editor only.</option>
+		<option name="Multi-line editor height">The height of the editor in number of text lines. Multi-line editor only.</option>
 		<option name="Regular Expression">
 			Regular expression defining valid values. Single-line editor only.
 		</option>

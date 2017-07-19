@@ -109,8 +109,8 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         // added with 3.5
         addPairToPanel("Editor type: ", m_editorTypeComboBox, panelWithGBLayout, gbc);
-        addPairToPanel("Multiline editor width: ", m_multilineEditorWidthSpinner, panelWithGBLayout, gbc);
-        addPairToPanel("Multiline editor height: ", m_multilineEditorHeightSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Multi-line editor width: ", m_multilineEditorWidthSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Multi-line editor height: ", m_multilineEditorHeightSpinner, panelWithGBLayout, gbc);
 
         // original ones
         addPairToPanel("Regular Expression: ", m_regexField.getRegexPanel(), panelWithGBLayout, gbc);

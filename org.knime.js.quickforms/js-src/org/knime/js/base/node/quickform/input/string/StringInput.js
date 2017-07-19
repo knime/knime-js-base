@@ -63,13 +63,13 @@ org_knime_js_base_node_quickform_input_string = function() {
 		var body = $('body');
 		var qfdiv = $('<div class="quickformcontainer">');
 		body.append(qfdiv);
-		if (representation.editorType == "Multi line") {
-			// Text area (multi line)
+		if (representation.editorType == "Multi-line") {
+			// Text area (multi-line)
 			input = $('<textarea>');
 			input.attr('cols', representation.multilineEditorWidth);
 			input.attr('rows', representation.multilineEditorHeight);
 		} else {
-			// Text input (single line)
+			// Text input (single-line)
 			input = $('<input>');
 			input.attr("type", "text");
 			if (representation.regex) {

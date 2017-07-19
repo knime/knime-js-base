@@ -63,14 +63,14 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<StringInputQuickFormValue> {
 
     /**
-     * Single line editor (text input)
+     * Single-line editor (text input)
      */
     public static final String EDITOR_TYPE_SINGLE_LINE_STRING = "Single-line";
 
     /**
-     * Multi line editor (text area)
+     * Multi-line editor (text area)
      */
-    public static final String EDITOR_TYPE_MULTI_LINE_STRING = "Multiline";
+    public static final String EDITOR_TYPE_MULTI_LINE_STRING = "Multi-line";
 
     private static final String CFG_REGEX = "regex";
     private static final String DEFAULT_REGEX = "";
