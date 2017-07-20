@@ -124,14 +124,17 @@ public class StringInputQuickFormNodeModel
      */
     @Override
     public ValidationError validateViewValue(final StringInputQuickFormValue viewContent) {
-        String string = viewContent.getString();
-        if (string == null) {
-            string = "";
-        }
-        String regex = getConfig().getRegex();
-        if (regex != null && !regex.isEmpty() && !string.matches(regex)) {
-            return new ValidationError(getConfig()
+        if (getConfig().getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
+            // Regex is possible only for single line editor
+            String string = viewContent.getString();
+            if (string == null) {
+                string = "";
+            }
+            String regex = getConfig().getRegex();
+            if (regex != null && !regex.isEmpty() && !string.matches(regex)) {
+                return new ValidationError(getConfig()
                     .getErrorMessage().replaceAll("[?]", string));
+            }
         }
         return super.validateViewValue(viewContent);
     }
