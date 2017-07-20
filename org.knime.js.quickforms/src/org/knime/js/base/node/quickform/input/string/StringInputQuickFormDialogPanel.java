@@ -47,7 +47,9 @@
  */
 package org.knime.js.base.node.quickform.input.string;
 
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.quickform.QuickFormDialogPanel;
@@ -61,7 +63,8 @@ import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 @SuppressWarnings("serial")
 public class StringInputQuickFormDialogPanel extends QuickFormDialogPanel<StringInputQuickFormValue> {
 
-    private JTextField m_component = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+    private JTextComponent m_component;
+
 
     /**
      * @param representation The dialog representation
@@ -69,6 +72,12 @@ public class StringInputQuickFormDialogPanel extends QuickFormDialogPanel<String
      */
     public StringInputQuickFormDialogPanel(final StringInputQuickFormRepresentation representation) {
         super(representation.getDefaultValue());
+        if (representation.getEditorType() == StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING) {
+            m_component = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+        } else {
+            // Multi-line editor
+            m_component = new JTextArea(5, QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+        }
         m_component.setText(representation.getDefaultValue().getString());
         setComponent(m_component);
     }
