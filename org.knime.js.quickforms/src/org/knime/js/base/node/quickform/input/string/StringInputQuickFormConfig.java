@@ -63,9 +63,9 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<StringInputQuickFormValue> {
 
     /**
-     * Single-line editor (text input)
+     * Single line editor (text input)
      */
-    public static final String EDITOR_TYPE_SINGLE_LINE_STRING = "Single-line";
+    public static final String EDITOR_TYPE_SINGLE_LINE_STRING = "Single line";
 
     /**
      * Multi-line editor (text area)

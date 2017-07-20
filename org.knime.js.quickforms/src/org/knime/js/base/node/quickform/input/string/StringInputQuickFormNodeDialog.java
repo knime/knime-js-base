@@ -45,14 +45,15 @@
 package org.knime.js.base.node.quickform.input.string;
 
 import java.awt.GridBagConstraints;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.JComboBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -73,7 +74,10 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
     private final JTextField m_defaultField;
 
     // added with 3.5
-    private final JComboBox<String> m_editorTypeComboBox;
+
+    private final ButtonGroup m_editorTypeGroup;
+    private final JRadioButton m_singleLineEditorButton;
+    private final JRadioButton m_multilineEditorButton;
     private final JSpinner m_multilineEditorWidthSpinner;
     private final JSpinner m_multilineEditorHeightSpinner;
 
@@ -86,15 +90,17 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_defaultField = new JTextField(DEF_TEXTFIELD_WIDTH);
 
         // added with 3.5
-        m_editorTypeComboBox = new JComboBox<String>();
-        m_editorTypeComboBox.addItem(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
-        m_editorTypeComboBox.addItem(StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
+        m_singleLineEditorButton = new JRadioButton(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
+        m_multilineEditorButton = new JRadioButton(StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
+        m_editorTypeGroup = new ButtonGroup();
+        m_editorTypeGroup.add(m_singleLineEditorButton);
+        m_editorTypeGroup.add(m_multilineEditorButton);
         m_multilineEditorWidthSpinner = new JSpinner(new SpinnerNumberModel(60, 10, Integer.MAX_VALUE, 10));
         m_multilineEditorHeightSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
 
-        m_editorTypeComboBox.addItemListener(new ItemListener() {
+        m_multilineEditorButton.addChangeListener(new ChangeListener() {
             @Override
-            public void itemStateChanged(final ItemEvent e) {
+            public void stateChanged(final ChangeEvent e) {
                 updateComponents();
             }
         });
@@ -108,7 +114,8 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         // added with 3.5
-        addPairToPanel("Editor type: ", m_editorTypeComboBox, panelWithGBLayout, gbc);
+        addPairToPanel("Editor type: ", m_singleLineEditorButton, panelWithGBLayout, gbc);
+        addPairToPanel("", m_multilineEditorButton, panelWithGBLayout, gbc);
         addPairToPanel("Multi-line editor width: ", m_multilineEditorWidthSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Multi-line editor height: ", m_multilineEditorHeightSpinner, panelWithGBLayout, gbc);
 
@@ -132,7 +139,9 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_regexField.setErrorMessage(m_config.getErrorMessage());
         m_defaultField.setText(m_config.getDefaultValue().getString());
         // added with 3.5
-        m_editorTypeComboBox.setSelectedItem(m_config.getEditorType());
+        boolean isSingleEditor = m_config.getEditorType() == StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING;
+        m_singleLineEditorButton.setSelected(isSingleEditor);
+        m_multilineEditorButton.setSelected(!isSingleEditor);
         m_multilineEditorWidthSpinner.setValue(m_config.getMultilineEditorWidth());
         m_multilineEditorHeightSpinner.setValue(m_config.getMultilineEditorHeight());
         updateComponents();
@@ -149,7 +158,7 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_config.setErrorMessage(m_regexField.getErrorMessage());
         m_config.getDefaultValue().setString(m_defaultField.getText());
         // added with 3.5
-        m_config.setEditorType((String)m_editorTypeComboBox.getSelectedItem());
+        m_config.setEditorType(m_singleLineEditorButton.isSelected() ? StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING : StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
         m_config.setMultilineEditorWidth((int)m_multilineEditorWidthSpinner.getValue());
         m_config.setMultilineEditorHeight((int) m_multilineEditorHeightSpinner.getValue());
 
@@ -170,7 +179,7 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
      * Update the components state
      */
     protected void updateComponents() {
-        boolean isMultiEditor = m_editorTypeComboBox.getSelectedItem().equals(StringInputQuickFormConfig.EDITOR_TYPE_MULTI_LINE_STRING);
+        boolean isMultiEditor = m_multilineEditorButton.isSelected();
 
         m_multilineEditorWidthSpinner.setEnabled(isMultiEditor);
         m_multilineEditorHeightSpinner.setEnabled(isMultiEditor);
