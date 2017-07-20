@@ -59,14 +59,16 @@ org_knime_js_base_node_quickform_input_bool = function() {
 		}
 		var body = $("body");
 		var qfdiv = $('<div class="quickformcontainer">');
-		body.append(qfdiv);
-		input = $('<input style="float: left;">');
-		input.attr("aria-label", representation.label);
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append(input);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		body.append(qfdiv);
+		var label = $('<label class="label" style="display: block; padding-left: 15px; text-indent: -15px; margin-left: 5px;">');
+		qfdiv.append(label);		
+		input = $('<input style="padding: 0; margin:0; margin-right: 5px; vertical-align: middle;">');
+		input.attr("aria-label", representation.label);
 		input.attr("type", "checkbox");
+		label.append(input);
+		label.append(representation.label);
 		var checked = representation.currentValue.boolean;
 		input.prop("checked", checked);
 		input.blur(callUpdate);
