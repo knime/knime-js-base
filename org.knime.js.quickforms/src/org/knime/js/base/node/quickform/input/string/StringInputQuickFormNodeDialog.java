@@ -139,7 +139,7 @@ public class StringInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_regexField.setErrorMessage(m_config.getErrorMessage());
         m_defaultField.setText(m_config.getDefaultValue().getString());
         // added with 3.5
-        boolean isSingleEditor = m_config.getEditorType() == StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING;
+        boolean isSingleEditor = m_config.getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
         m_singleLineEditorButton.setSelected(isSingleEditor);
         m_multilineEditorButton.setSelected(!isSingleEditor);
         m_multilineEditorWidthSpinner.setValue(m_config.getMultilineEditorWidth());

@@ -83,7 +83,7 @@ public class StringInputQuickFormConfig extends QuickFormFlowVariableConfig<Stri
 
     private static final String CFG_EDITOR_TYPE = "editorType";
     private static final String DEFAULT_EDITOR_TYPE = EDITOR_TYPE_SINGLE_LINE_STRING;
-    private String m_editorType = DEFAULT_ERROR_MESSAGE;
+    private String m_editorType = DEFAULT_EDITOR_TYPE;
 
     private static final String CFG_MULTI_LINE_EDITOR_WIDTH = "multilineEditorWidth";
     private static final int DEFAULT_MULTI_LINE_EDITOR_WIDTH = 60;

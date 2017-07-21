@@ -72,7 +72,7 @@ public class StringInputQuickFormDialogPanel extends QuickFormDialogPanel<String
      */
     public StringInputQuickFormDialogPanel(final StringInputQuickFormRepresentation representation) {
         super(representation.getDefaultValue());
-        if (representation.getEditorType() == StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING) {
+        if (representation.getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
             m_component = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
         } else {
             // Multi-line editor
