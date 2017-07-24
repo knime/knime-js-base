@@ -125,7 +125,7 @@ public class StringInputQuickFormNodeModel
     @Override
     public ValidationError validateViewValue(final StringInputQuickFormValue viewContent) {
         if (getConfig().getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
-            // Regex is possible only for single line editor
+            // Regex is possible only for single-line editor
             String string = viewContent.getString();
             if (string == null) {
                 string = "";
