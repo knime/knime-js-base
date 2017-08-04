@@ -51,11 +51,14 @@
 package org.knime.js.base.node.viz.plotter.scatterSelectionAppender;
 
 import java.awt.Color;
+import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.StringHistory;
 import org.knime.js.base.node.viz.plotter.line.LinePlotViewConfig;
+import org.knime.js.core.components.datetime.ConversionDateTimeFormat;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
@@ -124,7 +127,7 @@ final class ScatterPlotViewConfig {
     static final String Y_AXIS_MIN = "yAxisMin";
     static final String Y_AXIS_MAX = "yAxisMax";
     static final String DOT_SIZE = "dot_size";
-    static final String DATE_FORMAT = "date_format";
+    static final String DATE_FORMAT = "date_format"; // legacy date&time format
     static final String IMAGE_WIDTH = "imageWidth";
     static final String IMAGE_HEIGHT = "imageHeight";
     static final String BACKGROUND_COLOR = "backgroundColor";
@@ -132,6 +135,7 @@ final class ScatterPlotViewConfig {
     static final String GRID_COLOR = "gridColor";
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
     static final String REPORT_ON_MISSING_VALUES = "reportOnMissingValues";
+    static final String DATE_TIME_FORMATS = "dateTimeFormats";  // new date&time formats
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -176,7 +180,6 @@ final class ScatterPlotViewConfig {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize = DEFAULT_DOT_SIZE;
-    private String m_dateFormat = SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next();
     private int m_imageWidth = DEFAULT_WIDTH;
     private int m_imageHeight = DEFAULT_HEIGHT;
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
@@ -184,6 +187,8 @@ final class ScatterPlotViewConfig {
     private Color m_gridColor = DEFAULT_GRID_COLOR;
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
     private boolean m_reportOnMissingValues = DEFAULT_REPORT_ON_MISSING_VALUES;
+    private SettingsModelDateTimeOptions m_dateTimeFormats = new SettingsModelDateTimeOptions(DATE_TIME_FORMATS);
+    private static Map<String, String> m_conversionDateTimeFormatMap = null;
 
     /**
      * @return the hideInWizard
@@ -879,21 +884,7 @@ final class ScatterPlotViewConfig {
         m_dotSize = dotSize;
     }
 
-    /**
-     * @return the dateFormat
-     */
-    public String getDateFormat() {
-        return m_dateFormat;
-    }
-
-    /**
-     * @param dateFormat the dateFormat to set
-     */
-    public void setDateFormat(final String dateFormat) {
-        m_dateFormat = dateFormat;
-    }
-
-    /**
+        /**
      * @return the showWarningInView
      */
     public boolean getShowWarningInView() {
@@ -919,6 +910,20 @@ final class ScatterPlotViewConfig {
      */
     public void setReportOnMissingValues(final boolean reportOnMissingValues) {
         m_reportOnMissingValues = reportOnMissingValues;
+    }
+
+    /**
+     * @return the dateTimeFormats
+     */
+    public SettingsModelDateTimeOptions getDateTimeFormats() {
+        return m_dateTimeFormats;
+    }
+
+    /**
+     * @param dateTimeFormats the dateTimeFormats to set
+     */
+    public void setDateTimeFormats(final SettingsModelDateTimeOptions dateTimeFormats) {
+        m_dateTimeFormats = dateTimeFormats;
     }
 
     /** Saves current parameters to settings object.
@@ -966,7 +971,6 @@ final class ScatterPlotViewConfig {
         settings.addString(Y_AXIS_MAX, getyAxisMax() == null ? null : getyAxisMax().toString());
         settings.addString(DOT_SIZE, getDotSize() == null ? null : getDotSize().toString());
 
-        settings.addString(DATE_FORMAT, getDateFormat());
         settings.addInt(IMAGE_WIDTH, getImageWidth());
         settings.addInt(IMAGE_HEIGHT, getImageHeight());
         settings.addString(BACKGROUND_COLOR, getBackgroundColorString());
@@ -984,6 +988,9 @@ final class ScatterPlotViewConfig {
         settings.addBoolean(ENABLE_SWITCH_LEGEND, getEnableSwitchLegend());
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
         settings.addBoolean(REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
+
+        //added with 3.5
+        m_dateTimeFormats.saveSettingsTo(settings);
     }
 
     /** Loads parameters in NodeModel.
@@ -1037,8 +1044,6 @@ final class ScatterPlotViewConfig {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
-        setDateFormat(settings.getString(DATE_FORMAT));
-        setDateFormat(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT));
         String bgColorString = settings.getString(BACKGROUND_COLOR);
@@ -1059,6 +1064,17 @@ final class ScatterPlotViewConfig {
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
+
+        //added with 3.5
+        if (settings.containsKey(DATE_TIME_FORMATS)) {
+            m_dateTimeFormats.loadSettingsFrom(settings);
+        } else {
+            String legacyDateTimeFormat = settings.getString(DATE_FORMAT);
+            String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
+            m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
+        }
     }
 
     /** Loads parameters in Dialog.
@@ -1111,8 +1127,6 @@ final class ScatterPlotViewConfig {
         setyAxisMax(yMax == null ? null : Double.parseDouble(yMax));
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
 
-        setDateFormat(settings.getString(DATE_FORMAT, SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS.iterator().next()));
-        //LinePlotViewConfig.setDateFormatHistory(getDateFormat());
         setImageWidth(settings.getInt(IMAGE_WIDTH, DEFAULT_WIDTH));
         setImageHeight(settings.getInt(IMAGE_HEIGHT, DEFAULT_HEIGHT));
 
@@ -1146,5 +1160,22 @@ final class ScatterPlotViewConfig {
         setEnableSwitchLegend(settings.getBoolean(ENABLE_SWITCH_LEGEND, true));
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setReportOnMissingValues(settings.getBoolean(REPORT_ON_MISSING_VALUES, DEFAULT_REPORT_ON_MISSING_VALUES));
+
+        //added with 3.5
+        if (settings.containsKey(DATE_TIME_FORMATS)) {
+            try {
+                m_dateTimeFormats.loadSettingsFrom(settings);
+            } catch (InvalidSettingsException e) {
+                // return default
+            }
+        } else {
+            String legacyDateTimeFormat = settings.getString(DATE_FORMAT, null);
+            if (legacyDateTimeFormat != null) {
+                String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
+                m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+                m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+                StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
+            }
+        }
     }
 }

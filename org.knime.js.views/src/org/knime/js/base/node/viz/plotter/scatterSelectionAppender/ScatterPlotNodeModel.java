@@ -48,6 +48,11 @@
  */
 package org.knime.js.base.node.viz.plotter.scatterSelectionAppender;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -345,7 +350,19 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 } else if (tableData[colID] instanceof Long) {
                     rowData[colID] = ((Long)tableData[colID]).doubleValue();
                 } else if (tableData[colID] instanceof String) {
-                    rowData[colID] = ((Integer)getOrdinalFromStringValue((String)tableData[colID], table, colID)).doubleValue();
+                    String data = (String) tableData[colID];
+                    if (tableSpec.getKnimeTypes()[colID].equals("Local Date Time")) {
+                        rowData[colID] = ((Long)LocalDateTime.parse(data).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Date")) {
+                        rowData[colID] = ((Long)LocalDate.parse(data).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Time")) {
+                        rowData[colID] = ((Long)LocalTime.parse(data).atDate(LocalDate.now()).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Zoned Date Time")) {
+                        rowData[colID] = ((Long)ZonedDateTime.parse(data).toInstant().toEpochMilli()).doubleValue();
+                    } else {
+                        // String
+                        rowData[colID] = ((Integer)getOrdinalFromStringValue(data, table, colID)).doubleValue();
+                    }
                 }
             }
             rowValues[rowID] = new JSONKeyedValuesRow(currentRow.getRowKey(), rowData);
@@ -365,7 +382,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 dataset.setSymbol(getSymbolMap(tableSpec.getPossibleValues().get(col)), col);
             }
             if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
-                dataset.setDateTimeFormat(m_config.getDateFormat(), col);
+                dataset.setDateTimeFormat(tableSpec.getKnimeTypes()[col], col);
             }
         }
         dataset.setColorModels(tableSpec.getColorModels());
@@ -487,7 +504,6 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
         representation.setImageWidth(m_config.getImageWidth());
         representation.setImageHeight(m_config.getImageHeight());
-        representation.setDateTimeFormat(m_config.getDateFormat());
         representation.setBackgroundColor(m_config.getBackgroundColorString());
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
@@ -552,6 +568,9 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         viewValue.setShowLegend(m_config.getShowLegend());
         representation.setShowWarningInView(m_config.getShowWarningInView());
         representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
+
+        // added with 3.5
+        representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
     }
 
     private void copyValueToConfig() {

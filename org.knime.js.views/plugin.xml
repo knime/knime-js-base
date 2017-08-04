@@ -330,6 +330,9 @@
          <webDependency
                webResourceBundleID="org.knime.js.base.util.dateFormat.bundle">
          </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_locales_2_17">
+         </webDependency>
       </webResourceBundle>
       <webResourceBundle
             debug="true"

@@ -78,11 +78,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
-import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.core.node.util.DataValueColumnFilter;
+import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
@@ -133,7 +132,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JTextField m_xAxisLabelField;
     private final JTextField m_yAxisLabelField;
     private final JSpinner m_dotSize;
-    private final DialogComponentStringSelection m_dateFormatChooser;
     private final JSpinner m_imageWidthSpinner;
     private final JSpinner m_imageHeightSpinner;
     private final DialogComponentColorChooser m_gridColorChooser;
@@ -141,6 +139,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final DialogComponentColorChooser m_backgroundColorChooser;
     private final JCheckBox m_showWarningInViewCheckBox;
     private final JCheckBox m_reportOnMissingValuesCheckBox;
+    private final DialogComponentDateTimeOptions m_dateTimeFormats;
 
     /**
      * Creates a new dialog pane.
@@ -234,9 +233,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
             }
         });
 
-        m_dateFormatChooser =
-            new DialogComponentStringSelection(new SettingsModelString(ScatterPlotViewConfig.DATE_FORMAT, null),
-                "Date format: ", SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS, true);
+        m_dateTimeFormats = new DialogComponentDateTimeOptions(
+            new SettingsModelDateTimeOptions(ScatterPlotViewConfig.DATE_TIME_FORMATS), "Date and Time formatter");
 
         addTab("Options", initOptionsPanel());
         addTab("Axis Configuration", initAxisPanel());
@@ -314,12 +312,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy++;
 
-        JPanel formatPanel = new JPanel(new GridBagLayout());
-        formatPanel.setBorder(BorderFactory.createTitledBorder("Formatter"));
-        panel.add(formatPanel, c);
-        cc.gridx = 0;
-        cc.gridy = 0;
-        formatPanel.add(m_dateFormatChooser.getComponentPanel(), cc);
+        panel.add(m_dateTimeFormats.getPanel(), c);
         c.gridx = 0;
         c.gridy++;
 
@@ -642,8 +635,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_dotSize.setValue(config.getDotSize());
         m_maxRowsSpinner.setValue(config.getMaxRows());
 
-        m_dateFormatChooser.replaceListItems(SettingsModelDateTimeOptions.PREDEFINED_DATE_TIME_FORMATS,
-            config.getDateFormat());
         m_imageWidthSpinner.setValue(config.getImageWidth());
         m_imageHeightSpinner.setValue(config.getImageHeight());
         m_backgroundColorChooser.setColor(config.getBackgroundColor());
@@ -653,6 +644,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
         m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
         m_reportOnMissingValuesCheckBox.setSelected(config.getReportOnMissingValues());
+
+        m_dateTimeFormats.loadSettingsFromModel(config.getDateTimeFormats());
 
         enableViewControls();
         enableCrosshairControls();
@@ -709,7 +702,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         config.setDotSize((Integer)m_dotSize.getValue());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
-        config.setDateFormat(((SettingsModelString)m_dateFormatChooser.getModel()).getStringValue());
         config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
         config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
         config.setBackgroundColor(m_backgroundColorChooser.getColor());
@@ -718,6 +710,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
         config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
         config.setReportOnMissingValues(m_reportOnMissingValuesCheckBox.isSelected());
+
+        config.setDateTimeFormats((SettingsModelDateTimeOptions)m_dateTimeFormats.getModel());
 
         config.saveSettings(settings);
     }

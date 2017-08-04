@@ -51,11 +51,7 @@
 package org.knime.js.base.node.viz.plotter.line;
 
 import java.awt.Color;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -67,6 +63,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.StringHistory;
 import org.knime.core.node.util.filter.InputFilter;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
+import org.knime.js.core.components.datetime.ConversionDateTimeFormat;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
 /**
@@ -182,7 +179,7 @@ public final class LinePlotViewConfig {
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
     private SettingsModelDateTimeOptions m_dateTimeFormats = new SettingsModelDateTimeOptions(DATE_TIME_FORMATS);
     private boolean m_reportOnMissingValues = DEFAULT_REPORT_ON_MISSING_VALUES;
-    private static Map<String, String> m_conversionDateTimeFormatMap = null;
+
 
     /**
      * The line will break and have gaps, if the value is missing
@@ -1080,7 +1077,7 @@ public final class LinePlotViewConfig {
             m_dateTimeFormats.loadSettingsFrom(settings);
         } else {
             String legacyDateTimeFormat = settings.getString(DATE_FORMAT);
-            String newDateTimeFormat = convertDateTimeFormat(legacyDateTimeFormat);
+            String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
             m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
             m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
             StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
@@ -1177,67 +1174,11 @@ public final class LinePlotViewConfig {
         } else {
             String legacyDateTimeFormat = settings.getString(DATE_FORMAT, null);
             if (legacyDateTimeFormat != null) {
-                String newDateTimeFormat = convertDateTimeFormat(legacyDateTimeFormat);
+                String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
                 m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
                 m_dateTimeFormats.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
                 StringHistory.getInstance(SettingsModelDateTimeOptions.DATE_TIME_FORMAT_HISTORY_KEY).add(newDateTimeFormat);
             }
         }
-    }
-
-    /**
-     * Converts a string in old date&time format to the new one
-     * @param oldFormat
-     * @return string in the new date&time format
-     */
-    public static String convertDateTimeFormat(final String oldFormat) {
-        Map<String, String> conversionMap = getConversionDateTimeFormatMap();
-        String[] oldFormatMasks = conversionMap.keySet().toArray(new String[conversionMap.size()]);
-        String[] newFormatMasks = conversionMap.values().toArray(new String[conversionMap.size()]);
-        return StringUtils.replaceEach(oldFormat, oldFormatMasks, newFormatMasks);
-    }
-
-    /**
-     * Gets a conversion map for masks from the old date&time format to the new
-     * @return conversion map
-     */
-    public static Map<String, String> getConversionDateTimeFormatMap() {
-        if (m_conversionDateTimeFormatMap == null) {
-            initConversionDateTimeFormatMap();
-        }
-        return m_conversionDateTimeFormatMap;
-    }
-
-    private static void initConversionDateTimeFormatMap() {
-        m_conversionDateTimeFormatMap = new TreeMap<String, String>(Collections.reverseOrder());
-        // we have to sort desc, otherwise "d" will be processed before "dd" and break the pattern
-
-        m_conversionDateTimeFormatMap.put("d", "D");
-        m_conversionDateTimeFormatMap.put("dd", "DD");
-        m_conversionDateTimeFormatMap.put("ddd", "ddd");
-        m_conversionDateTimeFormatMap.put("dddd", "dddd");
-        m_conversionDateTimeFormatMap.put("m", "M");
-        m_conversionDateTimeFormatMap.put("mm", "MM");
-        m_conversionDateTimeFormatMap.put("mmm", "MMM");
-        m_conversionDateTimeFormatMap.put("mmmm", "MMMM");
-        m_conversionDateTimeFormatMap.put("yy", "YY");
-        m_conversionDateTimeFormatMap.put("yyyy", "YYYY");
-        m_conversionDateTimeFormatMap.put("h", "h");
-        m_conversionDateTimeFormatMap.put("hh", "hh");
-        m_conversionDateTimeFormatMap.put("H", "H");
-        m_conversionDateTimeFormatMap.put("HH", "HH");
-        m_conversionDateTimeFormatMap.put("M", "m");
-        m_conversionDateTimeFormatMap.put("MM", "mm");
-        m_conversionDateTimeFormatMap.put("s", "s");
-        m_conversionDateTimeFormatMap.put("ss", "ss");
-        m_conversionDateTimeFormatMap.put("l", "SSS");
-        m_conversionDateTimeFormatMap.put("L", "SS");
-        m_conversionDateTimeFormatMap.put("t", "a");
-        m_conversionDateTimeFormatMap.put("tt", "a");
-        m_conversionDateTimeFormatMap.put("T", "A");
-        m_conversionDateTimeFormatMap.put("TT", "A");
-        m_conversionDateTimeFormatMap.put("Z", "z");
-        m_conversionDateTimeFormatMap.put("o", "ZZ");
-        m_conversionDateTimeFormatMap.put("S", "o");
     }
 }

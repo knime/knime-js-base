@@ -56,6 +56,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.warnings.JSONWarnings;
 
@@ -105,7 +106,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
     private int m_imageWidth;
     private int m_imageHeight;
-    private String m_dateTimeFormat;
     private String m_backgroundColor;
     private String m_dataAreaColor;
     private String m_gridColor;
@@ -116,6 +116,8 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private JSONWarnings m_warnings = new JSONWarnings();
 
     private boolean m_reportOnMissingValues;
+
+    private JSONDateTimeOptions m_dateTimeFormats;
 
     /**
      * @return the keyedDataset
@@ -524,20 +526,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the dateTimeFormat
-     */
-    public String getDateTimeFormat() {
-        return m_dateTimeFormat;
-    }
-
-    /**
-     * @param dateTimeFormat the dateTimeFormat to set
-     */
-    public void setDateTimeFormat(final String dateTimeFormat) {
-        m_dateTimeFormat = dateTimeFormat;
-    }
-
-    /**
      * @return the backgroundColor
      */
     public String getBackgroundColor() {
@@ -636,6 +624,20 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the dateTimeFormats
+     */
+    public JSONDateTimeOptions getDateTimeFormats() {
+        return m_dateTimeFormats;
+    }
+
+    /**
+     * @param dateTimeFormats the dateTimeFormats to set
+     */
+    public void setDateTimeFormats(final JSONDateTimeOptions dateTimeFormats) {
+        m_dateTimeFormats = dateTimeFormats;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -668,7 +670,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         settings.addInt(ScatterPlotViewConfig.IMAGE_WIDTH, getImageWidth());
         settings.addInt(ScatterPlotViewConfig.IMAGE_HEIGHT, getImageHeight());
-        settings.addString(ScatterPlotViewConfig.DATE_FORMAT, getDateTimeFormat());
         settings.addString(ScatterPlotViewConfig.BACKGROUND_COLOR, getBackgroundColor());
         settings.addString(ScatterPlotViewConfig.DATA_AREA_COLOR, getDataAreaColor());
         settings.addString(ScatterPlotViewConfig.GRID_COLOR, getGridColor());
@@ -689,6 +690,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, getShowWarningInView());
         m_warnings.saveToNodeSettings(settings);
         settings.addBoolean(ScatterPlotViewConfig.REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
+
+        // added with 3.5
+        m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(ScatterPlotViewConfig.DATE_TIME_FORMATS));
     }
 
     /**
@@ -724,7 +728,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         setImageWidth(settings.getInt(ScatterPlotViewConfig.IMAGE_WIDTH));
         setImageHeight(settings.getInt(ScatterPlotViewConfig.IMAGE_HEIGHT));
-        setDateTimeFormat(settings.getString(ScatterPlotViewConfig.DATE_FORMAT));
         setBackgroundColor(settings.getString(ScatterPlotViewConfig.BACKGROUND_COLOR));
         setDataAreaColor(settings.getString(ScatterPlotViewConfig.DATA_AREA_COLOR));
         setGridColor(settings.getString(ScatterPlotViewConfig.GRID_COLOR));
@@ -747,6 +750,11 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         setShowWarningInView(settings.getBoolean(ScatterPlotViewConfig.SHOW_WARNING_IN_VIEW, ScatterPlotViewConfig.DEFAULT_SHOW_WARNING_IN_VIEW));
         m_warnings.loadFromNodeSettings(settings);
         setReportOnMissingValues(settings.getBoolean(ScatterPlotViewConfig.REPORT_ON_MISSING_VALUES, ScatterPlotViewConfig.DEFAULT_REPORT_ON_MISSING_VALUES));
+
+        //added with 3.5
+        if (settings.containsKey(ScatterPlotViewConfig.DATE_TIME_FORMATS)) {
+            m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(ScatterPlotViewConfig.DATE_TIME_FORMATS));
+        }
     }
 
     /**
@@ -794,7 +802,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .append(m_imageWidth, other.m_imageWidth)
                 .append(m_imageHeight, other.m_imageHeight)
-                .append(m_dateTimeFormat, other.m_dateTimeFormat)
                 .append(m_backgroundColor, other.m_backgroundColor)
                 .append(m_dataAreaColor, other.m_dataAreaColor)
                 .append(m_gridColor, other.m_gridColor)
@@ -802,6 +809,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
                 .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
+                .append(m_dateTimeFormats, other.m_dateTimeFormats)
                 .isEquals();
     }
 
@@ -840,7 +848,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_subscriptionFilterIds)
                 .append(m_imageWidth)
                 .append(m_imageHeight)
-                .append(m_dateTimeFormat)
                 .append(m_backgroundColor)
                 .append(m_dataAreaColor)
                 .append(m_gridColor)
@@ -848,6 +855,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_showWarningInView)
                 .append(m_warnings)
                 .append(m_reportOnMissingValues)
+                .append(m_dateTimeFormats)
                 .toHashCode();
     }
 }

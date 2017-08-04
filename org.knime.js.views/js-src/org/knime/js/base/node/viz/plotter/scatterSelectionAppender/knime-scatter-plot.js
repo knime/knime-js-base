@@ -90,6 +90,11 @@ knime_scatter_plot_selection_appender = function() {
 			};
 			customRange.prototype = jsfc.Range.prototype;
 			jsfc.Range = customRange;
+			
+			// Set locale for moment.js.
+			if (_representation.dateTimeFormats.globalDateTimeLocale !== 'en') {
+				moment.locale(_representation.dateTimeFormats.globalDateTimeLocale);
+			}
 
 			d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
 			d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
@@ -228,9 +233,9 @@ knime_scatter_plot_selection_appender = function() {
         }
         
         if (_value.xColumn) {
-			var dateProp = _keyedDataset.getColumnProperty(_value.xColumn, "date");
+            var dateProp = _keyedDataset.getColumnProperty(_value.xColumn, "date");
 			if (dateProp) {
-				plot.getXAxis().setTickLabelFormatOverride(new jsfc.UniversalDateFormat(dateProp));
+				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp));
 			} else {
 				plot.getXAxis().setTickLabelFormatOverride(null);
 			}
@@ -356,7 +361,7 @@ knime_scatter_plot_selection_appender = function() {
 		if (_value.xColumn) {
 			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
-				plot.getXAxis().setTickLabelFormatOverride(new jsfc.DateFormat(dateProp), false);
+				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
 			} else {
 				plot.getXAxis().setTickLabelFormatOverride(null, false);
 			}
@@ -1111,6 +1116,41 @@ knime_scatter_plot_selection_appender = function() {
 	    }
 	    
 	    return result;
+	};
+	
+	createDateFormatter = function(knimeColType) {
+		var format;
+		switch (knimeColType) {
+		case 'Date and Time':
+			format = _representation.dateTimeFormats.globalDateTimeFormat;
+			break;
+		case 'Local Date':
+			format = _representation.dateTimeFormats.globalLocalDateFormat;
+			break;
+		case 'Local Date Time':
+			format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
+			break;
+		case 'Local Time':
+			format = _representation.dateTimeFormats.globalLocalTimeFormat;
+			break;
+		case 'Zoned Date Time':
+			format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
+			break;
+		}
+		return new DateFormat(format, knimeColType);
+	}
+	
+	DateFormat = function(format, knimeColType) {
+		this._format = format;
+		this._knimeColType = knimeColType;
+	}
+	
+	DateFormat.prototype.format = function(n) {				
+		if (this._knimeColType == 'Date and Time' || this._knimeColType == 'Local Date' || this._knimeColType == 'Local Date Time' || this._knimeColType == 'Local Time') {
+			return moment(n).utc().format(this._format);
+		} else if (this._knimeColType == 'Zoned Date Time') {
+			return moment(n).tz(_representation.dateTimeFormats.timezone).format(this._format);
+		}		
 	};
 	
 	return view;
