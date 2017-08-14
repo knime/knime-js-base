@@ -1136,6 +1136,10 @@ knime_scatter_plot_selection_appender = function() {
 		case 'Zoned Date Time':
 			format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
 			break;
+		default:
+			// might be not set correct in case of opening the view of the old workflow, i.e. for backward compatibility 
+			knimeColType = 'Date and Time';
+			format = _representation.dateTimeFormats.globalDateTimeFormat;
 		}
 		return new DateFormat(format, knimeColType);
 	}
