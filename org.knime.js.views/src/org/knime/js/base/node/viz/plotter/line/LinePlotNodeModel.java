@@ -215,6 +215,20 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
      * {@inheritDoc}
      */
     @Override
+    public LinePlotViewRepresentation getViewRepresentation() {
+        LinePlotViewRepresentation rep = super.getViewRepresentation();
+        synchronized (getLock()) {
+            if (rep.getDateTimeFormats() == null) {
+                rep.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
+            }
+        }
+        return rep;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getJavascriptObjectID() {
         return "org.knime.js.base.node.viz.plotter.line";
     }
