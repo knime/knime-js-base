@@ -392,12 +392,14 @@ knime_paged_table = function() {
 			if (_representation.enableSelection) {
 				// Handle click on "Select all" control
 				var selectAllCheckbox = $('#checkbox-select-all').get(0);
-				if (selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)) {
-					selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
+				if (selectAllCheckbox) {
+					if (selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)) {
+						selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
+					}
+					selectAllCheckbox.addEventListener('click', function() {
+						selectAll(this.checked);
+					});
 				}
-				selectAllCheckbox.addEventListener('click', function() {
-					selectAll(this.checked);
-				});
 
 				// Handle click on checkbox to set state of "Select all" control
 				$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
