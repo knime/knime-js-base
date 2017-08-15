@@ -6,6 +6,7 @@ knime_paged_table = function() {
 	var knimeTable = null;
 	var dataTable = null;
 	var selection = {};
+	var partialSelectedRows = [];
 	var hideUnselected = false;
 	var allCheckboxes = [];
 	var currentFilter = null;
@@ -310,7 +311,7 @@ knime_paged_table = function() {
 						knimeService.addMenuItem('Show selected rows only', 'filter', hideUnselectedCheckbox);
 						$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
 							if (hideUnselected) {
-								return selection[rowData[0]];
+								return selection[rowData[0]] || partialSelectedRows.indexOf(rowData[0]) > -1;
 							}
 							return true;
 						});
@@ -405,6 +406,11 @@ knime_paged_table = function() {
 					// we could call delete _value.selection[this.value], but the call is very slow 
 					// and we can assume that a user doesn't click on a lot of checkboxes
 					selection[this.value] = this.checked;
+					// in either case the row is not partially selected
+					var partialIndex = partialSelectedRows.indexOf(this.value);
+					if (partialIndex > -1) {
+						partialSelectedRows.splice(partialIndex, 1);
+					}
 					
 					if (this.checked) {
 						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
@@ -557,6 +563,7 @@ knime_paged_table = function() {
 		// TODO: select only rows with current filter applied (but not hideUnselected), search: applied takes both into account
 		//var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
 		selection = {};
+		partialSelectedRows = [];
 		_value.selectAllIndeterminate = false;
 		allCheckboxes.each(function() {
 			this.checked = all;
@@ -622,12 +629,12 @@ knime_paged_table = function() {
 				}
 			}
 		}
-		var partialRows = knimeService.getAllPartiallySelectedRows(_representation.table.id);
+		partialSelectedRows = knimeService.getAllPartiallySelectedRows(_representation.table.id);
 		// set checked status on checkboxes
 		allCheckboxes.each(function() {
 			this.checked = selection[this.getAttribute('value')];
 			if ('indeterminate' in this) {
-				if (!this.checked && partialRows.indexOf(this.getAttribute('value')) > -1) {
+				if (!this.checked && partialSelectedRows.indexOf(this.getAttribute('value')) > -1) {
 					this.indeterminate = true;
 				} else {
 					this.indeterminate = false;
