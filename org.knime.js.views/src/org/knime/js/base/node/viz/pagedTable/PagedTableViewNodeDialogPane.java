@@ -103,6 +103,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_publishSelectionCheckBox;
     private final JCheckBox m_subscribeSelectionCheckBox;
     private final JCheckBox m_enableHideUnselectedCheckbox;
+    private final JCheckBox m_hideUnselectedCheckbox;
     private final JCheckBox m_enableSearchCheckbox;
     private final JCheckBox m_enableColumnSearchCheckbox;
     private final JCheckBox m_publishFilterCheckBox;
@@ -161,6 +162,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_selectionColumnNameField = new JTextField(TEXT_FIELD_SIZE);
         m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
         m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
+        m_hideUnselectedCheckbox = new JCheckBox("Show selected rows only");
         m_enableHideUnselectedCheckbox = new JCheckBox("Enable 'Show selected rows only' option");
         m_enableSearchCheckbox = new JCheckBox("Enable searching");
         m_enableSearchCheckbox.addChangeListener(new ChangeListener() {
@@ -298,7 +300,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBorder(new TitledBorder("Selection"));
         GridBagConstraints gbcS = createConfiguredGridBagConstraints();
+        gbcS.gridwidth = 2;
         selectionPanel.add(m_enableSelectionCheckbox, gbcS);
+        gbcS.gridwidth = 1;
+        gbcS.gridy++;
+        selectionPanel.add(m_hideUnselectedCheckbox, gbcS);
         gbcS.gridx++;
         selectionPanel.add(m_enableHideUnselectedCheckbox, gbcS);
         gbcS.gridx = 0;
@@ -422,6 +428,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(config.getEnableSelection());
         m_selectionColumnNameField.setText(config.getSelectionColumnName());
+        m_hideUnselectedCheckbox.setSelected(config.getHideUnselected());
         m_enableHideUnselectedCheckbox.setSelected(config.getEnableHideUnselected());
         m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
         m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
@@ -471,6 +478,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         config.setColumnFilterConfig(filterConfig);
         config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         config.setSelectionColumnName(m_selectionColumnNameField.getText());
+        config.setHideUnselected(m_hideUnselectedCheckbox.isSelected());
         config.setEnableHideUnselected(m_enableHideUnselectedCheckbox.isSelected());
         config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
         config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
@@ -526,6 +534,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private void enableSelectionFields() {
         boolean enable = m_enableSelectionCheckbox.isSelected();
         m_selectionColumnNameField.setEnabled(enable);
+        m_hideUnselectedCheckbox.setEnabled(enable);
         m_enableHideUnselectedCheckbox.setEnabled(enable);
         m_publishSelectionCheckBox.setEnabled(enable);
         m_subscribeSelectionCheckBox.setEnabled(enable);

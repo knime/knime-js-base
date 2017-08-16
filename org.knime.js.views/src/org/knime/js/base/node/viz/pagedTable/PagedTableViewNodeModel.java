@@ -158,8 +158,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
 
     /**
@@ -211,7 +210,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     public ValidationError validateViewValue(final PagedTableViewValue value) {
-        // TODO Auto-generated method stub
+        // no validation done here
         return null;
     }
 
@@ -332,6 +331,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             //added with 3.4
             viewRepresentation.setDisplayMissingValueAsQuestionMark(m_config.getDisplayMissingValueAsQuestionMark());
             viewRepresentation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
+            viewValue.setHideUnselected(m_config.getHideUnselected());
         }
     }
 
@@ -349,6 +349,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     @Override
     protected void useCurrentValueAsDefault() {
         PagedTableViewValue viewValue = getViewValue();
+        m_config.setHideUnselected(viewValue.getHideUnselected());
         m_config.setPublishSelection(viewValue.getPublishSelection());
         m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
         m_config.setPublishFilter(viewValue.getPublishFilter());

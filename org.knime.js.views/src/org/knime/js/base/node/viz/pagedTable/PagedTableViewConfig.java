@@ -153,6 +153,10 @@ public class PagedTableViewConfig {
     final static boolean DEFAULT_ENABLE_HIDE_UNSELECTED = true;
     private boolean m_enableHideUnselected = DEFAULT_ENABLE_HIDE_UNSELECTED;
 
+    final static String CFG_HIDE_UNSELECTED = "hideUnselected";
+    final static boolean DEFAULT_HIDE_UNSELECTED = false;
+    private boolean m_hideUnselected = DEFAULT_HIDE_UNSELECTED;
+
     final static String CFG_ENABLE_SORTING = "enableSorting";
     private final static boolean DEFAULT_ENABLE_SORTING = true;
     private boolean m_enableSorting = DEFAULT_ENABLE_SORTING;
@@ -472,6 +476,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return if hideUnselected
+     */
+    public boolean getHideUnselected() {
+        return m_hideUnselected;
+    }
+
+    /**
+     * @param hideUnselected the hideUnselected to set
+     */
+    public void setHideUnselected(final boolean hideUnselected) {
+        m_hideUnselected = hideUnselected;
+    }
+
+    /**
      * @return the publishSelection
      */
     public boolean getPublishSelection() {
@@ -680,6 +698,7 @@ public class PagedTableViewConfig {
         //added with 3.4
         settings.addBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
         m_dateTimeFormats.saveSettingsTo(settings);
+        settings.addBoolean(CFG_HIDE_UNSELECTED, m_hideUnselected);
     }
 
     /** Loads parameters in NodeModel.
@@ -729,6 +748,7 @@ public class PagedTableViewConfig {
             String legacyDateTimeFormat = settings.getString(CFG_GLOBAL_DATE_TIME_FORMAT);
             m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(legacyDateTimeFormat);
         }
+        m_hideUnselected = settings.getBoolean(CFG_HIDE_UNSELECTED, DEFAULT_HIDE_UNSELECTED);
     }
 
     /** Loads parameters in Dialog.
@@ -783,6 +803,7 @@ public class PagedTableViewConfig {
                 m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(legacyDateTimeFormat);
             }
         }
+        m_hideUnselected = settings.getBoolean(CFG_HIDE_UNSELECTED, DEFAULT_HIDE_UNSELECTED);
     }
 
 }

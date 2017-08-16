@@ -7,7 +7,6 @@ knime_paged_table = function() {
 	var dataTable = null;
 	var selection = {};
 	var partialSelectedRows = [];
-	var hideUnselected = false;
 	var allCheckboxes = [];
 	var currentFilter = null;
 	var initialized = false;
@@ -248,7 +247,10 @@ knime_paged_table = function() {
 			}
 			
 			var firstChunk = getDataSlice(0, _representation.initialPageSize);
-			var searchEnabled = _representation.enableSearching || (knimeService && knimeService.isInteractivityAvailable());
+			//search is also used for filtering, so consider all possible options
+			var searchEnabled = _representation.enableSearching || _representation.enableColumnSearching
+				|| (_representation.enableSelection && (_value.hideUnselected || _representation.enableHideUnselected)) 
+				|| (knimeService && knimeService.isInteractivityAvailable());
 
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
@@ -299,22 +301,21 @@ knime_paged_table = function() {
 					knimeService.allowFullscreen();
 				}
 				if (_representation.enableSelection) {
+					$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
+						if (_value.hideUnselected) {
+							return selection[rowData[0]] || partialSelectedRows.indexOf(rowData[0]) > -1;
+						}
+						return true;
+					});
 					if (_representation.enableHideUnselected) {
-						hideUnselected = _value.hideUnselected;
-						var hideUnselectedCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', hideUnselected, function() {
-							var prev = hideUnselected;
-							hideUnselected = this.checked;
-							if (prev !== hideUnselected) {
+						var hideUnselectedCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.hideUnselected, function() {
+							var prev = _value.hideUnselected;
+							_value.hideUnselected = this.checked;
+							if (prev !== _value.hideUnselected) {
 								dataTable.draw();
 							}
 						});
 						knimeService.addMenuItem('Show selected rows only', 'filter', hideUnselectedCheckbox);
-						$.fn.dataTable.ext.search.push(function(settings, searchData, index, rowData, counter) {
-							if (hideUnselected) {
-								return selection[rowData[0]] || partialSelectedRows.indexOf(rowData[0]) > -1;
-							}
-							return true;
-						});
 						if (knimeService.isInteractivityAvailable()) {
 							knimeService.addMenuDivider();
 						}
@@ -425,7 +426,7 @@ knime_paged_table = function() {
 							selectAllCheckbox.indeterminate = true;
 							_value.selectAllIndeterminate = true;
 						}
-						if (hideUnselected) {
+						if (_value.hideUnselected) {
 							dataTable.draw('full-hold');
 						}
 						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
@@ -577,7 +578,7 @@ knime_paged_table = function() {
 			}
 		});
 		_value.selectAll = all ? true : false;
-		if (hideUnselected) {
+		if (_value.hideUnselected) {
 			dataTable.draw();
 		}
 		publishCurrentSelection();
@@ -645,8 +646,11 @@ knime_paged_table = function() {
 		});
 		_value.selectAllIndeterminate = false;
 		_value.selectAll = false;
-		$('#checkbox-select-all').get(0).checked = false;
-		if (hideUnselected) {
+		var selectAllCheckbox = $('#checkbox-select-all').get(0);
+		if (selectAllCheckbox) {
+			selectAllCheckbox.checked = false;
+		}
+		if (_value.hideUnselected) {
 			dataTable.draw();
 		}
 	}
@@ -721,10 +725,6 @@ knime_paged_table = function() {
 			if (!filtered) {
 				_value.columnFilterStrings = null;
 			}
-		}
-		var hideUnselected = document.getElementById('showSelectedOnlyCheckbox');
-		if (hideUnselected) {
-			_value.hideUnselected = hideUnselected.checked;
 		}
 		var selSub = document.getElementById('subscribeSelectionCheckbox');
 		if (selSub) {
