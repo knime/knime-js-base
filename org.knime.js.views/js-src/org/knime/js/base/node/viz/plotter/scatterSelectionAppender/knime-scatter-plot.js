@@ -359,7 +359,7 @@ knime_scatter_plot_selection_appender = function() {
 		plot.setDataset(dataset, false);
 		dataset.selections = oldSelections;				
 		if (_value.xColumn) {
-			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
+			var dateProp = _keyedDataset.getColumnProperty(_value.xColumn, "date");
 			if (dateProp) {
 				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
 			} else {
@@ -1103,6 +1103,9 @@ knime_scatter_plot_selection_appender = function() {
 
 	    // special handling for 'symbols' property
 	    var xsymbols = dataset.getColumnProperty(xcol, "symbols");
+	    /*if (!xsymbols) {
+	    	xsymbols = dataset.getColumnProperty(xcol, "date");
+	    }*/
 	    if (xsymbols) {
 	        result.setProperty("x-symbols", xsymbols);
 	    }
