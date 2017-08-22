@@ -240,6 +240,14 @@ knime_scatter_plot_selection_appender = function() {
 				plot.getXAxis().setTickLabelFormatOverride(null);
 			}
 		}
+        if (_value.yColumn) {
+			var dateProp = _keyedDataset.getColumnProperty(_value.yColumn, "date");
+			if (dateProp) {
+				plot.getYAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
+			} else {
+				plot.getYAxis().setTickLabelFormatOverride(null, false);
+			}
+		}
         
         plot.renderer = new jsfc.ScatterRenderer(plot);
         var chart = new jsfc.Chart(plot);
@@ -364,6 +372,14 @@ knime_scatter_plot_selection_appender = function() {
 				plot.getXAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
 			} else {
 				plot.getXAxis().setTickLabelFormatOverride(null, false);
+			}
+		}
+		if (_value.yColumn) {
+			var dateProp = _keyedDataset.getColumnProperty(_value.yColumn, "date");
+			if (dateProp) {
+				plot.getYAxis().setTickLabelFormatOverride(createDateFormatter(dateProp), false);
+			} else {
+				plot.getYAxis().setTickLabelFormatOverride(null, false);
 			}
 		}
 		if (_representation.autoRangeAxes) {
@@ -1103,9 +1119,6 @@ knime_scatter_plot_selection_appender = function() {
 
 	    // special handling for 'symbols' property
 	    var xsymbols = dataset.getColumnProperty(xcol, "symbols");
-	    /*if (!xsymbols) {
-	    	xsymbols = dataset.getColumnProperty(xcol, "date");
-	    }*/
 	    if (xsymbols) {
 	        result.setProperty("x-symbols", xsymbols);
 	    }
