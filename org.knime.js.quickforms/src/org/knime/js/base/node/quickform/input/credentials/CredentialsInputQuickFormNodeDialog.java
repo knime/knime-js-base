@@ -50,6 +50,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
@@ -71,6 +73,7 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
     private final JCheckBox m_promptUsernameChecker;
     private final JCheckBox m_savePasswordChecker;
     private final JCheckBox m_useServerLoginChecker;
+    private final JCheckBox m_noDisplayChecker;
 
     /** Constructors, inits fields calls layout routines. */
     CredentialsInputQuickFormNodeDialog() {
@@ -79,6 +82,13 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_promptUsernameChecker = new JCheckBox("Prompt user name in wrapped metanode dialog/wizard");
         m_savePasswordChecker = new JCheckBox("Save password in configuration (weakly encrypted)");
         m_useServerLoginChecker = new JCheckBox("Use KNIME Server Login (when run on server)");
+        m_noDisplayChecker = new JCheckBox("Don't render input fields");
+        m_useServerLoginChecker.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                m_noDisplayChecker.setEnabled(m_useServerLoginChecker.isSelected());
+            }
+        });
         createAndAddTab();
     }
 
@@ -92,6 +102,7 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
         addPairToPanel(" ", m_promptUsernameChecker, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_savePasswordChecker, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_useServerLoginChecker, panelWithGBLayout, gbc);
+        addPairToPanel(" ", m_noDisplayChecker, panelWithGBLayout, gbc);
     }
 
     /**
@@ -109,6 +120,8 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
         m_savePasswordChecker.setSelected(defaultValue.isSavePassword());
         m_promptUsernameChecker.setSelected(config.isPromptUsername());
         m_useServerLoginChecker.setSelected(config.isUseServerLoginCredentials());
+        m_noDisplayChecker.setSelected(config.getNoDisplay());
+        m_noDisplayChecker.setEnabled(m_useServerLoginChecker.isSelected());
     }
 
     /**
@@ -119,6 +132,7 @@ public class CredentialsInputQuickFormNodeDialog extends QuickFormNodeDialog {
         CredentialsInputQuickFormConfig config = new CredentialsInputQuickFormConfig();
         config.setPromptUsername(m_promptUsernameChecker.isSelected());
         config.setUseServerLoginCredentials(m_useServerLoginChecker.isSelected());
+        config.setNoDisplay(m_useServerLoginChecker.isSelected() && m_noDisplayChecker.isSelected());
         final CredentialsInputQuickFormValue defaultValue = config.getDefaultValue();
         defaultValue.setUsername(m_usernameField.getText());
         defaultValue.setPassword(new String(m_passwordField.getPassword()));

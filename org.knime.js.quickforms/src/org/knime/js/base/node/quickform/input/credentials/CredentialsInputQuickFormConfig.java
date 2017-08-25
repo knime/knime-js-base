@@ -66,14 +66,17 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
     private static final String CFG_ERROR_MESSAGE = "error_message";
     private static final String CFG_PROMPT_USER = "prompt_username";
     private static final String CFG_USE_SERVER_LOGIN = "use_server_login";
+    private static final String CFG_NO_DISPLAY = "no_display";
 
     private static final String DEFAULT_ERROR_MESSAGE = "";
     private static final boolean DEFAULT_PROMPT_USER = true;
     private static final boolean DEFAULT_USE_SERVER_LOGIN_CREDENTIALS = false;
+    private static final boolean DEFAULT_NO_DISPLAY = false;
 
+    private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
     private boolean m_promptUsername = DEFAULT_PROMPT_USER;
     private boolean m_useServerLoginCredentials = DEFAULT_USE_SERVER_LOGIN_CREDENTIALS;
-    private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
+    private boolean m_noDisplay = DEFAULT_NO_DISPLAY;
 
     /** @return the errorMessage */
     String getErrorMessage() {
@@ -106,6 +109,20 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
     }
 
     /**
+     * @return the noDisplay
+     */
+    public boolean getNoDisplay() {
+        return m_noDisplay;
+    }
+
+    /**
+     * @param noDisplay the noDisplay to set
+     */
+    public void setNoDisplay(final boolean noDisplay) {
+        m_noDisplay = noDisplay;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -113,6 +130,10 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
         settings.addString(CFG_ERROR_MESSAGE, m_errorMessage);
         settings.addBoolean(CFG_PROMPT_USER, m_promptUsername);
         settings.addBoolean(CFG_USE_SERVER_LOGIN, m_useServerLoginCredentials);
+
+        //added with 3.4
+        settings.addBoolean(CFG_NO_DISPLAY, m_noDisplay);
+
         super.saveSettings(settings);
     }
 
@@ -124,6 +145,10 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE);
         m_promptUsername = settings.getBoolean(CFG_PROMPT_USER);
         m_useServerLoginCredentials = settings.getBoolean(CFG_USE_SERVER_LOGIN);
+
+        //added with 3.4
+        m_noDisplay = settings.getBoolean(CFG_NO_DISPLAY, DEFAULT_NO_DISPLAY);
+
         super.loadSettings(settings);
     }
 
@@ -135,6 +160,10 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
         m_errorMessage = settings.getString(CFG_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE);
         m_promptUsername = settings.getBoolean(CFG_PROMPT_USER, DEFAULT_PROMPT_USER);
         m_useServerLoginCredentials = settings.getBoolean(CFG_USE_SERVER_LOGIN, DEFAULT_USE_SERVER_LOGIN_CREDENTIALS);
+
+        //added with 3.4
+        m_noDisplay = settings.getBoolean(CFG_NO_DISPLAY, DEFAULT_NO_DISPLAY);
+
         super.loadSettingsInDialog(settings);
     }
 
@@ -150,6 +179,7 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
         return new ToStringBuilder(this).appendSuper(super.toString())
                 .append(CFG_PROMPT_USER, m_promptUsername)
                 .append(CFG_USE_SERVER_LOGIN, m_useServerLoginCredentials)
+                .append(CFG_NO_DISPLAY, m_noDisplay)
                 .append(CFG_ERROR_MESSAGE, m_errorMessage).toString();
     }
 
@@ -160,6 +190,7 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
                 .append(m_promptUsername)
                 .append(m_useServerLoginCredentials)
                 .append(m_errorMessage)
+                .append(m_noDisplay)
                 .toHashCode();
     }
 
@@ -180,6 +211,7 @@ public class CredentialsInputQuickFormConfig extends QuickFormFlowVariableConfig
                 .append(m_promptUsername, other.m_promptUsername)
                 .append(m_useServerLoginCredentials, other.m_useServerLoginCredentials)
                 .append(m_errorMessage, other.m_errorMessage)
+                .append(m_noDisplay, other.m_noDisplay)
                 .isEquals();
     }
 

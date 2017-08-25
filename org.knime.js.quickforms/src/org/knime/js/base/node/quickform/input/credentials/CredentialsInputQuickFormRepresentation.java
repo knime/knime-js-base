@@ -67,6 +67,7 @@ public class CredentialsInputQuickFormRepresentation extends
     private final boolean m_promptUsername;
     private final boolean m_useServerLoginCredentials;
     private final String m_errorMessage;
+    private final boolean m_noDisplay;
 
     /**
      * @param currentValue The value currently used by the node
@@ -78,6 +79,7 @@ public class CredentialsInputQuickFormRepresentation extends
         m_promptUsername = config.isPromptUsername();
         m_useServerLoginCredentials = config.isUseServerLoginCredentials();
         m_errorMessage = config.getErrorMessage();
+        m_noDisplay = config.getNoDisplay();
     }
 
 
@@ -97,6 +99,12 @@ public class CredentialsInputQuickFormRepresentation extends
     @JsonProperty("useServerLoginCredentials")
     boolean isUseServerLoginCredentials() {
         return m_useServerLoginCredentials;
+    }
+
+    /** @return the noDisplay */
+    @JsonProperty("noDisplay")
+    public boolean isNoDisplay() {
+        return m_noDisplay;
     }
 
     /** {@inheritDoc} */
@@ -119,6 +127,8 @@ public class CredentialsInputQuickFormRepresentation extends
         sb.append(m_promptUsername);
         sb.append(", useServerLoginCredentials=");
         sb.append(m_useServerLoginCredentials);
+        sb.append(", noDisplay=");
+        sb.append(m_noDisplay);
         sb.append(", errorMessage=");
         sb.append(m_errorMessage);
         return sb.toString();
@@ -132,6 +142,7 @@ public class CredentialsInputQuickFormRepresentation extends
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_promptUsername)
                 .append(m_useServerLoginCredentials)
+                .append(m_noDisplay)
                 .append(m_errorMessage)
                 .toHashCode();
     }
@@ -154,6 +165,7 @@ public class CredentialsInputQuickFormRepresentation extends
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_promptUsername, other.m_promptUsername)
                 .append(m_useServerLoginCredentials, other.m_useServerLoginCredentials)
+                .append(m_noDisplay, other.m_noDisplay)
                 .append(m_errorMessage, other.m_errorMessage)
                 .isEquals();
     }
