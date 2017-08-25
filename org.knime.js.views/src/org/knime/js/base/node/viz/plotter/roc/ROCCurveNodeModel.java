@@ -179,6 +179,14 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final ROCCurveViewValue viewContent) {
         synchronized (getLock()) {
             // validate value, nothing to do atm

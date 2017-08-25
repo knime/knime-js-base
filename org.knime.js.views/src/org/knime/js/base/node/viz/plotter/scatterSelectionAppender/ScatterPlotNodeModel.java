@@ -241,6 +241,14 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final ScatterPlotViewValue viewContent) {
         synchronized (getLock()) {
             // validate value, nothing to do atm

@@ -334,6 +334,14 @@ public class RangeSliderFilterNodeModel
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final RangeSliderFilterValue viewContent) {
         // nothing to do
         return null;

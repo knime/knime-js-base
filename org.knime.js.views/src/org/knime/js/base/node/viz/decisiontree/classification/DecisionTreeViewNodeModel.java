@@ -147,6 +147,14 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final DecisionTreeViewValue viewContent) {
         // nothing to do atm
         return null;

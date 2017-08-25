@@ -410,6 +410,15 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return m_config.getHideInWizard();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @since 3.5
+	 */
+	@Override
+	public void setHideInWizard(final boolean hide) {
+	    m_config.setHideInWizard(hide);
+	}
+
 	@Override
 	public ValidationError validateViewValue(final DynamicJSViewValue value) {
 		//TODO: validate options, flow variables, tables and maps

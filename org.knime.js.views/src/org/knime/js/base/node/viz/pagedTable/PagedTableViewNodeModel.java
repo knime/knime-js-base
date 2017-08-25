@@ -209,6 +209,14 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final PagedTableViewValue value) {
         // no validation done here
         return null;

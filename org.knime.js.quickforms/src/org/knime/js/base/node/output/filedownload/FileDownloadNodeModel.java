@@ -175,6 +175,14 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_config.saveSettings(settings);
     }

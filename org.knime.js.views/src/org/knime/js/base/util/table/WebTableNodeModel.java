@@ -366,6 +366,14 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void setHideInWizard(final boolean hide) {
+        m_hideInWizard.setBooleanValue(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public REP createEmptyViewRepresentation() {

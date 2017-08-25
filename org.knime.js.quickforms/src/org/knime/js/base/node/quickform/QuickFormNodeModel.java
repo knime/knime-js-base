@@ -334,8 +334,24 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
      * {@inheritDoc}
      */
     @Override
+    public void setHideInDialog(final boolean hide) {
+        m_config.setHideInDialog(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isHideInWizard() {
         return m_config.getHideInWizard();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
     }
 
     /**

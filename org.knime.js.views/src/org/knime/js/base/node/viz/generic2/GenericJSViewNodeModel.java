@@ -280,6 +280,14 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      * {@inheritDoc}
      */
     @Override
+    public void setHideInWizard(final boolean hide) {
+        m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
         // TODO Auto-generated method stub
 
