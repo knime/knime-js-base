@@ -50,9 +50,11 @@ package org.knime.js.base.node.quickform.input.fileupload;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -267,8 +269,12 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     @Override
     public void setInputData(final ExternalNodeData inputData) {
         FileUploadQuickFormValue val = createEmptyDialogValue();
-        val.setPath(inputData.getResource().getPath());
-        setDialogValue(val);
+        try {
+            val.setPath(URLDecoder.decode(inputData.getResource().getPath(), "UTF-8"));
+            setDialogValue(val);
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex); // doesn't happen
+        }
     }
 
     /**
