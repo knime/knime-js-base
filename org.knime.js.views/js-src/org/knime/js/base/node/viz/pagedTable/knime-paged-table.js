@@ -431,10 +431,8 @@ knime_paged_table = function() {
 						}
 						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
 							if (this.checked) {
-								knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
-							} else {
-								knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
-							} 
+								knimeService.setSelectedRows(_representation.table.id, [this.value], selectionChanged);
+							}
 						}
 					});
 				} else {
