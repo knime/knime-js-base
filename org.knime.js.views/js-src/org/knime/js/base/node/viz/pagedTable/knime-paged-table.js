@@ -99,26 +99,41 @@ knime_paged_table = function() {
 			var colArray = [];
 			var colDefs = [];
 			if (_representation.enableSelection) {
-				var all = _value.selectAll;
-				colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox"' + (all ? ' checked' : '')  + ' />'})
-				colDefs.push({
-					'targets': 0,
-					'searchable':false,
-					'orderable':false,
-					'className': 'dt-body-center',
-					'render': function (data, type, full, meta) {
-						//var selected = selection[data] ? !all : all;
-						setTimeout(function(){
-							var el = $('#checkbox-select-all').get(0);
-							/*if (all && selection[data] && el && ('indeterminate' in el)) {
-								el.indeterminate = true;
-							}*/
-						}, 0);
-						return '<input type="checkbox" name="id[]"'
+				if (_representation.singleSelection) {
+					colArray.push({'title': '<button type="button" id="clear-selection-button" class="btn btn-default btn-xs" title="Clear selection"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>'});
+					colDefs.push({
+						'targets': 0,
+						'searchable':false,
+						'orderable':false,
+						'className': 'dt-body-center selection-cell',
+						'render': function (data, type, full, meta) {
+							return '<input type="radio" name="radio_single_select"'
 							+ (selection[data] ? ' checked' : '')
 							+' value="' + $('<div/>').text(data).html() + '">';
-					}
-				});
+						}
+					});
+				} else {
+					var all = _value.selectAll;
+					colArray.push({'title': '<input name="select_all" value="1" id="checkbox-select-all" type="checkbox"' + (all ? ' checked' : '')  + ' />'});
+					colDefs.push({
+						'targets': 0,
+						'searchable':false,
+						'orderable':false,
+						'className': 'dt-body-center selection-cell',
+						'render': function (data, type, full, meta) {
+							//var selected = selection[data] ? !all : all;
+							setTimeout(function(){
+								var el = $('#checkbox-select-all').get(0);
+								/*if (all && selection[data] && el && ('indeterminate' in el)) {
+								el.indeterminate = true;
+							}*/
+							}, 0);
+							return '<input type="checkbox" name="id[]"'
+							+ (selection[data] ? ' checked' : '')
+							+' value="' + $('<div/>').text(data).html() + '">';
+						}
+					});
+				}
 			}
 			if (_representation.displayRowIndex) {
 				colArray.push({
@@ -307,7 +322,7 @@ knime_paged_table = function() {
 						}
 						return true;
 					});
-					if (_representation.enableHideUnselected) {
+					if (_representation.enableHideUnselected && !_representation.singleSelection) {
 						var hideUnselectedCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.hideUnselected, function() {
 							var prev = _value.hideUnselected;
 							_value.hideUnselected = this.checked;
@@ -338,17 +353,19 @@ knime_paged_table = function() {
 						if (_value.publishSelection && selection && Object.keys(selection).length > 0) {
 							publishCurrentSelection();
 						}
-						var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
-						var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
-							if (this.checked) {
+						if (!_representation.singleSelection) {
+							var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+							var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
+								if (this.checked) {
+									knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
+								} else {
+									knimeService.unsubscribeSelection(_representation.table.id, selectionChanged);
+								}
+							});
+							knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
+							if (_value.subscribeSelection) {
 								knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
-							} else {
-								knimeService.unsubscribeSelection(_representation.table.id, selectionChanged);
 							}
-						});
-						knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
-						if (_value.subscribeSelection) {
-							knimeService.subscribeToSelection(_representation.table.id, selectionChanged);
 						}
 					}
 					if (_representation.subscriptionFilterIds && _representation.subscriptionFilterIds.length > 0) {
@@ -391,49 +408,80 @@ knime_paged_table = function() {
 			}
 			
 			if (_representation.enableSelection) {
-				// Handle click on "Select all" control
-				var selectAllCheckbox = $('#checkbox-select-all').get(0);
-				if (selectAllCheckbox) {
-					if (selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)) {
-						selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
+				if (_representation.singleSelection) {
+					// Handle click on clear selection button
+					var clearSelectionButton = $('#clear-selection-button').get(0);
+					if (clearSelectionButton) {
+						clearSelectionButton.addEventListener('click', function() {
+							selectAll(false);
+						});
 					}
-					selectAllCheckbox.addEventListener('click', function() {
-						selectAll(this.checked);
+					// Handle click on radio button to set selection and publish event
+					$('#knimePagedTable tbody').on('change', 'input[type="radio"]', function() {
+						selection[this.value] = this.checked;
+						if (this.checked && allCheckboxes) {
+							// manually clear selection of other radio buttons, 
+							// because groups don't carry over multiple pages
+							var selectedRadio = this;
+							allCheckboxes.each(function() {
+								if (this !== selectedRadio) {
+									this.checked = false;
+								}
+							});
+						}
+						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+							if (this.checked) {
+								knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
+							} else {
+								knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
+							} 
+						}
+					});
+				} else {
+					// Handle click on "Select all" control
+					var selectAllCheckbox = $('#checkbox-select-all').get(0);
+					if (selectAllCheckbox) {
+						if (selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)) {
+							selectAllCheckbox.indeterminate = _value.selectAllIndeterminate;
+						}
+						selectAllCheckbox.addEventListener('click', function() {
+							selectAll(this.checked);
+						});
+					}
+
+					// Handle click on checkbox to set state of "Select all" control
+					$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
+						//var el = $('#checkbox-select-all').get(0);
+						//var selected = el.checked ? !this.checked : this.checked;
+						// we could call delete _value.selection[this.value], but the call is very slow 
+						// and we can assume that a user doesn't click on a lot of checkboxes
+						selection[this.value] = this.checked;
+						// in either case the row is not partially selected
+						var partialIndex = partialSelectedRows.indexOf(this.value);
+						if (partialIndex > -1) {
+							partialSelectedRows.splice(partialIndex, 1);
+						}
+
+						if (this.checked) {
+							if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+								knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
+							}
+						} else {
+							// If "Select all" control is checked and has 'indeterminate' property
+							if(selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)){
+								// Set visual state of "Select all" control as 'indeterminate'
+								selectAllCheckbox.indeterminate = true;
+								_value.selectAllIndeterminate = true;
+							}
+							if (_value.hideUnselected) {
+								dataTable.draw('full-hold');
+							}
+							if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
+								knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
+							}
+						}
 					});
 				}
-
-				// Handle click on checkbox to set state of "Select all" control
-				$('#knimePagedTable tbody').on('change', 'input[type="checkbox"]', function() {
-					//var el = $('#checkbox-select-all').get(0);
-					//var selected = el.checked ? !this.checked : this.checked;
-					// we could call delete _value.selection[this.value], but the call is very slow 
-					// and we can assume that a user doesn't click on a lot of checkboxes
-					selection[this.value] = this.checked;
-					// in either case the row is not partially selected
-					var partialIndex = partialSelectedRows.indexOf(this.value);
-					if (partialIndex > -1) {
-						partialSelectedRows.splice(partialIndex, 1);
-					}
-					
-					if (this.checked) {
-						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
-							knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
-						}
-					} else {
-						// If "Select all" control is checked and has 'indeterminate' property
-						if(selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)){
-							// Set visual state of "Select all" control as 'indeterminate'
-							selectAllCheckbox.indeterminate = true;
-							_value.selectAllIndeterminate = true;
-						}
-						if (_value.hideUnselected) {
-							dataTable.draw('full-hold');
-						}
-						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
-							knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
-						}
-					}
-				});
 			}
 			
 			if (_representation.enableColumnSearching) {
@@ -550,7 +598,11 @@ knime_paged_table = function() {
 	}
 	
 	finishInit = function() {
-		allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
+		if (_representation.singleSelection) {
+			allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="radio"]');
+		} else {
+			allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
+		}
 		initialized = true;
 	}
 	

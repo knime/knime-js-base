@@ -133,6 +133,10 @@ public class PagedTableViewConfig {
     final static boolean DEFAULT_ENABLE_SELECTION = false;
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
 
+    final static String CFG_SINGLE_SELECTION = "singleSelection";
+    final static boolean DEFAULT_SINGLE_SELECTION = false;
+    private boolean m_singleSelection = DEFAULT_SINGLE_SELECTION;
+
     final static String CFG_PUBLISH_SELECTION = "publishSelection";
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
     private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
@@ -448,6 +452,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the singleSelection
+     */
+    public boolean getSingleSelection() {
+        return m_singleSelection;
+    }
+
+    /**
+     * @param singleSelection the singleSelection to set
+     */
+    public void setSingleSelection(final boolean singleSelection) {
+        m_singleSelection = singleSelection;
+    }
+
+    /**
      * @return the selectionColumnName
      */
     public String getSelectionColumnName() {
@@ -699,6 +717,9 @@ public class PagedTableViewConfig {
         settings.addBoolean(CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
         m_dateTimeFormats.saveSettingsTo(settings);
         settings.addBoolean(CFG_HIDE_UNSELECTED, m_hideUnselected);
+
+        //added with 3.5
+        settings.addBoolean(CFG_SINGLE_SELECTION, m_singleSelection);
     }
 
     /** Loads parameters in NodeModel.
@@ -749,6 +770,9 @@ public class PagedTableViewConfig {
             m_dateTimeFormats.getGlobalDateTimeFormatModel().setStringValue(legacyDateTimeFormat);
         }
         m_hideUnselected = settings.getBoolean(CFG_HIDE_UNSELECTED, DEFAULT_HIDE_UNSELECTED);
+
+        //added with 3.5
+        m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
     }
 
     /** Loads parameters in Dialog.
@@ -804,6 +828,9 @@ public class PagedTableViewConfig {
             }
         }
         m_hideUnselected = settings.getBoolean(CFG_HIDE_UNSELECTED, DEFAULT_HIDE_UNSELECTED);
+
+        //added with 3.5
+        m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
     }
 
 }

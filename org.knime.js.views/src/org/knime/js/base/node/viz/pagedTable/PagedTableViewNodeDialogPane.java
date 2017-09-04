@@ -53,9 +53,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -99,6 +101,8 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JTextField m_subtitleField;
     private final DataColumnSpecFilterPanel m_columnFilterPanel;
     private final JCheckBox m_enableSelectionCheckbox;
+    private final JRadioButton m_singleSelectionRadioButton;
+    private final JRadioButton m_multipleSelectionRadioButton;
     private final JTextField m_selectionColumnNameField;
     private final JCheckBox m_publishSelectionCheckBox;
     private final JCheckBox m_subscribeSelectionCheckBox;
@@ -154,6 +158,18 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel = new DataColumnSpecFilterPanel();
         m_enableSelectionCheckbox = new JCheckBox("Enable selection");
         m_enableSelectionCheckbox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                enableSelectionFields();
+            }
+        });
+        m_singleSelectionRadioButton = new JRadioButton("Single Selection");
+        m_multipleSelectionRadioButton = new JRadioButton("Multiple Selection");
+        ButtonGroup selectionGroup = new ButtonGroup();
+        selectionGroup.add(m_singleSelectionRadioButton);
+        selectionGroup.add(m_multipleSelectionRadioButton);
+        m_multipleSelectionRadioButton.setSelected(true);
+        m_singleSelectionRadioButton.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 enableSelectionFields();
@@ -304,6 +320,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         selectionPanel.add(m_enableSelectionCheckbox, gbcS);
         gbcS.gridwidth = 1;
         gbcS.gridy++;
+        selectionPanel.add(m_singleSelectionRadioButton, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_multipleSelectionRadioButton, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
         selectionPanel.add(m_hideUnselectedCheckbox, gbcS);
         gbcS.gridx++;
         selectionPanel.add(m_enableHideUnselectedCheckbox, gbcS);
@@ -427,6 +448,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_subtitleField.setText(config.getSubtitle());
         m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(config.getEnableSelection());
+        boolean single = config.getSingleSelection();
+        m_singleSelectionRadioButton.setSelected(single);
+        m_multipleSelectionRadioButton.setSelected(!single);
         m_selectionColumnNameField.setText(config.getSelectionColumnName());
         m_hideUnselectedCheckbox.setSelected(config.getHideUnselected());
         m_enableHideUnselectedCheckbox.setSelected(config.getEnableHideUnselected());
@@ -477,6 +501,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel.saveConfiguration(filterConfig);
         config.setColumnFilterConfig(filterConfig);
         config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
+        config.setSingleSelection(m_singleSelectionRadioButton.isSelected());
         config.setSelectionColumnName(m_selectionColumnNameField.getText());
         config.setHideUnselected(m_hideUnselectedCheckbox.isSelected());
         config.setEnableHideUnselected(m_enableHideUnselectedCheckbox.isSelected());
@@ -533,11 +558,15 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
 
     private void enableSelectionFields() {
         boolean enable = m_enableSelectionCheckbox.isSelected();
-        m_selectionColumnNameField.setEnabled(enable);
-        m_hideUnselectedCheckbox.setEnabled(enable);
-        m_enableHideUnselectedCheckbox.setEnabled(enable);
+        boolean single = m_singleSelectionRadioButton.isSelected();
+
+        m_singleSelectionRadioButton.setEnabled(enable);
+        m_multipleSelectionRadioButton.setEnabled(enable);
+        m_hideUnselectedCheckbox.setEnabled(enable && !single);
+        m_enableHideUnselectedCheckbox.setEnabled(enable && !single);
         m_publishSelectionCheckBox.setEnabled(enable);
-        m_subscribeSelectionCheckBox.setEnabled(enable);
+        m_subscribeSelectionCheckBox.setEnabled(enable && !single);
+        m_selectionColumnNameField.setEnabled(enable);
     }
 
     private void enableSearchFields() {

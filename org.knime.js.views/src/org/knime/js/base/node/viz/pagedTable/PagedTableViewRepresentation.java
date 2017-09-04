@@ -85,6 +85,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private String m_title;
     private String m_subtitle;
     private boolean m_enableSelection;
+    private boolean m_singleSelection;
     private boolean m_enableSearching;
     private boolean m_enableColumnSearching;
     private boolean m_enableHideUnselected;
@@ -337,6 +338,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the singleSelection
+     */
+    public boolean getSingleSelection() {
+        return m_singleSelection;
+    }
+
+    /**
+     * @param singleSelection the singleSelection to set
+     */
+    public void setSingleSelection(final boolean singleSelection) {
+        m_singleSelection = singleSelection;
+    }
+
+    /**
      * @return the enableSearching
      */
     public boolean getEnableSearching() {
@@ -527,6 +542,9 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         //added with 3.4
         settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
         m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
+
+        //added with 3.5
+        settings.addBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, m_singleSelection);
     }
 
     /**
@@ -568,6 +586,9 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         if (settings.containsKey(PagedTableViewConfig.CFG_DATE_TIME_FORMATS)) {
             m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
         }
+
+        //added with 3.5
+        m_singleSelection = settings.getBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, PagedTableViewConfig.DEFAULT_SINGLE_SELECTION);
     }
 
     /**
@@ -602,6 +623,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_title, other.m_title)
                 .append(m_subtitle, other.m_subtitle)
                 .append(m_enableSelection, other.m_enableSelection)
+                .append(m_singleSelection, other.m_singleSelection)
                 .append(m_enableSearching, other.m_enableSearching)
                 .append(m_enableColumnSearching, other.m_enableColumnSearching)
                 .append(m_enableHideUnselected, other.m_enableHideUnselected)
@@ -638,6 +660,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_title)
                 .append(m_subtitle)
                 .append(m_enableSelection)
+                .append(m_singleSelection)
                 .append(m_enableSearching)
                 .append(m_enableColumnSearching)
                 .append(m_enableHideUnselected)

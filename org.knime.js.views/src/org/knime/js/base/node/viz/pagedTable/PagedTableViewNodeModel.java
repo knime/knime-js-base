@@ -331,7 +331,10 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             //added with 3.4
             viewRepresentation.setDisplayMissingValueAsQuestionMark(m_config.getDisplayMissingValueAsQuestionMark());
             viewRepresentation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
-            viewValue.setHideUnselected(m_config.getHideUnselected());
+            viewValue.setHideUnselected(m_config.getHideUnselected() && !m_config.getSingleSelection());
+
+            //added with 3.5
+            viewRepresentation.setSingleSelection(m_config.getSingleSelection());
         }
     }
 

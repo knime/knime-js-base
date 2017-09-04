@@ -136,3 +136,22 @@ h2 {
 #knimePagedTable td .missing-value-cell {
 	color: #d9534f;
 }
+
+#knimePagedTable #checkbox-select-all,
+#knimePagedTable #clear-selection-button,
+#knimePagedTable td.selection-cell input[type=checkbox], 
+#knimePagedTable td.selection-cell input[type=radio] {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#knimePagedTable #clear-selection-button {
+	border: none;
+    font-size: 14px;
+}
+
+#knimePagedTable #clear-selection-button span.glyphicon{
+    display: block;
+    padding-bottom: 3px;
+}
