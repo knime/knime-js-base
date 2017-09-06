@@ -320,9 +320,9 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         selectionPanel.add(m_enableSelectionCheckbox, gbcS);
         gbcS.gridwidth = 1;
         gbcS.gridy++;
-        selectionPanel.add(m_singleSelectionRadioButton, gbcS);
-        gbcS.gridx++;
         selectionPanel.add(m_multipleSelectionRadioButton, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_singleSelectionRadioButton, gbcS);
         gbcS.gridx = 0;
         gbcS.gridy++;
         selectionPanel.add(m_hideUnselectedCheckbox, gbcS);

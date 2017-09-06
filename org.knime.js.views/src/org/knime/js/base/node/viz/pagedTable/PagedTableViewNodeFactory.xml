@@ -63,7 +63,7 @@
         	<option name="Enable selection">
         		If checked a separate column containing checkboxes is rendered in the view. The selection, when applied, will be represented in the output table as a new boolean column.
         	</option>
-        	<option name="Single selection / Multiple selection">
+        	<option name="Multiple selection / Single selection">
         		Option to choose between different modes of selection. In 'single selection' radio buttons are rendered in front of each row to allow for one row being selected. 
         		In 'multiple selection' mode check boxes are rendered to allow for multiple selected rows. Only in this mode can the table also subscribe to selection events, which are 
         		created by other views and the 'show selected rows only' option be used.
