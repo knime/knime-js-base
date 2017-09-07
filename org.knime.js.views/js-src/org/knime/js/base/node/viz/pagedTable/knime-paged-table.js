@@ -7,7 +7,7 @@ knime_paged_table = function() {
 	var dataTable = null;
 	var selection = {};
 	var partialSelectedRows = [];
-	var allCheckboxes = [];
+	//var allCheckboxes = [];
 	var currentFilter = null;
 	var initialized = false;
 	
@@ -100,7 +100,11 @@ knime_paged_table = function() {
 			var colDefs = [];
 			if (_representation.enableSelection) {
 				if (_representation.singleSelection) {
-					colArray.push({'title': '<button type="button" id="clear-selection-button" class="btn btn-default btn-xs" title="Clear selection"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>'});
+					var titleElement = _representation.enableClearSelectionButton 
+						? ('<button type="button" id="clear-selection-button" class="btn btn-default btn-xs" title="Clear selection">' 
+							+ '<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>')
+						: '';
+					colArray.push({'title': titleElement});
 					colDefs.push({
 						'targets': 0,
 						'searchable':false,
@@ -418,17 +422,8 @@ knime_paged_table = function() {
 					}
 					// Handle click on radio button to set selection and publish event
 					$('#knimePagedTable tbody').on('change', 'input[type="radio"]', function() {
+						selection = {};
 						selection[this.value] = this.checked;
-						if (this.checked && allCheckboxes) {
-							// manually clear selection of other radio buttons, 
-							// because groups don't carry over multiple pages
-							var selectedRadio = this;
-							allCheckboxes.each(function() {
-								if (this !== selectedRadio) {
-									this.checked = false;
-								}
-							});
-						}
 						if (knimeService && knimeService.isInteractivityAvailable() && _value.publishSelection) {
 							if (this.checked) {
 								knimeService.setSelectedRows(_representation.table.id, [this.value], selectionChanged);
@@ -465,12 +460,6 @@ knime_paged_table = function() {
 								knimeService.addRowsToSelection(_representation.table.id, [this.value], selectionChanged);
 							}
 						} else {
-							// If "Select all" control is checked and has 'indeterminate' property
-							if(selectAllCheckbox && selectAllCheckbox.checked && ('indeterminate' in selectAllCheckbox)){
-								// Set visual state of "Select all" control as 'indeterminate'
-								selectAllCheckbox.indeterminate = true;
-								_value.selectAllIndeterminate = true;
-							}
 							if (_value.hideUnselected) {
 								dataTable.draw('full-hold');
 							}
@@ -478,8 +467,20 @@ knime_paged_table = function() {
 								knimeService.removeRowsFromSelection(_representation.table.id, [this.value], selectionChanged);
 							}
 						}
+						checkSelectAllState();
+					});
+					if (knimeService && _representation.enableClearSelectionButton) {
+						knimeService.addButton('pagedTableClearSelectionButton', 'minus-square-o', 'Clear Selection', function() {
+							selectAll(false, true);
+						});
+					}
+					dataTable.on('search.dt', function () {
+						checkSelectAllState();
 					});
 				}
+				dataTable.on('draw.dt', function () {
+					setSelectionOnPage();
+				});
 			}
 			
 			if (_representation.enableColumnSearching) {
@@ -596,15 +597,13 @@ knime_paged_table = function() {
 	}
 	
 	finishInit = function() {
-		if (_representation.singleSelection) {
-			allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="radio"]');
-		} else {
-			allCheckboxes = dataTable.column(0).nodes().to$().find('input[type="checkbox"]');
-		}
+		//Used to collect all checkboxes here, 
+		//but now keeping selection and checkbox state separate and applying checked state on every call of draw()
+		/*allCheckboxes = dataTable.column(0).nodes().to$().children();*/
 		initialized = true;
 	}
 	
-	selectAll = function(all) {
+	selectAll = function(all, ignoreSearch) {
 		// cannot select all rows before all data is loaded
 		if (!initialized) {
 			setTimeout(function() {
@@ -612,26 +611,77 @@ knime_paged_table = function() {
 			}, 500);
 		}
 		
-		// Check/uncheck all checkboxes in the table
-		// TODO: select only rows with current filter applied (but not hideUnselected), search: applied takes both into account
-		//var rows = dataTable.rows({/* 'search': 'applied' */}).nodes();
-		selection = {};
-		partialSelectedRows = [];
-		_value.selectAllIndeterminate = false;
-		allCheckboxes.each(function() {
-			this.checked = all;
-			if ('indeterminate' in this && this.indeterminate) {
-				this.indeterminate = false;
+		if (ignoreSearch) {
+			selection = {};
+			partialSelectedRows = [];
+		}
+		if (all || !ignoreSearch) {
+			var selIndices = dataTable.column(0, { 'search': 'applied' }).data();
+			for (var i = 0; i < selIndices.length; i++) {
+				selection[selIndices[i]] = all;
+				var pIndex = partialSelectedRows.indexOf(selIndices[i]);
+				if (pIndex > -1) {
+					partialSelectedRows.splice(pIndex, 1);
+				}
 			}
-			if (all) {
-				selection[this.value] = true;
-			}
-		});
-		_value.selectAll = all ? true : false;
+		}
+		checkSelectAllState();
+		setSelectionOnPage();
+		
 		if (_value.hideUnselected) {
 			dataTable.draw();
 		}
 		publishCurrentSelection();
+	}
+	
+	checkSelectAllState = function() {
+		var selectAllCheckbox = $('#checkbox-select-all').get(0);
+		if (!selectAllCheckbox) { return; }
+		var someSelected = false;
+		var allSelected = true;
+		var selIndices = dataTable.column(0, { 'search': 'applied' }).data();
+		if (selIndices.length < 1) {
+			allSelected = false;
+		}
+		for (var i = 0; i < selIndices.length; i++) {
+			if (selection[selIndices[i]]) {
+				someSelected = true;
+			} else {
+				allSelected = false;
+			}
+			if (partialSelectedRows.indexOf(selIndices[i]) > -1) {
+				someSelected = true;
+				allSelected = false;
+			}
+			if (someSelected && !allSelected) {
+				break;
+			}
+		}
+		_value.selectAll = allSelected;
+	    selectAllCheckbox.checked = allSelected;
+	    selectAllCheckbox.disabled = (selIndices.length < 1);
+	    var indeterminate = someSelected && !allSelected;
+	    
+	    if('indeterminate' in selectAllCheckbox){
+			// Set visual state of "Select all" control as 'indeterminate'
+			selectAllCheckbox.indeterminate = indeterminate;
+		}
+	    _value.selectAllIndeterminate = indeterminate;
+	}
+	
+	setSelectionOnPage = function() {
+		var curCheckboxes = dataTable.column(0, {page:'current'}).nodes().to$().children();
+		for (var i = 0; i < curCheckboxes.length; i++) {
+			var checkbox = curCheckboxes[i];
+			checkbox.checked = selection[checkbox.value];
+			if ('indeterminate' in checkbox) {
+				if (!checkbox.checked && partialSelectedRows.indexOf(checkbox.value) > -1) {
+					checkbox.indeterminate = true;
+				} else {
+					checkbox.indeterminate = false;
+				}
+			}
+		}
 	}
 	
 	publishCurrentSelection = function() {
@@ -641,7 +691,9 @@ knime_paged_table = function() {
 				if (!selection.hasOwnProperty(rowKey)) {
 			        continue;
 			    }
-				selArray.push(rowKey);
+				if (selection[rowKey]) {
+					selArray.push(rowKey);
+				}
 			}
 			knimeService.setSelectedRows(_representation.table.id, selArray, selectionChanged);
 		}
@@ -655,20 +707,6 @@ knime_paged_table = function() {
 			}, 500);
 		}
 		
-		/*// clear current selection
-		selection = {};
-		// construct new selection object
-		if (data.elements) {
-			for (var elId = 0; elId < data.elements.length; elId++) {
-				var element = data.elements[elId];
-				if (!element.rows) {
-					continue;
-				}
-				for (var rId = 0; rId < element.rows.length; rId++) {
-					selection[element.rows[rId]] = true;
-				}
-			}
-		}*/
 		// apply changeSet
 		if (data.changeSet) {
 			if (data.changeSet.removed) {
@@ -683,23 +721,8 @@ knime_paged_table = function() {
 			}
 		}
 		partialSelectedRows = knimeService.getAllPartiallySelectedRows(_representation.table.id);
-		// set checked status on checkboxes
-		allCheckboxes.each(function() {
-			this.checked = selection[this.getAttribute('value')];
-			if ('indeterminate' in this) {
-				if (!this.checked && partialSelectedRows.indexOf(this.getAttribute('value')) > -1) {
-					this.indeterminate = true;
-				} else {
-					this.indeterminate = false;
-				}
-			}
-		});
-		_value.selectAllIndeterminate = false;
-		_value.selectAll = false;
-		var selectAllCheckbox = $('#checkbox-select-all').get(0);
-		if (selectAllCheckbox) {
-			selectAllCheckbox.checked = false;
-		}
+		checkSelectAllState();
+		setSelectionOnPage();
 		if (_value.hideUnselected) {
 			dataTable.draw();
 		}

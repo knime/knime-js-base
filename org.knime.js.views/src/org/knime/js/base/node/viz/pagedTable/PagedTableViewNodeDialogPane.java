@@ -101,6 +101,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JTextField m_subtitleField;
     private final DataColumnSpecFilterPanel m_columnFilterPanel;
     private final JCheckBox m_enableSelectionCheckbox;
+    private final JCheckBox m_enableClearSelectionButtonCheckbox;
     private final JRadioButton m_singleSelectionRadioButton;
     private final JRadioButton m_multipleSelectionRadioButton;
     private final JTextField m_selectionColumnNameField;
@@ -163,6 +164,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
                 enableSelectionFields();
             }
         });
+        m_enableClearSelectionButtonCheckbox = new JCheckBox("Enable 'Clear Selection' button");
         m_singleSelectionRadioButton = new JRadioButton("Single Selection");
         m_multipleSelectionRadioButton = new JRadioButton("Multiple Selection");
         ButtonGroup selectionGroup = new ButtonGroup();
@@ -316,9 +318,11 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBorder(new TitledBorder("Selection"));
         GridBagConstraints gbcS = createConfiguredGridBagConstraints();
-        gbcS.gridwidth = 2;
-        selectionPanel.add(m_enableSelectionCheckbox, gbcS);
         gbcS.gridwidth = 1;
+        selectionPanel.add(m_enableSelectionCheckbox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_enableClearSelectionButtonCheckbox, gbcS);
+        gbcS.gridx = 0;
         gbcS.gridy++;
         selectionPanel.add(m_multipleSelectionRadioButton, gbcS);
         gbcS.gridx++;
@@ -448,6 +452,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_subtitleField.setText(config.getSubtitle());
         m_columnFilterPanel.loadConfiguration(config.getColumnFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(config.getEnableSelection());
+        m_enableClearSelectionButtonCheckbox.setSelected(config.getEnableClearSelectionButton());
         boolean single = config.getSingleSelection();
         m_singleSelectionRadioButton.setSelected(single);
         m_multipleSelectionRadioButton.setSelected(!single);
@@ -501,6 +506,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel.saveConfiguration(filterConfig);
         config.setColumnFilterConfig(filterConfig);
         config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
+        config.setEnableClearSelectionButton(m_enableClearSelectionButtonCheckbox.isSelected());
         config.setSingleSelection(m_singleSelectionRadioButton.isSelected());
         config.setSelectionColumnName(m_selectionColumnNameField.getText());
         config.setHideUnselected(m_hideUnselectedCheckbox.isSelected());
@@ -560,6 +566,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         boolean enable = m_enableSelectionCheckbox.isSelected();
         boolean single = m_singleSelectionRadioButton.isSelected();
 
+        m_enableClearSelectionButtonCheckbox.setEnabled(enable);
         m_singleSelectionRadioButton.setEnabled(enable);
         m_multipleSelectionRadioButton.setEnabled(enable);
         m_hideUnselectedCheckbox.setEnabled(enable && !single);

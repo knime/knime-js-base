@@ -145,6 +145,10 @@ public class PagedTableViewConfig {
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
 
+    final static String CFG_ENABLE_CLEAR_SELECTION_BUTTON = "enableClearSelectionButton";
+    final static boolean DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON = true;
+    private boolean m_enableClearSelectionButton = DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON;
+
     final static String CFG_ENABLE_SEARCHING = "enableSearching";
     private final static boolean DEFAULT_ENABLE_SEARCHING = true;
     private boolean m_enableSearching = DEFAULT_ENABLE_SEARCHING;
@@ -536,6 +540,20 @@ public class PagedTableViewConfig {
     }
 
     /**
+     * @return the enableClearSelectionButton
+     */
+    public boolean getEnableClearSelectionButton() {
+        return m_enableClearSelectionButton;
+    }
+
+    /**
+     * @param enableClearSelectionButton the enableClearSelectionButton to set
+     */
+    public void setEnableClearSelectionButton(final boolean enableClearSelectionButton) {
+        m_enableClearSelectionButton = enableClearSelectionButton;
+    }
+
+    /**
      * @return the enableSearching
      */
     public boolean getEnableSearching() {
@@ -720,6 +738,7 @@ public class PagedTableViewConfig {
 
         //added with 3.5
         settings.addBoolean(CFG_SINGLE_SELECTION, m_singleSelection);
+        settings.addBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, m_enableClearSelectionButton);
     }
 
     /** Loads parameters in NodeModel.
@@ -773,6 +792,7 @@ public class PagedTableViewConfig {
 
         //added with 3.5
         m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
+        m_enableClearSelectionButton = settings.getBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
     }
 
     /** Loads parameters in Dialog.
@@ -831,6 +851,7 @@ public class PagedTableViewConfig {
 
         //added with 3.5
         m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
+        m_enableClearSelectionButton = settings.getBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
     }
 
 }

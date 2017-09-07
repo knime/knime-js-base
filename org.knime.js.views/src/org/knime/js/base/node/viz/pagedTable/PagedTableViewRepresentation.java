@@ -89,6 +89,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     private boolean m_enableSearching;
     private boolean m_enableColumnSearching;
     private boolean m_enableHideUnselected;
+    private boolean m_enableClearSelectionButton;
     private boolean m_enableSorting;
     private boolean m_enableClearSortButton;
     private JSONDateTimeOptions m_dateTimeFormats;
@@ -394,6 +395,20 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the enableClearSelectionButton
+     */
+    public boolean getEnableClearSelectionButton() {
+        return m_enableClearSelectionButton;
+    }
+
+    /**
+     * @param enableClearSelectionButton the enableClearSelectionButton to set
+     */
+    public void setEnableClearSelectionButton(final boolean enableClearSelectionButton) {
+        m_enableClearSelectionButton = enableClearSelectionButton;
+    }
+
+    /**
      * @return the enableSorting
      */
     public boolean getEnableSorting() {
@@ -545,6 +560,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
 
         //added with 3.5
         settings.addBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, m_singleSelection);
+        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, m_enableClearSelectionButton);
     }
 
     /**
@@ -589,6 +605,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
 
         //added with 3.5
         m_singleSelection = settings.getBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, PagedTableViewConfig.DEFAULT_SINGLE_SELECTION);
+        m_enableClearSelectionButton = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, PagedTableViewConfig.DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
     }
 
     /**
@@ -624,6 +641,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_subtitle, other.m_subtitle)
                 .append(m_enableSelection, other.m_enableSelection)
                 .append(m_singleSelection, other.m_singleSelection)
+                .append(m_enableClearSelectionButton, other.m_enableClearSelectionButton)
                 .append(m_enableSearching, other.m_enableSearching)
                 .append(m_enableColumnSearching, other.m_enableColumnSearching)
                 .append(m_enableHideUnselected, other.m_enableHideUnselected)
@@ -661,6 +679,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
                 .append(m_subtitle)
                 .append(m_enableSelection)
                 .append(m_singleSelection)
+                .append(m_enableClearSelectionButton)
                 .append(m_enableSearching)
                 .append(m_enableColumnSearching)
                 .append(m_enableHideUnselected)

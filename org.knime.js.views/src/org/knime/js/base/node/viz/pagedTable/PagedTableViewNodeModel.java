@@ -335,6 +335,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
 
             //added with 3.5
             viewRepresentation.setSingleSelection(m_config.getSingleSelection());
+            viewRepresentation.setEnableClearSelectionButton(m_config.getEnableClearSelectionButton());
         }
     }
 
