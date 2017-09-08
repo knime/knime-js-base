@@ -169,7 +169,7 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         try {
             URL url = new URL(path);
             if (openStream) {
-                try (InputStream stream = FileUtil.openStreamWithTimeout(url, 1/*getConfig().getTimeout()*/)) {
+                try (InputStream stream = FileUtil.openStreamWithTimeout(url, getConfig().getTimeout())) {
                     /* just testing if connection can be achieved */
                 } catch (Exception e) {
                     StringBuilder b = new StringBuilder("Connection to given URL: \"");
