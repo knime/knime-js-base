@@ -53,10 +53,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.InvalidPathException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -253,11 +254,10 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      */
     @Override
     public ExternalNodeData getInputData() {
-        Path p = Paths.get(getConfig().getDefaultValue().getPath());
         try {
-            URL url = p.toUri().toURL();
-            return ExternalNodeData.builder(getConfig().getParameterName()).resource(url).build();
-        } catch (MalformedURLException ex) {
+            URI uri = FileUtil.toURL(getConfig().getDefaultValue().getPath()).toURI();
+            return ExternalNodeData.builder(getConfig().getParameterName()).resource(uri).build();
+        } catch (MalformedURLException | InvalidPathException | URISyntaxException ex) {
             throw new RuntimeException(ex); // should never happen
         }
 

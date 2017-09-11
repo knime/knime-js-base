@@ -48,8 +48,7 @@
  */
 package org.knime.js.base.node.output.filedownload;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -226,12 +225,11 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
     @Override
     public ExternalNodeData getExternalOutput() {
         try {
-            URL url = getPathFromVariable().toUri().toURL();
-            return ExternalNodeData.builder(m_config.getResourceName()).resource(url).build();
-        } catch (MalformedURLException | InvalidSettingsException ex) {
+            URI uri = getPathFromVariable().toUri();
+            return ExternalNodeData.builder(m_config.getResourceName()).resource(uri).build();
+        } catch (InvalidSettingsException ex) {
             getLogger().error("Could not get output resource URL: " + ex.getMessage(), ex);
             return ExternalNodeData.builder(m_config.getResourceName()).build();
         }
     }
-
 }
