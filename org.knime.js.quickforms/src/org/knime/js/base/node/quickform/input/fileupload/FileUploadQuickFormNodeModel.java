@@ -50,20 +50,22 @@ package org.knime.js.base.node.quickform.input.fileupload;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -184,7 +186,15 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
                     throw new InvalidSettingsException(b.toString(), e);
                 }
             }
-            vector.add(null);
+            if ("file".equalsIgnoreCase(url.getProtocol())) {
+                Path p = Paths.get(url.toURI());
+                if (!Files.exists(p)) {
+                    throw new InvalidSettingsException("No such file: \"" + p +"\"");
+                }
+                vector.addElement(p.toString());
+            } else {
+                vector.add(null);
+            }
             vector.add(url.toString());
         } catch (MalformedURLException ex) {
             File f = new File(path);
@@ -204,6 +214,9 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
             }
             vector.add(path);
             vector.add(url.toString());
+        } catch (URISyntaxException ex) {
+            // shouldn't happen
+            NodeLogger.getLogger(getClass()).debug("Invalid file URI encountered: " + ex.getMessage());
         }
         return vector;
     }
@@ -269,12 +282,8 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     @Override
     public void setInputData(final ExternalNodeData inputData) {
         FileUploadQuickFormValue val = createEmptyDialogValue();
-        try {
-            val.setPath(URLDecoder.decode(inputData.getResource().getPath(), "UTF-8"));
-            setDialogValue(val);
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex); // doesn't happen
-        }
+        val.setPath(inputData.getResource().toString());
+        setDialogValue(val);
     }
 
     /**
