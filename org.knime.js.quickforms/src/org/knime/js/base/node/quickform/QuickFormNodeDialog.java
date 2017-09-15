@@ -98,8 +98,6 @@ public abstract class QuickFormNodeDialog
 
     private final JTextField m_parameterNameField;
 
-    private final JCheckBox m_hideInWizard;
-
     private final JCheckBox m_hideInDialog;
 
     private final JCheckBox m_required;
@@ -118,8 +116,6 @@ public abstract class QuickFormNodeDialog
         m_descriptionArea.setMinimumSize(new Dimension(100, 30));
         m_variableNameField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_parameterNameField = new JTextField(DEF_TEXTFIELD_WIDTH);
-        m_hideInWizard = new JCheckBox((Icon)null, false);
-        m_hideInWizard.setToolTipText("If selected, this QuickForm elements is not visible in the wizard.");
         m_hideInDialog = new JCheckBox((Icon)null, false);
         m_hideInDialog.setToolTipText("If selected, this QuickForm elements is not visible in the dialog.");
         m_required = new JCheckBox((Icon)null, false);
@@ -156,15 +152,10 @@ public abstract class QuickFormNodeDialog
         sp.setMinimumSize(m_descriptionArea.getMinimumSize());
         addPairToPanel("Description: ", sp, panel, gbc);
 
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weighty = 0;
-        addPairToPanel("Hide in Wizard: ", m_hideInWizard, panel, gbc);
-
-        addPairToPanel("Hide in Dialog: ", m_hideInDialog, panel, gbc);
-
         // TODO enable once functionality is in
         // addPairToPanel("Required: ", m_required, panel, gbc);
 
+        gbc.weighty = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         addPairToPanel("Variable Name: ", m_variableNameField, panel, gbc);
 
@@ -259,34 +250,6 @@ public abstract class QuickFormNodeDialog
     }
 
     /**
-     * @return true if this node should be hidden in the wizard, false otherwise
-     */
-    protected boolean getHideInWizard() {
-        return m_hideInWizard.isSelected();
-    }
-
-    /**
-     * @param hideInWizard If true this node will be hidden in the wizard.
-     */
-    protected void setHideInWizard(final boolean hideInWizard) {
-        m_hideInWizard.setSelected(hideInWizard);
-    }
-
-    /**
-     * @return true if this node should be hidden in the sub node dialog, false otherwise
-     */
-    protected boolean getHideInDialog() {
-        return m_hideInDialog.isSelected();
-    }
-
-    /**
-     * @param hideInDialog If true this node will be hidden in the sub node dialog.
-     */
-    protected void setHideInDialog(final boolean hideInDialog) {
-        m_hideInDialog.setSelected(hideInDialog);
-    }
-
-    /**
      * @return true if this node is required to be configured from the sub node and wizard, false otherwise
      */
     protected boolean getRequired() {
@@ -335,8 +298,6 @@ public abstract class QuickFormNodeDialog
         setDescription(config.getDescription());
         setFlowVariableName(config.getFlowVariableName());
         setParameterName(config.getParameterName());
-        setHideInWizard(config.getHideInWizard());
-        setHideInDialog(config.getHideInDialog());
         setRequired(config.getRequired());
     }
 
@@ -357,8 +318,6 @@ public abstract class QuickFormNodeDialog
                 + "and ends with a word character (no '-' or '_'),");
         }
         config.setParameterName(getParameterName());
-        config.setHideInWizard(getHideInWizard());
-        config.setHideInDialog(getHideInDialog());
         config.setRequired(getRequired());
     }
 

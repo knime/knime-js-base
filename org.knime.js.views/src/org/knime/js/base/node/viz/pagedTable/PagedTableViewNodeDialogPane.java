@@ -84,7 +84,6 @@ import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JSpinner m_maxRowsSpinner;
     private final JCheckBox m_enablePagingCheckBox;
     private final JSpinner m_initialPageSizeSpinner;
@@ -121,7 +120,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_displayMissingValueAsQuestionMark;
 
     PagedTableViewNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
         m_enablePagingCheckBox = new JCheckBox("Enable pagination");
         m_enablePagingCheckBox.addChangeListener(new ChangeListener() {
@@ -233,10 +231,7 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         JPanel generalPanel = new JPanel(new GridBagLayout());
         generalPanel.setBorder(new TitledBorder("General Options"));
         GridBagConstraints gbcG = createConfiguredGridBagConstraints();
-        gbcG.gridwidth = 2;
         gbcG.fill = GridBagConstraints.HORIZONTAL;
-        generalPanel.add(m_hideInWizardCheckBox, gbcG);
-        gbcG.gridy++;
         gbcG.gridwidth = 1;
         generalPanel.add(new JLabel("No. of rows to display: "), gbcG);
         gbcG.gridx++;
@@ -435,7 +430,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         PagedTableViewConfig config = new PagedTableViewConfig();
         DataTableSpec inSpec = (DataTableSpec)specs[0];
         config.loadSettingsForDialog(settings, inSpec);
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_maxRowsSpinner.setValue(config.getMaxRows());
         m_enablePagingCheckBox.setSelected(config.getEnablePaging());
         m_initialPageSizeSpinner.setValue(config.getIntialPageSize());
@@ -487,7 +481,6 @@ public class PagedTableViewNodeDialogPane extends NodeDialogPane {
         m_dateTimeFormats.validateSettings();
 
         PagedTableViewConfig config = new PagedTableViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
         config.setEnablePaging(m_enablePagingCheckBox.isSelected());
         config.setIntialPageSize((Integer)m_initialPageSizeSpinner.getValue());

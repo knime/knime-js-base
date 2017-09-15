@@ -131,7 +131,6 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private DynamicJSConfig m_config;
 	private Map<String, DialogComponent> m_components = new HashMap<String, DialogComponent>();
 
-	private DialogComponentBoolean m_hideInWizardComponent;
 	private DialogComponentNumber m_maxRowsComponent;
 	private DialogComponentBoolean m_generateImageComponent;
 
@@ -346,9 +345,6 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private void createAdditionalOptions() {
 	    createNewGroup("General Settings");
 
-	    m_hideInWizardComponent = new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.HIDE_IN_WIZARD_CONF + "model", DynamicJSConfig.DEFAULT_HIDE_IN_WIZARD), "Hide in Wizard");
-	    addDialogComponent(m_hideInWizardComponent);
-
 	    if (m_config.getHasSvgImageOutport()) {
 	        m_generateImageComponent = new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.GENERATE_IMAGE_CONF + "model", DynamicJSConfig.DEFAULT_GENERATE_IMAGE), "Generate image");
 	        addDialogComponent(m_generateImageComponent);
@@ -384,9 +380,6 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			final PortObjectSpec[] specs) throws NotConfigurableException {
 		m_config.loadAdditionalNodeSettingsInDialog(settings);
 		super.loadAdditionalSettingsFrom(settings, specs);
-        if (m_hideInWizardComponent != null) {
-            ((SettingsModelBoolean)m_hideInWizardComponent.getModel()).setBooleanValue(m_config.getHideInWizard());
-        }
         if (m_maxRowsComponent != null) {
             ((SettingsModelIntegerBounded)m_maxRowsComponent.getModel()).setIntValue(m_config.getMaxRows());
         }
@@ -411,9 +404,6 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	@Override
 	public void saveAdditionalSettingsTo(final NodeSettingsWO settings)
 			throws InvalidSettingsException {
-        if (m_hideInWizardComponent != null) {
-            m_config.setHideInWizard(((SettingsModelBoolean)m_hideInWizardComponent.getModel()).getBooleanValue());
-        }
         if (m_maxRowsComponent != null) {
             m_config.setMaxRows(((SettingsModelIntegerBounded)m_maxRowsComponent.getModel()).getIntValue());
         }

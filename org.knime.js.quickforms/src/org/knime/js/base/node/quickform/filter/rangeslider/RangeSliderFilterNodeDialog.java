@@ -77,7 +77,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     private RangeSliderFilterConfig m_config;
     private SliderNodeDialogUI m_sliderUI;
 
-    private final JCheckBox m_hideInWizardCheckbox;
     private final JCheckBox m_mergeWithExistingFiltersTable;
     private final JCheckBox m_mergeWithExistingFiltersModel;
     private final JCheckBox m_useLabelCheckbox;
@@ -88,7 +87,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     RangeSliderFilterNodeDialog() {
         m_config = new RangeSliderFilterConfig();
         m_sliderUI = new SliderNodeDialogUI(2, false, true);
-        m_hideInWizardCheckbox = new JCheckBox("Hide In Wizard");
         m_mergeWithExistingFiltersTable = new JCheckBox("Merge With Existing Filter Definitions (Table)");
         m_mergeWithExistingFiltersModel = new JCheckBox("Merge With Existing Filter Definitions (Model Port)");
         m_useLabelCheckbox = new JCheckBox("Show Label");
@@ -113,9 +111,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = gbc.weighty = 0;
-
-        panel.add(m_hideInWizardCheckbox, gbc);
-        gbc.gridy++;
         gbc.gridwidth = 2;
         gbc.weightx = 1;
         panel.add(m_mergeWithExistingFiltersTable, gbc);
@@ -172,7 +167,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
-        m_hideInWizardCheckbox.setSelected(m_config.getHideInWizard());
         m_mergeWithExistingFiltersTable.setSelected(m_config.getMergeWithExistingFiltersTable());
         m_mergeWithExistingFiltersModel.setSelected(m_config.getMergeWithExistingFiltersModel());
         m_useLabelCheckbox.setSelected(m_config.getUseLabel());
@@ -207,7 +201,6 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        m_config.setHideInWizard(m_hideInWizardCheckbox.isSelected());
         m_config.setMergeWithExistingFiltersTable(m_mergeWithExistingFiltersTable.isSelected());
         m_config.setMergeWithExistingFiltersModel(m_mergeWithExistingFiltersModel.isSelected());
         m_config.setDomainColumn((SettingsModelString)m_sliderUI.getDomainColumnSelection().getModel());

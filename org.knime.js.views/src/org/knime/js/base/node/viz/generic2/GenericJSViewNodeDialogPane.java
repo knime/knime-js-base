@@ -113,7 +113,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private BiMap<String, String> m_availableLibraries;
 
     //private final JTextField m_viewName;
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateViewCheckBox;
     private final JSpinner m_maxRowsSpinner;
     private final JList m_flowVarList;
@@ -133,7 +132,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     @SuppressWarnings({"unchecked", "rawtypes"})
     GenericJSViewNodeDialogPane() {
         //m_viewName = new JTextField(20);
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateViewCheckBox = new JCheckBox("Generate image at outport");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
         m_WaitTimeSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 500));
@@ -199,8 +197,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBorder(m_lineBorder);
         topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(m_hideInWizardCheckBox);
-        topPanel.add(Box.createHorizontalGlue());
         topPanel.add(new JLabel("Maximum number of rows: "));
         m_maxRowsSpinner.setMaximumSize(new Dimension(100, 20));
         m_maxRowsSpinner.setMinimumSize(new Dimension(100, 20));
@@ -323,7 +319,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
             }
         }
         //m_viewName.setText(m_config.getViewName());
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateViewCheckBox.setSelected(config.getGenerateView());
         m_maxRowsSpinner.setValue(config.getMaxRows());
         m_jsTextArea.setText(config.getJsCode());
@@ -387,7 +382,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         }
         final GenericJSViewConfig config = new GenericJSViewConfig();
         //m_config.setViewName(m_viewName.getText());
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateView(m_generateViewCheckBox.isSelected());
         config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
         config.setJsCode(m_jsTextArea.getText());

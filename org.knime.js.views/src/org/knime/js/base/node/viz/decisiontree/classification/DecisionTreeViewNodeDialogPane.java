@@ -88,8 +88,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
-
     private final JCheckBox m_generateImageCheckBox;
 
     private final JCheckBox m_displayFullscreenButtonCheckBox;
@@ -135,7 +133,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public DecisionTreeViewNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_enableViewConfigCheckBox = new JCheckBox("Enable view edit controls");
@@ -218,12 +215,9 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
-        panel.add(m_hideInWizardCheckBox, c);
-        c.gridy++;
         panel.add(m_generateImageCheckBox, c);
         c.gridx = 0;
         c.gridy++;
-        c.gridwidth = 2;
 
         JPanel nodeStatusPanel = new JPanel(new GridBagLayout());
         nodeStatusPanel.setBorder(BorderFactory.createTitledBorder("Node status"));
@@ -427,7 +421,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
         throws NotConfigurableException {
         DecisionTreeViewConfig config = new DecisionTreeViewConfig();
         config.loadInDialog(settings);
-        m_hideInWizardCheckBox.setSelected(config.isHideInWizard());
         m_generateImageCheckBox.setSelected(config.isGenerateImage());
 
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullScreenButton());
@@ -485,7 +478,6 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         DecisionTreeViewConfig config = new DecisionTreeViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setDisplayFullScreenButton(m_displayFullscreenButtonCheckBox.isSelected());

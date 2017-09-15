@@ -92,7 +92,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_displayFullscreenButtonCheckBox;
@@ -145,7 +144,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public ScatterPlotNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
@@ -253,10 +251,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
-        panel.add(m_hideInWizardCheckBox, c);
-        c.gridy++;
         panel.add(m_generateImageCheckBox, c);
-        c.gridx = 0;
         c.gridy++;
         c.gridwidth = 1;
         panel.add(new JLabel("Maximum number of rows: "), c);
@@ -574,7 +569,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
             throws NotConfigurableException {
         ScatterPlotViewConfig config = new ScatterPlotViewConfig();
         config.loadSettingsForDialog(settings);
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         boolean legendAvailable = hasColorModelNominal(specs[0]);
@@ -659,7 +653,6 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         ScatterPlotViewConfig config = new ScatterPlotViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setShowLegend(m_showLegendCheckBox.isSelected());

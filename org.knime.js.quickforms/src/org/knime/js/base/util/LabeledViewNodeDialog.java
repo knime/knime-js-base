@@ -52,8 +52,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -82,8 +80,6 @@ public abstract class LabeledViewNodeDialog extends NodeDialogPane {
 
     private final JTextArea m_descriptionArea;
 
-    private final JCheckBox m_hideInWizard;
-
     /**
      * Inits fields, sub-classes should call the {@link #createAndAddTab()}
      * method when they are done initializing their fields.
@@ -94,8 +90,6 @@ public abstract class LabeledViewNodeDialog extends NodeDialogPane {
         m_descriptionArea.setLineWrap(true);
         m_descriptionArea.setPreferredSize(new Dimension(100, 50));
         m_descriptionArea.setMinimumSize(new Dimension(100, 30));
-        m_hideInWizard = new JCheckBox((Icon)null, false);
-        m_hideInWizard.setToolTipText("If selected, this QuickForm elements is not visible in the wizard.");
     }
 
     /**
@@ -120,10 +114,7 @@ public abstract class LabeledViewNodeDialog extends NodeDialogPane {
         sp.setMinimumSize(m_descriptionArea.getMinimumSize());
         addPairToPanel("Description: ", sp, panel, gbc);
 
-        gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0;
-        addPairToPanel("Hide in Wizard: ", m_hideInWizard, panel, gbc);
-
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         fillPanel(panel, gbc);
@@ -221,26 +212,11 @@ public abstract class LabeledViewNodeDialog extends NodeDialogPane {
     }
 
     /**
-     * @return true if this node should be hidden in the wizard, false otherwise
-     */
-    protected boolean getHideInWizard() {
-        return m_hideInWizard.isSelected();
-    }
-
-    /**
-     * @param hideInWizard If true this node will be hidden in the wizard.
-     */
-    protected void setHideInWizard(final boolean hideInWizard) {
-        m_hideInWizard.setSelected(hideInWizard);
-    }
-
-    /**
      * @param config The {@link LabeledViewConfig} to load from
      */
     protected void loadSettingsFrom(final LabeledViewConfig config) {
         setLabel(config.getLabel());
         setDescription(config.getDescription());
-        setHideInWizard(config.getHideInWizard());
     }
 
     /**
@@ -249,7 +225,6 @@ public abstract class LabeledViewNodeDialog extends NodeDialogPane {
     protected void saveSettingsTo(final LabeledViewConfig config) {
         config.setLabel(getLabel());
         config.setDescription(getDescription());
-        config.setHideInWizard(getHideInWizard());
     }
 
     /** {@inheritDoc} */

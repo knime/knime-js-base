@@ -97,7 +97,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showArea;
 
@@ -153,7 +152,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public ROCCurveNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showArea = new JCheckBox("Show area under curve");
         m_showGridCheckBox = new JCheckBox("Show grid");
@@ -355,9 +353,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 2;
-        panel.add(m_hideInWizardCheckBox, c);
-        c.gridx += 1;
         panel.add(m_generateImageCheckBox, c);
         return panel;
     }
@@ -381,8 +376,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
         JPanel genPanel = new JPanel(new GridBagLayout());
         genPanel.setBorder(BorderFactory.createTitledBorder("General"));
         panel.add(genPanel, c);
-        genPanel.add(m_hideInWizardCheckBox, cc);
-        cc.gridx = 1;
         genPanel.add(m_generateImageCheckBox, cc);
         cc.gridwidth = 1;
         cc.gridy++;
@@ -492,7 +485,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
             throws NotConfigurableException {
         ROCCurveViewConfig config = new ROCCurveViewConfig();
         config.loadSettingsForDialog(settings, specs[0]);
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showArea.setSelected(config.getShowArea());
@@ -540,7 +532,6 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         ROCCurveViewConfig config = new ROCCurveViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setShowArea(m_showArea.isSelected());

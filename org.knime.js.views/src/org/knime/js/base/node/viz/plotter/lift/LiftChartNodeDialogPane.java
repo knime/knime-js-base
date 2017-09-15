@@ -97,7 +97,6 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showGridCheckBox;
     private final JCheckBox m_resizeViewToWindow;
@@ -160,7 +159,6 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public LiftChartNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_resizeViewToWindow = new JCheckBox("Resize view to fill window");
@@ -400,9 +398,6 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         JPanel genPanel = new JPanel(new GridBagLayout());
         genPanel.setBorder(BorderFactory.createTitledBorder("General"));
         panel.add(genPanel, c);
-        cc.gridwidth = 2;
-        genPanel.add(m_hideInWizardCheckBox, cc);
-        cc.gridx = 2;
         genPanel.add(m_generateImageCheckBox, cc);
         cc.gridy++;
 
@@ -480,7 +475,6 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
         LiftChartViewConfig config = new LiftChartViewConfig();
         config.loadSettingsForDialog(settings, specs[0]);
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showGridCheckBox.setSelected(config.getShowGrid());
@@ -588,7 +582,6 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         LiftChartViewConfig config = new LiftChartViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setResizeToWindow(m_resizeViewToWindow.isSelected());

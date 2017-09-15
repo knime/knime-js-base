@@ -91,7 +91,6 @@ import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 public class LinePlotNodeDialogPane extends NodeDialogPane {
     private static final int TEXT_FIELD_SIZE = 20;
 
-    private final JCheckBox m_hideInWizardCheckBox;
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_autoRangeAxisCheckBox;
@@ -140,7 +139,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public LinePlotNodeDialogPane() {
-        m_hideInWizardCheckBox = new JCheckBox("Hide in wizard");
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
@@ -254,11 +252,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 2;
-        panel.add(m_hideInWizardCheckBox, c);
-        c.gridx += 2;
+        c.gridwidth = 4;
         panel.add(m_generateImageCheckBox, c);
-        c.gridx = 0;
         c.gridy++;
         c.gridwidth = 1;
         panel.add(new JLabel("Maximum number of rows: "), c);
@@ -551,7 +546,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
             throws NotConfigurableException {
         LinePlotViewConfig config = new LinePlotViewConfig();
         config.loadSettingsForDialog(settings, specs[0]);
-        m_hideInWizardCheckBox.setSelected(config.getHideInWizard());
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
 
         m_showLegendCheckBox.setSelected(config.getShowLegend());
@@ -616,7 +610,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_dateTimeFormats.validateSettings();
 
         LinePlotViewConfig config = new LinePlotViewConfig();
-        config.setHideInWizard(m_hideInWizardCheckBox.isSelected());
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
         config.setShowLegend(m_showLegendCheckBox.isSelected());
