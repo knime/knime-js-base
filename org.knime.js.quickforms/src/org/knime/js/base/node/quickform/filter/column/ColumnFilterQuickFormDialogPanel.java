@@ -110,7 +110,11 @@ public class ColumnFilterQuickFormDialogPanel extends QuickFormDialogPanel<Colum
     @Override
     protected void resetToDefault() {
         DataColumnSpecFilterConfiguration config = new DataColumnSpecFilterConfiguration("columnFilter");
-        config.loadConfigurationInDialog(m_representation.getDefaultValue().getSettings(), m_representation.getSpec());
+        NodeSettings settings = m_representation.getDefaultValue().getSettings();
+        if (settings == null) {
+            settings = new NodeSettings("columnFilter");
+        }
+        config.loadConfigurationInDialog(settings, m_representation.getSpec());
         m_columns.loadConfiguration(config, m_representation.getSpec());
     }
 

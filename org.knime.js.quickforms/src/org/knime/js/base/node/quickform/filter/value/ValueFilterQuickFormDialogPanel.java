@@ -52,6 +52,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -101,7 +102,11 @@ public class ValueFilterQuickFormDialogPanel extends QuickFormDialogPanel<ValueF
         gbc.gridy++;
         panel.add(m_values.getComponent(), gbc);
         m_column.setSelectedItem(representation.getDefaultValue().getColumn());
-        List<String> possibleValues = representation.getPossibleValues().get(m_column.getSelectedItem());
+        List<String> possibleValues = new ArrayList<String>(0);
+        String selectedValue = (String)m_column.getSelectedItem();
+        if (selectedValue != null) {
+            possibleValues = representation.getPossibleValues().get(m_column.getSelectedItem());
+        }
         m_values.setChoices(possibleValues.toArray(new String[possibleValues.size()]));
         m_values.setSelections(representation.getDefaultValue().getValues());
         setComponent(panel);
