@@ -48,6 +48,9 @@
  */
 package org.knime.dynamic.js.v30;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObject;
 
@@ -61,17 +64,11 @@ import org.knime.core.node.port.PortObject;
 public interface DynamicJSProcessor {
 
     /**
-     * A message container to store warning messages.
-     * @since 3.4
-     */
-    WarningMessage WARNING_MESSAGE = new WarningMessage();
-
-    /**
      * Container class to store warning messages.
      * @since 3.4
      */
     class WarningMessage {
-        String m_message = null;
+        private static final Map<DynamicJSProcessor, String> messageMap = new WeakHashMap<DynamicJSProcessor, String>();
     }
 
     /**
@@ -95,7 +92,7 @@ public interface DynamicJSProcessor {
      * @since 3.4
      */
     public default void setWarningMessage(final String message) {
-        WARNING_MESSAGE.m_message = message;
+        WarningMessage.messageMap.put(this, message);
     }
 
     /**
@@ -105,9 +102,6 @@ public interface DynamicJSProcessor {
      * @since 3.4
      */
     public default String getWarningMessage() {
-        String message = WARNING_MESSAGE.m_message;
-        WARNING_MESSAGE.m_message = null;
-        return message;
+        return WarningMessage.messageMap.get(this);
     }
-
 }
