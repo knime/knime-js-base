@@ -16,12 +16,14 @@ import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
+import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicJSProcessor;
 
@@ -122,6 +124,7 @@ public class GroupedProcessor implements DynamicJSProcessor {
                         + missingValuesMap.entrySet().stream()
                             .map(x -> "    " + x.getKey() + " - " + x.getValue().toString() + " missing value(s)")
                             .collect(Collectors.joining(",\n"));
+                NodeLogger.getLogger(GlobalNodeStats.class).error(warning);
                 setWarningMessage(warning);
             }
         }

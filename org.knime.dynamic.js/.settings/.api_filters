@@ -73,22 +73,10 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSProcessor.java" type="org.knime.dynamic.js.v30.DynamicJSProcessor">
-        <filter id="403767336">
+        <filter comment="Removed as the warning message implementation has been revised" id="405864542">
             <message_arguments>
                 <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
                 <message_argument value="WARNING_MESSAGE"/>
-            </message_arguments>
-        </filter>
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
-                <message_argument value="getWarningMessage()"/>
-            </message_arguments>
-        </filter>
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
-                <message_argument value="setWarningMessage(String)"/>
             </message_arguments>
         </filter>
     </resource>
