@@ -2,6 +2,7 @@ package org.knime.dynamic.js.base.sunburst;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.knime.base.data.filter.column.FilterColumnTable;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -10,11 +11,10 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
-import org.knime.dynamic.js.v30.DynamicJSProcessor;
+import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
 import org.knime.js.core.JSONDataTable;
-import org.knime.base.data.filter.column.FilterColumnTable;
 
-public class SunburstProcessor implements DynamicJSProcessor {
+public class SunburstProcessor extends DynamicStatefulJSProcessor {
              
     @Override
     public Object[] processInputObjects(PortObject[] inObjects,

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 2, 2015 (albrecht): created
+ *   26 Sep 2017 (albrecht): created
  */
 package org.knime.dynamic.js.v30;
 
@@ -52,27 +52,32 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObject;
 
 /**
- * Interface to provide the possibility to pre-process incoming data during execute of a dynamically created JavaScript
- * node.
+ * Abstract {@link DynamicJSProcessor} implementation, which keeps a state, e.g. a warn message, which occurred during execution.
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
- * @since 3.0
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @since 3.4
  */
-public interface DynamicJSProcessor {
+public abstract class DynamicStatefulJSProcessor implements DynamicJSProcessor {
+
+    private String m_warnMessage;
 
     /**
-     * Called during execute. Possibility to process {@link PortObject}s to perform heavy calculation or data
-     * transformation that is not intended to be run in JavaScript.
-     *
-     * @param inObjects The input objects.
-     * @param exec The original execution context used during execute. Implementations can
-     * @param config The configuration object containing the current node settings.
-     * @return An array of processed input objects. If an object is not modified the original PortObject is expected,
-     *         otherwise new PortObjects can be created or arbitrary Java objects, that can be serialized directly to
-     *         JSON. The indices of the array are expected to be the same as in the inObjects array.
-     * @throws Exception If processing the inputs fails for any reason.
+     * Sets an optional warning message by the implementing processor.
+     * @param message the warning message to set
      */
-    public Object[] processInputObjects(final PortObject[] inObjects, final ExecutionContext exec,
-        final DynamicJSConfig config) throws Exception;
+    protected void setWarningMessage(final String message) {
+        m_warnMessage = message;
+    }
+
+    /**
+     * Returns an optional warning message. Also erases the warning message from this instance, so it can
+     * only be queried once after every {@link #processInputObjects(PortObject[], ExecutionContext, DynamicJSConfig)} call.
+     * @return a warning message to display, or null if not set
+     */
+    String getWarningMessage() {
+        return m_warnMessage;
+    }
+
+
 
 }

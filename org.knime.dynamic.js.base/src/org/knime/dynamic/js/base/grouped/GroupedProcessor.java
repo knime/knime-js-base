@@ -23,9 +23,9 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
-import org.knime.dynamic.js.v30.DynamicJSProcessor;
+import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
 
-public class GroupedProcessor implements DynamicJSProcessor {
+public class GroupedProcessor extends DynamicStatefulJSProcessor {
 	
     private static final String COUNT = "Occurence\u00A0Count";
 	private static final String SUM = "Sum";

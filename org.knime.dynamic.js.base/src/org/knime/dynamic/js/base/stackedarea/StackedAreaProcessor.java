@@ -11,10 +11,10 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
-import org.knime.dynamic.js.v30.DynamicJSProcessor;
+import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
 import org.knime.js.core.JSONDataTable;
 
-public class StackedAreaProcessor implements DynamicJSProcessor {
+public class StackedAreaProcessor extends DynamicStatefulJSProcessor {
              
     @Override
     public Object[] processInputObjects(PortObject[] inObjects,
