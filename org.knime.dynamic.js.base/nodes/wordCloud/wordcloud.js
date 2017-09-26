@@ -1,12 +1,13 @@
-(wordcloud = function() {
+(wordcloud_ns = function() {
 
 	var wordCloud = {};
 	var _representation
 	var _value;
 
-	wordCloud.init = function(representation, value) {
+	wordCloud.init = function(representation, value, layout_cloud) {
 		_representation = representation;
 		_value = value;
+		debugger;
 		var knimeTable = new kt();
 		knimeTable.setDataTable(_representation.inObjects[0]);
 		var fontSizeMinimum = _representation.options["fontSizeMinimum"];
@@ -49,11 +50,9 @@
 				datum["color"] = colors[i];
 				data.push(datum);
 			}
-			require(
-					[ "https://raw.githubusercontent.com/jasondavies/d3-cloud/master/d3.layout.cloud.js" ],
-					function() {
+			debugger;
 						var useColorProperty = _representation.options["useColorProperty"];
-						var fill = d3.scale.category20();
+						var fill = d3.scaleOrdinal(d3.schemeCategory20);
 						var colorPalette = _representation.options["colorPalette"];
 						switch (colorPalette) {
 						case "Palette-B":
@@ -89,13 +88,12 @@
 										return d.text;
 									});
 						}
-						d3.layout.cloud().size([ 1000, 1000 ]).words(data)
+						layout_cloud[0]().size([ 1000, 1000 ]).words(data)
 								.padding(5).rotate(function() {
 									return Math.random() * 120 - 60;
 								}).font(font).fontSize(function(d) {
 									return d.size;
 								}).on("end", draw).start();
-					});
 		}
 	}
 
