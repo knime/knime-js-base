@@ -10,10 +10,7 @@
         	<description>
         		General view and display options.
         	</description>
-        	<option name="Hide in wizard">
-        		If checked the view will be hidden in the wizard execution.
-        	</option>
-            <option name="No. of rows to display">
+        	<option name="No. of rows to display">
     	        Use this numerical value to restrict the number of rows used for this visualization.
         	</option>
 	        <option name="Title" optional="true">
@@ -57,7 +54,7 @@
         	<option name="Selectable page sizes">
         		Define a comma-separated list of allowed page sizes for the page size control.
         	</option>
-        	<option name="Add 'All' option to sizes">
+        	<option name="Add 'All' option to page sizes">
         		When checked, an additional 'All' option will be available in the page size control.
         	</option>
         	<option name="Enable selection">
@@ -118,7 +115,7 @@
         			<li>PNG</li>
         			<li>SVG</li>
         		</ul>
-        		All other data types will be treated as UNKNOWN types. These are tried to be displayed by extracting their respective standard string representation.<br/><br/>
+        		All other data types will be treated as UNKNOWN types. The node tries to display them by extracting their respective standard string representation.<br/><br/>
         		If you wish to customize the format for certain data types you can use the following options. For unknown types the formatting has to be applied in preceding nodes.<br/><br/>
         		
         		<b>Date and Time types</b>
@@ -167,9 +164,6 @@
 			<option name="Locale">
         		The locale which is used to render all date/time cells.
         	</option>
-        	<option name="Date and Time (legacy) format">
-        		A global format, which is applied to all date/time (legacy) cells. To format the string the framework Moment.js is used.
-        	</option>
         	<option name="Local Date format">
         		A global format, which is applied to all locale date cells. To format the string the framework Moment.js is used.
         	</option>
@@ -181,6 +175,9 @@
         	</option>
         	<option name="Zoned Date and Time format">
         		A global format, which is applied to all zoned date/time cells. To format the string the framework Moment.js is used.
+        	</option>
+        	<option name="Date and Time (legacy) format">
+        		A global format, which is applied to all date/time (legacy) cells. To format the string the framework Moment.js is used.
         	</option>
         	<option name="Enable global number format (double cells)">
         		If checked the option beneath will be applied to all columns of type <i>Double</i>.
