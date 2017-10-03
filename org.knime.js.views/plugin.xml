@@ -68,6 +68,11 @@
             factory-class="org.knime.js.base.node.viz.tableEditor.TableEditorViewNodeFactory"
             >
       </node>
+      <node
+            category-path="/labs/interactiveView"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.wordCloud.WordCloudViewNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -475,6 +480,24 @@
                webResourceBundleID="dataTables_1_10_11_bootstrap">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Word Cloud"
+            usesDefine="false"
+            version="1.0"
+            webResourceBundleID="org.knime.js.base.node.viz.wordCloud.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/wordCloud/"
+               relativePathTarget="org/knime/js/base/node/viz/wordCloud/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/wordCloud/wordCloud.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="d3_layout_cloud_1.2.4">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -620,6 +643,16 @@
             javascriptComponentID="org.knime.js.base.node.viz.tableEditor"
             name="Table Editor"
             namespace="table_editor"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.wordCloud.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.wordCloud"
+            name="Word Cloud"
+            namespace="knime_word_cloud"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>

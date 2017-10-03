@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="../js.png" type="Visualizer" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>JavaScript Word Cloud</name>
+    <shortDescription>Displays a word cloud.</shortDescription>
+    <fullDescription>
+        <intro>
+            Displays a word cloud.
+        </intro>
+    </fullDescription>
+    <interactiveView name="JavaScript Word Cloud View">
+        Displays the selected strings in a word cloud.
+    </interactiveView>
+    <ports>
+        <inPort index="0" name="Input to display">
+            Input table to display.
+        </inPort>
+        <outPort index="0" name="SVG Image">
+        	Generated SVG image of word cloud visualization.
+        </outPort>
+    </ports>
+</knimeNode>
