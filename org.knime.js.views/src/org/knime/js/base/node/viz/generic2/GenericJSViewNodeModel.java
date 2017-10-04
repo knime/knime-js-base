@@ -50,7 +50,7 @@ package org.knime.js.base.node.viz.generic2;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;

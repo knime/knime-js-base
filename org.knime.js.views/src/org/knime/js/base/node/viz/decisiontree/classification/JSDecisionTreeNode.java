@@ -1,7 +1,7 @@
 package org.knime.js.base.node.viz.decisiontree.classification;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.base.node.mine.decisiontree2.PMMLPredicate;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

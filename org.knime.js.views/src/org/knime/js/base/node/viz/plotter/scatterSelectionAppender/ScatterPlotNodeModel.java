@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.base.data.xml.SvgCell;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
