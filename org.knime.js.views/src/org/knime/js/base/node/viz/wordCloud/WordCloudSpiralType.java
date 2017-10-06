@@ -44,108 +44,60 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   2 Oct 2017 (albrecht): created
+ *   3 Oct 2017 (albrecht): created
  */
 package org.knime.js.base.node.viz.wordCloud;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * JSON serializable representation object for the word cloud view
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WordCloudViewRepresentation extends JSONViewContent {
+public enum WordCloudSpiralType {
 
-    private boolean m_displayFullscreenButton;
-    private String m_font;
+    ARCHIMEDEAN,
+    RECTANGULAR;
 
-    /**
-     * @return the displayFullscreenButton
-     */
-    public boolean isDisplayFullscreenButton() {
-        return m_displayFullscreenButton;
+    private static Map<String, WordCloudSpiralType> namesMap = new HashMap<String, WordCloudSpiralType>(2);
+
+    static {
+        namesMap.put("archimedean", ARCHIMEDEAN);
+        namesMap.put("rectangular", RECTANGULAR);
     }
 
     /**
-     * @param displayFullscreenButton the displayFullscreenButton to set
+     * @param value the string representation to retrieve an enum type for
+     * @return an enum type for a given string, or null
      */
-    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
-        m_displayFullscreenButton = displayFullscreenButton;
+    @JsonCreator
+    public static WordCloudSpiralType forValue(final String value) {
+        return namesMap.get(StringUtils.lowerCase(value));
     }
 
     /**
-     * @return the font
+     * @return the string representation of this enum type
      */
-    public String getFont() {
-        return m_font;
-    }
-
-    /**
-     * @param font the font to set
-     */
-    public void setFont(final String font) {
-        m_font = font;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
-        settings.addString(WordCloudViewConfig.CFG_FONT, m_font);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_displayFullscreenButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON);
-        m_font = settings.getString(WordCloudViewConfig.CFG_FONT);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
+    @JsonValue
+    public String toValue() {
+        for (Entry<String, WordCloudSpiralType> entry : namesMap.entrySet()) {
+            if (entry.getValue() == this) {
+                return entry.getKey();
+            }
         }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        WordCloudViewRepresentation other = (WordCloudViewRepresentation)obj;
-        return new EqualsBuilder()
-                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
-                .append(m_font, other.m_font)
-                .isEquals();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_displayFullscreenButton)
-                .append(m_font)
-                .toHashCode();
+        // this does not happen, unless namesMap is not in synch with enum
+        return null;
     }
 
 }

@@ -109,7 +109,7 @@ public class WordCloudViewNodeModel
      */
     @Override
     public boolean isHideInWizard() {
-        return false;
+        return m_config.getHideInWizard();
     }
 
     /**
@@ -117,7 +117,7 @@ public class WordCloudViewNodeModel
      */
     @Override
     public void setHideInWizard(final boolean hide) {
-        // TODO Auto-generated method stub
+        m_config.setHideInWizard(hide);
 
     }
 
@@ -162,8 +162,7 @@ public class WordCloudViewNodeModel
      */
     @Override
     protected boolean generateImage() {
-        // TODO Auto-generated method stub
-        return false;
+        return m_config.getGenerateImage();
     }
 
     /**
@@ -171,8 +170,7 @@ public class WordCloudViewNodeModel
      */
     @Override
     protected void performReset() {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
 
     /**

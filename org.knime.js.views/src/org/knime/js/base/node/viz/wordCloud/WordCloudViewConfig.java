@@ -60,13 +60,73 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class WordCloudViewConfig {
 
-    final static String CFG_HIDE_IN_WIZARD = "hideInWizard";
+    private final static String CFG_HIDE_IN_WIZARD = "hideInWizard";
     private final static boolean DEFAULT_HIDE_IN_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
+
+    private static final String CFG_GENERATE_IMAGE = "generateImage";
+    private final static boolean DEFAULT_GENERATE_IMAGE = true;
+    private boolean m_generateImage = DEFAULT_GENERATE_IMAGE;
 
     final static String CFG_MAX_WORDS = "maxWords";
     private final static int DEFAULT_MAX_WORDS = 250;
     private int m_maxWords = DEFAULT_MAX_WORDS;
+
+    final static String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
+    final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
+
+    final static String CFG_TITLE = "title";
+    private final static String DEFAULT_TITLE = "";
+    private String m_title = DEFAULT_TITLE;
+
+    final static String CFG_SUBTITLE = "subtitle";
+    private final static String DEFAULT_SUBTITLE = "";
+    private String m_subtitle = DEFAULT_SUBTITLE;
+
+    private final static String CFG_WORD_COLUMN = "wordColumn";
+    private final static String DEFAULT_WORD_COLUMN = "";
+    private String m_wordColumn = DEFAULT_WORD_COLUMN;
+
+    private final static String CFG_SIZE_COLUMN = "sizeColumn";
+    private final static String DEFAULT_SIZE_COLUMN = "";
+    private String m_sizeColumn = DEFAULT_SIZE_COLUMN;
+
+    private final static String CFG_USE_SIZE_PROP = "sizeProp";
+    private final static boolean DEFAULT_USE_SIZE_PROP = false;
+    private boolean m_useSizeProp = DEFAULT_USE_SIZE_PROP;
+
+    final static String CFG_FONT = "font";
+    private final static String DEFAULT_FONT = "Impact";
+    private String m_font = DEFAULT_FONT;
+
+    final static String CFG_MIN_FONT_SIZE = "minFontSize";
+    private final static float DEFAULT_MIN_FONT_SIZE = 10f;
+    private float m_minFontSize = DEFAULT_MIN_FONT_SIZE;
+
+    final static String CFG_MAX_FONT_SIZE = "maxFontSize";
+    private final static float DEFAULT_MAX_FONT_SIZE = 100f;
+    private float m_maxFontSize = DEFAULT_MAX_FONT_SIZE;
+
+    final static String CFG_FONT_SCALE_TYPE = "fontScaleType";
+    private final static WordCloudFontScaleType DEFAULT_FONT_SCALE_TYPE = WordCloudFontScaleType.LINEAR;
+    private WordCloudFontScaleType m_fontScaleType = DEFAULT_FONT_SCALE_TYPE;
+
+    final static String CFG_SPIRAL_TYPE = "spiralType";
+    private final static WordCloudSpiralType DEFAULT_SPIRAL_TYPE = WordCloudSpiralType.ARCHIMEDEAN;
+    private WordCloudSpiralType m_spiralType = DEFAULT_SPIRAL_TYPE;
+
+    final static String CFG_NUM_ORIENTATIONS = "numOrientations";
+    private final static int DEFAULT_NUM_ORIENTATIONS = 5;
+    private int m_numOrientations = DEFAULT_NUM_ORIENTATIONS;
+
+    final static String CFG_START_ANGLE = "startAngle";
+    private final static int DEFAULT_START_ANGLE = -60;
+    private int m_startAngle = DEFAULT_START_ANGLE;
+
+    final static String CFG_END_ANGLE = "endAngle";
+    private final static int DEFAULT_END_ANGLE = 60;
+    private int m_endAngle = DEFAULT_END_ANGLE;
 
     /**
      * @return the hideInWizard
@@ -83,6 +143,20 @@ public class WordCloudViewConfig {
     }
 
     /**
+     * @return the generateImage
+     */
+    public boolean getGenerateImage() {
+        return m_generateImage;
+    }
+
+    /**
+     * @param generateImage the generateImage to set
+     */
+    public void setGenerateImage(final boolean generateImage) {
+        m_generateImage = generateImage;
+    }
+
+    /**
      * @return the maxWords
      */
     public int getMaxWords() {
@@ -96,12 +170,223 @@ public class WordCloudViewConfig {
         m_maxWords = maxWords;
     }
 
+    /**
+     * @return the displayFullscreenButton
+     */
+    public boolean getDisplayFullscreenButton() {
+        return m_displayFullscreenButton;
+    }
+
+    /**
+     * @param displayFullscreenButton the displayFullscreenButton to set
+     */
+    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
+        m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return m_title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(final String title) {
+        m_title = title;
+    }
+
+    /**
+     * @return the subtitle
+     */
+    public String getSubtitle() {
+        return m_subtitle;
+    }
+
+    /**
+     * @param subtitle the subtitle to set
+     */
+    public void setSubtitle(final String subtitle) {
+        m_subtitle = subtitle;
+    }
+
+    /**
+     * @return the wordColumn
+     */
+    public String getWordColumn() {
+        return m_wordColumn;
+    }
+
+    /**
+     * @param wordColumn the wordColumn to set
+     */
+    public void setWordColumn(final String wordColumn) {
+        m_wordColumn = wordColumn;
+    }
+
+    /**
+     * @return the sizeColumn
+     */
+    public String getSizeColumn() {
+        return m_sizeColumn;
+    }
+
+    /**
+     * @param sizeColumn the sizeColumn to set
+     */
+    public void setSizeColumn(final String sizeColumn) {
+        m_sizeColumn = sizeColumn;
+    }
+
+    /**
+     * @return the useSizeProp
+     */
+    public boolean getUseSizeProp() {
+        return m_useSizeProp;
+    }
+
+    /**
+     * @param useSizeProp the useSizeProp to set
+     */
+    public void setUseSizeProp(final boolean useSizeProp) {
+        m_useSizeProp = useSizeProp;
+    }
+
+    /**
+     * @return the font
+     */
+    public String getFont() {
+        return m_font;
+    }
+
+    /**
+     * @param font the font to set
+     */
+    public void setFont(final String font) {
+        m_font = font;
+    }
+
+    /**
+     * @return the minFontSize
+     */
+    public float getMinFontSize() {
+        return m_minFontSize;
+    }
+
+    /**
+     * @param minFontSize the minFontSize to set
+     */
+    public void setMinFontSize(final float minFontSize) {
+        m_minFontSize = minFontSize;
+    }
+
+    /**
+     * @return the maxFontSize
+     */
+    public float getMaxFontSize() {
+        return m_maxFontSize;
+    }
+
+    /**
+     * @param maxFontSize the maxFontSize to set
+     */
+    public void setMaxFontSize(final float maxFontSize) {
+        m_maxFontSize = maxFontSize;
+    }
+
+    /**
+     * @return the fontScaleType
+     */
+    public WordCloudFontScaleType getFontScaleType() {
+        return m_fontScaleType;
+    }
+
+    /**
+     * @param fontScaleType the fontScaleType to set
+     */
+    public void setFontScaleType(final WordCloudFontScaleType fontScaleType) {
+        m_fontScaleType = fontScaleType;
+    }
+
+    /**
+     * @return the spiralType
+     */
+    public WordCloudSpiralType getSpiralType() {
+        return m_spiralType;
+    }
+
+    /**
+     * @param spiralType the spiralType to set
+     */
+    public void setSpiralType(final WordCloudSpiralType spiralType) {
+        m_spiralType = spiralType;
+    }
+
+    /**
+     * @return the numOrientations
+     */
+    public int getNumOrientations() {
+        return m_numOrientations;
+    }
+
+    /**
+     * @param numOrientations the numOrientations to set
+     */
+    public void setNumOrientations(final int numOrientations) {
+        m_numOrientations = numOrientations;
+    }
+
+    /**
+     * @return the startAngle
+     */
+    public int getStartAngle() {
+        return m_startAngle;
+    }
+
+    /**
+     * @param startAngle the startAngle to set
+     */
+    public void setStartAngle(final int startAngle) {
+        m_startAngle = startAngle;
+    }
+
+    /**
+     * @return the endAngle
+     */
+    public int getEndAngle() {
+        return m_endAngle;
+    }
+
+    /**
+     * @param endAngle the endAngle to set
+     */
+    public void setEndAngle(final int endAngle) {
+        m_endAngle = endAngle;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
+        settings.addBoolean(CFG_GENERATE_IMAGE, m_generateImage);
         settings.addInt(CFG_MAX_WORDS, m_maxWords);
+        settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
+        settings.addString(CFG_TITLE, m_title);
+        settings.addString(CFG_SUBTITLE, m_subtitle);
+        settings.addString(CFG_WORD_COLUMN, m_wordColumn);
+        settings.addString(CFG_SIZE_COLUMN, m_sizeColumn);
+        settings.addBoolean(CFG_USE_SIZE_PROP, m_useSizeProp);
+        settings.addString(CFG_FONT, m_font);
+        settings.addFloat(CFG_MIN_FONT_SIZE, m_minFontSize);
+        settings.addFloat(CFG_MAX_FONT_SIZE, m_maxFontSize);
+        settings.addString(CFG_FONT_SCALE_TYPE, m_fontScaleType.toValue());
+        settings.addString(CFG_SPIRAL_TYPE, m_spiralType.toValue());
+        settings.addInt(CFG_NUM_ORIENTATIONS, m_numOrientations);
+        settings.addInt(CFG_START_ANGLE, m_startAngle);
+        settings.addInt(CFG_END_ANGLE, m_endAngle);
     }
 
     /** Loads parameters in NodeModel.
@@ -110,7 +395,22 @@ public class WordCloudViewConfig {
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
+        m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE);
         m_maxWords = settings.getInt(CFG_MAX_WORDS);
+        m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
+        m_title = settings.getString(CFG_TITLE);
+        m_subtitle = settings.getString(CFG_SUBTITLE);
+        m_wordColumn = settings.getString(CFG_WORD_COLUMN);
+        m_sizeColumn = settings.getString(CFG_SIZE_COLUMN);
+        m_useSizeProp = settings.getBoolean(CFG_USE_SIZE_PROP);
+        m_font = settings.getString(CFG_FONT);
+        m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE);
+        m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE);
+        m_fontScaleType = WordCloudFontScaleType.forValue(settings.getString(CFG_FONT_SCALE_TYPE));
+        m_spiralType = WordCloudSpiralType.forValue(settings.getString(CFG_SPIRAL_TYPE));
+        m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS);
+        m_startAngle = settings.getInt(CFG_START_ANGLE);
+        m_endAngle = settings.getInt(CFG_END_ANGLE);
     }
 
     /** Loads parameters in Dialog.
@@ -119,7 +419,22 @@ public class WordCloudViewConfig {
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
+        m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE_IMAGE);
         m_maxWords = settings.getInt(CFG_MAX_WORDS, DEFAULT_MAX_WORDS);
+        m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        m_title = settings.getString(CFG_TITLE, DEFAULT_TITLE);
+        m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
+        m_wordColumn = settings.getString(CFG_WORD_COLUMN, DEFAULT_WORD_COLUMN);
+        m_sizeColumn = settings.getString(CFG_SIZE_COLUMN, DEFAULT_SIZE_COLUMN);
+        m_useSizeProp = settings.getBoolean(CFG_USE_SIZE_PROP, DEFAULT_USE_SIZE_PROP);
+        m_font = settings.getString(CFG_FONT, DEFAULT_FONT);
+        m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE, DEFAULT_MIN_FONT_SIZE);
+        m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE, DEFAULT_MAX_FONT_SIZE);
+        m_fontScaleType = WordCloudFontScaleType.forValue(settings.getString(CFG_FONT_SCALE_TYPE, DEFAULT_FONT_SCALE_TYPE.toValue()));
+        m_spiralType = WordCloudSpiralType.forValue(settings.getString(CFG_SPIRAL_TYPE, DEFAULT_SPIRAL_TYPE.toValue()));
+        m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS, DEFAULT_NUM_ORIENTATIONS);
+        m_startAngle = settings.getInt(CFG_START_ANGLE, DEFAULT_START_ANGLE);
+        m_endAngle = settings.getInt(CFG_END_ANGLE, DEFAULT_END_ANGLE);
     }
 
 }
