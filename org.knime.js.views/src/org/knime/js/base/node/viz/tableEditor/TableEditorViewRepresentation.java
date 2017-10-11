@@ -102,6 +102,10 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
     private String[] m_subscriptionFilterIds;
 
+    // editor settings
+    private static final String CFG_EDITABLE_COLUMNS = "editableColumns";
+    private String[] m_editableColumns;
+
     /** Serialization constructor. Don't use. */
     public TableEditorViewRepresentation() { }
 
@@ -521,6 +525,20 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the editableColumns
+     */
+    public String[] getEditableColumns() {
+        return m_editableColumns;
+    }
+
+    /**
+     * @param editableColumns the editableColumns to set
+     */
+    public void setEditableColumns(final String[] editableColumns) {
+        m_editableColumns = editableColumns;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -561,6 +579,9 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         //added with 3.5
         settings.addBoolean(TableEditorViewConfig.CFG_SINGLE_SELECTION, m_singleSelection);
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, m_enableClearSelectionButton);
+
+        //editor settings
+        settings.addStringArray(CFG_EDITABLE_COLUMNS, m_editableColumns);
     }
 
     /**
@@ -606,6 +627,9 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         //added with 3.5
         m_singleSelection = settings.getBoolean(TableEditorViewConfig.CFG_SINGLE_SELECTION, TableEditorViewConfig.DEFAULT_SINGLE_SELECTION);
         m_enableClearSelectionButton = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, TableEditorViewConfig.DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
+
+        //editor settings
+        m_editableColumns = settings.getStringArray(CFG_EDITABLE_COLUMNS, (String[])null);
     }
 
     /**
@@ -653,6 +677,7 @@ public class TableEditorViewRepresentation extends JSONViewContent {
                 .append(m_displayMissingValueAsQuestionMark, other.m_displayMissingValueAsQuestionMark)
                 .append(m_publishFilterId, other.m_publishFilterId)
                 .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
+                .append(m_editableColumns, other.m_editableColumns)
                 .isEquals();
     }
 
@@ -691,6 +716,7 @@ public class TableEditorViewRepresentation extends JSONViewContent {
                 .append(m_displayMissingValueAsQuestionMark)
                 .append(m_publishFilterId)
                 .append(m_subscriptionFilterIds)
+                .append(m_editableColumns)
                 .toHashCode();
     }
 

@@ -202,6 +202,12 @@ public class TableEditorViewConfig {
     final static boolean DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK = true;
     private boolean m_displayMissingValueAsQuestionMark = DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK;
 
+    // Editor settings
+
+    final static String CFG_EDITABLE_COLUMNS_FILTER = "editableColumnsFilter";
+    private DataColumnSpecFilterConfiguration m_editableColumnsFilterConfig =
+        new DataColumnSpecFilterConfiguration(CFG_EDITABLE_COLUMNS_FILTER);
+
 
     /**
      * @return the hideInWizard
@@ -693,6 +699,20 @@ public class TableEditorViewConfig {
         m_displayMissingValueAsQuestionMark = displayMissingValueAsQuestionMark;
     }
 
+    /**
+     * @return the editableColumnFilterConfig
+     */
+    public DataColumnSpecFilterConfiguration getEditableColumnFilterConfig() {
+        return m_editableColumnsFilterConfig;
+    }
+
+    /**
+     * @param editableColumnFilterConfig the editableColumnFilterConfig to set
+     */
+    public void setEditableColumnFilterConfig(final DataColumnSpecFilterConfiguration editableColumnFilterConfig) {
+        m_editableColumnsFilterConfig = editableColumnFilterConfig;
+    }
+
 
     /** Saves current parameters to settings object.
      * @param settings To save to.
@@ -739,6 +759,9 @@ public class TableEditorViewConfig {
         //added with 3.5
         settings.addBoolean(CFG_SINGLE_SELECTION, m_singleSelection);
         settings.addBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, m_enableClearSelectionButton);
+
+        // editable settings
+        m_editableColumnsFilterConfig.saveConfiguration(settings);
     }
 
     /** Loads parameters in NodeModel.
@@ -793,6 +816,9 @@ public class TableEditorViewConfig {
         //added with 3.5
         m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
         m_enableClearSelectionButton = settings.getBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
+
+        // editable settings
+        m_editableColumnsFilterConfig.loadConfigurationInModel(settings);
     }
 
     /** Loads parameters in Dialog.
@@ -852,6 +878,9 @@ public class TableEditorViewConfig {
         //added with 3.5
         m_singleSelection = settings.getBoolean(CFG_SINGLE_SELECTION, DEFAULT_SINGLE_SELECTION);
         m_enableClearSelectionButton = settings.getBoolean(CFG_ENABLE_CLEAR_SELECTION_BUTTON, DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
+
+        // editable settings
+        m_editableColumnsFilterConfig.loadConfigurationInDialog(settings, spec);
     }
 
 }

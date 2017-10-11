@@ -119,6 +119,9 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
     private final JSpinner m_globalNumberFormatDecimalSpinner;
     private final JCheckBox m_displayMissingValueAsQuestionMark;
 
+    // editor
+    private final DataColumnSpecFilterPanel m_editableColumnsFilterPanel;
+
     TableEditorViewNodeDialogPane() {
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
         m_enablePagingCheckBox = new JCheckBox("Enable pagination");
@@ -222,7 +225,11 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
 
         m_displayMissingValueAsQuestionMark = new JCheckBox("Display missing value as red question mark");
 
+        // editor
+        m_editableColumnsFilterPanel = new DataColumnSpecFilterPanel();
+
         addTab("Options", initOptions());
+        addTab("Editor", initEditor());
         addTab("Interactivity", initInteractivity());
         addTab("Formatters", initFormatters());
     }
@@ -398,6 +405,24 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         return panel;
     }
 
+    private JPanel initEditor() {
+        JPanel editorPanel = new JPanel(new GridBagLayout());
+        editorPanel.setBorder(new TitledBorder("Editor Options"));
+        GridBagConstraints gbcD = createConfiguredGridBagConstraints();
+        gbcD.gridwidth = 1;
+        gbcD.gridx = 0;
+        editorPanel.add(new JLabel("Editable columns: "), gbcD);
+        gbcD.gridy++;
+        gbcD.gridwidth = 3;
+        editorPanel.add(m_editableColumnsFilterPanel, gbcD);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = createConfiguredGridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(editorPanel, gbc);
+        return panel;
+    }
+
     private void setNumberOfFilters(final DataTableSpec spec) {
         int numFilters = 0;
         for (int i = 0; i < spec.getNumColumns(); i++) {
@@ -471,6 +496,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         enableFormatterFields();
         enableSortingFields();
         setNumberOfFilters(inSpec);
+        // editor
+        m_editableColumnsFilterPanel.loadConfiguration(config.getEditableColumnFilterConfig(), inSpec);
     }
 
     /**
@@ -516,6 +543,11 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         config.setEnableGlobalNumberFormat(m_enableGlobalNumberFormatCheckbox.isSelected());
         config.setGlobalNumberFormatDecimals((Integer)m_globalNumberFormatDecimalSpinner.getValue());
         config.setDisplayMissingValueAsQuestionMark(m_displayMissingValueAsQuestionMark.isSelected());
+
+        // editor
+        DataColumnSpecFilterConfiguration editableColumnsFilterConfig = new DataColumnSpecFilterConfiguration(TableEditorViewConfig.CFG_EDITABLE_COLUMNS_FILTER);
+        m_editableColumnsFilterPanel.saveConfiguration(editableColumnsFilterConfig);
+        config.setEditableColumnFilterConfig(editableColumnsFilterConfig);
 
         config.saveSettings(settings);
     }

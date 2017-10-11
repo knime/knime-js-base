@@ -344,6 +344,9 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             //added with 3.5
             viewRepresentation.setSingleSelection(m_config.getSingleSelection());
             viewRepresentation.setEnableClearSelectionButton(m_config.getEnableClearSelectionButton());
+
+            //editor settings
+            viewRepresentation.setEditableColumns(m_config.getEditableColumnFilterConfig().applyTo(m_table.getDataTableSpec()).getIncludes());
         }
     }
 
