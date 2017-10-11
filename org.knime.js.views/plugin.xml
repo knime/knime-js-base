@@ -63,6 +63,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
       </node>
+      <node
+            category-path="/labs/interactiveView"
+            factory-class="org.knime.js.base.node.viz.tableEditor.TableEditorViewNodeFactory"
+            >
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -442,6 +447,34 @@
                webResourceBundleID="wNumb">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Table Editor"
+            usesDefine="false"
+            version="1.0"
+            webResourceBundleID="org.knime.js.base.node.viz.tableEditor.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/tableEditor/"
+               relativePathTarget="org/knime/js/base/node/viz/tableEditor/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/tableEditor/table-editor.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/viz/tableEditor/table-editor.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_locales_2_17">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="dataTables_1_10_11_bootstrap">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -577,6 +610,16 @@
             javascriptComponentID="org.knime.js.base.node.viz.decisiontree"
             name="Decision Tree View"
             namespace="knime_decision_tree"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.tableEditor.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.tableEditor"
+            name="Table Editor"
+            namespace="table_editor"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
