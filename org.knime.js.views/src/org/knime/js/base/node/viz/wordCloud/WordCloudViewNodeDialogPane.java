@@ -52,6 +52,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -112,6 +114,8 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableNumOrientationsChangeCheckBox;
     private final JCheckBox m_enableAnglesChangeCheckBox;
 
+    private String m_previousSizeColumn;
+
     WordCloudViewNodeDialogPane() {
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_maxWordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
@@ -121,12 +125,35 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         @SuppressWarnings("unchecked")
         DataValueColumnFilter wordColFilter = new DataValueColumnFilter(StringValue.class);
         Border wordColBorder = BorderFactory.createTitledBorder("Choose word column");
-        m_wordColumnSelection = new ColumnSelectionPanel(wordColBorder, wordColFilter, false, false);
+        m_wordColumnSelection = new ColumnSelectionPanel(wordColBorder, wordColFilter, false, true);
         @SuppressWarnings("unchecked")
         DataValueColumnFilter sizeColFilter = new DataValueColumnFilter(DoubleValue.class);
         Border sizeColBorder = BorderFactory.createTitledBorder("Choose size column");
-        m_sizeColumnSelection = new ColumnSelectionPanel(sizeColBorder, sizeColFilter, false, false);
+        m_sizeColumnSelection = new ColumnSelectionPanel(sizeColBorder, sizeColFilter, true, false);
+        m_sizeColumnSelection.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                String col = m_sizeColumnSelection.getSelectedColumn();
+                if (col != null) {
+                    m_previousSizeColumn = col;
+                }
+                m_useSizePropertyCheckBox.setSelected(col == null);
+            }
+        });
         m_useSizePropertyCheckBox = new JCheckBox("Use size property");
+        m_useSizePropertyCheckBox.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                boolean c = m_useSizePropertyCheckBox.isSelected();
+                String colSelect = m_previousSizeColumn;
+                if (m_previousSizeColumn == null && m_sizeColumnSelection.getNrItemsInList() > 1) {
+                    colSelect = m_sizeColumnSelection.getAvailableColumns().get(0).getName();
+                }
+                m_sizeColumnSelection.setSelectedColumn(c ? null : colSelect);
+            }
+        });
         m_fontTextField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_minFontSizeSpinner = new JSpinner(new SpinnerNumberModel(1f, 1f, null, 0.5f));
         m_maxFontSizeSpinner = new JSpinner(new SpinnerNumberModel(1f, 1f, null, 0.5f));
@@ -361,9 +388,8 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_titleTextField.setText(config.getTitle());
         m_subtitleTextField.setText(config.getSubtitle());
-        m_wordColumnSelection.update((DataTableSpec)specs[0], config.getWordColumn());
+        m_wordColumnSelection.update((DataTableSpec)specs[0], config.getWordColumn(), config.getWordColumn() == null);
         m_sizeColumnSelection.update((DataTableSpec)specs[0], config.getSizeColumn());
-        m_useSizePropertyCheckBox.setSelected(config.getUseSizeProp());
         m_fontTextField.setText(config.getFont());
         m_minFontSizeSpinner.setValue(config.getMinFontSize());
         m_maxFontSizeSpinner.setValue(config.getMaxFontSize());
@@ -382,6 +408,13 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         m_enableAnglesChangeCheckBox.setSelected(config.getEnableAnglesChange());
 
         enableViewConfigFields();
+        boolean onlyNoneColAvailable = m_sizeColumnSelection.getAvailableColumns().size() < 2;
+        m_sizeColumnSelection.setEnabled(!onlyNoneColAvailable);
+        m_useSizePropertyCheckBox.setEnabled(!onlyNoneColAvailable);
+        m_useSizePropertyCheckBox.setSelected(onlyNoneColAvailable || config.getUseSizeProp());
+        if (config.getSizeColumn() != null) {
+            m_previousSizeColumn = config.getSizeColumn();
+        }
     }
 
     private void enableViewConfigFields() {

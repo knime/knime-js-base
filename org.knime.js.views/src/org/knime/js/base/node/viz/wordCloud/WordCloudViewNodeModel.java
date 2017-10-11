@@ -53,6 +53,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.knime.base.data.xml.SvgCell;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -95,6 +96,15 @@ public class WordCloudViewNodeModel
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
+        String wordCol = m_config.getWordColumn();
+        if (wordCol != null && !inSpec.containsName(wordCol)) {
+            throw new InvalidSettingsException("Selected word column '" + wordCol + "' does not exist!");
+        }
+        String sizeCol = m_config.getSizeColumn();
+        if (sizeCol != null && !inSpec.containsName(sizeCol)) {
+            throw new InvalidSettingsException("Selected size column '" + sizeCol + "' does not exist!");
+        }
         PortObjectSpec imageSpec;
         if (generateImage()) {
             imageSpec = new ImagePortObjectSpec(SvgCell.TYPE);
@@ -187,21 +197,44 @@ public class WordCloudViewNodeModel
 
     private List<WordCloudData> extractWordCloudData(final BufferedDataTable table, final ExecutionContext exec) throws Exception {
         // TODO aggregate words
+        String[] includeColumns = new String[]{m_config.getWordColumn(), m_config.getSizeColumn()};
         JSONDataTable jsonTable = JSONDataTable.newBuilder()
                 .setDataTable(table)
                 .setId(getTableId(0))
                 .setFirstRow(1)
-                .setIncludeColumns(new String[]{m_config.getWordColumn(), m_config.getSizeColumn()})
+                .setMaxRows(m_config.getMaxWords())
+                .setIncludeColumns(includeColumns)
+                .extractRowColors(true)
+                .extractRowSizes(m_config.getUseSizeProp())
                 .build(exec);
         int numWords = Math.min(jsonTable.getSpec().getNumRows(), m_config.getMaxWords());
         List<WordCloudData> data = new ArrayList<WordCloudData>(numWords);
         JSONDataTableRow[] rows = jsonTable.getRows();
-        int wordIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getWordColumn());
-        int sizeIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getSizeColumn());
+        int wordIndex = -1;
+        if (m_config.getWordColumn() != null) {
+            wordIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getWordColumn());
+        }
+        int sizeIndex = -1;
+        if (!m_config.getUseSizeProp()) {
+            sizeIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getSizeColumn());
+        }
+        String[] colors = jsonTable.getSpec().getRowColorValues();
+        Double[] sizes = jsonTable.getSpec().getRowSizeValues();
         for(int i = 0; i < numWords; i++) {
             WordCloudData indData = new WordCloudData();
-            indData.setWord((String)rows[i].getData()[wordIndex]);
-            indData.setSize(((double)rows[i].getData()[sizeIndex]));
+            if (m_config.getWordColumn() != null) {
+                indData.setWord((String)rows[i].getData()[wordIndex]);
+            } else {
+                indData.setWord(rows[i].getRowKey());
+            }
+            if (m_config.getUseSizeProp()) {
+                indData.setSize(sizes[i]);
+            } else {
+                indData.setSize(((double)rows[i].getData()[sizeIndex]));
+            }
+            //TODO the following two properties need to be configurable
+            indData.setColor(colors[i]);
+            indData.setOpacity(1);
             data.add(indData);
         }
         return data;
