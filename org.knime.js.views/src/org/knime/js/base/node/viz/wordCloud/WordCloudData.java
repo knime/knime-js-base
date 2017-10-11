@@ -48,10 +48,139 @@
  */
 package org.knime.js.base.node.viz.wordCloud;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  *
- * @author albrecht
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WordCloudData {
+
+    private static final String CFG_WORD = "word";
+    private String m_word;
+
+    private static final String CFG_COLOR = "color";
+    private String m_color;
+
+    private static final String CFG_SIZE = "size";
+    private double m_size;
+
+    private static final String CFG_OPACITY = "opacity";
+    private double m_opacity;
+
+    /**
+     * @return the word
+     */
+    public String getWord() {
+        return m_word;
+    }
+
+    /**
+     * @param word the word to set
+     */
+    public void setWord(final String word) {
+        m_word = word;
+    }
+
+    /**
+     * @return the color
+     */
+    public String getColor() {
+        return m_color;
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColor(final String color) {
+        m_color = color;
+    }
+
+    /**
+     * @return the size
+     */
+    public double getSize() {
+        return m_size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(final double size) {
+        m_size = size;
+    }
+
+    /**
+     * @return the opacity
+     */
+    public double getOpacity() {
+        return m_opacity;
+    }
+
+    /**
+     * @param opacity the opacity to set
+     */
+    public void setOpacity(final double opacity) {
+        m_opacity = opacity;
+    }
+
+    void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_WORD, m_word);
+        settings.addString(CFG_COLOR, m_color);
+        settings.addDouble(CFG_SIZE, m_size);
+        settings.addDouble(CFG_OPACITY, m_opacity);
+    }
+
+    void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_word = settings.getString(CFG_WORD);
+        m_color = settings.getString(CFG_COLOR);
+        m_size = settings.getDouble(CFG_SIZE);
+        m_opacity = settings.getDouble(CFG_OPACITY);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        WordCloudData other = (WordCloudData)obj;
+        return new EqualsBuilder()
+                .append(m_word, other.m_word)
+                .append(m_color, other.m_color)
+                .append(m_size, other.m_size)
+                .append(m_opacity, other.m_opacity)
+                .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_word)
+                .append(m_color)
+                .append(m_size)
+                .append(m_opacity)
+                .toHashCode();
+    }
 
 }

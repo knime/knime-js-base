@@ -128,6 +128,38 @@ public class WordCloudViewConfig {
     private final static int DEFAULT_END_ANGLE = 60;
     private int m_endAngle = DEFAULT_END_ANGLE;
 
+    final static String CFG_ENABLE_CONFIG = "enableViewConfiguration";
+    private final static boolean DEFAULT_ENABLE_CONFIG = true;
+    private boolean m_enableViewConfig = DEFAULT_ENABLE_CONFIG;
+
+    final static String CFG_ENABLE_TITLE_CHANGE = "enableTitleChange";
+    private final static boolean DEFAULT_ENABLE_TITLE_CHANGE = true;
+    private boolean m_enableTitleChange = DEFAULT_ENABLE_TITLE_CHANGE;
+
+    final static String CFG_ENABLE_SUBTITLE_CHANGE = "enableSubtitleChange";
+    private final static boolean DEFAULT_ENABLE_SUBTITLE_CHANGE = true;
+    private boolean m_enableSubtitleChange = DEFAULT_ENABLE_SUBTITLE_CHANGE;
+
+    final static String CFG_ENABLE_FONT_SIZE_CHANGE = "enableFontSizeChange";
+    private final static boolean DEFAULT_ENABLE_FONT_SIZE_CHANGE = true;
+    private boolean m_enableFontSizeChange = DEFAULT_ENABLE_FONT_SIZE_CHANGE;
+
+    final static String CFG_ENABLE_SCALE_TYPE_CHANGE = "enableScaleTypeChange";
+    private final static boolean DEFAULT_ENABLE_SCALE_TYPE_CHANGE = true;
+    private boolean m_enableScaleTypeChange = DEFAULT_ENABLE_SCALE_TYPE_CHANGE;
+
+    final static String CFG_ENABLE_SPIRAL_TYPE_CHANGE = "enableSpiralTypeChange";
+    private final static boolean DEFAULT_ENABLE_SPIRAL_TYPE_CHANGE = true;
+    private boolean m_enableSpiralTypeChange = DEFAULT_ENABLE_SPIRAL_TYPE_CHANGE;
+
+    final static String CFG_ENABLE_NUM_ORIENTATIONS_CHANGE = "enableNumOrientationsChange";
+    private final static boolean DEFAULT_ENABLE_NUM_ORIENTATIONS_CHANGE = true;
+    private boolean m_enableNumOrientationsChange = DEFAULT_ENABLE_NUM_ORIENTATIONS_CHANGE;
+
+    final static String CFG_ENABLE_ANGLES_CHANGE = "enableAnglesChange";
+    private final static boolean DEFAULT_ENABLE_ANGLES_CHANGE = true;
+    private boolean m_enableAnglesChange = DEFAULT_ENABLE_ANGLES_CHANGE;
+
     /**
      * @return the hideInWizard
      */
@@ -366,6 +398,118 @@ public class WordCloudViewConfig {
         m_endAngle = endAngle;
     }
 
+    /**
+     * @return the enableViewConfig
+     */
+    public boolean getEnableViewConfig() {
+        return m_enableViewConfig;
+    }
+
+    /**
+     * @param enableViewConfig the enableViewConfig to set
+     */
+    public void setEnableViewConfig(final boolean enableViewConfig) {
+        m_enableViewConfig = enableViewConfig;
+    }
+
+    /**
+     * @return the enableTitleChange
+     */
+    public boolean getEnableTitleChange() {
+        return m_enableTitleChange;
+    }
+
+    /**
+     * @param enableTitleChange the enableTitleChange to set
+     */
+    public void setEnableTitleChange(final boolean enableTitleChange) {
+        m_enableTitleChange = enableTitleChange;
+    }
+
+    /**
+     * @return the enableSubtitleChange
+     */
+    public boolean getEnableSubtitleChange() {
+        return m_enableSubtitleChange;
+    }
+
+    /**
+     * @param enableSubtitleChange the enableSubtitleChange to set
+     */
+    public void setEnableSubtitleChange(final boolean enableSubtitleChange) {
+        m_enableSubtitleChange = enableSubtitleChange;
+    }
+
+    /**
+     * @return the enableFontSizeChante
+     */
+    public boolean getEnableFontSizeChange() {
+        return m_enableFontSizeChange;
+    }
+
+    /**
+     * @param enableFontSizeChange the enableFontSizeChange to set
+     */
+    public void setEnableFontSizeChange(final boolean enableFontSizeChange) {
+        m_enableFontSizeChange = enableFontSizeChange;
+    }
+
+    /**
+     * @return the enableScaleTypeChange
+     */
+    public boolean getEnableScaleTypeChange() {
+        return m_enableScaleTypeChange;
+    }
+
+    /**
+     * @param enableScaleTypeChange the enableScaleTypeChange to set
+     */
+    public void setEnableScaleTypeChange(final boolean enableScaleTypeChange) {
+        m_enableScaleTypeChange = enableScaleTypeChange;
+    }
+
+    /**
+     * @return the enableSpiralTypeChange
+     */
+    public boolean getEnableSpiralTypeChange() {
+        return m_enableSpiralTypeChange;
+    }
+
+    /**
+     * @param enableSpiralTypeChange the enableSpiralTypeChange to set
+     */
+    public void setEnableSpiralTypeChange(final boolean enableSpiralTypeChange) {
+        m_enableSpiralTypeChange = enableSpiralTypeChange;
+    }
+
+    /**
+     * @return the enableNumOrientationsChange
+     */
+    public boolean getEnableNumOrientationsChange() {
+        return m_enableNumOrientationsChange;
+    }
+
+    /**
+     * @param enableNumOrientationsChange the enableNumOrientationsChange to set
+     */
+    public void setEnableNumOrientationsChange(final boolean enableNumOrientationsChange) {
+        m_enableNumOrientationsChange = enableNumOrientationsChange;
+    }
+
+    /**
+     * @return the enableAnglesChange
+     */
+    public boolean getEnableAnglesChange() {
+        return m_enableAnglesChange;
+    }
+
+    /**
+     * @param enableAnglesChange the enableAnglesChange to set
+     */
+    public void setEnableAnglesChange(final boolean enableAnglesChange) {
+        m_enableAnglesChange = enableAnglesChange;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -387,6 +531,14 @@ public class WordCloudViewConfig {
         settings.addInt(CFG_NUM_ORIENTATIONS, m_numOrientations);
         settings.addInt(CFG_START_ANGLE, m_startAngle);
         settings.addInt(CFG_END_ANGLE, m_endAngle);
+        settings.addBoolean(CFG_ENABLE_CONFIG, m_enableViewConfig);
+        settings.addBoolean(CFG_ENABLE_TITLE_CHANGE, m_enableTitleChange);
+        settings.addBoolean(CFG_ENABLE_SUBTITLE_CHANGE, m_enableSubtitleChange);
+        settings.addBoolean(CFG_ENABLE_FONT_SIZE_CHANGE, m_enableFontSizeChange);
+        settings.addBoolean(CFG_ENABLE_SCALE_TYPE_CHANGE, m_enableScaleTypeChange);
+        settings.addBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE, m_enableSpiralTypeChange);
+        settings.addBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, m_enableNumOrientationsChange);
+        settings.addBoolean(CFG_ENABLE_ANGLES_CHANGE, m_enableAnglesChange);
     }
 
     /** Loads parameters in NodeModel.
@@ -411,6 +563,14 @@ public class WordCloudViewConfig {
         m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(CFG_START_ANGLE);
         m_endAngle = settings.getInt(CFG_END_ANGLE);
+        m_enableViewConfig = settings.getBoolean(CFG_ENABLE_CONFIG);
+        m_enableTitleChange = settings.getBoolean(CFG_ENABLE_TITLE_CHANGE);
+        m_enableSubtitleChange = settings.getBoolean(CFG_ENABLE_SUBTITLE_CHANGE);
+        m_enableFontSizeChange = settings.getBoolean(CFG_ENABLE_FONT_SIZE_CHANGE);
+        m_enableScaleTypeChange = settings.getBoolean(CFG_ENABLE_SCALE_TYPE_CHANGE);
+        m_enableSpiralTypeChange = settings.getBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE);
+        m_enableNumOrientationsChange = settings.getBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE);
+        m_enableAnglesChange = settings.getBoolean(CFG_ENABLE_ANGLES_CHANGE);
     }
 
     /** Loads parameters in Dialog.
@@ -435,6 +595,14 @@ public class WordCloudViewConfig {
         m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS, DEFAULT_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(CFG_START_ANGLE, DEFAULT_START_ANGLE);
         m_endAngle = settings.getInt(CFG_END_ANGLE, DEFAULT_END_ANGLE);
+        m_enableViewConfig = settings.getBoolean(CFG_ENABLE_CONFIG, DEFAULT_ENABLE_CONFIG);
+        m_enableTitleChange = settings.getBoolean(CFG_ENABLE_TITLE_CHANGE, DEFAULT_ENABLE_TITLE_CHANGE);
+        m_enableSubtitleChange = settings.getBoolean(CFG_ENABLE_SUBTITLE_CHANGE, DEFAULT_ENABLE_SUBTITLE_CHANGE);
+        m_enableFontSizeChange = settings.getBoolean(CFG_ENABLE_FONT_SIZE_CHANGE, DEFAULT_ENABLE_FONT_SIZE_CHANGE);
+        m_enableScaleTypeChange = settings.getBoolean(CFG_ENABLE_SCALE_TYPE_CHANGE, DEFAULT_ENABLE_SCALE_TYPE_CHANGE);
+        m_enableSpiralTypeChange = settings.getBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE, DEFAULT_ENABLE_SPIRAL_TYPE_CHANGE);
+        m_enableNumOrientationsChange = settings.getBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, DEFAULT_ENABLE_NUM_ORIENTATIONS_CHANGE);
+        m_enableAnglesChange = settings.getBoolean(CFG_ENABLE_ANGLES_CHANGE, DEFAULT_ENABLE_ANGLES_CHANGE);
     }
 
 }

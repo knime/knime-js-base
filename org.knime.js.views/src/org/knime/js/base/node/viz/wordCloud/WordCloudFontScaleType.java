@@ -56,7 +56,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -64,7 +63,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public enum WordCloudFontScaleType {
 
     LINEAR,
@@ -77,7 +75,7 @@ public enum WordCloudFontScaleType {
     static {
         namesMap.put("linear", LINEAR);
         namesMap.put("logarithmic", LOGARITHMIC);
-        namesMap.put("squareRoot", SQUARE_ROOT);
+        namesMap.put("square root", SQUARE_ROOT);
         namesMap.put("exponential", EXPONENTIAL);
     }
 
@@ -102,6 +100,14 @@ public enum WordCloudFontScaleType {
         }
         // this does not happen, unless namesMap is not in synch with enum
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return toValue();
     }
 
 }

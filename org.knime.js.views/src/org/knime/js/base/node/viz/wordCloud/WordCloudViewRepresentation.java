@@ -48,6 +48,9 @@
  */
 package org.knime.js.base.node.viz.wordCloud;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -67,8 +70,34 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WordCloudViewRepresentation extends JSONViewContent {
 
+    private static final String CFG_DATA = "data";
+    private static final String CFG_NUM_SETTINGS = "numSettings";
+    private List<WordCloudData> m_data;
+
     private boolean m_displayFullscreenButton;
     private String m_font;
+    private boolean m_enableViewConfig;
+    private boolean m_enableTitleChange;
+    private boolean m_enableSubtitleChange;
+    private boolean m_enableFontSizeChange;
+    private boolean m_enableScaleTypeChange;
+    private boolean m_enableSpiralTypeChange;
+    private boolean m_enableNumOrientationsChange;
+    private boolean m_enableAnglesChange;
+
+    /**
+     * @return the data
+     */
+    public List<WordCloudData> getData() {
+        return m_data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(final List<WordCloudData> data) {
+        m_data = data;
+    }
 
     /**
      * @return the displayFullscreenButton
@@ -99,12 +128,139 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the enableViewConfig
+     */
+    public boolean getEnableViewConfig() {
+        return m_enableViewConfig;
+    }
+
+    /**
+     * @param enableViewConfig the enableViewConfig to set
+     */
+    public void setEnableViewConfig(final boolean enableViewConfig) {
+        m_enableViewConfig = enableViewConfig;
+    }
+
+    /**
+     * @return the enableTitleChange
+     */
+    public boolean getEnableTitleChange() {
+        return m_enableTitleChange;
+    }
+
+    /**
+     * @param enableTitleChange the enableTitleChange to set
+     */
+    public void setEnableTitleChange(final boolean enableTitleChange) {
+        m_enableTitleChange = enableTitleChange;
+    }
+
+    /**
+     * @return the enableSubtitleChange
+     */
+    public boolean getEnableSubtitleChange() {
+        return m_enableSubtitleChange;
+    }
+
+    /**
+     * @param enableSubtitleChange the enableSubtitleChange to set
+     */
+    public void setEnableSubtitleChange(final boolean enableSubtitleChange) {
+        m_enableSubtitleChange = enableSubtitleChange;
+    }
+
+    /**
+     * @return the enableFontSizeChante
+     */
+    public boolean getEnableFontSizeChange() {
+        return m_enableFontSizeChange;
+    }
+
+    /**
+     * @param enableFontSizeChange the enableFontSizeChange to set
+     */
+    public void setEnableFontSizeChange(final boolean enableFontSizeChange) {
+        m_enableFontSizeChange = enableFontSizeChange;
+    }
+
+    /**
+     * @return the enableScaleTypeChange
+     */
+    public boolean getEnableScaleTypeChange() {
+        return m_enableScaleTypeChange;
+    }
+
+    /**
+     * @param enableScaleTypeChange the enableScaleTypeChange to set
+     */
+    public void setEnableScaleTypeChange(final boolean enableScaleTypeChange) {
+        m_enableScaleTypeChange = enableScaleTypeChange;
+    }
+
+    /**
+     * @return the enableSpiralTypeChange
+     */
+    public boolean getEnableSpiralTypeChange() {
+        return m_enableSpiralTypeChange;
+    }
+
+    /**
+     * @param enableSpiralTypeChange the enableSpiralTypeChange to set
+     */
+    public void setEnableSpiralTypeChange(final boolean enableSpiralTypeChange) {
+        m_enableSpiralTypeChange = enableSpiralTypeChange;
+    }
+
+    /**
+     * @return the enableNumOrientationsChange
+     */
+    public boolean getEnableNumOrientationsChange() {
+        return m_enableNumOrientationsChange;
+    }
+
+    /**
+     * @param enableNumOrientationsChange the enableNumOrientationsChange to set
+     */
+    public void setEnableNumOrientationsChange(final boolean enableNumOrientationsChange) {
+        m_enableNumOrientationsChange = enableNumOrientationsChange;
+    }
+
+    /**
+     * @return the enableAnglesChange
+     */
+    public boolean getEnableAnglesChange() {
+        return m_enableAnglesChange;
+    }
+
+    /**
+     * @param enableAnglesChange the enableAnglesChange to set
+     */
+    public void setEnableAnglesChange(final boolean enableAnglesChange) {
+        m_enableAnglesChange = enableAnglesChange;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        NodeSettingsWO dataSettings = settings.addNodeSettings(CFG_DATA);
+        int numSettings = m_data == null ? 0 : m_data.size();
+        dataSettings.addInt(CFG_NUM_SETTINGS, numSettings);
+        for (int i = 0; i < numSettings; i++) {
+            NodeSettingsWO indSettings = dataSettings.addNodeSettings(Integer.toString(i));
+            m_data.get(i).saveToNodeSettings(indSettings);
+        }
         settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addString(WordCloudViewConfig.CFG_FONT, m_font);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG, m_enableViewConfig);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE, m_enableTitleChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_SUBTITLE_CHANGE, m_enableSubtitleChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_FONT_SIZE_CHANGE, m_enableFontSizeChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_SCALE_TYPE_CHANGE, m_enableScaleTypeChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_SPIRAL_TYPE_CHANGE, m_enableSpiralTypeChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, m_enableNumOrientationsChange);
+        settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_ANGLES_CHANGE, m_enableAnglesChange);
     }
 
     /**
@@ -112,8 +268,27 @@ public class WordCloudViewRepresentation extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        NodeSettingsRO dataSettings = settings.getNodeSettings(CFG_DATA);
+        int numSettings = dataSettings.getInt(CFG_NUM_SETTINGS);
+        if (numSettings > 0) {
+            m_data = new ArrayList<WordCloudData>(numSettings);
+            for (int i = 0; i < numSettings; i++) {
+                NodeSettingsRO indSettings = dataSettings.getNodeSettings(Integer.toString(i));
+                WordCloudData indData = new WordCloudData();
+                indData.loadFromNodeSettings(indSettings);
+                m_data.add(indData);
+            }
+        }
         m_displayFullscreenButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_font = settings.getString(WordCloudViewConfig.CFG_FONT);
+        m_enableViewConfig = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG);
+        m_enableTitleChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE);
+        m_enableSubtitleChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_SUBTITLE_CHANGE);
+        m_enableFontSizeChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_FONT_SIZE_CHANGE);
+        m_enableScaleTypeChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_SCALE_TYPE_CHANGE);
+        m_enableSpiralTypeChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_SPIRAL_TYPE_CHANGE);
+        m_enableNumOrientationsChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_NUM_ORIENTATIONS_CHANGE);
+        m_enableAnglesChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_ANGLES_CHANGE);
     }
 
     /**
@@ -132,8 +307,17 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         }
         WordCloudViewRepresentation other = (WordCloudViewRepresentation)obj;
         return new EqualsBuilder()
+                .append(m_data, other.m_data)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_font, other.m_font)
+                .append(m_enableViewConfig, other.m_enableViewConfig)
+                .append(m_enableTitleChange, other.m_enableTitleChange)
+                .append(m_enableSubtitleChange, other.m_enableSubtitleChange)
+                .append(m_enableFontSizeChange, other.m_enableFontSizeChange)
+                .append(m_enableScaleTypeChange, other.m_enableScaleTypeChange)
+                .append(m_enableSpiralTypeChange, other.m_enableSpiralTypeChange)
+                .append(m_enableNumOrientationsChange, other.m_enableNumOrientationsChange)
+                .append(m_enableAnglesChange, other.m_enableAnglesChange)
                 .isEquals();
     }
 
@@ -143,8 +327,17 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_data)
                 .append(m_displayFullscreenButton)
                 .append(m_font)
+                .append(m_enableViewConfig)
+                .append(m_enableTitleChange)
+                .append(m_enableSubtitleChange)
+                .append(m_enableFontSizeChange)
+                .append(m_enableScaleTypeChange)
+                .append(m_enableSpiralTypeChange)
+                .append(m_enableNumOrientationsChange)
+                .append(m_enableAnglesChange)
                 .toHashCode();
     }
 

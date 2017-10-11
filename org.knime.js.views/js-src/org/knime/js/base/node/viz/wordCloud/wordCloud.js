@@ -1,4 +1,4 @@
-wordcloud_ns = function() {
+knime_word_cloud = function() {
 
 	var wordCloud = {};
 	var _representation

@@ -48,6 +48,11 @@
  */
 package org.knime.js.base.node.viz.wordCloud;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.knime.base.data.xml.SvgCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -55,9 +60,14 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
+import org.knime.core.node.port.image.ImagePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.JSONDataTable.JSONDataTableRow;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
@@ -78,6 +88,20 @@ public class WordCloudViewNodeModel
     protected WordCloudViewNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{ImagePortObject.TYPE}, viewName);
         m_config = new WordCloudViewConfig();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        PortObjectSpec imageSpec;
+        if (generateImage()) {
+            imageSpec = new ImagePortObjectSpec(SvgCell.TYPE);
+        } else {
+            imageSpec = InactiveBranchPortObjectSpec.INSTANCE;
+        }
+        return new PortObjectSpec[]{imageSpec};
     }
 
     /**
@@ -143,8 +167,12 @@ public class WordCloudViewNodeModel
      */
     @Override
     protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        // TODO Auto-generated method stub
-
+        WordCloudViewRepresentation representation = getViewRepresentation();
+        if(representation.getData() == null) {
+            copyConfigToView();
+            BufferedDataTable table = (BufferedDataTable)inObjects[0];
+            representation.setData(extractWordCloudData(table, exec));
+        }
     }
 
     /**
@@ -153,8 +181,30 @@ public class WordCloudViewNodeModel
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects,
         final ExecutionContext exec) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        /* nothing to do so far */
+        return new PortObject[]{svgImageFromView};
+    }
+
+    private List<WordCloudData> extractWordCloudData(final BufferedDataTable table, final ExecutionContext exec) throws Exception {
+        // TODO aggregate words
+        JSONDataTable jsonTable = JSONDataTable.newBuilder()
+                .setDataTable(table)
+                .setId(getTableId(0))
+                .setFirstRow(1)
+                .setIncludeColumns(new String[]{m_config.getWordColumn(), m_config.getSizeColumn()})
+                .build(exec);
+        int numWords = Math.min(jsonTable.getSpec().getNumRows(), m_config.getMaxWords());
+        List<WordCloudData> data = new ArrayList<WordCloudData>(numWords);
+        JSONDataTableRow[] rows = jsonTable.getRows();
+        int wordIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getWordColumn());
+        int sizeIndex = ArrayUtils.indexOf(jsonTable.getSpec().getColNames(), m_config.getSizeColumn());
+        for(int i = 0; i < numWords; i++) {
+            WordCloudData indData = new WordCloudData();
+            indData.setWord((String)rows[i].getData()[wordIndex]);
+            indData.setSize(((double)rows[i].getData()[sizeIndex]));
+            data.add(indData);
+        }
+        return data;
     }
 
     /**
@@ -178,8 +228,45 @@ public class WordCloudViewNodeModel
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
+        copyValueToConfig();
+    }
 
+    private void copyConfigToView() {
+        WordCloudViewRepresentation representation = getViewRepresentation();
+        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setFont(m_config.getFont());
+        representation.setEnableViewConfig(m_config.getEnableViewConfig());
+        representation.setEnableTitleChange(m_config.getEnableTitleChange());
+        representation.setEnableSubtitleChange(m_config.getEnableSubtitleChange());
+        representation.setEnableFontSizeChange(m_config.getEnableFontSizeChange());
+        representation.setEnableScaleTypeChange(m_config.getEnableScaleTypeChange());
+        representation.setEnableSpiralTypeChange(m_config.getEnableSpiralTypeChange());
+        representation.setEnableNumOrientationsChange(m_config.getEnableNumOrientationsChange());
+        representation.setEnableAnglesChange(m_config.getEnableAnglesChange());
+
+        WordCloudViewValue value = getViewValue();
+        value.setTitle(m_config.getTitle());
+        value.setSubtitle(m_config.getSubtitle());
+        value.setMinFontSize(m_config.getMinFontSize());
+        value.setMaxFontSize(m_config.getMaxFontSize());
+        value.setFontScaleType(m_config.getFontScaleType());
+        value.setSpiralType(m_config.getSpiralType());
+        value.setNumOrientations(m_config.getNumOrientations());
+        value.setStartAngle(m_config.getStartAngle());
+        value.setEndAngle(m_config.getEndAngle());
+    }
+
+    private void copyValueToConfig() {
+        WordCloudViewValue value = getViewValue();
+        m_config.setTitle(value.getTitle());
+        m_config.setSubtitle(value.getSubtitle());
+        m_config.setMinFontSize(value.getMinFontSize());
+        m_config.setMaxFontSize(value.getMaxFontSize());
+        m_config.setFontScaleType(value.getFontScaleType());
+        m_config.setSpiralType(value.getSpiralType());
+        m_config.setNumOrientations(value.getNumOrientations());
+        m_config.setStartAngle(value.getStartAngle());
+        m_config.setEndAngle(value.getEndAngle());
     }
 
     /**
