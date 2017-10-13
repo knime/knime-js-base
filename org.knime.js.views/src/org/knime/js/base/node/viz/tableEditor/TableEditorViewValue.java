@@ -47,6 +47,8 @@
  */
 package org.knime.js.base.node.viz.tableEditor;
 
+import java.util.Map;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -100,6 +102,9 @@ public class TableEditorViewValue extends JSONViewContent {
     private boolean m_subscribeSelection;
     private boolean m_publishFilter;
     private boolean m_subscribeFilter;
+
+    // editor
+    private Map<Integer, Map<Integer, String>> m_editChanges;
 
     /**
      * @return the selection
@@ -284,6 +289,20 @@ public class TableEditorViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the editChanges
+     */
+    public Map<Integer, Map<Integer, String>> getEditChanges() {
+        return m_editChanges;
+    }
+
+    /**
+     * @param editChanges the editChanges to set
+     */
+    public void setEditChanges(final Map<Integer, Map<Integer, String>> editChanges) {
+        m_editChanges = editChanges;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -372,6 +391,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_subscribeSelection, other.m_subscribeSelection)
                 .append(m_publishFilter, other.m_publishFilter)
                 .append(m_subscribeFilter, other.m_subscribeFilter)
+                .append(m_editChanges, other.m_editChanges)
                 .isEquals();
     }
 
@@ -394,6 +414,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_subscribeSelection)
                 .append(m_publishFilter)
                 .append(m_subscribeFilter)
+                .append(m_editChanges)
                 .toHashCode();
     }
 

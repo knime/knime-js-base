@@ -11,6 +11,9 @@ table_editor = function() {
 	var currentFilter = null;
 	var initialized = false;
 	
+	var colArray = [];
+	var colShift = 0;
+	
 	//register neutral ordering method for clear selection button
 	$.fn.dataTable.Api.register('order.neutral()', function () {
 	    return this.iterator('table', function (s) {
@@ -31,6 +34,8 @@ table_editor = function() {
 		}
 		_representation = representation;
 		_value = value;
+		
+		_value.editChanges = {};
 
 		if (parent && parent.KnimePageLoader) {
 			drawTable();
@@ -96,7 +101,7 @@ table_editor = function() {
 			    });
 			}
 			
-			var colArray = [];
+			colArray = [];
 			var colDefs = [];
 			if (_representation.enableSelection) {
 				if (_representation.singleSelection) {
@@ -138,12 +143,14 @@ table_editor = function() {
 						}
 					});
 				}
+				colShift++;
 			}
 			if (_representation.displayRowIndex) {
 				colArray.push({
 					'title': "Row Index",
 					'searchable': false
-				})
+				});
+				colShift++;
 			}
 			if (_representation.displayRowIds || _representation.displayRowColors) {
 				var title = _representation.displayRowIds ? 'RowID' : '';
@@ -153,6 +160,7 @@ table_editor = function() {
 					'orderable': orderable,
 					'className': 'no-break'
 				});
+				colShift++;
 			}
 			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
 				var colType = knimeTable.getColumnTypes()[i];
@@ -270,6 +278,13 @@ table_editor = function() {
 			var searchEnabled = _representation.enableSearching || _representation.enableColumnSearching
 				|| (_representation.enableSelection && (_value.hideUnselected || _representation.enableHideUnselected)) 
 				|| (knimeService && knimeService.isInteractivityAvailable());
+			
+			var editableColIndices = [];
+			for (var i = 0; i < colArray.length; i++) {
+				if (_representation.editableColumns.indexOf(colArray[i].title) !== -1) {
+					editableColIndices.push(i);
+				}
+			}
 
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
@@ -291,6 +306,14 @@ table_editor = function() {
 				  	}
 					if (searchEnabled && !_representation.enableSearching) {
 						$('#knimePagedTable_filter').remove();
+					}
+					if (dataTable) {
+						dataTable.columns(editableColIndices, {page: 'current'}).nodes().flatten().to$().on('click', editableCellClickHandler);
+					}
+				},
+				'preDrawCallback': function() {
+					if (dataTable) {
+						dataTable.columns(editableColIndices, {page: 'current'}).nodes().flatten().to$().off('click', editableCellClickHandler);
 					}
 				}
 			});
@@ -601,6 +624,40 @@ table_editor = function() {
 		//but now keeping selection and checkbox state separate and applying checked state on every call of draw()
 		/*allCheckboxes = dataTable.column(0).nodes().to$().children();*/
 		initialized = true;
+	}
+	
+	editableCellClickHandler = function() {
+		var td = this;
+		var cell = dataTable.cell(td);
+		
+		var $td = $(cell.node());
+		$td.off('click', editableCellClickHandler);
+		var $input = $('<input type="text"/>');
+		$input.val(cell.data());
+		
+		$input.on('focusout', function() {
+			setTimeout(function() {
+				$td.on('click', editableCellClickHandler)
+			}, 200);
+			$input.off('focusout');
+			var newVal = $input.val();
+			$td.empty()
+				.append(newVal);
+				
+			var index = cell.index();
+			dataTable.data()[index.row][index.column] = newVal;
+			
+			if (_value.editChanges[index.row] === undefined) {
+				_value.editChanges[index.row] = {};
+			}
+			_value.editChanges[index.row][index.column - colShift] = newVal;
+			
+			cell.invalidate();
+		})
+		
+		$td.empty()
+			.append($input);
+		$input.focus();
 	}
 	
 	selectAll = function(all, ignoreSearch) {

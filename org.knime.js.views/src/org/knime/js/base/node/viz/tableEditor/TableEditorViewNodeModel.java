@@ -50,6 +50,7 @@ package org.knime.js.base.node.viz.tableEditor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.data.DataCell;
@@ -62,7 +63,10 @@ import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.filter.FilterHandler;
+import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.CanceledExecutionException;
@@ -103,7 +107,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.viz.pagedTable";
+        return "org.knime.js.base.node.viz.tableEditor";
     }
 
     /**
@@ -243,18 +247,47 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        BufferedDataTable out = (BufferedDataTable)inObjects[0];
+        BufferedDataTable out;
         synchronized (getLock()) {
             TableEditorViewRepresentation viewRepresentation = getViewRepresentation();
             if (viewRepresentation.getTable() == null) {
-                m_table = (BufferedDataTable)inObjects[0];
+                if (m_table == null) {
+                    m_table = (BufferedDataTable)inObjects[0];
+                }
                 JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
                 viewRepresentation.setTable(jsonTable);
                 copyConfigToRepresentation();
             }
 
+            out = m_table;
+            TableEditorViewValue viewValue = getViewValue();
+
+            // apply edit changes
+            if (viewValue != null && viewValue.getEditChanges() != null && viewValue.getEditChanges().size() > 0) {
+                Map<Integer, Map<Integer, String>> editChanges = viewValue.getEditChanges();
+                BufferedDataContainer dc = exec.createDataContainer(m_table.getDataTableSpec());
+                int rowId = 0;
+                for (DataRow row : m_table) {
+                    Map<Integer, String> rowEditChanges = editChanges.get(rowId);
+                    DataCell[] copy = new DataCell[row.getNumCells()];
+                    for (int i = 0; i < row.getNumCells(); i++) {
+                        DataCell cell = row.getCell(i);
+                        if (rowEditChanges != null && rowEditChanges.containsKey(i)) {
+                            copy[i] = new StringCell(rowEditChanges.get(i));
+                        } else {
+                            copy[i] = cell;
+                        }
+                    }
+                    dc.addRowToTable(new DefaultRow(row.getKey(), copy));
+                    rowId++;
+                }
+                dc.close();
+                m_table = dc.getTable();
+                out = m_table;
+                viewRepresentation.setTable(null);
+            }
+
             if (m_config.getEnableSelection()) {
-                TableEditorViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
                 if (viewValue != null) {
                     if (viewValue.getSelection() != null) {
