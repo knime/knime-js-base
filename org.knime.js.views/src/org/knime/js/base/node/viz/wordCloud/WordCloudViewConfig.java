@@ -60,6 +60,10 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class WordCloudViewConfig {
 
+    /*
+     * TODO: svg settings, color attribute
+     */
+
     private final static String CFG_HIDE_IN_WIZARD = "hideInWizard";
     private final static boolean DEFAULT_HIDE_IN_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
