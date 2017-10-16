@@ -317,7 +317,7 @@ public abstract class QuickFormNodeDialog
                 + "letter, then it may contain any word character (including '-' and '_') "
                 + "and ends with a word character (no '-' or '_'),");
         }
-        config.setParameterName(getParameterName());
+        config.setParameterName(getParameterName(), false);
         config.setRequired(getRequired());
     }
 

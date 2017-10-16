@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.quickform;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -168,11 +170,15 @@ public abstract class QuickFormConfig
 
     /**
      * @param s the parameterName to set
+     * @param allowLegacyFormat if true it will allow the {@link DialogNode#PARAMETER_NAME_PATTERN_LEGACY} (backward
+     *            compatible)
      * @throws InvalidSettingsException If null or invalid
      */
-    public void setParameterName(final String s) throws InvalidSettingsException {
+    public void setParameterName(final String s, final boolean allowLegacyFormat) throws InvalidSettingsException {
         CheckUtils.checkSettingNotNull(s, "Parameter name must not be null");
-        CheckUtils.checkSetting("".equals(s) || DialogNode.PARAMETER_NAME_PATTERN.matcher(s).matches(),
+        Pattern pattern = allowLegacyFormat
+                ? DialogNode.PARAMETER_NAME_PATTERN_LEGACY : DialogNode.PARAMETER_NAME_PATTERN;
+        CheckUtils.checkSetting("".equals(s) || pattern.matcher(s).matches(),
             "Parameter name \"%s\" is invalid - only character, digits and a dash character are allowed", s);
         m_parameterName = s;
     }
@@ -205,7 +211,7 @@ public abstract class QuickFormConfig
         m_hideInDialog = settings.getBoolean(CFG_HIDE_IN_DIALOG);
         m_required = settings.getBoolean(CFG_REQUIRED);
         // added in 2.12 - "" is discouraged but OK
-        setParameterName(settings.getString(CFG_PARAMETER_NAME, ""));
+        setParameterName(settings.getString(CFG_PARAMETER_NAME, ""), true);
     }
 
     /**
@@ -228,7 +234,7 @@ public abstract class QuickFormConfig
         final String defaultParName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
         String parName = settings.getString(CFG_PARAMETER_NAME, defaultParName);
         try {
-            setParameterName(parName);
+            setParameterName(parName, true);
         } catch (InvalidSettingsException ise) {
             m_parameterName = defaultParName;
         }

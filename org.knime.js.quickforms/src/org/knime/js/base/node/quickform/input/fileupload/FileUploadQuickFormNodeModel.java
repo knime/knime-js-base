@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -267,13 +268,18 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      */
     @Override
     public ExternalNodeData getInputData() {
-        try {
-            URI uri = FileUtil.toURL(getConfig().getDefaultValue().getPath()).toURI();
-            return ExternalNodeData.builder(getConfig().getParameterName()).resource(uri).build();
-        } catch (MalformedURLException | InvalidPathException | URISyntaxException ex) {
-            throw new RuntimeException(ex); // should never happen
+        String path = getConfig().getDefaultValue().getPath();
+        URI uri;
+        if (StringUtils.isEmpty(path)) {
+            uri = ExternalNodeData.NO_URI_VALUE_YET;
+        } else {
+            try {
+                uri = FileUtil.toURL(path).toURI();
+            } catch (MalformedURLException | InvalidPathException | URISyntaxException ex) {
+                throw new RuntimeException(ex); // should never happen
+            }
         }
-
+        return ExternalNodeData.builder(getConfig().getParameterName()).resource(uri).build();
     }
 
     /**

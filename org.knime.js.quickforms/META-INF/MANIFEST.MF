@@ -7,7 +7,7 @@ Bundle-ClassPath: js-quickforms.jar
 Bundle-Vendor: KNIME.com, Zurich, Switzerland
 Export-Package: org.knime.js.base.node.quickform
 Require-Bundle: org.knime.base;bundle-version="[3.2.1,4.0.0)",
- org.knime.js.core;bundle-version="[3.0.0,4.0.0)",
+ org.knime.js.core;bundle-version="[3.5.0,4.0.0)",
  org.apache.commons.lang;bundle-version="[2.6.0,3.0.0)",
  com.google.guava;bundle-version="[19.0.0,20.0.0)",
  org.knime.ext.svg;bundle-version="[3.0.0,4.0.0)",
