@@ -48,10 +48,14 @@
  */
 package org.knime.js.base.node.viz.tableEditor;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.StringValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.filter.InputFilter;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 
@@ -205,8 +209,16 @@ public class TableEditorViewConfig {
     // Editor settings
 
     final static String CFG_EDITABLE_COLUMNS_FILTER = "editableColumnsFilter";
+    final static InputFilter<DataColumnSpec> EDIT_FILTER = new InputFilter<DataColumnSpec>() {
+
+        @Override
+        public boolean include(final DataColumnSpec spec) {
+            DataType type = spec.getType();
+            return type.isCompatible(StringValue.class);
+        }
+    };
     private DataColumnSpecFilterConfiguration m_editableColumnsFilterConfig =
-        new DataColumnSpecFilterConfiguration(CFG_EDITABLE_COLUMNS_FILTER);
+        new DataColumnSpecFilterConfiguration(CFG_EDITABLE_COLUMNS_FILTER, EDIT_FILTER);
 
 
     /**
