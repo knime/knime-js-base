@@ -65,8 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WordCloudData {
 
-    private static final String CFG_WORD = "word";
-    private String m_word;
+    private static final String CFG_TEXT = "text";
+    private String m_text;
 
     private static final String CFG_COLOR = "color";
     private String m_color;
@@ -78,17 +78,17 @@ public class WordCloudData {
     private double m_opacity;
 
     /**
-     * @return the word
+     * @return the text
      */
-    public String getWord() {
-        return m_word;
+    public String getText() {
+        return m_text;
     }
 
     /**
-     * @param word the word to set
+     * @param text the text to set
      */
-    public void setWord(final String word) {
-        m_word = word;
+    public void setText(final String text) {
+        m_text = text;
     }
 
     /**
@@ -134,14 +134,14 @@ public class WordCloudData {
     }
 
     void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_WORD, m_word);
+        settings.addString(CFG_TEXT, m_text);
         settings.addString(CFG_COLOR, m_color);
         settings.addDouble(CFG_SIZE, m_size);
         settings.addDouble(CFG_OPACITY, m_opacity);
     }
 
     void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_word = settings.getString(CFG_WORD);
+        m_text = settings.getString(CFG_TEXT);
         m_color = settings.getString(CFG_COLOR);
         m_size = settings.getDouble(CFG_SIZE);
         m_opacity = settings.getDouble(CFG_OPACITY);
@@ -163,7 +163,7 @@ public class WordCloudData {
         }
         WordCloudData other = (WordCloudData)obj;
         return new EqualsBuilder()
-                .append(m_word, other.m_word)
+                .append(m_text, other.m_text)
                 .append(m_color, other.m_color)
                 .append(m_size, other.m_size)
                 .append(m_opacity, other.m_opacity)
@@ -176,7 +176,7 @@ public class WordCloudData {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_word)
+                .append(m_text)
                 .append(m_color)
                 .append(m_size)
                 .append(m_opacity)

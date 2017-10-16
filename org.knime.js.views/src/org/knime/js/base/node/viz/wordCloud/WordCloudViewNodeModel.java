@@ -223,9 +223,9 @@ public class WordCloudViewNodeModel
         for(int i = 0; i < numWords; i++) {
             WordCloudData indData = new WordCloudData();
             if (m_config.getWordColumn() != null) {
-                indData.setWord((String)rows[i].getData()[wordIndex]);
+                indData.setText((String)rows[i].getData()[wordIndex]);
             } else {
-                indData.setWord(rows[i].getRowKey());
+                indData.setText(rows[i].getRowKey());
             }
             if (m_config.getUseSizeProp()) {
                 indData.setSize(sizes[i]);

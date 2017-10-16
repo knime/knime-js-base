@@ -48,7 +48,7 @@ knime_word_cloud = function() {
 			})
 			.font(_representation.font)
 			.fontSize(function(d) {
-				return scale(d.size);
+				return ~~scale(d.size);
 			})
 			.timeInterval(10)
 			.spiral(_value.spiralType)
@@ -78,7 +78,7 @@ knime_word_cloud = function() {
 					+ ")";
 			})
 			.text(function(d) {
-				return d.word;
+				return d.text;
 			});
 	}
 
@@ -102,7 +102,7 @@ knime_word_cloud = function() {
 	}
 	
 	wordCloud.getSVG = function() {
-		var svg = d3.select("svg")[0][0];
+		var svg = d3.select("svg").node();
 		return (new XMLSerializer()).serializeToString(svg);
 	}
 
