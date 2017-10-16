@@ -89,6 +89,7 @@ public class WordCloudViewNodeModel
     protected WordCloudViewNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{ImagePortObject.TYPE}, viewName);
         m_config = new WordCloudViewConfig();
+        setOptionalViewWaitTime(500l);
     }
 
     /**
@@ -183,6 +184,7 @@ public class WordCloudViewNodeModel
             BufferedDataTable table = (BufferedDataTable)inObjects[0];
             representation.setData(extractWordCloudData(table, exec));
         }
+        representation.setImageGeneration(true);
     }
 
     /**
@@ -191,7 +193,8 @@ public class WordCloudViewNodeModel
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects,
         final ExecutionContext exec) throws Exception {
-        /* nothing to do so far */
+        WordCloudViewRepresentation representation = getViewRepresentation();
+        representation.setImageGeneration(false);
         return new PortObject[]{svgImageFromView};
     }
 

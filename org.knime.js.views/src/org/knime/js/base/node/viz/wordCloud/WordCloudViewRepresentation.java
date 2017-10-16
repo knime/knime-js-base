@@ -73,6 +73,8 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     private static final String CFG_DATA = "data";
     private static final String CFG_NUM_SETTINGS = "numSettings";
     private List<WordCloudData> m_data;
+    private static final String CFG_IMAGE_GENERATION = "imageGeneration";
+    private boolean m_isImageGeneration;
 
     private boolean m_displayFullscreenButton;
     private String m_font;
@@ -97,6 +99,20 @@ public class WordCloudViewRepresentation extends JSONViewContent {
      */
     public void setData(final List<WordCloudData> data) {
         m_data = data;
+    }
+
+    /**
+     * @return the isImageGeneration
+     */
+    public boolean getImageGeneration() {
+        return m_isImageGeneration;
+    }
+
+    /**
+     * @param isImageGeneration the isImageGeneration to set
+     */
+    public void setImageGeneration(final boolean isImageGeneration) {
+        m_isImageGeneration = isImageGeneration;
     }
 
     /**
@@ -251,6 +267,7 @@ public class WordCloudViewRepresentation extends JSONViewContent {
             NodeSettingsWO indSettings = dataSettings.addNodeSettings(Integer.toString(i));
             m_data.get(i).saveToNodeSettings(indSettings);
         }
+        settings.addBoolean(CFG_IMAGE_GENERATION, m_isImageGeneration);
         settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addString(WordCloudViewConfig.CFG_FONT, m_font);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG, m_enableViewConfig);
@@ -279,6 +296,7 @@ public class WordCloudViewRepresentation extends JSONViewContent {
                 m_data.add(indData);
             }
         }
+        m_isImageGeneration = settings.getBoolean(CFG_IMAGE_GENERATION);
         m_displayFullscreenButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_font = settings.getString(WordCloudViewConfig.CFG_FONT);
         m_enableViewConfig = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG);
@@ -308,6 +326,7 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         WordCloudViewRepresentation other = (WordCloudViewRepresentation)obj;
         return new EqualsBuilder()
                 .append(m_data, other.m_data)
+                .append(m_isImageGeneration, other.m_isImageGeneration)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_font, other.m_font)
                 .append(m_enableViewConfig, other.m_enableViewConfig)
@@ -328,6 +347,7 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(m_data)
+                .append(m_isImageGeneration)
                 .append(m_displayFullscreenButton)
                 .append(m_font)
                 .append(m_enableViewConfig)

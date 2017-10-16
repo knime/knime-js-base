@@ -6,9 +6,15 @@ knime_word_cloud = function() {
 	var _sizeMin = Number.POSITIVE_INFINITY;
 	var _sizeMax = Number.NEGATIVE_INFINITY;
 
-	wordCloud.init = function(representation, value, layout_cloud) {
+	wordCloud.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
+		
+		if (_representation.imageGeneration && _value.svgFromView) {
+			// take last generated svg from view if available
+			return;
+		}
+		
 		_representation.data.sort(function(x, y) {
 			return d3.descending(x.size, y.size);
 		});
@@ -48,11 +54,12 @@ knime_word_cloud = function() {
 			})
 			.font(_representation.font)
 			.fontSize(function(d) {
-				return ~~scale(d.size);
+				return scale(d.size);
 			})
 			.timeInterval(10)
 			.spiral(_value.spiralType)
 			.on("end", draw).start();
+		drawControls();
 	}
 	
 	function draw(words, scale) {
@@ -80,13 +87,79 @@ knime_word_cloud = function() {
 			.text(function(d) {
 				return d.text;
 			});
+		var svg = d3.select("svg").node();
+		_value.svgFromView = (new XMLSerializer()).serializeToString(svg);
 	}
-
-	normalizeWord = function(value) {
-		var range = _value.maxFontSize - _value.minFontSize;
-		var normalizedValue = (value - _sizeMin) / (_sizeMax - _sizeMin);
-		normalizedValue = normalizedValue * range + _value.minFontSize;
-		return normalizedValue;
+	
+	function drawControls() {
+		if (!knimeService) {
+			return;
+		}
+		
+		// -- Buttons --
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}
+		
+		// -- Menu Items --
+	    if (!_representation.enableViewConfig) return;
+	    var pre = false;
+	    
+	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
+	    	if (_representation.enableTitleChange) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.title, function() {}, false);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (_representation.enableSubtitleChange) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.subtitle, function() {}, false);
+	    		knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}
+	    	pre = true;
+	    }
+	    
+	    if (_representation.enableFontSizeChange || _representation.enableScaleTypeChange) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    	if (_representation.enableScaleTypeChange) {
+	    		var scaleOptions = ['linear', 'logarithmic', 'square root', 'exponential'];
+	    		var scaleSelect = knimeService.createMenuSelect('scaleTypeSelect', _value.fontScaleType, scaleOptions, function() {});
+	    		knimeService.addMenuItem('Font Scale:', 'expand', scaleSelect);
+	    	}
+	    	if (_representation.enableFontSizeChange) {
+	    		var minFontSizeField = knimeService.createMenuNumberField('minFontSizeField', _value.minFontSize, 1, null, 0.5, function() {});
+	    		knimeService.addMenuItem('Minimum Font Size:', 'text-height', minFontSizeField, null, knimeService.SMALL_ICON);
+	    		
+	    		var maxFontSizeField = knimeService.createMenuNumberField('maxFontSizeField', _value.maxFontSize, 1, null, 0.5, function() {});
+	    		knimeService.addMenuItem('Maximum Font Size:', 'text-height', maxFontSizeField);
+	    	}
+	    	pre = true;
+	    }
+	    
+	    if (_representation.enableSpiralTypeChange || _represenation.enableNumOrientationsChange || _representation.enableAnglesChange) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    	if (_representation.enableSpiralTypeChange) {
+	    		var spiralOptions = ['archimedean', 'rectangular'];
+	    		var spiralSelect = knimeService.createMenuSelect('spiralSelect', _value.spiralType, spiralOptions, function() {});
+	    		knimeService.addMenuItem('Spiral Type:', 'repeat', spiralSelect);
+	    	}
+	    	if (_representation.enableNumOrientationsChange) {
+	    		var numOrientField = knimeService.createMenuNumberField('numOrientField', _value.numOrientations, 1, null, 1, function() {});
+	    		knimeService.addMenuItem('Number Orientations:', 'sort', numOrientField);
+	    	}
+	    	if (_representation.enableAnglesChange) {
+	    		var startAngleField = knimeService.createMenuNumberField('startAngleField', _value.startAngle, -90, 90, 1, function() {});
+	    		knimeService.addMenuItem('Start Angle:', 'chevron-left', startAngleField);
+	    		
+	    		var endAngleField = knimeService.createMenuNumberField('endAngleField', _value.endAngle, -90, 90, 1, function() {});
+	    		knimeService.addMenuItem('End Angle:', 'chevron-right', endAngleField);
+	    	}
+	    	pre = true;
+	    }
+	    
+	    
 	}
 
 	wordCloud.validate = function() {
@@ -94,7 +167,7 @@ knime_word_cloud = function() {
 	}
 
 	wordCloud.setValidationError = function() {
-
+		/* no validation on node model done */
 	}
 
 	wordCloud.getComponentValue = function() {
@@ -102,8 +175,7 @@ knime_word_cloud = function() {
 	}
 	
 	wordCloud.getSVG = function() {
-		var svg = d3.select("svg").node();
-		return (new XMLSerializer()).serializeToString(svg);
+		return _value.svgFromView;
 	}
 
 	return wordCloud;

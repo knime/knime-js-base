@@ -77,6 +77,11 @@ public class WordCloudViewValue extends JSONViewContent {
     private int m_startAngle;
     private int m_endAngle;
 
+    /* Workaround for font measuring and collision detection difficulty in PhantomJS,
+     * as well as not having seeded randoms available (reproducible results) */
+    private final static String CFG_SVG_FROM_VIEW = "svgFromView";
+    private String m_svgFromView;
+
     /**
      * @return the title
      */
@@ -204,6 +209,20 @@ public class WordCloudViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the svgFromView
+     */
+    public String getSvgFromView() {
+        return m_svgFromView;
+    }
+
+    /**
+     * @param svgFromView the svgFromView to set
+     */
+    public void setSvgFromView(final String svgFromView) {
+        m_svgFromView = svgFromView;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -217,6 +236,8 @@ public class WordCloudViewValue extends JSONViewContent {
         settings.addInt(WordCloudViewConfig.CFG_NUM_ORIENTATIONS, m_numOrientations);
         settings.addInt(WordCloudViewConfig.CFG_START_ANGLE, m_startAngle);
         settings.addInt(WordCloudViewConfig.CFG_END_ANGLE, m_endAngle);
+
+        settings.addString(CFG_SVG_FROM_VIEW, m_svgFromView);
     }
 
     /**
@@ -233,6 +254,8 @@ public class WordCloudViewValue extends JSONViewContent {
         m_numOrientations = settings.getInt(WordCloudViewConfig.CFG_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(WordCloudViewConfig.CFG_START_ANGLE);
         m_endAngle = settings.getInt(WordCloudViewConfig.CFG_END_ANGLE);
+
+        m_svgFromView = settings.getString(CFG_SVG_FROM_VIEW);
     }
 
     /**
@@ -259,6 +282,7 @@ public class WordCloudViewValue extends JSONViewContent {
                 .append(m_spiralType, other.m_spiralType)
                 .append(m_numOrientations, other.m_numOrientations)
                 .append(m_startAngle, other.m_startAngle)
+                .append(m_svgFromView, other.m_svgFromView)
                 .isEquals();
     }
 
@@ -276,6 +300,7 @@ public class WordCloudViewValue extends JSONViewContent {
                 .append(m_spiralType)
                 .append(m_numOrientations)
                 .append(m_startAngle)
+                .append(m_svgFromView)
                 .toHashCode();
     }
 
