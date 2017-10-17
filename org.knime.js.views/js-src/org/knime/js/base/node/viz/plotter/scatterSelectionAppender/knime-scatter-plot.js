@@ -518,8 +518,21 @@ knime_scatter_plot_selection_appender = function() {
         	panButtonClicked();
         }
 		
+        // -- Initial interactivity settings --
+        if (knimeService.isInteractivityAvailable()) {
+        	if (_representation.enableSelection && _value.subscribeSelection) {
+				knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
+			}
+        	var filterIds = _representation.subscriptionFilterIds;
+        	if (filterIds && filterIds.length > 0 && _value.subscribeFilter) {
+				knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, filterIds);
+			}
+        }
+
         // -- Menu Items --
-	    if (!_representation.enableViewConfiguration) return;
+	    if (!_representation.enableViewConfiguration) {
+	    	return;
+	    }
 	    var pre = false;
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
@@ -640,9 +653,6 @@ knime_scatter_plot_selection_appender = function() {
 					}
 				});
 				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
-				if (_value.subscribeSelection) {
-					knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
-				}
 	    	}
 	    	
 	    	if (_representation.subscriptionFilterIds && _representation.subscriptionFilterIds.length > 0) {
@@ -658,9 +668,6 @@ knime_scatter_plot_selection_appender = function() {
 					}
 				});
 				knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
-				if (_value.subscribeFilter) {
-					knimeService.subscribeToFilter(_representation.keyedDataset.id, filterChanged, _representation.subscriptionFilterIds);
-				}
 			}
 	    	
 	    	pre = true;
