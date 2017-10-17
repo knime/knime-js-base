@@ -5,6 +5,7 @@ knime_word_cloud = function() {
 	var _value;
 	var _sizeMin = Number.POSITIVE_INFINITY;
 	var _sizeMax = Number.NEGATIVE_INFINITY;
+	var _scale;
 
 	wordCloud.init = function(representation, value) {
 		_representation = representation;
@@ -23,22 +24,21 @@ knime_word_cloud = function() {
 			_sizeMin = Math.min(_sizeMin, curSize);
 			_sizeMax = Math.max(_sizeMax, curSize);
 		}
-		var scale;
 		switch (_value.fontScaleType) {
 			case "logarithmic":
-				scale = d3.scaleLog();
+				_scale = d3.scaleLog();
 				break;
 			case "square root":
-				scale = d3.scaleSqrt();
+				_scale = d3.scaleSqrt();
 				break;
 			case "exponential":
-				scale = d3.scalePow().exponent(2);
+				_scale = d3.scalePow().exponent(2);
 				break;
 			default:
-				scale = d3.scaleLinear();
+				_scale = d3.scaleLinear();
 		}
-		scale.domain([_sizeMin, _sizeMax]);
-		scale.range([_value.minFontSize, _value.maxFontSize]);
+		_scale.domain([_sizeMin, _sizeMax]);
+		_scale.range([_value.minFontSize, _value.maxFontSize]);
 						
 		d3.layout.cloud()
 			.size([800, 600])
@@ -54,7 +54,7 @@ knime_word_cloud = function() {
 			})
 			.font(_representation.font)
 			.fontSize(function(d) {
-				return scale(d.size);
+				return _scale(d.size);
 			})
 			.timeInterval(10)
 			.spiral(_value.spiralType)
