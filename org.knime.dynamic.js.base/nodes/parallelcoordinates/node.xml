@@ -22,9 +22,10 @@
 		</intro>
 		<tab name="Options">
 			<options>
+			     <!-- Have to use NominalValue instead of StringValue to filter out date&time type as the latter is compatible with StringValue -->
 				<columnFilterOption name="Included columns"
-					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DataValue" saveInView="true">
-					Select the columns to be plotted. The columns could be of string, number or dateTime types.
+					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.NominalValue org.knime.core.data.IntValue org.knime.core.data.LongValue org.knime.core.data.DoubleValue" saveInView="true">
+					Select the columns to be plotted. The columns could be of string or number types.
 				</columnFilterOption>
 				
 				<checkBoxOption name="Use colors from spec" id="useColors"
