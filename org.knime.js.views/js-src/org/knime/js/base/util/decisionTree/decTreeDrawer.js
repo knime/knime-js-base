@@ -439,9 +439,8 @@ function DecTreeDrawer(representation, value) {
 	    	.attr("stroke", "rgb(255, 204, 204)")
 	    	.attr("height", "100");
 
-    	if (options.enableViewConfiguration) {
-    		drawControls();
-    	}
+    	
+    	drawControls();
     	checkClearSelectionButton();
     	drawTree();
     	layout();
@@ -468,6 +467,13 @@ function DecTreeDrawer(representation, value) {
     			resizeSVG()
     		});
     	}
+    	
+    	// -- Initial interactivity settings --
+        if (knimeService.isInteractivityAvailable()) {
+        	if (options.enableSelection && options.subscribeSelection) {
+        		knimeService.subscribeToSelection(options.tableId, selectionChanged);
+			}
+        }
 		
 	    if (!options.enableViewConfiguration) return;
 	    var pre = false;
@@ -520,9 +526,6 @@ function DecTreeDrawer(representation, value) {
 					}
 				});
 				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
-				if (options.subscribeSelection) {
-					knimeService.subscribeToSelection(options.tableId, selectionChanged);
-				}
 	    	}
 	    }
 	    

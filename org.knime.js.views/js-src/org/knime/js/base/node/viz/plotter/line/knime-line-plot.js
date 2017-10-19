@@ -529,6 +529,7 @@ knime_line_plot = function() {
 			return;
 		}
 		
+		// -- Buttons --
 		if (_representation.displayFullscreenButton) {
 			knimeService.allowFullscreen();
 		}		    
@@ -539,8 +540,9 @@ knime_line_plot = function() {
 	    		plot.getXAxis().setAutoRange(true);
 	    		plot.getYAxis().setAutoRange(true);
 	    	});
-	    }		
-	    
+	    }
+		
+        // -- Menu Items --
 	    if (!_representation.enableViewConfiguration) return;
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {    	

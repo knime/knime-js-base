@@ -235,11 +235,12 @@
 
     function createControls() {
     	
-    	if (!knimeService || !_representation.options.enableViewControls) {
+    	if (!knimeService) {
 			// TODO: error handling?
 			return;
 		}
 		
+    	// -- Buttons --
 		if (_representation.options.displayFullscreenButton) {
 			knimeService.allowFullscreen();
 		}
@@ -251,6 +252,21 @@
 				publishCurrentSelection();
 			});
 			d3.select("#clearSelectionButton").classed("inactive", true);
+		}
+		
+		// -- Initial interactivity settings --
+        if (knimeService.isInteractivityAvailable()) {
+        	if (_representation.options.enableSelection && _value.options.subscribeSelection) {
+        		knimeService.subscribeToSelection(_representation.inObjects[0].id, selectionChanged);
+			}
+        	if (filterIds && _value.options.subscribeFilter) {
+				knimeService.subscribeToFilter(_representation.inObjects[0].id, filterChanged, filterIds);
+			}
+        }
+		
+        // -- Menu Items --
+		if (!_representation.options.enableViewControls) {
+			return;
 		}
 		
 		if (_representation.options.enableTitleEdit) {
@@ -467,9 +483,6 @@
 					}
 				});
 				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
-				if (_value.options.subscribeSelection) {
-					knimeService.subscribeToSelection(_representation.inObjects[0].id, selectionChanged);
-				}
 			}
         }
         
@@ -486,9 +499,6 @@
 				}
 			});
 			knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
-			if (_value.options.subscribeFilter) {
-				knimeService.subscribeToFilter(_representation.inObjects[0].id, filterChanged, filterIds);
-			}
 		}
     };
     

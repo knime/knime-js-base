@@ -468,13 +468,17 @@
   }
 
   var drawControls = function() {
-	  if (!knimeService || !_representation.options.enableViewControls) {
+	  if (!knimeService) {
 		  // TODO: error handling?
 		  return;
 	  }
 
     if (_representation.options.displayFullscreenButton) {
       knimeService.allowFullscreen();
+    }
+    
+    if (!_representation.options.enableViewControls) {
+    	return;
     }
 
     // Title / Subtitle Configuration
