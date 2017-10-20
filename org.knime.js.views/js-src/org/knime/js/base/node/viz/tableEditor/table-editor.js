@@ -723,11 +723,12 @@ table_editor = function() {
 		var editor = createCellEditor(cell);
 		var editorComponent = editor.getComponent();
 		
-		editorComponent.on('focusout', function() {
+		var editFinishCallback = function() {
 			setTimeout(function() {
 				$td.on('click', editableCellClickHandler)
 			}, 200);
 			editorComponent.off('focusout');
+			editorComponent.off('keypress');
 			var newVal = editor.getValue();
 			$td.empty()
 				.append(newVal);
@@ -741,7 +742,14 @@ table_editor = function() {
 			_value.editChanges[index.row][index.column - colShift] = newVal;
 			
 			cell.invalidate();
-		});
+		}
+		
+		editorComponent.on('focusout', editFinishCallback);
+		editorComponent.on('keypress', function(e) {
+			if (e.which == 13) {
+				editFinishCallback();
+			}
+		})
 		
 		$td.empty()
 			.append(editorComponent);
