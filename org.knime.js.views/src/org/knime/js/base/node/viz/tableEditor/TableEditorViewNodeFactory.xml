@@ -38,6 +38,14 @@
 	        	Select the columns to be included in the table view.
 	        </option>
         </tab>
+        <tab name="Editor">
+            <description>
+                Editor options.
+            </description>
+            <option name="Editable columns">
+                Choose which columns will be available for editing in the view. The following data types are currently supported: string and numbers. For numbers there is a basic validation in the view. Empty value after editing for numeric types will be replaced with 0.
+            </option>
+        </tab>
         <tab name="Interactivity">
         	<description>
         		The JavaScript Table View allows for several ways of interactivity. Please use the options below to configure which features will be activated on the view and further configuration of interactive properties.

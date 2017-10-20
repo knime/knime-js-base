@@ -451,7 +451,7 @@
             debug="true"
             name="Table Editor"
             usesDefine="false"
-            version="0.0.1"
+            version="0.0.2"
             webResourceBundleID="org.knime.js.base.node.viz.tableEditor.bundle">
          <webResource
                relativePathSource="js-src/org/knime/js/base/node/viz/tableEditor/"
