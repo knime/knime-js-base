@@ -23,7 +23,6 @@
             <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
 		</intro>
 		<tab name="Decision Tree Plot Options">
-		    <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>
 		    <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
 		    <option name="Expanded levels">Specifies how many levels of the tree are initially expanded. In case of a 0 only the root node is displayed, in case of a 1 also the children of the root are displayed, and so on.
 		    (Initially disabled if a different node status is specified in the view and saved as new default.)</option>

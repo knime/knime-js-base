@@ -23,9 +23,6 @@
           Some lines of description that will be shown in the remote control 
           form, for instance by means of a tooltip.
         </option>
-        <option name="Hide in Wizard">
-          If the setting should be hidden in the wizard execution.
-        </option>
         <option name="Hide in Dialog">
           If the setting should be hidden in a wrapped metanode dialog.
         </option>

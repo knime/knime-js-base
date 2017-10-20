@@ -48,7 +48,7 @@
             Otherwise, missing values in the Class Column will be treated as incorrect predictions; missing values in the Positive Class Probabilities columns will be sorted to the end (low probability) of the curves. A corresponding warning message will be raised.</option>
         </tab>
 		<tab name="General Plot Options">
-		    <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>
+		    
             <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
             
             <option name="Chart title">The width of the generated SVG image.</option>

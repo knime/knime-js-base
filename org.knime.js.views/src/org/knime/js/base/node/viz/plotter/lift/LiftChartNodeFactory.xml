@@ -30,7 +30,6 @@
 	        Missing values in Response column are ignored in any case.</option>
         </tab>
         <tab name="General Plot Options">
-            <option name="Hide in wizard">If the view should be hidden in the wizard execution.</option>
             <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
             <option name="Width of image (in px)">The width of the generated SVG image.</option>
             <option name="Height of image (in px)">The height of the generated SVG image.</option>
