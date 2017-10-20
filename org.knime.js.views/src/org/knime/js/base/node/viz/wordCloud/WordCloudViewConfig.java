@@ -60,10 +60,6 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class WordCloudViewConfig {
 
-    /*
-     * TODO: svg settings, color attribute
-     */
-
     private final static String CFG_HIDE_IN_WIZARD = "hideInWizard";
     private final static boolean DEFAULT_HIDE_IN_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
@@ -71,6 +67,22 @@ public class WordCloudViewConfig {
     private static final String CFG_GENERATE_IMAGE = "generateImage";
     private final static boolean DEFAULT_GENERATE_IMAGE = true;
     private boolean m_generateImage = DEFAULT_GENERATE_IMAGE;
+
+    static final String CFG_WARNINGS_IN_VIEW = "warningsInView";
+    private final static boolean DEFAULT_WARNINGS_IN_VIEW = true;
+    private boolean m_showWarningsInView = DEFAULT_WARNINGS_IN_VIEW;
+
+    final static String CFG_RESIZE_TO_WINDOW = "resizeToWindow";
+    private final static boolean DEFAULT_RESIZE_TO_WINDOW = true;
+    private boolean m_resizeToWindow = DEFAULT_RESIZE_TO_WINDOW;
+
+    final static String CFG_IMAGE_WIDTH = "imageWidth";
+    private final static int DEFAULT_IMAGE_WIDTH = 800;
+    private int m_imageWidth = DEFAULT_IMAGE_WIDTH;
+
+    final static String CFG_IMAGE_HEIGHT = "imageHeight";
+    private final static int DEFAULT_IMAGE_HEIGHT = 600;
+    private int m_imageHeight = DEFAULT_IMAGE_HEIGHT;
 
     final static String CFG_MAX_WORDS = "maxWords";
     private final static int DEFAULT_MAX_WORDS = 250;
@@ -99,6 +111,10 @@ public class WordCloudViewConfig {
     private final static String CFG_USE_SIZE_PROP = "sizeProp";
     private final static boolean DEFAULT_USE_SIZE_PROP = false;
     private boolean m_useSizeProp = DEFAULT_USE_SIZE_PROP;
+
+    final static String CFG_USE_COLOR_PROP = "colorProp";
+    private final static boolean DEFAULT_USE_COLOR_PROP = false;
+    private boolean m_useColorProp = DEFAULT_USE_COLOR_PROP;
 
     final static String CFG_FONT = "font";
     private final static String DEFAULT_FONT = "Impact";
@@ -190,6 +206,62 @@ public class WordCloudViewConfig {
      */
     public void setGenerateImage(final boolean generateImage) {
         m_generateImage = generateImage;
+    }
+
+    /**
+     * @return the showWarningsInView
+     */
+    public boolean getShowWarningsInView() {
+        return m_showWarningsInView;
+    }
+
+    /**
+     * @param showWarningsInView the showWarningsInView to set
+     */
+    public void setShowWarningsInView(final boolean showWarningsInView) {
+        m_showWarningsInView = showWarningsInView;
+    }
+
+    /**
+     * @return the resizeToWindow
+     */
+    public boolean getResizeToWindow() {
+        return m_resizeToWindow;
+    }
+
+    /**
+     * @param resizeToWindow the resizeToWindow to set
+     */
+    public void setResizeToWindow(final boolean resizeToWindow) {
+        m_resizeToWindow = resizeToWindow;
+    }
+
+    /**
+     * @return the imageWidth
+     */
+    public int getImageWidth() {
+        return m_imageWidth;
+    }
+
+    /**
+     * @param imageWidth the imageWidth to set
+     */
+    public void setImageWidth(final int imageWidth) {
+        m_imageWidth = imageWidth;
+    }
+
+    /**
+     * @return the imageHeight
+     */
+    public int getImageHeight() {
+        return m_imageHeight;
+    }
+
+    /**
+     * @param imageHeight the imageHeight to set
+     */
+    public void setImageHeight(final int imageHeight) {
+        m_imageHeight = imageHeight;
     }
 
     /**
@@ -288,6 +360,20 @@ public class WordCloudViewConfig {
      */
     public void setUseSizeProp(final boolean useSizeProp) {
         m_useSizeProp = useSizeProp;
+    }
+
+    /**
+     * @return the useColorProp
+     */
+    public boolean getUseColorProp() {
+        return m_useColorProp;
+    }
+
+    /**
+     * @param useColorProp the useColorProp to set
+     */
+    public void setUseColorProp(final boolean useColorProp) {
+        m_useColorProp = useColorProp;
     }
 
     /**
@@ -520,6 +606,10 @@ public class WordCloudViewConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
         settings.addBoolean(CFG_GENERATE_IMAGE, m_generateImage);
+        settings.addBoolean(CFG_WARNINGS_IN_VIEW, m_showWarningsInView);
+        settings.addBoolean(CFG_RESIZE_TO_WINDOW, m_resizeToWindow);
+        settings.addInt(CFG_IMAGE_WIDTH, m_imageWidth);
+        settings.addInt(CFG_IMAGE_HEIGHT, m_imageHeight);
         settings.addInt(CFG_MAX_WORDS, m_maxWords);
         settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addString(CFG_TITLE, m_title);
@@ -527,6 +617,7 @@ public class WordCloudViewConfig {
         settings.addString(CFG_WORD_COLUMN, m_wordColumn);
         settings.addString(CFG_SIZE_COLUMN, m_sizeColumn);
         settings.addBoolean(CFG_USE_SIZE_PROP, m_useSizeProp);
+        settings.addBoolean(CFG_USE_COLOR_PROP, m_useColorProp);
         settings.addString(CFG_FONT, m_font);
         settings.addFloat(CFG_MIN_FONT_SIZE, m_minFontSize);
         settings.addFloat(CFG_MAX_FONT_SIZE, m_maxFontSize);
@@ -552,6 +643,10 @@ public class WordCloudViewConfig {
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE);
+        m_showWarningsInView = settings.getBoolean(CFG_WARNINGS_IN_VIEW);
+        m_resizeToWindow = settings.getBoolean(CFG_RESIZE_TO_WINDOW);
+        m_imageWidth = settings.getInt(CFG_IMAGE_WIDTH);
+        m_imageHeight = settings.getInt(CFG_IMAGE_HEIGHT);
         m_maxWords = settings.getInt(CFG_MAX_WORDS);
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_title = settings.getString(CFG_TITLE);
@@ -559,6 +654,7 @@ public class WordCloudViewConfig {
         m_wordColumn = settings.getString(CFG_WORD_COLUMN);
         m_sizeColumn = settings.getString(CFG_SIZE_COLUMN);
         m_useSizeProp = settings.getBoolean(CFG_USE_SIZE_PROP);
+        m_useColorProp = settings.getBoolean(CFG_USE_COLOR_PROP);
         m_font = settings.getString(CFG_FONT);
         m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE);
         m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE);
@@ -584,13 +680,19 @@ public class WordCloudViewConfig {
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE_IMAGE);
+        m_showWarningsInView = settings.getBoolean(CFG_WARNINGS_IN_VIEW, DEFAULT_WARNINGS_IN_VIEW);
+        m_resizeToWindow = settings.getBoolean(CFG_RESIZE_TO_WINDOW, DEFAULT_RESIZE_TO_WINDOW);
+        m_imageWidth = settings.getInt(CFG_IMAGE_WIDTH, DEFAULT_IMAGE_WIDTH);
+        m_imageHeight = settings.getInt(CFG_IMAGE_HEIGHT, DEFAULT_IMAGE_HEIGHT);
         m_maxWords = settings.getInt(CFG_MAX_WORDS, DEFAULT_MAX_WORDS);
+
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
         m_title = settings.getString(CFG_TITLE, DEFAULT_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
         m_wordColumn = settings.getString(CFG_WORD_COLUMN, DEFAULT_WORD_COLUMN);
         m_sizeColumn = settings.getString(CFG_SIZE_COLUMN, DEFAULT_SIZE_COLUMN);
         m_useSizeProp = settings.getBoolean(CFG_USE_SIZE_PROP, DEFAULT_USE_SIZE_PROP);
+        m_useColorProp = settings.getBoolean(CFG_USE_COLOR_PROP, DEFAULT_USE_COLOR_PROP);
         m_font = settings.getString(CFG_FONT, DEFAULT_FONT);
         m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE, DEFAULT_MIN_FONT_SIZE);
         m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE, DEFAULT_MAX_FONT_SIZE);

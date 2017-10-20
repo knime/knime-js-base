@@ -70,13 +70,22 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WordCloudViewRepresentation extends JSONViewContent {
 
+    static final int MIN_WIDTH = 100;
+    static final int MIN_HEIGHT = 100;
+
     private static final String CFG_DATA = "data";
     private static final String CFG_NUM_SETTINGS = "numSettings";
     private List<WordCloudData> m_data;
+
     private static final String CFG_IMAGE_GENERATION = "imageGeneration";
     private boolean m_isImageGeneration;
+    private boolean m_showWarningsInView;
+    private boolean m_resizeToWindow;
+    private int m_imageWidth;
+    private int m_imageHeight;
 
     private boolean m_displayFullscreenButton;
+    private boolean m_useColorProperty;
     private String m_font;
     private boolean m_enableViewConfig;
     private boolean m_enableTitleChange;
@@ -113,6 +122,90 @@ public class WordCloudViewRepresentation extends JSONViewContent {
      */
     public void setImageGeneration(final boolean isImageGeneration) {
         m_isImageGeneration = isImageGeneration;
+    }
+
+    /**
+     * @return the showWarningsInView
+     */
+    public boolean getShowWarningsInView() {
+        return m_showWarningsInView;
+    }
+
+    /**
+     * @param showWarningsInView the showWarningsInView to set
+     */
+    public void setShowWarningsInView(final boolean showWarningsInView) {
+        m_showWarningsInView = showWarningsInView;
+    }
+
+    /**
+     * @return the minWidth
+     */
+    public static int getMinWidth() {
+        return MIN_WIDTH;
+    }
+
+    /**
+     * @return the minHeight
+     */
+    public static int getMinHeight() {
+        return MIN_HEIGHT;
+    }
+
+    /**
+     * @return the resizeToWindow
+     */
+    public boolean getResizeToWindow() {
+        return m_resizeToWindow;
+    }
+
+    /**
+     * @param resizeToWindow the resizeToWindow to set
+     */
+    public void setResizeToWindow(final boolean resizeToWindow) {
+        m_resizeToWindow = resizeToWindow;
+    }
+
+    /**
+     * @return the imageWidth
+     */
+    public int getImageWidth() {
+        return m_imageWidth;
+    }
+
+    /**
+     * @param imageWidth the imageWidth to set
+     */
+    public void setImageWidth(final int imageWidth) {
+        m_imageWidth = imageWidth;
+    }
+
+    /**
+     * @return the imageHeight
+     */
+    public int getImageHeight() {
+        return m_imageHeight;
+    }
+
+    /**
+     * @param imageHeight the imageHeight to set
+     */
+    public void setImageHeight(final int imageHeight) {
+        m_imageHeight = imageHeight;
+    }
+
+    /**
+     * @return the useColorProperty
+     */
+    public boolean getUseColorProperty() {
+        return m_useColorProperty;
+    }
+
+    /**
+     * @param useColorProperty the useColorProperty to set
+     */
+    public void setUseColorProperty(final boolean useColorProperty) {
+        m_useColorProperty = useColorProperty;
     }
 
     /**
@@ -268,7 +361,12 @@ public class WordCloudViewRepresentation extends JSONViewContent {
             m_data.get(i).saveToNodeSettings(indSettings);
         }
         settings.addBoolean(CFG_IMAGE_GENERATION, m_isImageGeneration);
+        settings.addBoolean(WordCloudViewConfig.CFG_WARNINGS_IN_VIEW, m_showWarningsInView);
+        settings.addBoolean(WordCloudViewConfig.CFG_RESIZE_TO_WINDOW, m_resizeToWindow);
+        settings.addInt(WordCloudViewConfig.CFG_IMAGE_WIDTH, m_imageWidth);
+        settings.addInt(WordCloudViewConfig.CFG_IMAGE_HEIGHT, m_imageHeight);
         settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
+        settings.addBoolean(WordCloudViewConfig.CFG_USE_COLOR_PROP, m_useColorProperty);
         settings.addString(WordCloudViewConfig.CFG_FONT, m_font);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG, m_enableViewConfig);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE, m_enableTitleChange);
@@ -297,7 +395,12 @@ public class WordCloudViewRepresentation extends JSONViewContent {
             }
         }
         m_isImageGeneration = settings.getBoolean(CFG_IMAGE_GENERATION);
+        m_showWarningsInView = settings.getBoolean(WordCloudViewConfig.CFG_WARNINGS_IN_VIEW);
+        m_resizeToWindow = settings.getBoolean(WordCloudViewConfig.CFG_RESIZE_TO_WINDOW);
+        m_imageWidth = settings.getInt(WordCloudViewConfig.CFG_IMAGE_WIDTH);
+        m_imageHeight = settings.getInt(WordCloudViewConfig.CFG_IMAGE_HEIGHT);
         m_displayFullscreenButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON);
+        m_useColorProperty = settings.getBoolean(WordCloudViewConfig.CFG_USE_COLOR_PROP);
         m_font = settings.getString(WordCloudViewConfig.CFG_FONT);
         m_enableViewConfig = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG);
         m_enableTitleChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE);
@@ -327,7 +430,12 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         return new EqualsBuilder()
                 .append(m_data, other.m_data)
                 .append(m_isImageGeneration, other.m_isImageGeneration)
+                .append(m_showWarningsInView, other.m_showWarningsInView)
+                .append(m_resizeToWindow, other.m_resizeToWindow)
+                .append(m_imageWidth, other.m_imageWidth)
+                .append(m_imageHeight, other.m_imageHeight)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
+                .append(m_useColorProperty, other.m_useColorProperty)
                 .append(m_font, other.m_font)
                 .append(m_enableViewConfig, other.m_enableViewConfig)
                 .append(m_enableTitleChange, other.m_enableTitleChange)
@@ -348,7 +456,12 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         return new HashCodeBuilder()
                 .append(m_data)
                 .append(m_isImageGeneration)
+                .append(m_showWarningsInView)
+                .append(m_resizeToWindow)
+                .append(m_imageWidth)
+                .append(m_imageHeight)
                 .append(m_displayFullscreenButton)
+                .append(m_useColorProperty)
                 .append(m_font)
                 .append(m_enableViewConfig)
                 .append(m_enableTitleChange)

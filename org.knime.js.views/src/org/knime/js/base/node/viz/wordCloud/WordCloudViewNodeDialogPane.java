@@ -89,6 +89,7 @@ import org.knime.js.core.settings.DialogUtil;
 public class WordCloudViewNodeDialogPane extends NodeDialogPane {
 
     private final JCheckBox m_generateImageCheckBox;
+    private final JCheckBox m_showWarningsCheckBox;
     private final JSpinner m_maxWordsSpinner;
     private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JTextField m_titleTextField;
@@ -96,6 +97,10 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
     private final ColumnSelectionPanel m_wordColumnSelection;
     private final ColumnSelectionPanel m_sizeColumnSelection;
     private final JCheckBox m_useSizePropertyCheckBox;
+    private final JCheckBox m_resizeToWindowCheckBox;
+    private final JSpinner m_imageWidthSpinner;
+    private final JSpinner m_imageHeightSpinner;
+    private final JCheckBox m_useColorPropertyCheckBox;
     private final JTextField m_fontTextField;
     private final JSpinner m_minFontSizeSpinner;
     private final JSpinner m_maxFontSizeSpinner;
@@ -118,8 +123,14 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
 
     WordCloudViewNodeDialogPane() {
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
+        m_showWarningsCheckBox = new JCheckBox("Display warnings in view");
         m_maxWordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
+        m_resizeToWindowCheckBox = new JCheckBox("Resize view to fill window");
+        int minWidth = WordCloudViewRepresentation.MIN_WIDTH;
+        int minHeight = WordCloudViewRepresentation.MIN_HEIGHT;
+        m_imageWidthSpinner = new JSpinner(new SpinnerNumberModel(minWidth, minWidth, Integer.MAX_VALUE, 1));
+        m_imageHeightSpinner = new JSpinner(new SpinnerNumberModel(minHeight, minHeight, Integer.MAX_VALUE, 1));
         m_titleTextField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_subtitleTextField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         @SuppressWarnings("unchecked")
@@ -154,6 +165,7 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
                 m_sizeColumnSelection.setSelectedColumn(c ? null : colSelect);
             }
         });
+        m_useColorPropertyCheckBox = new JCheckBox("Use color property");
         m_fontTextField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_minFontSizeSpinner = new JSpinner(new SpinnerNumberModel(1f, 1f, null, 0.5f));
         m_maxFontSizeSpinner = new JSpinner(new SpinnerNumberModel(1f, 1f, null, 0.5f));
@@ -196,14 +208,16 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         GridBagConstraints gbcG = createConfiguredGridBagConstraints();
         gbcG.fill = GridBagConstraints.HORIZONTAL;
         gbcG.gridwidth = 1;
-        generalPanel.add(new JLabel("No. of rows to display: "), gbcG);
+        generalPanel.add(new JLabel("No. of words to display: "), gbcG);
         gbcG.gridx++;
         m_maxWordsSpinner.setPreferredSize(new Dimension(100, DialogUtil.DEF_TEXTFIELD_WIDTH));
         generalPanel.add(m_maxWordsSpinner, gbcG);
-        gbcG.gridwidth = 2;
+        //gbcG.gridwidth = 2;
         gbcG.gridx = 0;
         gbcG.gridy++;
         generalPanel.add(m_generateImageCheckBox, gbcG);
+        gbcG.gridx++;
+        generalPanel.add(m_showWarningsCheckBox, gbcG);
 
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setBorder(new TitledBorder("Titles"));
@@ -228,6 +242,23 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         gbcC.gridy++;
         columnsPanel.add(m_useSizePropertyCheckBox, gbcC);
 
+        JPanel sizesPanel = new JPanel(new GridBagLayout());
+        sizesPanel.setBorder(new TitledBorder("Sizes"));
+        GridBagConstraints gbcS = createConfiguredGridBagConstraints();
+        sizesPanel.add(new JLabel("Width of view/image (in px): "), gbcS);
+        gbcS.gridx++;
+        sizesPanel.add(m_imageWidthSpinner, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
+        sizesPanel.add(new JLabel("Height of view/image (in px): "), gbcS);
+        gbcS.gridx++;
+        sizesPanel.add(m_imageHeightSpinner, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
+        sizesPanel.add(m_resizeToWindowCheckBox, gbcS);
+        gbcS.gridx++;
+        sizesPanel.add(m_displayFullscreenButtonCheckBox, gbcS);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -236,6 +267,8 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         panel.add(titlePanel, gbc);
         gbc.gridy++;
         panel.add(columnsPanel, gbc);
+        gbc.gridy++;
+        panel.add(sizesPanel, gbc);
         return panel;
     }
 
@@ -263,6 +296,10 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         gbcF.gridx++;
         m_maxFontSizeSpinner.setPreferredSize(new Dimension(100, DialogUtil.DEF_TEXTFIELD_WIDTH));
         fontPanel.add(m_maxFontSizeSpinner, gbcF);
+        gbcF.gridwidth = 2;
+        gbcF.gridx = 0;
+        gbcF.gridy++;
+        fontPanel.add(m_useColorPropertyCheckBox, gbcF);
 
         JPanel orientPanel = new JPanel(new GridBagLayout());
         orientPanel.setBorder(new TitledBorder("Orientation"));
@@ -325,8 +362,6 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(viewControlsPanel, gbc);
-        gbc.gridy++;
-        panel.add(m_displayFullscreenButtonCheckBox, gbc);
         return panel;
     }
 
@@ -350,6 +385,10 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
 
         WordCloudViewConfig config = new WordCloudViewConfig();
         config.setGenerateImage(m_generateImageCheckBox.isSelected());
+        config.setShowWarningsInView(m_showWarningsCheckBox.isSelected());
+        config.setResizeToWindow(m_resizeToWindowCheckBox.isSelected());
+        config.setImageWidth((int)m_imageWidthSpinner.getValue());
+        config.setImageHeight((int)m_imageHeightSpinner.getValue());
         config.setMaxWords((int)m_maxWordsSpinner.getValue());
         config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
         config.setTitle(m_titleTextField.getText());
@@ -357,6 +396,7 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         config.setWordColumn(m_wordColumnSelection.getSelectedColumn());
         config.setSizeColumn(m_sizeColumnSelection.getSelectedColumn());
         config.setUseSizeProp(m_useSizePropertyCheckBox.isSelected());
+        config.setUseColorProp(m_useColorPropertyCheckBox.isSelected());
         config.setFont(m_fontTextField.getText());
         config.setMinFontSize((float)m_minFontSizeSpinner.getValue());
         config.setMaxFontSize((float)m_maxFontSizeSpinner.getValue());
@@ -384,12 +424,17 @@ public class WordCloudViewNodeDialogPane extends NodeDialogPane {
         WordCloudViewConfig config = new WordCloudViewConfig();
         config.loadSettingsForDialog(settings, (DataTableSpec)specs[0]);
         m_generateImageCheckBox.setSelected(config.getGenerateImage());
+        m_showWarningsCheckBox.setSelected(config.getShowWarningsInView());
+        m_resizeToWindowCheckBox.setSelected(config.getResizeToWindow());
+        m_imageWidthSpinner.setValue(config.getImageWidth());
+        m_imageHeightSpinner.setValue(config.getImageHeight());
         m_maxWordsSpinner.setValue(config.getMaxWords());
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
         m_titleTextField.setText(config.getTitle());
         m_subtitleTextField.setText(config.getSubtitle());
         m_wordColumnSelection.update((DataTableSpec)specs[0], config.getWordColumn(), config.getWordColumn() == null);
         m_sizeColumnSelection.update((DataTableSpec)specs[0], config.getSizeColumn());
+        m_useColorPropertyCheckBox.setSelected(config.getUseColorProp());
         m_fontTextField.setText(config.getFont());
         m_minFontSizeSpinner.setValue(config.getMinFontSize());
         m_maxFontSizeSpinner.setValue(config.getMaxFontSize());

@@ -207,7 +207,7 @@ public class WordCloudViewNodeModel
                 .setFirstRow(1)
                 .setMaxRows(m_config.getMaxWords())
                 .setIncludeColumns(includeColumns)
-                .extractRowColors(true)
+                .extractRowColors(m_config.getUseColorProp())
                 .extractRowSizes(m_config.getUseSizeProp())
                 .build(exec);
         int numWords = Math.min(jsonTable.getSpec().getNumRows(), m_config.getMaxWords());
@@ -235,8 +235,10 @@ public class WordCloudViewNodeModel
             } else {
                 indData.setSize(((double)rows[i].getData()[sizeIndex]));
             }
-            //TODO the following two properties need to be configurable
-            indData.setColor(colors[i]);
+            if (m_config.getUseColorProp()) {
+                indData.setColor(colors[i]);
+            }
+            //TODO the following property could be configurable
             indData.setOpacity(1);
             data.add(indData);
         }
@@ -269,7 +271,12 @@ public class WordCloudViewNodeModel
 
     private void copyConfigToView() {
         WordCloudViewRepresentation representation = getViewRepresentation();
+        representation.setShowWarningsInView(m_config.getShowWarningsInView());
+        representation.setResizeToWindow(m_config.getResizeToWindow());
+        representation.setImageWidth(m_config.getImageWidth());
+        representation.setImageHeight(m_config.getImageHeight());
         representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setUseColorProperty(m_config.getUseColorProp());
         representation.setFont(m_config.getFont());
         representation.setEnableViewConfig(m_config.getEnableViewConfig());
         representation.setEnableTitleChange(m_config.getEnableTitleChange());
