@@ -104,7 +104,7 @@ public class TableEditorViewValue extends JSONViewContent {
     private boolean m_subscribeFilter;
 
     // editor
-    private Map<Integer, Map<Integer, String>> m_editChanges;
+    private Map<Integer, Map<Integer, Object>> m_editChanges;
 
     /**
      * @return the selection
@@ -291,14 +291,14 @@ public class TableEditorViewValue extends JSONViewContent {
     /**
      * @return the editChanges
      */
-    public Map<Integer, Map<Integer, String>> getEditChanges() {
+    public Map<Integer, Map<Integer, Object>> getEditChanges() {
         return m_editChanges;
     }
 
     /**
      * @param editChanges the editChanges to set
      */
-    public void setEditChanges(final Map<Integer, Map<Integer, String>> editChanges) {
+    public void setEditChanges(final Map<Integer, Map<Integer, Object>> editChanges) {
         m_editChanges = editChanges;
     }
 

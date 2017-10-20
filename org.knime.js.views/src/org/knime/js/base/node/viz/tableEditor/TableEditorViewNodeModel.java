@@ -59,11 +59,18 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.DoubleValue;
+import org.knime.core.data.IntValue;
+import org.knime.core.data.LongValue;
+import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.filter.FilterHandler;
 import org.knime.core.node.BufferedDataContainer;
@@ -264,16 +271,27 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
 
             // apply edit changes
             if (viewValue != null && viewValue.getEditChanges() != null && viewValue.getEditChanges().size() > 0) {
-                Map<Integer, Map<Integer, String>> editChanges = viewValue.getEditChanges();
-                BufferedDataContainer dc = exec.createDataContainer(m_table.getDataTableSpec());
+                DataTableSpec spec = m_table.getDataTableSpec();
+                Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditChanges();
+                BufferedDataContainer dc = exec.createDataContainer(spec);
                 int rowId = 0;
                 for (DataRow row : m_table) {
-                    Map<Integer, String> rowEditChanges = editChanges.get(rowId);
+                    Map<Integer, Object> rowEditChanges = editChanges.get(rowId);
                     DataCell[] copy = new DataCell[row.getNumCells()];
                     for (int i = 0; i < row.getNumCells(); i++) {
                         DataCell cell = row.getCell(i);
                         if (rowEditChanges != null && rowEditChanges.containsKey(i)) {
-                            copy[i] = new StringCell(rowEditChanges.get(i));
+                            Object value = rowEditChanges.get(i);
+                            DataType type = spec.getColumnSpec(i).getType();
+                            if (type.isCompatible(IntValue.class) && value instanceof Integer) {
+                                copy[i] = new IntCell((Integer) value);
+                            } else if (type.isCompatible(LongValue.class) && value instanceof Integer) {
+                                copy[i] = new LongCell(((Integer) value).longValue());
+                            } else if (type.isCompatible(DoubleValue.class) && value instanceof Double) {
+                                copy[i] = new DoubleCell((Double) value);
+                            } else if (type.isCompatible(StringValue.class)) {
+                                copy[i] = new StringCell(value.toString());
+                            }
                         } else {
                             copy[i] = cell;
                         }

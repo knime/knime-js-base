@@ -1,5 +1,5 @@
 table_editor = function() {
-	
+
 	var table_viewer = {};
 	var _representation = null;
 	var _value = null;
@@ -13,6 +13,94 @@ table_editor = function() {
 	
 	var colArray = [];
 	var colShift = 0;
+	
+	
+	/**
+	 * Editor abstract class
+	 */
+	
+	var Editor = function() {
+		this.component = undefined;
+	}
+	
+	Editor.prototype.getComponent = function() {
+		return this.component;
+	}
+	
+	Editor.prototype.getValue = function() {
+		return this.component.val();
+	}
+	
+	Editor.prototype.setValue = function(value) {
+		this.component.val(value);
+	}
+	
+	/**
+	 * String values editor
+	 */
+	var StringEditor = function() {
+		this.component = $('<input type="text"/>');
+	}
+	
+	StringEditor.prototype = Object.create(Editor.prototype);
+	
+	/**
+	 * Integer or Long values editor
+	 */
+	var IntEditor = function() {
+		this.component = $('<input type="number"/>');
+	}
+	
+	IntEditor.prototype = Object.create(Editor.prototype);
+	
+	IntEditor.prototype.getValue = function() {
+		var value = this.component.val();
+		if (value == '') {
+			return 0;
+		} else {
+			return parseInt(value, 10);
+		}
+	}
+	
+	/**
+	 * Double values editor
+	 */
+	var DoubleEditor = function() {
+		this.component = $('<input type="number"/>');
+	}
+	
+	DoubleEditor.prototype = Object.create(Editor.prototype);
+	
+	DoubleEditor.prototype.getValue = function() {
+		var value = this.component.val();
+		if (value == '') {
+			return 0;
+		} else {
+			return parseFloat(value);
+		}
+	}
+	
+	/**
+	 * Editor factory
+	 */
+	
+	createEditor = function(type) {
+		var editor;
+		switch (type) {
+			case 'String':
+				editor = new StringEditor();
+				break;
+			case 'Number (integer)':
+			case 'Number (long)':
+				editor = new IntEditor();
+				break;
+			case 'Number (double)':
+				editor = new DoubleEditor();
+				break;
+		}
+		return editor;
+	}
+	
 	
 	//register neutral ordering method for clear selection button
 	$.fn.dataTable.Api.register('order.neutral()', function () {
@@ -632,15 +720,15 @@ table_editor = function() {
 		
 		var $td = $(cell.node());
 		$td.off('click', editableCellClickHandler);
-		var $input = $('<input type="text"/>');
-		$input.val(cell.data());
+		var editor = createCellEditor(cell);
+		var editorComponent = editor.getComponent();
 		
-		$input.on('focusout', function() {
+		editorComponent.on('focusout', function() {
 			setTimeout(function() {
 				$td.on('click', editableCellClickHandler)
 			}, 200);
-			$input.off('focusout');
-			var newVal = $input.val();
+			editorComponent.off('focusout');
+			var newVal = editor.getValue();
 			$td.empty()
 				.append(newVal);
 				
@@ -653,11 +741,20 @@ table_editor = function() {
 			_value.editChanges[index.row][index.column - colShift] = newVal;
 			
 			cell.invalidate();
-		})
+		});
 		
 		$td.empty()
-			.append($input);
-		$input.focus();
+			.append(editorComponent);
+		editorComponent.focus();
+	}
+	
+	createCellEditor = function(cell) {
+		// get column type
+		var colInd = cell.index().column - colShift;
+		var colType = knimeTable.getKnimeColumnTypes()[colInd];
+		var editor = createEditor(colType);
+		editor.setValue(cell.data());
+		return editor;
 	}
 	
 	selectAll = function(all, ignoreSearch) {
@@ -864,5 +961,4 @@ table_editor = function() {
 	};
 	
 	return table_viewer;
-	
 }();
