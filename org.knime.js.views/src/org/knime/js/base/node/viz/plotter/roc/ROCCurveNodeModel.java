@@ -467,7 +467,7 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
         if (m_config.getResizeToWindow()) {
             template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
         } else {
-            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT_IE_MAX);
+            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
         }
         return template;
     }
