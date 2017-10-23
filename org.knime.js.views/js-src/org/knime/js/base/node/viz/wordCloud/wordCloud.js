@@ -1,11 +1,8 @@
 knime_word_cloud = function() {
 	
 	/* TODO: 
-	 * general node description
-	 * missing values + warnings, 
 	 * generic colors if no colors present,
 	 * title + subtitle,
-	 * warning for too few words in JS table,
 	 * test view in combined view
 	 */
 
@@ -27,6 +24,12 @@ knime_word_cloud = function() {
 		if (!_representation.data) {
 			d3.select("body").text("Error: No data available");
 			return;
+		}
+		
+		if (_representation.showWarningsInView && _representation.warningMessages) {
+			for (var key in _representation.warningMessages) {
+				knimeService.setWarningMessage(_representation.warningMessages[key], key);
+			}
 		}
 		
 		d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
@@ -140,7 +143,7 @@ knime_word_cloud = function() {
 		if (words.length < _representation.data.length) {
 			if (_representation.showWarningsInView) {
 				knimeService.setWarningMessage("Not all words could be displayed due to space restrictions or words are overlapping." 
-					+ "Adapt the font size settings or enlarge the view area.", "tooFewWords");
+					+ " Adapt the font size settings or enlarge the view area.", "tooFewWords");
 			}
 			_clearSVG = true;
 		} else {

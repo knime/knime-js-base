@@ -49,7 +49,9 @@
 package org.knime.js.base.node.viz.wordCloud;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -76,6 +78,9 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     private static final String CFG_DATA = "data";
     private static final String CFG_NUM_SETTINGS = "numSettings";
     private List<WordCloudData> m_data;
+
+    private static final String CFG_WARNING_MESSAGES = "warningMessages";
+    private Map<String, String> m_warningMessages;
 
     private static final String CFG_IMAGE_GENERATION = "imageGeneration";
     private boolean m_isImageGeneration;
@@ -111,6 +116,20 @@ public class WordCloudViewRepresentation extends JSONViewContent {
      */
     public void setData(final List<WordCloudData> data) {
         m_data = data;
+    }
+
+    /**
+     * @return the warningMessages
+     */
+    public Map<String, String> getWarningMessages() {
+        return m_warningMessages;
+    }
+
+    /**
+     * @param warningMessages the warningMessages to set
+     */
+    public void setWarningMessages(final Map<String, String> warningMessages) {
+        m_warningMessages = warningMessages;
     }
 
     /**
@@ -405,6 +424,15 @@ public class WordCloudViewRepresentation extends JSONViewContent {
             NodeSettingsWO indSettings = dataSettings.addNodeSettings(Integer.toString(i));
             m_data.get(i).saveToNodeSettings(indSettings);
         }
+        NodeSettingsWO warningSettings = settings.addNodeSettings(CFG_WARNING_MESSAGES);
+        numSettings = m_warningMessages == null ? 0 : m_warningMessages.size();
+        warningSettings.addInt(CFG_NUM_SETTINGS, numSettings);
+        int i = 0;
+        for (String key : m_warningMessages.keySet()) {
+            warningSettings.addString("key_" + i, key);
+            warningSettings.addString("value_" + i, m_warningMessages.get(key));
+            i++;
+        }
         settings.addBoolean(CFG_IMAGE_GENERATION, m_isImageGeneration);
         settings.addBoolean(WordCloudViewConfig.CFG_WARNINGS_IN_VIEW, m_showWarningsInView);
         settings.addBoolean(WordCloudViewConfig.CFG_RESIZE_TO_WINDOW, m_resizeToWindow);
@@ -440,6 +468,16 @@ public class WordCloudViewRepresentation extends JSONViewContent {
                 WordCloudData indData = new WordCloudData();
                 indData.loadFromNodeSettings(indSettings);
                 m_data.add(indData);
+            }
+        }
+        NodeSettingsRO warningSettings = settings.getNodeSettings(CFG_WARNING_MESSAGES);
+        numSettings = warningSettings.getInt(CFG_NUM_SETTINGS);
+        if (numSettings > 0) {
+            m_warningMessages = new HashMap<String, String>(numSettings);
+            for (int i = 0; i < numSettings; i++) {
+                String key = warningSettings.getString("key_" + i);
+                String value = warningSettings.getString("value_" + i);
+                m_warningMessages.put(key, value);
             }
         }
         m_isImageGeneration = settings.getBoolean(CFG_IMAGE_GENERATION);

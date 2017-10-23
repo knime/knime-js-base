@@ -49,7 +49,9 @@
 package org.knime.js.base.node.viz.wordCloud;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.knime.base.data.xml.SvgCell;
@@ -214,7 +216,22 @@ public class WordCloudViewNodeModel
                 .extractRowSizes(m_config.getUseSizeProp())
                 .excludeRowsWithMissingValues(true)
                 .build(exec);
-        //TODO: set warnings for max words and missing values
+        Map<String, String> warnMessages = new HashMap<String, String>();
+        if (table.size() > m_config.getMaxWords()) {
+            String warnMessage = "Only the first " + m_config.getMaxWords() + " words are displayed.";
+            setWarningMessage(warnMessage);
+            warnMessages.put("knime_clipped_rows", warnMessage);
+        }
+        int missingValueRowsRemoved = jsonTable.numberRemovedRowsWithMissingValues();
+        if (missingValueRowsRemoved > 0 && m_config.getReportMissingValues()) {
+            String warnMessage = missingValueRowsRemoved + " rows were omitted due to missing values.";
+            setWarningMessage(warnMessage);
+            warnMessages.put("knime_missing_values", warnMessage);
+        }
+        if (warnMessages.size() > 0) {
+            WordCloudViewRepresentation representation = getViewRepresentation();
+            representation.setWarningMessages(warnMessages);
+        }
         int numWords = Math.min(jsonTable.getSpec().getNumRows(), m_config.getMaxWords());
         List<WordCloudData> data = new ArrayList<WordCloudData>(numWords);
         JSONDataTableRow[] rows = jsonTable.getRows();
