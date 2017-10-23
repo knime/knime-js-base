@@ -1,7 +1,6 @@
 knime_word_cloud = function() {
 	
 	/* TODO: 
-	 * generic colors if no colors present,
 	 * title + subtitle,
 	 * test view in combined view
 	 */
@@ -13,6 +12,7 @@ knime_word_cloud = function() {
 	var _sizeMax = Number.NEGATIVE_INFINITY;
 	var _prevSize;
 	var _data;
+	var _colorScheme;
 	var _resizeTimeout;
 	var _animDuration;
 	var _clearSVG = false;
@@ -35,6 +35,12 @@ knime_word_cloud = function() {
 		d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
 		d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
 		
+		// d3 scheme set 2
+		_colorScheme = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"];
+		// d3 scheme set 3
+		/*_colorScheme = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", 
+			"#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"];*/
+
 		_animDuration = _representation.imageGeneration || _representation.disableAnimations ? 0 : 500;
 		
 		if (_value.svgFromView) {
@@ -188,7 +194,11 @@ knime_word_cloud = function() {
 			.style("font-family", _representation.font)
 			.style("font-weight", _representation.fontBold ? "bold" : "normal")
 			.style("fill", function(d, i) {
-				return d.color;
+				if (_representation.useColorProperty) {
+					return d.color;
+				} else {
+					return _colorScheme[~~(Math.random() * _colorScheme.length)];
+				}
 			})
 			.attr("text-anchor", "middle")
 			.attr("transform", function(d) {
