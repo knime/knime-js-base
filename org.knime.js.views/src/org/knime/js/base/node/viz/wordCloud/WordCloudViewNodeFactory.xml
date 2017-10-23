@@ -4,15 +4,160 @@
     <shortDescription>Displays a word cloud.</shortDescription>
     <fullDescription>
         <intro>
-            Displays a word cloud.
+        	<p>A word cloud view using JavaScript libraries. The view can be accessed either via
+            the "interactive view" action on the executed node or in KNIME Server web portal page.</p>
+            <p>The implementation is based on the popular JavaScript library <a href="https://d3js.org/">D3</a> 
+            and the layout extension by <a href="https://github.com/jasondavies/d3-cloud">Jason Davies</a>, which is inspired
+            by the popular Java based <a href="http://www.wordle.net/">Wordle</a>. See the appropriate links for more details.</p>
+            <p>The configuration of the node lets you choose the size of a sample to display and to enable certain controls, 
+            which are then available in the view. This includes the ability to choose different font sizes or the possibility 
+            to set a title. Enabling or disabling these controls via the configuration dialog might not seem useful at 
+            first glance but has benefits when used in a web portal/wizard execution where the end user has no access to the 
+            workflow itself.</p>
+            <p>Since missing values cannot be displayed in the view, they will be omitted with a corresponding warning message.</p>
+            <p>Additionally a static SVG image can be rendered, which is then made available at the image output port.</p>
         </intro>
+        <tab name="Options">
+        	<description>This tab contains all general options for controlling the generation and output of the view.</description>
+        	<option name="Number of words to display">
+        		Use this numerical value to restrict the number of words used for this visualization.
+        		A warning message can be displayed if the number of words in the input table exceeds this value.
+        	</option>
+        	<option name="Display warnings in view">
+        		If checked, warning messages will be displayed in the view when they occur.
+        		This could contain information about missing values, exceeding word count, limited layout space, etc.
+        	</option>
+        	<option name="Report on missing values">
+        		Missing values in the selected word or size column lead to the omission of the corresponding row. If this
+        		option is checked and missing values are encountered a warning is issued, the rows are silently ignored otherwise.
+        	</option>
+        	<option name="Create image at outport">
+        		If an image is supposed to be rendered during execute for the image outport. 
+        		Disable this option if image is not needed or creation is too time consuming.
+        		In this case the outport will be disabled.
+        	</option>
+        	<option name="Title" optional="true">
+        		The title of the visualization shown above the generated word cloud. If left blank, no title will be shown.
+        	</option>
+        	<option name="Subtitle" optional="true">
+        		The subtitle of the visualization shown above the generated word cloud. If left blank, no subtitle will be shown.
+        	</option>
+        	<option name="Word column">
+        		Defines the column that contains the string values for the words to display.
+        	</option>
+        	<option name="Size column" optional="true">
+        		Defines the column that contains the numerical size values for the words to display.
+        		This can be also set to <i>'&lt;none&gt;'</i>, in which case the size property for the individual row is used.
+        	</option>
+        	<option name="Use row size property">
+        		In case no size column is used the size property for each row is extracted as a size measure for the words.
+        	</option>
+        	<option name="Width of view/image">
+        		Static width of view and generated image. If 'resize view to fill window' is used, this value has no effect.
+        	</option>
+        	<option name="Height of view/image">
+        		Static height of view and generated image. If 'resize view to fill window' is used, this value has no effect.
+        	</option>
+        	<option name="Resize view to fill window">
+        		Setting this option resizes the view and image to the available area of the window. 
+        		If disabled the view size is static according to the set width and height.
+        	</option>
+        	<option name="Display full screen button">
+        		Displays a button enabling full screen mode.
+        	</option>
+        </tab>
+        <tab name="Display">
+        	<description>This tab contains specific display settings which control the font and layout of the words in the view.</description>
+        	<option name="Font family">
+        		A font family string, which is used to render the words. Values can be comma separated for fallback declaration.
+        		E.g. <i>'Helvetica, Arial, sans-serif'</i>.
+        	</option>
+        	<option name="Font scale">
+        		The font sizes are calculated as an interpolation between specified minimum and maximum font size. There is four
+        		interpolation methods to choose from:
+        		<ul>
+        			<li>linear</li>
+        			<li>logarithmic</li>
+        			<li>square root</li>
+        			<li>exponential</li>
+        		</ul>
+        		Depending on the size distribution in the data and the desired layout one or another 
+        		interpolation method might be more fitting. 
+        	</option>
+        	<option name="Minimum and maximum font size">
+        		Specification for the minimum and maximum font size of the rendered words. Please note that if the values
+        		are too large for all words to fit in the designated view area, words might be omitted from the layout or overlap.
+        		In this case a warning is displayed in the view.
+        	</option>
+        	<option name="Use bold font face">
+        		Check to use a bold variant of the selected font family for display.
+        	</option>
+        	<option name="Use row color property">
+        		If checked the color property for each word is extracted from the input table. Use a 'Color Manager' to assign
+        		colors to the data in advance. If not checked colors are drawn from a default color scale. 
+        	</option>
+        	<option name="Spiral type">
+        		Defines the type of spiral used to position the words. There is two types to choose from:
+        		<ul>
+        			<li>archimedean</li>
+        			<li>rectangular</li>
+        		</ul>
+        	</option>
+        	<option name="Number of orientations">
+        		Numerical value for the number of orientations which are assigned randomly to words. The rotation angles are
+        		calculated according to the specified start and end angle with the number of orientations taken into account.
+        		E.g. to create a strict perpendicular layout set the number to 2, with the start angle at -90&#176; and the
+        		end angle at 0&#176;. By default there is 5 orientations between -60&#176; and +60&#176;, which results in the
+        		following set of orientations: [-60&#176;, -30&#176;, 0&#176;, +30&#176; +60&#176;].
+        	</option>
+        	<option name="Start and end angle">
+        		Numerical values for start and end angle of orientations. The values need to be in the range from -90&#176; to +90&#176;.
+        		See 'number of orientations' for more details.
+        	</option>
+        	<option name="Display refresh button">
+        		Displays a button to refresh the word cloud layout with the current settings. As the orientation and placement
+        		of words have a random component, the layout will look different every time. To achieve a desired look or
+        		placement of certain key words, etc. this button can be pressed multiple times. When the view's value is
+        		applied the last layout is remembered for image creation and subsequent opening of the view.  
+        	</option>
+        	<option name="Disable animations">
+        		If checked all view animations will be disabled.
+        	</option>
+        </tab>
+        <tab name="View Controls">
+        	<description>This tab contains all settings which control the interactive menu displayable in the view.</description>
+        	<option name="Enable view edit controls">
+        		Enables or disables all view menu controls.
+        	</option>
+        	<option name="Enable title edit control">
+        		Renders a text input field to change the visualization's title in the view.
+        	</option>
+        	<option name="Enable subtitle edit control">
+        		Renders a text input field to change the visualization's subtitle in the view.
+        	</option>
+        	<option name="Enable font scale control">
+        		Renders a selection box to change the interpolation method for font sizes in the view.
+        	</option>
+        	<option name="Enable font size controls">
+        		Renders numerical inputs to change minimum and maximum font sizes in the view.
+        	</option>
+        	<option name="Enable spiral type control">
+        		Renders a selection box to change the spiral type in the view.
+        	</option>
+        	<option name="Enable orientation count control">
+        		Renders numerical input field to change the number of orientations used for word rotation in the view.
+        	</option>
+        	<option name="Enable angle controls">
+        		Renders numerical inputs to change the start and end angles used for word rotation in the view.
+        	</option>
+        </tab>
     </fullDescription>
     <interactiveView name="JavaScript Word Cloud View">
         Displays the selected strings in a word cloud.
     </interactiveView>
     <ports>
         <inPort index="0" name="Input to display">
-            Input table to display.
+            Input table containing words to display.
         </inPort>
         <outPort index="0" name="SVG Image">
         	Generated SVG image of word cloud visualization.
