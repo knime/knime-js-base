@@ -69,6 +69,9 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.JSONDataTableRow;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
@@ -77,7 +80,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class WordCloudViewNodeModel
-    extends AbstractSVGWizardNodeModel<WordCloudViewRepresentation, WordCloudViewValue> {
+    extends AbstractSVGWizardNodeModel<WordCloudViewRepresentation, WordCloudViewValue> implements LayoutTemplateProvider {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(WordCloudViewNodeModel.class);
 
@@ -89,7 +92,7 @@ public class WordCloudViewNodeModel
     protected WordCloudViewNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{ImagePortObject.TYPE}, viewName);
         m_config = new WordCloudViewConfig();
-        setOptionalViewWaitTime(500l);
+        setOptionalViewWaitTime(1000l);
     }
 
     /**
@@ -209,7 +212,9 @@ public class WordCloudViewNodeModel
                 .setIncludeColumns(includeColumns)
                 .extractRowColors(m_config.getUseColorProp())
                 .extractRowSizes(m_config.getUseSizeProp())
+                .excludeRowsWithMissingValues(true)
                 .build(exec);
+        //TODO: set warnings for max words and missing values
         int numWords = Math.min(jsonTable.getSpec().getNumRows(), m_config.getMaxWords());
         List<WordCloudData> data = new ArrayList<WordCloudData>(numWords);
         JSONDataTableRow[] rows = jsonTable.getRows();
@@ -276,8 +281,11 @@ public class WordCloudViewNodeModel
         representation.setImageWidth(m_config.getImageWidth());
         representation.setImageHeight(m_config.getImageHeight());
         representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setDisplayRefreshButton(m_config.getDisplayRefreshButton());
+        representation.setDisableAnimations(m_config.getDisableAnimations());
         representation.setUseColorProperty(m_config.getUseColorProp());
         representation.setFont(m_config.getFont());
+        representation.setFontBold(m_config.getFontBold());
         representation.setEnableViewConfig(m_config.getEnableViewConfig());
         representation.setEnableTitleChange(m_config.getEnableTitleChange());
         representation.setEnableSubtitleChange(m_config.getEnableSubtitleChange());
@@ -334,6 +342,20 @@ public class WordCloudViewNodeModel
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent template = new JSONLayoutViewContent();
+        if (m_config.getResizeToWindow()) {
+            template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+        } else {
+            template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
+        }
+        return template;
     }
 
 }

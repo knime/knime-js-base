@@ -85,8 +85,11 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     private int m_imageHeight;
 
     private boolean m_displayFullscreenButton;
+    private boolean m_displayRefreshButton;
+    private boolean m_disableAnimations;
     private boolean m_useColorProperty;
     private String m_font;
+    private boolean m_fontBold;
     private boolean m_enableViewConfig;
     private boolean m_enableTitleChange;
     private boolean m_enableSubtitleChange;
@@ -223,6 +226,34 @@ public class WordCloudViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the displayRefreshButton
+     */
+    public boolean isDisplayRefreshButton() {
+        return m_displayRefreshButton;
+    }
+
+    /**
+     * @param displayRefreshButton the displayRefreshButton to set
+     */
+    public void setDisplayRefreshButton(final boolean displayRefreshButton) {
+        m_displayRefreshButton = displayRefreshButton;
+    }
+
+    /**
+     * @return the disableAnimations
+     */
+    public boolean isDisableAnimations() {
+        return m_disableAnimations;
+    }
+
+    /**
+     * @param disableAnimations the disableAnimations to set
+     */
+    public void setDisableAnimations(final boolean disableAnimations) {
+        m_disableAnimations = disableAnimations;
+    }
+
+    /**
      * @return the font
      */
     public String getFont() {
@@ -234,6 +265,20 @@ public class WordCloudViewRepresentation extends JSONViewContent {
      */
     public void setFont(final String font) {
         m_font = font;
+    }
+
+    /**
+     * @return the fontBold
+     */
+    public boolean isFontBold() {
+        return m_fontBold;
+    }
+
+    /**
+     * @param fontBold the fontBold to set
+     */
+    public void setFontBold(final boolean fontBold) {
+        m_fontBold = fontBold;
     }
 
     /**
@@ -366,8 +411,11 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         settings.addInt(WordCloudViewConfig.CFG_IMAGE_WIDTH, m_imageWidth);
         settings.addInt(WordCloudViewConfig.CFG_IMAGE_HEIGHT, m_imageHeight);
         settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
+        settings.addBoolean(WordCloudViewConfig.CFG_DISPLAY_REFRESH_BUTTON, m_displayRefreshButton);
+        settings.addBoolean(WordCloudViewConfig.CFG_DISABLE_ANIMATIONS, m_disableAnimations);
         settings.addBoolean(WordCloudViewConfig.CFG_USE_COLOR_PROP, m_useColorProperty);
         settings.addString(WordCloudViewConfig.CFG_FONT, m_font);
+        settings.addBoolean(WordCloudViewConfig.CFG_FONT_BOLD, m_fontBold);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG, m_enableViewConfig);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE, m_enableTitleChange);
         settings.addBoolean(WordCloudViewConfig.CFG_ENABLE_SUBTITLE_CHANGE, m_enableSubtitleChange);
@@ -400,8 +448,11 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         m_imageWidth = settings.getInt(WordCloudViewConfig.CFG_IMAGE_WIDTH);
         m_imageHeight = settings.getInt(WordCloudViewConfig.CFG_IMAGE_HEIGHT);
         m_displayFullscreenButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON);
+        m_displayRefreshButton = settings.getBoolean(WordCloudViewConfig.CFG_DISPLAY_REFRESH_BUTTON);
+        m_disableAnimations = settings.getBoolean(WordCloudViewConfig.CFG_DISABLE_ANIMATIONS);
         m_useColorProperty = settings.getBoolean(WordCloudViewConfig.CFG_USE_COLOR_PROP);
         m_font = settings.getString(WordCloudViewConfig.CFG_FONT);
+        m_fontBold = settings.getBoolean(WordCloudViewConfig.CFG_FONT_BOLD);
         m_enableViewConfig = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_CONFIG);
         m_enableTitleChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_TITLE_CHANGE);
         m_enableSubtitleChange = settings.getBoolean(WordCloudViewConfig.CFG_ENABLE_SUBTITLE_CHANGE);
@@ -435,8 +486,11 @@ public class WordCloudViewRepresentation extends JSONViewContent {
                 .append(m_imageWidth, other.m_imageWidth)
                 .append(m_imageHeight, other.m_imageHeight)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
+                .append(m_displayRefreshButton, other.m_displayRefreshButton)
+                .append(m_disableAnimations, other.m_disableAnimations)
                 .append(m_useColorProperty, other.m_useColorProperty)
                 .append(m_font, other.m_font)
+                .append(m_fontBold, other.m_fontBold)
                 .append(m_enableViewConfig, other.m_enableViewConfig)
                 .append(m_enableTitleChange, other.m_enableTitleChange)
                 .append(m_enableSubtitleChange, other.m_enableSubtitleChange)
@@ -461,8 +515,11 @@ public class WordCloudViewRepresentation extends JSONViewContent {
                 .append(m_imageWidth)
                 .append(m_imageHeight)
                 .append(m_displayFullscreenButton)
+                .append(m_displayRefreshButton)
+                .append(m_disableAnimations)
                 .append(m_useColorProperty)
                 .append(m_font)
+                .append(m_fontBold)
                 .append(m_enableViewConfig)
                 .append(m_enableTitleChange)
                 .append(m_enableSubtitleChange)

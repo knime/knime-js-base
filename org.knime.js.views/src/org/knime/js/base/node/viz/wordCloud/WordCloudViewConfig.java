@@ -72,6 +72,10 @@ public class WordCloudViewConfig {
     private final static boolean DEFAULT_WARNINGS_IN_VIEW = true;
     private boolean m_showWarningsInView = DEFAULT_WARNINGS_IN_VIEW;
 
+    private static final String CFG_REPORT_MISSING_VALUES = "reportMissingValues";
+    private final static boolean DEFAULT_REPORT_MISSING_VALUES = true;
+    private boolean m_reportMissingValues = DEFAULT_REPORT_MISSING_VALUES;
+
     final static String CFG_RESIZE_TO_WINDOW = "resizeToWindow";
     private final static boolean DEFAULT_RESIZE_TO_WINDOW = true;
     private boolean m_resizeToWindow = DEFAULT_RESIZE_TO_WINDOW;
@@ -89,8 +93,16 @@ public class WordCloudViewConfig {
     private int m_maxWords = DEFAULT_MAX_WORDS;
 
     final static String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
-    final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
+    private final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
+
+    final static String CFG_DISPLAY_REFRESH_BUTTON = "displayRefreshButton";
+    private final static boolean DEFAULT_DISPLAY_REFRESH_BUTTON = true;
+    private boolean m_displayRefreshButton = DEFAULT_DISPLAY_REFRESH_BUTTON;
+
+    final static String CFG_DISABLE_ANIMATIONS = "disableAnimations";
+    private final static boolean DEFAULT_DISABLE_ANIMATIONS = false;
+    private boolean m_disableAnimations = DEFAULT_DISABLE_ANIMATIONS;
 
     final static String CFG_TITLE = "title";
     private final static String DEFAULT_TITLE = "";
@@ -131,6 +143,10 @@ public class WordCloudViewConfig {
     final static String CFG_FONT_SCALE_TYPE = "fontScaleType";
     private final static WordCloudFontScaleType DEFAULT_FONT_SCALE_TYPE = WordCloudFontScaleType.LINEAR;
     private WordCloudFontScaleType m_fontScaleType = DEFAULT_FONT_SCALE_TYPE;
+
+    final static String CFG_FONT_BOLD = "fontBold";
+    private final static boolean DEFAULT_FONT_BOLD = false;
+    private boolean m_fontBold = DEFAULT_FONT_BOLD;
 
     final static String CFG_SPIRAL_TYPE = "spiralType";
     private final static WordCloudSpiralType DEFAULT_SPIRAL_TYPE = WordCloudSpiralType.ARCHIMEDEAN;
@@ -223,6 +239,20 @@ public class WordCloudViewConfig {
     }
 
     /**
+     * @return the reportMissingValues
+     */
+    public boolean getReportMissingValues() {
+        return m_reportMissingValues;
+    }
+
+    /**
+     * @param reportMissingValues the reportMissingValues to set
+     */
+    public void setReportMissingValues(final boolean reportMissingValues) {
+        m_reportMissingValues = reportMissingValues;
+    }
+
+    /**
      * @return the resizeToWindow
      */
     public boolean getResizeToWindow() {
@@ -290,6 +320,34 @@ public class WordCloudViewConfig {
      */
     public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
         m_displayFullscreenButton = displayFullscreenButton;
+    }
+
+    /**
+     * @return the displayRefreshButton
+     */
+    public boolean getDisplayRefreshButton() {
+        return m_displayRefreshButton;
+    }
+
+    /**
+     * @param displayRefreshButton the displayRefreshButton to set
+     */
+    public void setDisplayRefreshButton(final boolean displayRefreshButton) {
+        m_displayRefreshButton = displayRefreshButton;
+    }
+
+    /**
+     * @return the disableAnimations
+     */
+    public boolean getDisableAnimations() {
+        return m_disableAnimations;
+    }
+
+    /**
+     * @param disableAnimations the disableAnimations to set
+     */
+    public void setDisableAnimations(final boolean disableAnimations) {
+        m_disableAnimations = disableAnimations;
     }
 
     /**
@@ -430,6 +488,20 @@ public class WordCloudViewConfig {
      */
     public void setFontScaleType(final WordCloudFontScaleType fontScaleType) {
         m_fontScaleType = fontScaleType;
+    }
+
+    /**
+     * @return the fontBold
+     */
+    public boolean getFontBold() {
+        return m_fontBold;
+    }
+
+    /**
+     * @param fontBold the fontBold to set
+     */
+    public void setFontBold(final boolean fontBold) {
+        m_fontBold = fontBold;
     }
 
     /**
@@ -607,11 +679,14 @@ public class WordCloudViewConfig {
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
         settings.addBoolean(CFG_GENERATE_IMAGE, m_generateImage);
         settings.addBoolean(CFG_WARNINGS_IN_VIEW, m_showWarningsInView);
+        settings.addBoolean(CFG_REPORT_MISSING_VALUES, m_reportMissingValues);
         settings.addBoolean(CFG_RESIZE_TO_WINDOW, m_resizeToWindow);
         settings.addInt(CFG_IMAGE_WIDTH, m_imageWidth);
         settings.addInt(CFG_IMAGE_HEIGHT, m_imageHeight);
         settings.addInt(CFG_MAX_WORDS, m_maxWords);
         settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
+        settings.addBoolean(CFG_DISPLAY_REFRESH_BUTTON, m_displayRefreshButton);
+        settings.addBoolean(CFG_DISABLE_ANIMATIONS, m_disableAnimations);
         settings.addString(CFG_TITLE, m_title);
         settings.addString(CFG_SUBTITLE, m_subtitle);
         settings.addString(CFG_WORD_COLUMN, m_wordColumn);
@@ -622,6 +697,7 @@ public class WordCloudViewConfig {
         settings.addFloat(CFG_MIN_FONT_SIZE, m_minFontSize);
         settings.addFloat(CFG_MAX_FONT_SIZE, m_maxFontSize);
         settings.addString(CFG_FONT_SCALE_TYPE, m_fontScaleType.toValue());
+        settings.addBoolean(CFG_FONT_BOLD, m_fontBold);
         settings.addString(CFG_SPIRAL_TYPE, m_spiralType.toValue());
         settings.addInt(CFG_NUM_ORIENTATIONS, m_numOrientations);
         settings.addInt(CFG_START_ANGLE, m_startAngle);
@@ -644,11 +720,14 @@ public class WordCloudViewConfig {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE);
         m_showWarningsInView = settings.getBoolean(CFG_WARNINGS_IN_VIEW);
+        m_reportMissingValues = settings.getBoolean(CFG_REPORT_MISSING_VALUES);
         m_resizeToWindow = settings.getBoolean(CFG_RESIZE_TO_WINDOW);
         m_imageWidth = settings.getInt(CFG_IMAGE_WIDTH);
         m_imageHeight = settings.getInt(CFG_IMAGE_HEIGHT);
         m_maxWords = settings.getInt(CFG_MAX_WORDS);
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
+        m_displayRefreshButton = settings.getBoolean(CFG_DISPLAY_REFRESH_BUTTON);
+        m_disableAnimations = settings.getBoolean(CFG_DISABLE_ANIMATIONS);
         m_title = settings.getString(CFG_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE);
         m_wordColumn = settings.getString(CFG_WORD_COLUMN);
@@ -659,6 +738,7 @@ public class WordCloudViewConfig {
         m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE);
         m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE);
         m_fontScaleType = WordCloudFontScaleType.forValue(settings.getString(CFG_FONT_SCALE_TYPE));
+        m_fontBold = settings.getBoolean(CFG_FONT_BOLD);
         m_spiralType = WordCloudSpiralType.forValue(settings.getString(CFG_SPIRAL_TYPE));
         m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(CFG_START_ANGLE);
@@ -681,12 +761,14 @@ public class WordCloudViewConfig {
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
         m_generateImage = settings.getBoolean(CFG_GENERATE_IMAGE, DEFAULT_GENERATE_IMAGE);
         m_showWarningsInView = settings.getBoolean(CFG_WARNINGS_IN_VIEW, DEFAULT_WARNINGS_IN_VIEW);
+        m_reportMissingValues = settings.getBoolean(CFG_REPORT_MISSING_VALUES, DEFAULT_REPORT_MISSING_VALUES);
         m_resizeToWindow = settings.getBoolean(CFG_RESIZE_TO_WINDOW, DEFAULT_RESIZE_TO_WINDOW);
         m_imageWidth = settings.getInt(CFG_IMAGE_WIDTH, DEFAULT_IMAGE_WIDTH);
         m_imageHeight = settings.getInt(CFG_IMAGE_HEIGHT, DEFAULT_IMAGE_HEIGHT);
         m_maxWords = settings.getInt(CFG_MAX_WORDS, DEFAULT_MAX_WORDS);
-
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
+        m_displayRefreshButton = settings.getBoolean(CFG_DISPLAY_REFRESH_BUTTON, DEFAULT_DISPLAY_REFRESH_BUTTON);
+        m_disableAnimations = settings.getBoolean(CFG_DISABLE_ANIMATIONS, DEFAULT_DISABLE_ANIMATIONS);
         m_title = settings.getString(CFG_TITLE, DEFAULT_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
         m_wordColumn = settings.getString(CFG_WORD_COLUMN, DEFAULT_WORD_COLUMN);
@@ -697,6 +779,7 @@ public class WordCloudViewConfig {
         m_minFontSize = settings.getFloat(CFG_MIN_FONT_SIZE, DEFAULT_MIN_FONT_SIZE);
         m_maxFontSize = settings.getFloat(CFG_MAX_FONT_SIZE, DEFAULT_MAX_FONT_SIZE);
         m_fontScaleType = WordCloudFontScaleType.forValue(settings.getString(CFG_FONT_SCALE_TYPE, DEFAULT_FONT_SCALE_TYPE.toValue()));
+        m_fontBold = settings.getBoolean(CFG_FONT_BOLD, DEFAULT_FONT_BOLD);
         m_spiralType = WordCloudSpiralType.forValue(settings.getString(CFG_SPIRAL_TYPE, DEFAULT_SPIRAL_TYPE.toValue()));
         m_numOrientations = settings.getInt(CFG_NUM_ORIENTATIONS, DEFAULT_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(CFG_START_ANGLE, DEFAULT_START_ANGLE);
