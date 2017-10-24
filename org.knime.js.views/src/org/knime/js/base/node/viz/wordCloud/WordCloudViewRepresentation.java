@@ -427,11 +427,13 @@ public class WordCloudViewRepresentation extends JSONViewContent {
         NodeSettingsWO warningSettings = settings.addNodeSettings(CFG_WARNING_MESSAGES);
         numSettings = m_warningMessages == null ? 0 : m_warningMessages.size();
         warningSettings.addInt(CFG_NUM_SETTINGS, numSettings);
-        int i = 0;
-        for (String key : m_warningMessages.keySet()) {
-            warningSettings.addString("key_" + i, key);
-            warningSettings.addString("value_" + i, m_warningMessages.get(key));
-            i++;
+        if (numSettings > 0) {
+            int i = 0;
+            for (String key : m_warningMessages.keySet()) {
+                warningSettings.addString("key_" + i, key);
+                warningSettings.addString("value_" + i, m_warningMessages.get(key));
+                i++;
+            }
         }
         settings.addBoolean(CFG_IMAGE_GENERATION, m_isImageGeneration);
         settings.addBoolean(WordCloudViewConfig.CFG_WARNINGS_IN_VIEW, m_showWarningsInView);
