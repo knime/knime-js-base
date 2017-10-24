@@ -1,7 +1,6 @@
 knime_word_cloud = function() {
 	
 	/* TODO: 
-	 * title + subtitle,
 	 * test view in combined view
 	 */
 
@@ -72,13 +71,23 @@ knime_word_cloud = function() {
 		}
 	}
 	
-	function getSize() {
+	function getSize(withTitleMargin) {
+		var mTop = 0;
+		if (withTitleMargin) {
+			if (_value.title && _value.subtitle) {
+				mTop += 56;        	
+			} else if (_value.title) {
+				mTop += 36;
+			} else if (_value.subtitle) {
+				mTop += 26;
+			}
+		}
 		if (_representation.imageGeneration || !_representation.resizeToWindow) {
-			return [_representation.imageWidth, _representation.imageHeight];
+			return [_representation.imageWidth, _representation.imageHeight - mTop, mTop];
 		}
 		var pad = 5;
 		var doc = document.documentElement;
-		return [doc.clientWidth - pad, doc.clientHeight - pad /* minus titles */];
+		return [doc.clientWidth - pad, doc.clientHeight - pad - mTop, mTop];
 	}
 	
 	function resize() {
@@ -118,7 +127,7 @@ knime_word_cloud = function() {
 	function generateLayout() {
 		var scale = getFontScale();
 		d3.layout.cloud()
-		.size(getSize())
+		.size(getSize(true))
 		.words(_representation.data)
 		/*.padding(5)*/
 		.rotate(function() {
@@ -155,7 +164,7 @@ knime_word_cloud = function() {
 		} else {
 			knimeService.clearWarningMessage("tooFewWords");
 		}
-		var size = getSize();
+		var size = getSize(true);
 		var locS = 1;
 		if (scale) {
 			var sX1 = size[0] / Math.abs(scale[1].x - size[0] / 2)
@@ -166,14 +175,19 @@ knime_word_cloud = function() {
 		}
 		var svg = d3.select("svg");
 		if (svg.empty()) {
-			svg = d3.select('body').append('svg');
-			svg.append('g')
-				.attr('class', 'vis')
+			//build basic structure
+			svg = d3.select("body").append("svg");
+			svg.append("g")
+				.attr("class", "titles")
+				.attr("transform", "translate(2,0)");
+			svg.append("g")
+				.attr("class", "vis")
 				.attr("transform", "translate(" 
-						+ [size[0] >> 1, size[1] >> 1] + ")");
+						+ [size[0] >> 1, (size[1] >> 1) + size[2]] + ")");
 		}
-		svg.attr("width", size[0])
-			.attr("height", size[1]);
+		var svgSize = getSize(false);
+		svg.attr("width", svgSize[0])
+			.attr("height", svgSize[1]);
 		var data = svg.select("g.vis")
 			.selectAll("text").data(words);
 		//update existing words
@@ -224,13 +238,48 @@ knime_word_cloud = function() {
 			.transition()
 			.delay(_animDuration)
 			.duration(_animDuration)
-			.attr("transform", "translate(" + [size[0] >> 1, size[1] >> 1] 
+			.attr("transform", "translate(" + [size[0] >> 1, (size[1] >> 1) + size[2]] 
 		        + ")scale(" + locS + ")")
 		    .on("end", function() {
 		    	//save new svg
 				var svgNode = svg.node();
 				_value.svgFromView = (new XMLSerializer()).serializeToString(svgNode);
 		    });
+		var titleG = svg.select("g.titles");
+		titleG.selectAll("*").remove();
+		if (_value.title) {
+        	titleG.append("text")
+	        	.text(_value.title)
+	        	.attr("id", "title")
+	        	.attr("font", "sans-serif")
+	        	.attr("y", 24)
+	        	.attr("font-size", 24);
+        }
+		if (_value.subtitle) {
+        	titleG.append("text")        
+	        	.text(_value.subtitle)
+	        	.attr("id", "subtitle")
+	        	.attr("font", "sans-serif")
+	        	.attr("font-size", 12)
+	        	.attr("y", size[2] - 12);
+        }
+	}
+	
+	function updateTitles() {
+		var title = d3.select("svg g.titles text#title");
+		var subtitle = d3.select("svg g.titles text#subtitle");
+		if (!_value.title != title.empty() || !_value.subtitle != subtitle.empty()) {
+			// if titles get introduced/removed sizes change
+			redraw();
+		} else {
+			// otherwise simply update
+			if (_value.title) {
+				title.text(_value.title);
+			}
+			if (_value.subtitle) {
+				subtitle.text(_value.subtitle);
+			}
+		}
 	}
 	
 	function drawControls() {
@@ -255,11 +304,17 @@ knime_word_cloud = function() {
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
 	    	if (_representation.enableTitleChange) {
-	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.title, function() {}, false);
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.title, function() {
+	    			_value.title = this.value;
+	    			updateTitles();
+	    		}, false);
 	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
 	    	}
 	    	if (_representation.enableSubtitleChange) {
-	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.subtitle, function() {}, false);
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.subtitle, function() {
+	    			_value.subtitle = this.value;
+	    			updateTitles();
+	    		}, false);
 	    		knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 	    	}
 	    	pre = true;
