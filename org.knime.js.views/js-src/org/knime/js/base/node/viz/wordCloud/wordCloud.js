@@ -1,6 +1,7 @@
 knime_word_cloud = function() {
 	
 	/* TODO: 
+	 * menu doesn't show on second open
 	 * test view in combined view
 	 */
 
@@ -40,13 +41,18 @@ knime_word_cloud = function() {
 		/*_colorScheme = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", 
 			"#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"];*/
 
-		_animDuration = _representation.imageGeneration || _representation.disableAnimations ? 0 : 500;
+		var disableAnimation = _representation.imageGeneration || _representation.disableAnimations;
+		_animDuration = disableAnimation ? 0 : 500;
 		
 		if (_value.svgFromView) {
 			if (_representation.imageGeneration) {
 				return;
 			}
-			d3.select('body').html(_value.svgFromView);
+	        var parser = new DOMParser(); 
+	        var xmlDoc = parser.parseFromString(_value.svgFromView, "text/xml"); 
+	        var elemXML = xmlDoc.documentElement;
+	        var elemSVG = document.adoptNode(elemXML);
+			document.getElementsByTagName('body')[0].appendChild(elemSVG);
 		}
 		
 		_representation.data.sort(function(x, y) {
@@ -59,7 +65,7 @@ knime_word_cloud = function() {
 			_representation.data[i]._size = _representation.data[i].size;
 		}
 		
-		_prevSize = getSize();
+		_prevSize = getSize(false);
 		
 		if (!_value.svgFromView) {
 			generateLayout();
@@ -91,7 +97,7 @@ knime_word_cloud = function() {
 	}
 	
 	function resize() {
-		var curSize = getSize();
+		var curSize = getSize(false);
 		if (Math.abs(_prevSize[0] - curSize[0]) > 5 || Math.abs(_prevSize[1] - curSize[1]) > 5) {
 			_prevSize = curSize;
 			redraw();
@@ -188,6 +194,42 @@ knime_word_cloud = function() {
 		var svgSize = getSize(false);
 		svg.attr("width", svgSize[0])
 			.attr("height", svgSize[1]);
+		
+		// create titles
+		var titleG = svg.select("g.titles");
+		titleG.selectAll("*").remove();
+		if (_value.title) {
+        	titleG.append("text")
+	        	.text(_value.title)
+	        	.attr("id", "title")
+	        	.attr("font", "sans-serif")
+	        	.attr("y", 24)
+	        	.attr("font-size", 24);
+        }
+		if (_value.subtitle) {
+        	titleG.append("text")        
+	        	.text(_value.subtitle)
+	        	.attr("id", "subtitle")
+	        	.attr("font", "sans-serif")
+	        	.attr("font-size", 12)
+	        	.attr("y", size[2] - 12);
+        }
+		
+		//add empty rect for batik bounds calculation on empty plot
+		if (_representation.imageGeneration && words.length < 1) {
+			svg.select("g.vis").remove();
+			svg.append("rect")
+				.attr("width", svgSize[0])
+				.attr("height", svgSize[1] - size[2])
+				.attr("transform", "translate(0," + size[2] + ")")
+				.style("fill", "white");
+			if (!_value.title && !_value.subtitle) {
+				svg.select("g.titles").remove();
+			}
+			var svgNode = svg.node();
+			_value.svgFromView = (new XMLSerializer()).serializeToString(svgNode);
+			return;
+		}
 		var data = svg.select("g.vis")
 			.selectAll("text").data(words);
 		//update existing words
@@ -245,24 +287,6 @@ knime_word_cloud = function() {
 				var svgNode = svg.node();
 				_value.svgFromView = (new XMLSerializer()).serializeToString(svgNode);
 		    });
-		var titleG = svg.select("g.titles");
-		titleG.selectAll("*").remove();
-		if (_value.title) {
-        	titleG.append("text")
-	        	.text(_value.title)
-	        	.attr("id", "title")
-	        	.attr("font", "sans-serif")
-	        	.attr("y", 24)
-	        	.attr("font-size", 24);
-        }
-		if (_value.subtitle) {
-        	titleG.append("text")        
-	        	.text(_value.subtitle)
-	        	.attr("id", "subtitle")
-	        	.attr("font", "sans-serif")
-	        	.attr("font-size", 12)
-	        	.attr("y", size[2] - 12);
-        }
 	}
 	
 	function updateTitles() {
