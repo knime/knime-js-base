@@ -401,7 +401,7 @@
 			var lineThicknessSpin = knimeService.createMenuNumberField("lineThickness", _value.options.lThickness, 0.1, 100, 0.1, function(){
 				_value.options.lThickness = Number(this.value);
 				d3.selectAll(".row").attr("stroke-width", this.value);
-			});
+			}, true);
 			knimeService.addMenuItem('Line thickness:', 'minus', lineThicknessSpin);
 		}
             

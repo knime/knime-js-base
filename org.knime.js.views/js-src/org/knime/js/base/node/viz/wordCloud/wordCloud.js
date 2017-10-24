@@ -357,7 +357,7 @@ knime_word_cloud = function() {
 	    	if (_representation.enableFontSizeChange) {
 	    		var minFontSizeField = knimeService.createMenuNumberField('minFontSizeField', _value.minFontSize, 1, null, 0.5, function() {
 	    			var size = parseFloat(this.value);
-	    			if (size < 1) {
+	    			if (size < 1 || isNaN(size)) {
 	    				this.value = 1;
 	    				size = 1;
 	    			}
@@ -370,13 +370,13 @@ knime_word_cloud = function() {
 	    				_value.minFontSize = size;
 	    				redraw();
 	    			}
-	    		});
+	    		}, false);
 	    		knimeService.addMenuItem('Minimum Font Size:', 'text-height', minFontSizeField, null, knimeService.SMALL_ICON);
 	    		
 	    		var maxFontSizeField = knimeService.createMenuNumberField('maxFontSizeField', _value.maxFontSize, 1, null, 0.5, function() {
 	    			var size = parseFloat(this.value);
 	    			var minSize = parseFloat(d3.select("#minFontSizeField").node().value);
-	    			if (size < minSize) {
+	    			if (size < minSize || isNaN(size)) {
 	    				this.value = minSize;
 	    				size = minSize;
 	    			}
@@ -384,7 +384,7 @@ knime_word_cloud = function() {
 	    				_value.maxFontSize = size;
 	    				redraw();
 	    			}
-	    		});
+	    		}, false);
 	    		knimeService.addMenuItem('Maximum Font Size:', 'text-height', maxFontSizeField);
 	    	}
 	    	pre = true;
@@ -408,7 +408,7 @@ knime_word_cloud = function() {
 	    	if (_representation.enableNumOrientationsChange) {
 	    		var numOrientField = knimeService.createMenuNumberField('numOrientField', _value.numOrientations, 1, null, 1, function() {
 	    			var num = parseInt(this.value);
-	    			if (num < 1) {
+	    			if (num < 1 || isNaN(num)) {
 	    				this.value = 1;
 	    				num = 1;
 	    			}
@@ -416,13 +416,13 @@ knime_word_cloud = function() {
 	    				_value.numOrientations = num;
 	    				redraw();
 	    			}
-	    		});
+	    		}, false);
 	    		knimeService.addMenuItem('Number Orientations:', 'sort', numOrientField);
 	    	}
 	    	if (_representation.enableAnglesChange) {
 	    		var startAngleField = knimeService.createMenuNumberField('startAngleField', _value.startAngle, -90, 90, 1, function() {
 	    			var angle = parseInt(this.value);
-	    			if (angle < -90) {
+	    			if (angle < -90 || isNaN(angle)) {
 	    				this.value = -90;
 	    				angle = -90;
 	    			}
@@ -435,12 +435,12 @@ knime_word_cloud = function() {
 	    				_value.startAngle = angle;
 	    				redraw();
 	    			}
-	    		});
+	    		}, false);
 	    		knimeService.addMenuItem('Start Angle:', 'chevron-left', startAngleField);
 	    		
 	    		var endAngleField = knimeService.createMenuNumberField('endAngleField', _value.endAngle, -90, 90, 1, function() {
 	    			var angle = parseInt(this.value);
-	    			if (angle > 90) {
+	    			if (angle > 90 || isNaN(angle)) {
 	    				this.value = 90;
 	    				angle = 90;
 	    			}
@@ -453,7 +453,7 @@ knime_word_cloud = function() {
 	    				_value.endAngle = angle;
 	    				redraw();
 	    			}
-	    		});
+	    		}, false);
 	    		knimeService.addMenuItem('End Angle:', 'chevron-right', endAngleField);
 	    	}
 	    	pre = true;
