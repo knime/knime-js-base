@@ -1,10 +1,5 @@
 knime_word_cloud = function() {
 	
-	/* TODO: 
-	 * menu doesn't show on second open
-	 * test view in combined view
-	 */
-
 	var wordCloud = {};
 	var _representation
 	var _value;
