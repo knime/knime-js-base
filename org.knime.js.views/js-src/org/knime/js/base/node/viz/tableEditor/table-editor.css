@@ -161,3 +161,9 @@ h2 {
     -webkit-appearance: none;
     margin: 0;
 }
+
+#knimePagedTable th span {
+	opacity: 0.2;
+	float: right;
+	padding-top: 2px;
+}
