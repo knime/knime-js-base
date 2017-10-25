@@ -269,17 +269,20 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     @Override
     public ExternalNodeData getInputData() {
         String path = getConfig().getDefaultValue().getPath();
-        URI uri;
-        if (StringUtils.isEmpty(path)) {
-            uri = ExternalNodeData.NO_URI_VALUE_YET;
-        } else {
-            try {
+        try {
+            URI uri;
+            if (StringUtils.isEmpty(path)) {
+                uri = ExternalNodeData.NO_URI_VALUE_YET;
+            } else {
                 uri = FileUtil.toURL(path).toURI();
-            } catch (MalformedURLException | InvalidPathException | URISyntaxException ex) {
-                throw new RuntimeException(ex); // should never happen
             }
+            return ExternalNodeData.builder(getConfig().getParameterName())
+                    .resource(uri)
+                    .description(getConfig().getDescription())
+                    .build();
+        } catch (MalformedURLException | InvalidPathException | URISyntaxException ex) {
+            throw new RuntimeException(ex); // should never happen
         }
-        return ExternalNodeData.builder(getConfig().getParameterName()).resource(uri).build();
     }
 
     /**

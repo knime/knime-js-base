@@ -465,7 +465,10 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
             jsonValue = Json.createObjectBuilder().build();
         }
 
-        return ExternalNodeData.builder(getParameterName()).jsonValue(jsonValue).build();
+        return ExternalNodeData.builder(getParameterName())
+                .jsonValue(jsonValue)
+                .description(m_config.getDescription())
+                .build();
     }
 
     /**
