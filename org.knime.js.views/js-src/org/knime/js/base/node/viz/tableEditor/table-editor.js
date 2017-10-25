@@ -74,7 +74,7 @@ table_editor = function() {
 	 * Double values editor
 	 */
 	var DoubleEditor = function() {
-		this.component = $('<input type="number"/>');
+		this.component = $('<input type="number" class="double-cell" step="any"/>');
 	}
 	
 	DoubleEditor.prototype = Object.create(Editor.prototype);

@@ -155,3 +155,9 @@ h2 {
     display: block;
     padding-bottom: 3px;
 }
+
+#knimePagedTable input.double-cell::-webkit-outer-spin-button,
+#knimePagedTable input.double-cell::-webkit-inner-spin-button {    
+    -webkit-appearance: none;
+    margin: 0;
+}
