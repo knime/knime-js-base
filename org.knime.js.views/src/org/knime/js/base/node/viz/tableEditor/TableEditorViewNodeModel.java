@@ -283,7 +283,9 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                         if (rowEditChanges != null && rowEditChanges.containsKey(i)) {
                             Object value = rowEditChanges.get(i);
                             DataType type = spec.getColumnSpec(i).getType();
-                            if (type.isCompatible(IntValue.class) && value instanceof Integer) {
+                            if (value == null) {
+                                copy[i] = DataType.getMissingCell();
+                            } else if (type.isCompatible(IntValue.class) && value instanceof Integer) {
                                 copy[i] = new IntCell((Integer) value);
                             } else if (type.isCompatible(LongValue.class) && value instanceof Integer) {
                                 copy[i] = new LongCell(((Integer) value).longValue());

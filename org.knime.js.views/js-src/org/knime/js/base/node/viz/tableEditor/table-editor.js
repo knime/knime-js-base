@@ -44,6 +44,14 @@ table_editor = function() {
 	
 	StringEditor.prototype = Object.create(Editor.prototype);
 	
+	StringEditor.prototype.getValue = function() {
+		var value = this.component.val();		
+		if (value == '') {
+			return null;
+		}
+		return value;
+	}
+	
 	/**
 	 * Integer or Long values editor
 	 */
@@ -56,7 +64,7 @@ table_editor = function() {
 	IntEditor.prototype.getValue = function() {
 		var value = this.component.val();
 		if (value == '') {
-			return 0;
+			return null;
 		} else {
 			return parseInt(value, 10);
 		}
@@ -74,7 +82,7 @@ table_editor = function() {
 	DoubleEditor.prototype.getValue = function() {
 		var value = this.component.val();
 		if (value == '') {
-			return 0;
+			return null;
 		} else {
 			return parseFloat(value);
 		}
