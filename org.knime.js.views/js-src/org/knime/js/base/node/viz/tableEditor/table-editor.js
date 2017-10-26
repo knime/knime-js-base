@@ -258,15 +258,26 @@ table_editor = function() {
 				});
 				colShift++;
 			}
+			
+			var editableColIndices = [];
+			/*for (var i = 0; i < colArray.length; i++) {
+				if (_representation.editableColumns.indexOf(colArray[i].title) !== -1) {
+					editableColIndices.push(i);
+				}
+			}*/
+			
 			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
 				var colType = knimeTable.getColumnTypes()[i];
 				var knimeColType = knimeTable.getKnimeColumnTypes()[i];
-				var title = knimeTable.getColumnNames()[i];
-				if (_representation.editableColumns.indexOf(title) !== -1) {
-					title += '<span class="glyphicon glyphicon-pencil"></span>';
+				
+				var colName = knimeTable.getColumnNames()[i];
+				if (_representation.editableColumns.indexOf(colName) !== -1) {
+					editableColIndices.push(colArray.length);  // colArray.length <=> index of the current column in colArray
+					colName += '<span class="glyphicon glyphicon-pencil"></span>';
 				}
+				
 				var colDef = {
-					'title': title,
+					'title': colName,
 					'orderable' : isColumnSortable(colType),
 					'searchable': isColumnSearchable(colType)					
 				}
@@ -379,13 +390,6 @@ table_editor = function() {
 				|| (_representation.enableSelection && (_value.hideUnselected || _representation.enableHideUnselected)) 
 				|| (knimeService && knimeService.isInteractivityAvailable());
 			
-			var editableColIndices = [];
-			for (var i = 0; i < colArray.length; i++) {
-				if (_representation.editableColumns.indexOf(colArray[i].title) !== -1) {
-					editableColIndices.push(i);
-				}
-			}
-
 			dataTable = $('#knimePagedTable').DataTable( {
 				'columns': colArray,
 				'columnDefs': colDefs,
@@ -736,11 +740,7 @@ table_editor = function() {
 		var editorComponent = editor.getComponent();
 		
 		var editFinishCallback = function() {
-			setTimeout(function() {
-				$td.on('click', editableCellClickHandler)
-			}, 200);
-			editorComponent.off('focusout');
-			editorComponent.off('keypress');
+			restoreListeners();
 			var newVal = editor.getValue();
 			$td.empty()
 				.append(newVal);
@@ -756,10 +756,25 @@ table_editor = function() {
 			cell.invalidate();
 		}
 		
+		var editCancelCallback = function() {
+			restoreListeners();
+			cell.invalidate();
+		}
+		
+		var restoreListeners = function() {
+			setTimeout(function() {
+				$td.on('click', editableCellClickHandler)
+			}, 200);
+			editorComponent.off('focusout');
+			editorComponent.off('keypress');
+		}
+		
 		editorComponent.on('focusout', editFinishCallback);
-		editorComponent.on('keypress', function(e) {
-			if (e.which == 13) {
+		editorComponent.on('keyup', function(e) {
+			if (e.key == "Enter") {
 				editFinishCallback();
+			} else if (e.key == "Escape") {
+				editCancelCallback();
 			}
 		})
 		
