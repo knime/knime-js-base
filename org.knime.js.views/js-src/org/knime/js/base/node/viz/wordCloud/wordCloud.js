@@ -10,7 +10,6 @@ knime_word_cloud = function() {
 	var _colorScheme;
 	var _resizeTimeout;
 	var _animDuration;
-	var _clearSVG = false;
 
 	wordCloud.init = function(representation, value) {
 		_representation = representation;
@@ -129,7 +128,7 @@ knime_word_cloud = function() {
 		var scale = getFontScale();
 		d3.layout.cloud()
 		.size(getSize(true))
-		.words(_representation.data)
+		.words(JSON.parse(JSON.stringify(_representation.data)))
 		/*.padding(5)*/
 		.rotate(function() {
 			if (_value.numOrientations < 2) {
@@ -145,28 +144,16 @@ knime_word_cloud = function() {
 			return scale(d.size);
 		})
 		.fontWeight(_representation.fontBold ? "bold" : "normal")
-		.timeInterval(10)
+		.timeInterval(100)
 		.spiral(_value.spiralType)
+		.overflow(true)
 		.on("end", draw).start();
 	}
 	
 	function draw(words, scale) {
-		if (_clearSVG) {
-			d3.selectAll("svg g > *").remove();
-			_clearSVG = false;
-		}
-		//set or clear warning
-		if (words.length < _representation.data.length) {
-			if (_representation.showWarningsInView) {
-				knimeService.setWarningMessage("Not all words could be displayed due to space restrictions or words are overlapping." 
-					+ " Adapt the font size settings or enlarge the view area.", "tooFewWords");
-			}
-			_clearSVG = true;
-		} else {
-			knimeService.clearWarningMessage("tooFewWords");
-		}
 		var size = getSize(true);
 		var locS = 1;
+		//determine scale factor
 		if (scale) {
 			var sX1 = size[0] / Math.abs(scale[1].x - size[0] / 2)
 			var sX2 = size[0] / Math.abs(scale[0].x - size[0] / 2);
@@ -174,6 +161,17 @@ knime_word_cloud = function() {
 			var sY2 = size[1] / Math.abs(scale[0].y - size[1] / 2);
 			locS = Math.min(sX1,sX2, sY1, sY2) / 2;
 		}
+		
+		//set or clear warning
+		if (words.length < _representation.data.length) {
+			if (_representation.showWarningsInView) {
+				knimeService.setWarningMessage("Not all words could be displayed due to space restrictions or words are overlapping." 
+					+ " Adapt the font size settings or enlarge the view area.", "tooFewWords");
+			}
+		} else {
+			knimeService.clearWarningMessage("tooFewWords");
+		}
+		
 		var svg = d3.select("svg");
 		if (svg.empty()) {
 			//build basic structure
