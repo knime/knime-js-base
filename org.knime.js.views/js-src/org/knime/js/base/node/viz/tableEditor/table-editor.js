@@ -760,7 +760,7 @@ table_editor = function() {
 				$td.on('click', editableCellClickHandler)
 			}, 200);
 			editorComponent.off('focusout');
-			editorComponent.off('keypress');
+			editorComponent.off('keyup');
 		}
 		
 		editorComponent.on('focusout', editFinishCallback);
