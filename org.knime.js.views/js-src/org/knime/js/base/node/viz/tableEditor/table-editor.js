@@ -260,12 +260,6 @@ table_editor = function() {
 			}
 			
 			var editableColIndices = [];
-			/*for (var i = 0; i < colArray.length; i++) {
-				if (_representation.editableColumns.indexOf(colArray[i].title) !== -1) {
-					editableColIndices.push(i);
-				}
-			}*/
-			
 			for (var i = 0; i < knimeTable.getColumnNames().length; i++) {
 				var colType = knimeTable.getColumnTypes()[i];
 				var knimeColType = knimeTable.getKnimeColumnTypes()[i];
