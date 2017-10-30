@@ -71,7 +71,7 @@
       <node
             category-path="/labs/interactiveView"
             deprecated="false"
-            factory-class="org.knime.js.base.node.viz.wordCloud.WordCloudViewNodeFactory">
+            factory-class="org.knime.js.base.node.viz.tagCloud.TagCloudViewNodeFactory">
       </node>
    </extension>
    <extension
@@ -482,16 +482,16 @@
       </webResourceBundle>
       <webResourceBundle
             debug="true"
-            name="Word Cloud"
+            name="Tag Cloud"
             usesDefine="false"
             version="1.0"
-            webResourceBundleID="org.knime.js.base.node.viz.wordCloud.bundle">
+            webResourceBundleID="org.knime.js.base.node.viz.tagCloud.bundle">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/viz/wordCloud/"
-               relativePathTarget="org/knime/js/base/node/viz/wordCloud/">
+               relativePathSource="js-src/org/knime/js/base/node/viz/tagCloud/"
+               relativePathTarget="org/knime/js/base/node/viz/tagCloud/">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/viz/wordCloud/wordCloud.js"
+               relativePath="org/knime/js/base/node/viz/tagCloud/tagCloud.js"
                type="JAVASCRIPT">
          </importResource>
          <webDependency
@@ -648,11 +648,11 @@
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="getComponentValue"
-            implementationBundleID="org.knime.js.base.node.viz.wordCloud.bundle"
+            implementationBundleID="org.knime.js.base.node.viz.tagCloud.bundle"
             init-method-name="init"
-            javascriptComponentID="org.knime.js.base.node.viz.wordCloud"
-            name="Word Cloud"
-            namespace="knime_word_cloud"
+            javascriptComponentID="org.knime.js.base.node.viz.tagCloud"
+            name="Tag Cloud"
+            namespace="knime_tag_cloud"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
