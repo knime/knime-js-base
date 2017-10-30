@@ -103,7 +103,7 @@ public class TagCloudViewNodeModel
         DataTableSpec inSpec = (DataTableSpec)inSpecs[0];
         String wordCol = m_config.getWordColumn();
         if (wordCol != null && !inSpec.containsName(wordCol)) {
-            throw new InvalidSettingsException("Selected word column '" + wordCol + "' does not exist!");
+            throw new InvalidSettingsException("Selected tag column '" + wordCol + "' does not exist!");
         }
         String sizeCol = m_config.getSizeColumn();
         if (sizeCol != null && !inSpec.containsName(sizeCol)) {
