@@ -67,6 +67,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class TagCloudViewValue extends JSONViewContent {
 
+    private static final String CFG_SELECTION = "selection";
+    private String[] m_selection;
+
     private String m_title;
     private String m_subtitle;
     private float m_minFontSize;
@@ -85,6 +88,20 @@ public class TagCloudViewValue extends JSONViewContent {
      * as well as not having seeded randoms available (reproducible results) */
     private final static String CFG_SVG_FROM_VIEW = "svgFromView";
     private String m_svgFromView;
+
+    /**
+     * @return the selection
+     */
+    public String[] getSelection() {
+        return m_selection;
+    }
+
+    /**
+     * @param selection the selection to set
+     */
+    public void setSelection(final String[] selection) {
+        m_selection = selection;
+    }
 
     /**
      * @return the title
@@ -287,6 +304,7 @@ public class TagCloudViewValue extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addStringArray(CFG_SELECTION, m_selection);
         settings.addString(TagCloudViewConfig.CFG_TITLE, m_title);
         settings.addString(TagCloudViewConfig.CFG_SUBTITLE, m_subtitle);
         settings.addFloat(TagCloudViewConfig.CFG_MIN_FONT_SIZE, m_minFontSize);
@@ -309,6 +327,7 @@ public class TagCloudViewValue extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_selection = settings.getStringArray(CFG_SELECTION);
         m_title = settings.getString(TagCloudViewConfig.CFG_TITLE);
         m_subtitle = settings.getString(TagCloudViewConfig.CFG_SUBTITLE);
         m_minFontSize = settings.getFloat(TagCloudViewConfig.CFG_MIN_FONT_SIZE);
@@ -342,6 +361,7 @@ public class TagCloudViewValue extends JSONViewContent {
         }
         TagCloudViewValue other = (TagCloudViewValue)obj;
         return new EqualsBuilder()
+                .append(m_selection, other.m_selection)
                 .append(m_title, other.m_title)
                 .append(m_subtitle, other.m_subtitle)
                 .append(m_minFontSize, other.m_minFontSize)
@@ -364,6 +384,7 @@ public class TagCloudViewValue extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_selection)
                 .append(m_title)
                 .append(m_subtitle)
                 .append(m_minFontSize)
