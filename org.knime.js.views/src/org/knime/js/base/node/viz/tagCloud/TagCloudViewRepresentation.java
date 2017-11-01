@@ -79,6 +79,12 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     private static final String CFG_NUM_SETTINGS = "numSettings";
     private List<TagCloudData> m_data;
 
+    private static final String CFG_TABLE_ID = "tableID";
+    private String m_tableID;
+
+    private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
+    private String[] m_subscriptionFilterIds;
+
     private static final String CFG_WARNING_MESSAGES = "warningMessages";
     private Map<String, String> m_warningMessages;
 
@@ -119,6 +125,34 @@ public class TagCloudViewRepresentation extends JSONViewContent {
      */
     public void setData(final List<TagCloudData> data) {
         m_data = data;
+    }
+
+    /**
+     * @return the tableID
+     */
+    public String getTableID() {
+        return m_tableID;
+    }
+
+    /**
+     * @param tableID the tableID to set
+     */
+    public void setTableID(final String tableID) {
+        m_tableID = tableID;
+    }
+
+    /**
+     * @return the subscriptionFilterIds
+     */
+    public String[] getSubscriptionFilterIds() {
+        return m_subscriptionFilterIds;
+    }
+
+    /**
+     * @param subscriptionFilterIds the subscriptionFilterIds to set
+     */
+    public void setSubscriptionFilterIds(final String[] subscriptionFilterIds) {
+        m_subscriptionFilterIds = subscriptionFilterIds;
     }
 
     /**
@@ -469,6 +503,8 @@ public class TagCloudViewRepresentation extends JSONViewContent {
             NodeSettingsWO indSettings = dataSettings.addNodeSettings(Integer.toString(i));
             m_data.get(i).saveToNodeSettings(indSettings);
         }
+        settings.addString(CFG_TABLE_ID, m_tableID);
+        settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
         NodeSettingsWO warningSettings = settings.addNodeSettings(CFG_WARNING_MESSAGES);
         numSettings = m_warningMessages == null ? 0 : m_warningMessages.size();
         warningSettings.addInt(CFG_NUM_SETTINGS, numSettings);
@@ -520,6 +556,8 @@ public class TagCloudViewRepresentation extends JSONViewContent {
                 m_data.add(indData);
             }
         }
+        m_tableID = settings.getString(CFG_TABLE_ID);
+        m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS);
         NodeSettingsRO warningSettings = settings.getNodeSettings(CFG_WARNING_MESSAGES);
         numSettings = warningSettings.getInt(CFG_NUM_SETTINGS);
         if (numSettings > 0) {
@@ -571,6 +609,8 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         TagCloudViewRepresentation other = (TagCloudViewRepresentation)obj;
         return new EqualsBuilder()
                 .append(m_data, other.m_data)
+                .append(m_tableID, other.m_tableID)
+                .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .append(m_isImageGeneration, other.m_isImageGeneration)
                 .append(m_showWarningsInView, other.m_showWarningsInView)
                 .append(m_resizeToWindow, other.m_resizeToWindow)
@@ -603,6 +643,8 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(m_data)
+                .append(m_tableID)
+                .append(m_subscriptionFilterIds)
                 .append(m_isImageGeneration)
                 .append(m_showWarningsInView)
                 .append(m_resizeToWindow)
