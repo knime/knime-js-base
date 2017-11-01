@@ -659,7 +659,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         m_publishSelectionCheckBox.setEnabled(enable);
         m_selectionColorChooser.getModel().setEnabled(enable || conf || sub);
         m_showSelectedOnlyCheckBox.setEnabled(enable || conf || sub);
-        m_enableShowSelectedOnlyCheckBox.setEnabled(conf || enable || sub);
+        m_enableShowSelectedOnlyCheckBox.setEnabled(conf && (enable || sub));
     }
 
     private void enableSizeFields() {

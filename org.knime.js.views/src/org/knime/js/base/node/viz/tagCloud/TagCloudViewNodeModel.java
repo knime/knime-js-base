@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.viz.tagCloud;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,16 @@ import java.util.Map;
 import org.knime.base.data.xml.SvgCell;
 import org.knime.base.node.util.DataArray;
 import org.knime.base.node.util.DefaultDataArray;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.container.CellFactory;
+import org.knime.core.data.container.ColumnRearranger;
+import org.knime.core.data.container.SingleCellFactory;
+import org.knime.core.data.def.BooleanCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -90,7 +100,7 @@ public class TagCloudViewNodeModel
      * @param viewName The name of the interactive view
      */
     protected TagCloudViewNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{ImagePortObject.TYPE}, viewName);
+        super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{ImagePortObject.TYPE, BufferedDataTable.TYPE}, viewName);
         m_config = new TagCloudViewConfig();
         setOptionalViewWaitTime(1000l);
     }
@@ -115,7 +125,12 @@ public class TagCloudViewNodeModel
         } else {
             imageSpec = InactiveBranchPortObjectSpec.INSTANCE;
         }
-        return new PortObjectSpec[]{imageSpec};
+        DataTableSpec tableSpec = inSpec;
+        if (m_config.getEnableSelection()) {
+            ColumnRearranger rearranger = createColumnAppender(inSpec, null);
+            tableSpec = inSpec = rearranger.createSpec();
+        }
+        return new PortObjectSpec[]{imageSpec, tableSpec};
     }
 
     /**
@@ -181,13 +196,17 @@ public class TagCloudViewNodeModel
      */
     @Override
     protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        TagCloudViewRepresentation representation = getViewRepresentation();
-        if(representation.getData() == null) {
-            copyConfigToView();
-            BufferedDataTable table = (BufferedDataTable)inObjects[0];
-            representation.setData(extractWordCloudData(table, exec));
+        BufferedDataTable table = (BufferedDataTable)inObjects[0];
+        synchronized (getLock()) {
+            TagCloudViewRepresentation representation = getViewRepresentation();
+            if (representation.getData() == null) {
+                copyConfigToView();
+                representation.setData(extractWordCloudData(table, exec));
+            }
+            representation.setTableID(getTableId(0));
+            representation.setSubscriptionFilterIds(getSubscriptionFilterIds(table.getDataTableSpec()));
+            representation.setImageGeneration(true);
         }
-        representation.setImageGeneration(true);
     }
 
     /**
@@ -196,9 +215,57 @@ public class TagCloudViewNodeModel
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects,
         final ExecutionContext exec) throws Exception {
-        TagCloudViewRepresentation representation = getViewRepresentation();
-        representation.setImageGeneration(false);
-        return new PortObject[]{svgImageFromView};
+        BufferedDataTable table = (BufferedDataTable)inObjects[0];
+        synchronized (getLock()) {
+            TagCloudViewRepresentation representation = getViewRepresentation();
+            representation.setImageGeneration(false);
+            if (m_config.getEnableSelection()) {
+                TagCloudViewValue viewValue = getViewValue();
+                List<String> selectionList = null;
+                if (viewValue != null) {
+                    if (viewValue.getSelection() != null) {
+                        selectionList = Arrays.asList(viewValue.getSelection());
+                    }
+                }
+                ColumnRearranger rearranger = createColumnAppender(table.getDataTableSpec(), selectionList);
+                table = exec.createColumnRearrangeTable(table, rearranger, exec.createSubExecutionContext(0.5));
+            }
+        }
+        exec.setProgress(1);
+        return new PortObject[]{svgImageFromView, table};
+    }
+
+    private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList) {
+        String newColName = m_config.getSelectionColumnName();
+        if (newColName == null || newColName.trim().isEmpty()) {
+            newColName = TagCloudViewConfig.DEFAULT_SELECTION_COLUMN_NAME;
+        }
+        newColName = DataTableSpec.getUniqueColumnName(spec, newColName);
+        DataColumnSpec outColumnSpec =
+                new DataColumnSpecCreator(newColName, DataType.getType(BooleanCell.class)).createSpec();
+        ColumnRearranger rearranger = new ColumnRearranger(spec);
+        CellFactory fac = new SingleCellFactory(outColumnSpec) {
+
+            private int m_rowIndex = 0;
+
+            @Override
+            public DataCell getCell(final DataRow row) {
+                //TODO: determine skipped rows
+                /*if (++m_rowIndex > m_config.getMaxRows()) {
+                    return DataType.getMissingCell();
+                }*/
+                if (selectionList != null) {
+                    if (selectionList.contains(row.getKey().toString())) {
+                        return BooleanCell.TRUE;
+                    } else {
+                        return BooleanCell.FALSE;
+                    }
+                }
+                return BooleanCell.FALSE;
+            }
+        };
+        rearranger.append(fac);
+        return rearranger;
     }
 
     private List<TagCloudData> extractWordCloudData(final BufferedDataTable table, final ExecutionContext exec) throws Exception {

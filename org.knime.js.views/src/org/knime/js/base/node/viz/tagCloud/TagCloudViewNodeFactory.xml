@@ -200,5 +200,8 @@
         <outPort index="0" name="SVG Image">
         	Generated SVG image of tag cloud visualization.
         </outPort>
+        <outPort index="1" name="Input data and view selection">
+        	Data table containing the input data appended with a column, that represents the selection made in the table view.
+        </outPort>
     </ports>
 </knimeNode>

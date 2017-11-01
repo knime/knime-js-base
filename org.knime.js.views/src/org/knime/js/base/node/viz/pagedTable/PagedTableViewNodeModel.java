@@ -47,10 +47,8 @@
  */
 package org.knime.js.base.node.viz.pagedTable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -62,7 +60,6 @@ import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
-import org.knime.core.data.property.filter.FilterHandler;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.CanceledExecutionException;
@@ -264,7 +261,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
                 out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
             }
-            setSubscriptionFilterIds(m_table.getDataTableSpec());
+            viewRepresentation.setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
         }
         exec.setProgress(1);
         return new PortObject[]{out};
@@ -287,20 +284,6 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
                     + m_config.getMaxRows() + " rows are displayed.");
         }
         return jsonTable;
-    }
-
-    private void setSubscriptionFilterIds(final DataTableSpec spec) {
-        PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
-        if (viewRepresentation != null) {
-            List<String> idList = new ArrayList<String>();
-            for (int i = 0; i < spec.getNumColumns(); i++) {
-                Optional<FilterHandler> filterHandler = spec.getColumnSpec(i).getFilterHandler();
-                if (filterHandler.isPresent()) {
-                    idList.add(filterHandler.get().getModel().getFilterUUID().toString());
-                }
-            }
-            viewRepresentation.setSubscriptionFilterIds(idList.toArray(new String[0]));
-        }
     }
 
     private void copyConfigToRepresentation() {

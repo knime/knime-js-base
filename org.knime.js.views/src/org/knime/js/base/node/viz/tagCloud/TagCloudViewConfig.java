@@ -212,7 +212,7 @@ public class TagCloudViewConfig {
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
 
     private final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
-    private final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (JavaScript Tag Cloud)";
+    final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (JavaScript Tag Cloud)";
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
 
     final static String CFG_SELECTION_COLOR = "selectionColor";
