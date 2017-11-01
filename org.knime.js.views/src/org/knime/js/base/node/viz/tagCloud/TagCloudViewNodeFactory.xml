@@ -133,8 +133,11 @@
         		If checked all view animations will be disabled.
         	</option>
         </tab>
-        <tab name="View Controls">
-        	<description>This tab contains all settings which control the interactive menu displayable in the view.</description>
+        <tab name="Interactivity">
+        	<description>
+        		This tab contains all settings which control the interactive menu displayable in the view, 
+        		as well as selection and filter settings.
+        	</description>
         	<option name="Enable view edit controls">
         		Enables or disables all view menu controls.
         	</option>
@@ -159,6 +162,32 @@
         	<option name="Enable angle controls">
         		Renders numerical inputs to change the start and end angles used for word rotation in the view.
         	</option>
+        	<option name="Enable selection">
+        		If checked tags are selectable by clicking in the view. Multiple selection can be done by holding down the 
+        		Ctrl-Key (Cmd-Key on Mac). The selection, when applied, will be represented in the output table as a new boolean column.
+        	</option>
+        	<option name="Selection outline color">
+        		Selected words are indicated by an added outline in the view. Select a color that does not interfere with the 
+        		colors applied to the tags themselves.
+        	</option>
+        	<option name="Publish selection events">
+        		If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".
+        	</option>
+        	<option name="Subscribe to selection events">
+        		If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".
+        	</option>
+        	<option name="Show selected tags only">
+        		If checked, only tags which are selected are displayed.
+        	</option>
+        	<option name="Enable 'Show selected tags only' option">
+        		If checked, a checkbox to switch on and off the mode of displaying only selected tags is rendered in the view.
+        	</option>
+        	<option name="Selection column name">
+        		The name of the boolean column containing the selection.
+        	</option>
+        	<option name="Subscribe to filter events">
+        		If checked, the view reacts when applied filters have been changed.
+        	</option>     	
         </tab>
     </fullDescription>
     <interactiveView name="JavaScript Tag Cloud View">

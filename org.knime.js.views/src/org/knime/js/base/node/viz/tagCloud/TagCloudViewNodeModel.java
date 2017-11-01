@@ -278,6 +278,9 @@ public class TagCloudViewNodeModel
         representation.setEnableSpiralTypeChange(m_config.getEnableSpiralTypeChange());
         representation.setEnableNumOrientationsChange(m_config.getEnableNumOrientationsChange());
         representation.setEnableAnglesChange(m_config.getEnableAnglesChange());
+        representation.setEnableSelection(m_config.getEnableSelection());
+        representation.setSelectionColor(m_config.getSelectionColorString());
+        representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
 
         TagCloudViewValue value = getViewValue();
         value.setTitle(m_config.getTitle());
@@ -289,6 +292,10 @@ public class TagCloudViewNodeModel
         value.setNumOrientations(m_config.getNumOrientations());
         value.setStartAngle(m_config.getStartAngle());
         value.setEndAngle(m_config.getEndAngle());
+        value.setPublishSelection(m_config.getPublishSelection());
+        value.setSubscribeSelection(m_config.getSubscribeSelection());
+        value.setShowSelectedOnly(m_config.getDefaultShowSelectedOnly());
+        value.setSubscribeFilter(m_config.getSubscribeFilter());
     }
 
     private void copyValueToConfig() {
@@ -302,6 +309,10 @@ public class TagCloudViewNodeModel
         m_config.setNumOrientations(value.getNumOrientations());
         m_config.setStartAngle(value.getStartAngle());
         m_config.setEndAngle(value.getEndAngle());
+        m_config.setPublishSelection(value.getPublishSelection());
+        m_config.setSubscribeSelection(value.getSubscribeSelection());
+        m_config.setDefaultShowSelectedOnly(value.getShowSelectedOnly());
+        m_config.setSubscribeFilter(value.getSubscribeFilter());
     }
 
     /**

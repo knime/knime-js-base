@@ -103,6 +103,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     private boolean m_enableSpiralTypeChange;
     private boolean m_enableNumOrientationsChange;
     private boolean m_enableAnglesChange;
+    private boolean m_enableSelection;
+    private String m_selectionColor;
+    private boolean m_enableShowSelectedOnly;
 
     /**
      * @return the data
@@ -413,6 +416,48 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the enableSelection
+     */
+    public boolean getEnableSelection() {
+        return m_enableSelection;
+    }
+
+    /**
+     * @param enableSelection the enableSelection to set
+     */
+    public void setEnableSelection(final boolean enableSelection) {
+        m_enableSelection = enableSelection;
+    }
+
+    /**
+     * @return the selectionColor
+     */
+    public String getSelectionColor() {
+        return m_selectionColor;
+    }
+
+    /**
+     * @param selectionColor the selectionColor to set
+     */
+    public void setSelectionColor(final String selectionColor) {
+        m_selectionColor = selectionColor;
+    }
+
+    /**
+     * @return the enableShowSelectedOnly
+     */
+    public boolean getEnableShowSelectedOnly() {
+        return m_enableShowSelectedOnly;
+    }
+
+    /**
+     * @param enableShowSelectedOnly the enableShowSelectedOnly to set
+     */
+    public void setEnableShowSelectedOnly(final boolean enableShowSelectedOnly) {
+        m_enableShowSelectedOnly = enableShowSelectedOnly;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -454,6 +499,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_SPIRAL_TYPE_CHANGE, m_enableSpiralTypeChange);
         settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, m_enableNumOrientationsChange);
         settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_ANGLES_CHANGE, m_enableAnglesChange);
+        settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_SELECTION, m_enableSelection);
+        settings.addString(TagCloudViewConfig.CFG_SELECTION_COLOR, m_selectionColor);
+        settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, m_enableShowSelectedOnly);
     }
 
     /**
@@ -501,6 +549,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         m_enableSpiralTypeChange = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_SPIRAL_TYPE_CHANGE);
         m_enableNumOrientationsChange = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_NUM_ORIENTATIONS_CHANGE);
         m_enableAnglesChange = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_ANGLES_CHANGE);
+        m_enableSelection = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_SELECTION);
+        m_selectionColor = settings.getString(TagCloudViewConfig.CFG_SELECTION_COLOR);
+        m_enableShowSelectedOnly = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY);
     }
 
     /**
@@ -539,6 +590,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
                 .append(m_enableSpiralTypeChange, other.m_enableSpiralTypeChange)
                 .append(m_enableNumOrientationsChange, other.m_enableNumOrientationsChange)
                 .append(m_enableAnglesChange, other.m_enableAnglesChange)
+                .append(m_enableSelection, other.m_enableSelection)
+                .append(m_selectionColor, other.m_selectionColor)
+                .append(m_enableShowSelectedOnly, other.m_enableShowSelectedOnly)
                 .isEquals();
     }
 
@@ -568,6 +622,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
                 .append(m_enableSpiralTypeChange)
                 .append(m_enableNumOrientationsChange)
                 .append(m_enableAnglesChange)
+                .append(m_enableSelection)
+                .append(m_selectionColor)
+                .append(m_enableShowSelectedOnly)
                 .toHashCode();
     }
 

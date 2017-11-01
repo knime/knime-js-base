@@ -76,6 +76,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
+import org.knime.core.node.defaultnodesettings.SettingsModelColor;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.core.node.util.DataValueColumnFilter;
@@ -123,6 +125,14 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableSpiralTypeChangeCheckBox;
     private final JCheckBox m_enableNumOrientationsChangeCheckBox;
     private final JCheckBox m_enableAnglesChangeCheckBox;
+    private final JCheckBox m_enableSelectionCheckBox;
+    private final JTextField m_selectionColumnNameField;
+    private final DialogComponentColorChooser m_selectionColorChooser;
+    private final JCheckBox m_publishSelectionCheckBox;
+    private final JCheckBox m_subscribeSelectionCheckBox;
+    private final JCheckBox m_enableShowSelectedOnlyCheckBox;
+    private final JCheckBox m_showSelectedOnlyCheckBox;
+    private final JCheckBox m_subscribeFilterCheckBox;
 
     private String m_previousSizeColumn;
 
@@ -218,6 +228,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 enableViewConfigFields();
+                enableSelectionFields();
             }
         });
         m_enableTitleChangeCheckBox = new JCheckBox("Enable title edit controls");
@@ -227,10 +238,33 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         m_enableSpiralTypeChangeCheckBox = new JCheckBox("Enable spiral type controls");
         m_enableNumOrientationsChangeCheckBox = new JCheckBox("Enable orientation count controls");
         m_enableAnglesChangeCheckBox = new JCheckBox("Enable angle controls");
+        m_enableSelectionCheckBox = new JCheckBox("Enable selection");
+        m_enableSelectionCheckBox.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                enableSelectionFields();
+            }
+        });
+        m_selectionColumnNameField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
+        m_selectionColorChooser = new DialogComponentColorChooser(
+            new SettingsModelColor("selectionColor", null), "Selection outline color: ", true);
+        m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
+        m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
+        m_subscribeSelectionCheckBox.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                enableSelectionFields();
+            }
+        });
+        m_enableShowSelectedOnlyCheckBox = new JCheckBox("Enable 'Show selected tags only' option");
+        m_showSelectedOnlyCheckBox = new JCheckBox("Show selected tags only");
+        m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
 
         addTab("Options", initOptions());
         addTab("Display", initDisplay());
-        addTab("View Controls", initControls());
+        addTab("Interactivity", initControls());
     }
 
     private JPanel initOptions() {
@@ -422,11 +456,57 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         gbcV.gridy++;
         viewControlsPanel.add(m_enableAnglesChangeCheckBox, gbcV);
 
+        JPanel selectionPanel = new JPanel(new GridBagLayout());
+        selectionPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
+        GridBagConstraints gbcS = createConfiguredGridBagConstraints();
+        selectionPanel.add(m_enableSelectionCheckBox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_selectionColorChooser.getComponentPanel(), gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
+        selectionPanel.add(m_publishSelectionCheckBox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_subscribeSelectionCheckBox, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
+        selectionPanel.add(m_showSelectedOnlyCheckBox, gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_enableShowSelectedOnlyCheckBox, gbcS);
+        gbcS.gridx = 0;
+        gbcS.gridy++;
+        selectionPanel.add(new JLabel("Selection column name: "), gbcS);
+        gbcS.gridx++;
+        selectionPanel.add(m_selectionColumnNameField, gbcS);
+
+        JPanel filterPanel = new JPanel(new GridBagLayout());
+        filterPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
+        GridBagConstraints gbcF = createConfiguredGridBagConstraints();
+        filterPanel.add(m_subscribeFilterCheckBox, gbcF);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(viewControlsPanel, gbc);
+        gbc.gridy++;
+        panel.add(selectionPanel, gbc);
+        gbc.gridy++;
+        panel.add(filterPanel, gbc);
         return panel;
+    }
+
+    private void setNumberOfFilters(final DataTableSpec spec) {
+        int numFilters = 0;
+        for (int i = 0; i < spec.getNumColumns(); i++) {
+            if (spec.getColumnSpec(i).getFilterHandler().isPresent()) {
+                numFilters++;
+            }
+        }
+        StringBuilder builder = new StringBuilder("Subscribe to filter events");
+        builder.append(" (");
+        builder.append(numFilters == 0 ? "no" : numFilters);
+        builder.append(numFilters == 1 ? " filter" : " filters");
+        builder.append(" available)");
+        m_subscribeFilterCheckBox.setText(builder.toString());
     }
 
     private GridBagConstraints createConfiguredGridBagConstraints() {
@@ -483,6 +563,14 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         config.setEnableSpiralTypeChange(m_enableSpiralTypeChangeCheckBox.isSelected());
         config.setEnableNumOrientationsChange(m_enableNumOrientationsChangeCheckBox.isSelected());
         config.setEnableAnglesChange(m_enableAnglesChangeCheckBox.isSelected());
+        config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
+        config.setSelectionColumnName(m_selectionColumnNameField.getText());
+        config.setSelectionColor(m_selectionColorChooser.getColor());
+        config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
+        config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
+        config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
+        config.setDefaultShowSelectedOnly(m_showSelectedOnlyCheckBox.isSelected());
+        config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
         config.saveSettings(settings);
     }
 
@@ -529,8 +617,17 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         m_enableSpiralTypeChangeCheckBox.setSelected(config.getEnableSpiralTypeChange());
         m_enableNumOrientationsChangeCheckBox.setSelected(config.getEnableNumOrientationsChange());
         m_enableAnglesChangeCheckBox.setSelected(config.getEnableAnglesChange());
+        m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
+        m_selectionColumnNameField.setText(config.getSelectionColumnName());
+        m_selectionColorChooser.setColor(config.getSelectionColor());
+        m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
+        m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
+        m_enableShowSelectedOnlyCheckBox.setSelected(config.getEnableShowSelectedOnly());
+        m_showSelectedOnlyCheckBox.setSelected(config.getDefaultShowSelectedOnly());
+        m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
 
         enableViewConfigFields();
+        enableSelectionFields();
         boolean onlyNoneColAvailable = m_sizeColumnSelection.getAvailableColumns().size() < 2;
         m_sizeColumnSelection.setEnabled(!onlyNoneColAvailable);
         m_useSizePropertyCheckBox.setEnabled(!onlyNoneColAvailable);
@@ -540,6 +637,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         }
         enableSizeFields();
         enableIgnoreTagsField();
+        setNumberOfFilters(spec);
     }
 
     private void enableViewConfigFields() {
@@ -551,6 +649,17 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         m_enableSpiralTypeChangeCheckBox.setEnabled(enable);
         m_enableNumOrientationsChangeCheckBox.setEnabled(enable);
         m_enableAnglesChangeCheckBox.setEnabled(enable);
+    }
+
+    private void enableSelectionFields() {
+        boolean enable = m_enableSelectionCheckBox.isSelected();
+        boolean sub = m_subscribeSelectionCheckBox.isSelected();
+        boolean conf = m_enableViewConfigCheckBox.isSelected();
+        m_selectionColumnNameField.setEnabled(enable);
+        m_publishSelectionCheckBox.setEnabled(enable);
+        m_selectionColorChooser.getModel().setEnabled(enable || conf || sub);
+        m_showSelectedOnlyCheckBox.setEnabled(enable || conf || sub);
+        m_enableShowSelectedOnlyCheckBox.setEnabled(conf || enable || sub);
     }
 
     private void enableSizeFields() {

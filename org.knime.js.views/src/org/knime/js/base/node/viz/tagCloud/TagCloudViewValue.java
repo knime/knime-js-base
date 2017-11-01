@@ -76,6 +76,10 @@ public class TagCloudViewValue extends JSONViewContent {
     private int m_numOrientations;
     private int m_startAngle;
     private int m_endAngle;
+    private boolean m_publishSelection;
+    private boolean m_subscribeSelection;
+    private boolean m_showSelectedOnly;
+    private boolean m_subscribeFilter;
 
     /* Workaround for font measuring and collision detection difficulty in PhantomJS,
      * as well as not having seeded randoms available (reproducible results) */
@@ -209,6 +213,62 @@ public class TagCloudViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
+     * @return the showSelectedOnly
+     */
+    public boolean getShowSelectedOnly() {
+        return m_showSelectedOnly;
+    }
+
+    /**
+     * @param showSelectedOnly the showSelectedOnly to set
+     */
+    public void setShowSelectedOnly(final boolean showSelectedOnly) {
+        m_showSelectedOnly = showSelectedOnly;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
+    }
+
+    /**
      * @return the svgFromView
      */
     public String getSvgFromView() {
@@ -236,6 +296,10 @@ public class TagCloudViewValue extends JSONViewContent {
         settings.addInt(TagCloudViewConfig.CFG_NUM_ORIENTATIONS, m_numOrientations);
         settings.addInt(TagCloudViewConfig.CFG_START_ANGLE, m_startAngle);
         settings.addInt(TagCloudViewConfig.CFG_END_ANGLE, m_endAngle);
+        settings.addBoolean(TagCloudViewConfig.CFG_PUBLISH_SELECTION, m_publishSelection);
+        settings.addBoolean(TagCloudViewConfig.CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
+        settings.addBoolean(TagCloudViewConfig.CFG_DEFAULT_SHOW_SELECTED_ONLY, m_showSelectedOnly);
+        settings.addBoolean(TagCloudViewConfig.CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
 
         settings.addString(CFG_SVG_FROM_VIEW, m_svgFromView);
     }
@@ -254,6 +318,10 @@ public class TagCloudViewValue extends JSONViewContent {
         m_numOrientations = settings.getInt(TagCloudViewConfig.CFG_NUM_ORIENTATIONS);
         m_startAngle = settings.getInt(TagCloudViewConfig.CFG_START_ANGLE);
         m_endAngle = settings.getInt(TagCloudViewConfig.CFG_END_ANGLE);
+        m_publishSelection = settings.getBoolean(TagCloudViewConfig.CFG_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(TagCloudViewConfig.CFG_SUBSCRIBE_SELECTION);
+        m_showSelectedOnly = settings.getBoolean(TagCloudViewConfig.CFG_DEFAULT_SHOW_SELECTED_ONLY);
+        m_subscribeFilter = settings.getBoolean(TagCloudViewConfig.CFG_SUBSCRIBE_FILTER);
 
         m_svgFromView = settings.getString(CFG_SVG_FROM_VIEW);
     }
@@ -283,6 +351,10 @@ public class TagCloudViewValue extends JSONViewContent {
                 .append(m_numOrientations, other.m_numOrientations)
                 .append(m_startAngle, other.m_startAngle)
                 .append(m_svgFromView, other.m_svgFromView)
+                .append(m_publishSelection, other.m_publishSelection)
+                .append(m_subscribeSelection, other.m_subscribeSelection)
+                .append(m_showSelectedOnly, other.m_showSelectedOnly)
+                .append(m_subscribeFilter, other.m_subscribeFilter)
                 .isEquals();
     }
 
@@ -301,6 +373,10 @@ public class TagCloudViewValue extends JSONViewContent {
                 .append(m_numOrientations)
                 .append(m_startAngle)
                 .append(m_svgFromView)
+                .append(m_publishSelection)
+                .append(m_subscribeSelection)
+                .append(m_showSelectedOnly)
+                .append(m_subscribeFilter)
                 .toHashCode();
     }
 

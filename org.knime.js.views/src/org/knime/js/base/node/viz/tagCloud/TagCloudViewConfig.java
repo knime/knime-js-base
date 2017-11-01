@@ -48,10 +48,13 @@
  */
 package org.knime.js.base.node.viz.tagCloud;
 
+import java.awt.Color;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.CSSUtils;
 
 /**
  * Settings class holding the tag cloud view config values
@@ -203,6 +206,38 @@ public class TagCloudViewConfig {
     final static String CFG_ENABLE_ANGLES_CHANGE = "enableAnglesChange";
     private final static boolean DEFAULT_ENABLE_ANGLES_CHANGE = true;
     private boolean m_enableAnglesChange = DEFAULT_ENABLE_ANGLES_CHANGE;
+
+    final static String CFG_ENABLE_SELECTION = "enableSelection";
+    private final static boolean DEFAULT_ENABLE_SELECTION = true;
+    private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
+
+    private final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
+    private final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (JavaScript Tag Cloud)";
+    private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
+
+    final static String CFG_SELECTION_COLOR = "selectionColor";
+    private final static Color DEFAULT_SELECTION_COLOR = new Color(253, 180, 98);
+    private Color m_selectionColor = DEFAULT_SELECTION_COLOR;
+
+    final static String CFG_PUBLISH_SELECTION = "publishSelection";
+    private final static boolean DEFAULT_PUBLISH_SELECTION = true;
+    private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
+
+    final static String CFG_SUBSCRIBE_SELECTION = "subscribeSelection";
+    private final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
+    private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
+
+    final static String CFG_ENABLE_SHOW_SELECTED_ONLY = "enableShowSelectedOnly";
+    private final static boolean DEFAULT_ENABLE_SHOW_SELECTED_ONLY = true;
+    private boolean m_enableShowSelectedOnly = DEFAULT_ENABLE_SHOW_SELECTED_ONLY;
+
+    final static String CFG_DEFAULT_SHOW_SELECTED_ONLY = "defaultShowSelectedOnly";
+    private final static boolean DEFAULT_DEFAULT_SHOW_SELECTED_ONLY = false;
+    private boolean m_defaultShowSelectedOnly = DEFAULT_DEFAULT_SHOW_SELECTED_ONLY;
+
+    final static String CFG_SUBSCRIBE_FILTER = "subscribeFilter";
+    private final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
+    private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
 
     /**
      * @return the hideInWizard
@@ -708,6 +743,125 @@ public class TagCloudViewConfig {
         m_enableAnglesChange = enableAnglesChange;
     }
 
+    /**
+     * @return the enableSelection
+     */
+    public boolean getEnableSelection() {
+        return m_enableSelection;
+    }
+
+    /**
+     * @param enableSelection the enableSelection to set
+     */
+    public void setEnableSelection(final boolean enableSelection) {
+        m_enableSelection = enableSelection;
+    }
+
+    /**
+     * @return the selectionColumnName
+     */
+    public String getSelectionColumnName() {
+        return m_selectionColumnName;
+    }
+
+    /**
+     * @param selectionColumnName the selectionColumnName to set
+     */
+    public void setSelectionColumnName(final String selectionColumnName) {
+        m_selectionColumnName = selectionColumnName;
+    }
+
+    /**
+     * @return the selectionColor
+     */
+    public Color getSelectionColor() {
+        return m_selectionColor;
+    }
+
+    /**
+     * @return the selectionColor as hex string
+     */
+    public String getSelectionColorString() {
+        return CSSUtils.cssHexStringFromColor(m_selectionColor);
+    }
+
+    /**
+     * @param selectionColor the selectionColor to set
+     */
+    public void setSelectionColor(final Color selectionColor) {
+        m_selectionColor = selectionColor;
+    }
+
+    /**
+     * @return the publishSelection
+     */
+    public boolean getPublishSelection() {
+        return m_publishSelection;
+    }
+
+    /**
+     * @param publishSelection the publishSelection to set
+     */
+    public void setPublishSelection(final boolean publishSelection) {
+        m_publishSelection = publishSelection;
+    }
+
+    /**
+     * @return the subscribeSelection
+     */
+    public boolean getSubscribeSelection() {
+        return m_subscribeSelection;
+    }
+
+    /**
+     * @param subscribeSelection the subscribeSelection to set
+     */
+    public void setSubscribeSelection(final boolean subscribeSelection) {
+        m_subscribeSelection = subscribeSelection;
+    }
+
+    /**
+     * @return the enableShowSelectedOnly
+     */
+    public boolean getEnableShowSelectedOnly() {
+        return m_enableShowSelectedOnly;
+    }
+
+    /**
+     * @param enableShowSelectedOnly the enableShowSelectedOnly to set
+     */
+    public void setEnableShowSelectedOnly(final boolean enableShowSelectedOnly) {
+        m_enableShowSelectedOnly = enableShowSelectedOnly;
+    }
+
+    /**
+     * @return the defaultShowSelectedOnly
+     */
+    public boolean getDefaultShowSelectedOnly() {
+        return m_defaultShowSelectedOnly;
+    }
+
+    /**
+     * @param defaultShowSelectedOnly the defaultShowSelectedOnly to set
+     */
+    public void setDefaultShowSelectedOnly(final boolean defaultShowSelectedOnly) {
+        m_defaultShowSelectedOnly = defaultShowSelectedOnly;
+    }
+
+    /**
+     * @return the subscribeFilter
+     */
+    public boolean getSubscribeFilter() {
+        return m_subscribeFilter;
+    }
+
+    /**
+     * @param subscribeFilter the subscribeFilter to set
+     */
+    public void setSubscribeFilter(final boolean subscribeFilter) {
+        m_subscribeFilter = subscribeFilter;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -748,6 +902,14 @@ public class TagCloudViewConfig {
         settings.addBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE, m_enableSpiralTypeChange);
         settings.addBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, m_enableNumOrientationsChange);
         settings.addBoolean(CFG_ENABLE_ANGLES_CHANGE, m_enableAnglesChange);
+        settings.addBoolean(CFG_ENABLE_SELECTION, m_enableSelection);
+        settings.addString(CFG_SELECTION_COLUMN_NAME, m_selectionColumnName);
+        settings.addString(CFG_SELECTION_COLOR, getSelectionColorString());
+        settings.addBoolean(CFG_PUBLISH_SELECTION, m_publishSelection);
+        settings.addBoolean(CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
+        settings.addBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, m_enableShowSelectedOnly);
+        settings.addBoolean(CFG_DEFAULT_SHOW_SELECTED_ONLY, m_defaultShowSelectedOnly);
+        settings.addBoolean(CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
     }
 
     /** Loads parameters in NodeModel.
@@ -791,6 +953,14 @@ public class TagCloudViewConfig {
         m_enableSpiralTypeChange = settings.getBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE);
         m_enableNumOrientationsChange = settings.getBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE);
         m_enableAnglesChange = settings.getBoolean(CFG_ENABLE_ANGLES_CHANGE);
+        m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION);
+        m_selectionColumnName = settings.getString(CFG_SELECTION_COLUMN_NAME);
+        m_selectionColor = CSSUtils.colorFromCssHexString(settings.getString(CFG_SELECTION_COLOR));
+        m_publishSelection = settings.getBoolean(CFG_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(CFG_SUBSCRIBE_SELECTION);
+        m_enableShowSelectedOnly = settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY);
+        m_defaultShowSelectedOnly = settings.getBoolean(CFG_DEFAULT_SHOW_SELECTED_ONLY);
+        m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER);
     }
 
     /** Loads parameters in Dialog.
@@ -834,6 +1004,15 @@ public class TagCloudViewConfig {
         m_enableSpiralTypeChange = settings.getBoolean(CFG_ENABLE_SPIRAL_TYPE_CHANGE, DEFAULT_ENABLE_SPIRAL_TYPE_CHANGE);
         m_enableNumOrientationsChange = settings.getBoolean(CFG_ENABLE_NUM_ORIENTATIONS_CHANGE, DEFAULT_ENABLE_NUM_ORIENTATIONS_CHANGE);
         m_enableAnglesChange = settings.getBoolean(CFG_ENABLE_ANGLES_CHANGE, DEFAULT_ENABLE_ANGLES_CHANGE);
+        m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION, DEFAULT_ENABLE_SELECTION);
+        m_selectionColumnName = settings.getString(CFG_SELECTION_COLUMN_NAME, DEFAULT_SELECTION_COLUMN_NAME);
+        String defaultColorString = CSSUtils.cssHexStringFromColor(DEFAULT_SELECTION_COLOR);
+        m_selectionColor = CSSUtils.colorFromCssHexString(settings.getString(CFG_SELECTION_COLOR, defaultColorString));
+        m_publishSelection = settings.getBoolean(CFG_PUBLISH_SELECTION, DEFAULT_PUBLISH_SELECTION);
+        m_subscribeSelection = settings.getBoolean(CFG_SUBSCRIBE_SELECTION, DEFAULT_SUBSCRIBE_SELECTION);
+        m_enableShowSelectedOnly = settings.getBoolean(CFG_ENABLE_SHOW_SELECTED_ONLY, DEFAULT_ENABLE_SHOW_SELECTED_ONLY);
+        m_defaultShowSelectedOnly = settings.getBoolean(CFG_DEFAULT_SHOW_SELECTED_ONLY, DEFAULT_DEFAULT_SHOW_SELECTED_ONLY);
+        m_subscribeFilter = settings.getBoolean(CFG_SUBSCRIBE_FILTER, DEFAULT_SUBSCRIBE_FILTER);
     }
 
 }

@@ -178,7 +178,7 @@ public class PagedTableViewConfig {
     private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
 
     final static String CFG_SELECTION_COLUMN_NAME = "selectionColumnName";
-    final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Paged Table View)";
+    final static String DEFAULT_SELECTION_COLUMN_NAME = "Selected (JavaScript Table View)";
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
 
     final static String CFG_ENABLE_CLEAR_SORT_BUTTON = "enableClearSortButton";
