@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.viz.tagCloud;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -228,7 +229,7 @@ public class TagCloudViewNodeModel
                     }
                 }
                 ColumnRearranger rearranger = createColumnAppender(table.getDataTableSpec(), selectionList);
-                table = exec.createColumnRearrangeTable(table, rearranger, exec.createSubExecutionContext(0.5));
+                table = exec.createColumnRearrangeTable(table, rearranger, exec);
             }
         }
         exec.setProgress(1);
@@ -236,6 +237,7 @@ public class TagCloudViewNodeModel
     }
 
     private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList) {
+        final List<String> usedRowIds = getAllRowIdsFromData();
         String newColName = m_config.getSelectionColumnName();
         if (newColName == null || newColName.trim().isEmpty()) {
             newColName = TagCloudViewConfig.DEFAULT_SELECTION_COLUMN_NAME;
@@ -246,16 +248,14 @@ public class TagCloudViewNodeModel
         ColumnRearranger rearranger = new ColumnRearranger(spec);
         CellFactory fac = new SingleCellFactory(outColumnSpec) {
 
-            private int m_rowIndex = 0;
-
             @Override
             public DataCell getCell(final DataRow row) {
-                //TODO: determine skipped rows
-                /*if (++m_rowIndex > m_config.getMaxRows()) {
+                String rowID = row.getKey().toString();
+                if (!usedRowIds.contains(rowID)) {
                     return DataType.getMissingCell();
-                }*/
+                }
                 if (selectionList != null) {
-                    if (selectionList.contains(row.getKey().toString())) {
+                    if (selectionList.contains(rowID)) {
                         return BooleanCell.TRUE;
                     } else {
                         return BooleanCell.FALSE;
@@ -299,6 +299,17 @@ public class TagCloudViewNodeModel
         }
 
         return data;
+    }
+
+    private List<String> getAllRowIdsFromData() {
+        TagCloudViewRepresentation representation = getViewRepresentation();
+        List<String> rowIDs = new ArrayList<String>();
+        if (representation != null && representation.getData() != null) {
+            for (TagCloudData tcd : representation.getData()) {
+                rowIDs.addAll(Arrays.asList(tcd.getRowIDs()));
+            }
+        }
+        return rowIDs;
     }
 
     /**

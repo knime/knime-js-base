@@ -20,7 +20,8 @@
         <tab name="Options">
         	<description>This tab contains all general options for controlling the generation and output of the view.</description>
         	<option name="Number of tags to display">
-        		Use this numerical value to restrict the number of tags used for this visualization.
+        		Use this numerical value to restrict the number of tags used for this visualization. This number takes into account
+        		aggregation settings and the largest tags by size are retained. 
         		A warning message can be displayed if the number of tags in the input table exceeds this value.
         	</option>
         	<option name="Display warnings in view">
@@ -201,7 +202,10 @@
         	Generated SVG image of tag cloud visualization.
         </outPort>
         <outPort index="1" name="Input data and view selection">
-        	Data table containing the input data appended with a column, that represents the selection made in the table view.
+        	Data table containing the input data appended with a column, that represents the selection made in the tag cloud view.
+        	Selected tags are denoted by a 'true' value and unselected tags be a 'false' value respectively. Rows with tags that 
+        	were not shown in the view, for example because of missing values or exceeding tag limit will be denoted with a missing 
+        	value.
         </outPort>
     </ports>
 </knimeNode>
