@@ -51,9 +51,12 @@ package org.knime.js.base.node.viz.tagCloud;
 import java.awt.Color;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -217,8 +220,9 @@ public class TagCloudTermCellResolver {
             }
             Object key;
             String word;
+            String rowKey = row.getKey().getString();
             if (m_useRowIds) {
-                word = row.getKey().getString();
+                word = rowKey;
                 key = word;
             } else {
                 DataCell wordCell = row.getCell(termColIndex);
@@ -251,8 +255,12 @@ public class TagCloudTermCellResolver {
             if (m_aggregateStrings && map.containsKey(key)) {
                 TagCloudData wcd = map.get(key);
                 wcd.setSize(wcd.getSize() + size);
+                Set<String> rowKeySet = new HashSet<String>(Arrays.asList(wcd.getRowIDs()));
+                rowKeySet.add(rowKey);
+                wcd.setRowIDs(rowKeySet.toArray(new String[0]));
             } else {
                 TagCloudData wcd = new TagCloudData();
+                wcd.setRowIDs(new String[]{rowKey});
                 wcd.setText(word);
                 wcd.setSize(size);
                 if (m_extractRowColors) {

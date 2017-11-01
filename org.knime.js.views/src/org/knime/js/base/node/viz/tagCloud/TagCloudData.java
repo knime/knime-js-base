@@ -65,6 +65,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class TagCloudData {
 
+    private static final String CFG_ROW_IDS = "rowIDs";
+    private String[] m_rowIDs;
+
     private static final String CFG_TEXT = "text";
     private String m_text;
 
@@ -76,6 +79,20 @@ public class TagCloudData {
 
     private static final String CFG_OPACITY = "opacity";
     private double m_opacity;
+
+    /**
+     * @return the rowIDs
+     */
+    public String[] getRowIDs() {
+        return m_rowIDs;
+    }
+
+    /**
+     * @param rowIDs the rowIDs to set
+     */
+    public void setRowIDs(final String[] rowIDs) {
+        m_rowIDs = rowIDs;
+    }
 
     /**
      * @return the text
@@ -134,6 +151,7 @@ public class TagCloudData {
     }
 
     void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addStringArray(CFG_ROW_IDS, m_rowIDs);
         settings.addString(CFG_TEXT, m_text);
         settings.addString(CFG_COLOR, m_color);
         settings.addDouble(CFG_SIZE, m_size);
@@ -141,6 +159,7 @@ public class TagCloudData {
     }
 
     void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_rowIDs = settings.getStringArray(CFG_ROW_IDS);
         m_text = settings.getString(CFG_TEXT);
         m_color = settings.getString(CFG_COLOR);
         m_size = settings.getDouble(CFG_SIZE);
@@ -163,6 +182,7 @@ public class TagCloudData {
         }
         TagCloudData other = (TagCloudData)obj;
         return new EqualsBuilder()
+                .append(m_rowIDs, other.m_rowIDs)
                 .append(m_text, other.m_text)
                 .append(m_color, other.m_color)
                 .append(m_size, other.m_size)
@@ -176,6 +196,7 @@ public class TagCloudData {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(m_rowIDs)
                 .append(m_text)
                 .append(m_color)
                 .append(m_size)
