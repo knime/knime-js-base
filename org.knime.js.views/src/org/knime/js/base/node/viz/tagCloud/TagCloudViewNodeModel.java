@@ -283,7 +283,7 @@ public class TagCloudViewNodeModel
 
         Map<String, String> warnMessages = new HashMap<String, String>();
         if (termResolver.isClippingOccured()) {
-            String warnMessage = "Only the first " + m_config.getMaxWords() + " words are displayed.";
+            String warnMessage = "Only the first " + m_config.getMaxWords() + " tags are displayed.";
             setWarningMessage(warnMessage);
             warnMessages.put("knime_clipped_rows", warnMessage);
         }

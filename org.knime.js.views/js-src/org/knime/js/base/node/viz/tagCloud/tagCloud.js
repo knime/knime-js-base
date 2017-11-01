@@ -1,15 +1,13 @@
 knime_tag_cloud = function() {
 	
 	var wordCloud = {};
-	var _representation
-	var _value;
+	var _representation, _value;
 	var _sizeMin = Number.POSITIVE_INFINITY;
 	var _sizeMax = Number.NEGATIVE_INFINITY;
 	var _prevSize;
 	var _data;
-	var _colorScheme;
-	var _resizeTimeout;
-	var _animDuration;
+	var _colorScheme, _resizeTimeout, _animDuration;
+	var _publishSelection, _currentFilter;
 
 	wordCloud.init = function(representation, value) {
 		_representation = representation;
@@ -49,9 +47,10 @@ knime_tag_cloud = function() {
 			document.getElementsByTagName('body')[0].appendChild(elemSVG);
 		}
 		
-		_representation.data.sort(function(x, y) {
+		// Sorting is done in node model
+		/*_representation.data.sort(function(x, y) {
 			return d3.descending(x.size, y.size);
-		});
+		});*/
 		for (var i = 0; i < _representation.data.length; i++) {
 			var curSize = _representation.data[i].size;
 			_sizeMin = Math.min(_sizeMin, curSize);
@@ -176,6 +175,7 @@ knime_tag_cloud = function() {
 		if (svg.empty()) {
 			//build basic structure
 			svg = d3.select("body").append("svg");
+			//createSVGFilters(svg);
 			svg.append("g")
 				.attr("class", "titles")
 				.attr("transform", "translate(2,0)");
@@ -256,6 +256,27 @@ knime_tag_cloud = function() {
 					+ ")rotate(" + d.rotate
 					+ ")";
 			})
+			.style("cursor", "pointer")
+			.on("click", function(d) {
+				//TODO: publish selection
+				var selection = _value.selection || [];
+				if (event.ctrlKey || event.metaKey) {
+					if (d.selected) {
+						for (var i = 0; i < d.rowIDs.length; i++) {
+							var index = selection.indexOf(d.rowIDs[i]);
+							if (index > -1) {
+								selection.splice(index, 1);
+							}
+						}
+						_value.selection = selection;
+					} else {
+						_value.selection = selection.concat(d.rowIDs);
+					}
+				} else {
+					_value.selection = d.rowIDs;
+				}
+		    	applySelection(true);
+		    })
 			.text(function(d) {
 				return d.text;
 			})
@@ -280,6 +301,49 @@ knime_tag_cloud = function() {
 				var svgNode = svg.node();
 				_value.svgFromView = (new XMLSerializer()).serializeToString(svgNode);
 		    });
+		applySelection(true);
+	}
+	
+	function createSVGFilters(svg) {
+		var defs = svg.append("defs");
+		createOuterGlowFilter(defs, "selectionGlow", _representation.selectionColor);
+		createOuterGlowFilter(defs, "partialSelectionGlow", "#DDDDDD");
+	}
+	
+	function createOuterGlowFilter(defs, id, color) {
+		var rgb = d3.rgb(color);
+		var selFilter = defs.append("filter");
+		selFilter.attr("id", id)
+			.attr("width", "140%")
+			.attr("height", "140%")
+			.attr("x", "-20%")
+			.attr("y", "-20%");
+		/*selFilter.append("feMorphology")
+			.attr("operator", "dilate")
+			.attr("radius", "4")
+			.attr("in", "SourceAlpha")
+			.attr("result", "thicken");*/
+		/*selFilter.append("feColorMatrix")
+			.attr("type", "matrix")
+			.attr("in", "SourceGraphic")
+			.attr("result", "colored")
+			.attr("values", "0 0 0 " + rgb.r + " 0 0 0 0 0 " + rgb.g + " 0 0 0 0 " + rgb.b + " 0 0 0 1 0");*/
+		selFilter.append("feGaussionBlur")
+			/*.attr("in", "thicken")*/
+			.attr("stdDeviation", "4")
+			/*.attr("in", "colored")*/
+			/*.attr("result", "coloredBlur");*/
+		/*selFilter.append("feFlood")
+			.attr("flood-color", color)
+			.attr("result", "glowColor");
+		selFilter.append("feComposite")
+			.attr("in", "glowColor")
+			.attr("in2", "blurred")
+			.attr("operator", "in")
+			.attr("result", "softGlow_colored");*/
+		/*var merge = selFilter.append("feMerge");
+		merge.append("feMergeNode").attr("in", "coloredBlur");
+		merge.append("feMergeNode").attr("in", "SourceGraphic");*/
 	}
 	
 	function updateTitles() {
@@ -315,8 +379,21 @@ knime_tag_cloud = function() {
 			});
 		}
 		
+		// -- Initial interactivity settings --
+		if (knimeService.isInteractivityAvailable()) {
+        	if (_value.subscribeSelection) {
+				knimeService.subscribeToSelection(_representation.tableID, selectionChanged);
+			}
+        	var filterIds = _representation.subscriptionFilterIds;
+        	if (filterIds && filterIds.length > 0 && _value.subscribeFilter) {
+				knimeService.subscribeToFilter(_representation.tableID, filterChanged, filterIds);
+			}
+        }
+		
 		// -- Menu Items --
-	    if (!_representation.enableViewConfig) return;
+	    if (!_representation.enableViewConfig) {
+	    	return;
+	    }
 	    var pre = false;
 	    
 	    if (_representation.enableTitleChange || _representation.enableSubtitleChange) {
@@ -456,8 +533,126 @@ knime_tag_cloud = function() {
 	    	}
 	    	pre = true;
 	    }
+	    if (_representation.enableShowSelectedOnly || knimeService.isInteractivityAvailable()) {
+	    	if (pre) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    	if (_representation.enableShowSelectedOnly) {
+	    		var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
+					_value.showSelectedOnly = this.checked;
+					redraw();
+				});
+				knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
+	    	}
+	    	if (knimeService.isInteractivityAvailable()) {
+	    		var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+				var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.publishSelection, function() {
+					if (this.checked) {
+						_value.publishSelection = true;
+						knimeService.setSelectedRows(_representation.tableID, getSelection());
+					} else {
+						_value.publishSelection = false;
+					}
+				});
+				knimeService.addMenuItem('Publish selection', pubSelIcon, pubSelCheckbox);
+				
+				var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+				var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.subscribeSelection, function() {
+					if (this.checked) {
+						knimeService.subscribeToSelection(_representation.tableID, selectionChanged);
+					} else {
+						knimeService.unsubscribeSelection(_representation.tableID, selectionChanged);
+					}
+				});
+				knimeService.addMenuItem('Subscribe to selection', subSelIcon, subSelCheckbox);
+				
+				if (_representation.subscriptionFilterIds && _representation.subscriptionFilterIds.length > 0) {
+					var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
+					var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.subscribeFilter, function() {
+						if (this.checked) {
+							knimeService.subscribeToFilter(_representation.tableID, filterChanged, _representation.subscriptionFilterIds);
+						} else {
+							knimeService.unsubscribeFilter(_representation.tableID, filterChanged);
+						}
+					});
+					knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
+				}
+	    	}
+	    }
 	    
-	    
+	}
+	
+	function applySelection(redraw) {
+		var selection = _value.selection || [];
+		d3.select("svg").select("g.vis").selectAll("text").each(function (d, i) {
+			var selectedRowIDs = [];
+			for (var r = 0; r < d.rowIDs.length; r++) {
+				var curRowID = d.rowIDs[r];
+				if (selection.indexOf(curRowID) > -1) {
+					selectedRowIDs.push(curRowID);
+				}
+			}
+			d.selectedRowIDs = selectedRowIDs;
+			if (selectedRowIDs.length == d.rowIDs.length) {
+				d.selected = true;
+				d.partialSelected = false;
+			} else {
+				d.selected = false;
+				d.partialSelected = selectedRowIDs.length > 0;
+			}
+			if (redraw) {
+				var strokeWidth = ~~(Math.log(d.size)/Math.log(5));
+				d3.select(this)
+					.attr("stroke", d.selected ? _representation.selectionColor : d.partialSelected ? "#DDDDDD" : null)
+					.attr("stroke-width", (d.selected || d.partialSelected) ? strokeWidth : null)
+					.attr("stroke-opacity", (d.selected || d.partialSelected) ? 1 : null)
+					.attr("stroke-dasharray", (d.selected || d.partialSelected) ? "5,1" : null)
+					/*.style("filter", d.selected ? "url(#selectionGlow)" : d.partialSelected ? "url(#partialSelectionGlow)" : null)*/
+					/*.style("filter", (d.selected || d.partialSelected) ? "blur(4px)" : null)*/;
+			}
+		});
+	}
+	
+	function getSelection() {
+		/*var selection = [];
+		for (var i = 0; i < _representation.data.length; i++) {
+			var curTag = _representation.data[i];
+			selection = selection.concat(curTag.selectedRowIDs);
+		}
+		return selection;*/
+		return _value.selection;
+	}
+	
+	function selectionChanged(data) {
+		if (data.changeSet) {
+			if (data.changeSet.removed && _value.selection) {
+				for (var i = 0; i < data.changeSet.removed.length; i++) {
+					var removed = data.changeSet.removed[i];
+					var index = _value.selection.indexOf(removed);
+					if (index > -1) {
+						_value.selection.splice(index, 1);
+					}
+				}
+			}
+			if (data.changeSet.added) {
+				if (!_value.selection) {
+					_value.selection = [];
+				}
+				for (var i = 0; i < data.changeSet.added.length; i++) {
+					var added = data.changeSet.added[i];
+					if (_value.selection.indexOf(added) < 0) {
+						_value.selection.push(added);
+					}
+				}
+			}
+		} else {
+			_value.selection = knimeService.getAllRowsForSelection(_representation.tableID);
+		}
+		applySelection(true);
+	}
+	
+	function filterChanged(data) {
+		
 	}
 
 	wordCloud.validate = function() {

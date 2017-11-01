@@ -519,6 +519,9 @@ knime_scatter_plot_selection_appender = function() {
         }
 		
         // -- Initial interactivity settings --
+        if (_representation.enableSelection && _value.showSelectedOnly) {
+			applyFilter();
+        }
         if (knimeService.isInteractivityAvailable()) {
         	if (_representation.enableSelection && _value.subscribeSelection) {
 				knimeService.subscribeToSelection(_representation.keyedDataset.id, selectionChanged);
@@ -622,9 +625,7 @@ knime_scatter_plot_selection_appender = function() {
 					applyFilter();
 				});
 				knimeService.addMenuItem('Show selected rows only', 'filter', showSelectedOnlyCheckbox);
-				if (_value.showSelectedOnly) {
-					applyFilter();
-				}
+				
 			}
 			pre = true;			
 		}
