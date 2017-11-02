@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   Oct 14, 2013 (Bernd Wiswedel, KNIME.com AG, Zurich, Switzerland): created
+ *   Oct 14, 2013 (Bernd Wiswedel, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.quickform.input.credentials;
 
@@ -62,7 +62,7 @@ import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 /**
  * The sub node dialog panel for the credentials input quick form node.
  *
- * @author Bernd Wiswedel, KNIME.com AG, Zurich, Switzerland
+ * @author Bernd Wiswedel, KNIME AG, Zurich, Switzerland
  */
 @SuppressWarnings("serial")
 public class CredentialsInputQuickFormDialogPanel extends QuickFormDialogPanel<CredentialsInputQuickFormValue> {

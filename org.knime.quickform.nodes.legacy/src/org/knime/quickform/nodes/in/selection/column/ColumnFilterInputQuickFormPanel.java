@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ import org.knime.core.util.node.quickform.in.TwinStringListInputQuickFormInEleme
 /**
  * Panel shown in meta node dialogs, displaying a column filter panel.
  *
- * @author Thomas Gabriel, KNIME.com, Zurich, Switzerland
+ * @author Thomas Gabriel, KNIME AG, Zurich, Switzerland
  * @since 2.6
  */
 public class ColumnFilterInputQuickFormPanel extends

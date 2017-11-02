@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -74,8 +74,8 @@ import org.knime.js.core.JavaScriptViewCreator;
 /**
  * Model of a quick form node.
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
- * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  * @param <REP> The representation implementation of the quick form node.
  * @param <VAL> The value implementation of the quick form node.
  * @param <CONF> The configuration implementation of the quick form node.

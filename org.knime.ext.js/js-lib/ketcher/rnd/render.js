@@ -923,7 +923,7 @@ rnd.Render.prototype.update = function (force)
 		}
 	}
 	
-	// Code inserted by KNIME.com AG to bubble up the moleculeChange event to the Quickform.
+	// Code inserted by KNIME AG to bubble up the moleculeChange event to the Quickform.
 	/*if (parent && parent.SketchTranslator) {
 		parent.SketchTranslator.moleculeChange();
 	}*/

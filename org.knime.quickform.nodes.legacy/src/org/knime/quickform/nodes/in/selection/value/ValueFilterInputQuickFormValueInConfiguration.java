@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ import org.knime.core.quickform.AbstractQuickFormValueInConfiguration;
 
 /**
  * Configuration to column selection input node.
- * @author Dominik Morent, KNIME.com, Zurich, Switzerland
+ * @author Dominik Morent, KNIME AG, Zurich, Switzerland
  * @since 2.6
  */
 final class ValueFilterInputQuickFormValueInConfiguration

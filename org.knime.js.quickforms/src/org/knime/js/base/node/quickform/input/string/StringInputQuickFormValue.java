@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   14.10.2013 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.quickform.input.string;
 
@@ -70,7 +70,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * The value for the string input quick form node.
  *
- * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")

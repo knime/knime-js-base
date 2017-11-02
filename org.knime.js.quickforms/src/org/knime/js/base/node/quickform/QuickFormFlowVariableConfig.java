@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ import org.knime.core.node.dialog.DialogNodeValue;
 /**
  * Configuration of a flow variable quick form node.
  *
- * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  * @param <VAL> The value used for the default value
  */
 public abstract class QuickFormFlowVariableConfig

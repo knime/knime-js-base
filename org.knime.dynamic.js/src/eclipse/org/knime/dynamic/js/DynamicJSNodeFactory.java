@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,13 +43,13 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   24.04.2015 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.dynamic.js;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 2.12
  */
 public final class DynamicJSNodeFactory extends org.knime.dynamic.js.v212.DynamicJSNodeFactory {

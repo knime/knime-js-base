@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ import org.knime.core.quickform.AbstractQuickFormValueInConfiguration;
  * Configuration for a column selection. Keeps list of currently selected values
  * and list of possible values.
  *
- * @author Thomas Gabriel, KNIME.com, Zurich, Switzerland
+ * @author Thomas Gabriel, KNIME AG, Zurich, Switzerland
  * @since 2.6
  */
 final class ColumnFilterInputQuickFormValueInConfiguration

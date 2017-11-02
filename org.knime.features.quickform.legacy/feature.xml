@@ -3,7 +3,7 @@
       id="org.knime.features.quickform.legacy"
       label="KNIME Quick Forms (legacy)"
       version="3.5.0.qualifier"
-      provider-name="KNIME.com, Zurich, Switzerland">
+      provider-name="KNIME AG, Zurich, Switzerland">
 
    <description url="http://www.knime.org/">
       Contains legacy nodes that contribute quick form elements. These elements
@@ -12,7 +12,7 @@ means of a web portal (part of the KNIME Enterprise Server).
    </description>
 
    <copyright>
-      Copyright by KNIME GmbH, Konstanz, Germany
+      Copyright by KNIME AG, Zurich, Switzerland
    </copyright>
 
    <license>

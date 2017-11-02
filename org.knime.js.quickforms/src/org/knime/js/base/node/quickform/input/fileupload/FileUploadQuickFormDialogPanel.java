@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   Oct 14, 2013 (Patrick Winter, KNIME.com AG, Zurich, Switzerland): created
+ *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.quickform.input.fileupload;
 
@@ -54,7 +54,7 @@ import org.knime.js.base.node.quickform.QuickFormDialogPanel;
 /**
  * The sub node dialog panel for the file upload quick form node.
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
 @SuppressWarnings("serial")
 public class FileUploadQuickFormDialogPanel extends QuickFormDialogPanel<FileUploadQuickFormValue> {

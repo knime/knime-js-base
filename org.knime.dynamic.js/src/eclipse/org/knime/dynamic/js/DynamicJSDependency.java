@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
 public class DynamicJSDependency {
 

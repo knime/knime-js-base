@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   21.10.2014 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   21.10.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.output.image;
 
@@ -61,7 +61,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")

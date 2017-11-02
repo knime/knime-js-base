@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  * 
  * History
- *   Oct 17, 2014 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   Oct 17, 2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 org_knime_js_base_node_quickform_input_fileupload = function() {
 	var fileUpload = {

@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ import org.knime.core.node.port.PortObject;
  * Interface to provide the possibility to pre-process incoming data during execute of a dynamically created JavaScript
  * node.
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 3.0
  */
 public interface DynamicJSProcessor {

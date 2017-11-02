@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 /**
  * The dialog for the single selection quick form node.
  *
- * @author Patrick Winter, KNIME.com, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
 @SuppressWarnings({"rawtypes", "unchecked" })
 public class SingleSelectionQuickFormNodeDialog extends QuickFormNodeDialog {

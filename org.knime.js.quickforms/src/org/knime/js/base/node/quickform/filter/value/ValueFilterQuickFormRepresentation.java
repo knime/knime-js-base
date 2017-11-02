@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * Representation for the value filter quick form node.
  *
- * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")

@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Node for boolean input.
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 2.7
  */
 public class InteractiveQuickFormInNodeModel extends NodeModel {
@@ -462,7 +462,7 @@ public class InteractiveQuickFormInNodeModel extends NodeModel {
 
     /**
      *
-     * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+     * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
      */
     public class PullData extends BrowserFunction {
 

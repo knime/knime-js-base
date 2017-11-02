@@ -4,7 +4,7 @@ Bundle-Name: D3 Samples for KNIME Dynamic JavaScript Node Generation
 Bundle-SymbolicName: org.knime.dynamic.js.base;singleton:=true
 Bundle-Version: 3.5.0.qualifier
 Bundle-ClassPath: org-knime-dynamic-js-base.jar
-Bundle-Vendor: KNIME GmbH, Konstanz, Germany
+Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Require-Bundle: org.knime.dynamic.js;bundle-version="[3.0.0,4.0.0)",
  org.knime.dynamic.node.generation;bundle-version="[3.0.0,4.0.0)",
  org.knime.core;bundle-version="[3.0.0,4.0.0)",

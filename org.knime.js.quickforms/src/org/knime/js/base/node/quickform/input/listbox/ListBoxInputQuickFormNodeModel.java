@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ import org.knime.js.base.node.quickform.QuickFormNodeModel;
 /**
  * The model for the list box input quick form node.
  *
- * @author Patrick Winter, KNIME.com AG, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
 public class ListBoxInputQuickFormNodeModel
         extends QuickFormNodeModel

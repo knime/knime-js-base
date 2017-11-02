@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29.09.2014 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   29.09.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.quickform.input.fileupload;
 
@@ -80,7 +80,7 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
 public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel<FileUploadQuickFormRepresentation,
         FileUploadQuickFormValue, FileUploadQuickFormConfig> {

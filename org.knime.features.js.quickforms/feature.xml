@@ -3,7 +3,7 @@
       id="org.knime.features.js.quickforms"
       label="KNIME Quick Forms"
       version="3.5.0.qualifier"
-      provider-name="KNIME.com, Zurich, Switzerland"
+      provider-name="KNIME AG, Zurich, Switzerland"
       plugin="org.knime.js.quickforms"
       image="icons/knime64.gif">
 
@@ -12,7 +12,7 @@
    </description>
 
    <copyright>
-      Copyright by KNIME GmbH, Konstanz, Germany
+      Copyright by KNIME AG, Zurich, Switzerland
    </copyright>
 
    <license>

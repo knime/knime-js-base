@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   24.04.2015 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   24.04.2015 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.dynamic.js.v30;
 
@@ -145,7 +145,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 3.0
  */
 public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> implements LayoutTemplateProvider {

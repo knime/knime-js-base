@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10.06.2014 (Christian Albrecht, KNIME.com AG, Zurich, Switzerland): created
+ *   10.06.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.util.table;
 
@@ -61,7 +61,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
 public class WebTableNodeDialogPane extends DefaultNodeSettingsPane {
 

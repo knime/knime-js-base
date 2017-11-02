@@ -1,7 +1,7 @@
 /*
  * ------------------------------------------------------------------------
  *
- *  Copyright by KNIME GmbH, Konstanz, Germany
+ *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -44,14 +44,14 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 2, 2014 (Patrick Winter, KNIME.com, Zurich, Switzerland): created
+ *   Jul 2, 2014 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
 package org.knime.js.base.node.quickform;
 
 /**
  * Describes if the value is overwritten by the sub node or wizard.
  *
- * @author Patrick Winter, KNIME.com, Zurich, Switzerland
+ * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
 public enum ValueOverwriteMode {
 
