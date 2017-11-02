@@ -127,7 +127,7 @@ knime_tag_cloud = function() {
 		var scale = getFontScale();
 		d3.layout.cloud()
 		.size(getSize(true))
-		.words(JSON.parse(JSON.stringify(_representation.data)))
+		.words(getFilteredData())
 		/*.padding(5)*/
 		.rotate(function() {
 			if (_value.numOrientations < 2) {
@@ -269,11 +269,18 @@ knime_tag_cloud = function() {
 							}
 						}
 						_value.selection = selection;
+						if (_value.publishSelection) {
+							knimeService.removeRowsFromSelection(_representation.tableID, d.rowIDs, selectionChanged);
+						}
 					} else {
 						_value.selection = selection.concat(d.rowIDs);
+						if (_value.publishSelection) {
+							knimeService.addRowsToSelection(_representation.tableID, d.rowIDs, selectionChanged);
+						}
 					}
 				} else {
 					_value.selection = d.rowIDs;
+					knimeService.setSelectedRows(_representation.tableID, d.rowIDs, selectionChanged);
 				}
 		    	applySelection(true);
 		    })
@@ -614,12 +621,6 @@ knime_tag_cloud = function() {
 	}
 	
 	function getSelection() {
-		/*var selection = [];
-		for (var i = 0; i < _representation.data.length; i++) {
-			var curTag = _representation.data[i];
-			selection = selection.concat(curTag.selectedRowIDs);
-		}
-		return selection;*/
 		return _value.selection;
 	}
 	
@@ -648,11 +649,46 @@ knime_tag_cloud = function() {
 		} else {
 			_value.selection = knimeService.getAllRowsForSelection(_representation.tableID);
 		}
-		applySelection(true);
+		if (_value.showSelectedOnly) {
+			redraw();
+		} else {
+			applySelection(true);
+		}
+	}
+	
+	function getFilteredData() {
+		if (!_currentFilter && !_value.showSelectedOnly) {
+			return JSON.parse(JSON.stringify(_representation.data));
+		}
+		var data = [];
+		var selection = _value.selection || [];
+		for (var i = 0; i < _representation.data.length; i++) {
+			var include = true;
+			var cD = _representation.data[i];
+			if (_value.showSelectedOnly) {
+				include = false;
+				for (var r = 0; r < cD.rowIDs.length; r++) {
+					if (selection.indexOf(cD.rowIDs[r]) > -1) {
+						include = true;
+						break;
+					}
+				}
+			}
+			if (include && _currentFilter) {
+				/*for (var r = 0; r < cD.rowIDs.length; r++) {
+					//TODO: filter
+				}*/
+			}
+			if (include) {
+				data.push(JSON.parse(JSON.stringify(cD)));
+			}
+		}
+		return data;
 	}
 	
 	function filterChanged(data) {
-		
+		_currentFilter = data;
+		redraw();
 	}
 
 	wordCloud.validate = function() {
