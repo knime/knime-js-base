@@ -49,6 +49,7 @@ package org.knime.js.base.node.quickform.input.string;
 
 import javax.json.Json;
 import javax.json.JsonException;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
@@ -193,8 +194,10 @@ public class StringInputQuickFormValue extends JSONViewContent implements Dialog
             } catch (Exception e) {
                 throw new JsonException("Expected string value for key '" + CFG_STRING + ".", e);
             }
+        } else if (json instanceof JsonNumber) {
+            loadFromString(json.toString());
         } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+            throw new JsonException("Expected JSON object, JSON string or JSON number, but got " + json.getValueType());
         }
     }
 
