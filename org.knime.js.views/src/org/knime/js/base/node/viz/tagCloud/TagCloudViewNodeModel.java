@@ -348,7 +348,7 @@ public class TagCloudViewNodeModel
     public TagCloudViewRepresentation getViewRepresentation() {
         TagCloudViewRepresentation representation = super.getViewRepresentation();
         synchronized (getLock()) {
-            if (representation.getFilterTable() == null && m_table != null) {
+            if (representation != null && representation.getFilterTable() == null && m_table != null) {
                 // set internal table
                 try {
                     representation.setFilterTable(getJSONTable(m_table, null));
