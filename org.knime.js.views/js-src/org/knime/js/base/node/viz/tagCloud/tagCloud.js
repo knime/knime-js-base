@@ -7,7 +7,7 @@ knime_tag_cloud = function() {
 	var _prevSize;
 	var _data;
 	var _colorScheme, _resizeTimeout, _animDuration;
-	var _publishSelection, _currentFilter;
+	var _publishSelection, _currentFilter, _filterTable, _filteredDataSize;
 
 	wordCloud.init = function(representation, value) {
 		_representation = representation;
@@ -22,6 +22,11 @@ knime_tag_cloud = function() {
 			for (var key in _representation.warningMessages) {
 				knimeService.setWarningMessage(_representation.warningMessages[key], key);
 			}
+		}
+		
+		if (_representation.filterTable) {
+			_filterTable = new kt();
+			_filterTable.setDataTable(_representation.filterTable);
 		}
 		
 		d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
@@ -162,7 +167,7 @@ knime_tag_cloud = function() {
 		}
 		
 		//set or clear warning
-		if (words.length < _representation.data.length) {
+		if (words.length < _filteredDataSize) {
 			if (_representation.showWarningsInView) {
 				knimeService.setWarningMessage("Not all words could be displayed due to space restrictions or words are overlapping." 
 					+ " Adapt the font size settings or enlarge the view area.", "tooFewWords");
@@ -233,7 +238,21 @@ knime_tag_cloud = function() {
 			})
 			.style("font-size", function(d) {
 				return d.size + "px";
-			});
+			})
+			.style("fill", function(d, i) {
+				if (_representation.useColorProperty) {
+					return d.color;
+				} else {
+					return _colorScheme[~~(Math.random() * _colorScheme.length)];
+				}
+			})
+			.text(function(d) {
+				return d.text;
+			})
+			.transition().duration(_animDuration)
+			.style("font-size", function(d) {
+		        return d.size + "px"
+		    });
 		//add new words
 		data.enter()
 			.append("text")
@@ -258,7 +277,6 @@ knime_tag_cloud = function() {
 			})
 			.style("cursor", "pointer")
 			.on("click", function(d) {
-				//TODO: publish selection
 				var selection = _value.selection || [];
 				if (event.ctrlKey || event.metaKey) {
 					if (d.selected) {
@@ -674,15 +692,20 @@ knime_tag_cloud = function() {
 					}
 				}
 			}
-			if (include && _currentFilter) {
-				/*for (var r = 0; r < cD.rowIDs.length; r++) {
-					//TODO: filter
-				}*/
+			if (include && _currentFilter && _filterTable) {
+				include = false;
+				for (var r = 0; r < cD.rowIDs.length; r++) {
+					if (_filterTable.isRowIncludedInFilter(cD.rowIDs[r], _currentFilter)) {
+						include = true;
+						break;
+					}
+				}
 			}
 			if (include) {
 				data.push(JSON.parse(JSON.stringify(cD)));
 			}
 		}
+		_filteredDataSize = data.length;
 		return data;
 	}
 	
@@ -704,7 +727,15 @@ knime_tag_cloud = function() {
 	}
 	
 	wordCloud.getSVG = function() {
-		return _value.svgFromView;
+		var parser = new DOMParser();
+		var svg = parser.parseFromString(_value.svgFromView, "image/svg+xml");
+		// remove selection outlines
+		d3.select(svg).selectAll("text")
+			.attr("stroke", null)
+			.attr("stroke-width", null)
+			.attr("stroke-opacity", null)
+			.attr("stroke-dasharray", null);
+		return (new XMLSerializer()).serializeToString(svg);
 	}
 
 	return wordCloud;

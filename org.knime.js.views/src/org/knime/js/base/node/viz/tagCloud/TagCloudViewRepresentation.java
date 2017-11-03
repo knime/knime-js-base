@@ -58,6 +58,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -81,6 +82,9 @@ public class TagCloudViewRepresentation extends JSONViewContent {
 
     private static final String CFG_TABLE_ID = "tableID";
     private String m_tableID;
+
+    private static final String CFG_TABLE = "table";
+    private JSONDataTable m_filterTable;
 
     private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
     private String[] m_subscriptionFilterIds;
@@ -139,6 +143,20 @@ public class TagCloudViewRepresentation extends JSONViewContent {
      */
     public void setTableID(final String tableID) {
         m_tableID = tableID;
+    }
+
+    /**
+     * @return the filterTable
+     */
+    public JSONDataTable getFilterTable() {
+        return m_filterTable;
+    }
+
+    /**
+     * @param filterTable the filterTable to set
+     */
+    public void setFilterTable(final JSONDataTable filterTable) {
+        m_filterTable = filterTable;
     }
 
     /**
@@ -504,6 +522,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
             m_data.get(i).saveToNodeSettings(indSettings);
         }
         settings.addString(CFG_TABLE_ID, m_tableID);
+        //filter table is not saved
         settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
         NodeSettingsWO warningSettings = settings.addNodeSettings(CFG_WARNING_MESSAGES);
         numSettings = m_warningMessages == null ? 0 : m_warningMessages.size();
@@ -557,6 +576,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
             }
         }
         m_tableID = settings.getString(CFG_TABLE_ID);
+        //filter table is not loaded
         m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS);
         NodeSettingsRO warningSettings = settings.getNodeSettings(CFG_WARNING_MESSAGES);
         numSettings = warningSettings.getInt(CFG_NUM_SETTINGS);
@@ -610,6 +630,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         return new EqualsBuilder()
                 .append(m_data, other.m_data)
                 .append(m_tableID, other.m_tableID)
+                .append(m_filterTable, other.m_filterTable)
                 .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
                 .append(m_isImageGeneration, other.m_isImageGeneration)
                 .append(m_showWarningsInView, other.m_showWarningsInView)
@@ -644,6 +665,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         return new HashCodeBuilder()
                 .append(m_data)
                 .append(m_tableID)
+                .append(m_filterTable)
                 .append(m_subscriptionFilterIds)
                 .append(m_isImageGeneration)
                 .append(m_showWarningsInView)

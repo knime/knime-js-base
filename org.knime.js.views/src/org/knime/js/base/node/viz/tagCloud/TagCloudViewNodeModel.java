@@ -68,6 +68,8 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.BufferedDataTableHolder;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -80,6 +82,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
@@ -91,11 +94,12 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class TagCloudViewNodeModel
-    extends AbstractSVGWizardNodeModel<TagCloudViewRepresentation, TagCloudViewValue> implements LayoutTemplateProvider {
+    extends AbstractSVGWizardNodeModel<TagCloudViewRepresentation, TagCloudViewValue> implements LayoutTemplateProvider, BufferedDataTableHolder {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(TagCloudViewNodeModel.class);
 
     private final TagCloudViewConfig m_config;
+    private BufferedDataTable m_table;
 
     /**
      * @param viewName The name of the interactive view
@@ -197,15 +201,16 @@ public class TagCloudViewNodeModel
      */
     @Override
     protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        BufferedDataTable table = (BufferedDataTable)inObjects[0];
+        m_table = (BufferedDataTable)inObjects[0];
         synchronized (getLock()) {
             TagCloudViewRepresentation representation = getViewRepresentation();
             if (representation.getData() == null) {
                 copyConfigToView();
-                representation.setData(extractWordCloudData(table, exec));
+                representation.setData(extractWordCloudData(m_table, exec.createSubExecutionContext(0.8)));
+                representation.setFilterTable(getJSONTable(m_table, exec.createSubExecutionContext(0.2)));
             }
             representation.setTableID(getTableId(0));
-            representation.setSubscriptionFilterIds(getSubscriptionFilterIds(table.getDataTableSpec()));
+            representation.setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
             representation.setImageGeneration(true);
         }
     }
@@ -216,7 +221,8 @@ public class TagCloudViewNodeModel
     @Override
     protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects,
         final ExecutionContext exec) throws Exception {
-        BufferedDataTable table = (BufferedDataTable)inObjects[0];
+        m_table = (BufferedDataTable)inObjects[0];
+        BufferedDataTable returnTable = m_table;
         synchronized (getLock()) {
             TagCloudViewRepresentation representation = getViewRepresentation();
             representation.setImageGeneration(false);
@@ -228,12 +234,12 @@ public class TagCloudViewNodeModel
                         selectionList = Arrays.asList(viewValue.getSelection());
                     }
                 }
-                ColumnRearranger rearranger = createColumnAppender(table.getDataTableSpec(), selectionList);
-                table = exec.createColumnRearrangeTable(table, rearranger, exec);
+                ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
+                returnTable = exec.createColumnRearrangeTable(m_table, rearranger, exec);
             }
         }
         exec.setProgress(1);
-        return new PortObject[]{svgImageFromView, table};
+        return new PortObject[]{svgImageFromView, returnTable};
     }
 
     private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList) {
@@ -301,6 +307,29 @@ public class TagCloudViewNodeModel
         return data;
     }
 
+    private JSONDataTable getJSONTable(final BufferedDataTable table, final ExecutionContext exec) throws IllegalArgumentException, CanceledExecutionException {
+        if (!m_config.getEnableViewConfig() && !m_config.getSubscribeFilter()) {
+            return null;
+        }
+        List<String> includeColumns = new ArrayList<String>();
+        for (DataColumnSpec spec : table.getDataTableSpec()) {
+            if (spec.getFilterHandler().isPresent()) {
+                includeColumns.add(spec.getName());
+            }
+        }
+        if (includeColumns.size() < 1) {
+            return null;
+        }
+        return JSONDataTable.newBuilder()
+                .setDataTable(table)
+                .setIncludeColumns(includeColumns.toArray(new String[0]))
+                .setId(getTableId(0))
+                .extractRowColors(false)
+                .extractRowSizes(false)
+                .excludeRowsWithMissingValues(true) /* missing values are by default excluded from filter */
+                .build(exec);
+    }
+
     private List<String> getAllRowIdsFromData() {
         TagCloudViewRepresentation representation = getViewRepresentation();
         List<String> rowIDs = new ArrayList<String>();
@@ -316,6 +345,25 @@ public class TagCloudViewNodeModel
      * {@inheritDoc}
      */
     @Override
+    public TagCloudViewRepresentation getViewRepresentation() {
+        TagCloudViewRepresentation representation = super.getViewRepresentation();
+        synchronized (getLock()) {
+            if (representation.getFilterTable() == null && m_table != null) {
+                // set internal table
+                try {
+                    representation.setFilterTable(getJSONTable(m_table, null));
+                } catch (Exception e) {
+                    LOGGER.error("Could not create JSON table: " + e.getMessage(), e);
+                }
+            }
+        }
+        return representation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected boolean generateImage() {
         return m_config.getGenerateImage();
     }
@@ -325,7 +373,7 @@ public class TagCloudViewNodeModel
      */
     @Override
     protected void performReset() {
-        // nothing to do
+        m_table = null;
     }
 
     /**
@@ -429,6 +477,22 @@ public class TagCloudViewNodeModel
             template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
         }
         return template;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedDataTable[] getInternalTables() {
+        return new BufferedDataTable[]{m_table};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setInternalTables(final BufferedDataTable[] tables) {
+        m_table = tables[0];
     }
 
 }
