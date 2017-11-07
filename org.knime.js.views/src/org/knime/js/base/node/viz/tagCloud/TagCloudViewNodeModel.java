@@ -304,6 +304,7 @@ public class TagCloudViewNodeModel
             representation.setWarningMessages(warnMessages);
         }
 
+        setOptionalViewWaitTime(1000l /* animation time + buffer */ + (data.size() * 2) /* layout time */);
         return data;
     }
 
