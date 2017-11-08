@@ -204,11 +204,7 @@ public class DoubleInputQuickFormValue extends JSONViewContent implements Dialog
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
-        JsonObject value = Json.createObjectBuilder()
-                .add(CFG_DOUBLE, m_double)
-                .build();
-        return value;
+    public JsonValue toJson() {
+        return Json.createObjectBuilder().add(CFG_DOUBLE, m_double).build().get(CFG_DOUBLE);
     }
-
 }

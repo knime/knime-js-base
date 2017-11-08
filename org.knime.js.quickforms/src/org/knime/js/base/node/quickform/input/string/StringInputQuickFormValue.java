@@ -205,14 +205,13 @@ public class StringInputQuickFormValue extends JSONViewContent implements Dialog
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
+    public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (m_string == null) {
             builder.addNull(CFG_STRING);
         } else {
             builder.add(CFG_STRING, m_string);
         }
-        return builder.build();
+        return builder.build().get(CFG_STRING);
     }
-
 }

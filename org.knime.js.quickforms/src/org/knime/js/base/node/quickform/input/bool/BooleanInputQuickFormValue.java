@@ -47,7 +47,6 @@
  */
 package org.knime.js.base.node.quickform.input.bool;
 
-import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonString;
@@ -205,11 +204,7 @@ public class BooleanInputQuickFormValue extends JSONViewContent implements Dialo
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
-        JsonObject value = Json.createObjectBuilder()
-                .add(CFG_BOOLEAN, m_boolean)
-                .build();
-        return value;
+    public JsonValue toJson() {
+        return m_boolean ? JsonValue.TRUE : JsonValue.FALSE;
     }
-
 }

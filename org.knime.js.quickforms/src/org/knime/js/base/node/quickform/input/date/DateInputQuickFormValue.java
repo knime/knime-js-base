@@ -245,14 +245,13 @@ public class DateInputQuickFormValue extends JSONViewContent implements DialogNo
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
+    public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (m_date == null) {
             builder.addNull(CFG_DATE);
         } else {
             builder.add(CFG_DATE, dateFormat.format(m_date));
         }
-        return builder.build();
+        return builder.build().get(CFG_DATE);
     }
-
 }

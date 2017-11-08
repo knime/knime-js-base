@@ -204,11 +204,8 @@ public class IntInputQuickFormValue extends JSONViewContent implements DialogNod
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
-        JsonObject value = Json.createObjectBuilder()
-                .add(CFG_INTEGER, m_integer)
-                .build();
-        return value;
+    public JsonValue toJson() {
+        return Json.createObjectBuilder().add(CFG_INTEGER, m_integer).build().get(CFG_INTEGER);
     }
 
 }
