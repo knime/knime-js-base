@@ -88,6 +88,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.JSONDataTableSpec;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -274,14 +275,17 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                 DataTableSpec spec = m_table.getDataTableSpec();
                 Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
+                JSONDataTableSpec jsonSpec = viewRepresentation.getTable().getSpec();
                 int rowId = 0;
                 for (DataRow row : m_table) {
                     Map<Integer, Object> rowEditChanges = editChanges.get(rowId);
                     DataCell[] copy = new DataCell[row.getNumCells()];
                     for (int i = 0; i < row.getNumCells(); i++) {
+                        // since some columns could have been filtered out from the view, we need to map knime-table 'i' to json-table 'i'
+                        int jsonI = jsonSpec.getColumnIndex(spec.getColumnNames()[i]);
                         DataCell cell = row.getCell(i);
-                        if (rowEditChanges != null && rowEditChanges.containsKey(i)) {
-                            Object value = rowEditChanges.get(i);
+                        if (rowEditChanges != null && rowEditChanges.containsKey(jsonI)) {
+                            Object value = rowEditChanges.get(jsonI);
                             DataType type = spec.getColumnSpec(i).getType();
                             if (value == null) {
                                 copy[i] = DataType.getMissingCell();
