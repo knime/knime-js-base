@@ -376,6 +376,15 @@
 		var w = Math.max(50, svgWidth - margin.left - margin.right);
 		var h = Math.max(50, svgHeight - margin.top - margin.bottom);
 
+		var options = {
+				legend: _value.options.legend,
+				breadcrumb: _value.options.breadcrumb,
+				zoomable: _representation.options.zoomable,
+				donutHole: _value.options.donutHole,
+				aggregationType: _value.options.aggregationType,
+				filterSmallNodes: _value.options.filterSmallNodes
+		};
+		
 		// Check if there is data.
 		if (_data.children.length == 0) {
 			if (knimeTable1.getNumRows() == 0) {
@@ -388,19 +397,10 @@
 				.text("Error: No data available");
 			} else {   
 				knimeService.setWarningMessage("There is no data to display due to a filter or selection.", "filter_warnMessage");
+				drawSunburst(_data, plottingSurface, w, h, options);
 			}
 		} else {
 			knimeService.setWarningMessage(null, "filter_warnMessage");
-
-			var options = {
-					legend: _value.options.legend,
-					breadcrumb: _value.options.breadcrumb,
-					zoomable: _representation.options.zoomable,
-					donutHole: _value.options.donutHole,
-					aggregationType: _value.options.aggregationType,
-					filterSmallNodes: _value.options.filterSmallNodes
-			};
-
 			drawSunburst(_data, plottingSurface, w, h, options);
 		}
 
@@ -1288,7 +1288,7 @@
 		// show selection only
 		if (_representation.options.selection && _representation.options.showSelectedOnlyToggle) {
 			knimeService.addMenuDivider();
-			var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.showSelectedOnly, function() {
+			var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.options.showSelectedOnly, function() {
 				_value.options.showSelectedOnly = this.checked;
 				if (this.checked) {
 					highlitedPath = null;
