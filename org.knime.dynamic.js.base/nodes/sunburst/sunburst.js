@@ -197,7 +197,6 @@
 				}
 			}
 		}
-
 		if (missingPathCount > 0) {
 			knimeService.setWarningMessage(missingPathCount + " rows are not display because of missing path.", "missingPathCount");
 		}
@@ -727,8 +726,38 @@
 			toggleInnerLabel(false);
 		}
 
+		clearSelection = function() {
+			selectionChangedFlag = true;
+
+			selectedRows = [];
+			setPropAllNodes('selected', false);
+			renderSelection();
+			if (_value.options.publishSelection) {
+				knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
+			}
+		}
+		
+		// Traverse through tree and add nodes to selection.
+		addNodeToSelectionBackward = function(node) {
+			if (!node) {
+				return;
+			}
+			node.selected = true;
+			var parent = node.parent;
+			while (parent != null) {
+				var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
+				if (allChildrenSelected) {
+					parent.selected = true;
+				} else {
+					break;
+				}
+				parent = parent.parent;
+			}
+		}
+		
 		// Draw border around all selected segments.
-		function renderSelection() {
+		renderSelection = function() {
+			//var sunburstGroup = d3.select("g#sunburstGroup");
 			if (_value.options.showSelectedOnly) {
 				sunburstGroup.selectAll("path")
 				.attr("stroke-width", 1)
@@ -753,32 +782,6 @@
 					}
 					return -1;
 				});
-			}
-		}
-
-		function clearSelection() {
-			selectionChangedFlag = true;
-
-			selectedRows = [];
-			setPropAllNodes('selected', false);
-			renderSelection();
-			if (_value.options.publishSelection) {
-				knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
-			}
-		}
-
-		// Traverse through tree and add nodes to selection.
-		function addNodeToSelectionBackward(node) {
-			node.selected = true;
-			var parent = node.parent;
-			while (parent != null) {
-				var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
-				if (allChildrenSelected) {
-					parent.selected = true;
-				} else {
-					break;
-				}
-				parent = parent.parent;
 			}
 		}
 
@@ -1086,7 +1089,7 @@
 				textLength = self.node().getComputedTextLength();
 			}
 		} 
-	};
+	}
 
 	function setBreadcrumbCursor() {
 		d3.selectAll("#trail g polygon").style("cursor", mouseMode == 'zoom' ? "pointer" : "default");
