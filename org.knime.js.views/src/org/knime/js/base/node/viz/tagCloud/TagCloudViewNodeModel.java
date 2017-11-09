@@ -408,6 +408,7 @@ public class TagCloudViewNodeModel
         representation.setEnableSelection(m_config.getEnableSelection());
         representation.setSelectionColor(m_config.getSelectionColorString());
         representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
+        representation.setDisplayClearSelectionButton(m_config.getDisplayClearSelectionButton());
 
         TagCloudViewValue value = getViewValue();
         value.setTitle(m_config.getTitle());

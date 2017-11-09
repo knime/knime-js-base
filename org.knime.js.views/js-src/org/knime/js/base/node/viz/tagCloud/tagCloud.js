@@ -404,6 +404,12 @@ knime_tag_cloud = function() {
 			});
 		}
 		
+		if (_representation.enableSelection && _representation.displayClearSelectionButton) {
+			knimeService.addButton('clear-selection-button', 'minus-square-o', 'Clear Selection', function() {
+				clearSelection();
+			});
+		}
+		
 		// -- Initial interactivity settings --
 		if (knimeService.isInteractivityAvailable()) {
         	if (_value.subscribeSelection) {
@@ -640,6 +646,18 @@ knime_tag_cloud = function() {
 	
 	function getSelection() {
 		return _value.selection;
+	}
+	
+	function clearSelection() {
+		_value.selection = [];
+		if (_value.showSelectedOnly) {
+			redraw();
+		} else {
+			applySelection(true);
+		}
+		if (_value.publishSelection) {
+			knimeService.setSelectedRows(_representation.tableID, getSelection());
+		}
 	}
 	
 	function selectionChanged(data) {

@@ -116,6 +116,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     private boolean m_enableSelection;
     private String m_selectionColor;
     private boolean m_enableShowSelectedOnly;
+    private boolean m_displayClearSelectionButton;
 
     /**
      * @return the data
@@ -510,6 +511,20 @@ public class TagCloudViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the displayClearSelectionButton
+     */
+    public boolean getDisplayClearSelectionButton() {
+        return m_displayClearSelectionButton;
+    }
+
+    /**
+     * @param displayClearSelectionButton the displayClearSelectionButton to set
+     */
+    public void setDisplayClearSelectionButton(final boolean displayClearSelectionButton) {
+        m_displayClearSelectionButton = displayClearSelectionButton;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -557,6 +572,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_SELECTION, m_enableSelection);
         settings.addString(TagCloudViewConfig.CFG_SELECTION_COLOR, m_selectionColor);
         settings.addBoolean(TagCloudViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY, m_enableShowSelectedOnly);
+        settings.addBoolean(TagCloudViewConfig.CFG_DISPLAY_CLEAR_SELECTION_BUTTON, m_displayClearSelectionButton);
     }
 
     /**
@@ -610,6 +626,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
         m_enableSelection = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_SELECTION);
         m_selectionColor = settings.getString(TagCloudViewConfig.CFG_SELECTION_COLOR);
         m_enableShowSelectedOnly = settings.getBoolean(TagCloudViewConfig.CFG_ENABLE_SHOW_SELECTED_ONLY);
+        m_displayClearSelectionButton = settings.getBoolean(TagCloudViewConfig.CFG_DISPLAY_CLEAR_SELECTION_BUTTON);
     }
 
     /**
@@ -654,6 +671,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
                 .append(m_enableSelection, other.m_enableSelection)
                 .append(m_selectionColor, other.m_selectionColor)
                 .append(m_enableShowSelectedOnly, other.m_enableShowSelectedOnly)
+                .append(m_displayClearSelectionButton, other.m_displayClearSelectionButton)
                 .isEquals();
     }
 
@@ -689,6 +707,7 @@ public class TagCloudViewRepresentation extends JSONViewContent {
                 .append(m_enableSelection)
                 .append(m_selectionColor)
                 .append(m_enableShowSelectedOnly)
+                .append(m_displayClearSelectionButton)
                 .toHashCode();
     }
 

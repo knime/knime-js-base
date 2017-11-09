@@ -132,6 +132,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_subscribeSelectionCheckBox;
     private final JCheckBox m_enableShowSelectedOnlyCheckBox;
     private final JCheckBox m_showSelectedOnlyCheckBox;
+    private final JCheckBox m_displayClearSelectionButtonCheckBox;
     private final JCheckBox m_subscribeFilterCheckBox;
 
     private String m_previousSizeColumn;
@@ -260,6 +261,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         });
         m_enableShowSelectedOnlyCheckBox = new JCheckBox("Enable 'Show selected tags only' option");
         m_showSelectedOnlyCheckBox = new JCheckBox("Show selected tags only");
+        m_displayClearSelectionButtonCheckBox = new JCheckBox("Display 'Clear selection' button");
         m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
 
         addTab("Options", initOptions());
@@ -474,6 +476,8 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         selectionPanel.add(m_enableShowSelectedOnlyCheckBox, gbcS);
         gbcS.gridx = 0;
         gbcS.gridy++;
+        selectionPanel.add(m_displayClearSelectionButtonCheckBox, gbcS);
+        gbcS.gridy++;
         selectionPanel.add(new JLabel("Selection column name: "), gbcS);
         gbcS.gridx++;
         selectionPanel.add(m_selectionColumnNameField, gbcS);
@@ -570,6 +574,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
         config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
         config.setDefaultShowSelectedOnly(m_showSelectedOnlyCheckBox.isSelected());
+        config.setDisplayClearSelectionButton(m_displayClearSelectionButtonCheckBox.isSelected());
         config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
         config.saveSettings(settings);
     }
@@ -624,6 +629,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
         m_enableShowSelectedOnlyCheckBox.setSelected(config.getEnableShowSelectedOnly());
         m_showSelectedOnlyCheckBox.setSelected(config.getDefaultShowSelectedOnly());
+        m_displayClearSelectionButtonCheckBox.setSelected(config.getDisplayClearSelectionButton());
         m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
 
         enableViewConfigFields();
@@ -657,6 +663,7 @@ public class TagCloudViewNodeDialogPane extends NodeDialogPane {
         boolean conf = m_enableViewConfigCheckBox.isSelected();
         m_selectionColumnNameField.setEnabled(enable);
         m_publishSelectionCheckBox.setEnabled(enable);
+        m_displayClearSelectionButtonCheckBox.setEnabled(enable);
         m_selectionColorChooser.getModel().setEnabled(enable || conf || sub);
         m_showSelectedOnlyCheckBox.setEnabled(enable || conf || sub);
         m_enableShowSelectedOnlyCheckBox.setEnabled(conf && (enable || sub));

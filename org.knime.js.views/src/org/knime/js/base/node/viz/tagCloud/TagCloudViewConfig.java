@@ -111,6 +111,10 @@ public class TagCloudViewConfig {
     private final static boolean DEFAULT_DISPLAY_REFRESH_BUTTON = true;
     private boolean m_displayRefreshButton = DEFAULT_DISPLAY_REFRESH_BUTTON;
 
+    final static String CFG_DISPLAY_CLEAR_SELECTION_BUTTON = "displayClearSelectionButton";
+    private final static boolean DEFAULT_DISPLAY_CLEAR_SELECTION_BUTTON = true;
+    private boolean m_displayClearSelectionButton = DEFAULT_DISPLAY_CLEAR_SELECTION_BUTTON;
+
     final static String CFG_DISABLE_ANIMATIONS = "disableAnimations";
     private final static boolean DEFAULT_DISABLE_ANIMATIONS = false;
     private boolean m_disableAnimations = DEFAULT_DISABLE_ANIMATIONS;
@@ -216,7 +220,7 @@ public class TagCloudViewConfig {
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
 
     final static String CFG_SELECTION_COLOR = "selectionColor";
-    private final static Color DEFAULT_SELECTION_COLOR = new Color(253, 180, 98);
+    private final static Color DEFAULT_SELECTION_COLOR = new Color(/*253, 180, 98*/ 51, 51, 51);
     private Color m_selectionColor = DEFAULT_SELECTION_COLOR;
 
     final static String CFG_PUBLISH_SELECTION = "publishSelection";
@@ -405,6 +409,20 @@ public class TagCloudViewConfig {
      */
     public void setDisplayRefreshButton(final boolean displayRefreshButton) {
         m_displayRefreshButton = displayRefreshButton;
+    }
+
+    /**
+     * @return the displaySelectionResetButton
+     */
+    public boolean getDisplayClearSelectionButton() {
+        return m_displayClearSelectionButton;
+    }
+
+    /**
+     * @param displayClearSelectionButton the displayClearSelectionButton to set
+     */
+    public void setDisplayClearSelectionButton(final boolean displayClearSelectionButton) {
+        m_displayClearSelectionButton = displayClearSelectionButton;
     }
 
     /**
@@ -878,6 +896,7 @@ public class TagCloudViewConfig {
         settings.addBoolean(CFG_IGNORE_TERM_TAGS, m_ignoreTermTags);
         settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addBoolean(CFG_DISPLAY_REFRESH_BUTTON, m_displayRefreshButton);
+        settings.addBoolean(CFG_DISPLAY_CLEAR_SELECTION_BUTTON, m_displayClearSelectionButton);
         settings.addBoolean(CFG_DISABLE_ANIMATIONS, m_disableAnimations);
         settings.addString(CFG_TITLE, m_title);
         settings.addString(CFG_SUBTITLE, m_subtitle);
@@ -929,6 +948,7 @@ public class TagCloudViewConfig {
         m_ignoreTermTags = settings.getBoolean(CFG_IGNORE_TERM_TAGS);
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_displayRefreshButton = settings.getBoolean(CFG_DISPLAY_REFRESH_BUTTON);
+        m_displayClearSelectionButton = settings.getBoolean(CFG_DISPLAY_CLEAR_SELECTION_BUTTON);
         m_disableAnimations = settings.getBoolean(CFG_DISABLE_ANIMATIONS);
         m_title = settings.getString(CFG_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE);
@@ -980,6 +1000,7 @@ public class TagCloudViewConfig {
         m_ignoreTermTags = settings.getBoolean(CFG_IGNORE_TERM_TAGS, DEFAULT_IGNORE_TERM_TAGS);
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
         m_displayRefreshButton = settings.getBoolean(CFG_DISPLAY_REFRESH_BUTTON, DEFAULT_DISPLAY_REFRESH_BUTTON);
+        m_displayClearSelectionButton = settings.getBoolean(CFG_DISPLAY_CLEAR_SELECTION_BUTTON, DEFAULT_DISPLAY_CLEAR_SELECTION_BUTTON);
         m_disableAnimations = settings.getBoolean(CFG_DISABLE_ANIMATIONS, DEFAULT_DISABLE_ANIMATIONS);
         m_title = settings.getString(CFG_TITLE, DEFAULT_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
