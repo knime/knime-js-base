@@ -54,7 +54,7 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
 import org.knime.core.data.LongValue;
-import org.knime.core.data.StringValue;
+import org.knime.core.data.NominalValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -217,7 +217,7 @@ public class TableEditorViewConfig {
         @Override
         public boolean include(final DataColumnSpec spec) {
             DataType type = spec.getType();
-            return type.isCompatible(StringValue.class) || type.isCompatible(IntValue.class) || type.isCompatible(LongValue.class) || type.isCompatible(DoubleValue.class);
+            return type.isCompatible(NominalValue.class) || type.isCompatible(IntValue.class) || type.isCompatible(LongValue.class) || type.isCompatible(DoubleValue.class);
         }
     };
     private DataColumnSpecFilterConfiguration m_editableColumnsFilterConfig =
