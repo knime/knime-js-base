@@ -23,7 +23,6 @@
   view.init = function(representation, value) {
     _representation = representation;
     _value = value;
-
     // Create Knime tables from data.
     // Load data from port 1.
     knimeTable1 = new kt();
@@ -269,10 +268,10 @@
   var toggleFilter = function() {
     if (_value.options.subscribeFilter) {
       knimeService.subscribeToFilter(
-        knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
+        _representation.tableIds[0], filterChanged, knimeTable1.getFilterIds()
       );
     } else {
-      knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
+      knimeService.unsubscribeFilter(_representation.tableIds[0], filterChanged);
     }
   }
 
