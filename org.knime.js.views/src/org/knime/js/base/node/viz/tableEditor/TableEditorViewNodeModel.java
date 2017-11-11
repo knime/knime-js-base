@@ -274,9 +274,9 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             TableEditorViewValue viewValue = getViewValue();
 
             // apply edit changes
-            if (viewValue != null && viewValue.getEditChanges() != null && viewValue.getEditChanges().size() > 0) {
+            if (viewValue != null && viewValue.getEditorChanges().getChanges().size() > 0) {
                 DataTableSpec spec = m_table.getDataTableSpec();
-                Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditChanges();
+                Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditorChanges().getChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
                 JSONDataTableSpec jsonSpec = viewRepresentation.getTable().getSpec();
                 int rowId = 0;
@@ -411,6 +411,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
 
             //editor settings
             viewRepresentation.setEditableColumns(m_config.getEditableColumnFilterConfig().applyTo(m_table.getDataTableSpec()).getIncludes());
+            viewValue.setEditorChanges(m_config.getEditorChanges());
         }
     }
 
@@ -433,6 +434,8 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
         m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
         m_config.setPublishFilter(viewValue.getPublishFilter());
         m_config.setSubscribeFilter(viewValue.getSubscribeFilter());
+        // editor settings
+        m_config.setEditorChanges(viewValue.getEditorChanges());
     }
 
     /**

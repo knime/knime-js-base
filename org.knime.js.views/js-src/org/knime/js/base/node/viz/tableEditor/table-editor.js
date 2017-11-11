@@ -151,8 +151,6 @@ table_editor = function() {
 		}
 		_representation = representation;
 		_value = value;
-		
-		_value.editChanges = {};
 
 		if (parent && parent.KnimePageLoader) {
 			drawTable();
@@ -763,10 +761,10 @@ table_editor = function() {
 			var index = cell.index();
 			dataTable.data()[index.row][index.column] = newVal;
 			
-			if (_value.editChanges[index.row] === undefined) {
-				_value.editChanges[index.row] = {};
+			if (_value.editorChanges.changes[index.row] === undefined) {
+				_value.editorChanges.changes[index.row] = {};
 			}
-			_value.editChanges[index.row][index.column - colShift] = newVal;
+			_value.editorChanges.changes[index.row][index.column - colShift] = newVal;
 			
 			cell.invalidate();
 		}

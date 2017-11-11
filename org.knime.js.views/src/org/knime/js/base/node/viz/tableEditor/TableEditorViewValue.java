@@ -47,8 +47,6 @@
  */
 package org.knime.js.base.node.viz.tableEditor;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -104,7 +102,7 @@ public class TableEditorViewValue extends JSONViewContent {
     private boolean m_subscribeFilter;
 
     // editor
-    private Map<Integer, Map<Integer, Object>> m_editChanges;
+    private TableEditorChangesSettingsModel m_editorChanges = new TableEditorChangesSettingsModel(TableEditorViewConfig.CFG_EDITOR_CHANGES);
 
     /**
      * @return the selection
@@ -289,17 +287,17 @@ public class TableEditorViewValue extends JSONViewContent {
     }
 
     /**
-     * @return the editChanges
+     * @return the editorChanges
      */
-    public Map<Integer, Map<Integer, Object>> getEditChanges() {
-        return m_editChanges;
+    public TableEditorChangesSettingsModel getEditorChanges() {
+        return m_editorChanges;
     }
 
     /**
-     * @param editChanges the editChanges to set
+     * @param editorChanges the editorChanges to set
      */
-    public void setEditChanges(final Map<Integer, Map<Integer, Object>> editChanges) {
-        m_editChanges = editChanges;
+    public void setEditorChanges(final TableEditorChangesSettingsModel editorChanges) {
+        m_editorChanges = editorChanges;
     }
 
     /**
@@ -329,6 +327,10 @@ public class TableEditorViewValue extends JSONViewContent {
         settings.addBoolean(TableEditorViewConfig.CFG_SUBSCRIBE_SELECTION, m_subscribeSelection);
         settings.addBoolean(TableEditorViewConfig.CFG_PUBLISH_FILTER, m_publishFilter);
         settings.addBoolean(TableEditorViewConfig.CFG_SUBSCRIBE_FILTER, m_subscribeFilter);
+
+        // editor settings
+        m_editorChanges.setConfigName(TableEditorViewConfig.CFG_EDITOR_CHANGES);  // assign the config name in case it has not been assigned by using serialization constructor
+        m_editorChanges.saveSettingsTo(settings);
     }
 
     /**
@@ -360,6 +362,9 @@ public class TableEditorViewValue extends JSONViewContent {
         m_subscribeSelection = settings.getBoolean(TableEditorViewConfig.CFG_SUBSCRIBE_SELECTION, TableEditorViewConfig.DEFAULT_SUBSCRIBE_SELECTION);
         m_publishFilter = settings.getBoolean(TableEditorViewConfig.CFG_PUBLISH_FILTER, TableEditorViewConfig.DEFAULT_PUBLISH_FILTER);
         m_subscribeFilter = settings.getBoolean(TableEditorViewConfig.CFG_SUBSCRIBE_FILTER, TableEditorViewConfig.DEFAULT_SUBSCRIBE_FILTER);
+
+        // editor settings
+        m_editorChanges.loadSettingsFrom(settings);
     }
 
     /**
@@ -391,7 +396,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_subscribeSelection, other.m_subscribeSelection)
                 .append(m_publishFilter, other.m_publishFilter)
                 .append(m_subscribeFilter, other.m_subscribeFilter)
-                .append(m_editChanges, other.m_editChanges)
+                .append(m_editorChanges, other.m_editorChanges)
                 .isEquals();
     }
 
@@ -414,7 +419,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_subscribeSelection)
                 .append(m_publishFilter)
                 .append(m_subscribeFilter)
-                .append(m_editChanges)
+                .append(m_editorChanges)
                 .toHashCode();
     }
 
