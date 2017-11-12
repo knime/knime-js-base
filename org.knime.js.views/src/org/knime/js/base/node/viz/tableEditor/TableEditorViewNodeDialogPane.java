@@ -121,6 +121,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
 
     // editor
     private final DataColumnSpecFilterPanel m_editableColumnsFilterPanel;
+    private TableEditorChangesSettingsModel m_editorChanges;
 
     TableEditorViewNodeDialogPane() {
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
@@ -498,6 +499,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         setNumberOfFilters(inSpec);
         // editor
         m_editableColumnsFilterPanel.loadConfiguration(config.getEditableColumnFilterConfig(), inSpec);
+        m_editorChanges = config.getEditorChanges();
     }
 
     /**
@@ -548,6 +550,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         DataColumnSpecFilterConfiguration editableColumnsFilterConfig = new DataColumnSpecFilterConfiguration(TableEditorViewConfig.CFG_EDITABLE_COLUMNS_FILTER);
         m_editableColumnsFilterPanel.saveConfiguration(editableColumnsFilterConfig);
         config.setEditableColumnFilterConfig(editableColumnsFilterConfig);
+        config.setEditorChanges(m_editorChanges);
 
         config.saveSettings(settings);
     }

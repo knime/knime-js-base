@@ -794,6 +794,7 @@ public class TableEditorViewConfig {
 
         // editor settings
         m_editableColumnsFilterConfig.saveConfiguration(settings);
+        m_editorChanges.setConfigName(TableEditorViewConfig.CFG_EDITOR_CHANGES);  // assign the config name in case it has not been assigned by using serialization constructor
         m_editorChanges.saveSettingsTo(settings);
     }
 

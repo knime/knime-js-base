@@ -313,9 +313,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                     rowId++;
                 }
                 dc.close();
-                m_table = dc.getTable();
-                out = m_table;
-                viewRepresentation.setTable(null);
+                out = dc.getTable();
             }
 
             if (m_config.getEnableSelection()) {
@@ -325,10 +323,10 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                         selectionList = Arrays.asList(viewValue.getSelection());
                     }
                 }
-                ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
-                out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
+                ColumnRearranger rearranger = createColumnAppender(out.getDataTableSpec(), selectionList);
+                out = exec.createColumnRearrangeTable(out, rearranger, exec.createSubExecutionContext(0.5));
             }
-            setSubscriptionFilterIds(m_table.getDataTableSpec());
+            setSubscriptionFilterIds(out.getDataTableSpec());
         }
         exec.setProgress(1);
         return new PortObject[]{out};
