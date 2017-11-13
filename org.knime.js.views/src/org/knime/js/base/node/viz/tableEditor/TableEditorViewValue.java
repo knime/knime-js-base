@@ -104,6 +104,9 @@ public class TableEditorViewValue extends JSONViewContent {
     // editor
     private TableEditorChangesSettingsModel m_editorChanges = new TableEditorChangesSettingsModel(TableEditorViewConfig.CFG_EDITOR_CHANGES);
 
+    private static final String CFG_TABLE_HASH = "tableHash";
+    private String m_tableHash = null;
+
     /**
      * @return the selection
      */
@@ -301,6 +304,20 @@ public class TableEditorViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the tableHash
+     */
+    public String getTableHash() {
+        return m_tableHash;
+    }
+
+    /**
+     * @param tableHash the tableHash to set
+     */
+    public void setTableHash(final String tableHash) {
+        m_tableHash = tableHash;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -331,6 +348,7 @@ public class TableEditorViewValue extends JSONViewContent {
         // editor settings
         m_editorChanges.setConfigName(TableEditorViewConfig.CFG_EDITOR_CHANGES);  // assign the config name in case it has not been assigned by using serialization constructor
         m_editorChanges.saveSettingsTo(settings);
+        settings.addString(CFG_TABLE_HASH, m_tableHash);
     }
 
     /**
@@ -365,6 +383,7 @@ public class TableEditorViewValue extends JSONViewContent {
 
         // editor settings
         m_editorChanges.loadSettingsFrom(settings);
+        m_tableHash = settings.getString(CFG_TABLE_HASH);
     }
 
     /**
@@ -397,6 +416,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_publishFilter, other.m_publishFilter)
                 .append(m_subscribeFilter, other.m_subscribeFilter)
                 .append(m_editorChanges, other.m_editorChanges)
+                .append(m_tableHash, m_tableHash)
                 .isEquals();
     }
 
@@ -420,6 +440,7 @@ public class TableEditorViewValue extends JSONViewContent {
                 .append(m_publishFilter)
                 .append(m_subscribeFilter)
                 .append(m_editorChanges)
+                .append(m_tableHash)
                 .toHashCode();
     }
 

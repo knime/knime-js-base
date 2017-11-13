@@ -175,13 +175,18 @@ table_editor = function() {
 		}
 		try {
 			// apply editor changes
-			var editorChanges = _value.editorChanges.changes;
-			for(var rowId in editorChanges) {
-				var rowEntry = editorChanges[rowId];
-				for (var colIndex in rowEntry) {
-					var cellValue = rowEntry[colIndex];
-					_representation.table.rows[rowId].data[colIndex] = cellValue;
+			if (_representation.table.hash == _value.tableHash) {
+				var editorChanges = _value.editorChanges.changes;
+				for(var rowId in editorChanges) {
+					var rowEntry = editorChanges[rowId];
+					for (var colIndex in rowEntry) {
+						var cellValue = rowEntry[colIndex];
+						_representation.table.rows[rowId].data[colIndex] = cellValue;
+					}
 				}
+			} else {
+				_value.tableHash = _representation.table.hash;
+				_value.editorChanges.changes = {};
 			}
 			
 			knimeTable = new kt();

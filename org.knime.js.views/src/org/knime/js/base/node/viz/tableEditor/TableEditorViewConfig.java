@@ -226,6 +226,9 @@ public class TableEditorViewConfig {
     static final String CFG_EDITOR_CHANGES = "editorChanges";
     private TableEditorChangesSettingsModel m_editorChanges = new TableEditorChangesSettingsModel(CFG_EDITOR_CHANGES);
 
+    static final String CFG_TABLE_HASH = "tableHash";
+    private String m_tableHash = null;
+
 
     /**
      * @return the hideInWizard
@@ -745,6 +748,20 @@ public class TableEditorViewConfig {
         m_editorChanges = editorChanges;
     }
 
+    /**
+     * @return the tableHash
+     */
+    public String getTableHash() {
+        return m_tableHash;
+    }
+
+    /**
+     * @param tableHash the tableHash to set
+     */
+    public void setTableHash(final String tableHash) {
+        m_tableHash = tableHash;
+    }
+
 
     /** Saves current parameters to settings object.
      * @param settings To save to.
@@ -796,6 +813,7 @@ public class TableEditorViewConfig {
         m_editableColumnsFilterConfig.saveConfiguration(settings);
         m_editorChanges.setConfigName(TableEditorViewConfig.CFG_EDITOR_CHANGES);  // assign the config name in case it has not been assigned by using serialization constructor
         m_editorChanges.saveSettingsTo(settings);
+        settings.addString(CFG_TABLE_HASH, m_tableHash);
     }
 
     /** Loads parameters in NodeModel.
@@ -854,6 +872,7 @@ public class TableEditorViewConfig {
         // editor settings
         m_editableColumnsFilterConfig.loadConfigurationInModel(settings);
         m_editorChanges.loadSettingsFrom(settings);
+        m_tableHash = settings.getString(CFG_TABLE_HASH);
     }
 
     /** Loads parameters in Dialog.
@@ -921,6 +940,7 @@ public class TableEditorViewConfig {
         } catch (InvalidSettingsException e) {
             // return default
         }
+        m_tableHash = settings.getString(CFG_TABLE_HASH, null);
     }
 
 }
