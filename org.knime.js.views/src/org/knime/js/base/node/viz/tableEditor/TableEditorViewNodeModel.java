@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.knime.core.data.BooleanValue;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -63,7 +65,6 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
 import org.knime.core.data.LongValue;
-import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
@@ -291,20 +292,18 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                             DataType type = spec.getColumnSpec(i).getType();
                             if (value == null) {
                                 copy[i] = DataType.getMissingCell();
+                            } else if (type.isCompatible(BooleanValue.class)) {
+                                copy[i] = BooleanCellFactory.create((Boolean) value);
                             } else if (type.isCompatible(IntValue.class) && value instanceof Integer) {
                                 copy[i] = new IntCell((Integer) value);
                             } else if (type.isCompatible(LongValue.class) && value instanceof Integer) {
                                 copy[i] = new LongCell(((Integer) value).longValue());
                             } else if (type.isCompatible(DoubleValue.class) && value instanceof Double) {
                                 copy[i] = new DoubleCell((Double) value);
-                            } else if (type.isCompatible(StringValue.class)) {
+                            }  else if (type.getCellClass().equals(StringCell.class)) {
                                 copy[i] = new StringCell(value.toString());
-                            } else if (type.isCompatible(BooleanValue.class)) {
-                                copy[i] = BooleanCellFactory.create((Boolean) value);
-                            }
-                            else {
-                                // this part should never be reached, but in case it is, we provide a better error than a NPE
-                                throw new ClassCastException("Casting to the type " + type.getName() + " is not supported.");
+                            } else {
+                                throw new OperationNotSupportedException("Type " + type.getName() + " is not supported for editing.");
                             }
                         } else {
                             copy[i] = cell;

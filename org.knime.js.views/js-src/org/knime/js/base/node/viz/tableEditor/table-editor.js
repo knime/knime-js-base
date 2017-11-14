@@ -102,7 +102,7 @@ table_editor = function() {
 		if (value == '') {
 			return null;
 		} else {
-			return value == "true";
+			return value.toLowerCase() === 'true' || value === '1';
 		}
 	}
 	
