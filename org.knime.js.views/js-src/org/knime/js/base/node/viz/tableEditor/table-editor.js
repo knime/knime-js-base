@@ -89,6 +89,24 @@ table_editor = function() {
 	}
 	
 	/**
+	 * Boolean values editor
+	 */
+	var BooleanEditor = function() {
+		this.component = $('<input type="text"/>');
+	}
+	
+	BooleanEditor.prototype = Object.create(Editor.prototype);
+	
+	BooleanEditor.prototype.getValue = function() {
+		var value = this.component.val();
+		if (value == '') {
+			return null;
+		} else {
+			return value == "true";
+		}
+	}
+	
+	/**
 	 * Editor factory
 	 */
 	
@@ -104,6 +122,9 @@ table_editor = function() {
 				break;
 			case 'Number (double)':
 				editor = new DoubleEditor();
+				break;
+			case 'Boolean value':
+				editor = new BooleanEditor();
 				break;
 		}
 		return editor;

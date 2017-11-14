@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.knime.core.data.BooleanValue;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -67,6 +68,7 @@ import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
@@ -297,6 +299,12 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                                 copy[i] = new DoubleCell((Double) value);
                             } else if (type.isCompatible(StringValue.class)) {
                                 copy[i] = new StringCell(value.toString());
+                            } else if (type.isCompatible(BooleanValue.class)) {
+                                copy[i] = BooleanCellFactory.create((Boolean) value);
+                            }
+                            else {
+                                // this part should never be reached, but in case it is, we provide a better error than a NPE
+                                throw new ClassCastException("Casting to the type " + type.getName() + " is not supported.");
                             }
                         } else {
                             copy[i] = cell;
