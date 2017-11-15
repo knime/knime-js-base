@@ -175,7 +175,7 @@ table_editor = function() {
 		}
 		try {
 			// apply editor changes
-			if (_representation.table.hash == _value.tableHash) {
+			if (_representation.table.dataHash == _value.tableHash) {
 				var editorChanges = _value.editorChanges.changes;
 				for(var rowId in editorChanges) {
 					var rowEntry = editorChanges[rowId];
@@ -185,7 +185,7 @@ table_editor = function() {
 					}
 				}
 			} else {
-				_value.tableHash = _representation.table.hash;
+				_value.tableHash = _representation.table.dataHash;
 				_value.editorChanges.changes = {};
 			}
 			

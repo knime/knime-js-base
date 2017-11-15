@@ -274,7 +274,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             TableEditorViewValue viewValue = getViewValue();
 
             // apply edit changes
-            if (viewValue != null && viewRepresentation.getTable().getHash().equals(viewValue.getTableHash()) && viewValue.getEditorChanges().getChanges().size() > 0) {
+            if (viewValue != null && viewRepresentation.getTable().getDataHash().equals(viewValue.getTableHash()) && viewValue.getEditorChanges().getChanges().size() > 0) {
                 DataTableSpec spec = m_table.getDataTableSpec();
                 Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditorChanges().getChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
