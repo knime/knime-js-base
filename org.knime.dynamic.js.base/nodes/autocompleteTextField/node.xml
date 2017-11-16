@@ -4,7 +4,7 @@
 		xmlns:n="http://knime.org/node/v2.12"
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd" 
- 		jsNamespace="autocomplete_input" nodeID="autocompleteTextField" categoryPath="/view/js-views"
+ 		jsNamespace="autocomplete_input" nodeID="autocompleteTextField" categoryPath="/flowcontrol/quickforms/input"
  		icon="../js.png" type="QuickForm">
  		
  	<name>Autocomplete Text Input</name>
