@@ -18,9 +18,14 @@
             factory-class="org.knime.js.base.node.rowselector.RowSelectorNodeFactory"
             /> -->
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
             >
+      </node>
+      <node
+            after="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory">
       </node>
       <!-- <node
             after="org.knime.js.base.node.viz.plotter.scatter.ScatterPlotNodeFactory"
@@ -34,54 +39,45 @@
             factory-class="org.knime.js.base.node.viz.plotter.line.WebLinePlotterNodeFactory"
             /> -->
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"
-            >
+            after="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory">
       </node>
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory"
-            >
+            after="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory">
       </node>
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory"
-            >
+            after="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory">
       </node>
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory"
-            >
-      </node>
-      <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
-            >
-      </node>
-      <node
-            category-path="/labs/interactiveView"
+            after="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
       </node>
       <node
-            category-path="/labs/interactiveView"
-            factory-class="org.knime.js.base.node.viz.tableEditor.TableEditorViewNodeFactory"
-            >
+            after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
       </node>
       <node
-            category-path="/labs/interactiveView"
-            deprecated="false"
-            factory-class="org.knime.js.base.node.viz.tagCloud.TagCloudViewNodeFactory">
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.viz.tableEditor.TableEditorViewNodeFactory"
+            >
       </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
       <category
             icon="icons/js.png"
-            level-id="interactiveView"
+            level-id="js-views"
             locked="true"
-            name="JavaScript Views"
-            path="/labs">
+            name="JavaScript"
+            path="/view/">
       </category>
    </extension>
    <extension
@@ -480,27 +476,6 @@
                webResourceBundleID="dataTables_1_10_11_bootstrap">
          </webDependency>
       </webResourceBundle>
-      <webResourceBundle
-            debug="true"
-            name="Tag Cloud"
-            usesDefine="false"
-            version="1.0"
-            webResourceBundleID="org.knime.js.base.node.viz.tagCloud.bundle">
-         <webResource
-               relativePathSource="js-src/org/knime/js/base/node/viz/tagCloud/"
-               relativePathTarget="org/knime/js/base/node/viz/tagCloud/">
-         </webResource>
-         <importResource
-               relativePath="org/knime/js/base/node/viz/tagCloud/tagCloud.js"
-               type="JAVASCRIPT">
-         </importResource>
-         <webDependency
-               webResourceBundleID="d3_layout_cloud_1.2.4">
-         </webDependency>
-         <webDependency
-               webResourceBundleID="KnimeTable_1.0.0">
-         </webDependency>
-      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -646,16 +621,6 @@
             javascriptComponentID="org.knime.js.base.node.viz.tableEditor"
             name="Table Editor"
             namespace="table_editor"
-            setValidationError-method-name="setValidationError"
-            validate-method-name="validate">
-      </javascriptComponent>
-      <javascriptComponent
-            getComponentValue-method-name="getComponentValue"
-            implementationBundleID="org.knime.js.base.node.viz.tagCloud.bundle"
-            init-method-name="init"
-            javascriptComponentID="org.knime.js.base.node.viz.tagCloud"
-            name="Tag Cloud"
-            namespace="knime_tag_cloud"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
