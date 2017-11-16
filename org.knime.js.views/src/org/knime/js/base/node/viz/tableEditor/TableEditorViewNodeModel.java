@@ -274,7 +274,9 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             TableEditorViewValue viewValue = getViewValue();
 
             // apply edit changes
-            if (viewValue != null && viewRepresentation.getTable().getDataHash().equals(viewValue.getTableHash()) && viewValue.getEditorChanges().getChanges().size() > 0) {
+            Optional<String> dataHash = viewRepresentation.getTable().getDataHash();
+            boolean isSameHash = dataHash.isPresent() ? dataHash.get().equals(viewValue.getTableHash()) : false;
+            if (viewValue != null && isSameHash && viewValue.getEditorChanges().getChanges().size() > 0) {
                 DataTableSpec spec = m_table.getDataTableSpec();
                 Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditorChanges().getChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
@@ -343,6 +345,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                 .setFirstRow(1)
                 .setMaxRows(m_config.getMaxRows())
                 .setExcludeColumns(filter.getExcludes())
+                .calculateDataHash(true)
                 .build(exec);
         if (m_config.getMaxRows() < table.size()) {
             setWarningMessage("Only the first "
