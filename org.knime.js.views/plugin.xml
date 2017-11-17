@@ -71,16 +71,6 @@
       </node>
    </extension>
    <extension
-         point="org.knime.workbench.repository.categories">
-      <category
-            icon="icons/js.png"
-            level-id="js-views"
-            locked="true"
-            name="JavaScript"
-            path="/view/">
-      </category>
-   </extension>
-   <extension
          point="org.knime.js.core.webResources">
       <webResourceBundle
             debug="true"

@@ -6,7 +6,7 @@
 	jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/view/js-views"
 	icon="../js.png" type="Visualizer">
 
-	<name>JavaScript Stacked Area Chart</name>
+	<name>Stacked Area Chart (JavaScript)</name>
 	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>

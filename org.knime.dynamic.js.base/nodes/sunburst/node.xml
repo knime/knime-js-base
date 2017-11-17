@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="sunburst_namespace" nodeID="sunburst_chart" categoryPath="/view/js-views"
 	icon="../js.png" type="Visualizer">
-	<name>JavaScript Sunburst Chart</name>
+	<name>Sunburst Chart (JavaScript)</name>
 	<shortDescription>A sunburst chart based on the d3.js library.</shortDescription>
 	<fullDescription>
 		<intro>

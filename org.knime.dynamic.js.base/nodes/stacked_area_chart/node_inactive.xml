@@ -6,7 +6,7 @@
 	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/flowcontrol/quickforms/view"
 	icon="../js.png" type="Visualizer">
 
-	<name>Stacked Area Chart</name>
+	<name>Stacked Area Chart (JavaScript)</name>
 	<shortDescription>This node provides a view with a Stacked Area Chart implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>

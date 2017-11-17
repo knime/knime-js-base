@@ -6,7 +6,7 @@
 	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/view/js-views"
 	icon="../js.png" type="Visualizer">
 
-	<name>JavaScript Box Plot</name>
+	<name>Box Plot (JavaScript)</name>
 	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>

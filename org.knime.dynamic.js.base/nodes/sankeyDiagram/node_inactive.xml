@@ -6,7 +6,7 @@
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
  		jsNamespace="sankey_namespace" nodeID="sankey_diagram" categoryPath="/preview"
  		icon="../js.png" type="Visualizer">
-    <name>JavaScript Sankey Diagram</name>
+    <name>Sankey Diagram (JavaScript)</name>
     <shortDescription>A sankey diagram based on the d3.js library.</shortDescription>
     <fullDescription>
 	    <intro>
