@@ -6,8 +6,8 @@ Bundle-Version: 3.5.0.qualifier
 Bundle-ClassPath: js-views.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.js.base.node.viz.decisiontree.classification
-Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
- org.knime.js.core;bundle-version="[3.0.0,4.0.0)",
+Require-Bundle: org.knime.base;bundle-version="[3.5.0,4.0.0)",
+ org.knime.js.core;bundle-version="[3.5.0,4.0.0)",
  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
  com.google.guava;bundle-version="[19.0.0,20.0.0)",
  org.knime.ext.svg;bundle-version="[3.0.0,4.0.0)",
@@ -22,7 +22,6 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  com.fifesoft.rsyntaxtextarea;bundle-version="[2.5.7,3.0.0)",
  com.fifesoft.spellchecker;bundle-version="[2.5.7,3.0.0)",
  say.swing.jfontchooser;bundle-version="[1.0.5,2.0.0)",
- org.knime.core.pmml;bundle-version="3.3.0",
- org.knime.ext.textprocessing;bundle-version="[3.5.0,4.0.0)";resolution:=optional
+ org.knime.core.pmml;bundle-version="[3.5.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
