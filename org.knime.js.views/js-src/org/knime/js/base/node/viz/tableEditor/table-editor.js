@@ -179,14 +179,17 @@ table_editor = function() {
 				var editorChanges = _value.editorChanges.changes;
 				for (var rowKey in editorChanges) {
 					var rowFilter = _representation.table.rows.filter(function(row) { return row.rowKey === rowKey });
+					// since not all rows from the input table can be shown, we need to check, if the row is present in the view
 					if (rowFilter.length > 0) {
 						var row = rowFilter[0];
 						var rowEntry = editorChanges[rowKey];
 						for (var colName in rowEntry) {
-							var colIndex = _representation.table.spec.colNames.indexOf(colName);
-							if (colIndex != -1) {
-								var cellValue = rowEntry[colName];
-								row.data[colIndex] = cellValue;
+							if (_representation.editableColumns.indexOf(colName) != -1) {  // check, if the column is still editable
+								var colIndex = _representation.table.spec.colNames.indexOf(colName);
+								if (colIndex != -1) {
+									var cellValue = rowEntry[colName];
+									row.data[colIndex] = cellValue;
+								}
 							}
 						}
 					}					

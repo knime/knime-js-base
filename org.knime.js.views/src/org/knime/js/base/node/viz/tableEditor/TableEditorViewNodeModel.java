@@ -49,9 +49,11 @@ package org.knime.js.base.node.viz.tableEditor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -276,10 +278,17 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             Optional<String> dataHash = viewRepresentation.getTable().getDataHash();
             boolean isSameHash = dataHash.isPresent() ? dataHash.get().equals(viewValue.getTableHash()) : false;
             if (viewValue != null && isSameHash && viewValue.getEditorChanges().getChanges().size() > 0) {
+                // if there are editor changes and hash of the input table has not changed, we apply the changes
+
                 DataTableSpec spec = m_table.getDataTableSpec();
                 Map<String, Map<String, Object>> editorChanges = viewValue.getEditorChanges().getChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
                 String[] columnNames = spec.getColumnNames();
+                List<String> editableColumns = Arrays.asList(viewRepresentation.getEditableColumns());
+                // set of columns which were editable, but then have become read-only in the node config dialog
+                Set<String> conflictEditColumns = new HashSet<String>();
+
+                // iterate over each row from the input table and apply the changes where appropriate
                 for (DataRow row : m_table) {
                     String rowKey = row.getKey().getString();
                     Map<String, Object> rowEditorChanges = editorChanges.get(rowKey);
@@ -289,28 +298,38 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                         String colName = columnNames[i];
                         DataCell cell = row.getCell(i);
                         if (rowEditorChanges != null && rowEditorChanges.containsKey(colName)) {
-                            Object value = rowEditorChanges.get(colName);
-                            DataType type = spec.getColumnSpec(i).getType();
-                            if (value == null) {
-                                copy[i] = DataType.getMissingCell();
-                            } else if (type.isCompatible(BooleanValue.class)) {
-                                copy[i] = BooleanCellFactory.create((Boolean) value);
-                            } else if (type.isCompatible(IntValue.class) && value instanceof Integer) {
-                                copy[i] = new IntCell((Integer) value);
-                            } else if (type.isCompatible(LongValue.class) && value instanceof Integer) {
-                                copy[i] = new LongCell(((Integer) value).longValue());
-                            } else if (type.isCompatible(DoubleValue.class) && value instanceof Double) {
-                                copy[i] = new DoubleCell((Double) value);
-                            }  else if (type.getCellClass().equals(StringCell.class)) {
-                                copy[i] = new StringCell(value.toString());
+                            // check whether the columns is still editable
+                            if (editableColumns.contains(colName)) {
+                                Object value = rowEditorChanges.get(colName);
+                                DataType type = spec.getColumnSpec(i).getType();
+                                if (value == null) {
+                                    copy[i] = DataType.getMissingCell();
+                                } else if (type.isCompatible(BooleanValue.class)) {
+                                    copy[i] = BooleanCellFactory.create((Boolean) value);
+                                } else if (type.isCompatible(IntValue.class) && value instanceof Integer) {
+                                    copy[i] = new IntCell((Integer) value);
+                                } else if (type.isCompatible(LongValue.class) && value instanceof Integer) {
+                                    copy[i] = new LongCell(((Integer) value).longValue());
+                                } else if (type.isCompatible(DoubleValue.class) && value instanceof Double) {
+                                    copy[i] = new DoubleCell((Double) value);
+                                }  else if (type.getCellClass().equals(StringCell.class)) {
+                                    copy[i] = new StringCell(value.toString());
+                                } else {
+                                    throw new OperationNotSupportedException("Type " + type.getName() + " is not supported for editing.");
+                                }
                             } else {
-                                throw new OperationNotSupportedException("Type " + type.getName() + " is not supported for editing.");
+                                // if editor filter setting has changed, do not apply the change and raise a warning
+                                copy[i] = cell;
+                                conflictEditColumns.add(colName);
                             }
                         } else {
                             copy[i] = cell;
                         }
                     }
                     dc.addRowToTable(new DefaultRow(row.getKey(), copy));
+                }
+                if (conflictEditColumns.size() > 0) {
+                    setWarningMessage("The column(s) " + String.join(",", conflictEditColumns) + " have become not editable. Saved changes for these columns are ignored.");
                 }
                 dc.close();
                 out = dc.getTable();
