@@ -430,9 +430,6 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridy++;
         gbcD.gridwidth = 3;
         editorPanel.add(m_editableColumnsFilterPanel, gbcD);
-        //gbcD.gridy++;
-        //gbcD.gridx = 1;
-        //editorPanel.add(m_resetEditorChangesButton, gbcD);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();

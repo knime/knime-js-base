@@ -45,6 +45,9 @@
             <option name="Editable columns">
                 Choose which columns will be available for editing in the view. The following data types are currently supported: string, numbers and boolean. For numbers there is a basic validation in the view. For boolean type "true" represents logical true value, any other value will be intepreted as false. To input a missing value, leave the editor's field blank.
             </option>
+            <option name="Reset editor changes">
+                Erase all the editor changes stored in the node.
+            </option>
         </tab>
         <tab name="Interactivity">
         	<description>
