@@ -96,6 +96,13 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
     }
 
     /**
+     * Erase all the editor changes
+     */
+    public void reset() {
+        m_changes = new HashMap<String, Map<String, Object>>();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")

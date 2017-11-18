@@ -52,8 +52,11 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -122,6 +125,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
     // editor
     private final DataColumnSpecFilterPanel m_editableColumnsFilterPanel;
     private TableEditorChangesSettingsModel m_editorChanges;
+    private final JButton m_resetEditorChangesButton;
     private String m_tableHash;
 
     TableEditorViewNodeDialogPane() {
@@ -229,6 +233,15 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
 
         // editor
         m_editableColumnsFilterPanel = new DataColumnSpecFilterPanel();
+        m_resetEditorChangesButton = new JButton("Reset editor changes");
+        m_resetEditorChangesButton.setEnabled(false);
+        m_resetEditorChangesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                m_editorChanges.reset();
+                m_resetEditorChangesButton.setEnabled(false);
+            }
+        });
 
         addTab("Options", initOptions());
         addTab("Editor", initEditor());
@@ -417,11 +430,19 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridy++;
         gbcD.gridwidth = 3;
         editorPanel.add(m_editableColumnsFilterPanel, gbcD);
+        //gbcD.gridy++;
+        //gbcD.gridx = 1;
+        //editorPanel.add(m_resetEditorChangesButton, gbcD);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(editorPanel, gbc);
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(m_resetEditorChangesButton, gbc);
+
         return panel;
     }
 
@@ -502,6 +523,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_editableColumnsFilterPanel.loadConfiguration(config.getEditableColumnFilterConfig(), inSpec);
         m_editorChanges = config.getEditorChanges();
         m_tableHash = config.getTableHash();
+        m_resetEditorChangesButton.setEnabled(m_editorChanges.getChanges().size() > 0);
     }
 
     /**
