@@ -91,7 +91,6 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
-import org.knime.js.core.JSONDataTableSpec;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -278,19 +277,19 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             boolean isSameHash = dataHash.isPresent() ? dataHash.get().equals(viewValue.getTableHash()) : false;
             if (viewValue != null && isSameHash && viewValue.getEditorChanges().getChanges().size() > 0) {
                 DataTableSpec spec = m_table.getDataTableSpec();
-                Map<Integer, Map<Integer, Object>> editChanges = viewValue.getEditorChanges().getChanges();
+                Map<String, Map<String, Object>> editorChanges = viewValue.getEditorChanges().getChanges();
                 BufferedDataContainer dc = exec.createDataContainer(spec);
-                JSONDataTableSpec jsonSpec = viewRepresentation.getTable().getSpec();
-                int rowId = 0;
+                String[] columnNames = spec.getColumnNames();
                 for (DataRow row : m_table) {
-                    Map<Integer, Object> rowEditChanges = editChanges.get(rowId);
+                    String rowKey = row.getKey().getString();
+                    Map<String, Object> rowEditorChanges = editorChanges.get(rowKey);
+
                     DataCell[] copy = new DataCell[row.getNumCells()];
                     for (int i = 0; i < row.getNumCells(); i++) {
-                        // since some columns could have been filtered out from the view, we need to map knime-table 'i' to json-table 'i'
-                        int jsonI = jsonSpec.getColumnIndex(spec.getColumnNames()[i]);
+                        String colName = columnNames[i];
                         DataCell cell = row.getCell(i);
-                        if (rowEditChanges != null && rowEditChanges.containsKey(jsonI)) {
-                            Object value = rowEditChanges.get(jsonI);
+                        if (rowEditorChanges != null && rowEditorChanges.containsKey(colName)) {
+                            Object value = rowEditorChanges.get(colName);
                             DataType type = spec.getColumnSpec(i).getType();
                             if (value == null) {
                                 copy[i] = DataType.getMissingCell();
@@ -312,7 +311,6 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                         }
                     }
                     dc.addRowToTable(new DefaultRow(row.getKey(), copy));
-                    rowId++;
                 }
                 dc.close();
                 out = dc.getTable();

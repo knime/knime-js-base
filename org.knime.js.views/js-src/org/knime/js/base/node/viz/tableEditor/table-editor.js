@@ -177,12 +177,19 @@ table_editor = function() {
 			// apply editor changes
 			if (_representation.table.dataHash == _value.tableHash) {
 				var editorChanges = _value.editorChanges.changes;
-				for(var rowId in editorChanges) {
-					var rowEntry = editorChanges[rowId];
-					for (var colIndex in rowEntry) {
-						var cellValue = rowEntry[colIndex];
-						_representation.table.rows[rowId].data[colIndex] = cellValue;
-					}
+				for (var rowKey in editorChanges) {
+					var rowFilter = _representation.table.rows.filter(function(row) { return row.rowKey === rowKey });
+					if (rowFilter.length > 0) {
+						var row = rowFilter[0];
+						var rowEntry = editorChanges[rowKey];
+						for (var colName in rowEntry) {
+							var colIndex = _representation.table.spec.colNames.indexOf(colName);
+							if (colIndex != -1) {
+								var cellValue = rowEntry[colName];
+								row.data[colIndex] = cellValue;
+							}
+						}
+					}					
 				}
 			} else {
 				_value.tableHash = _representation.table.dataHash;
@@ -776,10 +783,12 @@ table_editor = function() {
 			var index = cell.index();
 			dataTable.data()[index.row][index.column] = newVal;
 			
-			if (_value.editorChanges.changes[index.row] === undefined) {
-				_value.editorChanges.changes[index.row] = {};
+			var rowKey = knimeTable.getRows()[index.row].rowKey;
+			var colName = knimeTable.getColumnNames()[index.column - colShift];
+			if (_value.editorChanges.changes[rowKey] === undefined) {
+				_value.editorChanges.changes[rowKey] = {};
 			}
-			_value.editorChanges.changes[index.row][index.column - colShift] = newVal;
+			_value.editorChanges.changes[rowKey][colName] = newVal;
 			
 			cell.invalidate();
 		}

@@ -71,8 +71,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class TableEditorChangesSettingsModel extends SettingsModel {
 
-    // map from RowId to a map from Column Index to Data Value
-    private Map<Integer, Map<Integer, Object>> m_changes;
+    // map from Row Key to a map from Column Name to Data Value
+    private Map<String, Map<String, Object>> m_changes;
 
     private String m_configName;
 
@@ -85,7 +85,7 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
         }
         m_configName = configName;
 
-        m_changes = new HashMap<Integer, Map<Integer,Object>>();
+        m_changes = new HashMap<String, Map<String, Object>>();
     }
 
     /**
@@ -131,14 +131,14 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
     /**
      * @return the changes
      */
-    public Map<Integer, Map<Integer, Object>> getChanges() {
+    public Map<String, Map<String, Object>> getChanges() {
         return m_changes;
     }
 
     /**
      * @param changes the changes to set
      */
-    public void setChanges(final Map<Integer, Map<Integer, Object>> changes) {
+    public void setChanges(final Map<String, Map<String, Object>> changes) {
         m_changes = changes;
     }
 
@@ -169,7 +169,7 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
      */
     @Override
     protected void validateSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
-        Map<Integer, Map<Integer, Object>> curChanges = m_changes;
+        Map<String, Map<String, Object>> curChanges = m_changes;
         loadSettings(settings);
         m_changes = curChanges;
     }
@@ -193,15 +193,15 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
     private void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         NodeSettingsRO editChangesSettings = settings.getNodeSettings(m_configName);
         int numRows = editChangesSettings.getInt("numRows");
-        m_changes = new HashMap<Integer, Map<Integer,Object>>(numRows);
+        m_changes = new HashMap<String, Map<String, Object>>(numRows);
         for (int i = 0; i < numRows; i++) {
             NodeSettingsRO rowSettings = editChangesSettings.getNodeSettings("rowEntry" + i);
-            int rowId = rowSettings.getInt("rowId");
+            String rowKey = rowSettings.getString("rowKey");
             int numCells = rowSettings.getInt("numCells");
-            Map<Integer, Object> rowMap = new HashMap<Integer, Object>(numCells);
+            Map<String, Object> rowMap = new HashMap<String, Object>(numCells);
             for (int j = 0; j < numCells; j++) {
                 NodeSettingsRO cellSettings = rowSettings.getNodeSettings("cellEntry" + j);
-                int colIndex = cellSettings.getInt("colIndex");
+                String colName = cellSettings.getString("colName");
                 String type = cellSettings.getString("type");
                 Object value = null;
                 switch (type) {
@@ -218,9 +218,9 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
                         value = cellSettings.getString("value");
                         break;
                 }
-                rowMap.put(colIndex, value);
+                rowMap.put(colName, value);
             }
-            m_changes.put(rowId, rowMap);
+            m_changes.put(rowKey, rowMap);
         }
     }
 
@@ -228,14 +228,14 @@ public class TableEditorChangesSettingsModel extends SettingsModel {
         NodeSettingsWO editChangesSettings = settings.addNodeSettings(m_configName);
         editChangesSettings.addInt("numRows", m_changes.size());
         int rowCnt = 0;
-        for (Map.Entry<Integer, Map<Integer, Object>> rowEntry : m_changes.entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> rowEntry : m_changes.entrySet()) {
             NodeSettingsWO rowSettings = editChangesSettings.addNodeSettings("rowEntry" + rowCnt);
-            rowSettings.addInt("rowId", rowEntry.getKey());
+            rowSettings.addString("rowKey", rowEntry.getKey());
             rowSettings.addInt("numCells", rowEntry.getValue().size());
             int cellCnt = 0;
-            for (Map.Entry<Integer, Object> cellEntry : rowEntry.getValue().entrySet()) {
+            for (Map.Entry<String, Object> cellEntry : rowEntry.getValue().entrySet()) {
                 NodeSettingsWO cellSettings = rowSettings.addNodeSettings("cellEntry" + cellCnt);
-                cellSettings.addInt("colIndex", cellEntry.getKey());
+                cellSettings.addString("colName", cellEntry.getKey());
                 Object value = cellEntry.getValue();
                 if (value == null) {
                     cellSettings.addString("type", "mv");  // missing value
