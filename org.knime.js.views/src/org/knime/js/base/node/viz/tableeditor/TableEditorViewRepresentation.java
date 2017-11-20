@@ -45,7 +45,7 @@
  * History
  *   14.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

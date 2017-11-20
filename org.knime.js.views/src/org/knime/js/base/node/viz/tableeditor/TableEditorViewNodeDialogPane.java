@@ -46,7 +46,7 @@
  * History
  *   Apr 28, 2016 (albrecht): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

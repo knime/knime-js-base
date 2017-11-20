@@ -46,7 +46,7 @@
  * History
  *   Apr 20, 2016 (albrecht): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;

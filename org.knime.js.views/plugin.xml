@@ -66,7 +66,7 @@
       </node>
       <node
             category-path="/view/js-views"
-            factory-class="org.knime.js.base.node.viz.tableEditor.TableEditorViewNodeFactory"
+            factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory"
             >
       </node>
    </extension>
@@ -443,17 +443,17 @@
             name="Table Editor"
             usesDefine="false"
             version="0.0.2"
-            webResourceBundleID="org.knime.js.base.node.viz.tableEditor.bundle">
+            webResourceBundleID="org.knime.js.base.node.viz.tableeditor.bundle">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/viz/tableEditor/"
-               relativePathTarget="org/knime/js/base/node/viz/tableEditor/">
+               relativePathSource="js-src/org/knime/js/base/node/viz/tableeditor/"
+               relativePathTarget="org/knime/js/base/node/viz/tableeditor/">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/viz/tableEditor/table-editor.js"
+               relativePath="org/knime/js/base/node/viz/tableeditor/table-editor.js"
                type="JAVASCRIPT">
          </importResource>
          <importResource
-               relativePath="org/knime/js/base/node/viz/tableEditor/table-editor.css"
+               relativePath="org/knime/js/base/node/viz/tableeditor/table-editor.css"
                type="CSS">
          </importResource>
          <webDependency
@@ -568,9 +568,9 @@
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="getComponentValue"
-            implementationBundleID="org.knime.js.base.node.viz.tableEditor.bundle"
+            implementationBundleID="org.knime.js.base.node.viz.tableeditor.bundle"
             init-method-name="init"
-            javascriptComponentID="org.knime.js.base.node.viz.tableEditor"
+            javascriptComponentID="org.knime.js.base.node.viz.tableeditor"
             name="Table Editor"
             namespace="table_editor"
             setValidationError-method-name="setValidationError"

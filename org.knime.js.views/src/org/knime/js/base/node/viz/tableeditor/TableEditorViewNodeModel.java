@@ -45,7 +45,7 @@
  * History
  *   23.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +119,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.viz.tableEditor";
+        return "org.knime.js.base.node.viz.tableeditor";
     }
 
     /**

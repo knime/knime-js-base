@@ -45,7 +45,7 @@
  * History
  *   23.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;

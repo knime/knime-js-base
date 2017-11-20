@@ -46,7 +46,7 @@
  * History
  *   10.11.2017 (Oleg Yasnev): created
  */
-package org.knime.js.base.node.viz.tableEditor;
+package org.knime.js.base.node.viz.tableeditor;
 
 import java.util.HashMap;
 import java.util.Map;
