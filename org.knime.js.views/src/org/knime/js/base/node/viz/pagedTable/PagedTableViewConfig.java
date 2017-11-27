@@ -130,7 +130,7 @@ public class PagedTableViewConfig {
         new DataColumnSpecFilterConfiguration(CFG_COLUMN_FILTER);
 
     final static String CFG_ENABLE_SELECTION = "enableSelection";
-    final static boolean DEFAULT_ENABLE_SELECTION = false;
+    final static boolean DEFAULT_ENABLE_SELECTION = true;
     private boolean m_enableSelection = DEFAULT_ENABLE_SELECTION;
 
     final static String CFG_SINGLE_SELECTION = "singleSelection";
