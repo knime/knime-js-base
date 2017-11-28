@@ -5,7 +5,7 @@
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
  		jsNamespace="pie_chart_namespace" nodeID="pie_chart" categoryPath="/view/js-views"
- 		icon="../js.png" type="Visualizer">
+        icon="./pie_chart.png" type="Visualizer">
     <name>Pie/Donut Chart (JavaScript)</name>
     <shortDescription>A pie/donut chart based on the NVD3 library.</shortDescription>
     <fullDescription>
