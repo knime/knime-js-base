@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="streamgraph_namespace" nodeID="streamgraph" categoryPath="/view/js-views"
-	icon="../js.png" type="Visualizer">
+	icon="./stacked_area_chart.png" type="Visualizer">
 
 	<name>Stacked Area Chart (JavaScript)</name>
 	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
