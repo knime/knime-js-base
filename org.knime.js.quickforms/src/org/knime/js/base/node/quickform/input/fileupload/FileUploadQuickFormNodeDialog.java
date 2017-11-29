@@ -63,6 +63,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FilesHistoryPanel;
+import org.knime.core.node.util.FilesHistoryPanel.LocationValidation;
 import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 
 /**
@@ -83,7 +84,7 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
     FileUploadQuickFormNodeDialog() {
         m_config = new FileUploadQuickFormConfig();
         m_fileHistoryPanel =
-                new FilesHistoryPanel("file_upload_quick_form", false);
+                new FilesHistoryPanel("file_upload_quick_form", LocationValidation.FileInput);
         m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_validExtensionsField.addFocusListener(new FocusListener() {
             @Override
