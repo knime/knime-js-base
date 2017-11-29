@@ -146,7 +146,11 @@ class FileDownloadQuickFormOutNodeModel extends
     protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec) throws IOException,
         CanceledExecutionException {
         NodeSettings s = new NodeSettings("file_qf");
-        s.addString("file", m_element.getFile().getAbsolutePath());
+        String filePath = null;
+        if (m_element.getFile() != null) {
+            filePath = m_element.getFile().getAbsolutePath();
+        }
+        s.addString("file", filePath);
         s.saveToXML(new BufferedOutputStream(new FileOutputStream(new File(nodeInternDir, "file_qf.xml"))));
     }
 
