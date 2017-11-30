@@ -870,14 +870,15 @@ knime_scatter_plot_selection_appender = function() {
 		dataset.clearSelection(FILTERED_ID, false);
 		
 		for (var i = 0; i < rows.length; i++) {
+			var dataId = indexRowkeyMap.indexOf(rows[i].key);
 			if (isRowIncludedInFilter(rows[i], filter)) {
 				// displaying the point
-				dataset.unselect(FILTERED_ID, "series 1", String(i), false);
-				showIds.push(i);
+				dataset.unselect(FILTERED_ID, "series 1", String(dataId), false);
+				showIds.push(dataId);
 			} else {				
 				// hiding the point
-				dataset.select(FILTERED_ID, "series 1", String(i), false);
-				hideIds.push(i);
+				dataset.select(FILTERED_ID, "series 1", String(dataId), false);
+				hideIds.push(dataId);
 			}
 		}
 		
