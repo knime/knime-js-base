@@ -25,6 +25,7 @@ knime_scatter_plot_selection_appender = function() {
 	
 	var missingValuesCount = 0;
 	var isEmptyPlot = false;
+	var indexRowkeyMap = [];
 	
 	var MISSING_VALUES_NOT_SHOWN_WARNING_ID = "missingValuesNotShown";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
@@ -794,7 +795,8 @@ knime_scatter_plot_selection_appender = function() {
 	};
 	
 	getSelection = function() {
-		var selections = chartManager.getChart().getPlot().getDataset().selections;
+		var dataset = chartManager.getChart().getPlot().getDataset();
+		var selections = dataset.selections;
 		var selectionsArray = [];
 		for (var i = 0; i < selections.length; i++) {
 			if (selections[i].id === SELECTION_ID) {
@@ -804,7 +806,13 @@ knime_scatter_plot_selection_appender = function() {
 		}
 		var selectionIDs = [];
 		for (var i = 0; i < selectionsArray.length; i++) {
-			selectionIDs.push(_keyedDataset.rowKey(selectionsArray[i].itemKey));
+			var selIndex = dataset.itemIndex("series 1", selectionsArray[i].itemKey);
+			if (selIndex >=0 && selIndex < indexRowkeyMap.length) {
+				var rowKey = indexRowkeyMap[selIndex];
+				if (rowKey) {
+					selectionIDs.push(rowKey);
+				}
+			}
 		}
 		if (selectionsArray.length == 0) {
 			return null;
@@ -848,7 +856,8 @@ knime_scatter_plot_selection_appender = function() {
 	 * @returns {!string} the row index
 	 */
 	getRowIndex = function(rowKey) {
-		return String(_keyedDataset.rowIndex(rowKey));
+		//return String(_keyedDataset.rowIndex(rowKey));
+		return new String(indexRowkeyMap.indexOf(rowKey));
 	}
 	
 	filterChanged = function(data) {
@@ -1094,6 +1103,7 @@ knime_scatter_plot_selection_appender = function() {
 	extractXYDatasetFromColumns2D = function(dataset, xcol, 
 	        ycol, seriesKey) {
 		missingValuesCount = 0;
+		indexRowkeyMap = new Array(dataset.rowCount());
 	    jsfc.Args.requireString(xcol, "xcol");
 	    jsfc.Args.requireString(ycol, "ycol");
 	    var result = new jsfc.StandardXYDataset();
@@ -1111,6 +1121,7 @@ knime_scatter_plot_selection_appender = function() {
 	        var xPropKeys = dataset.getItemPropertyKeys(rowKey, xcol);
 	        var yPropKeys = dataset.getItemPropertyKeys(rowKey, ycol);
 	        var itemIndex = result.itemCount(0) - 1;
+	        indexRowkeyMap.splice(itemIndex, 0, rowKey);
 	        rowPropKeys.forEach(function(key) {
 	            var p = dataset.getRowProperty(rowKey, key);
 	            result.setItemPropertyByIndex(0, itemIndex, key, p);
