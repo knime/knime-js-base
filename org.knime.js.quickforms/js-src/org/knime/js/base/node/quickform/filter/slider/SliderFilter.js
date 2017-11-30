@@ -215,7 +215,8 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 	};
 	
 	sliderFilter.setValidationErrorMessage = function(message) {
-		/* nothing to do */
+		/* show message in alert */
+		alert(message);
 	};
 
 	sliderFilter.value = function() {
