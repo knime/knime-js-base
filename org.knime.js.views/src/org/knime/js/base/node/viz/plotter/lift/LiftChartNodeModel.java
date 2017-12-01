@@ -368,17 +368,19 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
         representation.setShowWarningInView(m_config.getShowWarningInView());
 
         LiftChartPlotViewValue value = getViewValue();
-        value.setTitleLift(m_config.getTitleLift());
-        value.setSubtitleLift(m_config.getSubtitleLift());
-        value.setxAxisTitleLift(m_config.getxAxisTitleLift());
-        value.setyAxisTitleLift(m_config.getyAxisTitleLift());
+        if (isViewValueEmpty()) {
+            value.setTitleLift(m_config.getTitleLift());
+            value.setSubtitleLift(m_config.getSubtitleLift());
+            value.setxAxisTitleLift(m_config.getxAxisTitleLift());
+            value.setyAxisTitleLift(m_config.getyAxisTitleLift());
 
-        value.setTitleGain(m_config.getTitleGain());
-        value.setSubtitleGain(m_config.getSubtitleGain());
-        value.setxAxisTitleGain(m_config.getxAxisTitleGain());
-        value.setyAxisTitleGain(m_config.getyAxisTitleGain());
-        value.setShowGainChart(m_config.getShowGainChart());
-        value.setSmoothing(m_config.getSmoothing());
+            value.setTitleGain(m_config.getTitleGain());
+            value.setSubtitleGain(m_config.getSubtitleGain());
+            value.setxAxisTitleGain(m_config.getxAxisTitleGain());
+            value.setyAxisTitleGain(m_config.getyAxisTitleGain());
+            value.setShowGainChart(m_config.getShowGainChart());
+            value.setSmoothing(m_config.getSmoothing());
+        }
 
     }
 
