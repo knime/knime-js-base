@@ -83,6 +83,7 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
  * Testcases for {@link JSONDataTable}.
@@ -99,6 +100,7 @@ public class JSONDataTableTest {
     @Test
     public void testSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
 
         DataTableSpec tableSpec = new DataTableSpec(
             new DataColumnSpecCreator("col1", StringCell.TYPE).createSpec(),
@@ -154,6 +156,7 @@ public class JSONDataTableTest {
     @Test
     public void testDateTimeSerialization() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
 
         DataTableSpec tableSpec = new DataTableSpec(
             new DataColumnSpecCreator("col1", DateAndTimeCell.TYPE).createSpec(),
