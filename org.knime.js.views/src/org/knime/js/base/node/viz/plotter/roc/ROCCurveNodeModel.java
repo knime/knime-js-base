@@ -290,10 +290,12 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
         representation.setShowWarningInView(m_config.getShowWarningInView());
 
         ROCCurveViewValue value = getViewValue();
-        value.setTitle(m_config.getTitle());
-        value.setSubtitle(m_config.getSubtitle());
-        value.setxAxisTitle(m_config.getxAxisTitle());
-        value.setyAxisTitle(m_config.getyAxisTitle());
+        if (isViewValueEmpty()) {
+            value.setTitle(m_config.getTitle());
+            value.setSubtitle(m_config.getSubtitle());
+            value.setxAxisTitle(m_config.getxAxisTitle());
+            value.setyAxisTitle(m_config.getyAxisTitle());
+        }
     }
 
     /**
