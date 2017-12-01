@@ -531,65 +531,71 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         representation.setGridColor(m_config.getGridColorString());
 
         ScatterPlotViewValue viewValue = getViewValue();
-        viewValue.setChartTitle(m_config.getChartTitle());
-        viewValue.setChartSubtitle(m_config.getChartSubtitle());
-        viewValue.setxColumn(m_config.getxColumn());
-        viewValue.setyColumn(m_config.getyColumn());
-        viewValue.setxAxisLabel(m_config.getxAxisLabel());
-        viewValue.setyAxisLabel(m_config.getyAxisLabel());
-        if (m_config.getxAxisMin() == null && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-            viewValue.setxAxisMin(getMinimumFromColumn(spec, m_config.getxColumn()));
-        } else {
-            viewValue.setxAxisMin(m_config.getxAxisMin());
-        }
-        if (m_config.getxAxisMax() == null && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-            viewValue.setxAxisMax(getMaximumFromColumn(spec, m_config.getxColumn()));
-        } else {
-            viewValue.setxAxisMax(m_config.getxAxisMax());
-        }
-        if (m_config.getyAxisMin() == null && m_config.getUseDomainInfo() && (m_config.getyColumn() != null)) {
-            viewValue.setyAxisMin(getMinimumFromColumn(spec, m_config.getyColumn()));
-        } else {
-            viewValue.setyAxisMin(m_config.getyAxisMin());
-        }
-        if (m_config.getyAxisMax() == null && m_config.getUseDomainInfo() && (m_config.getyColumn() != null)) {
-            viewValue.setyAxisMax(getMaximumFromColumn(spec, m_config.getyColumn()));
-        } else {
-            viewValue.setyAxisMax(m_config.getyAxisMax());
-        }
+        if (isViewValueEmpty()) {
+            viewValue.setChartTitle(m_config.getChartTitle());
+            viewValue.setChartSubtitle(m_config.getChartSubtitle());
+            viewValue.setxColumn(m_config.getxColumn());
+            viewValue.setyColumn(m_config.getyColumn());
+            viewValue.setxAxisLabel(m_config.getxAxisLabel());
+            viewValue.setyAxisLabel(m_config.getyAxisLabel());
+            if (m_config.getxAxisMin() == null && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
+                viewValue.setxAxisMin(getMinimumFromColumn(spec, m_config.getxColumn()));
+            } else {
+                viewValue.setxAxisMin(m_config.getxAxisMin());
+            }
+            if (m_config.getxAxisMax() == null && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
+                viewValue.setxAxisMax(getMaximumFromColumn(spec, m_config.getxColumn()));
+            } else {
+                viewValue.setxAxisMax(m_config.getxAxisMax());
+            }
+            if (m_config.getyAxisMin() == null && m_config.getUseDomainInfo() && (m_config.getyColumn() != null)) {
+                viewValue.setyAxisMin(getMinimumFromColumn(spec, m_config.getyColumn()));
+            } else {
+                viewValue.setyAxisMin(m_config.getyAxisMin());
+            }
+            if (m_config.getyAxisMax() == null && m_config.getUseDomainInfo() && (m_config.getyColumn() != null)) {
+                viewValue.setyAxisMax(getMaximumFromColumn(spec, m_config.getyColumn()));
+            } else {
+                viewValue.setyAxisMax(m_config.getyAxisMax());
+            }
 
-        // Check axes ranges
-        Double xMin = viewValue.getxAxisMin();
-        Double xMax = viewValue.getxAxisMax();
-        if (xMin != null && xMax != null && xMin >= xMax) {
-            LOGGER.info("Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax
-                + ").");
-            viewValue.setxAxisMin(null);
-            viewValue.setxAxisMax(null);
-        }
-        Double yMin = viewValue.getyAxisMin();
-        Double yMax = viewValue.getyAxisMax();
-        if (yMin != null && yMax != null && yMin >= yMax) {
-            LOGGER.info("Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax
-                + ").");
-            viewValue.setyAxisMin(null);
-            viewValue.setyAxisMax(null);
-        }
+            // Check axes ranges
+            Double xMin = viewValue.getxAxisMin();
+            Double xMax = viewValue.getxAxisMax();
+            if (xMin != null && xMax != null && xMin >= xMax) {
+                LOGGER.info("Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax
+                    + ").");
+                viewValue.setxAxisMin(null);
+                viewValue.setxAxisMax(null);
+            }
+            Double yMin = viewValue.getyAxisMin();
+            Double yMax = viewValue.getyAxisMax();
+            if (yMin != null && yMax != null && yMin >= yMax) {
+                LOGGER.info("Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax
+                    + ").");
+                viewValue.setyAxisMin(null);
+                viewValue.setyAxisMax(null);
+            }
 
-        viewValue.setDotSize(m_config.getDotSize());
+            viewValue.setDotSize(m_config.getDotSize());
+        }
 
         // added with 3.3
         representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
         representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
-        viewValue.setPublishSelection(m_config.getPublishSelection());
-        viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
-        viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
+        if (isViewValueEmpty()) {
+            viewValue.setPublishSelection(m_config.getPublishSelection());
+            viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
+            viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
+        }
 
         // added with 3.4
         representation.setEnableSwitchLegend(m_config.getEnableSwitchLegend());
-        viewValue.setShowLegend(m_config.getShowLegend());
         representation.setShowWarningInView(m_config.getShowWarningInView());
         representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
+        if (isViewValueEmpty()) {
+            viewValue.setShowLegend(m_config.getShowLegend());
+        }
 
         // added with 3.5
         representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
