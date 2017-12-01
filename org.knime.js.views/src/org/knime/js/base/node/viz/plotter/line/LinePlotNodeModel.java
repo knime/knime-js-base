@@ -567,54 +567,57 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         representation.setShowWarningInView(m_config.getShowWarningInView());
         representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
         representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
+
         LinePlotViewValue viewValue = getViewValue();
-        viewValue.setChartTitle(m_config.getChartTitle());
-        viewValue.setChartSubtitle(m_config.getChartSubtitle());
-        viewValue.setxColumn(m_config.getxColumn());
-        FilterResult filter = m_config.getyColumnsConfig().applyTo(spec);
-        viewValue.setyColumns(filter.getIncludes());
-        viewValue.setxAxisLabel(m_config.getxAxisLabel());
-        viewValue.setyAxisLabel(m_config.getyAxisLabel());
-        if ((m_config.getxAxisMin() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-            viewValue.setxAxisMin(getMinimumFromColumns(spec, m_config.getxColumn()));
-        } else {
-            viewValue.setxAxisMin(m_config.getxAxisMin());
-        }
-        if ((m_config.getxAxisMax() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-            viewValue.setxAxisMax(getMaximumFromColumns(spec, m_config.getxColumn()));
-        } else {
-            viewValue.setxAxisMax(m_config.getxAxisMax());
-        }
-        if (m_config.getyAxisMin() == null && m_config.getUseDomainInfo()) {
-            viewValue.setyAxisMin(getMinimumFromColumns(spec, filter.getIncludes()));
-        } else {
-            viewValue.setyAxisMin(m_config.getyAxisMin());
-        }
-        if (m_config.getyAxisMax() == null && m_config.getUseDomainInfo()) {
-            viewValue.setyAxisMax(getMaximumFromColumns(spec, filter.getIncludes()));
-        } else {
-            viewValue.setyAxisMax(m_config.getyAxisMax());
-        }
+        if (isViewValueEmpty()) {
+            viewValue.setChartTitle(m_config.getChartTitle());
+            viewValue.setChartSubtitle(m_config.getChartSubtitle());
+            viewValue.setxColumn(m_config.getxColumn());
+            FilterResult filter = m_config.getyColumnsConfig().applyTo(spec);
+            viewValue.setyColumns(filter.getIncludes());
+            viewValue.setxAxisLabel(m_config.getxAxisLabel());
+            viewValue.setyAxisLabel(m_config.getyAxisLabel());
+            if ((m_config.getxAxisMin() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
+                viewValue.setxAxisMin(getMinimumFromColumns(spec, m_config.getxColumn()));
+            } else {
+                viewValue.setxAxisMin(m_config.getxAxisMin());
+            }
+            if ((m_config.getxAxisMax() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
+                viewValue.setxAxisMax(getMaximumFromColumns(spec, m_config.getxColumn()));
+            } else {
+                viewValue.setxAxisMax(m_config.getxAxisMax());
+            }
+            if (m_config.getyAxisMin() == null && m_config.getUseDomainInfo()) {
+                viewValue.setyAxisMin(getMinimumFromColumns(spec, filter.getIncludes()));
+            } else {
+                viewValue.setyAxisMin(m_config.getyAxisMin());
+            }
+            if (m_config.getyAxisMax() == null && m_config.getUseDomainInfo()) {
+                viewValue.setyAxisMax(getMaximumFromColumns(spec, filter.getIncludes()));
+            } else {
+                viewValue.setyAxisMax(m_config.getyAxisMax());
+            }
 
-        // Check axes ranges
-        Double xMin = viewValue.getxAxisMin();
-        Double xMax = viewValue.getxAxisMax();
-        if (xMin != null && xMax != null && xMin >= xMax) {
-            LOGGER.info("Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax
-                + ").");
-            viewValue.setxAxisMin(null);
-            viewValue.setxAxisMax(null);
-        }
-        Double yMin = viewValue.getyAxisMin();
-        Double yMax = viewValue.getyAxisMax();
-        if (yMin != null && yMax != null && yMin >= yMax) {
-            LOGGER.info("Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax
-                + ").");
-            viewValue.setyAxisMin(null);
-            viewValue.setyAxisMax(null);
-        }
+            // Check axes ranges
+            Double xMin = viewValue.getxAxisMin();
+            Double xMax = viewValue.getxAxisMax();
+            if (xMin != null && xMax != null && xMin >= xMax) {
+                LOGGER.info("Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax
+                    + ").");
+                viewValue.setxAxisMin(null);
+                viewValue.setxAxisMax(null);
+            }
+            Double yMin = viewValue.getyAxisMin();
+            Double yMax = viewValue.getyAxisMax();
+            if (yMin != null && yMax != null && yMin >= yMax) {
+                LOGGER.info("Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax
+                    + ").");
+                viewValue.setyAxisMin(null);
+                viewValue.setyAxisMax(null);
+            }
 
-        viewValue.setDotSize(m_config.getDotSize());
+            viewValue.setDotSize(m_config.getDotSize());
+        }
     }
 
     private void copyValueToConfig() {
