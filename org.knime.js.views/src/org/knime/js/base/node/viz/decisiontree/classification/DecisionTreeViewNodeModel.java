@@ -386,14 +386,16 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
 
         // Copy to value
         DecisionTreeViewValue value = getViewValue();
-        value.setSubtitle(m_config.getSubtitle());
-        value.setTitle(m_config.getTitle());
-        value.setPublishSelection(m_config.getPublishSelection());
-        value.setSubscribeSelection(m_config.getSubscribeSelection());
-        value.setSelection(EMPTY_SELECTION);
-        value.setScale(m_config.getScale());
-//        int[] nodeStatus = {5, 1, 0};
-//        value.setNodeStatus(m_config.getNodeStatus());
+        if (isViewValueEmpty()) {
+            value.setSubtitle(m_config.getSubtitle());
+            value.setTitle(m_config.getTitle());
+            value.setPublishSelection(m_config.getPublishSelection());
+            value.setSubscribeSelection(m_config.getSubscribeSelection());
+            value.setSelection(EMPTY_SELECTION);
+            value.setScale(m_config.getScale());
+//          int[] nodeStatus = {5, 1, 0};
+//          value.setNodeStatus(m_config.getNodeStatus());
+        }
     }
 
     /**
