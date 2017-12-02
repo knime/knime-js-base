@@ -381,7 +381,6 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
             value.setShowGainChart(m_config.getShowGainChart());
             value.setSmoothing(m_config.getSmoothing());
         }
-
     }
 
     /**

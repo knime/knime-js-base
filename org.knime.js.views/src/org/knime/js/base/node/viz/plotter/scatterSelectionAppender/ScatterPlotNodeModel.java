@@ -530,6 +530,18 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         representation.setDataAreaColor(m_config.getDataAreaColorString());
         representation.setGridColor(m_config.getGridColorString());
 
+        // added with 3.3
+        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
+
+        // added with 3.4
+        representation.setEnableSwitchLegend(m_config.getEnableSwitchLegend());
+        representation.setShowWarningInView(m_config.getShowWarningInView());
+        representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
+
+        // added with 3.5
+        representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
+
         ScatterPlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {
             viewValue.setChartTitle(m_config.getChartTitle());
@@ -578,27 +590,15 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
             }
 
             viewValue.setDotSize(m_config.getDotSize());
-        }
 
-        // added with 3.3
-        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
-        representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
-        if (isViewValueEmpty()) {
+            // added with 3.3
             viewValue.setPublishSelection(m_config.getPublishSelection());
             viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
             viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
-        }
 
-        // added with 3.4
-        representation.setEnableSwitchLegend(m_config.getEnableSwitchLegend());
-        representation.setShowWarningInView(m_config.getShowWarningInView());
-        representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
-        if (isViewValueEmpty()) {
+            // added with 3.4
             viewValue.setShowLegend(m_config.getShowLegend());
         }
-
-        // added with 3.5
-        representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
     }
 
     private void copyValueToConfig() {

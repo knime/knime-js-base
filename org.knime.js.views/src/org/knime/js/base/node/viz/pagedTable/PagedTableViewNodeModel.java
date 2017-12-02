@@ -289,7 +289,6 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     private void copyConfigToRepresentation() {
         synchronized(getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
-            PagedTableViewValue viewValue = getViewValue();
             viewRepresentation.setEnablePaging(m_config.getEnablePaging());
             viewRepresentation.setInitialPageSize(m_config.getIntialPageSize());
             viewRepresentation.setEnablePageSizeChange(m_config.getEnablePageSizeChange());
@@ -314,23 +313,26 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
             //added with 3.3
             viewRepresentation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
             viewRepresentation.setEnableHideUnselected(m_config.getEnableHideUnselected());
-            if (isViewValueEmpty()) {
-                viewValue.setPublishSelection(m_config.getPublishSelection());
-                viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
-                viewValue.setPublishFilter(m_config.getPublishFilter());
-                viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
-            }
 
             //added with 3.4
             viewRepresentation.setDisplayMissingValueAsQuestionMark(m_config.getDisplayMissingValueAsQuestionMark());
             viewRepresentation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
-            if (isViewValueEmpty()) {
-                viewValue.setHideUnselected(m_config.getHideUnselected() && !m_config.getSingleSelection());
-            }
 
             //added with 3.5
             viewRepresentation.setSingleSelection(m_config.getSingleSelection());
             viewRepresentation.setEnableClearSelectionButton(m_config.getEnableClearSelectionButton());
+
+            PagedTableViewValue viewValue = getViewValue();
+            if (isViewValueEmpty()) {
+                //added with 3.3
+                viewValue.setPublishSelection(m_config.getPublishSelection());
+                viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
+                viewValue.setPublishFilter(m_config.getPublishFilter());
+                viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
+
+                //added with 3.4
+                viewValue.setHideUnselected(m_config.getHideUnselected() && !m_config.getSingleSelection());
+            }
         }
     }
 
