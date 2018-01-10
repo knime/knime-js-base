@@ -152,8 +152,8 @@ public final class LinePlotViewConfig {
     private boolean m_enablePanning = true;
     private boolean m_enableDragZooming = false;
     private boolean m_showZoomResetButton = false;
-    private boolean m_enableSelection = true;
-    private boolean m_enableRectangleSelection = true;
+    private boolean m_enableSelection = false;
+    private boolean m_enableRectangleSelection = false;
     private boolean m_enableLassoSelection = false;
     private int m_maxRows = DEFAULT_MAX_ROWS;
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;

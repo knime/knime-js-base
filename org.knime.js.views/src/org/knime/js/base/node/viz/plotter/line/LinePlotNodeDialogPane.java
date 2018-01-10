@@ -110,15 +110,15 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_allowPanningCheckBox;
     private final JCheckBox m_showZoomResetCheckBox;
     private final JCheckBox m_enableDotSizeChangeCheckBox;
-    private final JCheckBox m_enableSelectionCheckBox;
+    /*private final JCheckBox m_enableSelectionCheckBox;
     private final JCheckBox m_allowRectangleSelectionCheckBox;
-    private final JCheckBox m_allowLassoSelectionCheckBox;
+    private final JCheckBox m_allowLassoSelectionCheckBox;*/
     private final JComboBox<String> m_missingValueMethodComboBox;
     private final JCheckBox m_showWarningInViewCheckBox;
     private final JCheckBox m_reportOnMissingValuesCheckBox;
 
     private final JSpinner m_maxRowsSpinner;
-    private final JTextField m_appendedColumnName;
+    //private final JTextField m_appendedColumnName;
     private final JTextField m_chartTitleTextField;
     private final JTextField m_chartSubtitleTextField;
     private final ColumnSelectionPanel m_xColComboBox;
@@ -158,19 +158,19 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_allowDragZoomingCheckBox = new JCheckBox("Enable drag zooming");
         m_allowPanningCheckBox = new JCheckBox("Enable panning");
         m_showZoomResetCheckBox = new JCheckBox("Show zoom reset button");
-        m_enableSelectionCheckBox = new JCheckBox("Enable selection");
+        /*m_enableSelectionCheckBox = new JCheckBox("Enable selection");
         m_allowRectangleSelectionCheckBox = new JCheckBox("Enable rectangular selection");
-        m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");
+        m_allowLassoSelectionCheckBox = new JCheckBox("Enable lasso selection");*/
         m_missingValueMethodComboBox = new JComboBox<String>();
         m_missingValueMethodComboBox.addItem("Connect");
         m_missingValueMethodComboBox.addItem("Gap");
         m_missingValueMethodComboBox.addItem("Skip column");
 
         m_maxRowsSpinner = new JSpinner();
-        m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
+        //m_appendedColumnName = new JTextField(TEXT_FIELD_SIZE);
         m_chartTitleTextField = new JTextField(TEXT_FIELD_SIZE);
         m_chartSubtitleTextField = new JTextField(TEXT_FIELD_SIZE);
-        Border xColBoxBorder = BorderFactory.createTitledBorder("Choose column for x axis");
+        Border xColBoxBorder = BorderFactory.createTitledBorder("Choose column for x-axis");
         @SuppressWarnings("unchecked")
         DataValueColumnFilter xColFilter = new DataValueColumnFilter(DoubleValue.class, StringValue.class);
         m_xColComboBox = new ColumnSelectionPanel(xColBoxBorder, xColFilter, false, true);
@@ -204,13 +204,13 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
                 enableCrosshairControls();
             }
         });
-        m_enableSelectionCheckBox.addChangeListener(new ChangeListener() {
+        /*m_enableSelectionCheckBox.addChangeListener(new ChangeListener() {
 
             @Override
             public void stateChanged(final ChangeEvent e) {
                 enableSelectionControls();
             }
-        });
+        });*/
         m_showGridCheckBox.addChangeListener(new ChangeListener() {
 
             @Override
@@ -250,28 +250,28 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 4;
+        c.gridwidth = 2;
         panel.add(m_generateImageCheckBox, c);
-        c.gridy++;
+        c.gridx += 2;
         c.gridwidth = 1;
         panel.add(new JLabel("Maximum number of rows: "), c);
-        c.gridx += 1;
+        c.gridx++;
         m_maxRowsSpinner.setPreferredSize(new Dimension(100, TEXT_FIELD_SIZE));
         panel.add(m_maxRowsSpinner, c);
-        c.gridx++;
+        /*c.gridx++;
         panel.add(new JLabel("Selection column name: "), c);
         c.gridx++;
-        panel.add(m_appendedColumnName, c);
+        panel.add(m_appendedColumnName, c);*/
         c.gridwidth = 2;
         c.gridx = 0;
         c.gridy++;
         m_xColComboBox.setPreferredSize(new Dimension(260, 50));
         panel.add(m_xColComboBox, c);
 
-        c.gridx = 0;
-        panel.add(new JLabel("Choose column for y axis: "), c);
-        c.gridy++;
         c.gridwidth = 4;
+        c.gridx = 0;
+        c.gridy++;
+        m_yColFilter.setBorder(BorderFactory.createTitledBorder("Choose columns for y-axis"));
         panel.add(m_yColFilter, c);
         c.gridx = 0;
         c.gridy++;
@@ -479,7 +479,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         c.gridx = 0;
         c.gridy++;
-        JPanel selectionControlPanel = new JPanel(new GridBagLayout());
+        /*JPanel selectionControlPanel = new JPanel(new GridBagLayout());
         selectionControlPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
         panel.add(selectionControlPanel, c);
         cc.gridx = 0;
@@ -491,7 +491,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         selectionControlPanel.add(m_allowLassoSelectionCheckBox, cc);
 
         c.gridx = 0;
-        c.gridy++;
+        c.gridy++;*/
         JPanel panControlPanel = new JPanel(new GridBagLayout());
         panControlPanel.setBorder(BorderFactory.createTitledBorder("Panning"));
         panel.add(panControlPanel, c);
@@ -525,11 +525,11 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableDotSizeChangeCheckBox.setEnabled(enable);
     }
 
-    private void enableSelectionControls() {
+    /*private void enableSelectionControls() {
         boolean enable = m_enableSelectionCheckBox.isSelected();
         m_allowRectangleSelectionCheckBox.setEnabled(enable);
         m_allowLassoSelectionCheckBox.setEnabled(enable);
-    }
+    }*/
 
     private void enableCrosshairControls() {
         boolean enable = m_showCrosshairCheckBox.isSelected();
@@ -555,7 +555,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_resizeViewToWindow.setSelected(config.getResizeToWindow());
         m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
 
-        m_appendedColumnName.setText(config.getSelectionColumnName());
+        //m_appendedColumnName.setText(config.getSelectionColumnName());
         m_enableViewConfigCheckBox.setSelected(config.getEnableViewConfiguration());
         m_enableTitleChangeCheckBox.setSelected(config.getEnableTitleChange());
         m_enableSubtitleChangeCheckBox.setSelected(config.getEnableSubtitleChange());
@@ -568,9 +568,9 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_allowDragZoomingCheckBox.setSelected(config.getEnableDragZooming());
         m_allowPanningCheckBox.setSelected(config.getEnablePanning());
         m_showZoomResetCheckBox.setSelected(config.getShowZoomResetButton());
-        m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
+        /*m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
         m_allowRectangleSelectionCheckBox.setSelected(config.getEnableRectangleSelection());
-        m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());
+        m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());*/
         setMissingValueMethod(config.getMissingValueMethod());
 
         m_chartTitleTextField.setText(config.getChartTitle());
@@ -597,7 +597,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         enableViewControls();
         enableCrosshairControls();
-        enableSelectionControls();
+        //enableSelectionControls();
     }
 
     /**
@@ -619,7 +619,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setResizeToWindow(m_resizeViewToWindow.isSelected());
         config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
 
-        config.setSelectionColumnName(m_appendedColumnName.getText());
+        //config.setSelectionColumnName(m_appendedColumnName.getText());
         config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
         config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
         config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
@@ -632,9 +632,9 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
         config.setEnablePanning(m_allowPanningCheckBox.isSelected());
         config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
-        config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
+        /*config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
         config.setEnableRectangleSelection(m_allowRectangleSelectionCheckBox.isSelected());
-        config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
+        config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());*/
         config.setMissingValueMethod(getMissingValueMethod());
 
         config.setChartTitle(m_chartTitleTextField.getText());
