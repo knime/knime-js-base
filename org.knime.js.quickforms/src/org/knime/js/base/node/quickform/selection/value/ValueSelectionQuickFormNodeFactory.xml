@@ -29,9 +29,9 @@
         <option name="Column Type">
           The type of columns that can be selected.
         </option>
-        <option name="Lock Column">
+        <!-- <option name="Lock Column">
           If selected the column is locked and can not be selected from the sub node dialog or wizard.
-        </option>
+        </option> -->
         <option name="Default Column">
           The column containing the values.
         </option>

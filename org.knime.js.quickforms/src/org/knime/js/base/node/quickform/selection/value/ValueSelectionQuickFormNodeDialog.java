@@ -214,7 +214,8 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
-        addPairToPanel("Column Type: ", m_columnType, panelWithGBLayout, gbc);
+        //not adding to panel, until this option is actually needed/useful
+        //addPairToPanel("Column Type: ", m_columnType, panelWithGBLayout, gbc);
         addPairToPanel("Lock Column: ", m_lockColumn, panelWithGBLayout, gbc);
         addPairToPanel("Default Column: ", m_defaultColumnField, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
