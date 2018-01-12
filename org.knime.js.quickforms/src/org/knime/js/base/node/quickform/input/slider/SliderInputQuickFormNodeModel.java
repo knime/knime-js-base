@@ -57,6 +57,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
+import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
  * The model for the slider input quick form node.
@@ -211,7 +212,14 @@ public class SliderInputQuickFormNodeModel
      */
     @Override
     public ValidationError validateViewValue(final SliderInputQuickFormValue viewContent) {
-        // TODO: validate specifics
+        double value = viewContent.getDouble();
+        SliderSettings settings = getRepresentation().getSliderSettings().clone();
+        settings.setStart(new double[]{value});
+        try {
+            settings.validateSettings();
+        } catch (InvalidSettingsException e) {
+            return new ValidationError(e.getMessage());
+        }
         return super.validateViewValue(viewContent);
     }
 

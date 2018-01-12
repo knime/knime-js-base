@@ -21,7 +21,7 @@
  *  Hence, KNIME and ECLIPSE are both independent programs and are not
  *  derived from each other. Should, however, the interpretation of the
  *  GNU GPL Version 3 ("License") under any applicable laws result in
- *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  KNIME and ECLIPSE being a combined program, KNIME GMBH herewith grants
  *  you the additional permission to use and propagate KNIME together with
  *  ECLIPSE with only the license terms in place for ECLIPSE applying to
  *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
@@ -169,6 +169,13 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 			label.appendChild(document.createTextNode(representation.label));
 			body.appendChild(label);
 		}
+		body.append(document.createElement('br'));
+		errorMessage = document.createElement('span');
+		errorMessage.style.display = 'none';
+		errorMessage.style.color = 'red';
+		errorMessage.style.fontStyle = 'italic';
+		errorMessage.style.fontSize = '75%';
+		body.append(errorMessage);
 	};
 	
 	setNumberFormatOptions = function(settings) {
@@ -211,12 +218,28 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 	}
 	
 	sliderFilter.validate = function() {
+		var sliderValues = slider.noUiSlider.get();
+		var min = sliderValues[0];
+		var max = sliderValues[1];
+		var range = _representation.sliderSettings.range;
+		var rangeMin = range.min[0];
+		var rangeMax = range.max[0];
+		if (min < rangeMin || max < rangeMin) {
+			sliderFilter.setValidationErrorMessage("One value is smaller than the allowed minimum of " + rangeMin);
+			return false;
+		}
+		if (min > rangeMax || max > rangeMax) {
+			sliderFilter.setValidationErrorMessage("One value is larger than the allowed maximum of " + rangeMax);
+			return false;
+		}
 		return true;
 	};
 	
 	sliderFilter.setValidationErrorMessage = function(message) {
 		/* show message in alert */
-		alert(message);
+		if (message) {
+			alert(message);
+		}
 	};
 
 	sliderFilter.value = function() {
