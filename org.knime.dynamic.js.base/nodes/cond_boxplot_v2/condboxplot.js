@@ -328,7 +328,7 @@
 	        .attr("text-anchor", "end")
 	        .attr("x", w)
 	        .attr("y", h - 6)
-	        .text("class");
+	        .text(_representation.inObjects[0].catCol);
 
         var range = x.range();  // The width for each box
         

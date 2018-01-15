@@ -37,13 +37,15 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
 
         LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats =
             bc.calculateMultipleConditional(dt, catCol, numColumns, exec);
-        CondBoxPlotResult res = new CondBoxPlotResult(stats, bc.getExcludedClasses(), bc.getIgnoredMissVals());
+        CondBoxPlotResult res = new CondBoxPlotResult(stats, catCol, bc.getExcludedClasses(), bc.getIgnoredMissVals());
         return new Object[]{res, inObjects[1]};
     }
 
     @JsonAutoDetect
     public static class CondBoxPlotResult {
         private LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> m_stats;
+
+        private String m_catCol;
 
         private LinkedHashMap<String, String[]> m_excludedClasses;
 
@@ -61,6 +63,20 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
          */
         public void setStats(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats) {
             m_stats = stats;
+        }
+
+        /**
+         * @return the catCol
+         */
+        public String getCatCol() {
+            return m_catCol;
+        }
+
+        /**
+         * @param catCol the catCol to set
+         */
+        public void setCatCol(String catCol) {
+            m_catCol = catCol;
         }
 
         /**
@@ -93,13 +109,16 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
 
         /**
          * @param stats
+         * @param catCol
          * @param excludedClasses
          * @param ignoredMissVals
          */
         public CondBoxPlotResult(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats,
+            String catCol,
             LinkedHashMap<String, String[]> excludedClasses,
             LinkedHashMap<String, LinkedHashMap<String, Long>> ignoredMissVals) {
             m_stats = stats;
+            m_catCol = catCol;
             m_excludedClasses = excludedClasses;
             m_ignoredMissVals = ignoredMissVals;
         }
