@@ -14,7 +14,7 @@
   var stackStyleByType = {
     "Stacked-Area-Chart": "stack",
     "Percentage-Area-Chart": "expand",
-    "Stream-Graph": "stream-center"
+    "Stream-Graph": "stream"
   }
   
   var TOOLTIP_WARNING = 'basisTooltip';
