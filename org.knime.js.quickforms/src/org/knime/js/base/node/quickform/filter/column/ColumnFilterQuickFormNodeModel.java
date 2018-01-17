@@ -230,6 +230,10 @@ public class ColumnFilterQuickFormNodeModel
     public void setInternalTables(final BufferedDataTable[] tables) {
         if (tables.length > 0) {
             m_inTable = tables[0];
+            DataTableSpec spec = getSpec();
+            if (spec != null) {
+                updateValuesFromSpec(spec);
+            }
         }
     }
 
