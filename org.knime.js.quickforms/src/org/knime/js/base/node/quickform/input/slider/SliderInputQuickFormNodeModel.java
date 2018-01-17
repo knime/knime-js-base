@@ -213,12 +213,14 @@ public class SliderInputQuickFormNodeModel
     @Override
     public ValidationError validateViewValue(final SliderInputQuickFormValue viewContent) {
         double value = viewContent.getDouble();
-        SliderSettings settings = getRepresentation().getSliderSettings().clone();
-        settings.setStart(new double[]{value});
-        try {
-            settings.validateSettings();
-        } catch (InvalidSettingsException e) {
-            return new ValidationError(e.getMessage());
+        if (getRepresentation() != null && getRepresentation().getSliderSettings() != null) {
+            SliderSettings settings = getRepresentation().getSliderSettings().clone();
+            settings.setStart(new double[]{value});
+            try {
+                settings.validateSettings();
+            } catch (InvalidSettingsException e) {
+                return new ValidationError(e.getMessage());
+            }
         }
         return super.validateViewValue(viewContent);
     }

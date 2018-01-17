@@ -346,12 +346,14 @@ public class RangeSliderFilterNodeModel
         NumericColumnRangeSelection selection = (NumericColumnRangeSelection)viewContent.getFilter().getColumns()[0];
         double min = selection.getMinimum();
         double max = selection.getMaximum();
-        SliderSettings settings = getViewRepresentation().getSliderSettings().clone();
-        settings.setStart(new double[]{min, max});
-        try {
-            settings.validateSettings();
-        } catch (InvalidSettingsException e) {
-            return new ValidationError(e.getMessage());
+        if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings() != null) {
+            SliderSettings settings = getViewRepresentation().getSliderSettings().clone();
+            settings.setStart(new double[]{min, max});
+            try {
+                settings.validateSettings();
+            } catch (InvalidSettingsException e) {
+                return new ValidationError(e.getMessage());
+            }
         }
         return null;
     }

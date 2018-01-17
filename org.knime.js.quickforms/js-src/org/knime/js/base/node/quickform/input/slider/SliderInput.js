@@ -162,8 +162,8 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		if (!viewValid) {
 			return false;
 		}
-		var min = viewRepresentation.min;
-		var max = viewRepresentation.max;
+		var min = viewRepresentation.sliderSettings.range.min[0];
+		var max = viewRepresentation.sliderSettings.range.max[0];
 		var value = slider.noUiSlider.get();
 		if (!$.isNumeric(value)) {
 			doubleInput.setValidationErrorMessage('The set value is not a double');
