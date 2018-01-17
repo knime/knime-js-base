@@ -26,12 +26,12 @@
         <option name="Selection Type">
           Type of the selection panel.
         </option>
-        <option name="Column Type">
+        <!-- <option name="Column Type">
           The type of columns that can be selected.
-        </option>
-        <!-- <option name="Lock Column">
-          If selected the column is locked and can not be selected from the sub node dialog or wizard.
         </option> -->
+        <option name="Lock Column">
+          If selected the column is locked and can not be selected from the sub node dialog or wizard.
+        </option>
         <option name="Default Column">
           The column containing the values.
         </option>
