@@ -14,7 +14,7 @@
   var stackStyleByType = {
     "Stacked-Area-Chart": "stack",
     "Percentage-Area-Chart": "expand",
-    "Stream-Graph": "stream"
+    "Stream-Graph": "stream-center"
   }
   
   var TOOLTIP_WARNING = 'basisTooltip';
@@ -548,8 +548,7 @@
         var chartTypeSelector =
           knimeService.createMenuSelect('chartTypeSelector', _value.options.chartType, chartTypes, function() {
             _value.options.chartType = this.options[this.selectedIndex].value;
-            chart.style(stackStyleByType[_value.options.chartType]);
-            chart.update();
+            drawChart();  // needs a redraw to avoid tooltip problem (AP-7068)
           });
         knimeService.addMenuItem('Chart Type:', 'area-chart', chartTypeSelector);
       }
