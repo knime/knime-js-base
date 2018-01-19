@@ -223,11 +223,8 @@ knime_paged_table = function() {
 						colDef.render = function(data, type, full, meta) {
 							if (!$.isNumeric(data)) {
 								return data;
-							}							
-							var precision = _representation.globalNumberFormatDecimals;
-							// to prevent "minus zero" (-0 or -0.0)
-							var toFixed = Math.abs(data) < Math.pow(10, -precision) ? (0).toFixed(precision) : data.toFixed(precision);
-							return toFixed;
+							}
+							return Number(data).toFixed(_representation.globalNumberFormatDecimals);
 						}
 					}
 				}
