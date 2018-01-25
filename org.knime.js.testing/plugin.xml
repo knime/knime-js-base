@@ -13,12 +13,48 @@
                relativePathSource="js-src/dummy.js">
          </webResource>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Minimal Request Handler"
+            usesDefine="false"
+            version="0.0.1"
+            webResourceBundleID="org.knime.js.testing.minimalRequestHandlerBundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/node/minimalRequestHandler"
+               relativePathTarget="org/knime/js/node/minimalRequestHandler">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/node/minimalRequestHandler/requestHandler.js"
+               type="JAVASCRIPT">
+         </importResource>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.testing.TestcaseCollector">
       <TestcaseCollector
             TestcaseCollector="org.knime.js.testing.JSTestcaseCollector">
       </TestcaseCollector>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/testing"
+            deprecated="false"
+            factory-class="org.knime.js.node.minimalRequestHandler.MinimalRequestHandlerNodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.js.core.javascriptComponents">
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.testing.minimalRequestHandlerBundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.testing.minimalRequestHandler"
+            name="Minimal Request Handler"
+            namespace="requestHandler"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
    </extension>
 
 </plugin>

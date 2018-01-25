@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./request.png" type="Other" xmlns="http://knime.org/node/v3.1" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Minimal Request Handler (Testing)</name>
+    <shortDescription>A testing node to mimic the behavior of actual view initiated requests/responses.</shortDescription>
+    <fullDescription>
+    	<intro>A testing node to mimic the behavior of actual view initiated requests/responses.</intro>
+    	<option name="Hide in wizard">
+    		Whether or not to include the node in a combined metanode view or WebPortal page.
+    	</option>
+    	<option name="Stall requests in node model">
+    		If this option is set, the node model will stall requests issued by a random time between 0 and 5 seconds 
+    		to simulate computation of the result. In case this option is not chosen the node model returns the dummy 
+    		string issued by the request immediately.
+    	</option>
+    	<option name="Keep responses in order">
+    		If the stall option is set, requests will be received by the view in a random order. Set this option 
+    		to test keeping the responses in order in such a case.
+    	</option>
+    	<option name="Cancel previous requests">
+    		If this option is set each issued request will cancel all previously issued, not returned requests.
+    	</option>
+    </fullDescription>
+    <interactiveView name="Minimal Request Handler View">
+    	Creates a button to issue dummy requests. Displays responses as text.
+   	</interactiveView>
+    <ports>
+    </ports>
+</knimeNode>
