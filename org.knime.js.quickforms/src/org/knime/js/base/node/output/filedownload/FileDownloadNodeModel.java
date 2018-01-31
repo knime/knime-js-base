@@ -123,7 +123,13 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
         } catch (NoSuchElementException e) {
             throw new InvalidSettingsException(e.getMessage(), e);
         }
-        Path path = Paths.get(value);
+        Path path = null;
+        try {
+            path = Paths.get(value);
+        } catch (Exception e) {
+            throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote a valid file: "
+                    + value);
+        }
         if (!Files.exists(path)) {
             throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote an existing file: "
                 + value);
