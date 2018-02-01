@@ -96,6 +96,7 @@ import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.JSONDataTableRow;
 import org.knime.js.core.JSONDataTableSpec;
 import org.knime.js.core.JSONDataTableSpec.JSTypes;
+import org.knime.js.core.color.JSONColorModel;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.datasets.JSONKeyedValuesRow;
 import org.knime.js.core.layout.LayoutTemplateProvider;
@@ -407,7 +408,11 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
                 dataset.setDateTimeFormat(tableSpec.getKnimeTypes()[col], col);
             }
         }
-        dataset.setColorModels(tableSpec.getColorModels());
+
+        JSONColorModel[] colorModels = tableSpec.getColorModels();
+        if (colorModels != null && colorModels.length > 0) {
+            dataset.setColorModels(colorModels);
+        }
 
         ScatterPlotViewValue viewValue = getViewValue();
         final String xColumn = viewValue.getxColumn();
