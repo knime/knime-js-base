@@ -117,6 +117,8 @@ public class JSONROCCurve extends ROCCurve implements JSONDataset {
      */
     private static final String X_VALUES_CFG = "x_values";
 
+    private static final String MAX_POINTS = "max_points";
+
     /**
      * {@inheritDoc}
      */
@@ -126,6 +128,7 @@ public class JSONROCCurve extends ROCCurve implements JSONDataset {
         settings.addDoubleArray(Y_VALUES_CFG, getY());
         settings.addString(NAME_CFG, getName());
         settings.addDouble(AREA_CFG, getArea());
+        settings.addInt(MAX_POINTS, getMaxPoints());
     }
 
     /**
@@ -137,6 +140,9 @@ public class JSONROCCurve extends ROCCurve implements JSONDataset {
         setY(settings.getDoubleArray(Y_VALUES_CFG));
         setName(settings.getString(NAME_CFG));
         setArea(settings.getDouble(AREA_CFG));
+
+        //added with 3.6
+        setMaxPoints(settings.getInt(MAX_POINTS, 0));
     }
 
     /**
@@ -150,6 +156,7 @@ public class JSONROCCurve extends ROCCurve implements JSONDataset {
         result = prime * result + Arrays.hashCode(getY());
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
         result = prime * result + new Double(getArea()).hashCode();
+        result = prime * result + new Integer(getMaxPoints()).hashCode();
         return result;
     }
 
@@ -182,6 +189,9 @@ public class JSONROCCurve extends ROCCurve implements JSONDataset {
             return false;
         }
         if (getArea() != other.getArea()) {
+            return false;
+        }
+        if (getMaxPoints() != other.getMaxPoints()) {
             return false;
         }
         return true;
