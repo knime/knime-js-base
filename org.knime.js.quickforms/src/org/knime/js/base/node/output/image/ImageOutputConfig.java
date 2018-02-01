@@ -61,12 +61,12 @@ import org.knime.js.base.util.LabeledViewConfig;
  */
 public class ImageOutputConfig extends LabeledViewConfig {
 
-    private static final String CFG_MAX_WIDTH = "maxwidth";
-    private static final int DEFAULT_MAX_WIDTH = 300;
+    static final String CFG_MAX_WIDTH = "maxwidth";
+    static final int DEFAULT_MAX_WIDTH = 300;
     private int m_maxWidth = DEFAULT_MAX_WIDTH;
 
-    private static final String CFG_MAX_HEIGHT = "maxheight";
-    private static final int DEFAULT_MAX_HEIGHT = 300;
+    static final String CFG_MAX_HEIGHT = "maxheight";
+    static final int DEFAULT_MAX_HEIGHT = 300;
     private int m_maxHeight = DEFAULT_MAX_HEIGHT;
 
     /**

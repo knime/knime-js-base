@@ -67,17 +67,21 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ImageOutputRepresentation extends JSONViewContent {
 
+    private static final String DEFAULT_STRING = "";
+    private static final String CFG_LABEL = "label";
     private String m_label;
+
+    private static final String CFG_DESCRIPTION = "description";
     private String m_description;
+
     private int m_maxWidth;
     private int m_maxHeight;
 
     private static final String SETTINGS_FORMAT = "imageFormat";
-    private static final String EMPTY_STRING = "";
-    private String m_imageFormat = EMPTY_STRING;
+    private String m_imageFormat = DEFAULT_STRING;
 
     private static final String SETTINGS_DATA = "imageData";
-    private String m_imageData = EMPTY_STRING;
+    private String m_imageData = DEFAULT_STRING;
 
     /**
      * @return the label
@@ -170,6 +174,10 @@ public class ImageOutputRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_LABEL, m_label);
+        settings.addString(CFG_DESCRIPTION, m_description);
+        settings.addInt(ImageOutputConfig.CFG_MAX_WIDTH, m_maxWidth);
+        settings.addInt(ImageOutputConfig.CFG_MAX_HEIGHT, m_maxHeight);
         settings.addString(SETTINGS_FORMAT, m_imageFormat);
         settings.addString(SETTINGS_DATA, m_imageData);
     }
@@ -181,6 +189,12 @@ public class ImageOutputRepresentation extends JSONViewContent {
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_imageFormat = settings.getString(SETTINGS_FORMAT);
         m_imageData = settings.getString(SETTINGS_DATA);
+
+        //added later, load with default for backwards compatibility
+        m_label = settings.getString(CFG_LABEL, DEFAULT_STRING);
+        m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_STRING);
+        m_maxWidth = settings.getInt(ImageOutputConfig.CFG_MAX_WIDTH, ImageOutputConfig.DEFAULT_MAX_WIDTH);
+        m_maxHeight = settings.getInt(ImageOutputConfig.CFG_MAX_HEIGHT, ImageOutputConfig.DEFAULT_MAX_HEIGHT);
     }
 
     /**
