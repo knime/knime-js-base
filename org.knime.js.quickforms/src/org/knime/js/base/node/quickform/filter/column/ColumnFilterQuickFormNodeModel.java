@@ -232,6 +232,7 @@ public class ColumnFilterQuickFormNodeModel
             m_inTable = tables[0];
             DataTableSpec spec = getSpec();
             if (spec != null) {
+                updateColumns(spec);
                 updateValuesFromSpec(spec);
             }
         }
