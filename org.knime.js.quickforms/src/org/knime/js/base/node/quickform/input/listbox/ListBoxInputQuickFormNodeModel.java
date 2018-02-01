@@ -220,7 +220,8 @@ public class ListBoxInputQuickFormNodeModel
         } else {
             value = optionalValue.getString();
         }
-        final String separatorRegexp = getSeparatorRegex();
+        getConfig().setSeparatorRegex(getSeparatorRegex());
+        final String separatorRegexp = getConfig().getSeparatorRegex();
         final ArrayList<String> values = new ArrayList<String>();
 
         if (getConfig().getSeparateEachCharacter()) {
