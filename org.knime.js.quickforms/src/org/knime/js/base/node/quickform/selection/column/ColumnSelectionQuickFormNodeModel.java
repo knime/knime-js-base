@@ -48,9 +48,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
@@ -69,7 +69,9 @@ public class ColumnSelectionQuickFormNodeModel
         extends QuickFormNodeModel
         <ColumnSelectionQuickFormRepresentation,
         ColumnSelectionQuickFormValue,
-        ColumnSelectionQuickFormConfig> {
+        ColumnSelectionQuickFormConfig> implements BufferedDataTableHolder {
+
+    private BufferedDataTable m_table;
 
     /** Creates a new value selection node model.
      * @param viewName the view name*/
@@ -108,7 +110,8 @@ public class ColumnSelectionQuickFormNodeModel
     /** {@inheritDoc} */
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        updateColumns(((DataTable)inObjects[0]).getDataTableSpec());
+        m_table = (BufferedDataTable)inObjects[0];
+        updateColumns(m_table.getDataTableSpec());
         createAndPushFlowVariable();
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
@@ -163,6 +166,25 @@ public class ColumnSelectionQuickFormNodeModel
     @Override
     protected ColumnSelectionQuickFormRepresentation getRepresentation() {
         return new ColumnSelectionQuickFormRepresentation(getRelevantValue(), getConfig());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedDataTable[] getInternalTables() {
+        return new BufferedDataTable[]{m_table};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setInternalTables(final BufferedDataTable[] tables) {
+        if (tables != null && tables.length > 0) {
+            m_table = tables[0];
+            updateColumns(m_table.getDataTableSpec());
+        }
     }
 
 }
