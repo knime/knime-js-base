@@ -67,13 +67,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FileDownloadRepresentation extends JSONViewContent {
 
+    private static final String DEFAULT_STRING = "";
+    private static final String SETTINGS_LABEL = "label";
     private String m_label;
+
+    private static final String SETTINGS_DESCRIPTION = "description";
     private String m_description;
+
+    private static final String SETTINGS_TITLE = "linkTitle";
     private String m_linkTitle;
 
     private static final String SETTINGS_PATH = "path";
-    private static final String DEFAULT_PATH = "";
-    private String m_path = DEFAULT_PATH;
+    private String m_path = DEFAULT_STRING;
 
     /**
      * @return the label
@@ -141,6 +146,9 @@ public class FileDownloadRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(SETTINGS_LABEL, m_label);
+        settings.addString(SETTINGS_DESCRIPTION, m_description);
+        settings.addString(SETTINGS_TITLE, m_linkTitle);
         settings.addString(SETTINGS_PATH, m_path);
     }
 
@@ -150,6 +158,11 @@ public class FileDownloadRepresentation extends JSONViewContent {
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_path = settings.getString(SETTINGS_PATH);
+
+        //added later, load with default for backwards compatibility
+        m_label = settings.getString(SETTINGS_LABEL, DEFAULT_STRING);
+        m_description = settings.getString(SETTINGS_DESCRIPTION, DEFAULT_STRING);
+        m_linkTitle = settings.getString(SETTINGS_TITLE, DEFAULT_STRING);
     }
 
     /**
