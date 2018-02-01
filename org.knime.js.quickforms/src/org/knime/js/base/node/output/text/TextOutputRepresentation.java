@@ -67,9 +67,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class TextOutputRepresentation extends JSONViewContent {
 
+    private static final String DEFAULT_STRING = "";
+    private static final String CFG_LABEL = "label";
     private String m_label;
+
+    private static final String CFG_DESCRIPTION = "description";
     private String m_description;
 
+    private static final String CFG_TEXT_FORMAT = "format";
     private String m_textFormat;
 
     private static final String CFG_TEXT = "text";
@@ -138,6 +143,9 @@ public class TextOutputRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_LABEL, m_label);
+        settings.addString(CFG_DESCRIPTION, m_description);
+        settings.addString(CFG_TEXT_FORMAT, m_textFormat);
         settings.addString(CFG_TEXT, m_text);
     }
 
@@ -147,6 +155,11 @@ public class TextOutputRepresentation extends JSONViewContent {
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_text = settings.getString(CFG_TEXT);
+
+        //added later, load with default for backwards compatibility
+        m_label = settings.getString(CFG_LABEL, DEFAULT_STRING);
+        m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_STRING);
+        m_textFormat = settings.getString(CFG_TEXT_FORMAT, DEFAULT_STRING);
     }
 
     /**
