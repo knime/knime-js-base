@@ -187,4 +187,13 @@ public class ColumnSelectionQuickFormNodeModel
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        m_table = null;
+        super.reset();
+    }
+
 }

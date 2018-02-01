@@ -54,10 +54,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
@@ -75,7 +75,9 @@ public class ValueFilterQuickFormNodeModel
         QuickFormNodeModel
         <ValueFilterQuickFormRepresentation,
         ValueFilterQuickFormValue,
-        ValueFilterQuickFormConfig> {
+        ValueFilterQuickFormConfig> implements BufferedDataTableHolder {
+
+    private BufferedDataTable m_table;
 
     /** Creates a new value selection node model.
      * @param viewName the view name*/
@@ -126,7 +128,8 @@ public class ValueFilterQuickFormNodeModel
     @Override
     protected PortObject[] execute(final PortObject[] inObjects,
             final ExecutionContext exec) throws Exception {
-        getConfig().setFromSpec(((DataTable)inObjects[0]).getDataTableSpec());
+        m_table = (BufferedDataTable)inObjects[0];
+        getConfig().setFromSpec(m_table.getDataTableSpec());
         Map<String, List<String>> value = createAndPushFlowVariable();
         Entry<String, List<String>> entry = value.entrySet().iterator().next();
         String column = entry.getKey();
@@ -250,6 +253,34 @@ public class ValueFilterQuickFormNodeModel
     @Override
     protected ValueFilterQuickFormRepresentation getRepresentation() {
         return new ValueFilterQuickFormRepresentation(getRelevantValue(), getConfig());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedDataTable[] getInternalTables() {
+        return new BufferedDataTable[]{m_table};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setInternalTables(final BufferedDataTable[] tables) {
+        if (tables != null && tables.length > 0) {
+            m_table = tables[0];
+            updateValues(m_table.getDataTableSpec());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        m_table = null;
+        super.reset();
     }
 
 }
