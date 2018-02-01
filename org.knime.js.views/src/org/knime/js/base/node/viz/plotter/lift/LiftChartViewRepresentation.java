@@ -524,7 +524,7 @@ public class LiftChartViewRepresentation extends JSONViewContent {
         setGridColor(settings.getString(LiftChartViewConfig.GRID_COLOR));
         setLineWidth(settings.getInt(LiftChartViewConfig.LINE_WIDTH));
         m_liftValues = settings.getDoubleArray(LIFT_VALUES);
-        m_cumulativeLift = settings.getDoubleArray(LIFT_VALUES);
+        m_cumulativeLift = settings.getDoubleArray(CUMULATIVE_LIFT);
         m_baseline = settings.getDouble(BASELINE);
         m_intervalWidth = settings.getDouble(LiftChartViewConfig.INTERVAL_WIDTH);
         m_response = settings.getDoubleArray(RESPONSE_VALUES);
