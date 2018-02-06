@@ -54,470 +54,49 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
-import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
+import org.knime.js.core.settings.table.TableRepresentationSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
  *
- * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PagedTableViewRepresentation extends JSONViewContent {
 
-    private JSONDataTable m_table;
-    private boolean m_enablePaging;
-    private int m_initialPageSize;
-    private boolean m_enablePageSizeChange;
-    private int[] m_allowedPageSizes;
-    private boolean m_pageSizeShowAll;
-    private boolean m_enableJumpToPage;
-    private boolean m_displayRowColors;
-    private boolean m_displayRowIds;
-    private boolean m_displayColumnHeaders;
-    private boolean m_displayRowIndex;
-    private boolean m_displayFullscreenButton;
-    private boolean m_fixedHeaders;
-    private String m_title;
-    private String m_subtitle;
-    private boolean m_enableSelection;
-    private boolean m_singleSelection;
-    private boolean m_enableSearching;
-    private boolean m_enableColumnSearching;
-    private boolean m_enableHideUnselected;
-    private boolean m_enableClearSelectionButton;
-    private boolean m_enableSorting;
-    private boolean m_enableClearSortButton;
-    private JSONDateTimeOptions m_dateTimeFormats;
-    private boolean m_enableGlobalNumberFormat;
-    private int m_globalNumberFormatDecimals;
-    private boolean m_displayMissingValueAsQuestionMark;
-
-    private static final String CFG_PUBLISH_FILTER_ID = "publishFilterId";
-    private String m_publishFilterId;
-    private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
-    private String[] m_subscriptionFilterIds;
+    private TableRepresentationSettings m_settings = new TableRepresentationSettings();
 
     /** Serialization constructor. Don't use. */
     public PagedTableViewRepresentation() { }
 
     /**
-     * @param table
+     * @return the settings
      */
-    public PagedTableViewRepresentation(final JSONDataTable table) {
-        setTable(table);
+    @JsonUnwrapped
+    public TableRepresentationSettings getSettings() {
+        return m_settings;
     }
 
     /**
-     * @return The JSON data table.
+     * @param settings the settings to set
      */
-    @JsonProperty("table")
-    public JSONDataTable getTable() {
-        return m_table;
+    public void setSettings(final TableRepresentationSettings settings) {
+        m_settings = settings;
     }
 
     /**
-     * @param table The table to set.
+     * Copy settings from dialog keeping the existing table data
+     * @param settings the settings to set
      */
-    @JsonProperty("table")
-    public void setTable(final JSONDataTable table) {
-        m_table = table;
-    }
-
-    /**
-     * @return true if pagination is enabled
-     */
-    public boolean getEnablePaging() {
-        return m_enablePaging;
-    }
-
-    /**
-     * @param enablePaging true if pagination is enabled
-     */
-    public void setEnablePaging(final boolean enablePaging) {
-        m_enablePaging = enablePaging;
-    }
-
-    /**
-     * @return the initialPageSize
-     */
-    public int getInitialPageSize() {
-        return m_initialPageSize;
-    }
-
-    /**
-     * @param initialPageSize the initialPageSize to set
-     */
-    public void setInitialPageSize(final int initialPageSize) {
-        m_initialPageSize = initialPageSize;
-    }
-
-    /**
-     * @return the enablePageSizeChange
-     */
-    public boolean getEnablePageSizeChange() {
-        return m_enablePageSizeChange;
-    }
-
-    /**
-     * @param enablePageSizeChange the enablePageSizeChange to set
-     */
-    public void setEnablePageSizeChange(final boolean enablePageSizeChange) {
-        m_enablePageSizeChange = enablePageSizeChange;
-    }
-
-    /**
-     * @return the allowedPageSizes
-     */
-    public int[] getAllowedPageSizes() {
-        return m_allowedPageSizes;
-    }
-
-    /**
-     * @param allowedPageSizes the allowedPageSizes to set
-     */
-    public void setAllowedPageSizes(final int[] allowedPageSizes) {
-        m_allowedPageSizes = allowedPageSizes;
-    }
-
-    /**
-     * @return the pageSizeShowAll
-     */
-    public boolean getPageSizeShowAll() {
-        return m_pageSizeShowAll;
-    }
-
-    /**
-     * @param pageSizeShowAll the pageSizeShowAll to set
-     */
-    public void setPageSizeShowAll(final boolean pageSizeShowAll) {
-        m_pageSizeShowAll = pageSizeShowAll;
-    }
-
-    /**
-     * @return the enableJumpToPage
-     */
-    public boolean getEnableJumpToPage() {
-        return m_enableJumpToPage;
-    }
-
-    /**
-     * @param enableJumpToPage the enableJumpToPage to set
-     */
-    public void setEnableJumpToPage(final boolean enableJumpToPage) {
-        m_enableJumpToPage = enableJumpToPage;
-    }
-
-    /**
-     * @return the displayRowColors
-     */
-    public boolean getDisplayRowColors() {
-        return m_displayRowColors;
-    }
-
-    /**
-     * @param displayRowColors the displayRowColors to set
-     */
-    public void setDisplayRowColors(final boolean displayRowColors) {
-        m_displayRowColors = displayRowColors;
-    }
-
-    /**
-     * @return the displayRowIds
-     */
-    public boolean getDisplayRowIds() {
-        return m_displayRowIds;
-    }
-
-    /**
-     * @param displayRowIds the displayRowIds to set
-     */
-    public void setDisplayRowIds(final boolean displayRowIds) {
-        m_displayRowIds = displayRowIds;
-    }
-
-    /**
-     * @return the displayColumnHeaders
-     */
-    public boolean getDisplayColumnHeaders() {
-        return m_displayColumnHeaders;
-    }
-
-    /**
-     * @param displayColumnHeaders the displayColumnHeaders to set
-     */
-    public void setDisplayColumnHeaders(final boolean displayColumnHeaders) {
-        m_displayColumnHeaders = displayColumnHeaders;
-    }
-
-    /**
-     * @return the displayRowIndex
-     */
-    public boolean getDisplayRowIndex() {
-        return m_displayRowIndex;
-    }
-
-    /**
-     * @param displayRowIndex the displayRowIndex to set
-     */
-    public void setDisplayRowIndex(final boolean displayRowIndex) {
-        m_displayRowIndex = displayRowIndex;
-    }
-
-    /**
-     * @return the displayFullscreenButton
-     */
-    public boolean getDisplayFullscreenButton() {
-        return m_displayFullscreenButton;
-    }
-
-    /**
-     * @param displayFullscreenButton the displayFullscreenButton to set
-     */
-    public void setDisplayFullscreenButton(final boolean displayFullscreenButton) {
-        m_displayFullscreenButton = displayFullscreenButton;
-    }
-
-    /**
-     * @return the fixedHeaders
-     */
-    public boolean getFixedHeaders() {
-        return m_fixedHeaders;
-    }
-
-    /**
-     * @param fixedHeaders the fixedHeaders to set
-     */
-    public void setFixedHeaders(final boolean fixedHeaders) {
-        m_fixedHeaders = fixedHeaders;
-    }
-
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return m_title;
-    }
-
-    /**
-     * @param title the title to set
-     */
-    public void setTitle(final String title) {
-        m_title = title;
-    }
-
-    /**
-     * @return the subtitle
-     */
-    public String getSubtitle() {
-        return m_subtitle;
-    }
-
-    /**
-     * @param subtitle the subtitle to set
-     */
-    public void setSubtitle(final String subtitle) {
-        m_subtitle = subtitle;
-    }
-
-    /**
-     * @return the enableSelection
-     */
-    public boolean getEnableSelection() {
-        return m_enableSelection;
-    }
-
-    /**
-     * @param enableSelection the enableSelection to set
-     */
-    public void setEnableSelection(final boolean enableSelection) {
-        m_enableSelection = enableSelection;
-    }
-
-    /**
-     * @return the singleSelection
-     */
-    public boolean getSingleSelection() {
-        return m_singleSelection;
-    }
-
-    /**
-     * @param singleSelection the singleSelection to set
-     */
-    public void setSingleSelection(final boolean singleSelection) {
-        m_singleSelection = singleSelection;
-    }
-
-    /**
-     * @return the enableSearching
-     */
-    public boolean getEnableSearching() {
-        return m_enableSearching;
-    }
-
-    /**
-     * @param enableSearching the enableSearching to set
-     */
-    public void setEnableSearching(final boolean enableSearching) {
-        m_enableSearching = enableSearching;
-    }
-
-    /**
-     * @return the enableColumnSearching
-     */
-    public boolean getEnableColumnSearching() {
-        return m_enableColumnSearching;
-    }
-
-    /**
-     * @param enableColumnSearching the enableColumnSearching to set
-     */
-    public void setEnableColumnSearching(final boolean enableColumnSearching) {
-        m_enableColumnSearching = enableColumnSearching;
-    }
-
-    /**
-     * @return the enableHideUnselected
-     */
-    public boolean getEnableHideUnselected() {
-        return m_enableHideUnselected;
-    }
-
-    /**
-     * @param enableHideUnselected the enableHideUnselected to set
-     */
-    public void setEnableHideUnselected(final boolean enableHideUnselected) {
-        m_enableHideUnselected = enableHideUnselected;
-    }
-
-    /**
-     * @return the enableClearSelectionButton
-     */
-    public boolean getEnableClearSelectionButton() {
-        return m_enableClearSelectionButton;
-    }
-
-    /**
-     * @param enableClearSelectionButton the enableClearSelectionButton to set
-     */
-    public void setEnableClearSelectionButton(final boolean enableClearSelectionButton) {
-        m_enableClearSelectionButton = enableClearSelectionButton;
-    }
-
-    /**
-     * @return the enableSorting
-     */
-    public boolean getEnableSorting() {
-        return m_enableSorting;
-    }
-
-    /**
-     * @param enableSorting the enableSorting to set
-     */
-    public void setEnableSorting(final boolean enableSorting) {
-        m_enableSorting = enableSorting;
-    }
-
-    /**
-     * @return the enableClearSortButton
-     */
-    public boolean getEnableClearSortButton() {
-        return m_enableClearSortButton;
-    }
-
-    /**
-     * @param enableClearSortButton the enableClearSortButton to set
-     */
-    public void setEnableClearSortButton(final boolean enableClearSortButton) {
-        m_enableClearSortButton = enableClearSortButton;
-    }
-
-    /**
-     * @return the dateTimeFormats
-     */
-    public JSONDateTimeOptions getDateTimeFormats() {
-        return m_dateTimeFormats;
-    }
-
-    /**
-     * @param dateTimeFormats the dateTimeFormats to set
-     */
-    public void setDateTimeFormats(final JSONDateTimeOptions dateTimeFormats) {
-        m_dateTimeFormats = dateTimeFormats;
-    }
-
-    /**
-     * @return the enableGlobalNumberFormat
-     */
-    public boolean getEnableGlobalNumberFormat() {
-        return m_enableGlobalNumberFormat;
-    }
-
-    /**
-     * @param enableGlobalNumberFormat the enableGlobalNumberFormat to set
-     */
-    public void setEnableGlobalNumberFormat(final boolean enableGlobalNumberFormat) {
-        m_enableGlobalNumberFormat = enableGlobalNumberFormat;
-    }
-
-    /**
-     * @return the globalNumberFormatDecimals
-     */
-    public int getGlobalNumberFormatDecimals() {
-        return m_globalNumberFormatDecimals;
-    }
-
-    /**
-     * @param globalNumberFormatDecimals the globalNumberFormatDecimals to set
-     */
-    public void setGlobalNumberFormatDecimals(final int globalNumberFormatDecimals) {
-        m_globalNumberFormatDecimals = globalNumberFormatDecimals;
-    }
-
-    /**
-     * @return the publishFilterId
-     */
-    public String getPublishFilterId() {
-        return m_publishFilterId;
-    }
-
-    /**
-     * @param publishFilterId the publishFilterId to set
-     */
-    public void setPublishFilterId(final String publishFilterId) {
-        m_publishFilterId = publishFilterId;
-    }
-
-    /**
-     * @return the subscriptionFilterIds
-     */
-    public String[] getSubscriptionFilterIds() {
-        return m_subscriptionFilterIds;
-    }
-
-    /**
-     * @param subscriptionFilterIds the subscriptionFilterIds to set
-     */
-    public void setSubscriptionFilterIds(final String[] subscriptionFilterIds) {
-        m_subscriptionFilterIds = subscriptionFilterIds;
-    }
-
-    /**
-     * @return the displayMissingValueAsQuestionMark
-     */
-    public boolean getDisplayMissingValueAsQuestionMark() {
-        return m_displayMissingValueAsQuestionMark;
-    }
-
-    /**
-     * @param displayMissingValueAsQuestionMark the displayMissingValueAsQuestionMark to set
-     */
-    public void setDisplayMissingValueAsQuestionMark(final boolean displayMissingValueAsQuestionMark) {
-        m_displayMissingValueAsQuestionMark = displayMissingValueAsQuestionMark;
+    public void setSettingsFromDialog(final TableRepresentationSettings settings) {
+        JSONDataTable table = m_settings.getTable();
+        m_settings = settings;
+        m_settings.setTable(table);
     }
 
     /**
@@ -526,41 +105,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        // save everything but table
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_PAGING, m_enablePaging);
-        settings.addInt(PagedTableViewConfig.CFG_INITIAL_PAGE_SIZE, m_initialPageSize);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_PAGE_SIZE_CHANGE, m_enablePageSizeChange);
-        settings.addIntArray(PagedTableViewConfig.CFG_PAGE_SIZES, m_allowedPageSizes);
-        settings.addBoolean(PagedTableViewConfig.CFG_PAGE_SIZE_SHOW_ALL, m_pageSizeShowAll);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_JUMP_TO_PAGE, m_enableJumpToPage);
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_COLORS, m_displayRowColors);
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_IDS, m_displayRowIds);
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_COLUMN_HEADERS, m_displayColumnHeaders);
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_INDEX, m_displayRowIndex);
-        settings.addBoolean(PagedTableViewConfig.CFG_FIXED_HEADERS, m_fixedHeaders);
-        settings.addString(PagedTableViewConfig.CFG_TITLE, m_title);
-        settings.addString(PagedTableViewConfig.CFG_SUBTITLE, m_subtitle);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SELECTION, m_enableSelection);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SEARCHING, m_enableSearching);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING, m_enableColumnSearching);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING, m_enableSorting);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
-        settings.addInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
-
-        //added with 3.3
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
-        settings.addString(CFG_PUBLISH_FILTER_ID, m_publishFilterId);
-        settings.addStringArray(CFG_SUBSCRIPTION_FILTER_IDS, m_subscriptionFilterIds);
-
-        //added with 3.4
-        settings.addBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, m_displayMissingValueAsQuestionMark);
-        m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
-
-        //added with 3.5
-        settings.addBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, m_singleSelection);
-        settings.addBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, m_enableClearSelectionButton);
+        m_settings.saveSettings(settings);
     }
 
     /**
@@ -569,43 +114,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     @Override
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // load everything but table
-        m_enablePaging = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_PAGING);
-        m_initialPageSize = settings.getInt(PagedTableViewConfig.CFG_INITIAL_PAGE_SIZE);
-        m_enablePageSizeChange = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_PAGE_SIZE_CHANGE);
-        m_allowedPageSizes = settings.getIntArray(PagedTableViewConfig.CFG_PAGE_SIZES);
-        m_pageSizeShowAll = settings.getBoolean(PagedTableViewConfig.CFG_PAGE_SIZE_SHOW_ALL);
-        m_enableJumpToPage = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_JUMP_TO_PAGE);
-        m_displayRowColors = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_COLORS);
-        m_displayRowIds = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_IDS);
-        m_displayColumnHeaders = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_COLUMN_HEADERS);
-        m_displayRowIndex = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_ROW_INDEX);
-        m_fixedHeaders = settings.getBoolean(PagedTableViewConfig.CFG_FIXED_HEADERS);
-        m_title = settings.getString(PagedTableViewConfig.CFG_TITLE);
-        m_subtitle = settings.getString(PagedTableViewConfig.CFG_SUBTITLE);
-        m_enableSelection = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SELECTION);
-        m_enableSearching = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SEARCHING);
-        m_enableColumnSearching = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_COLUMN_SEARCHING);
-        m_enableSorting = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_SORTING);
-        m_enableClearSortButton = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON);
-        m_enableGlobalNumberFormat = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
-        m_globalNumberFormatDecimals = settings.getInt(PagedTableViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
-
-        //added with 3.3
-        m_enableHideUnselected = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_HIDE_UNSELECTED, PagedTableViewConfig.DEFAULT_ENABLE_HIDE_UNSELECTED);
-        m_displayFullscreenButton = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_FULLSCREEN_BUTTON, PagedTableViewConfig.DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
-        m_publishFilterId = settings.getString(CFG_PUBLISH_FILTER_ID, null);
-        m_subscriptionFilterIds = settings.getStringArray(CFG_SUBSCRIPTION_FILTER_IDS, (String[])null);
-
-        //added with 3.4
-        m_displayMissingValueAsQuestionMark = settings.getBoolean(PagedTableViewConfig.CFG_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK, PagedTableViewConfig.DEFAULT_DISPLAY_MISSING_VALUE_AS_QUESTION_MARK);
-        if (settings.containsKey(PagedTableViewConfig.CFG_DATE_TIME_FORMATS)) {
-            m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(PagedTableViewConfig.CFG_DATE_TIME_FORMATS));
-        }
-
-        //added with 3.5
-        m_singleSelection = settings.getBoolean(PagedTableViewConfig.CFG_SINGLE_SELECTION, PagedTableViewConfig.DEFAULT_SINGLE_SELECTION);
-        m_enableClearSelectionButton = settings.getBoolean(PagedTableViewConfig.CFG_ENABLE_CLEAR_SELECTION_BUTTON, PagedTableViewConfig.DEFAULT_ENABLE_CLEAR_SELECTION_BUTTON);
+        m_settings.loadSettings(settings);
     }
 
     /**
@@ -624,35 +133,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
         }
         PagedTableViewRepresentation other = (PagedTableViewRepresentation)obj;
         return new EqualsBuilder()
-                .append(m_table, other.m_table)
-                .append(m_enablePaging, other.m_enablePaging)
-                .append(m_initialPageSize, other.m_initialPageSize)
-                .append(m_enablePageSizeChange, other.m_enablePageSizeChange)
-                .append(m_allowedPageSizes, other.m_allowedPageSizes)
-                .append(m_pageSizeShowAll, other.m_pageSizeShowAll)
-                .append(m_enableJumpToPage, other.m_enableJumpToPage)
-                .append(m_displayRowColors, other.m_displayRowColors)
-                .append(m_displayRowIds, other.m_displayRowIds)
-                .append(m_displayColumnHeaders, other.m_displayColumnHeaders)
-                .append(m_displayRowIndex, other.m_displayRowIndex)
-                .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
-                .append(m_fixedHeaders, other.m_fixedHeaders)
-                .append(m_title, other.m_title)
-                .append(m_subtitle, other.m_subtitle)
-                .append(m_enableSelection, other.m_enableSelection)
-                .append(m_singleSelection, other.m_singleSelection)
-                .append(m_enableClearSelectionButton, other.m_enableClearSelectionButton)
-                .append(m_enableSearching, other.m_enableSearching)
-                .append(m_enableColumnSearching, other.m_enableColumnSearching)
-                .append(m_enableHideUnselected, other.m_enableHideUnselected)
-                .append(m_enableSorting, other.m_enableSorting)
-                .append(m_enableClearSortButton, other.m_enableClearSortButton)
-                .append(m_dateTimeFormats, other.m_dateTimeFormats)
-                .append(m_enableGlobalNumberFormat, other.m_enableGlobalNumberFormat)
-                .append(m_globalNumberFormatDecimals, other.m_globalNumberFormatDecimals)
-                .append(m_displayMissingValueAsQuestionMark, other.m_displayMissingValueAsQuestionMark)
-                .append(m_publishFilterId, other.m_publishFilterId)
-                .append(m_subscriptionFilterIds, other.m_subscriptionFilterIds)
+                .append(m_settings, other.m_settings)
                 .isEquals();
     }
 
@@ -662,35 +143,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_table)
-                .append(m_enablePaging)
-                .append(m_initialPageSize)
-                .append(m_enablePageSizeChange)
-                .append(m_allowedPageSizes)
-                .append(m_pageSizeShowAll)
-                .append(m_enableJumpToPage)
-                .append(m_displayRowColors)
-                .append(m_displayRowIds)
-                .append(m_displayColumnHeaders)
-                .append(m_displayRowIndex)
-                .append(m_displayFullscreenButton)
-                .append(m_fixedHeaders)
-                .append(m_title)
-                .append(m_subtitle)
-                .append(m_enableSelection)
-                .append(m_singleSelection)
-                .append(m_enableClearSelectionButton)
-                .append(m_enableSearching)
-                .append(m_enableColumnSearching)
-                .append(m_enableHideUnselected)
-                .append(m_enableSorting)
-                .append(m_enableClearSortButton)
-                .append(m_dateTimeFormats)
-                .append(m_enableGlobalNumberFormat)
-                .append(m_globalNumberFormatDecimals)
-                .append(m_displayMissingValueAsQuestionMark)
-                .append(m_publishFilterId)
-                .append(m_subscriptionFilterIds)
+                .append(m_settings)
                 .toHashCode();
     }
 

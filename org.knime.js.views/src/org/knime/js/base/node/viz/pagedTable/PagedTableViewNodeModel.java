@@ -75,6 +75,7 @@ import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.settings.table.TableSettings;
 
 /**
  *
@@ -109,7 +110,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         DataTableSpec tableSpec = (DataTableSpec)inSpecs[0];
-        if (m_config.getEnableSelection()) {
+        if (m_config.getSettings().getRepresentationSettings().getEnableSelection()) {
             ColumnRearranger rearranger = createColumnAppender(tableSpec, null);
             tableSpec = rearranger.createSpec();
         }
@@ -117,9 +118,9 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     }
 
     private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<String> selectionList) {
-        String newColName = m_config.getSelectionColumnName();
+        String newColName = m_config.getSettings().getSelectionColumnName();
         if (newColName == null || newColName.trim().isEmpty()) {
-            newColName = PagedTableViewConfig.DEFAULT_SELECTION_COLUMN_NAME;
+            newColName = TableSettings.DEFAULT_SELECTION_COLUMN_NAME;
         }
         newColName = DataTableSpec.getUniqueColumnName(spec, newColName);
         DataColumnSpec outColumnSpec =
@@ -131,7 +132,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
 
             @Override
             public DataCell getCell(final DataRow row) {
-                if (++m_rowIndex > m_config.getMaxRows()) {
+                if (++m_rowIndex > m_config.getSettings().getRepresentationSettings().getMaxRows()) {
                     return DataType.getMissingCell();
                 }
                 if (selectionList != null) {
@@ -181,11 +182,11 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     public PagedTableViewRepresentation getViewRepresentation() {
         PagedTableViewRepresentation rep = super.getViewRepresentation();
         synchronized (getLock()) {
-            if (rep.getTable() == null && m_table != null) {
+            if (rep.getSettings().getTable() == null && m_table != null) {
                 // set internal table
                 try {
                     JSONDataTable jT = createJSONTableFromBufferedDataTable(m_table, null);
-                    rep.setTable(jT);
+                    rep.getSettings().setTable(jT);
                 } catch (Exception e) {
                     LOGGER.error("Could not create JSON table: " + e.getMessage(), e);
                 }
@@ -199,7 +200,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     public boolean isHideInWizard() {
-        return m_config.getHideInWizard();
+        return m_config.getSettings().getHideInWizard();
     }
 
     /**
@@ -207,7 +208,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     public void setHideInWizard(final boolean hide) {
-        m_config.setHideInWizard(hide);
+        m_config.getSettings().setHideInWizard(hide);
     }
 
     /**
@@ -243,45 +244,45 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
         BufferedDataTable out = (BufferedDataTable)inObjects[0];
         synchronized (getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
-            if (viewRepresentation.getTable() == null) {
+            if (viewRepresentation.getSettings().getTable() == null) {
                 m_table = (BufferedDataTable)inObjects[0];
                 JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
-                viewRepresentation.setTable(jsonTable);
+                viewRepresentation.getSettings().setTable(jsonTable);
                 copyConfigToRepresentation();
             }
 
-            if (m_config.getEnableSelection()) {
+            if (m_config.getSettings().getRepresentationSettings().getEnableSelection()) {
                 PagedTableViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
                 if (viewValue != null) {
-                    if (viewValue.getSelection() != null) {
-                        selectionList = Arrays.asList(viewValue.getSelection());
+                    if (viewValue.getSettings().getSelection() != null) {
+                        selectionList = Arrays.asList(viewValue.getSettings().getSelection());
                     }
                 }
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
                 out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
             }
-            viewRepresentation.setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
+            viewRepresentation.getSettings().setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
         }
         exec.setProgress(1);
         return new PortObject[]{out};
     }
 
     private JSONDataTable createJSONTableFromBufferedDataTable(final BufferedDataTable table, final ExecutionContext exec) throws CanceledExecutionException {
-        FilterResult filter = m_config.getColumnFilterConfig().applyTo(table.getDataTableSpec());
+        FilterResult filter = m_config.getSettings().getColumnFilterConfig().applyTo(table.getDataTableSpec());
         //ColumnRearranger rearranger = new ColumnRearranger(table.getDataTableSpec());
         //rearranger.keepOnly(filter.getIncludes());
         //BufferedDataTable filteredTable = exec.createColumnRearrangeTable(table, rearranger, exec.createSubExecutionContext(0.5));
+        int maxRows = m_config.getSettings().getRepresentationSettings().getMaxRows();
         JSONDataTable jsonTable = JSONDataTable.newBuilder()
                 .setDataTable(table)
                 .setId(getTableId(0))
                 .setFirstRow(1)
-                .setMaxRows(m_config.getMaxRows())
+                .setMaxRows(maxRows)
                 .setExcludeColumns(filter.getExcludes())
                 .build(exec);
-        if (m_config.getMaxRows() < table.size()) {
-            setWarningMessage("Only the first "
-                    + m_config.getMaxRows() + " rows are displayed.");
+        if (maxRows < table.size()) {
+            setWarningMessage("Only the first " + maxRows + " rows are displayed.");
         }
         return jsonTable;
     }
@@ -289,49 +290,12 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     private void copyConfigToRepresentation() {
         synchronized(getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
-            viewRepresentation.setEnablePaging(m_config.getEnablePaging());
-            viewRepresentation.setInitialPageSize(m_config.getIntialPageSize());
-            viewRepresentation.setEnablePageSizeChange(m_config.getEnablePageSizeChange());
-            viewRepresentation.setAllowedPageSizes(m_config.getAllowedPageSizes());
-            viewRepresentation.setPageSizeShowAll(m_config.getPageSizeShowAll());
-            viewRepresentation.setEnableJumpToPage(m_config.getEnableJumpToPage());
-            viewRepresentation.setDisplayRowColors(m_config.getDisplayRowColors());
-            viewRepresentation.setDisplayRowIds(m_config.getDisplayRowIds());
-            viewRepresentation.setDisplayColumnHeaders(m_config.getDisplayColumnHeaders());
-            viewRepresentation.setDisplayRowIndex(m_config.getDisplayRowIndex());
-            viewRepresentation.setFixedHeaders(m_config.getFixedHeaders());
-            viewRepresentation.setTitle(m_config.getTitle());
-            viewRepresentation.setSubtitle(m_config.getSubtitle());
-            viewRepresentation.setEnableSelection(m_config.getEnableSelection());
-            viewRepresentation.setEnableSearching(m_config.getEnableSearching());
-            viewRepresentation.setEnableColumnSearching(m_config.getEnableColumnSearching());
-            viewRepresentation.setEnableSorting(m_config.getEnableSorting());
-            viewRepresentation.setEnableClearSortButton(m_config.getEnableClearSortButton());
-            viewRepresentation.setEnableGlobalNumberFormat(m_config.getEnableGlobalNumberFormat());
-            viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());
-
-            //added with 3.3
-            viewRepresentation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
-            viewRepresentation.setEnableHideUnselected(m_config.getEnableHideUnselected());
-
-            //added with 3.4
-            viewRepresentation.setDisplayMissingValueAsQuestionMark(m_config.getDisplayMissingValueAsQuestionMark());
-            viewRepresentation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
-
-            //added with 3.5
-            viewRepresentation.setSingleSelection(m_config.getSingleSelection());
-            viewRepresentation.setEnableClearSelectionButton(m_config.getEnableClearSelectionButton());
+            viewRepresentation.setSettingsFromDialog(m_config.getSettings().getRepresentationSettings());
 
             PagedTableViewValue viewValue = getViewValue();
             if (isViewValueEmpty()) {
-                //added with 3.3
-                viewValue.setPublishSelection(m_config.getPublishSelection());
-                viewValue.setSubscribeSelection(m_config.getSubscribeSelection());
-                viewValue.setPublishFilter(m_config.getPublishFilter());
-                viewValue.setSubscribeFilter(m_config.getSubscribeFilter());
-
-                //added with 3.4
-                viewValue.setHideUnselected(m_config.getHideUnselected() && !m_config.getSingleSelection());
+                viewValue.setSettings(m_config.getSettings().getValueSettings());
+                viewValue.getSettings().setHideUnselected(m_config.getSettings().getValueSettings().getHideUnselected() && !m_config.getSettings().getRepresentationSettings().getSingleSelection());
             }
         }
     }
@@ -350,11 +314,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
     @Override
     protected void useCurrentValueAsDefault() {
         PagedTableViewValue viewValue = getViewValue();
-        m_config.setHideUnselected(viewValue.getHideUnselected());
-        m_config.setPublishSelection(viewValue.getPublishSelection());
-        m_config.setSubscribeSelection(viewValue.getSubscribeSelection());
-        m_config.setPublishFilter(viewValue.getPublishFilter());
-        m_config.setSubscribeFilter(viewValue.getSubscribeFilter());
+        m_config.getSettings().setValueSettings(viewValue.getSettings());
     }
 
     /**
@@ -370,7 +330,7 @@ public class PagedTableViewNodeModel extends AbstractWizardNodeModel<PagedTableV
      */
     @Override
     protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        (new PagedTableViewConfig()).loadSettings(settings);
+        (new TableSettings()).loadSettings(settings);
     }
 
     /**

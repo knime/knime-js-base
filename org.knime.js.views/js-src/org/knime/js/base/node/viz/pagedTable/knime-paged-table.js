@@ -25,7 +25,7 @@ knime_paged_table = function() {
 	});
 	
 	table_viewer.init = function(representation, value) {
-		if (!representation || !representation.table) {
+		if (!representation || !representation.table || !value) {
 			$('body').append("Error: No data available");
 			return;
 		}
