@@ -373,10 +373,6 @@
                relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.js"
                type="JAVASCRIPT">
          </importResource>
-         <importResource
-               relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.css"
-               type="CSS">
-         </importResource>
          <webDependency
                webResourceBundleID="KnimeTable_1.0.0">
          </webDependency>
@@ -385,6 +381,9 @@
          </webDependency>
          <webDependency
                webResourceBundleID="dataTables_1_10_11_bootstrap">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="knimeBaseTableViewer_1.0.0">
          </webDependency>
       </webResourceBundle>
       <webResourceBundle
