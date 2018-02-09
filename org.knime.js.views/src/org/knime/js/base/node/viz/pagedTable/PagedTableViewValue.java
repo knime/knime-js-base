@@ -52,7 +52,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.node.table.AbstractTableValue;
 import org.knime.js.core.settings.table.TableValueSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -66,13 +66,14 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class PagedTableViewValue extends JSONViewContent {
+public class PagedTableViewValue extends AbstractTableValue {
 
     private TableValueSettings m_settings = new TableValueSettings();
 
     /**
      * @return the settings
      */
+    @Override
     @JsonUnwrapped
     public TableValueSettings getSettings() {
         return m_settings;
@@ -81,6 +82,7 @@ public class PagedTableViewValue extends JSONViewContent {
     /**
      * @param settings the settings to set
      */
+    @Override
     @JsonUnwrapped
     public void setSettings(final TableValueSettings settings) {
         m_settings = settings;

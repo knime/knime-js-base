@@ -53,7 +53,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONDataTable;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.node.table.AbstractTableRepresentation;
 import org.knime.js.core.settings.table.TableRepresentationSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -67,7 +67,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class PagedTableViewRepresentation extends JSONViewContent {
+public class PagedTableViewRepresentation extends AbstractTableRepresentation {
 
     private TableRepresentationSettings m_settings = new TableRepresentationSettings();
 
@@ -77,6 +77,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     /**
      * @return the settings
      */
+    @Override
     @JsonUnwrapped
     public TableRepresentationSettings getSettings() {
         return m_settings;
@@ -85,6 +86,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
     /**
      * @param settings the settings to set
      */
+    @Override
     public void setSettings(final TableRepresentationSettings settings) {
         m_settings = settings;
     }
@@ -93,6 +95,7 @@ public class PagedTableViewRepresentation extends JSONViewContent {
      * Copy settings from dialog keeping the existing table data
      * @param settings the settings to set
      */
+    @Override
     public void setSettingsFromDialog(final TableRepresentationSettings settings) {
         JSONDataTable table = m_settings.getTable();
         m_settings = settings;

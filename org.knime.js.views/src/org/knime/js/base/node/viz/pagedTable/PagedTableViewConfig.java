@@ -52,49 +52,53 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.node.table.TableConfig;
 import org.knime.js.core.settings.table.TableSettings;
 
 /**
  *
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
-public class PagedTableViewConfig {
+public class PagedTableViewConfig implements TableConfig {
 
     private TableSettings m_settings = new TableSettings();
 
     /**
-     * @return the settings
+     * {@inheritDoc}
      */
+    @Override
     public TableSettings getSettings() {
         return m_settings;
     }
 
     /**
-     * @param settings the settings to set
+     * {@inheritDoc}
      */
+    @Override
     public void setSettings(final TableSettings settings) {
         m_settings = settings;
     }
 
-    /** Saves current parameters to settings object.
-     * @param settings To save to.
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void saveSettings(final NodeSettingsWO settings) {
         m_settings.saveSettings(settings);
     }
 
-    /** Loads parameters in NodeModel.
-     * @param settings To load from.
-     * @throws InvalidSettingsException If incomplete or wrong.
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_settings.loadSettings(settings);
     }
 
-    /** Loads parameters in Dialog.
-     * @param settings To load from.
-     * @param spec The spec from the incoming data table
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         m_settings.loadSettingsForDialog(settings, spec);
     }
