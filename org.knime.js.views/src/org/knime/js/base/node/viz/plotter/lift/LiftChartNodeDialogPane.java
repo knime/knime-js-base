@@ -409,6 +409,30 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         cc.gridy = 0;
         cc.gridwidth = 1;
 
+        JPanel titlesPanel = new JPanel(new GridBagLayout());
+        titlesPanel.setBorder(BorderFactory.createTitledBorder("Titles"));
+        panel.add(titlesPanel, c);
+        titlesPanel.add(new JLabel("Lift Chart title: "), cc);
+        cc.gridx++;
+        titlesPanel.add(m_chartLiftTitleTextField, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        titlesPanel.add(new JLabel("Lift Chart subtitle: "), cc);
+        cc.gridx++;
+        titlesPanel.add(m_chartLiftSubtitleTextField, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        titlesPanel.add(new JLabel("Gain Chart title: "), cc);
+        cc.gridx++;
+        titlesPanel.add(m_chartGainTitleTextField, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        titlesPanel.add(new JLabel("Gain Chart subtitle: "), cc);
+        cc.gridx++;
+        titlesPanel.add(m_chartGainSubtitleTextField, cc);
+        c.gridx = 0;
+        c.gridy++;
+
         JPanel sizesPanel = new JPanel(new GridBagLayout());
         sizesPanel.setBorder(BorderFactory.createTitledBorder("Display"));
         panel.add(sizesPanel, c);

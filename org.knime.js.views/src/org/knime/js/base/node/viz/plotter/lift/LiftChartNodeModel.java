@@ -393,10 +393,10 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
        m_config.setxAxisTitleLift(val.getxAxisTitleLift());
        m_config.setyAxisTitleLift(val.getyAxisTitleLift());
 
-       m_config.setTitleLift(val.getTitleGain());
-       m_config.setSubtitleLift(val.getSubtitleGain());
-       m_config.setxAxisTitleLift(val.getxAxisTitleGain());
-       m_config.setyAxisTitleLift(val.getyAxisTitleGain());
+       m_config.setTitleGain(val.getTitleGain());
+       m_config.setSubtitleGain(val.getSubtitleGain());
+       m_config.setxAxisTitleGain(val.getxAxisTitleGain());
+       m_config.setyAxisTitleGain(val.getyAxisTitleGain());
 
        m_config.setShowGainChart(val.getShowGainChart());
        m_config.setSmoothing(val.getSmoothing());
