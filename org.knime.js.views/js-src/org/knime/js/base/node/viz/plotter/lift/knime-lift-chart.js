@@ -20,7 +20,15 @@ knime_lift_chart = function() {
                 "Step before" : "step-before",
                 "Cardinal" : "cardinal",
                 "Monotone" : "monotone"
-            };
+        };
+    var smoothingMapInverted = {
+            "linear" : "None",
+            "basis" : "Bezier",
+            "step-before" : "Step before",
+            "cardinal": "Cardinal",
+            "monotone" : "Monotone",
+        };
+
             
     view.init = function(representation, value) {
         _value = value;
@@ -210,8 +218,8 @@ knime_lift_chart = function() {
 	    				hasTitle = (_value.xAxisTitleGain.length > 0);
 	                } else {
 	                	hadTitle = (_value.xAxisTitleLift.length > 0);
-	                    _value.xAxisTitleLift = this.value;
-	                    hasTitle = (_value.xAxisTitleLift.length > 0);
+                        _value.xAxisTitleLift = this.value;
+                        hasTitle = (_value.xAxisTitleLift.length > 0);
 	                }
 	                d3.select("#xtitle").text(this.value);
 	                if (hadTitle != hasTitle) {
@@ -247,7 +255,7 @@ knime_lift_chart = function() {
 	    }
 	    
 	    if (_representation.enableSmoothingEdit) {	    	
-	    	var smoothSelect = knimeService.createMenuSelect('smoothSelect', _value.smoothing, Object.keys(smoothingMap), function() {
+	    	var smoothSelect = knimeService.createMenuSelect('smoothSelect', smoothingMapInverted[_value.smoothing], Object.keys(smoothingMap), function() {
 	    		_value.smoothing = smoothingMap[this.value];
                 drawChart();
     		});
