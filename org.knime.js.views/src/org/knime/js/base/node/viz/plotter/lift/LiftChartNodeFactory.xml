@@ -31,6 +31,10 @@
         </tab>
         <tab name="General Plot Options">
             <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>
+            <option name="Lift chart title" optional="true">The title of the lift graph shown above the generated image. If left blank, no title will be shown.</option>
+            <option name="Lift chart subtitle" optional="true">The subtitle of the lift graph shown above the generated image. If left blank, no subtitle will be shown.</option>         
+            <option name="Gain chart title" optional="true">The title of the gain graph shown above the generated image. If left blank, no title will be shown.</option>
+            <option name="Gain chart subtitle" optional="true">The subtitle of the gain graph shown above the generated image. If left blank, no subtitle will be shown.</option>     
             <option name="Width of image (in px)">The width of the generated SVG image.</option>
             <option name="Height of image (in px)">The height of the generated SVG image.</option>
             <option name="Line width (in px)">The width of the shown lines.</option>
