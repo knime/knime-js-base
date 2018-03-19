@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
+	jsNamespace="scorer_namespace" nodeID="scorerJS" categoryPath="/analytics/mining/modeleval"
+    icon="./scorer.png" type="Other">
+    
+    <name>Scorer (JavaScript)</name>
+    <shortDescription></shortDescription>
+    <fullDescription>
+    	<intro>What does this node do?</intro>
+    	<options>
+    		<columnSelectorOption name="First column" id="first_column" inPortIndex="0" label="First column">
+ 				The first column represents the real classes of the data.
+    		</columnSelectorOption>
+    		<columnSelectorOption name="Second column" id="second_column" inPortIndex="0" label="Second column">
+ 				The second column represents the real classes of the data.
+    		</columnSelectorOption>
+    		<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
+    		</colorOption>
+    		<colorOption name="Diagonal color" id="diag_color" label="Diagonal color" format="HexString" defaultR="166" defaultG="192" defaultB="197">
+    		</colorOption>
+    	</options>
+    </fullDescription>
+    
+    <interactiveView name="Confusion Matrix"></interactiveView>
+    <ports>
+    	<inPort portType="Data" name="Input table" index="0">Table containing at least two columns to compare.</inPort>
+    	<inPort portType="Data" name="Dummy port" index="1" optional="true"></inPort>
+    </ports>
+    
+    <js:resources>
+    	<js:resource type="js" path="scorer.js"/>
+    	<js:resource type="css" path="scorer.css"/>
+    </js:resources>
+    <js:javaProcessor className="org.knime.dynamic.js.base.scorer.ScorerProcessor" hidesLimitRowOption="true" />
+    
+</js:knimeNode>
