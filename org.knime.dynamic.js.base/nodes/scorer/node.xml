@@ -27,7 +27,6 @@
     <interactiveView name="Confusion Matrix"></interactiveView>
     <ports>
     	<inPort portType="Data" name="Input table" index="0">Table containing at least two columns to compare.</inPort>
-    	<inPort portType="Data" name="Dummy port" index="1" optional="true"></inPort>
     </ports>
     
     <js:resources>

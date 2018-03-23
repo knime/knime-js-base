@@ -41,7 +41,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 //        return new Object[]{table, confusionMatrix, valueStatsList};
         ScorerResult result = new ScorerResult(classes, confusionMatrix, keyStore, valueStatsList, accuracy, cohensKappa);
         
-        return new Object[] {table, result};
+        return new Object[] {result};
 	}
 
 	//Class for wrapping all the results of the ScorerCalculator into one unique structure

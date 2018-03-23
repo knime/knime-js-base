@@ -15,11 +15,14 @@
 		
 		debugger;
 		
-		classes = _representation.inObjects[1].classes;
-		confusionMatrix = _representation.inObjects[1].confusionMatrix;
-		keyStore = representation.inObjects[1].keyStore;
-		tableID = _representation.inObjects[0].id;
-		valueStatsList = _representation.inObjects[1].valueStatsList;
+		classes = _representation.inObjects[0].classes;
+		confusionMatrix = _representation.inObjects[0].confusionMatrix;
+		keyStore = representation.inObjects[0].keyStore;
+		tableID = _representation.tableIds[0];
+		valueStatsList = _representation.inObjects[0].valueStatsList;
+		accuracy = representation.inObjects[0].accuracy;
+		cohensKappa = representation.inObjects[0].cohensKappa;
+
 		
 
 		var body = document.querySelector('body');
@@ -94,28 +97,85 @@
 		body.appendChild(table);
 
 
-		// //Building the accuracy statistics table
-		// table = document.createElement('table');
-		// table.setAttribute('id', 'knime-accuracy-statistics');
-		// table.setAttribute('class', 'center');
-
-		// tHeader = document.createElement('thead');
-		// tRow = document.createElement('tr');
-		// th = document.createElement('th');
-		// th.appendChild(document.createTextNode('Class'));
-		// tRow.appendChild(th);
-		// // for (var i = 0; i < classes.length; i++) {
-		// // 	th = document.createElement('th');
-		// // 	th.appendChild(document.createTextNode(classes[i]));
-		// // 	tRow.appendChild(th);
-		// // }
+		// //Displaying the accuracy and Cohen's kappa values
+		var p = document.createElement('p');
+		p.innerHTML = 'Accuracy : ' + accuracy.toFixed(3);
+		body.appendChild(p);
+		var p = document.createElement('p');
+		p.innerHTML = "Cohen's kappa : " + cohensKappa.toFixed(3);
+		body.appendChild(p);
 
 
-		// table.appendChild(tHeader);
 
-		// body.appendChild(table);
+		//Building the accuracy statistics table
+		table = document.createElement('table');
+		table.setAttribute('id', 'knime-accuracy-statistics');
+		table.setAttribute('class', 'center');
+
+		tHeader = document.createElement('thead');
+		tRow = document.createElement('tr');
+		th = document.createElement('th');
+		var statNames = ['Class', 'TruePositives', 'FalsePositives', 'TrueNegatives', 'FalseNegatives',
+			'Recall', 'Precision', 'Sensitivity', 'Specificity', 'F-measure']
+		for (var i = 0; i < statNames.length; i++) {
+			th = document.createElement('th');
+			th.appendChild(document.createTextNode(statNames[i]));
+			tRow.appendChild(th);
+		}
+		tHeader.appendChild(tRow);
+		table.appendChild(tHeader);
+
+		tBody = document.createElement('tbody');
+		for (var i = 0; i < valueStatsList.length; i++) {
+			tRow = document.createElement('tr');
+
+			var td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].valueName));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].tp));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].fp));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].tn));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].fn));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
+			tRow.appendChild(td);																		
+
+			tBody.appendChild(tRow);
+		}
+		table.appendChild(tBody);
+
+		body.appendChild(table);
 		
-		
+
 		knimeService.subscribeToSelection(tableID, selectionChanged);
 	}
 	
