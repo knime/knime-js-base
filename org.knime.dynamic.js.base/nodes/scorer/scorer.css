@@ -2,6 +2,8 @@ table {
 	border-collapse: collapse;
 	margin-bottom: 8px;
 	color: #222;
+	table-layout: fixed;
+	width: 100%;
 }
 
 .center {
