@@ -7,20 +7,21 @@
     icon="./scorer.png" type="Other">
     
     <name>Scorer (JavaScript)</name>
-    <shortDescription></shortDescription>
+    <shortDescription>An Accuracy Scorer Node in JavaScript</shortDescription>
     <fullDescription>
-    	<intro>What does this node do?</intro>
+    	<intro>Compares two columns by their attribute value pairs and shows the confusion matrix, i.e. how many rows of which attribute and their classification match. Additionally, it is possible to hilight cells of this matrix to determine the underlying rows. The dialog allows you to select two columns for comparison; the values from the first selected column are represented in the confusion matrix's rows and the values from the second column by the confusion matrix's columns. The output of the node is the confusion matrix with the number of matches in each cell. Additionally, the second out-port reports a number of accuracy statistics such as True-Positives, False-Positives, True-Negatives, False-Negatives, Recall, Precision, Sensitivity, Specificity, F-measure, as well as the overall accuracy and Cohen's kappa.</intro>
     	<options>
     		<columnSelectorOption name="First column" id="first_column" inPortIndex="0" label="First column">
- 				The first column represents the real classes of the data.
+ 				The first column represents the actual classes of the data.
     		</columnSelectorOption>
     		<columnSelectorOption name="Second column" id="second_column" inPortIndex="0" label="Second column">
- 				The second column represents the real classes of the data.
+ 				The second column represents the predicted classes of the data.
     		</columnSelectorOption>
     		<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
+    		Color used for the header sections of the tables (rows or column headers).
     		</colorOption>
     		<colorOption name="Diagonal color" id="diag_color" label="Diagonal color" format="HexString" defaultR="166" defaultG="192" defaultB="197">
-    		</colorOption>
+    		Color used for highlighting the values on the diagonal of the confusion matrix (the correct predictions).</colorOption>
     	</options>
     </fullDescription>
     
@@ -33,6 +34,8 @@
     	<js:resource type="js" path="scorer.js"/>
     	<js:resource type="css" path="scorer.css"/>
     </js:resources>
+    <js:dependencies>
+		<js:dependency name="jQuery" path="jQuery_3.1.1" type="local" />
+	</js:dependencies>
     <js:javaProcessor className="org.knime.dynamic.js.base.scorer.ScorerProcessor" hidesLimitRowOption="true" />
-    
 </js:knimeNode>

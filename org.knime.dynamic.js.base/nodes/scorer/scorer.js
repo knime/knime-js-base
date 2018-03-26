@@ -31,6 +31,9 @@
 		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-confusion-matrix');
 		table.setAttribute('class', 'center');
+		var caption = document.createElement('caption');
+		caption.appendChild(document.createTextNode('Confusion Matrix'));
+		table.appendChild(caption);
 		
 		var tHeader = document.createElement('thead');
 		//1st header row
@@ -40,6 +43,7 @@
 		th.appendChild(document.createTextNode('Total'));
 		th.setAttribute('colspan', 2);
 		th.setAttribute('rowspan', 2);
+		th.setAttribute('style', 'border-right-width: 2px')
 		tRow.appendChild(th);
 		//Predicted
 		th = document.createElement('th');
@@ -64,6 +68,7 @@
 				th = document.createElement('th');
 				th.appendChild(document.createTextNode('Actual'));
 				th.setAttribute('rowspan', classes.length);
+				th.setAttribute('style', 'border-bottom-width: 2px')
 				tRow.appendChild(th);
 			}
 			if (row !== confusionMatrix.length) {
@@ -106,11 +111,13 @@
 		body.appendChild(p);
 
 
-
 		//Building the accuracy statistics table
 		table = document.createElement('table');
 		table.setAttribute('id', 'knime-accuracy-statistics');
 		table.setAttribute('class', 'center');
+		caption = document.createElement('caption');
+		caption.appendChild(document.createTextNode('Accuracy Statistics'));
+		table.appendChild(caption);
 
 		tHeader = document.createElement('thead');
 		tRow = document.createElement('tr');
@@ -126,48 +133,92 @@
 		table.appendChild(tHeader);
 
 		tBody = document.createElement('tbody');
-		for (var i = 0; i < valueStatsList.length; i++) {
+		for (var i = 0; i <= valueStatsList.length; i++) {
 			tRow = document.createElement('tr');
 
 			var td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].valueName));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].valueName));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}	
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].tp));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].tp));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}	
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].fp));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].fp));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}	
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].tn));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].tn));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}	
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].fn));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].fn));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}	
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}				
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}			
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}			
 			tRow.appendChild(td);
 
 			td = document.createElement('td');
-			td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
-			tRow.appendChild(td);																		
+			if (i !== valueStatsList.length) {
+				td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
+			} else {
+				td.setAttribute('class', 'no-border');
+			}				
+			tRow.appendChild(td);
+
+			td = document.createElement('td');
+			td.setAttribute('class', 'no-border');
+			tRow.appendChild(td);
 
 			tBody.appendChild(tRow);
 		}

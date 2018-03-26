@@ -26,6 +26,12 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         String secondColumnName = secondColumnModel.getStringValue();
                 
         AccuracyScorerCalculator scorerCalc = new AccuracyScorerCalculator(table, firstColumnName, secondColumnName, exec);
+        List<String> warnings = scorerCalc.getWarnings();
+        StringBuffer buffer = new StringBuffer();
+        for (String warning : warnings) {
+        	buffer.append(warning + "\n");
+        }
+        setWarningMessage(buffer.toString());
         String[] classes = scorerCalc.getTargetValues();
         List<String>[][] keyStore = scorerCalc.getKeyStore();
         int[][] confusionMatrix = scorerCalc.getConfusionMatrix();
