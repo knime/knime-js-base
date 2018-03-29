@@ -20,11 +20,11 @@
 		keyStore = representation.inObjects[0].keyStore;
 		tableID = _representation.tableIds[0];
 		valueStatsList = _representation.inObjects[0].valueStatsList;
-		accuracy = representation.inObjects[0].accuracy;
-		cohensKappa = representation.inObjects[0].cohensKappa;
+		accuracy = _representation.inObjects[0].accuracy;
+		cohensKappa = _representation.inObjects[0].cohensKappa;
+		rowsNumber = _representation.inObjects[0].rowsNumber;
 
 		
-
 		var body = document.querySelector('body');
 		
 		//Building the confusion matrix table
@@ -40,7 +40,7 @@
 		var tRow = document.createElement('tr');
 		//Total
 		var th = document.createElement('th');
-		th.appendChild(document.createTextNode('Total'));
+		th.appendChild(document.createTextNode('Total rows number: \n' + rowsNumber));
 		th.setAttribute('colspan', 2);
 		th.setAttribute('rowspan', 2);
 		th.setAttribute('style', 'border-right-width: 2px')
@@ -102,15 +102,6 @@
 		body.appendChild(table);
 
 
-		// //Displaying the accuracy and Cohen's kappa values
-		var p = document.createElement('p');
-		p.innerHTML = 'Accuracy : ' + accuracy.toFixed(3);
-		body.appendChild(p);
-		var p = document.createElement('p');
-		p.innerHTML = "Cohen's kappa : " + cohensKappa.toFixed(3);
-		body.appendChild(p);
-
-
 		//Building the accuracy statistics table
 		table = document.createElement('table');
 		table.setAttribute('id', 'knime-accuracy-statistics');
@@ -122,7 +113,7 @@
 		tHeader = document.createElement('thead');
 		tRow = document.createElement('tr');
 		th = document.createElement('th');
-		var statNames = ['Class', 'TruePositives', 'FalsePositives', 'TrueNegatives', 'FalseNegatives',
+		var statNames = ['Class', 'True Positives', 'False Positives', 'True Negatives', 'False Negatives',
 			'Recall', 'Precision', 'Sensitivity', 'Specificity', 'F-measure']
 		for (var i = 0; i < statNames.length; i++) {
 			th = document.createElement('th');
@@ -226,6 +217,38 @@
 
 		body.appendChild(table);
 		
+
+		//Table containing the accuracy and Cohen's kappa values
+		table = document.createElement('table');
+		table.setAttribute('id', 'knime-overall-statistics');
+		table.setAttribute('class', 'center');
+
+		tBody = document.createElement('tbody');
+		tRow = document.createElement('tr');
+		th = document.createElement('th');
+		th.appendChild(document.createTextNode('Overall Accuracy'));
+		tRow.appendChild(th);
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode(accuracy.toFixed(3)));
+		tRow.appendChild(td);
+		tBody.appendChild(tRow);
+
+		tRow = document.createElement('tr');
+		th = document.createElement('th');
+		th.appendChild(document.createTextNode("Cohen's kappa"));
+		tRow.appendChild(th);
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode(cohensKappa.toFixed(3)));
+		tRow.appendChild(td);
+		tBody.appendChild(tRow);
+
+		table.appendChild(tBody);
+		
+
+
+		body.appendChild(table);
+
+
 
 		knimeService.subscribeToSelection(tableID, selectionChanged);
 	}
