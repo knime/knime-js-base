@@ -1,6 +1,8 @@
 (scorer_namespace = function() {
 	
 	var scorer = {};
+	var title;
+	var subtitle;
 	var classes;	//Classifications 
 	var confusionMatrix;
 	var keyStore;
@@ -15,6 +17,8 @@
 		
 		debugger;
 		
+		title = _value.options["title"];
+		subtitle = _value.options["subtitle"];
 		classes = _representation.inObjects[0].classes;
 		confusionMatrix = _representation.inObjects[0].confusionMatrix;
 		keyStore = representation.inObjects[0].keyStore;
@@ -26,6 +30,17 @@
 
 		
 		var body = document.querySelector('body');
+
+		//Title and subtitle
+		var h1 = document.createElement('h1');
+		h1.appendChild(document.createTextNode(title));
+		h1.setAttribute('id', 'title');
+		body.appendChild(h1);
+		var h2 = document.createElement('h2');
+		h2.appendChild(document.createTextNode(subtitle));
+		h2.setAttribute('id', 'subtitle');
+		h2.setAttribute('align', 'center');
+		body.appendChild(h2);
 		
 		//Building the confusion matrix table
 		var table = document.createElement('table');
@@ -216,6 +231,8 @@
 		table.appendChild(tBody);
 
 		body.appendChild(table);
+
+		toggleAccuracyStatisticsDisplay();
 		
 
 		//Table containing the accuracy and Cohen's kappa values
@@ -251,6 +268,10 @@
 
 
 		knimeService.subscribeToSelection(tableID, selectionChanged);
+
+		if (_representation.options.enableViewControls) {
+			drawControls();
+		}
 	}
 	
 	cellClicked = function(event) {
@@ -269,6 +290,97 @@
 		//TODO should we support this?
 	}
 	
+	drawControls = function() {
+		if (!knimeService) {
+			// TODO: error handling?
+			return;
+		}
+		
+		if (_representation.displayFullscreenButton) {
+			knimeService.allowFullscreen();
+		}
+		
+	    if (!_representation.options.enableViewControls) return;
+	    
+	    var titleEdit = _representation.options.enableTitleEdit;
+	    var subtitleEdit = _representation.options.enableSubtitleEdit;
+	    var accuracyStatsDisplay = _representation.options.enableAccuracyStatisticsDisplay;	    
+	    
+	    if (titleEdit || subtitleEdit) {	    	    
+	    	if (titleEdit) {
+	    		var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, function() {
+	    			if (_value.options.title != this.value) {
+						_value.options.title = this.value;
+						updateTitles(true);
+					}
+	    		}, true);
+	    		knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+	    	}
+	    	if (subtitleEdit) {
+	    		var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, function() {
+	    			if (_value.options.subtitle != this.value) {
+						_value.options.subtitle = this.value;
+						updateTitles(true);
+					}
+	    		}, true);
+	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+	    	}
+	    	if (accuracyStatsDisplay) {
+	    		knimeService.addMenuDivider();
+	    	}
+	    }
+
+	    if (accuracyStatsDisplay) {
+	    	var switchAccuracyStatsDisplay = knimeService.createMenuCheckbox('switchAccuracyStatsDisplay', _value.options.displayAccuracyStatistics, function() {
+	    		if (_value.options.displayAccuracyStatistics != this.checked) {
+					_value.options.displayAccuracyStatistics = this.checked;
+					toggleAccuracyStatisticsDisplay();
+				}
+	    	});
+	    	knimeService.addMenuItem("Display accuracy statistics: ", 'question', switchAccuracyStatsDisplay);
+	    }
+	};
+
+	function updateTitles(updateChart) {
+		var curTitle = d3.select("#title");
+		var curSubtitle = d3.select("#subtitle");
+		if (!_value.options.title) {
+			curTitle.remove();
+		}
+		if (_value.options.title) {
+			if (curTitle.empty()) {
+				d3.select('body').append('h1')
+				.attr("id", "title")
+				.text(_value.options.title);
+			} else {
+				curTitle.text(_value.options.title);
+			}
+		}
+		if (!_value.options.subtitle) {
+			curSubtitle.remove();
+		} 
+		if (_value.options.subtitle) {
+			if (curSubtitle.empty()) {
+				d3.select('body').append('h2')
+				.attr("id", "subtitle")
+				.text(_value.options.subtitle);
+			} else {
+				curSubtitle.text(_value.options.subtitle)
+			}
+		}
+		
+		var isTitle = _value.options.title || _value.options.subtitle;
+		knimeService.floatingHeader(isTitle);
+	}
+
+	function toggleAccuracyStatisticsDisplay() {
+		if (_value.options.displayAccuracyStatistics === true) {
+			d3.select("#knime-accuracy-statistics").style("display", "block");
+		} else {
+			d3.select("#knime-accuracy-statistics").style("display", "none");
+		}
+	}
+
 	scorer.validate = function() {
 		return true;
 	}

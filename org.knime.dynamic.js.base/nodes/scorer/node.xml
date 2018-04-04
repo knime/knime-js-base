@@ -39,14 +39,46 @@
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
 					The view subtitle.
 				</stringOption>
+				<checkBoxOption name="Display accuracy statistics table" id="displayAccuracyStatistics"
+                    label="Display accuracy statistics table" defaultValue="false" loadDefaults="true" saveInView="true">
+                    Check to display the accuracy statistics table.
+                </checkBoxOption>
 				<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
 					Color used for the header sections of the tables (rows or column headers).
 				</colorOption>
 				<colorOption name="Diagonal color" id="diag_color" label="Diagonal color" format="HexString" defaultR="166" defaultG="192" defaultB="197">
 					Color used for highlighting the values on the diagonal of the confusion matrix (the correct predictions).
 				</colorOption>
+				<checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
+                    label="Display fullscreen button" defaultValue="true" loadDefaults="true">
+                    Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
+                </checkBoxOption>
 			</options>
 		</tab>
+		<tab name="Control Options">
+			<options>
+				<checkBoxOption name="Enable view controls" id="enableViewControls"
+					label="Enable view controls" defaultValue="true">
+					Check to enable controls in the chart.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
+					label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the title within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
+					label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the editing of the subtitle within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Accuracy Statistics display" id="enableAccuracyStatisticsDisplay"
+					label="Enable Accuracy Statistics display" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the display of the accuracy statistics table.
+				</checkBoxOption>
+			</options>
+		</tab>		
+		
     </fullDescription>
     
     <interactiveView name="Confusion Matrix"></interactiveView>
@@ -60,6 +92,7 @@
     </js:resources>
     <js:dependencies>
 		<js:dependency name="jQuery" path="jQuery_3.1.1" type="local" />
+		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 	</js:dependencies>
     <js:javaProcessor className="org.knime.dynamic.js.base.scorer.ScorerProcessor" hidesLimitRowOption="true" />
 </js:knimeNode>
