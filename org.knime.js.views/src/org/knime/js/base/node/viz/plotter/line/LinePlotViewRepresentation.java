@@ -54,6 +54,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.ConversionDateTimeFormat;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.warnings.JSONWarnings;
@@ -713,8 +715,17 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         m_warnings.loadFromNodeSettings(settings);
         setReportOnMissingValues(settings.getBoolean(LinePlotViewConfig.REPORT_ON_MISSING_VALUES, LinePlotViewConfig.DEFAULT_REPORT_ON_MISSING_VALUES));
 
+        // added with 3.5
         if (settings.containsKey(LinePlotViewConfig.DATE_TIME_FORMATS)) {
             m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
+        } else {
+            // convert from legacy
+            String legacyDateTimeFormat = settings.getString(LinePlotViewConfig.DATE_FORMAT);
+            String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
+            SettingsModelDateTimeOptions dateTimeOptions = new SettingsModelDateTimeOptions(LinePlotViewConfig.DATE_TIME_FORMATS);
+            dateTimeOptions.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            dateTimeOptions.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            m_dateTimeFormats = dateTimeOptions.getJSONSerializableObject();
         }
     }
 

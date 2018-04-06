@@ -54,6 +54,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.components.datetime.ConversionDateTimeFormat;
+import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 import org.knime.js.core.datasets.JSONKeyedValues2DDataset;
 import org.knime.js.core.warnings.JSONWarnings;
@@ -752,6 +754,14 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
         //added with 3.5
         if (settings.containsKey(ScatterPlotViewConfig.DATE_TIME_FORMATS)) {
             m_dateTimeFormats = JSONDateTimeOptions.loadFromNodeSettings(settings.getNodeSettings(ScatterPlotViewConfig.DATE_TIME_FORMATS));
+        } else {
+            // convert from legacy
+            String legacyDateTimeFormat = settings.getString(ScatterPlotViewConfig.DATE_FORMAT);
+            String newDateTimeFormat = ConversionDateTimeFormat.oldToNew(legacyDateTimeFormat);
+            SettingsModelDateTimeOptions dateTimeOptions = new SettingsModelDateTimeOptions(ScatterPlotViewConfig.DATE_TIME_FORMATS);
+            dateTimeOptions.getGlobalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            dateTimeOptions.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
+            m_dateTimeFormats = dateTimeOptions.getJSONSerializableObject();
         }
     }
 
