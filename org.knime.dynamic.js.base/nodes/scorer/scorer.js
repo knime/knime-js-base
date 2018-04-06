@@ -17,11 +17,19 @@
 		
 		debugger;
 		
+		drawPage();
+
+		if (_representation.options.enableViewControls) {
+			drawControls();
+		}
+	}
+
+	function drawPage() {
 		title = _value.options["title"];
 		subtitle = _value.options["subtitle"];
 		classes = _representation.inObjects[0].classes;
 		confusionMatrix = _representation.inObjects[0].confusionMatrix;
-		keyStore = representation.inObjects[0].keyStore;
+		keyStore = _representation.inObjects[0].keyStore;
 		tableID = _representation.tableIds[0];
 		valueStatsList = _representation.inObjects[0].valueStatsList;
 		accuracy = _representation.inObjects[0].accuracy;
@@ -41,6 +49,7 @@
 		h2.setAttribute('id', 'subtitle');
 		h2.setAttribute('align', 'center');
 		body.appendChild(h2);
+
 		
 		//Building the confusion matrix table
 		var table = document.createElement('table');
@@ -117,12 +126,12 @@
 		body.appendChild(table);
 
 
-		//Building the accuracy statistics table
+		//Building the class statistics table
 		table = document.createElement('table');
-		table.setAttribute('id', 'knime-accuracy-statistics');
+		table.setAttribute('id', 'knime-class-statistics');
 		table.setAttribute('class', 'center');
 		caption = document.createElement('caption');
-		caption.appendChild(document.createTextNode('Accuracy Statistics'));
+		caption.appendChild(document.createTextNode('Class Statistics'));
 		table.appendChild(caption);
 
 		tHeader = document.createElement('thead');
@@ -142,13 +151,14 @@
 		for (var i = 0; i <= valueStatsList.length; i++) {
 			tRow = document.createElement('tr');
 
-			var td = document.createElement('td');
+			var th = document.createElement('th');
 			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].valueName));
+				th.appendChild(document.createTextNode(valueStatsList[i].valueName));
 			} else {
-				td.setAttribute('class', 'no-border');
+				th = document.createElement('td');
+				th.setAttribute('class', 'no-border');
 			}	
-			tRow.appendChild(td);
+			tRow.appendChild(th);
 
 			td = document.createElement('td');
 			if (i !== valueStatsList.length) {
@@ -232,13 +242,16 @@
 
 		body.appendChild(table);
 
-		toggleAccuracyStatisticsDisplay();
+		toggleClassStatisticsDisplay();
 		
 
 		//Table containing the accuracy and Cohen's kappa values
 		table = document.createElement('table');
 		table.setAttribute('id', 'knime-overall-statistics');
 		table.setAttribute('class', 'center');
+		caption = document.createElement('caption');
+		caption.appendChild(document.createTextNode('Overall Statistics'));
+		table.appendChild(caption);		
 
 		tBody = document.createElement('tbody');
 		tRow = document.createElement('tr');
@@ -260,19 +273,12 @@
 		tBody.appendChild(tRow);
 
 		table.appendChild(tBody);
-		
-
-
 		body.appendChild(table);
 
 
-
 		knimeService.subscribeToSelection(tableID, selectionChanged);
-
-		if (_representation.options.enableViewControls) {
-			drawControls();
-		}
 	}
+
 	
 	cellClicked = function(event) {
 		confusionTable.querySelectorAll('td').forEach(function (cell) {
@@ -304,7 +310,8 @@
 	    
 	    var titleEdit = _representation.options.enableTitleEdit;
 	    var subtitleEdit = _representation.options.enableSubtitleEdit;
-	    var accuracyStatsDisplay = _representation.options.enableAccuracyStatisticsDisplay;	    
+	    var classStatsDisplay = _representation.options.enableClassStatisticsDisplay;	    
+	    var CMRatesDisplay = _representation.options.enableCMRatesDisplay;	    
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -325,19 +332,29 @@
 	    		}, true);
 	    		var mi = knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 	    	}
-	    	if (accuracyStatsDisplay) {
+	    	if (CMRatesDisplay || classStatsDisplay) {
 	    		knimeService.addMenuDivider();
 	    	}
 	    }
 
-	    if (accuracyStatsDisplay) {
-	    	var switchAccuracyStatsDisplay = knimeService.createMenuCheckbox('switchAccuracyStatsDisplay', _value.options.displayAccuracyStatistics, function() {
-	    		if (_value.options.displayAccuracyStatistics != this.checked) {
-					_value.options.displayAccuracyStatistics = this.checked;
-					toggleAccuracyStatisticsDisplay();
+	    if (CMRatesDisplay) {
+	    	var switchCMRatesDisplay = knimeService.createMenuCheckbox('switchCMRatesDisplay', _value.options.displayCMRates, function() {
+	    		if (_value.options.displayCMRates != this.checked) {
+					_value.options.displayCMRates = this.checked;
+					// toggleClassStatisticsDisplay();
 				}
 	    	});
-	    	knimeService.addMenuItem("Display accuracy statistics: ", 'question', switchAccuracyStatsDisplay);
+	    	knimeService.addMenuItem("Display confusion matrix rates: ", 'table', switchCMRatesDisplay);
+	    }
+
+	    if (classStatsDisplay) {
+	    	var switchClassStatsDisplay = knimeService.createMenuCheckbox('switchClassStatsDisplay', _value.options.displayClassStatistics, function() {
+	    		if (_value.options.displayClassStatistics != this.checked) {
+					_value.options.displayClassStatistics = this.checked;
+					toggleClassStatisticsDisplay();
+				}
+	    	});
+	    	knimeService.addMenuItem("Display class statistics: ", 'table', switchClassStatsDisplay);
 	    }
 	};
 
@@ -373,11 +390,11 @@
 		knimeService.floatingHeader(isTitle);
 	}
 
-	function toggleAccuracyStatisticsDisplay() {
-		if (_value.options.displayAccuracyStatistics === true) {
-			d3.select("#knime-accuracy-statistics").style("display", "block");
+	function toggleClassStatisticsDisplay() {
+		if (_value.options.displayClassStatistics === true) {
+			d3.select("#knime-class-statistics").style("display", "block");
 		} else {
-			d3.select("#knime-accuracy-statistics").style("display", "none");
+			d3.select("#knime-class-statistics").style("display", "none");
 		}
 	}
 

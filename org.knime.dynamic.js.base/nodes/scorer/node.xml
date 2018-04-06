@@ -12,14 +12,14 @@
     	<intro>Compares two columns by their attribute value pairs and shows the confusion matrix, i.e. how many rows of which attribute and their classification match. Additionally, it is possible to hilight cells of this matrix to determine the underlying rows. The dialog allows you to select two columns for comparison; the values from the first selected column are represented in the confusion matrix's rows and the values from the second column by the confusion matrix's columns. The output of the node is the confusion matrix with the number of matches in each cell. Additionally, the second out-port reports a number of accuracy statistics such as True-Positives, False-Positives, True-Negatives, False-Negatives, Recall, Precision, Sensitivity, Specificity, F-measure, as well as the overall accuracy and Cohen's kappa.</intro>
 		<tab name="Scorer Options">
 			<options>
-				<columnSelectorOption name="First column" id="first_column" inPortIndex="0" label="First column" filterClasses="org.knime.core.data.DataValue">
-					The first column represents the actual classes of the data.
+				<columnSelectorOption name="First column" id="first_column" inPortIndex="0" label="Actual column" filterClasses="org.knime.core.data.DataValue">
+					The actual column contains the actual classes of the data.
 				</columnSelectorOption>
-				<columnSelectorOption name="Second column" id="second_column" inPortIndex="0" label="Second column" filterClasses="org.knime.core.data.DataValue">
-					The second column represents the predicted classes of the data.
+				<columnSelectorOption name="Second column" id="second_column" inPortIndex="0" label="Predicted column" filterClasses="org.knime.core.data.DataValue">
+					The predicted column contains the predicted classes of the data.
 				</columnSelectorOption>
  				<radioButtonOption name="Sorting Strategy" id="sorting_strategy" 
-					possibleValues="Insertion&#160;Order Lexical" label="Sorting Strategy" defaultValue="Insertion&#160;Order">
+					possibleValues="Lexical Insertion&#160;Order" label="Sorting Strategy" defaultValue="Lexical">
 				</radioButtonOption>
 				<checkBoxOption name="Reverse order" id="reverse_order" 
                     label="Reverse order" defaultValue="false" loadDefaults="true">
@@ -39,9 +39,13 @@
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
 					The view subtitle.
 				</stringOption>
-				<checkBoxOption name="Display accuracy statistics table" id="displayAccuracyStatistics"
-                    label="Display accuracy statistics table" defaultValue="false" loadDefaults="true" saveInView="true">
-                    Check to display the accuracy statistics table.
+				<checkBoxOption name="Display confusion matrix rates" id="displayCMRates"
+                    label="Display confusion matrix rates" defaultValue="true" loadDefaults="true" saveInView="true">
+                    Check to display the confusion matrix's rows and columns totals as rates.
+                </checkBoxOption>
+				<checkBoxOption name="Display class statistics table" id="displayClassStatistics"
+                    label="Display class statistics table" defaultValue="false" loadDefaults="true" saveInView="true">
+                    Check to display the class statistics table.
                 </checkBoxOption>
 				<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
 					Color used for the header sections of the tables (rows or column headers).
@@ -71,10 +75,15 @@
 					enableValue="true">
 					Check to enable the editing of the subtitle within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Accuracy Statistics display" id="enableAccuracyStatisticsDisplay"
-					label="Enable Accuracy Statistics display" defaultValue="true" enableDependency="enableViewControls"
+				<checkBoxOption name="Enable Confusion Matrix rates display" id="enableCMRatesDisplay"
+					label="Enable Confusion Matrix rates display" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
-					Check to enable the display of the accuracy statistics table.
+					Check to enable the display of the Confusion Matrix's rows and columns totals as rates.
+				</checkBoxOption>				
+				<checkBoxOption name="Enable Class Statistics display" id="enableClassStatisticsDisplay"
+					label="Enable Class Statistics display" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the display of the class statistics table.
 				</checkBoxOption>
 			</options>
 		</tab>		

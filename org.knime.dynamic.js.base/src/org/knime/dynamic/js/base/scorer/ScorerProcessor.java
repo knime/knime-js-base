@@ -57,6 +57,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         String[] classes = scorerCalc.getTargetValues();
         List<String>[][] keyStore = scorerCalc.getKeyStore();
         int[][] confusionMatrix = scorerCalc.getConfusionMatrix();
+        double[][] confusionMatrixWithRates = scorerCalc.getConfusionMatrixWithRates();
         List<ValueStats> valueStatsList = new ArrayList<ValueStats>();
         Iterator<ValueStats> valueStatsIterator = scorerCalc.getIterator();
         while(valueStatsIterator.hasNext()) {
@@ -68,7 +69,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         
         //TODO: make this into a proper JSONDataTable, see DataExplorer for example
 //        return new Object[]{table, confusionMatrix, valueStatsList};
-        ScorerResult result = new ScorerResult(classes, confusionMatrix, keyStore, valueStatsList, accuracy, cohensKappa, rowsNumber);
+        ScorerResult result = new ScorerResult(classes, confusionMatrix, confusionMatrixWithRates, keyStore, valueStatsList, accuracy, cohensKappa, rowsNumber);
         
         return new Object[] {result};
 	}
@@ -77,6 +78,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 	public class ScorerResult {
 		private String[] classes;
 		private int[][] confusionMatrix;
+		private double[][] confusionMatrixWithRates;
 		private List<String>[][] keyStore;
 		private List<ValueStats> valueStatsList;
 	    private double accuracy;
@@ -98,7 +100,14 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		public void setConfusionMatrix(int[][] confusionMatrix) {
 			this.confusionMatrix = confusionMatrix;
 		}
+
+		public double[][] getConfusionMatrixWithRates() {
+			return confusionMatrixWithRates;
+		}
 		
+		public void setConfusionMatrixWithRates(double[][] confusionMatrixWithRates) {
+			this.confusionMatrixWithRates = confusionMatrixWithRates;
+		}		
 		public List<String>[][] getKeyStore() {
 			return keyStore;
 		}
@@ -148,11 +157,12 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		 * @param m_accuracy
 		 * @param m_cohensKappa
 		 */
-		public ScorerResult(String[] classes, int[][] confusionMatrix, List<String>[][] keyStore, List<ValueStats> valueStatsList, double accuracy,
+		public ScorerResult(String[] classes, int[][] confusionMatrix, double[][] confusionMatrixWithRates, List<String>[][] keyStore, List<ValueStats> valueStatsList, double accuracy,
 				double cohensKappa, int rowsNumber) {
 			super();
 			this.classes = classes;
 			this.confusionMatrix = confusionMatrix;
+			this.confusionMatrixWithRates = confusionMatrixWithRates;
 			this.keyStore = keyStore;
 			this.valueStatsList = valueStatsList;
 			this.accuracy = accuracy;
