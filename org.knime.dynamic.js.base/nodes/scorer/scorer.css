@@ -6,6 +6,10 @@ table {
 	width: 100%;
 }
 
+table caption{
+	text-align:	left;
+}
+
 .center {
 	margin-left: auto;
 	margin-right: auto;
@@ -72,5 +76,12 @@ body {
 h1 {
     font-size: 24px;
     font-weight: normal;
-    text-align: center;
+    text-align: left;
+    line-height: 0;
+}
+
+h4 {
+    font-size: 12px;
+    font-weight: normal;
+    text-align: left;
 }

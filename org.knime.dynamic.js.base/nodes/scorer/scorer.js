@@ -45,11 +45,11 @@
 		h1.appendChild(document.createTextNode(title));
 		h1.setAttribute('id', 'title');
 		body.appendChild(h1);
-		var h2 = document.createElement('h2');
-		h2.appendChild(document.createTextNode(subtitle));
-		h2.setAttribute('id', 'subtitle');
-		h2.setAttribute('align', 'center');
-		body.appendChild(h2);
+		var h4 = document.createElement('h4');
+		h4.appendChild(document.createTextNode(subtitle));
+		h4.setAttribute('id', 'subtitle');
+		h4.setAttribute('align', 'center');
+		body.appendChild(h4);
 
 		
 		//Building the confusion matrix table
@@ -402,7 +402,7 @@
 		} 
 		if (_value.options.subtitle) {
 			if (curSubtitle.empty()) {
-				d3.select('body').append('h2')
+				d3.select('body').append('h4')
 				.attr("id", "subtitle")
 				.text(_value.options.subtitle);
 			} else {
