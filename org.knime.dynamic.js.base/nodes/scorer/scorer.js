@@ -1,16 +1,22 @@
 (scorer_namespace = function() {
 	
 	var scorer = {};
+	var _representation, _value;
 	var title;
 	var subtitle;
+	var rowsNumber;
 	var classes;	//Classifications 
 	var confusionMatrix;
+	var confusionMatrixWithRates;
 	var keyStore;
 	var tableID;
-	var valueStatsList
-	var _representation, _value;
+	var valueStatsList;
+	var accuracy;
+	var cohensKappa;
+	var body;
 	var confusionTable;
-	
+
+
 	scorer.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
@@ -37,8 +43,7 @@
 		cohensKappa = _representation.inObjects[0].cohensKappa;
 		rowsNumber = _representation.inObjects[0].rowsNumber;
 
-		
-		var body = document.querySelector('body');
+		body = document.querySelector('body');
 
 		//Title and subtitle
 		var h1 = document.createElement('h1');
@@ -51,8 +56,19 @@
 		h4.setAttribute('align', 'center');
 		body.appendChild(h4);
 
-		
 		//Building the confusion matrix table
+		createConfusionMatrixTable();
+
+		//Building the class statistics table
+		createClassStatisticsTable();
+
+		//Table containing the accuracy and Cohen's kappa values
+		createOverallStatisticsTable();
+
+		knimeService.subscribeToSelection(tableID, selectionChanged);
+	}
+
+	createConfusionMatrixTable = function() {
 		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-confusion-matrix');
 		table.setAttribute('class', 'center');
@@ -61,28 +77,16 @@
 		table.appendChild(caption);
 		
 		var tHeader = document.createElement('thead');
-		//1st header row
+		//header row
 		var tRow = document.createElement('tr');
-		//Total
 		var th = document.createElement('th');
-		th.appendChild(document.createTextNode('Total rows number: \n' + rowsNumber));
-		th.setAttribute('colspan', 2);
-		th.setAttribute('rowspan', 2);
+		th.appendChild(document.createTextNode('Rows Number : \n' + rowsNumber));
 		th.setAttribute('style', 'border-right-width: 2px');
 		th.style.backgroundColor = _representation.options.header_color;
 		tRow.appendChild(th);
-		//Predicted
-		th = document.createElement('th');
-		th.appendChild(document.createTextNode('Predicted'));
-		th.setAttribute('colspan', classes.length);
-		th.style.backgroundColor = _representation.options.header_color;
-		tRow.appendChild(th);
-		tHeader.appendChild(tRow);
-		//2nd header row
-		tRow = document.createElement('tr');
 		for (var i = 0; i < classes.length; i++) {
 			th = document.createElement('th');
-			th.appendChild(document.createTextNode(classes[i]));
+			th.appendChild(document.createTextNode('Predicted ' + classes[i]));
 			th.style.backgroundColor = _representation.options.header_color;
 			tRow.appendChild(th);
 		}
@@ -92,16 +96,8 @@
 		var tBody = document.createElement('tbody');
 		for (var row = 0; row < confusionMatrix.length; row++) {
 			tRow = document.createElement('tr');
-			if (row === 0) {
-				th = document.createElement('th');
-				th.appendChild(document.createTextNode('Actual'));
-				th.setAttribute('rowspan', classes.length);
-				th.setAttribute('style', 'border-bottom-width: 2px');
-				th.style.backgroundColor = _representation.options.header_color;
-				tRow.appendChild(th);
-			}
 			th = document.createElement('th');
-			th.appendChild(document.createTextNode(classes[row]));
+			th.appendChild(document.createTextNode('Actual ' + classes[row]));
 			th.style.backgroundColor = _representation.options.header_color;
 			tRow.appendChild(th);
 			for (var col = 0; col < confusionMatrix.length; col++) {
@@ -122,9 +118,6 @@
 			tBody.appendChild(tRow);
 		}
 		tRow = document.createElement('tr');
-		var td = document.createElement('td');
-		td.setAttribute('class', 'no-border');
-		tRow.appendChild(td);
 		td = document.createElement('td');
 		td.setAttribute('class', 'no-border');
 		tRow.appendChild(td);
@@ -134,17 +127,32 @@
 			td.setAttribute('class', 'rateCell');			
 			tRow.appendChild(td);
 		}
-
-
 		tBody.appendChild(tRow);
 		table.appendChild(tBody);
-		
 		confusionTable = table;
 		body.appendChild(table);
 
-
-		//Building the class statistics table
-		table = document.createElement('table');
+		toggleConfusionMatrixRatesDisplay();
+	}
+	
+	cellClicked = function(event) {
+		confusionTable.querySelectorAll('td').forEach(function (cell) {
+			cell.classList.remove('selected');
+		});
+		this.classList.add('selected');
+		if (knimeService.isInteractivityAvailable()) {
+			// knimeService.setSelectedRows(tableID, ['Row20'], selectionChanged);
+			var rowIds = keyStore[this.dataset.row][this.dataset.col];
+			knimeService.setSelectedRows(tableID, rowIds);
+		}
+	}
+	
+	selectionChanged = function(data) {
+		//TODO should we support this?
+	}
+	
+	createClassStatisticsTable = function() {
+		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-class-statistics');
 		table.setAttribute('class', 'center');
 		caption = document.createElement('caption');
@@ -154,8 +162,46 @@
 		tHeader = document.createElement('thead');
 		tRow = document.createElement('tr');
 		th = document.createElement('th');
-		var statNames = ['Class', 'True Positives', 'False Positives', 'True Negatives', 'False Negatives',
-			'Recall', 'Precision', 'Sensitivity', 'Specificity', 'F-measure']
+		var statNames = ['Class'];
+		if (_representation.options.displayTruePositives === true) {
+			statNames.push('True Positives');
+		}
+		if (_representation.options.displayFalsePositives === true) {
+			statNames.push('False Positives');
+		}
+		if (_representation.options.displayTrueNegatives === true) {
+			statNames.push('True Negatives');
+		}
+		if (_representation.options.displayFalseNegatives === true) {
+			statNames.push('False Negatives');
+		}
+		if (_representation.options.displayAccuracy === true) {
+			statNames.push('Accuracy');
+		}
+		if (_representation.options.displayBalancedAccuracy === true) {
+			statNames.push('Balanced Accuracy');
+		}
+		if (_representation.options.displayErrorRate === true) {
+			statNames.push('Error Rate');
+		}
+		if (_representation.options.displayFalseNegativeRate === true) {
+			statNames.push('False Negative Rate');
+		}
+		if (_representation.options.displayRecall === true) {
+			statNames.push('Recall');
+		}
+		if (_representation.options.displayPrecision === true) {
+			statNames.push('Precision');
+		}
+		if (_representation.options.displaySensitivity === true) {
+			statNames.push('Sensitivity');
+		}
+		if (_representation.options.displaySpecificity === true) {
+			statNames.push('Specificity');
+		}
+		if (_representation.options.displayFMeasure === true) {
+			statNames.push('F-measure');
+		}
 		for (var i = 0; i < statNames.length; i++) {
 			th = document.createElement('th');
 			th.appendChild(document.createTextNode(statNames[i]));
@@ -179,77 +225,135 @@
 			}	
 			tRow.appendChild(th);
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].tp));
-			} else {
-				td.setAttribute('class', 'no-border');
+			if (_representation.options.displayTruePositives === true) {	
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].tp));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}	
+				tRow.appendChild(td);
 			}	
-			tRow.appendChild(td);
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].fp));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}	
-			tRow.appendChild(td);
-
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].tn));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}	
-			tRow.appendChild(td);
-
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].fn));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}	
-			tRow.appendChild(td);
-
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
-			} else {
-				td.setAttribute('class', 'no-border');
+			if (_representation.options.displayFalsePositives === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].fp));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}	
+				tRow.appendChild(td);
 			}
-			tRow.appendChild(td);
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}				
-			tRow.appendChild(td);
+			if (_representation.options.displayTrueNegatives === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].tn));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}	
+				tRow.appendChild(td);
+			}
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
-			} else {
-				td.setAttribute('class', 'no-border');
+			if (_representation.options.displayFalseNegatives === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].fn));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}	
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displayAccuracy === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].accuracy.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displayBalancedAccuracy === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].balancedAccuracy.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displayErrorRate === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].errorRate.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displayFalseNegativeRate === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].falseNegativeRate.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}
+				tRow.appendChild(td);
 			}			
-			tRow.appendChild(td);
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}			
-			tRow.appendChild(td);
+			if (_representation.options.displayRecall === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}
+				tRow.appendChild(td);
+			}
 
-			td = document.createElement('td');
-			if (i !== valueStatsList.length) {
-				td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
-			} else {
-				td.setAttribute('class', 'no-border');
-			}				
-			tRow.appendChild(td);
+			if (_representation.options.displayPrecision === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}				
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displaySensitivity === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}			
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displaySpecificity === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}			
+				tRow.appendChild(td);
+			}
+
+			if (_representation.options.displayFMeasure === true) {
+				td = document.createElement('td');
+				if (i !== valueStatsList.length) {
+					td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
+				} else {
+					td.setAttribute('class', 'no-border');
+				}				
+				tRow.appendChild(td);
+			}	
 
 			td = document.createElement('td');
 			td.setAttribute('class', 'no-border');
@@ -261,11 +365,11 @@
 
 		body.appendChild(table);
 
-		toggleClassStatisticsDisplay();
-		
+		toggleClassStatisticsDisplay();		
+	}
 
-		//Table containing the accuracy and Cohen's kappa values
-		table = document.createElement('table');
+	createOverallStatisticsTable = function() {
+		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-overall-statistics');
 		table.setAttribute('class', 'center');
 		caption = document.createElement('caption');
@@ -294,32 +398,9 @@
 		tBody.appendChild(tRow);
 
 		table.appendChild(tBody);
-		body.appendChild(table);
-
-
-		knimeService.subscribeToSelection(tableID, selectionChanged);
+		body.appendChild(table);		
 	}
 
-	createConfusionMatrixTable = function() {
-
-	}
-	
-	cellClicked = function(event) {
-		confusionTable.querySelectorAll('td').forEach(function (cell) {
-			cell.classList.remove('selected');
-		});
-		this.classList.add('selected');
-		if (knimeService.isInteractivityAvailable()) {
-			// knimeService.setSelectedRows(tableID, ['Row20'], selectionChanged);
-			var rowIds = keyStore[this.dataset.row][this.dataset.col];
-			knimeService.setSelectedRows(tableID, rowIds);
-		}
-	}
-	
-	selectionChanged = function(data) {
-		//TODO should we support this?
-	}
-	
 	drawControls = function() {
 		if (!knimeService) {
 			// TODO: error handling?
@@ -368,7 +449,7 @@
 					toggleConfusionMatrixRatesDisplay();
 				}
 	    	});
-	    	knimeService.addMenuItem("Display confusion matrix rates: ", 'table', switchCMRatesDisplay);
+	    	knimeService.addMenuItem("Display confusion matrix totals as rates: ", 'table', switchCMRatesDisplay);
 	    }
 
 	    if (classStatsDisplay) {
@@ -424,11 +505,11 @@
 
 	function toggleConfusionMatrixRatesDisplay() {
 		if (_value.options.displayCMRates === true) {
-			d3.selectAll(".rateCell").style("visibility", "visible");
-
+			d3.selectAll(".rateCell").style("display", "table-cell");
+			d3.selectAll(".no-border").style("display", "table-cell");
 		} else {
-			d3.selectAll(".rateCell").style("visibility", "hidden");
-			d3.selectAll(".no-border").style("visibility", "hidden");
+			d3.selectAll(".rateCell").style("display", "none");
+			d3.selectAll(".no-border").style("display", "none");
 		}
 	}	
 
