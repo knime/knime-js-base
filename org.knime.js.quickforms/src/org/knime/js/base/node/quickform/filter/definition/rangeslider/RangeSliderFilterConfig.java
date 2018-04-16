@@ -46,7 +46,7 @@
  * History
  *   Oct 10, 2016 (albrecht): created
  */
-package org.knime.js.base.node.quickform.filter.rangeslider;
+package org.knime.js.base.node.quickform.filter.definition.rangeslider;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;

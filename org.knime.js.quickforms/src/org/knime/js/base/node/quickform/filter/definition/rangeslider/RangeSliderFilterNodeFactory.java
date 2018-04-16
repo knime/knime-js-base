@@ -42,7 +42,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform.filter.rangeslider;
+package org.knime.js.base.node.quickform.filter.definition.rangeslider;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;

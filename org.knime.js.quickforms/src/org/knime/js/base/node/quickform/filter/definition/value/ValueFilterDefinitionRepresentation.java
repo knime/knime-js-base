@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,94 +41,47 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   14 Apr 2018 (albrecht): created
  */
-package org.knime.js.base.node.quickform.filter.rangeslider;
+package org.knime.js.base.node.quickform.filter.definition.value;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
-import org.knime.js.core.selections.json.RangeSelection;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Value for the range slider filter node.
  *
- * @author Christian Albrecht, KNIME.com AG, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class RangeSliderFilterValue extends JSONViewContent {
+public class ValueFilterDefinitionRepresentation extends JSONViewContent {
 
-    private static final String CFG_FILTER = "filter";
-    private RangeSelection m_filter;
+    /**
+     *
+     */
+    public ValueFilterDefinitionRepresentation() {
+        // TODO Auto-generated constructor stub
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        NodeSettingsWO filterSettings = settings.addNodeSettings(CFG_FILTER);
-        m_filter.saveToNodeSettings(filterSettings);
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        NodeSettingsRO filterSettings = settings.getNodeSettings(CFG_FILTER);
-        m_filter = new RangeSelection();
-        m_filter.loadFromNodeSettings(filterSettings);
-    }
+        // TODO Auto-generated method stub
 
-    /**
-     * @return the filter
-     */
-    @JsonProperty("filter")
-    public RangeSelection getFilter() {
-        return m_filter;
-    }
-
-    /**
-     * @param filter the filter to set
-     */
-    @JsonProperty("filter")
-    public void setFilter(final RangeSelection filter) {
-        m_filter = filter;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("filter=");
-        sb.append(m_filter);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_filter)
-                .toHashCode();
     }
 
     /**
@@ -135,19 +89,17 @@ public class RangeSliderFilterValue extends JSONViewContent {
      */
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        RangeSliderFilterValue other = (RangeSliderFilterValue)obj;
-        return new EqualsBuilder()
-                .append(m_filter, other.m_filter)
-                .isEquals();
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

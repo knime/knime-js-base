@@ -103,7 +103,12 @@
       </node>
       <node
             category-path="/flowcontrol/quickforms/filter"
-            factory-class="org.knime.js.base.node.quickform.filter.rangeslider.RangeSliderFilterNodeFactory">
+            factory-class="org.knime.js.base.node.quickform.filter.definition.rangeslider.RangeSliderFilterNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/quickforms/filter"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
    </extension>
    <extension
@@ -589,15 +594,15 @@
             version="1.0.0"
             webResourceBundleID="org.knime.js.base.node.quickform.filter.slider.bundle">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/quickform/filter/slider/"
-               relativePathTarget="org/knime/js/base/node/quickform/filter/slider/">
+               relativePathSource="js-src/org/knime/js/base/node/quickform/filter/definition/slider/"
+               relativePathTarget="org/knime/js/base/node/quickform/filter/definition/slider/">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/quickform/filter/slider/SliderFilter.js"
+               relativePath="org/knime/js/base/node/quickform/filter/definition/slider/SliderFilter.js"
                type="JAVASCRIPT">
          </importResource>
          <importResource
-               relativePath="org/knime/js/base/node/quickform/filter/slider/slider.css"
+               relativePath="org/knime/js/base/node/quickform/filter/definition/slider/slider.css"
                type="CSS">
          </importResource>
          <webDependency
