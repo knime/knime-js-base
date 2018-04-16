@@ -13,6 +13,7 @@
 	var valueStatsList;
 	var accuracy;
 	var cohensKappa;
+	var error;
 	var body;
 	var confusionTable;
 
@@ -41,6 +42,7 @@
 		valueStatsList = _representation.inObjects[0].valueStatsList;
 		accuracy = _representation.inObjects[0].accuracy;
 		cohensKappa = _representation.inObjects[0].cohensKappa;
+		error = _representation.inObjects[0].error;
 		rowsNumber = _representation.inObjects[0].rowsNumber;
 
 		body = document.querySelector('body');
@@ -372,32 +374,42 @@
 		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-overall-statistics');
 		table.setAttribute('class', 'center');
-		caption = document.createElement('caption');
+		var caption = document.createElement('caption');
 		caption.appendChild(document.createTextNode('Overall Statistics'));
 		table.appendChild(caption);		
 
-		tBody = document.createElement('tbody');
-		tRow = document.createElement('tr');
-		th = document.createElement('th');
+		var tHeader = document.createElement('thead');
+		var tRow = document.createElement('tr');
+		var th = document.createElement('th');
 		th.appendChild(document.createTextNode('Overall Accuracy'));
 		th.style.backgroundColor = _representation.options.header_color;
 		tRow.appendChild(th);
-		td = document.createElement('td');
-		td.appendChild(document.createTextNode(accuracy.toFixed(3)));
-		tRow.appendChild(td);
-		tBody.appendChild(tRow);
-
-		tRow = document.createElement('tr');
 		th = document.createElement('th');
 		th.appendChild(document.createTextNode("Cohen's kappa"));
 		th.style.backgroundColor = _representation.options.header_color;
 		tRow.appendChild(th);
+		th = document.createElement('th');
+		th.appendChild(document.createTextNode("Error"));
+		th.style.backgroundColor = _representation.options.header_color;
+		tRow.appendChild(th);		
+		tHeader.appendChild(tRow);
+		table.appendChild(tHeader);
+
+
+		var tBody = document.createElement('tbody');
+		tRow = document.createElement('tr');
+		var td = document.createElement('td');
+		td.appendChild(document.createTextNode(accuracy.toFixed(3)));
+		tRow.appendChild(td);
 		td = document.createElement('td');
 		td.appendChild(document.createTextNode(cohensKappa.toFixed(3)));
 		tRow.appendChild(td);
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode(error.toFixed(3)));
+		tRow.appendChild(td);		
 		tBody.appendChild(tRow);
-
 		table.appendChild(tBody);
+
 		body.appendChild(table);		
 	}
 

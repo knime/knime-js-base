@@ -65,11 +65,12 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         }
         double accuracy = scorerCalc.getAccuracy();
         double cohensKappa = scorerCalc.getCohensKappa();
+        double error = scorerCalc.getError();
         int rowsNumber = scorerCalc.getRowsNumber();
         
         //TODO: make this into a proper JSONDataTable, see DataExplorer for example
 //        return new Object[]{table, confusionMatrix, valueStatsList};
-        ScorerResult result = new ScorerResult(classes, confusionMatrix, confusionMatrixWithRates, keyStore, valueStatsList, accuracy, cohensKappa, rowsNumber);
+        ScorerResult result = new ScorerResult(classes, confusionMatrix, confusionMatrixWithRates, keyStore, valueStatsList, accuracy, cohensKappa, error, rowsNumber);
         
         return new Object[] {result};
 	}
@@ -83,6 +84,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		private List<ValueStats> valueStatsList;
 	    private double accuracy;
 	    private double cohensKappa;
+	    private double error;
 	    private int rowsNumber;
 	    
 		public String[] getClasses() {
@@ -140,7 +142,15 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 			this.cohensKappa = cohensKappa;
 		}
 	    
-		public int getRowsNumber() {
+		public double getError() {
+            return error;
+        }
+
+        public void setError(double error) {
+            this.error = error;
+        }
+
+        public int getRowsNumber() {
 			return rowsNumber;
 		}
 
@@ -158,7 +168,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		 * @param m_cohensKappa
 		 */
 		public ScorerResult(String[] classes, int[][] confusionMatrix, double[][] confusionMatrixWithRates, List<String>[][] keyStore, List<ValueStats> valueStatsList, double accuracy,
-				double cohensKappa, int rowsNumber) {
+				double cohensKappa, double error, int rowsNumber) {
 			super();
 			this.classes = classes;
 			this.confusionMatrix = confusionMatrix;
@@ -167,6 +177,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 			this.valueStatsList = valueStatsList;
 			this.accuracy = accuracy;
 			this.cohensKappa = cohensKappa;
+			this.error = error;
 			this.rowsNumber = rowsNumber;
 		}
 	}	

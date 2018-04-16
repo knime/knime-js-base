@@ -43,10 +43,6 @@
                     label="Display confusion matrix rates" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check to display the confusion matrix's rows and columns totals as rates.
                 </checkBoxOption>
-				<checkBoxOption name="Display class statistics table" id="displayClassStatistics"
-                    label="Display class statistics table" defaultValue="false" loadDefaults="true" saveInView="true">
-                    Check to display the class statistics table.
-                </checkBoxOption>
 				<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
 					Color used for the header sections of the tables (rows or column headers).
 				</colorOption>
@@ -61,56 +57,60 @@
 		</tab>
 		<tab name="Class Statistics Options">
 			<options>
+				<checkBoxOption name="Display class statistics table" id="displayClassStatistics"
+                    label="Display class statistics table" defaultValue="false" loadDefaults="true" saveInView="true">
+                    Check to display the class statistics table.
+                </checkBoxOption>	
 				<checkBoxOption name="Display true positives for each class" id="displayTruePositives"
-                    label="Display true positives for each class" defaultValue="true" loadDefaults="true">
+                    label="Display true positives" defaultValue="true" loadDefaults="true">
                     Check to display the true positives in the class statistics table.
                 </checkBoxOption>
                 <checkBoxOption name="Display false positives for each class" id="displayFalsePositives"
-                    label="Display false positives for each class" defaultValue="true" loadDefaults="true">
+                    label="Display false positives" defaultValue="true" loadDefaults="true">
                     Check to display the false positives in the class statistics table.
                 </checkBoxOption>
 				<checkBoxOption name="Display true negatives for each class" id="displayTrueNegatives"
-                    label="Display true negatives for each class" defaultValue="true" loadDefaults="true">
+                    label="Display true negatives" defaultValue="true" loadDefaults="true">
                     Check to display the true negatives in the class statistics table.
                 </checkBoxOption>
                 <checkBoxOption name="Display false negatives for each class" id="displayFalseNegatives"
-                    label="Display false negatives for each class" defaultValue="true" loadDefaults="true">
+                    label="Display false negatives" defaultValue="true" loadDefaults="true">
                     Check to display the false negatives in the class statistics table.
                 </checkBoxOption>                
 				<checkBoxOption name="Display accuracy for each class" id="displayAccuracy"
-                    label="Display accuracy for each class" defaultValue="true" loadDefaults="true">
+                    label="Display accuracy" defaultValue="true" loadDefaults="true">
                     Check to display the accuracy in the class statistics table.
                 </checkBoxOption>
 				<checkBoxOption name="Display balanced accuracy for each class" id="displayBalancedAccuracy"
-                    label="Display balanced accuracy for each class" defaultValue="true" loadDefaults="true">
+                    label="Display balanced accuracy" defaultValue="true" loadDefaults="true">
                     Check to display the balanced accuracy in the class statistics table.
                 </checkBoxOption>                
 				<checkBoxOption name="Display error rate for each class" id="displayErrorRate"
-                    label="Display error rate for each class" defaultValue="true" loadDefaults="true">
+                    label="Display error rate" defaultValue="true" loadDefaults="true">
                     Check to display the error rate in the class statistics table.
                 </checkBoxOption>
                 <checkBoxOption name="Display false negative rate for each class" id="displayFalseNegativeRate"
-                    label="Display false negative rate for each class" defaultValue="true" loadDefaults="true">
+                    label="Display false negative rate" defaultValue="true" loadDefaults="true">
                     Check to display the false negative rate in the class statistics table.
                 </checkBoxOption>
 				<checkBoxOption name="Display recall for each class" id="displayRecall"
-                    label="Display recall for each class" defaultValue="true" loadDefaults="true">
+                    label="Display recall" defaultValue="true" loadDefaults="true">
                     Check to display the recall in the class statistics table.
                 </checkBoxOption>
 				<checkBoxOption name="Display precision for each class" id="displayPrecision"
-                    label="Display precision for each class" defaultValue="true" loadDefaults="true">
+                    label="Display precision" defaultValue="true" loadDefaults="true">
                     Check to display the precision in the class statistics table.
                 </checkBoxOption>                
 				<checkBoxOption name="Display sensitivity for each class" id="displaySensitivity"
-                    label="Display sensitivity for each class" defaultValue="true" loadDefaults="true">
+                    label="Display sensitivity" defaultValue="true" loadDefaults="true">
                     Check to display the sensitivity in the class statistics table.
                 </checkBoxOption>
                 <checkBoxOption name="Display specificity rate for each class" id="displaySpecificity"
-                    label="Display specificity for each class" defaultValue="true" loadDefaults="true">
+                    label="Display specificity" defaultValue="true" loadDefaults="true">
                     Check to display the specificity in the class statistics table.
                 </checkBoxOption>                
                 <checkBoxOption name="Display F-measure for each class" id="displayFMeasure"
-                    label="Display F-measure for each class" defaultValue="true" loadDefaults="true">
+                    label="Display F-measure" defaultValue="true" loadDefaults="true">
                     Check to display the F-measure in the class statistics table.
                 </checkBoxOption>                
 			</options>
