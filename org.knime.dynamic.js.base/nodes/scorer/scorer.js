@@ -24,11 +24,11 @@
 		
 		debugger;
 		
-		createPage();
+		// createPage();
 
-		if (_representation.options.enableViewControls) {
-			drawControls();
-		}
+		// if (_representation.options.enableViewControls) {
+		// 	drawControls();
+		// }
 	}
 
 	function createPage() {

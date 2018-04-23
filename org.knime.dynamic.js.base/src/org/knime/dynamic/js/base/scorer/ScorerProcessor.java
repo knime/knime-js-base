@@ -9,12 +9,14 @@ import org.knime.base.node.mine.scorer.accuracy.AccuracyScorerCalculator;
 import org.knime.base.node.mine.scorer.accuracy.AccuracyScorerCalculator.ValueStats;
 import org.knime.base.util.SortingStrategy;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
 import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
+import org.knime.js.core.JSONDataTable;
 
 public class ScorerProcessor extends DynamicStatefulJSProcessor {
 	
@@ -41,123 +43,63 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		boolean sortingReversed = ((SettingsModelBoolean)config.getModel("reverse_order")).getBooleanValue();
 		boolean ignoreMissingValues = ((SettingsModelBoolean)config.getModel("ignore_missing_values")).getBooleanValue();
 		
-        AccuracyScorerCalculator scorerCalc = new AccuracyScorerCalculator();
-        scorerCalc.setSortingStrategy(sortingStrategy);
-        scorerCalc.setSortingReversed(sortingReversed);
-        scorerCalc.setIgnoreMissingValues(ignoreMissingValues);
+		AccuracyScorerCalculator.ScorerCalculatorConfiguration calculatorConfig = new AccuracyScorerCalculator.ScorerCalculatorConfiguration();
+		calculatorConfig.setSortingStrategy(sortingStrategy);
+		calculatorConfig.setSortingReversed(sortingReversed);
+		calculatorConfig.setIgnoreMissingValues(ignoreMissingValues);
+        AccuracyScorerCalculator scorerCalc = AccuracyScorerCalculator.createCalculator(table, firstColumnName, secondColumnName, calculatorConfig, exec);
         
-        scorerCalc.calculate(table, firstColumnName, secondColumnName, exec);
-		
-        List<String> warnings = scorerCalc.getWarnings();
-        StringBuffer buffer = new StringBuffer();
-        for (String warning : warnings) {
-        	buffer.append(warning + "\n");
-        }
-        setWarningMessage(buffer.toString());
-        String[] classes = scorerCalc.getTargetValues();
-        List<String>[][] keyStore = scorerCalc.getKeyStore();
-        int[][] confusionMatrix = scorerCalc.getConfusionMatrix();
-        double[][] confusionMatrixWithRates = scorerCalc.getConfusionMatrixWithRates();
-        List<ValueStats> valueStatsList = new ArrayList<ValueStats>();
-        Iterator<ValueStats> valueStatsIterator = scorerCalc.getIterator();
-        while(valueStatsIterator.hasNext()) {
-        	valueStatsList.add(valueStatsIterator.next());
-        }
-        double accuracy = scorerCalc.getAccuracy();
-        double cohensKappa = scorerCalc.getCohensKappa();
-        double error = scorerCalc.getError();
-        int rowsNumber = scorerCalc.getRowsNumber();
+        JSONDataTable confusionMatrixJSTable = createJSONTableFromBufferedDataTable(scorerCalc.getConfusionMatrixTable(exec), exec);
+//        List<String> warnings = scorerCalc.getWarnings();
+//        StringBuffer buffer = new StringBuffer();
+//        for (String warning : warnings) {
+//            buffer.append(warning + "\n");
+//        }
+//        setWarningMessage(buffer.toString());
+        
+//        List<ValueStats> valueStatsList = new ArrayList<ValueStats>();
+//        Iterator<ValueStats> valueStatsIterator = scorerCalc.getIterator();
+//        while(valueStatsIterator.hasNext()) {
+//        	valueStatsList.add(valueStatsIterator.next());
+//        }
         
         //TODO: make this into a proper JSONDataTable, see DataExplorer for example
 //        return new Object[]{table, confusionMatrix, valueStatsList};
-        ScorerResult result = new ScorerResult(classes, confusionMatrix, confusionMatrixWithRates, keyStore, valueStatsList, accuracy, cohensKappa, error, rowsNumber);
+        ScorerResult result = new ScorerResult(confusionMatrixJSTable);
         
         return new Object[] {result};
 	}
+	
+    /**
+     * Converts a buffered data table into {@link JSONDataTable} format
+     * @param table
+     * @param exec
+     * @return corresponding {@link JSONDataTable} object
+     * @throws CanceledExecutionException
+     */
+    private JSONDataTable createJSONTableFromBufferedDataTable(final BufferedDataTable table, final ExecutionContext exec) throws CanceledExecutionException {
+        JSONDataTable jsonTable = getJsonDataTableBuilder(table).build(exec);
+        return jsonTable;
+    }
+
+    /**
+     * Gets a builder for the concrete view
+     * @param table
+     * @return corresponding builder object
+     */
+    protected JSONDataTable.Builder getJsonDataTableBuilder(final BufferedDataTable table) {
+        return JSONDataTable.newBuilder()
+                .setDataTable(table);
+    }	
 
 	//Class for wrapping all the results of the ScorerCalculator into one unique structure
 	public class ScorerResult {
-		private String[] classes;
-		private int[][] confusionMatrix;
-		private double[][] confusionMatrixWithRates;
-		private List<String>[][] keyStore;
-		private List<ValueStats> valueStatsList;
-	    private double accuracy;
-	    private double cohensKappa;
-	    private double error;
-	    private int rowsNumber;
-	    
-		public String[] getClasses() {
-			return classes;
-		}
+		private JSONDataTable confusionMatrix;
 
-		public void setClasses(String[] classes) {
-			this.classes = classes;
-		}
-
-		public int[][] getConfusionMatrix() {
+		public JSONDataTable getConfusionMatrix() {
 			return confusionMatrix;
 		}
 		
-		public void setConfusionMatrix(int[][] confusionMatrix) {
-			this.confusionMatrix = confusionMatrix;
-		}
-
-		public double[][] getConfusionMatrixWithRates() {
-			return confusionMatrixWithRates;
-		}
-		
-		public void setConfusionMatrixWithRates(double[][] confusionMatrixWithRates) {
-			this.confusionMatrixWithRates = confusionMatrixWithRates;
-		}		
-		public List<String>[][] getKeyStore() {
-			return keyStore;
-		}
-
-		public void setKeyStore(List<String>[][] keyStore) {
-			this.keyStore = keyStore;
-		}
-
-		public List<ValueStats> getValueStatsList() {
-			return valueStatsList;
-		}
-		
-		public void setValueStatsList(List<ValueStats> valueStatsList) {
-			this.valueStatsList = valueStatsList;
-		}
-
-		public double getAccuracy() {
-			return accuracy;
-		}
-
-		public void setAccuracy(double accuracy) {
-			this.accuracy = accuracy;
-		}
-
-		public double getCohensKappa() {
-			return cohensKappa;
-		}
-
-		public void setCohensKappa(double cohensKappa) {
-			this.cohensKappa = cohensKappa;
-		}
-	    
-		public double getError() {
-            return error;
-        }
-
-        public void setError(double error) {
-            this.error = error;
-        }
-
-        public int getRowsNumber() {
-			return rowsNumber;
-		}
-
-		public void setRowsNumber(int rowsNumber) {
-			this.rowsNumber = rowsNumber;
-		}
-
 		public ScorerResult() {
 		}
 
@@ -167,18 +109,9 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		 * @param m_accuracy
 		 * @param m_cohensKappa
 		 */
-		public ScorerResult(String[] classes, int[][] confusionMatrix, double[][] confusionMatrixWithRates, List<String>[][] keyStore, List<ValueStats> valueStatsList, double accuracy,
-				double cohensKappa, double error, int rowsNumber) {
+		public ScorerResult(JSONDataTable confusionMatrix) {
 			super();
-			this.classes = classes;
 			this.confusionMatrix = confusionMatrix;
-			this.confusionMatrixWithRates = confusionMatrixWithRates;
-			this.keyStore = keyStore;
-			this.valueStatsList = valueStatsList;
-			this.accuracy = accuracy;
-			this.cohensKappa = cohensKappa;
-			this.error = error;
-			this.rowsNumber = rowsNumber;
 		}
 	}	
 }
