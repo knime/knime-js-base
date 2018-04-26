@@ -115,6 +115,34 @@
                 </checkBoxOption>                
 			</options>
 		</tab>
+		<tab name="Overall Statistics Options">
+			<options>
+				<checkBoxOption name="Display overall statistics table" id="displayOverallStatistics"
+                    label="Display overall statistics table" defaultValue="true" loadDefaults="true" saveInView="true">
+                    Check to display the overall statistics table.
+                </checkBoxOption>				
+				<checkBoxOption name="Display overall accuracy" id="displayOverallAccuracy"
+                    label="Display overall accuracy" defaultValue="true" loadDefaults="true">
+                    Check to display the overall accuracy in the overall statistics table.
+                </checkBoxOption>
+				<checkBoxOption name="Display overall error" id="displayOverallError"
+                    label="Display overall error" defaultValue="true" loadDefaults="true">
+                    Check to display the overall error in the overall statistics table.
+                </checkBoxOption>
+				<checkBoxOption name="Display Cohen's kappa" id="displayCohensKappa"
+                    label="Display Cohen's kappa" defaultValue="true" loadDefaults="true">
+                    Check to display the Cohen's kappa in the overall statistics table.
+                </checkBoxOption>
+				<checkBoxOption name="Display correct classified" id="displayCorrectClassified"
+                    label="Display correct classified" defaultValue="true" loadDefaults="true">
+                    Check to display the correct classified in the overall statistics table.
+                </checkBoxOption>
+				<checkBoxOption name="Display wrong classified" id="displayWrongClassified"
+                    label="Display wrong classified" defaultValue="true" loadDefaults="true">
+                    Check to display the wrong classified in the overall statistics table.
+                </checkBoxOption>
+			</options>
+		</tab>		
 		<tab name="Control Options">
 			<options>
 				<checkBoxOption name="Enable view controls" id="enableViewControls"
