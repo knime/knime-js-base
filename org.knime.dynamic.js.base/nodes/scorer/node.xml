@@ -53,6 +53,10 @@
                     label="Display fullscreen button" defaultValue="true" loadDefaults="true">
                     Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
                 </checkBoxOption>
+                <checkBoxOption name="Show warnings in view" id="showWarnings" 
+				    label="Show warnings in view" defaultValue="true" loadDefaults="true">
+                    If checked, warning messages will be displayed in the view when they occur.
+                </checkBoxOption>
 			</options>
 		</tab>
 		<tab name="Class Statistics Options">
@@ -184,6 +188,7 @@
     	<js:resource type="css" path="scorer.css"/>
     </js:resources>
     <js:dependencies>
+    	<js:dependency name="KnimeTable" path="KnimeTable_1.0.0" type="local" />
 		<js:dependency name="jQuery" path="jQuery_3.1.1" type="local" />
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 	</js:dependencies>

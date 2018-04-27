@@ -4,16 +4,16 @@
 	var _representation, _value;
 	var title;
 	var subtitle;
-	var rowsNumber;
-	var classes;	//Classifications 
 	var confusionMatrix;
+	var classes;
+	var rowsNumber;		
 	var confusionMatrixWithRates;
 	var keyStore;
 	var tableID;
-	var valueStatsList;
-	var accuracy;
-	var cohensKappa;
-	var error;
+	// var valueStatsList;
+	// var accuracy;
+	// var cohensKappa;
+	// var overallError;
 	var body;
 	var confusionTable;
 
@@ -24,7 +24,7 @@
 		
 		debugger;
 		
-		// createPage();
+		createPage();
 
 		// if (_representation.options.enableViewControls) {
 		// 	drawControls();
@@ -34,16 +34,18 @@
 	function createPage() {
 		title = _value.options["title"];
 		subtitle = _value.options["subtitle"];
-		classes = _representation.inObjects[0].classes;
-		confusionMatrix = _representation.inObjects[0].confusionMatrix;
-		confusionMatrixWithRates = _representation.inObjects[0].confusionMatrixWithRates;
-		keyStore = _representation.inObjects[0].keyStore;
+		confusionMatrix = new kt();
+		confusionMatrix.setDataTable(_representation.inObjects[0].confusionMatrix);
+		classes = confusionMatrix.getColumnNames();
+		confusionMatrixWithRates = createConfusionMatrixWithRates(confusionMatrix, classes.length + 1, classes.length + 1);
+		// confusionMatrixWithRates = _representation.inObjects[0].confusionMatrixWithRates;
+		// keyStore = _representation.inObjects[0].keyStore;
 		tableID = _representation.tableIds[0];
-		valueStatsList = _representation.inObjects[0].valueStatsList;
-		accuracy = _representation.inObjects[0].accuracy;
-		cohensKappa = _representation.inObjects[0].cohensKappa;
-		error = _representation.inObjects[0].error;
-		rowsNumber = _representation.inObjects[0].rowsNumber;
+		// valueStatsList = _representation.inObjects[0].valueStatsList;
+		// accuracy = _representation.inObjects[0].accuracy;
+		// cohensKappa = _representation.inObjects[0].cohensKappa;
+		// overallError = _representation.inObjects[0].overallError;
+		// rowsNumber = _representation.inObjects[0].rowsNumber;
 
 		body = document.querySelector('body');
 
@@ -61,13 +63,13 @@
 		//Building the confusion matrix table
 		createConfusionMatrixTable();
 
-		//Building the class statistics table
-		createClassStatisticsTable();
+		// //Building the class statistics table
+		// createClassStatisticsTable();
 
-		//Table containing the accuracy and Cohen's kappa values
-		createOverallStatisticsTable();
+		// //Table containing the accuracy and Cohen's kappa values
+		// createOverallStatisticsTable();
 
-		knimeService.subscribeToSelection(tableID, selectionChanged);
+		// knimeService.subscribeToSelection(tableID, selectionChanged);
 	}
 
 	createConfusionMatrixTable = function() {
@@ -96,15 +98,15 @@
 		table.appendChild(tHeader);
 		
 		var tBody = document.createElement('tbody');
-		for (var row = 0; row < confusionMatrix.length; row++) {
+		for (var row = 0; row < confusionMatrix.getNumRows(); row++) {
 			tRow = document.createElement('tr');
 			th = document.createElement('th');
 			th.appendChild(document.createTextNode('Actual ' + classes[row]));
 			th.style.backgroundColor = _representation.options.header_color;
 			tRow.appendChild(th);
-			for (var col = 0; col < confusionMatrix.length; col++) {
+			for (var col = 0; col < confusionMatrix.getNumColumns(); col++) {
 				var tCell = document.createElement('td');
-				tCell.appendChild(document.createTextNode(confusionMatrix[row][col]));
+				tCell.appendChild(document.createTextNode(confusionMatrix.getCell(row, col)));
 				tCell.setAttribute('data-row', row);
 				tCell.setAttribute('data-col', col);
 				if (row === col) {
@@ -123,7 +125,7 @@
 		td = document.createElement('td');
 		td.setAttribute('class', 'no-border');
 		tRow.appendChild(td);
-		for (var col = 0; col < confusionMatrix.length; col++) {
+		for (var col = 0; col < confusionMatrix.getNumRows(); col++) {
 			td = document.createElement('td');
 			td.appendChild(document.createTextNode(confusionMatrixWithRates[confusionMatrixWithRates.length-1][col].toFixed(3)));
 			td.setAttribute('class', 'rateCell');			
@@ -134,9 +136,37 @@
 		confusionTable = table;
 		body.appendChild(table);
 
-		toggleConfusionMatrixRatesDisplay();
+		// toggleConfusionMatrixRatesDisplay();
 	}
 	
+	createConfusionMatrixWithRates = function(confusionMatrix, numRows, numColumns) {
+		var confusionMatrixWithRates = new Array(numRows); 
+		for(var i = 0; i < numRows; i++) {
+			confusionMatrixWithRates[i] = new Array(numColumns); 
+		}
+		for (var i = 0; i < confusionMatrix.getNumRows(); i++) {
+			var currentRow = confusionMatrix.getRow(i);
+            for (var j = 0; j < confusionMatrix.getRow(i).data.length; j++) {
+                confusionMatrixWithRates[i][j] = confusionMatrix.getCell(i, j);
+            }
+        }
+        for (var i = 0; i < confusionMatrixWithRates.length-1; i++) {
+            var rowSum = 0;
+            for (var j = 0; j < confusionMatrixWithRates[i].length-1; j++) {
+                rowSum += confusionMatrixWithRates[i][j];
+            }
+            confusionMatrixWithRates[i][confusionMatrixWithRates.length-1] = confusionMatrixWithRates[i][i] / rowSum;
+        }
+        for (var i = 0; i < confusionMatrixWithRates.length-1; i++) {
+            var columnSum = 0;
+            for (var j = 0; j < confusionMatrixWithRates.length-1; j++) {
+                columnSum += confusionMatrixWithRates[j][i];
+            }
+            confusionMatrixWithRates[confusionMatrixWithRates.length-1][i] = confusionMatrixWithRates[i][i] / columnSum;
+        }
+		return confusionMatrixWithRates;
+	}
+
 	cellClicked = function(event) {
 		confusionTable.querySelectorAll('td').forEach(function (cell) {
 			cell.classList.remove('selected');
@@ -389,7 +419,7 @@
 		th.style.backgroundColor = _representation.options.header_color;
 		tRow.appendChild(th);
 		th = document.createElement('th');
-		th.appendChild(document.createTextNode("Error"));
+		th.appendChild(document.createTextNode("Overall Error"));
 		th.style.backgroundColor = _representation.options.header_color;
 		tRow.appendChild(th);		
 		tHeader.appendChild(tRow);
@@ -405,7 +435,7 @@
 		td.appendChild(document.createTextNode(cohensKappa.toFixed(3)));
 		tRow.appendChild(td);
 		td = document.createElement('td');
-		td.appendChild(document.createTextNode(error.toFixed(3)));
+		td.appendChild(document.createTextNode(overallError.toFixed(3)));
 		tRow.appendChild(td);		
 		tBody.appendChild(tRow);
 		table.appendChild(tBody);

@@ -1,6 +1,7 @@
 package org.knime.dynamic.js.base.scorer;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.knime.base.node.mine.scorer.accuracy.AccuracyScorerCalculator;
 import org.knime.base.util.SortingStrategy;
@@ -37,6 +38,7 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		SortingStrategy sortingStrategy = SortingStrategy.valueOf(strategy.replaceAll("\u00A0", ""));
 		boolean sortingReversed = ((SettingsModelBoolean)config.getModel("reverse_order")).getBooleanValue();
 		boolean ignoreMissingValues = ((SettingsModelBoolean)config.getModel("ignore_missing_values")).getBooleanValue();
+
 		AccuracyScorerCalculator.ScorerCalculatorConfiguration calculatorConfig = new AccuracyScorerCalculator.ScorerCalculatorConfiguration();
 		calculatorConfig.setSortingStrategy(sortingStrategy);
 		calculatorConfig.setSortingReversed(sortingReversed);
@@ -87,13 +89,18 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         .withCorrectClassifiedCalculated(isCorrectClassifiedCalculated)
         .withWrongClassifiedCalculated(isWrongClassifiedCalculated);
         JSONDataTable overallStatsTable = createJSONTableFromBufferedDataTable(scorerCalc.getOverallStatisticsTable(overallStatsConfig, exec), exec.createSubExecutionContext(0.03));
-//        List<String> warnings = scorerCalc.getWarnings();
-//        StringBuffer buffer = new StringBuffer();
-//        for (String warning : warnings) {
-//            buffer.append(warning + "\n");
-//        }
-//        setWarningMessage(buffer.toString());
-        ScorerResult result = new ScorerResult(confusionMatrixTable, classStatsTable, overallStatsTable);
+
+        List<String> warnings = scorerCalc.getWarnings();
+        StringBuffer buffer = new StringBuffer();
+        for (String warning : warnings) {
+            buffer.append(warning + "\n");
+        }
+        setWarningMessage(buffer.toString());
+
+        String[] classes = scorerCalc.getClasses();
+        int rowsNumber = scorerCalc.getRowsNumber();
+
+        ScorerResult result = new ScorerResult(confusionMatrixTable, classStatsTable, overallStatsTable, classes, rowsNumber);
         exec.setProgress(1);
         return new Object[] {result};
 	}
@@ -137,6 +144,8 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		private JSONDataTable confusionMatrix;
 		private JSONDataTable classStatistics;
 		private JSONDataTable overallStatistics;
+		private String[] classes;
+		private int rowsNumber;
 
 		/**
 		 * @return the confusion matrix
@@ -159,6 +168,20 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
             return overallStatistics;
         }
 
+        /**
+         * @return the classes as a string array
+         */
+        public String[] getClasses() {
+            return classes;
+        }
+
+        /**
+         * @return the rows number
+         */
+        public int getRowsNumber() {
+            return rowsNumber;
+        }
+
         public ScorerResult() {
 		}
 
@@ -166,11 +189,13 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
 		 * @param confusionMatrix
 		 * @param classStatistics
 		 */
-		public ScorerResult(final JSONDataTable confusionMatrix, final JSONDataTable classStatistics, final JSONDataTable overallStatistics) {
+		public ScorerResult(final JSONDataTable confusionMatrix, final JSONDataTable classStatistics, final JSONDataTable overallStatistics, final String[] classes, final int rowsNumber) {
 			super();
 			this.confusionMatrix = confusionMatrix;
 			this.classStatistics = classStatistics;
 			this.overallStatistics = overallStatistics;
+			this.classes = classes;
+			this.rowsNumber = rowsNumber;
 		}
 	}
 }
