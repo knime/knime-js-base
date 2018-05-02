@@ -6,14 +6,12 @@
 	var subtitle;
 	var confusionMatrix;
 	var classes;
-	var rowsNumber;		
 	var confusionMatrixWithRates;
-	var keyStore;
+	var classStatistics;
+	var overallStatistics;
+	var rowsNumber;
 	var tableID;
-	// var valueStatsList;
-	// var accuracy;
-	// var cohensKappa;
-	// var overallError;
+	var keyStore;
 	var body;
 	var confusionTable;
 
@@ -26,9 +24,9 @@
 		
 		createPage();
 
-		// if (_representation.options.enableViewControls) {
-		// 	drawControls();
-		// }
+		if (_representation.options.enableViewControls) {
+			drawControls();
+		}
 	}
 
 	function createPage() {
@@ -38,14 +36,13 @@
 		confusionMatrix.setDataTable(_representation.inObjects[0].confusionMatrix);
 		classes = confusionMatrix.getColumnNames();
 		confusionMatrixWithRates = createConfusionMatrixWithRates(confusionMatrix, classes.length + 1, classes.length + 1);
-		// confusionMatrixWithRates = _representation.inObjects[0].confusionMatrixWithRates;
-		// keyStore = _representation.inObjects[0].keyStore;
+		classStatistics = new kt();
+		classStatistics.setDataTable(_representation.inObjects[0].classStatistics);
+		overallStatistics = new kt();
+		overallStatistics.setDataTable(_representation.inObjects[0].overallStatistics);	
+		rowsNumber = overallStatistics.getCell('Overall','Correct Classified') + overallStatistics.getCell('Overall','Wrong Classified');
 		tableID = _representation.tableIds[0];
-		// valueStatsList = _representation.inObjects[0].valueStatsList;
-		// accuracy = _representation.inObjects[0].accuracy;
-		// cohensKappa = _representation.inObjects[0].cohensKappa;
-		// overallError = _representation.inObjects[0].overallError;
-		// rowsNumber = _representation.inObjects[0].rowsNumber;
+		keyStore = _representation.inObjects[0].keyStore;
 
 		body = document.querySelector('body');
 
@@ -64,12 +61,12 @@
 		createConfusionMatrixTable();
 
 		// //Building the class statistics table
-		// createClassStatisticsTable();
+		createClassStatisticsTable();
 
 		// //Table containing the accuracy and Cohen's kappa values
-		// createOverallStatisticsTable();
+		createOverallStatisticsTable();
 
-		// knimeService.subscribeToSelection(tableID, selectionChanged);
+		knimeService.subscribeToSelection(tableID, selectionChanged);
 	}
 
 	createConfusionMatrixTable = function() {
@@ -105,15 +102,15 @@
 			th.style.backgroundColor = _representation.options.header_color;
 			tRow.appendChild(th);
 			for (var col = 0; col < confusionMatrix.getNumColumns(); col++) {
-				var tCell = document.createElement('td');
-				tCell.appendChild(document.createTextNode(confusionMatrix.getCell(row, col)));
-				tCell.setAttribute('data-row', row);
-				tCell.setAttribute('data-col', col);
+				var td = document.createElement('td');
+				td.appendChild(document.createTextNode(confusionMatrix.getCell(row, col)));
+				td.setAttribute('data-row', row);
+				td.setAttribute('data-col', col);
 				if (row === col) {
-					tCell.style.backgroundColor = _representation.options.diag_color;
+					td.style.backgroundColor = _representation.options.diag_color;
 				}
-				tCell.onclick = cellClicked;
-				tRow.appendChild(tCell);
+				td.onclick = cellClicked;
+				tRow.appendChild(td);
 			}
 			var lastCell = document.createElement('td');
 			lastCell.appendChild(document.createTextNode(confusionMatrixWithRates[row][confusionMatrixWithRates.length-1].toFixed(3)));
@@ -136,7 +133,7 @@
 		confusionTable = table;
 		body.appendChild(table);
 
-		// toggleConfusionMatrixRatesDisplay();
+		toggleConfusionMatrixRatesDisplay();
 	}
 	
 	createConfusionMatrixWithRates = function(confusionMatrix, numRows, numColumns) {
@@ -187,55 +184,16 @@
 		var table = document.createElement('table');
 		table.setAttribute('id', 'knime-class-statistics');
 		table.setAttribute('class', 'center');
-		caption = document.createElement('caption');
+		var caption = document.createElement('caption');
 		caption.appendChild(document.createTextNode('Class Statistics'));
 		table.appendChild(caption);
 
-		tHeader = document.createElement('thead');
-		tRow = document.createElement('tr');
-		th = document.createElement('th');
+		var tHeader = document.createElement('thead');
+		var tRow = document.createElement('tr');
 		var statNames = ['Class'];
-		if (_representation.options.displayTruePositives === true) {
-			statNames.push('True Positives');
-		}
-		if (_representation.options.displayFalsePositives === true) {
-			statNames.push('False Positives');
-		}
-		if (_representation.options.displayTrueNegatives === true) {
-			statNames.push('True Negatives');
-		}
-		if (_representation.options.displayFalseNegatives === true) {
-			statNames.push('False Negatives');
-		}
-		if (_representation.options.displayAccuracy === true) {
-			statNames.push('Accuracy');
-		}
-		if (_representation.options.displayBalancedAccuracy === true) {
-			statNames.push('Balanced Accuracy');
-		}
-		if (_representation.options.displayErrorRate === true) {
-			statNames.push('Error Rate');
-		}
-		if (_representation.options.displayFalseNegativeRate === true) {
-			statNames.push('False Negative Rate');
-		}
-		if (_representation.options.displayRecall === true) {
-			statNames.push('Recall');
-		}
-		if (_representation.options.displayPrecision === true) {
-			statNames.push('Precision');
-		}
-		if (_representation.options.displaySensitivity === true) {
-			statNames.push('Sensitivity');
-		}
-		if (_representation.options.displaySpecificity === true) {
-			statNames.push('Specificity');
-		}
-		if (_representation.options.displayFMeasure === true) {
-			statNames.push('F-measure');
-		}
+		Array.prototype.push.apply(statNames, classStatistics.getColumnNames());
 		for (var i = 0; i < statNames.length; i++) {
-			th = document.createElement('th');
+			var th = document.createElement('th');
 			th.appendChild(document.createTextNode(statNames[i]));
 			th.style.backgroundColor = _representation.options.header_color;
 			tRow.appendChild(th);
@@ -244,155 +202,35 @@
 		table.appendChild(tHeader);
 
 		tBody = document.createElement('tbody');
-		for (var i = 0; i <= valueStatsList.length; i++) {
+		for (var row = 0; row < classStatistics.getNumRows(); row++) {
 			tRow = document.createElement('tr');
-
-			var th = document.createElement('th');
-			if (i !== valueStatsList.length) {
-				th.appendChild(document.createTextNode(valueStatsList[i].valueName));
-				th.style.backgroundColor = _representation.options.header_color;
-			} else {
-				th = document.createElement('td');
-				th.setAttribute('class', 'no-border');
-			}	
-			tRow.appendChild(th);
-
-			if (_representation.options.displayTruePositives === true) {	
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].tp));
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode(classStatistics.getRow(row).rowKey));
+			tRow.appendChild(td);
+			for (var col = 0; col < classStatistics.getNumColumns(); col++) {
+				var td = document.createElement('td');
+				var cellValue  = classStatistics.getCell(row, col);
+				if (cellValue % 1 === 0) {
+					// cellValue is an integer
+					td.appendChild(document.createTextNode(cellValue));
 				} else {
-					td.setAttribute('class', 'no-border');
-				}	
-				tRow.appendChild(td);
-			}	
-
-			if (_representation.options.displayFalsePositives === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].fp));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}	
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayTrueNegatives === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].tn));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}	
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayFalseNegatives === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].fn));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}	
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayAccuracy === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].accuracy.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
+					// cellValue is a float
+					td.appendChild(document.createTextNode(cellValue.toFixed(3)));
 				}
 				tRow.appendChild(td);
 			}
-
-			if (_representation.options.displayBalancedAccuracy === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].balancedAccuracy.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayErrorRate === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].errorRate.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayFalseNegativeRate === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].falseNegativeRate.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}
-				tRow.appendChild(td);
-			}			
-
-			if (_representation.options.displayRecall === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].recall.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayPrecision === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].precision.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}				
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displaySensitivity === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].sensitivity.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}			
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displaySpecificity === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].specificity.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}			
-				tRow.appendChild(td);
-			}
-
-			if (_representation.options.displayFMeasure === true) {
-				td = document.createElement('td');
-				if (i !== valueStatsList.length) {
-					td.appendChild(document.createTextNode(valueStatsList[i].fmeasure.toFixed(3)));
-				} else {
-					td.setAttribute('class', 'no-border');
-				}				
-				tRow.appendChild(td);
-			}	
-
+			// last cell of each row has no border
 			td = document.createElement('td');
 			td.setAttribute('class', 'no-border');
 			tRow.appendChild(td);
-
 			tBody.appendChild(tRow);
 		}
+		// last row has one cell without any border
+		tRow = document.createElement('tr');
+		td = document.createElement('td');
+		td.setAttribute('class', 'no-border');
+		tRow.appendChild(td);
+		tBody.appendChild(tRow);
 		table.appendChild(tBody);
 
 		body.appendChild(table);
@@ -411,32 +249,40 @@
 		var tHeader = document.createElement('thead');
 		var tRow = document.createElement('tr');
 		var th = document.createElement('th');
-		th.appendChild(document.createTextNode('Overall Accuracy'));
-		th.style.backgroundColor = _representation.options.header_color;
-		tRow.appendChild(th);
-		th = document.createElement('th');
-		th.appendChild(document.createTextNode("Cohen's kappa"));
-		th.style.backgroundColor = _representation.options.header_color;
-		tRow.appendChild(th);
-		th = document.createElement('th');
-		th.appendChild(document.createTextNode("Overall Error"));
-		th.style.backgroundColor = _representation.options.header_color;
-		tRow.appendChild(th);		
+		var statNames = overallStatistics.getColumnNames()
+		for (var i = 0; i < statNames.length; i++) {
+			th = document.createElement('th');
+			th.appendChild(document.createTextNode(statNames[i]));
+			th.style.backgroundColor = _representation.options.header_color;
+			tRow.appendChild(th);
+		}
 		tHeader.appendChild(tRow);
 		table.appendChild(tHeader);
 
-
 		var tBody = document.createElement('tbody');
 		tRow = document.createElement('tr');
-		var td = document.createElement('td');
-		td.appendChild(document.createTextNode(accuracy.toFixed(3)));
-		tRow.appendChild(td);
+		for (var col = 0; col < overallStatistics.getNumColumns(); col++) {
+			var td = document.createElement('td');
+			var cellValue  = overallStatistics.getCell(0, col);
+			if (cellValue % 1 === 0) {
+				// cellValue is an integer
+				td.appendChild(document.createTextNode(cellValue));
+			} else {
+				// cellValue is a float
+				td.appendChild(document.createTextNode(cellValue.toFixed(3)));
+			}
+			tRow.appendChild(td);
+		}
+		// last cell of each row has no border
 		td = document.createElement('td');
-		td.appendChild(document.createTextNode(cohensKappa.toFixed(3)));
+		td.setAttribute('class', 'no-border');
 		tRow.appendChild(td);
+		tBody.appendChild(tRow);
+		// last row has one cell without any border
+		tRow = document.createElement('tr');
 		td = document.createElement('td');
-		td.appendChild(document.createTextNode(overallError.toFixed(3)));
-		tRow.appendChild(td);		
+		td.setAttribute('class', 'no-border');
+		tRow.appendChild(td);
 		tBody.appendChild(tRow);
 		table.appendChild(tBody);
 
