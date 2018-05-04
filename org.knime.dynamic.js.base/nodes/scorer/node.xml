@@ -39,6 +39,10 @@
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
 					The view subtitle.
 				</stringOption>
+				<checkBoxOption name="Display number of rows" id="displayRowsNumber"
+                    label="Display number of rows" defaultValue="false" loadDefaults="true" saveInView="true">
+                    Check to display the number of rows.
+                </checkBoxOption>
 				<checkBoxOption name="Display confusion matrix rates" id="displayCMRates"
                     label="Display confusion matrix rates" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check to display the confusion matrix's rows and columns totals as rates.
@@ -49,6 +53,10 @@
 				<colorOption name="Diagonal color" id="diag_color" label="Diagonal color" format="HexString" defaultR="166" defaultG="192" defaultB="197">
 					Color used for highlighting the values on the diagonal of the confusion matrix (the correct predictions).
 				</colorOption>
+				<checkBoxOption name="Display float values as percentages" id="displayPercentages"
+                    label="Display float values as percentages" defaultValue="true" loadDefaults="true">
+                    Check to display float values as percentages.
+                </checkBoxOption>				
 				<checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
                     label="Display fullscreen button" defaultValue="true" loadDefaults="true">
                     Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
@@ -163,6 +171,11 @@
 					enableValue="true">
 					Check to enable the editing of the subtitle within the view.
 				</checkBoxOption>
+				<checkBoxOption name="Enable Rows Number display" id="enableRowsNumberDisplay"
+					label="Enable Rows Number display" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the display of the rows number.
+				</checkBoxOption>				
 				<checkBoxOption name="Enable Confusion Matrix rates display" id="enableCMRatesDisplay"
 					label="Enable Confusion Matrix rates display" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
@@ -172,6 +185,11 @@
 					label="Enable Class Statistics display" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the display of the class statistics table.
+				</checkBoxOption>
+				<checkBoxOption name="Enable Overall Statistics display" id="enableOverallStatisticsDisplay"
+					label="Enable Overall Statistics display" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable the display of the overall statistics table.
 				</checkBoxOption>
 			</options>
 		</tab>		
@@ -188,7 +206,6 @@
     	<js:resource type="css" path="scorer.css"/>
     </js:resources>
     <js:dependencies>
-    	<js:dependency name="KnimeTable" path="KnimeTable_1.0.0" type="local" />
 		<js:dependency name="jQuery" path="jQuery_3.1.1" type="local" />
 		<js:dependency name="D3" path="D3_3.2.8" type="local" />
 	</js:dependencies>

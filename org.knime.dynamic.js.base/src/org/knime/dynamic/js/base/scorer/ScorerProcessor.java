@@ -2,6 +2,7 @@ package org.knime.dynamic.js.base.scorer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.knime.base.node.mine.scorer.accuracy.AccuracyScorerCalculator;
@@ -97,7 +98,10 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
         for (int i = 0; i < keyStoreAsStrings.length; i++) {
             for (int j = 0; j < keyStoreAsStrings[i].length; j++) {
                 keyStoreAsStrings[i][j] = new ArrayList<String>();
-                keyStoreAsStrings[i][j].add((keyStore[i][j]).toString());
+                Iterator<RowKey> storeIt = keyStore[i][j].iterator();
+                while (storeIt.hasNext()) {
+                    keyStoreAsStrings[i][j].add(storeIt.next().getString());
+                }
             }
         }
 
