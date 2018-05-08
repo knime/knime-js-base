@@ -105,12 +105,17 @@ public class ScorerProcessor extends DynamicStatefulJSProcessor {
             }
         }
 
-        List<String> warnings = scorerCalc.getWarnings();
-        StringBuffer buffer = new StringBuffer();
-        for (String warning : warnings) {
-            buffer.append(warning + "\n");
+        // Missing values processing
+        if (ignoreMissingValues) {
+            List<String> warnings = scorerCalc.getWarnings();
+            if (warnings.size() > 0) {
+                StringBuffer buffer = new StringBuffer();
+                for (String warning : warnings) {
+                    buffer.append(warning + "\n");
+                }
+                setWarningMessage(buffer.toString());
+            }
         }
-        setWarningMessage(buffer.toString());
 
         ScorerResult result = new ScorerResult(confusionMatrixTable, classStatsTable, overallStatsTable, keyStoreAsStrings);
         exec.setProgress(1);

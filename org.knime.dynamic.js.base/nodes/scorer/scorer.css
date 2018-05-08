@@ -18,7 +18,9 @@ table caption{
 
 th {
 	background-color: #fff0c7;
-	overflow-wrap: break-word;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;    
 }
 
 td, th {
@@ -62,7 +64,7 @@ tbody tr:not(:last-child) td:nth-last-child(2) {
 }
 
 tbody td.selected {
-	outline: 2px lime solid;
+	outline: 3px #0089c8 solid;
 }
 
 .no-border {

@@ -96,13 +96,14 @@
 			th = document.createElement('th');
 			th.appendChild(document.createTextNode('Predicted ' + classes[i]));
 			th.style.backgroundColor = _representation.options.header_color;
+			th.setAttribute('title', 'Predicted ' + classes[i]);
 			tRow.appendChild(th);
 		}
 		tHeader.appendChild(tRow);
 		table.appendChild(tHeader);
 		
 		var tBody = document.createElement('tbody');
-		var rateCellDescription = 'This is the sum of all values on the same row (or column) divided by the correct prediction on this line.';
+		var rateCellDescription = 'This is the the correct prediction on this row (or column) divided by the sum of all values on this line.';
 		for (var row = 0; row < confusionMatrix.getNumRows(); row++) {
 			tRow = document.createElement('tr');
 			th = document.createElement('th');
@@ -123,7 +124,7 @@
 			var lastCell = document.createElement('td');
 			var cellValue = confusionMatrixWithRates[row][confusionMatrixWithRates.length-1];
 			if (_representation.options.displayPercentages === true) {
-				lastCell.appendChild(document.createTextNode((cellValue * 100).toPrecision(5) + '\xA0%'));
+				lastCell.appendChild(document.createTextNode((cellValue * 100).toFixed(1) + '\xA0%'));
 			} else {
 				lastCell.appendChild(document.createTextNode(cellValue.toFixed(3)));
 			}
@@ -140,7 +141,7 @@
 			td = document.createElement('td');
 			var cellValue = confusionMatrixWithRates[confusionMatrixWithRates.length-1][col];
 			if (_representation.options.displayPercentages === true) {
-				td.appendChild(document.createTextNode((cellValue * 100).toPrecision(5) + '\xA0%'));
+				td.appendChild(document.createTextNode((cellValue * 100).toFixed(1) + '\xA0%'));
 			} else {
 				td.appendChild(document.createTextNode(cellValue.toFixed(3)));
 			}
@@ -255,7 +256,7 @@
 				} else {
 					// cellValue is a float
 					if (_representation.options.displayPercentages === true) {
-						td.appendChild(document.createTextNode((cellValue * 100).toPrecision(5) + '\xA0%'));
+						td.appendChild(document.createTextNode((cellValue * 100).toFixed(1) + '\xA0%'));
 					} else {
 						td.appendChild(document.createTextNode(cellValue.toFixed(3)));
 					}
@@ -316,7 +317,7 @@
 			} else {
 				// cellValue is a float
 				if (_representation.options.displayPercentages === true) {
-					td.appendChild(document.createTextNode((cellValue * 100).toPrecision(5) + '\xA0%'));
+					td.appendChild(document.createTextNode((cellValue * 100).toFixed(1) + '\xA0%'));
 				} else {
 					td.appendChild(document.createTextNode(cellValue.toFixed(3)));
 				}
