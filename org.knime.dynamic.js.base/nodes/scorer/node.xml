@@ -9,7 +9,7 @@
     <name>Scorer (JavaScript)</name>
     <shortDescription>An Accuracy Scorer Node with a JavaScript view.</shortDescription>
     <fullDescription>
-    	<intro>Compares two columns by their attribute value pairs and shows the confusion matrix, i.e. how many rows of which attribute and their classification match. Additionally, it is possible to hilight cells of this matrix to determine the underlying rows. The dialog allows you to select two columns for comparison; the values from the first selected column are represented in the confusion matrix's rows and the values from the second column by the confusion matrix's columns. The output of the node is the confusion matrix with the number of matches in each cell. Additionally, the second out-port reports a number of accuracy statistics such as True-Positives, False-Positives, True-Negatives, False-Negatives, Recall, Precision, Sensitivity, Specificity, F-measure, as well as the overall accuracy and Cohen's kappa.</intro>
+    	<intro>Compares two columns by their attribute value pairs and shows the confusion matrix, i.e. how many rows of which attribute and their classification match. Additionally, it is possible to hilight cells of this matrix to determine the underlying rows. The dialog allows you to select two columns for comparison; the values from the first selected column are represented in the confusion matrix's rows and the values from the second column by the confusion matrix's columns. The view of the node displays three tables, the first one is the confusion matrix with the number of matches in each cell. The second table reports a number of accuracy statistics specific to a given class such as True-Positives, False-Positives, True-Negatives, False-Negatives, Accuracy, Balanced Accuracy, Error Rate, False Negative Rate, Recall, Precision, Sensitivity, Specificity, F-measure. The last table contains overall statistics like the overall accuracy, Overall Error, Cohen's kappa, the Correct Classified and the Wrong Classified.</intro>
 		<tab name="Scorer Options">
 			<options>
 				<columnSelectorOption name="First column" id="first_column" inPortIndex="0" label="Actual column" filterClasses="org.knime.core.data.DataValue">
@@ -45,8 +45,9 @@
                 </checkBoxOption>
 				<checkBoxOption name="Display confusion matrix rates" id="displayCMRates"
                     label="Display confusion matrix rates" defaultValue="true" loadDefaults="true" saveInView="true">
-                    Check to display the confusion matrix's rows and columns totals as rates.
-                </checkBoxOption>
+                    Check to display the confusion matrix's rows and columns totals as rates. These are the result of the division of the correct prediction on a given row (or cell)
+                    divided by the sum of all values on that  line (row or column).
+                 </checkBoxOption>
 				<colorOption name="Header color" id="header_color" label="Header color" format="HexString" defaultR="255" defaultG="240" defaultB="199">
 					Color used for the header sections of the tables (rows or column headers).
 				</colorOption>

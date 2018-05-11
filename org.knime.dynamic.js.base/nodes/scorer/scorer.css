@@ -4,10 +4,12 @@ table {
 	color: #222;
 	table-layout: fixed;
 	width: 100%;
+	overflow: auto;
 }
 
 table caption{
 	text-align:	left;
+    font-size: 16px;
 }
 
 .center {

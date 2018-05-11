@@ -94,9 +94,9 @@
 		tRow.appendChild(th);
 		for (var i = 0; i < classes.length; i++) {
 			th = document.createElement('th');
-			th.appendChild(document.createTextNode('Predicted ' + classes[i]));
+			th.appendChild(document.createTextNode(classes[i] + ' (Predicted)'));
 			th.style.backgroundColor = _representation.options.header_color;
-			th.setAttribute('title', 'Predicted ' + classes[i]);
+			th.setAttribute('title', classes[i] + ' (Predicted)');
 			tRow.appendChild(th);
 		}
 		tHeader.appendChild(tRow);
@@ -107,8 +107,9 @@
 		for (var row = 0; row < confusionMatrix.getNumRows(); row++) {
 			tRow = document.createElement('tr');
 			th = document.createElement('th');
-			th.appendChild(document.createTextNode('Actual ' + classes[row]));
+			th.appendChild(document.createTextNode(classes[row] + ' (Actual)'));
 			th.style.backgroundColor = _representation.options.header_color;
+			th.setAttribute('title', classes[row] + ' (Actual)');
 			tRow.appendChild(th);
 			for (var col = 0; col < confusionMatrix.getNumColumns(); col++) {
 				var td = document.createElement('td');
