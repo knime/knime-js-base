@@ -77,6 +77,7 @@
 		} else {
 			layoutContainer = body.append("div")
 				.attr("id", "layoutContainer")
+				.attr('class', 'knime-layout-container')
 				.style('display', 'block')
 				.style("width", width)
 				.style("height", height)
@@ -85,6 +86,7 @@
 			
 			div = layoutContainer.append("div")
 				.attr("id", "svgContainer")
+				.attr('class', 'knime-svg-container')
 				.style("min-width", MIN_WIDTH + "px")
 				.style("min-height", MIN_HEIGHT + "px")
 				.style("box-sizing", "border-box")
@@ -141,6 +143,11 @@
 				.showLabels(showLabels)
 				.labelThreshold(labelThreshold) 
 				.labelType(labelType); // "key", "value" or "percent"
+
+			chart.dispatch.on('renderEnd.css', setCssClasses);
+			// tooltip is re-created every time therefore we need to assign classes accordingly
+			chart.pie.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
+			chart.pie.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
 			
 			chart.width(optFullscreen ? "100%" : optWidth);
 			chart.height(optFullscreen ? "100%" : optHeight);
@@ -186,6 +193,7 @@
 						.attr("y", 30)
 						.attr("font-size", 24)
 						.attr("id", "title")
+						.attr('class', 'knime-title')
 						.text(_value.options.title);
 				} else {
 					curTitle.text(_value.options.title);
@@ -201,10 +209,11 @@
 						.attr("y", _value.options.title ? 46 : 20)
 						.attr("font-size", 12)
 						.attr("id", "subtitle")
+						.attr('class', 'knime-subtitle')
 						.text(_value.options.subtitle);
 				} else {
 					curSubtitle.text(_value.options.subtitle)
-					.attr("y", _value.options.title ? 46 : 20);
+						.attr("y", _value.options.title ? 46 : 20);
 				}
 			}
 			
@@ -504,6 +513,34 @@
 	    	}*/
     	}
 	};
+
+	function setCssClasses() {		
+		d3.selectAll('.nv-label')
+			.classed('knime-label', true);
+
+		// legend
+		d3.selectAll('.nv-legendWrap')
+			.classed('knime-legend', true);
+		d3.selectAll('.nv-legend-symbol')
+			.classed('knime-legend-symbol', true);
+		d3.selectAll('.nv-legend-text')
+			.classed('knime-legend-text', true);
+	}
+	
+	function setTooltipCssClasses() {
+		// tooltip
+		var tooltip = d3.selectAll('.nvtooltip')
+		.classed('knime-tooltip', true);
+		tooltip.selectAll('.x-value')
+		.classed('knime-tooltip-caption', true)
+		.classed('knime-x', true);
+		tooltip.selectAll('.legend-color-guide')
+		.classed('knime-tooltip-color', true);
+		tooltip.selectAll('.key')
+		.classed('knime-tooltip-key', true);
+		tooltip.selectAll('.value')
+		.classed('knime-tooltip-value', true);
+	}
 
 	pie.validate = function() {
 		return true;
