@@ -1,4 +1,4 @@
-(streamgraph_namespace = function() {
+(streamgraph_namespace = function () {
 
   var view = {};
   var _representation, _value;
@@ -16,11 +16,11 @@
     "Percentage-Area-Chart": "expand",
     "Stream-Graph": "stream-center"
   }
-  
+
   var TOOLTIP_WARNING = 'basisTooltip';
 
 
-  view.init = function(representation, value) {
+  view.init = function (representation, value) {
     _representation = representation;
     _value = value;
     // Create Knime tables from data.
@@ -35,11 +35,11 @@
       knimeTable2 = new kt();
       knimeTable2.setDataTable(_representation.inObjects[1]);
     }
-    
+
     // Set locale for moment.js.
-	if (_representation.options.dateTimeFormats.globalDateTimeLocale !== 'en') {
-		moment.locale(_representation.options.dateTimeFormats.globalDateTimeLocale);
-	}
+    if (_representation.options.dateTimeFormats.globalDateTimeLocale !== 'en') {
+      moment.locale(_representation.options.dateTimeFormats.globalDateTimeLocale);
+    }
 
 
     if (_representation.options.enableViewControls) {
@@ -52,7 +52,7 @@
     toggleFilter();
   }
 
-  var drawChart = function() {
+  var drawChart = function () {
     // Remove earlier chart.
     d3.select("#layoutContainer").remove();
 
@@ -61,7 +61,7 @@
      */
     var stackStyle = stackStyleByType[_value.options.chartType];
     var optFullscreen = _representation.options.svg.fullscreen &&
-                        _representation.runningInView;
+      _representation.runningInView;
     var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
 
     /*
@@ -96,6 +96,7 @@
 
     layoutContainer = body.append("div")
       .attr("id", "layoutContainer")
+      .attr('class', 'knime-layout-container')
       .style({
         "width": width,
         "height": height,
@@ -107,6 +108,7 @@
     // create div container to hold svg
     var svgContainer = layoutContainer.append("div")
       .attr("id", "svgContainer")
+      .attr('class', 'knime-svg-container')
       .style({
         "min-width": MIN_WIDTH + "px",
         "min-height": MIN_HEIGHT + "px",
@@ -129,19 +131,19 @@
       svg.attr("width", width)
       svg.attr("height", height);
     }
-    
+
     if (_value.options.interpolation == 'basis' && _value.options.interactiveGuideline) {
-    	knimeService.setWarningMessage('Displaying a tooltip is not supported when interpolation is set to "basis".', TOOLTIP_WARNING);
+      knimeService.setWarningMessage('Displaying a tooltip is not supported when interpolation is set to "basis".', TOOLTIP_WARNING);
     } else {
-    	knimeService.clearWarningMessage(TOOLTIP_WARNING);
+      knimeService.clearWarningMessage(TOOLTIP_WARNING);
     }
 
     // create the stacked area chart
-    nv.addGraph(function() {
+    nv.addGraph(function () {
       chart = nv.models.stackedAreaChart()
         .margin({ right: 50 })
-        .x(function(d) { return d[0]; })
-        .y(function(d) { return d[1]; })
+        .x(function (d) { return d[0]; })
+        .y(function (d) { return d[1]; })
         .color(_colorRange)
         .interpolate(_value.options.interpolation)
         .style(stackStyle)
@@ -151,19 +153,21 @@
         .interactive(false)
         .duration(0);
 
-        var topMargin = 10;
-  			topMargin += _value.options.title ? 10 : 0;
-  			topMargin += _value.options.legend ? 0 : 30;
-  			topMargin += _value.options.subtitle ? 8 : 0;
-        var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
-  			chart.legend.margin({
-  				top : topMargin,
-  				bottom : topMargin
-  			});
-  			chart.margin({
-  				top : topMargin,
-  				bottom : bottomMargin
-  			});
+      chart.dispatch.on('renderEnd.css', setCssClasses);      
+
+      var topMargin = 10;
+      topMargin += _value.options.title ? 10 : 0;
+      topMargin += _value.options.legend ? 0 : 30;
+      topMargin += _value.options.subtitle ? 8 : 0;
+      var bottomMargin = _value.options.title || _value.options.subtitle ? 25 : 30;
+      chart.legend.margin({
+        top: topMargin,
+        bottom: topMargin
+      });
+      chart.margin({
+        top: topMargin,
+        bottom: bottomMargin
+      });
 
       chart.xAxis
         .tickFormat(createXAxisFormatter());
@@ -178,7 +182,7 @@
 
       nv.utils.windowResize(chart.update);
 
-      if  ("disabled" in _value.options) {
+      if ("disabled" in _value.options) {
         var state = chart.defaultState();
         state.disabled = _value.options.disabled;
         chart.dispatch.changeState(state);
@@ -187,29 +191,32 @@
       toggleGrid();
       toggleLegend();
 
+      // tooltip is re-created every time therefore we need to assign classes accordingly
+      chart.interactiveLayer.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
+
       return chart;
     });
   }
 
-	var toggleGrid = function() {
-		var opacity = _value.options.showGrid ? 1 : 0;
-		d3.selectAll("g.tick:not(.zero) > line").style("opacity", opacity);
-	}
+  var toggleGrid = function () {
+    var opacity = _value.options.showGrid ? 1 : 0;
+    d3.selectAll("g.tick:not(.zero) > line").style("opacity", opacity);
+  }
 
-	var toggleLegend = function() {
-		var opacity = _value.options.legend ? 1 : 0;
-		d3.select("g.nv-legend").style("opacity", opacity);
-	}
+  var toggleLegend = function () {
+    var opacity = _value.options.legend ? 1 : 0;
+    d3.select("g.nv-legend").style("opacity", opacity);
+  }
 
-  var setXAxisConf = function() {
+  var setXAxisConf = function () {
     // Set data and data type for the x-axis.
     var xAxisColumn = _representation.options.xAxisColumn;
     if (typeof xAxisColumn !== "undefined") {
       var columnIndex = knimeTable1.getColumnNames().indexOf(xAxisColumn);
       xAxisType = knimeTable1.getColumnTypes()[columnIndex];
       if (xAxisType == "dateTime") {
-    	  // need to get which exactly date&time type it is
-    	  xAxisType = knimeTable1.getKnimeColumnTypes()[columnIndex];
+        // need to get which exactly date&time type it is
+        xAxisType = knimeTable1.getKnimeColumnTypes()[columnIndex];
       }
       xAxisData = knimeTable1.getColumn(columnIndex);
     } else {
@@ -225,16 +232,16 @@
   }
 
   // Transform the tabular format into a JSON format.
-  var transformData = function() {
-		// Check which rows are included by the filter.
-		var includedRows = [];
-		for (var i = 0; i < knimeTable1.getNumRows(); i++) {
-			if (!currentFilter ||
-					knimeTable1.isRowIncludedInFilter(i, currentFilter)) {
+  var transformData = function () {
+    // Check which rows are included by the filter.
+    var includedRows = [];
+    for (var i = 0; i < knimeTable1.getNumRows(); i++) {
+      if (!currentFilter ||
+        knimeTable1.isRowIncludedInFilter(i, currentFilter)) {
 
-				includedRows.push(i);
-			}
-		}
+        includedRows.push(i);
+      }
+    }
 
     _data = [];
     var columns = _representation.options.columns
@@ -242,30 +249,30 @@
     for (var i = 0; i < columns.length; i++) {
       var columnKey = columns[i];
       var columnIndex = knimeTable1.getColumnNames().indexOf(columnKey);
-			var currentColumn = knimeTable1.getColumn(columnIndex);
+      var currentColumn = knimeTable1.getColumn(columnIndex);
 
       _data.push({
-        "key" : columnKey,
-				"values" : includedRows.map(
-				    // This loops over all rows that are included.
-				    function(i) {
-				      d = currentColumn[i];
+        "key": columnKey,
+        "values": includedRows.map(
+          // This loops over all rows that are included.
+          function (i) {
+            d = currentColumn[i];
 
-			        if (xAxisType === 'number') {
-			          // If data type of x-axis column can be interpreted as numeric,
-			          // use the data for the x-axis.
-			          return [xAxisData[i], d]
-			        } else {
-			          // If not, just use an integer index [0, n[.
-			          return [i, d];
-			        }
-				    }
-				)
+            if (xAxisType === 'number') {
+              // If data type of x-axis column can be interpreted as numeric,
+              // use the data for the x-axis.
+              return [xAxisData[i], d]
+            } else {
+              // If not, just use an integer index [0, n[.
+              return [i, d];
+            }
+          }
+        )
       });
     }
   };
 
-  var toggleFilter = function() {
+  var toggleFilter = function () {
     if (_value.options.subscribeFilter) {
       knimeService.subscribeToFilter(
         _representation.tableIds[0], filterChanged, knimeTable1.getFilterIds()
@@ -275,7 +282,7 @@
     }
   }
 
-  var filterChanged = function(filter) {
+  var filterChanged = function (filter) {
     currentFilter = filter;
     transformData();
     svg.datum(_data);
@@ -283,7 +290,7 @@
   }
 
   // Set color scale: custom or default.
-  var setColors = function() {
+  var setColors = function () {
     var colorScale = [];
     var columns = _representation.options.columns;
     if (knimeTable2 !== null) {
@@ -310,62 +317,66 @@
   }
 
   // Return a function to format the x-axis-ticks.
-  var createXAxisFormatter = function() {
+  var createXAxisFormatter = function () {
     switch (xAxisType) {
       case "Date and Time":
-        return function(i) {
+        return function (i) {
           return moment(xAxisData[i]).utc().format(_representation.options.dateTimeFormats.globalDateTimeFormat);
         };
       case "Local Date":
-    	  return function(i) {
-              return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateFormat);
-          };
+        return function (i) {
+          return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateFormat);
+        };
       case "Local Date Time":
-    	  return function(i) {
-              return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateTimeFormat);
-          };
+        return function (i) {
+          return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateTimeFormat);
+        };
       case "Local Time":
-    	  return function(i) {
-              return moment(xAxisData[i], "hh:mm:ss.SSSSSSSSS").format(_representation.options.dateTimeFormats.globalLocalTimeFormat);
-          };
+        return function (i) {
+          return moment(xAxisData[i], "hh:mm:ss.SSSSSSSSS").format(_representation.options.dateTimeFormats.globalLocalTimeFormat);
+        };
       case "Zoned Date Time":
-    	  return function(i) {    	 
-    	  		var data = xAxisData[i];
-    	  		var regex = /(.*)\[(.*)\]$/
-				var match = regex.exec(data);
+        return function (i) {
+          var data = xAxisData[i];
+          var regex = /(.*)\[(.*)\]$/
+          var match = regex.exec(data);
 
-				if (match == null) {
-					var date = moment.tz(data, "");
-				} else {
-					dateTimeOffset = match[1];
-					var date = moment.tz(dateTimeOffset, _representation.options.dateTimeFormats.timezone);
-				}
+          if (match == null) {
+            var date = moment.tz(data, "");
+          } else {
+            dateTimeOffset = match[1];
+            var date = moment.tz(dateTimeOffset, _representation.options.dateTimeFormats.timezone);
+          }
 
-				return date.format(_representation.options.dateTimeFormats.globalZonedDateTimeFormat);
-          };
+          return date.format(_representation.options.dateTimeFormats.globalZonedDateTimeFormat);
+        };
       case "string":
-        return function(i) { return xAxisData[i]; };
+        return function (i) { return xAxisData[i]; };
       case "number":
         return d3.format(_representation.options.xAxisFormatString);
       default:
-        return function(i) { return i; };
+        return function (i) { return i; };
     }
   }
 
-  var updateTitles = function(updateChart) {
+  var updateTitles = function (updateChart) {
     if (chart) {
       var curTitle = d3.select("#title");
       var curSubtitle = d3.select("#subtitle");
       var chartNeedsUpdating = curTitle.empty() != !(_value.options.title)
-          || curSubtitle.empty() != !(_value.options.subtitle);
+        || curSubtitle.empty() != !(_value.options.subtitle);
       if (!_value.options.title) {
         curTitle.remove();
       }
       if (_value.options.title) {
         if (curTitle.empty()) {
-          svg.append("text").attr("x", 20).attr("y", 30).attr(
-              "font-size", 24).attr("id", "title").text(
-              _value.options.title);
+          svg.append("text")
+            .attr("x", 20)
+            .attr("y", 30)
+            .attr("font-size", 24)
+            .attr("id", "title")
+            .attr('class', 'knime-title')
+            .text(_value.options.title);
         } else {
           curTitle.text(_value.options.title);
         }
@@ -375,35 +386,38 @@
       }
       if (_value.options.subtitle) {
         if (curSubtitle.empty()) {
-          svg.append("text").attr("x", 20).attr("y",
-              _value.options.title ? 46 : 20).attr("font-size",
-              12).attr("id", "subtitle").text(
-              _value.options.subtitle);
+          svg.append("text")
+            .attr("x", 20)
+            .attr("y", _value.options.title ? 46 : 20)
+            .attr("font-size", 12)
+            .attr("id", "subtitle")
+            .attr('class', 'knime-subtitle')
+            .text(_value.options.subtitle);
         } else {
-          curSubtitle.text(_value.options.subtitle).attr("y",
-              _value.options.title ? 46 : 20);
+          curSubtitle.text(_value.options.subtitle)
+            .attr("y", _value.options.title ? 46 : 20);
         }
       }
 
       if (updateChart && chartNeedsUpdating) {
         var topMargin = 10;
-  			topMargin += _value.options.title ? 10 : 0;
-  			topMargin += _value.options.legend ? 0 : 30;
-  			topMargin += _value.options.subtitle ? 8 : 0;
+        topMargin += _value.options.title ? 10 : 0;
+        topMargin += _value.options.legend ? 0 : 30;
+        topMargin += _value.options.subtitle ? 8 : 0;
         var bottomMargin = 25;
         bottomMargin += !(_value.options.title || _value.options.subtitle) ? 5 : 0;
         bottomMargin += _value.options.xAxisLabel ? 20 : 0;
-  			chart.legend.margin({
-  				top : topMargin,
-  				bottom : topMargin
-  			});
-  			chart.margin({
-  				top : topMargin,
-  				bottom : bottomMargin
-  			});
+        chart.legend.margin({
+          top: topMargin,
+          bottom: topMargin
+        });
+        chart.margin({
+          top: topMargin,
+          bottom: bottomMargin
+        });
 
         if (_representation.options.svg.fullscreen
-            && _representation.runningInView) {
+          && _representation.runningInView) {
 
           var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
 
@@ -416,8 +430,8 @@
           }
 
           layoutContainer.style("height", height)
-          // two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE
-          .style('display', 'none').style('display', 'block');
+            // two rows below force to invalidate the container which solves a weird problem with vertical scroll bar in IE
+            .style('display', 'none').style('display', 'block');
           // d3.select("#svgContainer").style("height", height);
         }
 
@@ -439,7 +453,7 @@
         curXAxisLabel = curXAxisLabelElement.text();
       }
       var chartNeedsUpdating = (curYAxisLabel != _value.options.yAxisLabel)
-                            || (curXAxisLabel != _value.options.xAxisLabel);
+        || (curXAxisLabel != _value.options.xAxisLabel);
 
       if (!chartNeedsUpdating) return;
 
@@ -466,76 +480,76 @@
     }
   }
 
-  var drawControls = function() {
-	  if (!knimeService) {
-		  // TODO: error handling?
-		  return;
-	  }
+  var drawControls = function () {
+    if (!knimeService) {
+      // TODO: error handling?
+      return;
+    }
 
     if (_representation.options.displayFullscreenButton) {
       knimeService.allowFullscreen();
     }
-    
+
     if (!_representation.options.enableViewControls) {
-    	return;
+      return;
     }
 
     // Title / Subtitle Configuration
     var titleEdit = _representation.options.enableTitleEdit;
     var subtitleEdit = _representation.options.enableSubtitleEdit;
-  	if (titleEdit || subtitleEdit) {
-  	  if (titleEdit) {
-  	    var chartTitleText = knimeService.createMenuTextField(
-  	        'chartTitleText', _value.options.title, function() {
-  	      if (_value.options.title != this.value) {
-  	        _value.options.title = this.value;
-  	        updateTitles(true);
-  	      }
-  	    }, true);
-  	    knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
-  	  }
-  	  if (subtitleEdit) {
-  	    var chartSubtitleText = knimeService.createMenuTextField(
-  	        'chartSubtitleText', _value.options.subtitle,
-  	        function() {
-  	        	if (_value.options.subtitle != this.value) {
-  	        		_value.options.subtitle = this.value;
-  	        		updateTitles(true);
-  	        	}
-  	        }, true);
-  	    knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
-  	  }
-  	}
+    if (titleEdit || subtitleEdit) {
+      if (titleEdit) {
+        var chartTitleText = knimeService.createMenuTextField(
+          'chartTitleText', _value.options.title, function () {
+            if (_value.options.title != this.value) {
+              _value.options.title = this.value;
+              updateTitles(true);
+            }
+          }, true);
+        knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+      }
+      if (subtitleEdit) {
+        var chartSubtitleText = knimeService.createMenuTextField(
+          'chartSubtitleText', _value.options.subtitle,
+          function () {
+            if (_value.options.subtitle != this.value) {
+              _value.options.subtitle = this.value;
+              updateTitles(true);
+            }
+          }, true);
+        knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
+      }
+    }
 
-  	// x-Axis & y-Axis Labels
+    // x-Axis & y-Axis Labels
     var xAxisEdit = _representation.options.enableXAxisEdit;
     var yAxisEdit = _representation.options.enableYAxisEdit;
-  	if (xAxisEdit || yAxisEdit) {
-        knimeService.addMenuDivider();
+    if (xAxisEdit || yAxisEdit) {
+      knimeService.addMenuDivider();
 
-  	  if (xAxisEdit) {
-  		var xAxisText = knimeService.createMenuTextField(
-  			'xAxisText', _value.options.xAxisLabel,
-  		function() {
-  				if (_value.options.xAxisLabel != this.value) {
-  					_value.options.xAxisLabel = this.value;
-  					updateAxisLabels(true);
-  				}
-  			}, true);
-  		knimeService.addMenuItem('X-axis label:', 'ellipsis-h', xAxisText);
-  	  }
-  	  if (yAxisEdit) {
-  			var yAxisText = knimeService.createMenuTextField(
-  				'yAxisText', _value.options.yAxisLabel,
-  			function() {
-  					if (_value.options.yAxisLabel != this.value) {
-  						_value.options.yAxisLabel = this.value;
-  						updateAxisLabels(true);
-  					}
-  				}, true);
-  			knimeService.addMenuItem('Y-axis label:', 'ellipsis-v', yAxisText);
-  		  }
-  	}
+      if (xAxisEdit) {
+        var xAxisText = knimeService.createMenuTextField(
+          'xAxisText', _value.options.xAxisLabel,
+          function () {
+            if (_value.options.xAxisLabel != this.value) {
+              _value.options.xAxisLabel = this.value;
+              updateAxisLabels(true);
+            }
+          }, true);
+        knimeService.addMenuItem('X-axis label:', 'ellipsis-h', xAxisText);
+      }
+      if (yAxisEdit) {
+        var yAxisText = knimeService.createMenuTextField(
+          'yAxisText', _value.options.yAxisLabel,
+          function () {
+            if (_value.options.yAxisLabel != this.value) {
+              _value.options.yAxisLabel = this.value;
+              updateAxisLabels(true);
+            }
+          }, true);
+        knimeService.addMenuItem('Y-axis label:', 'ellipsis-v', yAxisText);
+      }
+    }
 
     // Chart Type / Interpolation Method / Custom Color
     var chartTypeChange = _representation.options.enableChartTypeChange;
@@ -546,7 +560,7 @@
       if (chartTypeChange) {
         var chartTypes = Object.keys(stackStyleByType);
         var chartTypeSelector =
-          knimeService.createMenuSelect('chartTypeSelector', _value.options.chartType, chartTypes, function() {
+          knimeService.createMenuSelect('chartTypeSelector', _value.options.chartType, chartTypes, function () {
             _value.options.chartType = this.options[this.selectedIndex].value;
             drawChart();  // needs a redraw to avoid tooltip problem (AP-7068)
           });
@@ -554,18 +568,18 @@
       }
 
       if (interpolationEdit) {
-        var interpolationMethods = [ 'basis', 'linear', 'step' ];
+        var interpolationMethods = ['basis', 'linear', 'step'];
         var interpolationMethodSelector =
-          knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function() {
-        	var changedToBasis = this.options[this.selectedIndex].value == 'basis' && _value.options.interpolation != 'basis'; 
+          knimeService.createMenuSelect('interpolationMethodSelector', _value.options.interpolation, interpolationMethods, function () {
+            var changedToBasis = this.options[this.selectedIndex].value == 'basis' && _value.options.interpolation != 'basis';
             _value.options.interpolation = this.options[this.selectedIndex].value;
             if (changedToBasis && _value.options.interactiveGuideline) {
-            	 drawChart();
+              drawChart();
             } else {
-            	knimeService.clearWarningMessage(TOOLTIP_WARNING);
-            	chart.interpolate(_value.options.interpolation);
-            	chart.useInteractiveGuideline(_value.options.interpolation == 'basis' ? false : _value.options.interactiveGuideline);
-            	chart.update();
+              knimeService.clearWarningMessage(TOOLTIP_WARNING);
+              chart.interpolate(_value.options.interpolation);
+              chart.useInteractiveGuideline(_value.options.interpolation == 'basis' ? false : _value.options.interactiveGuideline);
+              chart.update();
             }
           });
         // CHECK: Should we use line-chart here?
@@ -576,38 +590,38 @@
     // Legend, Interactive Guideline, Grid
     var legendToggle = _representation.options.enableLegendToggle;
     var interactiveGuidelineToggle = _representation.options.enableInteractiveGuidelineToggle;
-		var showGridToggle = _representation.options.showGridToggle;
+    var showGridToggle = _representation.options.showGridToggle;
     if (legendToggle || interactiveGuidelineToggle || showGridToggle) {
       knimeService.addMenuDivider();
 
       if (legendToggle) {
         var legendCheckbox = knimeService.createMenuCheckbox(
-            'legendCheckbox', _value.options.legend, function() {
-              _value.options.legend = this.checked;
-              toggleLegend();
-            });
+          'legendCheckbox', _value.options.legend, function () {
+            _value.options.legend = this.checked;
+            toggleLegend();
+          });
         knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
       }
 
       if (interactiveGuidelineToggle) {
         var interactiveGuidelineCheckbox = knimeService.createMenuCheckbox(
-                'interactiveGuidelineCheckbox',
-                _value.options.interactiveGuideline,
-                function() {
-                  _value.options.interactiveGuideline = this.checked;
-                  drawChart();
-                });
+          'interactiveGuidelineCheckbox',
+          _value.options.interactiveGuideline,
+          function () {
+            _value.options.interactiveGuideline = this.checked;
+            drawChart();
+          });
 
         knimeService.addMenuItem('Tooltip:', 'comment',
-            interactiveGuidelineCheckbox);
+          interactiveGuidelineCheckbox);
       }
 
-			if (showGridToggle) {
+      if (showGridToggle) {
         var gridCheckbox = knimeService.createMenuCheckbox(
-            'gridCheckbox', _value.options.showGrid, function() {
-              _value.options.showGrid = this.checked;
-              toggleGrid();
-            });
+          'gridCheckbox', _value.options.showGrid, function () {
+            _value.options.showGrid = this.checked;
+            toggleGrid();
+          });
         knimeService.addMenuItem('Show Grid:', 'th', gridCheckbox);
       }
     }
@@ -618,34 +632,81 @@
       var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
 
       var subFilCheckbox = knimeService.createMenuCheckbox(
-          'filterCheckbox', _value.options.subscribeFilter, function() {
-            _value.options.subscribeFilter = this.checked;
-            toggleFilter();
-          });
+        'filterCheckbox', _value.options.subscribeFilter, function () {
+          _value.options.subscribeFilter = this.checked;
+          toggleFilter();
+        });
       knimeService.addMenuItem('Subscribe to filter', subFilIcon, subFilCheckbox);
     }
   };
 
-  view.validate = function() {
+  function setCssClasses() {
+    // axis
+    var axis = d3.selectAll('.nv-axis')
+      .classed('knime-axis', true);
+    d3.selectAll('.nv-x')
+      .classed('knime-x', true);
+    d3.selectAll('.nv-y')
+      .classed('knime-y', true);
+    d3.selectAll('.nv-axislabel')
+      .classed('knime-axis-label', true);
+    axis.selectAll('path.domain')
+      .classed('knime-axis-line', true);
+    var axisMaxMin = d3.selectAll('.nv-axisMaxMin')
+      .classed('knime-axis-max-min', true);
+    axisMaxMin.selectAll('text')
+      .classed('knime-axis-label', true);
+    var tick = axis.selectAll('.knime-axis .tick')
+      .classed('knime-tick', true);
+    tick.selectAll('text')
+      .classed('knime-tick-text', true);
+    tick.selectAll('line')
+      .classed('knime-tick-line', true);
+
+    // legend
+    d3.selectAll('.nv-legendWrap')
+      .classed('knime-legend', true);
+    d3.selectAll('.nv-legend-symbol')
+      .classed('knime-legend-symbol', true);
+    d3.selectAll('.nv-legend-text')
+      .classed('knime-legend-text', true);
+  }
+
+  function setTooltipCssClasses() {
+    // tooltip
+    var tooltip = d3.selectAll('.nvtooltip')
+      .classed('knime-tooltip', true);
+    tooltip.selectAll('.x-value')
+      .classed('knime-tooltip-caption', true)
+      .classed('knime-x', true);
+    tooltip.selectAll('.legend-color-guide')
+      .classed('knime-tooltip-color', true);
+    tooltip.selectAll('.key')
+      .classed('knime-tooltip-key', true);
+    tooltip.selectAll('.value')
+      .classed('knime-tooltip-value', true);
+  }
+
+  view.validate = function () {
     return true;
   }
 
-  view.getComponentValue = function() {
+  view.getComponentValue = function () {
     // Save disabled-state of the series from the chart if:
     //   - it was saved in _value before
     //   - some series are disabled
 
     var container = d3.select("#svgContainer");
-    var disabled = container.selectAll('g .nv-series').data().map(function(o) { return !!o.disabled })
+    var disabled = container.selectAll('g .nv-series').data().map(function (o) { return !!o.disabled })
 
-    if  (("disabled" in _value.options) || disabled.some(Boolean)) {
+    if (("disabled" in _value.options) || disabled.some(Boolean)) {
       _value.options.disabled = disabled;
     }
 
     return _value;
   }
 
-  view.getSVG = function() {
+  view.getSVG = function () {
     // inline global style declarations for SVG export
     var styles = document.styleSheets;
     for (i = 0; i < styles.length; i++) {
@@ -660,20 +721,20 @@
         var rule = styles[i].cssRules[j];
         // rule.selectorText might not be defined for print media queries.
         if (typeof rule.selectorText !== "undefined") {
-          d3.selectAll(rule.selectorText).each(function() {
+          d3.selectAll(rule.selectorText).each(function () {
             for (var k = 0; k < rule.style.length; k++) {
               var curStyle = this.style
-                  .getPropertyValue(rule.style[k]);
+                .getPropertyValue(rule.style[k]);
               var curPrio = this.style
-                  .getPropertyPriority(rule.style[k]);
+                .getPropertyPriority(rule.style[k]);
               var rulePrio = rule.style
-                  .getPropertyPriority(rule.style[k]);
+                .getPropertyPriority(rule.style[k]);
               // only overwrite style if not set or
               // priority is overruled
               if (!curStyle || (curPrio != "important" && rulePrio === "important")) {
                 d3.select(this).style(
-                    rule.style[k],
-                    rule.style[rule.style[k]]);
+                  rule.style[k],
+                  rule.style[rule.style[k]]);
               }
             }
           });
@@ -681,7 +742,7 @@
       }
     }
     // correct faulty rect elements
-    d3.selectAll("rect").each(function() {
+    d3.selectAll("rect").each(function () {
       var rect = d3.select(this);
       if (!rect.attr("width")) {
         rect.attr("width", 0);
