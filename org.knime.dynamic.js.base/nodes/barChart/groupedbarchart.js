@@ -127,6 +127,7 @@
 		} else {
 			layoutContainer = body.append("div")
 				.attr("id", "layoutContainer")
+				.attr('class', 'knime-layout-container')
 				.style('display', 'block')
 				.style("width", width)
 				.style("height", height)
@@ -135,6 +136,7 @@
 			
 			div = layoutContainer.append("div")
 				.attr("id", "svgContainer")
+				.attr('class', 'knime-svg-container')
 				.style("min-width", MIN_WIDTH + "px")
 				.style("min-height", MIN_HEIGHT + "px")
 				.style("box-sizing", "border-box")
@@ -198,6 +200,11 @@
 				chart = nv.models.multiBarChart();
 				chart.reduceXTicks(false);
 			}
+
+			chart.dispatch.on('renderEnd.css', setCssClasses);
+			// tooltip is re-created every time therefore we need to assign classes accordingly
+			chart.multibar.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
+			chart.multibar.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
 			
 			var stacked = _value.options.chartType == 'Stacked';
 			if (stacked) {				
@@ -585,6 +592,7 @@
 						.attr("y", 30)
 						.attr("font-size", 24)
 						.attr("id", "title")
+						.attr('class', 'knime-title')
 						.text(_value.options.title);
 				} else {
 					curTitle.text(_value.options.title);
@@ -600,10 +608,11 @@
 						.attr("y", _value.options.title ? 46 : 20)
 						.attr("font-size", 12)
 						.attr("id", "subtitle")
+						.attr('class', 'knime-subtitle')
 						.text(_value.options.subtitle);
 				} else {
 					curSubtitle.text(_value.options.subtitle)
-					.attr("y", _value.options.title ? 46 : 20);
+						.attr("y", _value.options.title ? 46 : 20);
 				}
 			}
 			
@@ -812,6 +821,53 @@
 	    	knimeService.addMenuItem('Stagger labels:', 'map-o', staggerCbx);
 	    }
 	};
+
+	function setCssClasses() {
+		// axis
+		var axis = d3.selectAll('.nv-axis')
+			.classed('knime-axis', true);
+		d3.selectAll('.nv-x')
+			.classed('knime-x', true);
+		d3.selectAll('.nv-y')
+			.classed('knime-y', true);
+		d3.selectAll('.nv-axislabel')
+			.classed('knime-axis-label', true);
+		axis.selectAll('path.domain')
+			.classed('knime-axis-line', true);
+		var axisMaxMin = d3.selectAll('.nv-axisMaxMin')
+				.classed('knime-axis-max-min', true);
+		axisMaxMin.selectAll('text')
+			.classed('knime-axis-label', true);
+		var tick = axis.selectAll('.knime-axis .tick')
+			.classed('knime-tick', true);
+		tick.selectAll('text')
+			.classed('knime-tick-text', true);
+		tick.selectAll('line')
+			.classed('knime-tick-line', true);
+
+		// legend
+		d3.selectAll('.nv-legendWrap')
+			.classed('knime-legend', true);
+		d3.selectAll('.nv-legend-symbol')
+			.classed('knime-legend-symbol', true);
+		d3.selectAll('.nv-legend-text')
+			.classed('knime-legend-text', true);
+	}
+	
+	function setTooltipCssClasses() {
+		// tooltip
+		var tooltip = d3.selectAll('.nvtooltip')
+		.classed('knime-tooltip', true);
+		tooltip.selectAll('.x-value')
+		.classed('knime-tooltip-caption', true)
+		.classed('knime-x', true);
+		tooltip.selectAll('.legend-color-guide')
+		.classed('knime-tooltip-color', true);
+		tooltip.selectAll('.key')
+		.classed('knime-tooltip-key', true);
+		tooltip.selectAll('.value')
+		.classed('knime-tooltip-value', true);
+	}
 
 	/*function createControls(controlsContainer) {
 		if (_representation.options.enableViewControls) {
