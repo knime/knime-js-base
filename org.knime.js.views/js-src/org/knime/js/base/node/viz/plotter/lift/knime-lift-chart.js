@@ -41,7 +41,8 @@ knime_lift_chart = function() {
         
         // Container for the chart. Height is calculated after the view controls have been inserted.
         var layoutContainer = body.append("div")
-        	.attr("id", layoutContainerID)
+            .attr("id", layoutContainerID)
+            .attr("class", "knime-layout-container")
         	.style("width", "100%")
         	.style("height", minWidth + "px")
         	.style("min-width", minWidth + "px");   
@@ -438,6 +439,7 @@ knime_lift_chart = function() {
         // The container for the chart
         var div = lc.append("div")
             .attr("id", containerID)
+            .attr("class", "knime-svg-container")
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
             .style("box-sizing", "border-box")
@@ -476,13 +478,15 @@ knime_lift_chart = function() {
         var titleG = d3svg.append("g").attr("transform", "translate(" + margin.left + ",0)");
         if (title) {
     		titleG.append("text")
-    			.text(title)
+                .text(title)
+                .attr("class", "knime-title")
     			.attr({"y" : 30, "id" : "title"})
     			.attr("font-size", 24);
         }
         if (subtitle) {
         	titleG.append("text")
-        		.text(subtitle)
+                .text(subtitle)
+                .attr("class", "knime-subtitle")
     			.attr({"y" : mTop - 14, "id" : "subtitle"});
         }
         
@@ -525,19 +529,19 @@ knime_lift_chart = function() {
         
         // Add the X Axis
         var d3XAxis = svg.append("g");
-            d3XAxis.attr("class", "x axis")
+            d3XAxis.attr("class", "x axis knime-x knime-axis")
             .attr("transform", "translate(0," + h + ")")
             .call(xAxis);
     
         // Add the Y Axis
         var d3YAxis = svg.append("g");
-            d3YAxis.attr("class", "y axis")
+            d3YAxis.attr("class", "y axis knime-y knime-axis")
             .call(yAxis);
         
         // Axis titles
         if (xAxisTitle) {    
 	        svg.append("text")
-	            .attr("class", "x label")
+	            .attr("class", "x label knime-x knime-axis-label")
 	            .attr("text-anchor", "end")
 	            .attr("x", w - 10)
 	            .attr("y", h + 45)
@@ -547,7 +551,7 @@ knime_lift_chart = function() {
             
         if (yAxisTitle) {
 	        svg.append("text")
-	            .attr("class", "y label")
+	            .attr("class", "y label knime-y knime-axis-label")
 	            .attr("text-anchor", "end")
 	            .attr("y", -55)
 	            .attr("dy", ".75em")
@@ -555,6 +559,13 @@ knime_lift_chart = function() {
 	            .attr("id", "ytitle")
 	            .text(yAxisTitle);
         }
+
+        var ticks = d3.selectAll(".tick")
+            .classed("knime-tick", true);
+        ticks.selectAll("line")
+            .classed("knime-tick-line", true);
+        ticks.selectAll("text")
+            .classed("knime-tick-label", true);
         
         var gridColor = parseColor(_representation.gridColor);
         var stroke = _representation.showGrid ? gridColor.rgb : "#000";
@@ -587,9 +598,16 @@ knime_lift_chart = function() {
             }
             
             if (_representation.showLegend) { 
-                var g = svg.append("g").attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
-                var l = g.append("text").attr({x : 20}).text(key);
-                g.append("circle").attr({"r" : 5, "fill" : currentData[key].color, cx : 5, cy : -5});
+                var g = svg.append("g")
+                    .attr("class", "knime-legend")
+                    .attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
+                var l = g.append("text")
+                    .attr("class", "knime-legend-text")
+                    .attr({x : 20})
+                    .text(key);
+                g.append("circle")
+                    .attr("class", "knime-legend-symbol")
+                    .attr({"r" : 5, "fill" : currentData[key].color, cx : 5, cy : -5});
                 xPos += parseInt(l.node().getBoundingClientRect().width) + 20;
                 
                 if (xPos > w) {
