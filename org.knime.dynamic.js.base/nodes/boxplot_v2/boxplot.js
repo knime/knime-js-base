@@ -33,7 +33,8 @@
 
         // Create container for our content
         layoutContainer = body.append("div")
-        					.attr("id", "layoutContainer")
+                            .attr("id", "layoutContainer")
+                            .attr("class", "knime-layout-container")
                 			.style("min-width", MIN_WIDTH + "px")
                 			.style("min-height", MIN_HEIGHT + "px");
         
@@ -68,6 +69,7 @@
         // Title
         d3svg.append("text")
             .attr("id", "title")
+            .attr("class", "knime-title")
             .attr("font-size", 24)
             .attr("x", 20) 
             .attr("y", 30)
@@ -76,6 +78,7 @@
         // Subtitle
         d3svg.append("text")
             .attr("id", "subtitle")
+            .attr("class", "knime-subtitle")
             .attr("font-size", 12)
             .attr("x", 20)            
             .text(_value.options.subtitle);
@@ -300,23 +303,32 @@
         
         // Append and style x-axis
         var d3XAxis = plotG.append("g")
-            .attr("class", "x axis")
+            .attr("class", "x axis knime-x knime-axis")
             .attr("transform", "translate(0," + (h + 5) + ")")
             .call(xAxis);
-        d3XAxis.selectAll("line,path")
+        d3XAxis.selectAll("line,path")            
         	.attr("fill", "none")
         	.attr("stroke", "black")
-        	.attr("shape-rendering", "crispEdges"); 
+            .attr("shape-rendering", "crispEdges"); 
     
         // Append and style y-axis
         var d3YAxis = plotG.append("g")
-            .attr("class", "y axis")
+            .attr("class", "y axis knime-y knime-axis")
             .call(yAxis);
-        d3YAxis.selectAll("line,path")
+        d3YAxis.selectAll("line,path")            
        		.attr("fill", "none")
        		.attr("stroke", "black")
        		.attr("shape-rendering", "crispEdges"); 
         
+        d3.selectAll(".domain")
+            .classed("knime-axis-line", true);
+        var ticks = d3.selectAll(".tick")
+            .classed("knime-tick", true);
+        ticks.selectAll("line")
+            .classed("knime-tick-line", true);
+        ticks.selectAll("text")
+            .classed("knime-tick-label", true);
+
         var range = x.range(); // The width for each box
         
         // Animate only when running in view and not resizing
@@ -364,7 +376,7 @@
         box.append("text")
             .attr("x", -5)
             .attr("text-anchor", "end")
-            .attr("class", "uqText");
+            .attr("class", "uqText knime-label");
         boxG.selectAll(".uqText")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
@@ -375,7 +387,7 @@
         box.append("text")
             .attr("x", -5)
             .attr("text-anchor", "end")
-            .attr("class", "lqText");
+            .attr("class", "lqText knime-label");
         boxG.selectAll(".lqText")
             .data(function(d) { return [d]; } )
             .transition().duration(duration)
@@ -398,7 +410,7 @@
             .attr("y2", function(d) { return y(d.value.median); });
         
         box.append("text")
-            .attr("class", "medianText");
+            .attr("class", "medianText knime-label");
             
         boxG.selectAll(".medianText")
             .data(function(d) { return [d]; } )
@@ -437,7 +449,7 @@
             .attr("y2", function(d) { return y(d.value.upperWhisker); });
 
         box.append("text")
-            .attr("class", "uwText");
+            .attr("class", "uwText knime-label");
             
         boxG.selectAll(".uwText")
             .data(function(d) { return [d]; } )
@@ -476,7 +488,7 @@
             .attr("y2", function(d) { return y(d.value.lowerWhisker); });
             
        box.append("text")
-            .attr("class", "ulText");
+            .attr("class", "ulText knime-label");
             
        boxG.selectAll(".ulText")
             .data(function(d) { return [d]; } )
@@ -497,7 +509,9 @@
        		.attr("stroke", "black")
        		.attr("cx", middle)
        		.attr("cy", function(d) { return y(d.value); })
-       		.append("title").text(function(d) { return d.rowKey; });
+            .append("title")
+            .attr("class", "knime-label")
+            .text(function(d) { return d.rowKey; });
        
        outl.transition().duration(duration)
        		.attr("cx", middle)
@@ -515,11 +529,17 @@
          
        var crossSize = 4;
        
-       enterG.append("line").attr({x1 : -crossSize, y1 : -crossSize, x2 : crossSize, y2 : crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
-       		.append("title").text(function(d) { return d.rowKey; });
+       enterG.append("line")
+            .attr({x1 : -crossSize, y1 : -crossSize, x2 : crossSize, y2 : crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
+            .append("title")
+            .attr("class", "knime-label")
+            .text(function(d) { return d.rowKey; });
        
-       enterG.append("line").attr({x1 : -crossSize, y1 : crossSize, x2 : crossSize, y2 : -crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
-        	.append("title").text(function(d) { return d.rowKey; });
+       enterG.append("line")
+            .attr({x1 : -crossSize, y1 : crossSize, x2 : crossSize, y2 : -crossSize, "stroke-width" : 1.5, "stroke-linecap" : "round"})
+            .append("title")
+            .attr("class", "knime-label")
+            .text(function(d) { return d.rowKey; });
        
        exoutl.transition().duration(duration)
        		.attr("transform", function(d) { return "translate(" + middle + "," + y(d.value) + ")"; });
