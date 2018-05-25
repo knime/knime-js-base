@@ -299,6 +299,7 @@
 
 		layoutContainer = body.append("div")
 		.attr("id", "layoutContainer")
+		.attr("class", "knime-layout-container")
 		.style({
 			"width": width,
 			"height": height,
@@ -310,6 +311,7 @@
 		// create div container to hold svg
 		var svgContainer = layoutContainer.append("div")
 		.attr("id", "svgContainer")
+		.attr("class", "knime-svg-container")
 		.style({
 			"min-width": MIN_WIDTH + "px",
 			"min-height": MIN_HEIGHT + "px",
@@ -347,6 +349,7 @@
 		// Title
 		svg.append("text")
 		.attr("id", "title")
+		.attr("class", "knime-title")
 		.attr("font-size", 24)
 		.attr("x", 20)
 		.attr("y", 30)
@@ -355,6 +358,7 @@
 		// Subtitle
 		svg.append("text")
 		.attr("id", "subtitle")
+		.attr("class", "knime-subtitle")
 		.attr("font-size", 12)
 		.attr("x", 20)
 		.attr("y", 46)
@@ -389,6 +393,7 @@
 		if (_data.children.length == 0) {
 			if (knimeTable1.getNumRows() == 0) {
 				svg.append("text")
+				.attr("class", "knime-label")
 				.attr("text-anchor", "middle")
 				.attr("alignment-baseline", "central")
 				.attr("x", w/2)
@@ -484,6 +489,7 @@
 		.attr("fill-rule", "evenodd")
 		.attr("fill", function(d) { return _colorMap(d.name); })
 		.attr("stroke",function(d) { return d.selected ? "black" : "white" })
+		.classed("knime-selected", function(d) { return d.selected; })
 		.attr("stroke-width", 1)
 		.on("mouseover", mouseover)
 		.on("click", click);
@@ -515,6 +521,7 @@
 
 		explanation.append("text")
 		.attr("id", "percentage")
+		.attr("class", "knime-label")
 		.attr("text-anchor", "middle")
 		.attr("alignment-baseline", "middle")
 		.attr("width", rootRadius * 2)
@@ -522,6 +529,7 @@
 
 		explanation.append("text")
 		.attr("id", "explanationText")
+		.attr("class", "knime-label")
 		.attr("text-anchor", "middle")
 		.attr("alignment-baseline", "middle")
 		.attr("y", 30)
@@ -761,7 +769,8 @@
 			if (_value.options.showSelectedOnly) {
 				sunburstGroup.selectAll("path")
 				.attr("stroke-width", 1)
-				.attr("stroke", "white");
+				.attr("stroke", "white")
+				.classed("knime-selected", true);
 			} else {
 				sunburstGroup.selectAll("path")
 				.attr("stroke-width", function(d) {
@@ -769,6 +778,9 @@
 				})
 				.attr("stroke",function(d) {
 					return d.selected ? "#333333" : "white";
+				})
+				.classed("knime-selected", function(d) {
+					return d.selected;
 				});
 
 				// Resort elements in dom so that selected elements
@@ -885,6 +897,7 @@
 			var entering = g.enter().append("svg:g");
 
 			entering.append("svg:polygon")
+			.attr("class", "knime-tooltip-color")
 			.attr("points", breadcrumbPoints)
 			.attr("fill", function(d) { return _colorMap(d.name); })
 			.attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; })
@@ -895,6 +908,7 @@
 			});
 
 			entering.append("svg:text")
+			.attr("class", "knime-tooltip-key")
 			.attr("x", (b.w + b.t) / 2)
 			.attr("y", b.h / 2)
 			.attr("width", b.w)
@@ -1033,10 +1047,12 @@
 			//    .attr("height", 50)
 			var trail = plottingSurface.append("svg:g")
 			.attr("id", "trail")
+			.attr("class", "knime-tooltip");
 
 			// Add the label at the end, for the percentage.
 			trail.append("svg:text")
 			.attr("id", "endlabel")
+			.attr("class", "knime-tooltip-value")
 			.attr("fill", "#000");
 		}
 
@@ -1049,6 +1065,7 @@
 			var li = { w: 100, h: 15, s: 6, r: 6 };
 
 			var legend = plottingSurface.append("g")
+			.attr("class", "knime-legend")
 			.attr("width", li.w)
 			.attr("height", entries.length * (li.h + li.s))
 			.attr("transform", "translate(" + (width - li.w) + ", " + (breadcrumb * breadcrumbHeight + 10) + ")");
@@ -1062,12 +1079,14 @@
 
 
 			g.append("svg:circle")
+			.attr("class", "knime-legend-symbol")
 			.attr("cx", 0)
 			.attr("cy", 0.5 * (li.h - li.r))
 			.attr("r", li.r)
 			.attr("fill", function(d) { return d.value; });
 
 			g.append("svg:text")
+			.attr("class", "knime-legend-text")
 			.attr("x", li.r + 5)
 			.attr("y", li.r)
 			.attr("width", li.w)
