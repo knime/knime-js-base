@@ -35,8 +35,10 @@
         // initially included columns
         sortedCols =_data.colNames;
 
-        layoutContainer = body.append("div").attr("id", "layoutContainer")
-                .style("min-width", MIN_WIDTH + "px");
+		layoutContainer = body.append("div")
+			.attr("id", "layoutContainer")
+			.attr("class", "knime-layout-container")
+			.style("min-width", MIN_WIDTH + "px");
 
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
             layoutContainer.style("width", "100%")
@@ -49,7 +51,8 @@
         createControls();
 
         var div = layoutContainer.append("div")
-            .attr("id", "svgContainer")
+			.attr("id", "svgContainer")
+			.attr("class", "knime-svg-container")
             .style("min-width", MIN_WIDTH + "px")
             .style("min-height", MIN_HEIGHT + "px")
             .style("box-sizing", "border-box")
@@ -66,14 +69,16 @@
         plotG.append("rect").attr("id", "da").attr("fill", _representation.options.daColor);
         
         d3svg.append("text")
-            .attr("id", "title")
+			.attr("id", "title")
+			.attr("class", "knime-title")
             .attr("font-size", 24)
             .attr("x", 20)
             .attr("y", 30)
             .text(_value.options.title);
 
         d3svg.append("text")
-            .attr("id", "subtitle")
+			.attr("id", "subtitle")
+			.attr("class", "knime-subtitle")
             .attr("font-size", 12)
             .attr("x", 20)
             .attr("y", 46)
@@ -247,7 +252,7 @@
 		
 		if (_representation.options.displayClearSelectionButton &&  _representation.options.enableSelection) {
 			knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
-				d3.selectAll(".row").classed({"selected": false, "unselected": false });
+				d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false });
 				clearBrushes();
 				publishCurrentSelection();
 			});
@@ -546,7 +551,7 @@
 					var removedId = data.changeSet.removed[i];
 					var row = d3.select("#"+ removedId);
 					if (!row.empty() && !row.classed("filtered")) {
-						row.classed({"unselected": true, "selected": false});
+						row.classed({"unselected": true, "selected": false, "knime-selected": false});
 					}
 				}
 				if (d3.selectAll(".selected").empty()){
@@ -562,7 +567,7 @@
 						if (d3.selectAll(".selected").empty()) {
 							d3.selectAll(".row").classed("unselected", true);
 						}
-						row.classed({"selected": true, "unselected": false});
+						row.classed({"selected": true, "knime-selected": true, "unselected": false});
 					}
 				}
 			}
@@ -598,15 +603,23 @@
         
         d3.select(".legend").remove();
         if (_representation.options.catCol && _representation.options.showLegend && !_representation.options.useColors) {
-	        var legendG = d3svg.append("g").attr("class", "legend");
+	        var legendG = d3svg.append("g").attr("class", "legend knime-legend");
 	        var maxLength = 0;
 	        var catValues = _data.domains[_representation.options.catCol].values();
 	        for (var i = 0; i < catValues.length; i++) {
 	        	var cat = catValues[i];
-	        	var txt = legendG.append("text").attr("x", 20).attr("y", i * 23).text(cat);
+				var txt = legendG.append("text")
+					.attr("class", "knime-legend-text")
+					.attr("x", 20)
+					.attr("y", i * 23)
+					.text(cat);
 	        	maxLength = Math.max(maxLength, txt.node().getComputedTextLength());
-	        	legendG.append("circle").attr("cx", 5).attr("cy", i * 23 - 4).attr("r", 5)
-	        	.attr("fill", colors(cat));
+				legendG.append("circle")
+					.attr("class", "knime-legend-symbol")
+					.attr("cx", 5)
+					.attr("cy", i * 23 - 4)
+					.attr("r", 5)
+	        		.attr("fill", colors(cat));
 	        }
 	        maxLength += 35;
 	        legendG.attr("transform", "translate(" + (parseInt(d3svg.style('width')) - maxLength) + "," + (mTop + 20) + ")");
@@ -658,7 +671,7 @@
         var g;
         g = plotG.selectAll("g.axis")
         .data(_data.colNames, function(d) { return d; })
-        .enter().append("g").attr("class", "axis").attr("id", function(d){return d;}).style("font-weight", "bold")
+        .enter().append("g").attr("class", "axis knime-axis knime-y").attr("id", function(d){return d;}).style("font-weight", "bold")
         .attr("transform", function(d) { return "translate(" + scaleCols(d) + ",0)"; })
     	.each(function(d) {
         	var scale = scales[d];
@@ -668,11 +681,20 @@
         })
         .each(function(d, i) {
 	        	d3.select(this).append("text").datum(_data.colNames[i])
-	        	.attr("class", "label").attr("text-anchor", "middle")
+	        	.attr("class", "label knime-axis-label").attr("text-anchor", "middle")
 	        	.attr("transform", function(d) { return "translate(0," + (-15) + ")"; })// h + 40
 	        	.attr("text-anchor", "middle")
 	        	.text(function(d) { return d; });
-	        });
+			});
+		
+		d3.selectAll(".domain")
+            .classed("knime-axis-line", true);
+		var ticks = d3.selectAll(".tick")
+            .classed("knime-tick", true);
+        ticks.selectAll("line")
+            .classed("knime-tick-line", true);
+        ticks.selectAll("text")
+            .classed("knime-tick-label", true);
         
         if (_representation.options.enableAxesSwapping){
 	        g.call(d3.behavior.drag()
@@ -746,7 +768,8 @@
 
 	    if (bottomBar) {
         	plotG.append("text")
-            .attr("id", "missingVtitle")
+			.attr("id", "missingVtitle")
+			.attr("class", "knime-label")
             .attr("font-size", 12)
             .attr("x", -30)
             .attr("y", h + 38)
@@ -845,16 +868,16 @@
      if (_representation.options.enableSelection){
     	 rows.on("click", function(d,i){
         		if( !d3.event.shiftKey) {
-        			d3.selectAll(".selected").classed("selected", false);
+					d3.selectAll(".selected").classed({"selected": false, "knime-selected": false});
         			d3.selectAll(".row").classed("unselected", true);
-        			d3.select(this).classed({"selected": true, "unselected": false});
+        			d3.select(this).classed({"selected": true, "knime-selected": true, "unselected": false});
         			rowsSelected = true;
         			if (knimeService && knimeService.isInteractivityAvailable() && _value.options.publishSelection) {
 						knimeService.setSelectedRows(_representation.inObjects[0].id, [this.getAttribute("id")], selectionChanged);
 					}
         		} else {
         			var selected = d3.select(this).classed("selected");
-        			d3.select(this).classed({"selected": !selected, "unselected": selected});
+        			d3.select(this).classed({"selected": !selected, "knime-selected": !selected, "unselected": selected});
         			if (selected && d3.selectAll(".selected").empty()){
         				rowsSelected = false;
         			}
@@ -900,7 +923,10 @@
      if (selected){
     	 rows.classed( "selected", function(d){
     		 return d.selected;
-    	 });
+		 });
+		 rows.classed( "knime-selected", function(d){
+			return d.selected;
+		});
     	 
     	 rows.classed( "unselected", function(d){
     		 return d.selected == false;
@@ -928,7 +954,7 @@
     
     function createXAxis(){
 	    xAxis = d3.svg.axis().scale(scaleCols).tickSize(5).orient("bottom");
-	    gx = plotG.append("g").attr("class", "xAxis")
+	    gx = plotG.append("g").attr("class", "xAxis knime-axis knime-x")
 	    .attr("transform", function(d) { return "translate(0," + (h + 40	) + ")"; })
 	    .attr("stroke", "transparent")
 	    .call(xAxis);        
@@ -981,7 +1007,7 @@
     		nothingSelected &= xBrush.empty();
     	}
     	if (nothingSelected) {
-    		d3.selectAll(".row").classed({"selected": false, "unselected": false});
+    		d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false});
     		return;
     	};
     	d3.selectAll(".row").each(function(dp) {
@@ -1028,7 +1054,7 @@
     	    		return extents[i][0] <= dp[p] && dp[p] <= extents[i][1];
     	    	};
     		});
-    		row.classed({"selected": selected, "unselected": !selected});
+    		row.classed({"selected": selected, "knime-selected": selected, "unselected": !selected});
     	});
     };
     
@@ -1091,7 +1117,7 @@
    			}
    			var row = d3.select(this);
    			if (!row.classed("filtered")) {
-   				d3.select(this).classed({"selected": selected, "unselected": unselected});
+   				d3.select(this).classed({"selected": selected, "knime-selected": selected, "unselected": unselected});
    			}
    		});
    		if (selection && selection.length > 0) {
@@ -1181,7 +1207,11 @@
 	    d3.selectAll(".row.selected").datum(function( d ) {
 	    	d.selected = true;
 	    				  return d;
-	    				});
+						});
+		d3.selectAll(".row.knime-selected").datum(function( d ) {
+			d.selected = true;
+							return d;
+						});
 	    d3.selectAll(".row.unselected").datum(function( d ) {
 	    	d.selected = false;
 	    				  return d;
