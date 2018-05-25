@@ -22,7 +22,8 @@ knime_roc_curve = function() {
         var body = d3.select("body").attr("id", "body");
         
         var layoutContainer = body.append("div")
-        	.attr("id", layoutContainerID)
+            .attr("id", layoutContainerID)
+            .attr("class", "knime-layout-container")
             .style("width", "100%")
             .style("height", "100%")
             .style("min-width", minWidth + "px")
@@ -276,6 +277,7 @@ knime_roc_curve = function() {
         // The container for the chart
         var div = lc.append("div")
             .attr("id", containerID)
+            .attr("class", "knime-svg-container")
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
             .style("box-sizing", "border-box")
@@ -311,14 +313,16 @@ knime_roc_curve = function() {
         if (_value.title) {
         	titleG.append("text")
 	        	.text(_value.title)
-	        	.attr("id", "title")
+                .attr("id", "title")
+                .attr("class", "knime-title")
 	        	.attr("y", 30)
 	        	.attr("font-size", 24);
         }
         if (_value.subtitle) {
         	titleG.append("text")        
 	        	.text(_value.subtitle)
-	        	.attr("id", "subtitle")
+                .attr("id", "subtitle")
+                .attr("class", "knime-subtitle")
 	        	.attr("y", mTop - 14);
         }
                 
@@ -355,19 +359,19 @@ knime_roc_curve = function() {
         
         // Add the X Axis
         var d3XAxis = svg.append("g");
-            d3XAxis.attr("class", "x axis")
+            d3XAxis.attr("class", "x axis knime-x knime-axis")
             .attr("transform", "translate(0," + h + ")")
             .call(xAxis);
     
         // Add the Y Axis
         var d3YAxis = svg.append("g");
-            d3YAxis.attr("class", "y axis")
+            d3YAxis.attr("class", "y axis knime-y knime-axis")
             .call(yAxis);
         
         // Axis titles
         if (_value.xAxisTitle) {
 	        svg.append("text")
-	            .attr("class", "x label")
+	            .attr("class", "x label knime-x knime-axis-label")
 	            .attr("text-anchor", "end")
 	            .attr("x", w - 10)
 	            .attr("y", h + 45)
@@ -376,7 +380,7 @@ knime_roc_curve = function() {
         }
         if (_value.yAxisTitle) {
 	        svg.append("text")
-	            .attr("class", "y label")
+	            .attr("class", "y label knime-y knime-axis-label")
 	            .attr("text-anchor", "end")
 	            .attr("y", -55)
 	            .attr("dy", ".75em")
@@ -384,6 +388,13 @@ knime_roc_curve = function() {
 	            .attr("id", "ytitle")
 	            .text(_value.yAxisTitle);
         }
+
+        var ticks = d3.selectAll(".tick")
+            .classed("knime-tick", true);
+        ticks.selectAll("line")
+            .classed("knime-tick-line", true);
+        ticks.selectAll("text")
+            .classed("knime-tick-label", true);
             
         var gridColor = parseColor(_representation.gridColor);
         
@@ -396,7 +407,7 @@ knime_roc_curve = function() {
         
         var xPos = 0;
         var yPos = (_value.xAxisTitle) ? 70 : 50;
-        var areaG = svg.append("g");
+        var areaG = svg.append("g").attr("class", "knime-tooltip");
         var areaCount = 0;
         var maxWidth = 0;
         
@@ -408,9 +419,15 @@ knime_roc_curve = function() {
             .attr("d", valueline(xy[key].data));
             
             if (_representation.showLegend) { 
-                var g = svg.append("g").attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
-                var l = g.append("text").attr({x : 20}).text(key);
-                g.append("circle").attr({"r" : 5, "fill" : xy[key].color, cx : 5, cy : -5});
+                var g = svg.append("g")
+                    .attr("class", "knime-legend")
+                    .attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
+                var l = g.append("text")
+                    .attr("class", "knime-legend-text")
+                    .attr({x : 20}).text(key);
+                g.append("circle")
+                    .attr("class", "knime-legend-symbol")
+                    .attr({"r" : 5, "fill" : xy[key].color, cx : 5, cy : -5});
                 xPos += parseInt(l.node().getBoundingClientRect().width) + 20;
                 
                 if (xPos > w) {
@@ -426,6 +443,7 @@ knime_roc_curve = function() {
             
             if (key !== "random" && _representation.showArea) {
                 var area = areaG.append("text")
+                    .attr("class", "knime-tooltip-key knime-tooltip-value knime-tooltip-color")
                     .attr("y", areaCount++ * 25)
                     .attr("x", 0)
                     .attr("fill", xy[key].color)
