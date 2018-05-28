@@ -371,7 +371,8 @@ function DecTreeDrawer(representation, value) {
 
     	// Create container for our content
     	layoutContainer = body.append("div")
-	    	.attr("id", "layoutContainer");
+			.attr("id", "layoutContainer")
+			.attr("class", "knime-layout-container");
 
     	// Size layout container based on sizing settings
 //    	layoutContainer.style("width", "100%")
@@ -413,7 +414,8 @@ function DecTreeDrawer(representation, value) {
     	
     	// Title
     	titleGroup.append("text")
-	    	.attr("id", "title")
+			.attr("id", "title")
+			.attr("class", "knime-title")
 	    	.attr("font-size", 24)
 	    	.attr("x", 20) 
 	    	.attr("y", 30)
@@ -421,7 +423,8 @@ function DecTreeDrawer(representation, value) {
 
     	// Subtitle
     	titleGroup.append("text")
-	    	.attr("id", "subtitle")
+			.attr("id", "subtitle")
+			.attr("class", "knime-subtitle")
 	    	.attr("font-size", 12)
 	    	.attr("x", 20)
 	    	.attr("y", 46)
