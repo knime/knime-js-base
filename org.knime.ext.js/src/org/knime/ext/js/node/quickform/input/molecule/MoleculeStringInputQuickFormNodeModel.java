@@ -64,6 +64,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.ext.phantomjs.PhantomJSImageGenerator;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
+import org.knime.js.core.AbstractImageGenerator;
 import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
@@ -146,14 +147,12 @@ public class MoleculeStringInputQuickFormNodeModel
                 + "\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">";
         String svg = null;
         String errorText = "";
-        // Only one instance of PhantomJS is running atm, synchronize view generation on static lock.
-        // View nodes will get executed sequentially as a result.
-        synchronized (PhantomJSImageGenerator.VIEW_GENERATION_LOCK) {
-            // Inits PhantomJS AND the view.
 
-            PhantomJSImageGenerator generator = null;
+        AbstractImageGenerator generator = null;
+        try {
             try {
-                generator = new PhantomJSImageGenerator(this, 2000L, exec.createSubExecutionContext(0.75));
+                generator = AbstractImageGenerator.getConfiguredHeadlessBrowser(this);
+                generator.generateView(2000L, exec.createSubExecutionContext(0.75));
             } catch (IOException ex) {
                 throw ex;
             } catch (Exception e) {
@@ -171,18 +170,22 @@ public class MoleculeStringInputQuickFormNodeModel
             Object imageData;
             try {
                 if (generator != null) {
-                    imageData = generator.executeScript(methodCall);
+                    imageData = generator.retrieveImage(methodCall);
                     if (imageData instanceof String) {
                         svg = (String)imageData;
                     }
                 }
                 exec.setProgress(0.9, "Creating image output...");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 errorText = e.getMessage();
                 LOGGER.error("Retrieving SVG from view failed: " + e.getMessage(), e);
             }
-
+        } finally {
+            if (generator != null) {
+                generator.cleanup();
+            }
         }
+
         if (svg == null || svg.isEmpty()) {
             if (errorText.isEmpty()) {
                 errorText = "JavaScript returned nothing. Possible implementation error.";
