@@ -87,6 +87,7 @@ final class GenericJSViewConfig {
     private static final String DEPENDENCIES = "dependencies";
     private static final String WAIT_TIME = "waitTime";
     private static final String OUT_VARS = "outputVariables";
+    private static final String CUSTOM_CSS = "customCSS";
     //private static final String VIEW_NAME = "viewName";
 
     private boolean m_hideInWizard = false;
@@ -98,6 +99,7 @@ final class GenericJSViewConfig {
     private String[] m_dependencies;
     private int m_waitTime;
     private OutFlowVariableList m_outVarList;
+    private String m_customCSS;
 
     //private String m_viewName;
 
@@ -250,6 +252,20 @@ final class GenericJSViewConfig {
     }
 
     /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * @return the viewName
      */
     /*public String getViewName() {
@@ -276,7 +292,9 @@ final class GenericJSViewConfig {
         settings.addStringArray(DEPENDENCIES, m_dependencies);
         settings.addInt(WAIT_TIME, getWaitTime());
         m_outVarList.saveSettings(settings.addConfig(OUT_VARS));
-        //settings.addString(VIEW_NAME, m_viewName);
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
     }
 
     /** Loads parameters in NodeModel.
@@ -293,7 +311,9 @@ final class GenericJSViewConfig {
         m_dependencies = settings.getStringArray(DEPENDENCIES);
         setWaitTime(settings.getInt(WAIT_TIME));
         m_outVarList.loadSettings(settings.getConfig(OUT_VARS));
-        //m_viewName = settings.getString(VIEW_NAME);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, "");
     }
 
     /** Loads parameters in Dialog.
@@ -329,6 +349,8 @@ final class GenericJSViewConfig {
         } catch (InvalidSettingsException e) {
            m_outVarList = new OutFlowVariableList(true);
         }
-        //m_viewName = settings.getString(VIEW_NAME, "");
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, "");
     }
 }

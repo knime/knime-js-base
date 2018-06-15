@@ -118,6 +118,10 @@ public class DynamicJSConfig {
     static final String GENERATE_IMAGE_CONF = "generateImage";
     private boolean m_generateImage = DEFAULT_GENERATE_IMAGE;
 
+    private static final String DEFAULT_CUSTOM_CSS = "";
+    private static final String CUSTOM_CSS = "customCSS";
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
+
     private boolean m_hasSVGImageOutport = false;
     private int m_numberDataInports = 0;
 
@@ -399,6 +403,22 @@ public class DynamicJSConfig {
     }
 
     /**
+     * @return the customCSS
+     * @since 3.6
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     * @since 3.6
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * @return true, if at least one correctly configured image outport is present
      */
     public boolean getHasSvgImageOutport() {
@@ -482,6 +502,9 @@ public class DynamicJSConfig {
         settings.addBoolean(HIDE_IN_WIZARD_CONF, m_hideInWizard);
         settings.addInt(MAX_ROWS_CONF, m_maxRows);
         settings.addBoolean(GENERATE_IMAGE_CONF, m_generateImage);
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
     }
 
     /**
@@ -492,6 +515,9 @@ public class DynamicJSConfig {
         m_hideInWizard = settings.getBoolean(HIDE_IN_WIZARD_CONF);
         m_maxRows = settings.getInt(MAX_ROWS_CONF);
         m_generateImage = settings.getBoolean(GENERATE_IMAGE_CONF);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -501,6 +527,9 @@ public class DynamicJSConfig {
         m_hideInWizard = settings.getBoolean(HIDE_IN_WIZARD_CONF, DEFAULT_HIDE_IN_WIZARD);
         m_maxRows = settings.getInt(MAX_ROWS_CONF, DEFAULT_MAX_ROWS);
         m_generateImage = settings.getBoolean(GENERATE_IMAGE_CONF, DEFAULT_GENERATE_IMAGE);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**

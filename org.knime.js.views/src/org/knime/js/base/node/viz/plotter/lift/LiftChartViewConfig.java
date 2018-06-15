@@ -115,6 +115,7 @@ public final class LiftChartViewConfig {
     static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
     final static boolean DEFAULT_IGNORE_MISSING_VALUES = false;
+    final static String DEFAULT_CUSTOM_CSS = "";
 
     static final String TITLE_LIFT = "titleLift";
     static final String SUBTITLE_LIFT = "subtitleLift";
@@ -154,6 +155,8 @@ public final class LiftChartViewConfig {
     static final String ENABLE_EDIT_Y_AXIS_LABEL = "enableEditYAxisLabel";
     static final String ENABLE_EDIT_SMOOTHING = "enableSmoothingEdit";
 
+    static final String CUSTOM_CSS = "customCSS";
+
     private String m_responseColumn;
     private String m_probabilityColumn;
     private String m_responseLabel;
@@ -192,6 +195,8 @@ public final class LiftChartViewConfig {
     private boolean m_enableEditXAxisLabel = true;
     private boolean m_enableEditYAxisLabel = true;
     private boolean m_enableSmoothing = true;
+
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     /**
      * @return the smoothing
@@ -690,6 +695,20 @@ public final class LiftChartViewConfig {
         m_showWarningInView = showWarningInView;
     }
 
+    /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
     public static String getRGBAStringFromColor(final Color color) {
         if (color == null) {
             return null;
@@ -780,6 +799,9 @@ public final class LiftChartViewConfig {
         //added with 3.4
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
         settings.addBoolean(IGNORE_MISSING_VALUES, getIgnoreMissingValues());
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
     }
 
     /** Loads parameters in NodeModel.
@@ -830,6 +852,9 @@ public final class LiftChartViewConfig {
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /** Loads parameters in Dialog.
@@ -897,5 +922,8 @@ public final class LiftChartViewConfig {
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 }

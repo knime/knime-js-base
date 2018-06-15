@@ -67,13 +67,14 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
  */
 final class GenericJSViewNodeModel extends AbstractWizardNodeModel<GenericJSViewRepresentation, GenericJSViewValue>
-        implements FlowVariableProvider {
+        implements FlowVariableProvider, CSSModifiable {
 
     private final GenericJSViewConfig m_config;
 
@@ -261,6 +262,14 @@ final class GenericJSViewNodeModel extends AbstractWizardNodeModel<GenericJSView
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

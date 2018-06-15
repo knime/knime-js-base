@@ -63,14 +63,17 @@ public abstract class LabeledViewConfig {
     private static final String CFG_LABEL = "label";
     private static final String CFG_DESCRIPTION = "description";
     private static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
+    private static final String CFG_CUSTOM_CSS = "customCSS";
 
     private static final String DEFAULT_LABEL = "Label";
     private static final String DEFAULT_DESCRIPTION = "Enter Description";
     private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
+    private static final String DEFAULT_CUSTOM_CSS = "";
 
     private String m_label = DEFAULT_LABEL;
     private String m_description = DEFAULT_DESCRIPTION;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     /**
      * @return the label
@@ -115,12 +118,29 @@ public abstract class LabeledViewConfig {
     }
 
     /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * @param settings The settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_LABEL, m_label);
         settings.addString(CFG_DESCRIPTION, m_description);
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
+
+        //added with 3.6
+        settings.addString(CFG_CUSTOM_CSS, m_customCSS);
     }
 
     /**
@@ -131,6 +151,9 @@ public abstract class LabeledViewConfig {
         m_label = settings.getString(CFG_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION);
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -140,6 +163,9 @@ public abstract class LabeledViewConfig {
         m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -168,6 +194,7 @@ public abstract class LabeledViewConfig {
                 .append(m_label)
                 .append(m_description)
                 .append(m_hideInWizard)
+                .append(m_customCSS)
                 .toHashCode();
     }
 
@@ -190,6 +217,7 @@ public abstract class LabeledViewConfig {
                 .append(m_label, other.m_label)
                 .append(m_description, other.m_description)
                 .append(m_hideInWizard, other.m_hideInWizard)
+                .append(m_customCSS, other.m_customCSS)
                 .isEquals();
     }
 

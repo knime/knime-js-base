@@ -71,13 +71,14 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
  */
 final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSViewRepresentation, GenericJSViewValue>
-        implements FlowVariableProvider {
+        implements FlowVariableProvider, CSSModifiable {
 
     private final GenericJSViewConfig m_config;
 
@@ -282,6 +283,14 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

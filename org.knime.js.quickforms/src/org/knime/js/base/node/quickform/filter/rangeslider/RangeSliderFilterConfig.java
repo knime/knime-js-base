@@ -106,6 +106,10 @@ public class RangeSliderFilterConfig {
     private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
     private boolean m_mergeWithExistingFiltersModel = DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
 
+    private static final String CFG_CUSTOM_CSS = "customCSS";
+    private static final String DEFAULT_CUSTOM_CSS = "";
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
+
     /**
      * @return the hideInWizard
      */
@@ -261,6 +265,20 @@ public class RangeSliderFilterConfig {
     }
 
     /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * Save the current config to a given settings object
      * @param settings the settings to save to
      */
@@ -281,6 +299,9 @@ public class RangeSliderFilterConfig {
         settings.addBooleanArray(CFG_USE_DOMAIN_EXTENDS, m_useDomainExtends);
         settings.addBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE, m_mergeWithExistingFiltersTable);
         settings.addBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL, m_mergeWithExistingFiltersModel);
+
+        //added with 3.6
+        settings.addString(CFG_CUSTOM_CSS, m_customCSS);
     }
 
     /**
@@ -305,6 +326,9 @@ public class RangeSliderFilterConfig {
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS);
         m_mergeWithExistingFiltersTable = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE);
         m_mergeWithExistingFiltersModel = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -330,6 +354,9 @@ public class RangeSliderFilterConfig {
         m_useDomainExtends = settings.getBooleanArray(CFG_USE_DOMAIN_EXTENDS, DEFAULT_USE_DOMAIN_EXTENDS);
         m_mergeWithExistingFiltersTable = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_TABLE, DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE);
         m_mergeWithExistingFiltersModel = settings.getBoolean(CFG_MERGE_WITH_EXISTING_FILTERS_MODEL, DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -368,6 +395,7 @@ public class RangeSliderFilterConfig {
                 .append(m_useDomainExtends)
                 .append(m_mergeWithExistingFiltersTable)
                 .append(m_mergeWithExistingFiltersModel)
+                .append(m_customCSS)
                 .toHashCode();
     }
 
@@ -395,6 +423,7 @@ public class RangeSliderFilterConfig {
                 .append(m_useDomainExtends, other.m_useDomainExtends)
                 .append(m_mergeWithExistingFiltersTable, other.m_mergeWithExistingFiltersTable)
                 .append(m_mergeWithExistingFiltersModel, other.m_mergeWithExistingFiltersModel)
+                .append(m_customCSS, other.m_customCSS)
                 .isEquals();
     }
 

@@ -66,8 +66,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
  * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  * @param <VAL> The value implementation of the quick form node.
  */
-public abstract class QuickFormConfig
-        <VAL extends DialogNodeValue> {
+public abstract class QuickFormConfig <VAL extends DialogNodeValue> {
 
     private static final String CFG_LABEL = "label";
     private static final String CFG_DESCRIPTION = "description";
@@ -76,12 +75,14 @@ public abstract class QuickFormConfig
     private static final String CFG_DEFAULT_VALUE = "defaultValue";
     private static final String CFG_REQUIRED = "required";
     private static final String CFG_PARAMETER_NAME = "parameterName";
+    private static final String CFG_CUSTOM_CSS = "customCSS";
 
     private static final String DEFAULT_LABEL = "Label";
     private static final String DEFAULT_DESCRIPTION = "Enter Description";
     private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
     private static final boolean DEFAULT_HIDE_IN_DIALOG = false;
     private static final boolean DEFAULT_REQUIRED = true;
+    private static final String DEFAULT_CUSTOM_CSS = "";
 
     private String m_label = DEFAULT_LABEL;
     private String m_description = DEFAULT_DESCRIPTION;
@@ -90,6 +91,7 @@ public abstract class QuickFormConfig
     private VAL m_defaultValue = createEmptyValue();
     private boolean m_required = DEFAULT_REQUIRED;
     private String m_parameterName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     /**
      * @return the label
@@ -184,6 +186,20 @@ public abstract class QuickFormConfig
     }
 
     /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * @param settings The settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
@@ -195,6 +211,9 @@ public abstract class QuickFormConfig
         settings.addBoolean(CFG_HIDE_IN_DIALOG, m_hideInDialog);
         settings.addBoolean(CFG_REQUIRED, m_required);
         settings.addString(CFG_PARAMETER_NAME, m_parameterName);
+
+        //added with 3.6
+        settings.addString(CFG_CUSTOM_CSS, m_customCSS);
     }
 
     /**
@@ -212,6 +231,9 @@ public abstract class QuickFormConfig
         m_required = settings.getBoolean(CFG_REQUIRED);
         // added in 2.12 - "" is discouraged but OK
         setParameterName(settings.getString(CFG_PARAMETER_NAME, ""), true);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -238,6 +260,9 @@ public abstract class QuickFormConfig
         } catch (InvalidSettingsException ise) {
             m_parameterName = defaultParName;
         }
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /**
@@ -298,6 +323,7 @@ public abstract class QuickFormConfig
                 .append(m_parameterName)
                 .append(m_defaultValue)
                 .append(m_required)
+                .append(m_customCSS)
                 .toHashCode();
     }
 
@@ -325,6 +351,7 @@ public abstract class QuickFormConfig
                 .append(m_parameterName, other.m_parameterName)
                 .append(m_defaultValue, other.m_defaultValue)
                 .append(m_required, other.m_required)
+                .append(m_customCSS, other.m_customCSS)
                 .isEquals();
     }
 

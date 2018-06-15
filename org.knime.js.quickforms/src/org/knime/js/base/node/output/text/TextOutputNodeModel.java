@@ -62,13 +62,14 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
-public class TextOutputNodeModel extends AbstractWizardNodeModel<TextOutputRepresentation, TextOutputValue> implements
-    FlowVariableProvider {
+public class TextOutputNodeModel extends AbstractWizardNodeModel<TextOutputRepresentation, TextOutputValue>
+        implements FlowVariableProvider, CSSModifiable {
 
     private TextOutputConfig m_config = new TextOutputConfig();
 
@@ -158,6 +159,14 @@ public class TextOutputNodeModel extends AbstractWizardNodeModel<TextOutputRepre
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

@@ -78,6 +78,7 @@ final class GenericJSViewConfig {
     private static final String JS_CODE = "jsCode";
     private static final String CSS_CODE = "cssCode";
     private static final String DEPENDENCIES = "dependencies";
+    private static final String CUSTOM_CSS = "customCSS";
     //private static final String VIEW_NAME = "viewName";
 
     private boolean m_hideInWizard = false;
@@ -85,6 +86,7 @@ final class GenericJSViewConfig {
     private String m_jsCode;
     private String m_cssCode;
     private String[] m_dependencies;
+    private String m_customCSS;
     //private String m_viewName;
 
     /**
@@ -165,6 +167,20 @@ final class GenericJSViewConfig {
     }
 
     /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
+    /**
      * @return the viewName
      */
     /*public String getViewName() {
@@ -187,7 +203,9 @@ final class GenericJSViewConfig {
         settings.addString(JS_CODE, m_jsCode);
         settings.addString(CSS_CODE, m_cssCode);
         settings.addStringArray(DEPENDENCIES, m_dependencies);
-        //settings.addString(VIEW_NAME, m_viewName);
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
     }
 
     /** Loads parameters in NodeModel.
@@ -202,7 +220,9 @@ final class GenericJSViewConfig {
         m_jsCode = settings.getString(JS_CODE);
         m_cssCode = settings.getString(CSS_CODE);
         m_dependencies = settings.getStringArray(DEPENDENCIES);
-        //m_viewName = settings.getString(VIEW_NAME);
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, "");
     }
 
     /** Loads parameters in Dialog.
@@ -230,6 +250,8 @@ final class GenericJSViewConfig {
             }
         }
         m_dependencies = settings.getStringArray(DEPENDENCIES, new String[0]);
-        //m_viewName = settings.getString(VIEW_NAME, "");
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, "");
     }
 }

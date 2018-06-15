@@ -103,12 +103,14 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
-public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlotViewRepresentation, ScatterPlotViewValue> implements LayoutTemplateProvider {
+public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlotViewRepresentation,
+        ScatterPlotViewValue> implements LayoutTemplateProvider, CSSModifiable {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ScatterPlotNodeModel.class);
 
@@ -244,6 +246,14 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

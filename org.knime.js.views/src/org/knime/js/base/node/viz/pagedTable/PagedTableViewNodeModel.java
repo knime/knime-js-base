@@ -64,7 +64,8 @@ import org.knime.js.core.settings.table.TableSettings;
  *
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
-public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation, PagedTableViewValue> {
+public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation,
+        PagedTableViewValue> {
 
     /**
      * @param viewName The name of the interactive view

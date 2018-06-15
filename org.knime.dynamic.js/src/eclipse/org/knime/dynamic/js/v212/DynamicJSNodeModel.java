@@ -136,13 +136,15 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 3.0
  */
-public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation, DynamicJSViewValue> implements LayoutTemplateProvider {
+public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSViewRepresentation,
+        DynamicJSViewValue> implements LayoutTemplateProvider, CSSModifiable {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeModel.class);
 
@@ -352,6 +354,14 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	@Override
 	public void setHideInWizard(final boolean hide) {
 	    m_config.setHideInWizard(hide);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getCssStyles() {
+	    return m_config.getCustomCSS();
 	}
 
 	@Override

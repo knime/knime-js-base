@@ -70,6 +70,7 @@ import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  * Model of a quick form node.
@@ -81,8 +82,9 @@ import org.knime.js.core.JavaScriptViewCreator;
  * @param <CONF> The configuration implementation of the quick form node.
  *
  */
-public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl<VAL, CONF>, VAL extends DialogNodeValue & WebViewContent, CONF extends QuickFormConfig<VAL>>
-    extends NodeModel implements DialogNode<REP, VAL>, WizardNode<REP, VAL>, InputNode {
+public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl<VAL, CONF>,
+        VAL extends DialogNodeValue & WebViewContent, CONF extends QuickFormConfig<VAL>>
+    extends NodeModel implements DialogNode<REP, VAL>, WizardNode<REP, VAL>, InputNode, CSSModifiable {
 
     /**
      * Config key for the overwrite mode. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
@@ -352,6 +354,14 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

@@ -86,6 +86,7 @@ public class DecisionTreeViewConfig {
     static final String TRUNCATION_LIMIT = "truncationLimit";
     static final String SCALE = "scale";
     static final String SHOW_ZOOM_RESET_BUTTON = "showZoomResetButton";
+    static final String CUSTOM_CSS = "customCSS";
 
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = DEFAULT_BACKGROUND_COLOR;
@@ -108,6 +109,7 @@ public class DecisionTreeViewConfig {
     static final int DEFAULT_TRUNCATION_LIMIT = 25;
     static final double DEFAULT_SCALE = 1.0;
     static final boolean DEFAULT_SHOW_ZOOM_RESET_BUTTON = false;
+    static final String DEFAULT_CUSTOM_CSS = "";
 
     private String m_title;
     private String m_subtitle;
@@ -132,6 +134,7 @@ public class DecisionTreeViewConfig {
     private int m_truncationLimit = DEFAULT_TRUNCATION_LIMIT;
     private double m_scale = DEFAULT_SCALE;
     private boolean m_showZoomResetButton = DEFAULT_SHOW_ZOOM_RESET_BUTTON;
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     private NumberFormatSettings m_numberFormat = DEFAULT_NUMBER_FORMAT;
 
@@ -168,6 +171,9 @@ public class DecisionTreeViewConfig {
         settings.addInt(TRUNCATION_LIMIT, m_truncationLimit);
         settings.addDouble(SCALE, m_scale);
         settings.addBoolean(SHOW_ZOOM_RESET_BUTTON, m_showZoomResetButton);
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
     }
 
     /**
@@ -211,6 +217,9 @@ public class DecisionTreeViewConfig {
         //added with 3.3.2
         setTruncationLimit(settings.getInt(TRUNCATION_LIMIT, DEFAULT_TRUNCATION_LIMIT));
         setScale(settings.getDouble(SCALE, DEFAULT_SCALE));
+
+        //added with 3.6
+        setCustomCSS(settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS));
 
     }
 
@@ -256,6 +265,9 @@ public class DecisionTreeViewConfig {
         setTruncationLimit(settings.getInt(TRUNCATION_LIMIT, DEFAULT_TRUNCATION_LIMIT));
         setScale(settings.getDouble(SCALE, DEFAULT_SCALE));
         setShowZoomResetButton(settings.getBoolean(SHOW_ZOOM_RESET_BUTTON, DEFAULT_SHOW_ZOOM_RESET_BUTTON));
+
+        //added with 3.6
+        setCustomCSS(settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS));
     }
 
 
@@ -623,6 +635,20 @@ public class DecisionTreeViewConfig {
      */
     public void setShowZoomResetButton(final boolean showZoomResetButton) {
         m_showZoomResetButton = showZoomResetButton;
+    }
+
+    /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
     }
 
 }

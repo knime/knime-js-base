@@ -84,6 +84,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
@@ -92,7 +93,7 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
  * @param <VAL>
  */
 public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, VAL extends WebTableViewValue>
-        extends AbstractWizardNodeModel<REP, VAL> implements BufferedDataTableHolder {
+        extends AbstractWizardNodeModel<REP, VAL> implements BufferedDataTableHolder, CSSModifiable {
 
     /** Config key for hide in wizard. */
     public static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
@@ -118,6 +119,11 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
     public static final int END = 2500;
     /** Default selection column name. */
     public static final String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Table View)";
+    /** Config key for custom CSS. */
+    public static final String CFG_CSS = "customCSS";
+    /** Default custom CSS. */
+    public static final String DEFAULT_CSS = "";
+    private String m_customCSS;
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(WebTableNodeModel.class);
 
@@ -403,6 +409,14 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
      * {@inheritDoc}
      */
     @Override
+    public String getCssStyles() {
+        return m_customCSS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_hideInWizard.saveSettingsTo(settings);
         m_maxRows.saveSettingsTo(settings);
@@ -414,6 +428,9 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
         m_selectionColumnName.saveSettingsTo(settings);
 //        m_decimalSeparator.saveSettingsTo(settings);
 //        m_thousandsSeparator.saveSettingsTo(settings);
+
+        //added with 3.6
+        settings.addString(CFG_CSS, m_customCSS);
     }
 
     /**
@@ -435,6 +452,9 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
 //            throw new InvalidSettingsException(
 //                "Decimal separator and thousands separator cannot be assigned to the same string.");
 //        }
+
+        //added with 3.6
+        settings.getString(CFG_CSS, DEFAULT_CSS);
     }
 
     /**
@@ -457,6 +477,9 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
             m_tableHeight.setIntValue(300);
             m_fullFrame.setBooleanValue(false);
         }
+
+        //added with 3.6
+        m_customCSS = settings.getString(CFG_CSS, DEFAULT_CSS);
     }
 
     /**

@@ -75,6 +75,7 @@ public final class ROCCurveViewConfig {
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
     final static boolean DEFAULT_IGNORE_MISSING_VALUES = false;
+    final static String DEFAULT_CUSTOM_CSS = "";
 
     static final String TITLE = "title";
     static final String SUBTITLE = "subtitle";
@@ -108,6 +109,8 @@ public final class ROCCurveViewConfig {
     static final String ENABLE_EDIT_X_AXIS_LABEL = "enableEditXAxisLabel";
     static final String ENABLE_EDIT_Y_AXIS_LABEL = "enableEditYAxisLabel";
 
+    static final String CUSTOM_CSS = "customCSS";
+
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
     private boolean m_showGrid = true;
@@ -134,6 +137,8 @@ public final class ROCCurveViewConfig {
     private String m_subtitle = "";
     private String m_xAxisTitle = DEFAULT_X_TITLE;
     private String m_yAxisTitle = DEFAULT_Y_TITLE;
+
+    private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     private ROCSettings m_rocSettings = new ROCSettings();
 
@@ -547,6 +552,20 @@ public final class ROCCurveViewConfig {
         }
     }
 
+    /**
+     * @return the customCSS
+     */
+    public String getCustomCSS() {
+        return m_customCSS;
+    }
+
+    /**
+     * @param customCSS the customCSS to set
+     */
+    public void setCustomCSS(final String customCSS) {
+        m_customCSS = customCSS;
+    }
+
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
@@ -580,6 +599,9 @@ public final class ROCCurveViewConfig {
         //added with 3.4
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
         settings.addBoolean(IGNORE_MISSING_VALUES, getIgnoreMissingValues());
+
+        //added with 3.6
+        settings.addString(CUSTOM_CSS, m_customCSS);
 
         m_rocSettings.saveSettings(settings);
     }
@@ -622,6 +644,9 @@ public final class ROCCurveViewConfig {
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
     /** Loads parameters in Dialog.
@@ -671,8 +696,12 @@ public final class ROCCurveViewConfig {
         m_enableEditXAxisLabel = settings.getBoolean(ENABLE_EDIT_X_AXIS_LABEL, true);
         m_enableEditYAxisLabel = settings.getBoolean(ENABLE_EDIT_Y_AXIS_LABEL, true);
         m_showLegend = settings.getBoolean(SHOW_LEGEND, true);
+
         //added with 3.4
         setShowWarningInView(settings.getBoolean(SHOW_WARNING_IN_VIEW, DEFAULT_SHOW_WARNING_IN_VIEW));
         setIgnoreMissingValues(settings.getBoolean(IGNORE_MISSING_VALUES, DEFAULT_IGNORE_MISSING_VALUES));
+
+        //added with 3.6
+        m_customCSS = settings.getString(CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 }

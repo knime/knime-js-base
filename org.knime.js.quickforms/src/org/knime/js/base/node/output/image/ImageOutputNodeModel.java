@@ -65,12 +65,14 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  */
-public class ImageOutputNodeModel extends AbstractWizardNodeModel<ImageOutputRepresentation, ImageOutputValue> {
+public class ImageOutputNodeModel extends AbstractWizardNodeModel<ImageOutputRepresentation,
+        ImageOutputValue> implements CSSModifiable {
 
     private final ImageOutputConfig m_config = new ImageOutputConfig();
 
@@ -175,6 +177,14 @@ public class ImageOutputNodeModel extends AbstractWizardNodeModel<ImageOutputRep
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**

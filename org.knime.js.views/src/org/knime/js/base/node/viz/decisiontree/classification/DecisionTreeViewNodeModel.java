@@ -85,13 +85,15 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.node.CSSModifiable;
 import org.w3c.dom.Node;
 
 /**
  *
  * @author Adrian Nembach, KNIME.com
  */
-public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<DecisionTreeViewRepresentation, DecisionTreeViewValue> implements PortObjectHolder, LayoutTemplateProvider {
+public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<DecisionTreeViewRepresentation,
+        DecisionTreeViewValue> implements PortObjectHolder, LayoutTemplateProvider, CSSModifiable {
 
     private static final String[] EMPTY_SELECTION = new String[0];
 
@@ -149,6 +151,14 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
     @Override
     public void setHideInWizard(final boolean hide) {
         m_config.setHideInWizard(hide);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
     }
 
     /**
