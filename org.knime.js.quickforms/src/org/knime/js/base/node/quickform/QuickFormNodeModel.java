@@ -453,7 +453,8 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
     private String createViewPath() {
         JavaScriptViewCreator viewCreator = new JavaScriptViewCreator(getJavascriptObjectID());
         try {
-            return viewCreator.createWebResources(m_viewName, getViewRepresentation(), getViewValue());
+            return viewCreator.createWebResources(m_viewName, getViewRepresentation(), getViewValue(),
+                getCssStyles());
         } catch (IOException e) {
             return null;
         }
