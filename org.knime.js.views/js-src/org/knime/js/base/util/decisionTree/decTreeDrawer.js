@@ -361,12 +361,6 @@ function DecTreeDrawer(representation, value) {
     
     this.init = init;
     function init() {
-    	d3.selectAll("html, body")
-	    	.style("width", "100%")
-	    	.style("height", "100%")
-	    	.style("padding", "0px")
-	    	.style("margin", "0px");
-
     	var body = d3.select("body");
 
     	// Create container for our content
@@ -390,8 +384,6 @@ function DecTreeDrawer(representation, value) {
     	var svg = d3.select("svg")
     		.style("display", "block")
     		.attr("data-iframe-height", "")
-    		.attr("font-family", "sans-serif")
-    		.attr("font-size", "14px")
     		.attr("margin", "0px")
     		.attr("padding", "0px");
     	
@@ -416,7 +408,6 @@ function DecTreeDrawer(representation, value) {
     	titleGroup.append("text")
 			.attr("id", "title")
 			.attr("class", "knime-title")
-	    	.attr("font-size", 24)
 	    	.attr("x", 20) 
 	    	.attr("y", 30)
 	    	.text(title);
@@ -425,7 +416,6 @@ function DecTreeDrawer(representation, value) {
     	titleGroup.append("text")
 			.attr("id", "subtitle")
 			.attr("class", "knime-subtitle")
-	    	.attr("font-size", 12)
 	    	.attr("x", 20)
 	    	.attr("y", 46)
 	    	.text(subtitle);

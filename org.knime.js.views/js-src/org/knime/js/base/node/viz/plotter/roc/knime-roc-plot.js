@@ -7,8 +7,6 @@ knime_roc_curve = function() {
 	var layoutContainerID = "layoutContainer";
 	var minWidth = 400;
 	var minHeight = 300;
-	var defaultFont = "sans-serif";
-	var defaultFontSize = 12;
 	var xy = {};
 	var legendHeight = 0;
 	
@@ -16,16 +14,11 @@ knime_roc_curve = function() {
 		_value = value;
 		_representation = representation;
 		
-		d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
-        d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
-
         var body = d3.select("body").attr("id", "body");
         
         var layoutContainer = body.append("div")
             .attr("id", layoutContainerID)
             .attr("class", "knime-layout-container")
-            .style("width", "100%")
-            .style("height", "100%")
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px");
         
@@ -280,17 +273,13 @@ knime_roc_curve = function() {
             .attr("class", "knime-svg-container")
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
-            .style("box-sizing", "border-box")
-            .style("display", "block")
-            .style("overflow", "hidden")
-            .style("margin", "0")
             .style("height", chartHeight)
             .style("width", chartWidth);        
         
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         document.getElementById(containerID).appendChild(svg1);
         
-        var d3svg = d3.select(svg1).style("font-family", "sans-serif");
+        var d3svg = d3.select(svg1);
 
         var svg = d3svg.attr({width : cw, height : ch}).style({width : chartWidth, height : chartHeight})
             .append("g").attr("transform", 
@@ -315,8 +304,7 @@ knime_roc_curve = function() {
 	        	.text(_value.title)
                 .attr("id", "title")
                 .attr("class", "knime-title")
-	        	.attr("y", 30)
-	        	.attr("font-size", 24);
+	        	.attr("y", 30);
         }
         if (_value.subtitle) {
         	titleG.append("text")        
@@ -423,7 +411,7 @@ knime_roc_curve = function() {
                     .attr("class", "knime-legend")
                     .attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
                 var l = g.append("text")
-                    .attr("class", "knime-legend-text")
+                    .attr("class", "knime-legend-label")
                     .attr({x : 20}).text(key);
                 g.append("circle")
                     .attr("class", "knime-legend-symbol")
@@ -446,7 +434,7 @@ knime_roc_curve = function() {
                     .attr("class", "knime-tooltip-key knime-tooltip-value knime-tooltip-color")
                     .attr("y", areaCount++ * 25)
                     .attr("x", 0)
-                    .attr("fill", xy[key].color)
+                    .style('fill', xy[key].color)
                     .text(key + " (" + Math.round(parseFloat(xy[key].area) * 1000) / 1000 + ")");
                 var width = parseInt(area.node().getBoundingClientRect().width);
                 if (width > maxWidth) {

@@ -67,14 +67,6 @@
     /*
      * Create HTML for the view.
      */
-    d3.selectAll("html, body")
-      .style({
-        "width": "100%",
-        "height": "100%",
-        "margin": "0",
-        "padding": "0"
-      });
-
     var body = d3.select("body");
 
     // Determine available witdh and height.
@@ -111,18 +103,14 @@
       .attr('class', 'knime-svg-container')
       .style({
         "min-width": MIN_WIDTH + "px",
-        "min-height": MIN_HEIGHT + "px",
-        "box-sizing": "border-box",
-        "overflow": "hidden",
-        "margin": "0",
+        "min-height": MIN_HEIGHT + "px",        
         "width": "100%",
         "height": "100%"
       });
 
     // Create the SVG object
     svg = svgContainer.append("svg")
-      .attr("id", "svg")
-      .style("font-family", "sans-serif")
+      .attr("id", "svg");
 
     if (optFullscreen) {
       svg.attr("width", "100%");
@@ -373,7 +361,6 @@
           svg.append("text")
             .attr("x", 20)
             .attr("y", 30)
-            .attr("font-size", 24)
             .attr("id", "title")
             .attr('class', 'knime-title')
             .text(_value.options.title);
@@ -389,7 +376,6 @@
           svg.append("text")
             .attr("x", 20)
             .attr("y", _value.options.title ? 46 : 20)
-            .attr("font-size", 12)
             .attr("id", "subtitle")
             .attr('class', 'knime-subtitle')
             .text(_value.options.subtitle);
@@ -655,11 +641,11 @@
     var axisMaxMin = d3.selectAll('.nv-axisMaxMin')
       .classed('knime-axis-max-min', true);
     axisMaxMin.selectAll('text')
-      .classed('knime-axis-label', true);
+      .classed('knime-tick-label', true);
     var tick = axis.selectAll('.knime-axis .tick')
       .classed('knime-tick', true);
     tick.selectAll('text')
-      .classed('knime-tick-text', true);
+      .classed('knime-tick-label', true);
     tick.selectAll('line')
       .classed('knime-tick-line', true);
 
@@ -669,7 +655,7 @@
     d3.selectAll('.nv-legend-symbol')
       .classed('knime-legend-symbol', true);
     d3.selectAll('.nv-legend-text')
-      .classed('knime-legend-text', true);
+      .classed('knime-legend-label', true);
   }
 
   function setTooltipCssClasses() {

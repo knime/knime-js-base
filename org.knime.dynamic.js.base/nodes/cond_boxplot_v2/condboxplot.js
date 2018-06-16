@@ -4,8 +4,6 @@
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var maxY = 0, minY = 0;
-    var defaultFont = "sans-serif";
-	var defaultFontSize = 12;
     var _representation, _value;
     
     var _switchMissValClassCbx;
@@ -34,15 +32,6 @@
             _value.options.numCol = _representation.options.columns[0];
         }                
 
-        d3.select("html")
-        	.style("width", "100%")
-        	.style("height", "100%")
-        d3.select("body")
-        	.style("width", "100%")
-        	.style("height", "100%")
-        	.style("margin", "0")
-        	.style("padding", "0");
-
         var body = d3.select("body");
         
         // Create container for our content
@@ -65,18 +54,13 @@
             .attr("id", "svgContainer")
             .attr("class", "knime-svg-container")
             .style("min-width", MIN_WIDTH + "px")
-            .style("min-height", MIN_HEIGHT + "px")
-            .style("box-sizing", "border-box")
-            .style("display", "block")
-            .style("overflow", "hidden")
-            .style("margin", "0");
+            .style("min-height", MIN_HEIGHT + "px");
         
         // Add SVG element
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         div[0][0].appendChild(svg1);
         
-        var d3svg = d3.select("svg")
-        			.style("font-family", "sans-serif");
+        var d3svg = d3.select("svg");
         // Add rectangle for background color
         d3svg.append("rect")
         		.attr("id", "bgr")
@@ -93,7 +77,6 @@
         d3svg.append("text")
             .attr("id", "title")
             .attr("class", "knime-title")
-            .attr("font-size", 24)
             .attr("x", 20)
             .attr("y", 30)
             .text(_value.options.title);
@@ -102,7 +85,6 @@
         d3svg.append("text")
             .attr("id", "subtitle")
             .attr("class", "knime-subtitle")
-            .attr("font-size", 12)
             .attr("x", 20)
             .text(_value.options.subtitle);
         // y attr is set in drawChart

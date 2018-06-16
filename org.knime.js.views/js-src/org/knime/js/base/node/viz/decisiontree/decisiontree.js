@@ -4,8 +4,6 @@ knime_decision_tree = function() {
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var maxY = 0, minY = 0;
-    var defaultFont = "sans-serif";
-	var defaultFontSize = 12;
     var _representation, _value;
     var decTreeDrawer;
     

@@ -4,8 +4,6 @@
     var layoutContainer;
     var MIN_HEIGHT = 300, MIN_WIDTH = 400;
     var maxY = 0, minY = 0;
-    var defaultFont = "sans-serif";
-	var defaultFontSize = 12;
     var _representation, _value;
     
     var MISSING_VALUES_ONLY = "missingValuesOnly";
@@ -52,8 +50,7 @@
         layoutContainer[0][0].appendChild(svg1);
         
         var d3svg = d3.select("svg")
-        			.style("display", "block")
-        			.style("font-family", "sans-serif");
+        			.style("display", "block");
         // Add rectangle for background color
         d3svg.append("rect")
         		.attr("id", "bgr")
@@ -70,7 +67,6 @@
         d3svg.append("text")
             .attr("id", "title")
             .attr("class", "knime-title")
-            .attr("font-size", 24)
             .attr("x", 20) 
             .attr("y", 30)
             .text(_value.options.title);
@@ -79,7 +75,6 @@
         d3svg.append("text")
             .attr("id", "subtitle")
             .attr("class", "knime-subtitle")
-            .attr("font-size", 12)
             .attr("x", 20)            
             .text(_value.options.subtitle);
         // y attr is set in drawChart

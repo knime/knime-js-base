@@ -86,8 +86,6 @@
 	}
 
 	function drawChart(redraw) {
-		d3.selectAll("html, body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
-
 		/*
 		 * Process options
 		 */
@@ -128,7 +126,6 @@
 			layoutContainer = body.append("div")
 				.attr("id", "layoutContainer")
 				.attr('class', 'knime-layout-container')
-				.style('display', 'block')
 				.style("width", width)
 				.style("height", height)
 				.style("min-width", MIN_WIDTH + "px")
@@ -138,18 +135,14 @@
 				.attr("id", "svgContainer")
 				.attr('class', 'knime-svg-container')
 				.style("min-width", MIN_WIDTH + "px")
-				.style("min-height", MIN_HEIGHT + "px")
-				.style("box-sizing", "border-box")
-				.style("overflow", "hidden")
-				.style("margin", "0");
+				.style("min-height", MIN_HEIGHT + "px");
 		}
 
 
 		var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		div[0][0].appendChild(svg1);
 
-		svg = d3.select("svg")
-			.style("font-family", "sans-serif")
+		svg = d3.select("svg")			
 			.style("display", "block")
 			.classed("colored", true);
 
@@ -590,7 +583,6 @@
 					svg.append("text")
 						.attr("x", 20)             
 						.attr("y", 30)
-						.attr("font-size", 24)
 						.attr("id", "title")
 						.attr('class', 'knime-title')
 						.text(_value.options.title);
@@ -606,7 +598,6 @@
 					svg.append("text")
 						.attr("x", 20)             
 						.attr("y", _value.options.title ? 46 : 20)
-						.attr("font-size", 12)
 						.attr("id", "subtitle")
 						.attr('class', 'knime-subtitle')
 						.text(_value.options.subtitle);
@@ -837,11 +828,11 @@
 		var axisMaxMin = d3.selectAll('.nv-axisMaxMin')
 				.classed('knime-axis-max-min', true);
 		axisMaxMin.selectAll('text')
-			.classed('knime-axis-label', true);
+			.classed('knime-tick-label', true);
 		var tick = axis.selectAll('.knime-axis .tick')
 			.classed('knime-tick', true);
 		tick.selectAll('text')
-			.classed('knime-tick-text', true);
+			.classed('knime-tick-label', true);
 		tick.selectAll('line')
 			.classed('knime-tick-line', true);
 
@@ -851,7 +842,7 @@
 		d3.selectAll('.nv-legend-symbol')
 			.classed('knime-legend-symbol', true);
 		d3.selectAll('.nv-legend-text')
-			.classed('knime-legend-text', true);
+			.classed('knime-legend-label', true);
 	}
 	
 	function setTooltipCssClasses() {

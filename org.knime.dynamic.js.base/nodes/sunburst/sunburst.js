@@ -265,20 +265,7 @@
 		var optFullscreen = _representation.options.svg.fullscreen && _representation.runningInView;
 		var isTitle = _value.options.title !== "" || _value.options.subtitle !== "";
 
-		d3.selectAll("html, body")
-		.style({
-			"width": "100%",
-			"height": "100%",
-			"margin": "0",
-			"padding": "0"
-		});
-
 		var body = d3.select("body");
-		body.style({
-			"font-family": "sans-serif",
-			"font-size": "12px",
-			"font-weight": "400",
-		})
 
 		// Determine available witdh and height.
 		if (optFullscreen) {
@@ -315,9 +302,6 @@
 		.style({
 			"min-width": MIN_WIDTH + "px",
 			"min-height": MIN_HEIGHT + "px",
-			"box-sizing": "border-box",
-			"overflow": "hidden",
-			"margin": "0",
 			"width": "100%",
 			"height": "100%"
 		});
@@ -325,10 +309,7 @@
 		// Create the SVG object
 		svg = svgContainer.append("svg")
 		.attr({
-			"id": "svg",
-			"font-family": "sans-serif",
-			"font-size": "12px",
-			"font-weight": "400",
+			"id": "svg"
 		});
 
 		// set width / height of svg
@@ -350,7 +331,6 @@
 		svg.append("text")
 		.attr("id", "title")
 		.attr("class", "knime-title")
-		.attr("font-size", 24)
 		.attr("x", 20)
 		.attr("y", 30)
 		.text(_value.options.title);
@@ -359,7 +339,6 @@
 		svg.append("text")
 		.attr("id", "subtitle")
 		.attr("class", "knime-subtitle")
-		.attr("font-size", 12)
 		.attr("x", 20)
 		.attr("y", 46)
 		.text(_value.options.subtitle);
@@ -1086,7 +1065,7 @@
 			.attr("fill", function(d) { return d.value; });
 
 			g.append("svg:text")
-			.attr("class", "knime-legend-text")
+			.attr("class", "knime-legend-label")
 			.attr("x", li.r + 5)
 			.attr("y", li.r)
 			.attr("width", li.w)

@@ -26,9 +26,6 @@
         _representation = representation;
         //alert(JSON.stringify(_value.options.selectedrows));
         
-        d3.select("html").style("width", "100%").style("height", "100%");
-        d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
-        
         var body = d3.select("body");
         
         _data = createData(representation);
@@ -54,15 +51,12 @@
 			.attr("id", "svgContainer")
 			.attr("class", "knime-svg-container")
             .style("min-width", MIN_WIDTH + "px")
-            .style("min-height", MIN_HEIGHT + "px")
-            .style("box-sizing", "border-box")
-            .style("overflow", "hidden")
-            .style("margin", "0");
+            .style("min-height", MIN_HEIGHT + "px");
 
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         div[0][0].appendChild(svg1);
 
-        var d3svg = d3.select("svg").style("font-family", "sans-serif");
+        var d3svg = d3.select("svg");
         d3svg.append("rect").attr("id", "bgr").attr("fill", _representation.options.backgroundColor);
 
         var plotG = d3svg.append("g").attr("id", "plotG");
@@ -71,7 +65,6 @@
         d3svg.append("text")
 			.attr("id", "title")
 			.attr("class", "knime-title")
-            .attr("font-size", 24)
             .attr("x", 20)
             .attr("y", 30)
             .text(_value.options.title);
@@ -79,7 +72,6 @@
         d3svg.append("text")
 			.attr("id", "subtitle")
 			.attr("class", "knime-subtitle")
-            .attr("font-size", 12)
             .attr("x", 20)
             .attr("y", 46)
             .text(_value.options.subtitle);
@@ -414,16 +406,12 @@
             if (_representation.options.enableColumnSelection){
 	            var layoutContainer = "layoutContainer";
 	            var containerID = "plotContainer";
-	            var defaultFont = "sans-serif";
-	            var defaultFontSize = 12;
 		    	var controlContainer = d3.select("#"+layoutContainer).insert("table", "#" + containerID + " ~ *")
 		    	.attr("id", "plotControls")
 		    	.style("width", "100%")
 		    	.style("padding", "10px")
 		    	.style("margin", "0 auto")
 		    	.style("box-sizing", "border-box")
-		    	.style("font-family", defaultFont)
-		    	.style("font-size", defaultFontSize+"px")
 		    	.style("border-spacing", 0)
 		    	.style("border-collapse", "collapse");			   	
 	
@@ -452,8 +440,6 @@
 		    	});
 		    	
 		    	knimeService.addMenuItem('Axes:', 'long-arrow-up', ySelectComponent);
-		    	ySelectComponent.style.fontFamily = defaultFont;				
-		    	ySelectComponent.style.fontSize = defaultFontSize + 'px';				
 		    	ySelectComponent.style.margin = '0';
 		    	ySelectComponent.style.outlineOffset = '-3px';
 		    	ySelectComponent.style.width = '';
@@ -609,7 +595,7 @@
 	        for (var i = 0; i < catValues.length; i++) {
 	        	var cat = catValues[i];
 				var txt = legendG.append("text")
-					.attr("class", "knime-legend-text")
+					.attr("class", "knime-legend-label")
 					.attr("x", 20)
 					.attr("y", i * 23)
 					.text(cat);
@@ -671,7 +657,7 @@
         var g;
         g = plotG.selectAll("g.axis")
         .data(_data.colNames, function(d) { return d; })
-        .enter().append("g").attr("class", "axis knime-axis knime-y").attr("id", function(d){return d;}).style("font-weight", "bold")
+        .enter().append("g").attr("class", "axis knime-axis knime-y").attr("id", function(d){return d;})
         .attr("transform", function(d) { return "translate(" + scaleCols(d) + ",0)"; })
     	.each(function(d) {
         	var scale = scales[d];
@@ -770,10 +756,8 @@
         	plotG.append("text")
 			.attr("id", "missingVtitle")
 			.attr("class", "knime-label")
-            .attr("font-size", 12)
             .attr("x", -30)
             .attr("y", h + 38)
-            .style("font-weight", "bold")
             .text("Miss.values");
 	    };
 	    

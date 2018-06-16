@@ -7,8 +7,6 @@ knime_lift_chart = function() {
      
     var minWidth = 400;
     var minHeight = 300;
-    var defaultFont = "sans-serif";
-    var defaultFontSize = 12;
     var xy = {};
     var gainXY = {};
     var legendHeight = 0;
@@ -34,16 +32,12 @@ knime_lift_chart = function() {
         _value = value;
         _representation = representation;
         
-        d3.select("html").style("width", "100%").style("height", "100%")/*.style("overflow", "hidden")*/;
-        d3.select("body").style("width", "100%").style("height", "100%").style("margin", "0").style("padding", "0");
-       
         var body = d3.select("body").attr("id", "body");
         
         // Container for the chart. Height is calculated after the view controls have been inserted.
         var layoutContainer = body.append("div")
             .attr("id", layoutContainerID)
             .attr("class", "knime-layout-container")
-        	.style("width", "100%")
         	.style("height", minWidth + "px")
         	.style("min-width", minWidth + "px");   
         
@@ -442,10 +436,6 @@ knime_lift_chart = function() {
             .attr("class", "knime-svg-container")
             .style("min-width", minWidth + "px")
             .style("min-height", minHeight + "px")
-            .style("box-sizing", "border-box")
-            .style("display", "block")
-            .style("overflow", "hidden")
-            .style("margin", "0")
             .style("height", chartHeight)
             .style("width", chartWidth);
             
@@ -457,7 +447,7 @@ knime_lift_chart = function() {
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         document.getElementById(containerID).appendChild(svg1);
         
-        var d3svg = d3.select(svg1).style("font-family", "sans-serif");
+        var d3svg = d3.select(svg1);
 
         var svg = d3svg.attr({width : cw, height : ch}).style({width : chartWidth, height : chartHeight})
             .append("g").attr("transform", 
@@ -480,8 +470,7 @@ knime_lift_chart = function() {
     		titleG.append("text")
                 .text(title)
                 .attr("class", "knime-title")
-    			.attr({"y" : 30, "id" : "title"})
-    			.attr("font-size", 24);
+    			.attr({"y" : 30, "id" : "title"});
         }
         if (subtitle) {
         	titleG.append("text")
@@ -602,7 +591,7 @@ knime_lift_chart = function() {
                     .attr("class", "knime-legend")
                     .attr("transform", "translate(" + xPos + "," + (h + yPos) + ")");
                 var l = g.append("text")
-                    .attr("class", "knime-legend-text")
+                    .attr("class", "knime-legend-label")
                     .attr({x : 20})
                     .text(key);
                 g.append("circle")
