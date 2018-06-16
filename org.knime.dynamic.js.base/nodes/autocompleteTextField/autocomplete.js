@@ -24,20 +24,20 @@
 			autocompleteOptions.push(key);
 		}
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		textField = $('<input>');
 		textField.attr("type", "text");
 		textField.attr("id", "textfield");
-		textField.attr("class", "standard-sizing");
+		textField.attr("class", "standard-sizing knime-qf-input knime-string knime-single-line");
 		//textField.width(400);
 		var stringValue = _value.options["string_input"];
 		textField.val(stringValue);
 		qfdiv.attr("title", _representation.options["description"]);
-		qfdiv.append('<div class="label">' + _representation.options["label"] + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + _representation.options["label"] + '</div>');
 		qfdiv.append(textField);
 		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');

@@ -58,11 +58,11 @@ org_knime_js_base_node_quickform_selection_column = function() {
 			return;
 		}
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		qfdiv.attr('title', representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		if (representation.possibleColumns == null) {
 			qfdiv.append("Error: No data available");
 		} else {

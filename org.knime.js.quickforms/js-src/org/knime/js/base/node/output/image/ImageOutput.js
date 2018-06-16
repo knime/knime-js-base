@@ -60,11 +60,11 @@ org_knime_js_base_node_output_image = function() {
 		var width = representation.maxWidth;
 		var height = representation.maxHeight;
 		var div = document.createElement("div");
-		div.setAttribute("class", "quickformcontainer");
+		div.setAttribute("class", "quickformcontainer knime-qf-container");
 		body.appendChild(div);
 		if (representation.label) {
 			var label = document.createElement("div");
-			label.setAttribute("class", "label");
+			label.setAttribute("class", "label knime-qf-title");
 			label.appendChild(document.createTextNode(representation.label));
 			div.appendChild(label);
 		}
@@ -75,6 +75,7 @@ org_knime_js_base_node_output_image = function() {
 		var element = null;
 		if (representation.imageFormat == "PNG") {
 			var img = document.createElement("img");
+			img.setAttribute("class", "knime-qf-image");
 			img.setAttribute("src", "data:image/png;base64," + representation.imageData);
 			div.appendChild(img);
 			if (width >= 0) {
@@ -84,9 +85,10 @@ org_knime_js_base_node_output_image = function() {
 				img.style.maxHeight = height + "px";
 			}
 		} else if (representation.imageFormat == "SVG") {
-			var tempContainer = document.createElement("div");
+			var tempContainer = document.createElement("div");			
 			tempContainer.innerHTML = representation.imageData;
 			element = tempContainer.getElementsByTagName("svg")[0];
+			element.setAttribute("class", "knime-qf-image");
 			div.appendChild(element);
 			var originalWidth = parseInt(element.getAttribute("width"));
 			var originalHeight = parseInt(element.getAttribute("height"));

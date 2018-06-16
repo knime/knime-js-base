@@ -68,6 +68,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		
 		//add error field
 		m_errorDiv = document.createElement('div');
+		m_errorDiv.setAttribute('class', 'knime-qf-error');
 		m_errorDiv.style.display = 'none';
 		m_errorDiv.style.color = 'red';
 		m_errorDiv.style.fontStyle = 'italic';
@@ -82,6 +83,7 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 			m_component.setAttribute("aria-label", representation.label);
 			var uLabel = m_component.getElementsByClassName('knime-upload-label')[0];
 			if (uLabel) {
+				uLabel.classList.add('knime-qf-label');
 				//use mutation event instead of observer, since IE only supports it as of version 11 
 				try {
 					uLabel.addEventListener('DOMSubtreeModified', function() {
@@ -90,6 +92,11 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 						}
 					}, false);
 				} catch (exception) { /*do nothing*/ }
+			}
+			// add button styles
+			var btn = m_component.getElementsByClassName('v-upload')[0];
+			if (btn) {
+				btn.classList.add('knime-qf-button');
 			}
 		}
 		

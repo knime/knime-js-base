@@ -69,19 +69,19 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 			return;
 		}
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		qfdiv.attr("title", representation.description);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		qfdiv.attr("aria-label", representation.label);
 		
 		if (representation.promptUsername) {
-			var user_label = $('<label style="display:block;" for="user_input">');
+			var user_label = $('<label class="knime-qf-label" style="display:block;" for="user_input">');
 			user_label.append('User');
 			qfdiv.append(user_label);
 			user_input = $('<input id="user_input" type="text">');
 			user_input.css("margin-bottom", "5px");
-			user_input.attr("class", "standard-sizing");
+			user_input.attr("class", "standard-sizing knime-qf-input knime-string knime-single-line");
 			user_input.attr("aria-label", 'User');
 			//user_input.width(400);
 			var usernameValue = representation.currentValue.username;
@@ -93,17 +93,17 @@ org_knime_js_base_node_quickform_input_credentials = function() {
 		password_input = $('<input>');
 		password_input.attr('id', 'pw_input');
 		password_input.attr("type", "password");
-		password_input.attr("class", "standard-sizing");
+		password_input.attr("class", "standard-sizing knime-qf-input knime-string knime-single-line");
 		password_input.attr("aria-label", 'Password');
 		//password_input.width(400);
 		var passwordValue = representation.currentValue.password;
 		password_input.val(passwordValue);
-		var password_label = $('<label style="display:block;" for="pw_input">');
+		var password_label = $('<label class="knime-qf-label" style="display:block;" for="pw_input">');
 		password_label.append('Password');
 		qfdiv.append(password_label);
 		qfdiv.append(password_input);
 		
-		errorMessage = $('<div>');
+		errorMessage = $('<div class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');

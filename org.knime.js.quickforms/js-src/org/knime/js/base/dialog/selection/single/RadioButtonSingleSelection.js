@@ -65,8 +65,8 @@ function radioButtonSingleSelection(vertical) {
 		for ( var i in choices) {
 			var choice = choices[i];
 			var button = $('<input id="choice'+i+'" type="radio" name="singleSelection" value="'
-					+ choice + '"></input>');
-			var label = $('<label for="choice'+i+'">'+choice+'</label>');
+					+ choice + '" class="knime-qf-select knime-single-line"></input>');
+			var label = $('<label class="knime-qf-label" for="choice'+i+'">'+choice+'</label>');
 			var nobr = $('<nobr>');
 			nobr.append(button);
 			nobr.append(label);

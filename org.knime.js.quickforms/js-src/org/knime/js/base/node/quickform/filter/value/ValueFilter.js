@@ -60,11 +60,11 @@ org_knime_js_base_node_quickform_filter_value = function() {
 			return;
 		}
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		qfdiv.attr('title', representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		viewRepresentation = representation;
 		if (viewRepresentation.possibleValues == null) {
 			qfdiv.append("Error: No data available");
@@ -80,7 +80,7 @@ org_knime_js_base_node_quickform_filter_value = function() {
 				return;
 			}
 			if (!viewRepresentation.lockColumn) {
-				colselection = $('<select>');
+				colselection = $('<select class="knime-qf-select knime-single-line">');
 				colselection.addClass('dropdown');
 				colselection.css('margin', '0px 0px 5px 0px');
 				qfdiv.append(colselection);

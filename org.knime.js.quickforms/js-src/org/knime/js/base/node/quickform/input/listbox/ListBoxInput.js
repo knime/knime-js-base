@@ -63,13 +63,13 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		}
 		viewRepresentation = representation;
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		input = $('<textarea>');
 		input.attr("aria-label", representation.label);
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		qfdiv.append(input);
 		input.css('white-space', 'pre');
 		input.css('overflow', 'auto');
@@ -77,12 +77,12 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		input.attr('rows', representation.numberVisOptions);
 		input.attr('cols', '20');
 		input.attr("pattern", representation.regex);
-		input.attr("class", "standard-sizing");
+		input.attr("class", "standard-sizing knime-qf-input knime-string knime-multi-line");
 		//input.width(400);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
 		qfdiv.append($('<br>'));
-		errorMessageLine = $('<span>');
+		errorMessageLine = $('<span class="knime-qf-error">');
 		var errorMessages = errorMessageLine;
 		errorMessages.css('display', 'none');
 		errorMessages.css('color', 'red');

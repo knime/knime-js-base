@@ -108,22 +108,24 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 			format = "";
 		}
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer" style="display:table" data-iframe-height data-iframe-width>');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container" style="display:table" data-iframe-height data-iframe-width>');
 		body.append(qfdiv);
-		var dateElement = $('<div style="display:inline-block">');
-		var timeElement = $('<div style="display:inline-block">');
-		var nowButtonElement = $('<div style="display:inline-block">');
-		var zoneElement = $('<div style="display:inline-block">');
+		var dateElement = $('<div class="knime-datetime knime-date" style="display:inline-block">');
+		var timeElement = $('<div class="knime-datetime knime-time" style="display:inline-block">');
+		var nowButtonElement = $('<div class="knime-datetime knime-now" style="display:inline-block">');
+		var zoneElement = $('<div class="knime-datetime knime-timezone" style="display:inline-block">');
 
 		// === add date picker ===
 		var dateLabel = $('<label>Date: </label>');
 		dateLabel.attr('id', 'dateLabel');
+		dateLabel.attr('class', 'knime-qf-label')
 		dateElement.append(dateLabel);
 		dateInput = $('<input>');
+		dateInput.attr('class', 'knime-qf-input knime-datetime knime-date knime-single-line');
 		dateInput.attr("aria-label", representation.label + " - date field");
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		dateElement.append(dateInput);
 		dateInput
 				.datepicker({
@@ -159,9 +161,9 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 				});
 
 		$('#ui-datepicker-div').attr({
-			"data-iframe-height" : "",
-			"data-iframe-width" : ""
-		});
+			"data-iframe-height": "",
+			"data-iframe-width": ""
+		}).addClass('knime-qf-input knime-datetime knime-date');
 
 		if (viewRepresentation.usemin) {
 			dateInput.datepicker('option', 'minDate', minDate.toDate());
@@ -174,11 +176,13 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 			dateElement.css('display', 'none');
 		}
 		qfdiv.append("&nbsp;");
+		$('.ui-datepicker-trigger').addClass('knime-qf-button knime-datetime knime-date');
 
 		// === add time spinner ===
 		// add hours field to time spinner
-		timeElement.append('Time: ');
+		timeElement.append('<span class="knime-qf-label">Time: </span>');
 		hourInput = $('<input>');
+		hourInput.attr('class', 'knime-qf-input knime-datetime knime-time knime-integer');
 		hourInput.attr("aria-label", "Hours");
 		timeElement.append(hourInput);
 		hourInput.spinner({
@@ -196,8 +200,9 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		});
 
 		// add minutes field to time spinner
-		timeElement.append(' <b>:</b> ');
+		timeElement.append('<span class="knime-qf-label"> <b>:</b> </span>');
 		minInput = $('<input>');
+		minInput.attr('class', 'knime-qf-input knime-datetime knime-time knime-integer');
 		minInput.attr("aria-label", "Minutes");
 		timeElement.append(minInput);
 		minInput.spinner({
@@ -216,8 +221,9 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 
 		// add seconds field to time spinner
 		secInput = $('<input>');
+		secInput.attr('class', 'knime-qf-input knime-datetime knime-time knime-integer');
 		if (granularity != "show_minutes") {
-			timeElement.append(' <b>:</b> ');
+			timeElement.append('<span class="knime-qf-label"> <b>:</b> </span>');
 			timeElement.append(secInput);
 		}
 		secInput.attr("aria-label", "Seconds");
@@ -237,8 +243,9 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 
 		// add milliseconds field to time spinner
 		milliInput = $('<input>');
+		milliInput.attr('class', 'knime-qf-input knime-datetime knime-time knime-integer');
 		if (granularity == "show_millis") {
-			timeElement.append(' <b>.</b> ');
+			timeElement.append('<span class="knime-qf-label"> <b>:</b> </span>');
 			timeElement.append(milliInput);
 		}
 		milliInput.attr('id', 'millis');
@@ -262,6 +269,8 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 			timeElement.css('display', 'none');
 		}
 
+		$('.ui-spinner').addClass('knime-spinner knime-datetime knime-time');
+
 		if ((representation.shownowbutton)) {
 			qfdiv.append("&nbsp;");
 		}
@@ -269,6 +278,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		nowButton = $('<button>Now</button>');
 		nowButton.attr('id', 'nowButton');
 		nowButton.attr("aria-label", "Now");
+		nowButton.attr('class', 'knime-qf-button knime-datetime knime-now')
 		nowButtonElement.append(nowButton);
 
 		nowButton.click(function() {
@@ -288,10 +298,12 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		zones = viewRepresentation.zones;
 		zoneLabel = $('<label>Time Zone: </label>');
 		zoneLabel.attr('id', 'zoneLabel');
+		zoneLabel.attr('class', 'knime-qf-label knime-datetime knime-time')
 		zoneElement.append(zoneLabel);
 		zoneInput = $('<select id="time_zone_select">');
 		zoneInput.attr('id', 'zoneList');
 		zoneInput.attr("aria-label", "Time Zone");
+		zoneInput.attr('class', 'knime-qf-select knime-datetime knime-timezone')
 
 		$.each(zones, function(i, zone) {
 			zoneInput.append($('<option>', {
@@ -313,7 +325,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		}
 
 		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');

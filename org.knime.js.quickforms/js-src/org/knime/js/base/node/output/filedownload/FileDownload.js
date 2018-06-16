@@ -66,6 +66,7 @@ org_knime_js_base_node_output_filedownload = function() {
 		if (link) {
 			//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
 			link.setAttribute('download', '');
+			link.setAttribute('class', 'knime-string knime-single-line');
 		
 			// for IE just open in new tab
 			var ua = window.navigator.userAgent;

@@ -72,9 +72,9 @@ checkMissingData = function(representation) {
 		return false;
 	} else {
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
-		var error = $("<span>Error: Data is missing, can not display view.</span>");
+		var error = $('<span class="knime-qf-error">Error: Data is missing, can not display view.</span>');
 		error.css('color', 'red');
 		qfdiv.append(error);
 		resizeParent();
@@ -87,10 +87,10 @@ insertNativeComponent = function(representation, messageNotFound, messageNotStan
 	var body = document.getElementsByTagName("body")[0];
 	var div = document.createElement("div");
 	//set correct class attributes to be used by JS and native component's css
-	div.setAttribute("class", "v-app knime quickformcontainer");
+	div.setAttribute("class", "v-app knime quickformcontainer knime-qf-container");
 	body.appendChild(div);
 	var label = document.createElement("div");
-	label.setAttribute("class", "label");
+	label.setAttribute("class", "label knime-qf-title");
 	label.appendChild(document.createTextNode(representation.label));
 	div.appendChild(label);
 	div.setAttribute("title", representation.description);
@@ -126,6 +126,7 @@ createPlaceHolder = function(message) {
 	var element = null;
 	if (message) {
 		element = document.createElement("div");
+		element.setAttribute('class', 'knime-string knime-single-line');
 		element.appendChild(document.createTextNode(message));
 	}
 	return element;

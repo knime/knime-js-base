@@ -64,7 +64,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		var body = document.getElementsByTagName('body')[0];
 		
 		var sliderContainer = document.createElement('div');
-		sliderContainer.setAttribute('class', 'slidercontainer');
+		sliderContainer.setAttribute('class', 'slidercontainer knime-slider');
 		
 		body.appendChild(sliderContainer);
 		slider = document.createElement('div');
@@ -72,6 +72,9 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		setNumberFormatOptions(settings);
 		setStartValuesToRange(settings);
 		noUiSlider.create(slider, settings);
+		addClassToElements('noUi-base', 'knime-slider-base');
+		addClassToElements('noUi-handle', 'knime-slider-handle');
+		addClassToElements('noUi-connect', 'knime-slider-connect');
 		if (settings.orientation == 'vertical') {
 			//TODO: make configurable
 			slider.style.height = '500px';
@@ -82,6 +85,8 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		var maxTipHeight = 0;
 		if (settings.tooltips && settings.tooltips.length > 0) {
 			var tips = document.getElementsByClassName('noUi-tooltip');
+			addClassToElements('noUi-tooltip', 'knime-tooltip');
+			addClassToElements('noUi-tooltip', 'knime-tooltip-value');
 			if (tips.length == 1) {
 				slider.noUiSlider.set([settings.range.min, settings.range.min]);
 			}
@@ -123,6 +128,9 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxLabelWidth / 2) + 'px';
 				sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
 			}
+			addClassToElements('noUi-pips', 'knime-tick');
+			addClassToElements('noUi-value', 'knime-tick-label');
+			addClassToElements('noUi-marker', 'knime-tick-line');		
 		}
 		
 		if (value.filter && value.filter.columns) {
@@ -149,7 +157,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		
 		if (typeof representation.label == 'string' && '' != representation.label) {
 			var label = document.createElement('div');
-			label.setAttribute('class', 'label');
+			label.setAttribute('class', 'label knime-title');
 			if (settings.orientation == 'vertical') {
 				label.setAttribute('class', label.getAttribute('class') + ' vertical');
 				label.style.width = '500px';
@@ -171,6 +179,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		}
 		body.append(document.createElement('br'));
 		errorMessage = document.createElement('span');
+		errorMessage.setAttribute('class', 'knime-qf-error');
 		errorMessage.style.display = 'none';
 		errorMessage.style.color = 'red';
 		errorMessage.style.fontStyle = 'italic';
@@ -246,6 +255,13 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		setFilterOnValue();
 		return _value;
 	};
+	
+	function addClassToElements(elSelector, className) {
+		var el = document.getElementsByClassName(elSelector);
+		for (var i = 0; i < el.length; i++) {
+			el[i].classList.add(className);
+		}
+	}
 	
 	return sliderFilter;
 	

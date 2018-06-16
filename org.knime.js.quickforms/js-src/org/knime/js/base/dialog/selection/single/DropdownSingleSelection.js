@@ -82,5 +82,5 @@ function dropdownSingleSelection() {
 		});
 	};
 	select = $('<select>');
-	select.addClass('dropdown');
+	select.addClass('dropdown knime-qf-select knime-single-line');
 }

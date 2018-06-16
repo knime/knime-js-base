@@ -61,15 +61,16 @@ org_knime_js_base_node_quickform_input_integer = function() {
 		}
 		viewRepresentation = representation;
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
-		input = $('<input>');
+		input = $('<input class="knime-qf-input knime-integer knime-spinner">');
 		input.attr("aria-label", representation.label);
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		qfdiv.append(input);
 		input.spinner();
+		$('.ui-spinner').addClass('knime-spinner knime-integer');
 		if (viewRepresentation.usemin) {
 			input.spinner('option', 'min', viewRepresentation.min);
 		}
@@ -80,7 +81,7 @@ org_knime_js_base_node_quickform_input_integer = function() {
 		var integerValue = representation.currentValue.integer;
 		input.val(integerValue);
 		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');

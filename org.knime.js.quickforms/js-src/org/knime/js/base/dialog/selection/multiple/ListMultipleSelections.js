@@ -89,7 +89,7 @@ function listMultipleSelections() {
 			}
 		});
 	};
-	select = $('<select>');
+	select = $('<select class="knime-qf-select knime-multi-line">');
 	select.prop('multiple', true);
 	select.attr('data-iframe-height', '');
 }

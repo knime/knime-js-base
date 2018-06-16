@@ -89,7 +89,7 @@ function listSingleSelection() {
 			}
 		});
 	};
-	select = $('<select>');
+	select = $('<select class="knime-qf-select knime-multi-line">');
 	select.attr('size', 0);
 	select.attr('data-iframe-height', '');
 }

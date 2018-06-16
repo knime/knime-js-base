@@ -74,12 +74,12 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		  };
 		}
 		
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		$('body').append(qfdiv);
 		
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		
 		if (!representation.tree || representation.tree.length < 1) {
 			var errorText = 'No items found for selection. ';
@@ -99,7 +99,7 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 			}]
 		}
 		
-		qfdiv.append('<div id="treeContainer" aria-label="' + representation.label + '">');
+		qfdiv.append('<div id="treeContainer" class="knime-qf-tree" aria-label="' + representation.label + '">');
 		$('#treeContainer').jstree({
 				'core' : {
 					'data' : representation.tree,
@@ -122,7 +122,7 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		});
 		
 		qfdiv.append($('<br>'));
-		m_errorMessage = $('<span>');
+		m_errorMessage = $('<span class="knime-qf-error">');
 		m_errorMessage.css('display', 'none');
 		m_errorMessage.css('color', 'red');
 		m_errorMessage.css('font-style', 'italic');

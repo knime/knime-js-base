@@ -61,31 +61,31 @@ org_knime_js_base_node_quickform_input_string = function() {
 		}
 		viewRepresentation = representation;
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		if (representation.editorType == "Multi-line") {
 			// Text area (multi-line)
-			input = $('<textarea>');
+			input = $('<textarea class="knime-qf-input knime-string knime-multi-line">');
 			input.attr('cols', representation.multilineEditorWidth);
 			input.attr('rows', representation.multilineEditorHeight);
 		} else {
 			// Text input (single-line)
-			input = $('<input>');
+			input = $('<input class="knime-qf-input knime-string knime-single-line">');
 			input.attr("type", "text");
 			if (representation.regex) {
 				input.attr("pattern", representation.regex);
 			}
-			input.attr("class", "standard-sizing");
 		}
+		input.addClass("standard-sizing");
 		input.attr("aria-label", representation.label);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
 		qfdiv.append(input);
 		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');

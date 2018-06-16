@@ -62,15 +62,18 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		viewRepresentation = representation;
 		var settings = representation.sliderSettings;
 		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		qfdiv.attr("title", representation.description);
-		qfdiv.append('<div class="label">' + representation.label + '</div>');
-		var sliderContainer = $('<div class="slidercontainer">');
+		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
+		var sliderContainer = $('<div class="slidercontainer knime-slider">');
 		qfdiv.append(sliderContainer);
 		slider = $('<div>').appendTo(sliderContainer).get(0);
 		setNumberFormatOptions(settings);
 		noUiSlider.create(slider, settings);
+		addClassToElements('noUi-base', 'knime-slider-base');
+		addClassToElements('noUi-handle', 'knime-slider-handle');
+		addClassToElements('noUi-connect', 'knime-slider-connect');
 		if (settings.orientation == 'vertical') {
 			//TODO: make configurable
 			slider.style.height = '500px';
@@ -81,6 +84,7 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		var maxTipHeight = 0;
 		if (settings.tooltips && settings.tooltips.length > 0) {
 			var tip = document.getElementsByClassName('noUi-tooltip')[0];
+			tip.classList.add('knime-tooltip', 'knime-tooltip-value');
 			// assume that the maximum length of the tooltip is either at the minimum or maximum
 			slider.noUiSlider.set([settings.range.min]);
 			var tipStyle = getComputedStyle(tip);
@@ -119,11 +123,14 @@ org_knime_js_base_node_quickform_input_slider = function() {
 				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer.get(0)).paddingLeft), maxLabelWidth / 2) + 'px';
 				sliderContainer.css({'padding-left': padSide, 'padding-right': padSide});
 			}
+			addClassToElements('noUi-pips', 'knime-tick');
+			addClassToElements('noUi-value', 'knime-tick-label');
+			addClassToElements('noUi-marker', 'knime-tick-line');			
 		}
 		var doubleValue = representation.currentValue.double;
 		slider.noUiSlider.set([doubleValue]);
 		qfdiv.append($('<br>'));
-		errorMessage = $('<span>');
+		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
 		errorMessage.css('color', 'red');
 		errorMessage.css('font-style', 'italic');
@@ -204,6 +211,13 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		viewValue.double = slider.noUiSlider.get();
 		return viewValue;
 	};
+	
+	function addClassToElements(elSelector, className) {
+		var el = document.getElementsByClassName(elSelector);
+		for (var i = 0; i < el.length; i++) {
+			el[i].classList.add(className);
+		}
+	}
 	
 	return sliderInput;
 	

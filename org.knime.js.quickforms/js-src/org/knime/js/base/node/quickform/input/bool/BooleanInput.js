@@ -58,13 +58,13 @@ org_knime_js_base_node_quickform_input_bool = function() {
 			return;
 		}
 		var body = $("body");
-		var qfdiv = $('<div class="quickformcontainer">');
+		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		qfdiv.attr("title", representation.description);
 		qfdiv.attr("aria-label", representation.label);
 		body.append(qfdiv);
-		var label = $('<label class="label" style="display: block; padding-left: 15px; text-indent: -15px; margin-left: 5px;">');
+		var label = $('<label class="label knime-qf-title" style="display: block; padding-left: 15px; text-indent: -15px; margin-left: 5px;">');
 		qfdiv.append(label);		
-		input = $('<input style="padding: 0; margin:0; margin-right: 5px; vertical-align: middle;">');
+		input = $('<input class="knime-qf-input knime-boolean" style="padding: 0; margin:0; margin-right: 5px; vertical-align: middle;">');
 		input.attr("aria-label", representation.label);
 		input.attr("type", "checkbox");
 		label.append(input);

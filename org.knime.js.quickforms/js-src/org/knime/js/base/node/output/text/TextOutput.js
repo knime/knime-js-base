@@ -60,11 +60,11 @@ org_knime_js_base_node_output_text = function() {
 			var body = document.getElementsByTagName("body")[0];
 			
 			var div = document.createElement("div");
-			div.setAttribute("class", "quickformcontainer");
+			div.setAttribute("class", "quickformcontainer knime-qf-container");
 			body.appendChild(div);
 			if (representation.label) {
 				var label = document.createElement("div");
-				label.setAttribute("class", "label");
+				label.setAttribute("class", "label knime-qf-title");
 				label.appendChild(document.createTextNode(representation.label));
 				div.appendChild(label);
 			}
@@ -74,14 +74,17 @@ org_knime_js_base_node_output_text = function() {
 				
 			if (representation.textFormat == "Text") {
 				var p = document.createElement("p");
+				p.setAttribute("class", "knime-qf-text knime-multi-line");
 				p.appendChild(document.createTextNode(representation.text));
 				div.appendChild(p);
 			} else if (representation.textFormat == "Preformatted") {
 				var pre = document.createElement("pre");
+				pre.setAttribute("class", "knime-qf-text knime-multi-line");
 				pre.appendChild(document.createTextNode(representation.text));
 				div.appendChild(pre);
 			} else if (representation.textFormat == "Html") {
 				var textContainer = document.createElement("div");
+				textContainer.setAttribute("class", "knime-qf-text knime-multi-line");
 				textContainer.innerHTML = representation.text;
 				div.appendChild(textContainer);
 			}
