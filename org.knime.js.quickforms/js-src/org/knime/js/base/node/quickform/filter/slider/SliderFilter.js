@@ -181,9 +181,6 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		errorMessage = document.createElement('span');
 		errorMessage.setAttribute('class', 'knime-qf-error');
 		errorMessage.style.display = 'none';
-		errorMessage.style.color = 'red';
-		errorMessage.style.fontStyle = 'italic';
-		errorMessage.style.fontSize = '75%';
 		body.append(errorMessage);
 	};
 	

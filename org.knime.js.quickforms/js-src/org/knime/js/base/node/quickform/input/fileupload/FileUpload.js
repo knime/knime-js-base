@@ -70,9 +70,6 @@ org_knime_js_base_node_quickform_input_fileupload = function() {
 		m_errorDiv = document.createElement('div');
 		m_errorDiv.setAttribute('class', 'knime-qf-error');
 		m_errorDiv.style.display = 'none';
-		m_errorDiv.style.color = 'red';
-		m_errorDiv.style.fontStyle = 'italic';
-		m_errorDiv.style.fontSize = '75%';
 		m_errorDiv.style.marginTop = '1em';
 		m_errorDiv.setAttribute("role", "alert");
 		m_errorDiv.appendChild(document.createTextNode(''));

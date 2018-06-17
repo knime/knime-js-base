@@ -327,20 +327,13 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		qfdiv.append($('<br>'));
 		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
-		errorMessage.css('color', 'red');
-		errorMessage.css('font-style', 'italic');
-		errorMessage.css('font-size', '75%');
 		errorMessage.attr("role", "alert");
 		qfdiv.append(errorMessage);
 
 		var allInputs = $('input');
 		allInputs.height(20);
 		allInputs.width(20);
-		dateInput.width(108);
-		dateInput.css('border', '1px solid silver');
-		dateInput.css('margin-bottom', '10px');
-		allInputs.css('font-size', 'medium');
-		allInputs.css('background-color', 'white');
+		dateInput.width(108);		
 
 		if ((type == "ZDT")) {
 			dateLabel.css('width', '80px');

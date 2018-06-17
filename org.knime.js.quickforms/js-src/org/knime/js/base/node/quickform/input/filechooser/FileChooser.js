@@ -124,9 +124,6 @@ org_knime_js_base_node_quickform_input_filechooser = function() {
 		qfdiv.append($('<br>'));
 		m_errorMessage = $('<span class="knime-qf-error">');
 		m_errorMessage.css('display', 'none');
-		m_errorMessage.css('color', 'red');
-		m_errorMessage.css('font-style', 'italic');
-		m_errorMessage.css('font-size', '75%');
 		m_errorMessage.attr("role", "alert");
 		qfdiv.append(m_errorMessage);
 		

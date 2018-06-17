@@ -132,9 +132,6 @@ org_knime_js_base_node_quickform_input_slider = function() {
 		qfdiv.append($('<br>'));
 		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
-		errorMessage.css('color', 'red');
-		errorMessage.css('font-style', 'italic');
-		errorMessage.css('font-size', '75%');
 		qfdiv.append(errorMessage);
 		resizeParent();
 		viewValid = true;

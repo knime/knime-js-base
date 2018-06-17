@@ -39,9 +39,6 @@
 		qfdiv.append($('<br>'));
 		errorMessage = $('<span class="knime-qf-error">');
 		errorMessage.css('display', 'none');
-		errorMessage.css('color', 'red');
-		errorMessage.css('font-style', 'italic');
-		errorMessage.css('font-size', '75%');
 		qfdiv.append(errorMessage);
 		$(function() {
 			if (!_setAutocomplete()) {

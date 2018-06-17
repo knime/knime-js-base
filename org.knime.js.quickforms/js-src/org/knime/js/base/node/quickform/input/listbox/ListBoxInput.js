@@ -85,9 +85,6 @@ org_knime_js_base_node_quickform_input_listbox = function() {
 		errorMessageLine = $('<span class="knime-qf-error">');
 		var errorMessages = errorMessageLine;
 		errorMessages.css('display', 'none');
-		errorMessages.css('color', 'red');
-		errorMessages.css('font-style', 'italic');
-		errorMessages.css('font-size', '75%');
 		errorMessages.attr('role', 'alert');
 		qfdiv.append(errorMessageLine);
 		if (representation.separator==null || representation.separator.length==0) {

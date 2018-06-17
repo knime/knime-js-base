@@ -75,7 +75,6 @@ checkMissingData = function(representation) {
 		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
 		body.append(qfdiv);
 		var error = $('<span class="knime-qf-error">Error: Data is missing, can not display view.</span>');
-		error.css('color', 'red');
 		qfdiv.append(error);
 		resizeParent();
 		return true;
