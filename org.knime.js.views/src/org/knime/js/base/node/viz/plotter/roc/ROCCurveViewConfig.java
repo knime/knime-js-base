@@ -600,10 +600,10 @@ public final class ROCCurveViewConfig {
         settings.addBoolean(SHOW_WARNING_IN_VIEW, getShowWarningInView());
         settings.addBoolean(IGNORE_MISSING_VALUES, getIgnoreMissingValues());
 
+        m_rocSettings.saveSettings(settings);
+
         //added with 3.6
         settings.addString(CUSTOM_CSS, m_customCSS);
-
-        m_rocSettings.saveSettings(settings);
     }
 
     /** Loads parameters in NodeModel.
