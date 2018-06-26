@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -21,8 +23,10 @@ public class JSNodeContent {
 
 	private double[] m_classCounts;
 
-	public JSNodeContent(final int majorityClassIdx, final double[] classCounts) {
-		m_majorityClassIdx = majorityClassIdx;
+	@JsonCreator
+    public JSNodeContent(@JsonProperty("majorityClassIdx") final int majorityClassIdx,
+        @JsonProperty("classCounts") final double[] classCounts) {
+    	m_majorityClassIdx = majorityClassIdx;
 		m_classCounts = classCounts;
 	}
 

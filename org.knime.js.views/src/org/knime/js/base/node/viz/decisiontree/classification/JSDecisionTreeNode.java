@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.base.node.mine.decisiontree2.PMMLPredicate;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * A representation of a single decision tree node.
@@ -38,10 +40,12 @@ public class JSDecisionTreeNode {
 
 	private String[] m_rowKeys;
 
-	public JSDecisionTreeNode(final Integer id, final Integer parentId,
-			final JSDecisionTreeNode[] children, final JSNodeContent content,
-			final PMMLPredicate condition, final String[] rowKeys) {
-		m_name = id;
+	@JsonCreator
+    public JSDecisionTreeNode(@JsonProperty("name") final Integer id, @JsonProperty("parent") final Integer parentId,
+        @JsonProperty("children") final JSDecisionTreeNode[] children,
+        @JsonProperty("content") final JSNodeContent content, @JsonProperty("condition") final PMMLPredicate condition,
+        @JsonProperty("rowKeys") final String[] rowKeys) {
+    	m_name = id;
 		m_parent = parentId;
 		m_children = children;
 		m_content = content;

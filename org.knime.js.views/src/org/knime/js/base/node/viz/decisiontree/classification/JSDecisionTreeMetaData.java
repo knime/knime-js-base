@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -19,9 +21,10 @@ public class JSDecisionTreeMetaData {
 
 	private final String[] m_classNames;
 
-	public JSDecisionTreeMetaData(final String[] classNames) {
-		m_classNames = classNames;
-	}
+    @JsonCreator
+    public JSDecisionTreeMetaData(@JsonProperty("classNames") final String[] classNames) {
+        m_classNames = classNames;
+    }
 
 	public String[] getClassNames() {
 		return m_classNames;

@@ -7,6 +7,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -25,10 +27,12 @@ public class JSDecisionTree {
 
 	private final JSDecisionTreeMetaData m_metaData;
 
-	public JSDecisionTree(final JSDecisionTreeNode root, final JSDecisionTreeMetaData metaData) {
-		m_root = root;
-		m_metaData = metaData;
-	}
+	@JsonCreator
+    public JSDecisionTree(@JsonProperty("root") final JSDecisionTreeNode root,
+        @JsonProperty("metaData") final JSDecisionTreeMetaData metaData) {
+        m_root = root;
+        m_metaData = metaData;
+    }
 
 	/**
 	 * Creates an int array that represents the NodeStatus corresponding to a tree of which the
