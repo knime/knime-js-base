@@ -16,6 +16,7 @@
 	
 	var MISSING_VALUES_ONLY = "missingValuesOnly";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
+	var ALL_ZERO_PIES = "allZeroPies";
 
 	pie.init = function(representation, value) {
 		_representation = representation;
@@ -163,7 +164,13 @@
 			}
 			updateTitles(false);
 
-			svg.datum(plotData).transition().duration(300).call(chart);
+			// checking if all the pies are 0s
+			if (plotData.filter(function(d) { return d.value !== 0 }).length === 0) {
+				knimeService.setWarningMessage("The plot is empty because all pies have values of 0", ALL_ZERO_PIES);				
+			} else {
+				knimeService.clearWarningMessage(ALL_ZERO_PIES);
+				svg.datum(plotData).transition().duration(300).call(chart);
+			}
 			nv.utils.windowResize(chart.update);
 
 			return chart;
