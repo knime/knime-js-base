@@ -60,6 +60,7 @@ import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.warnings.JSONWarnings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -248,11 +249,21 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
         m_gridColor = ROCCurveViewConfig.getRGBAStringFromColor(c);
     }
 
-    /**
+    @JsonProperty("gridColor")
+    private void setGridColor(final String c) {
+        m_gridColor = c;
+    }
+
+   /**
      * @param c the color to set
      */
     public void setBackgroundColor(final Color c) {
         m_backgroundColor = ROCCurveViewConfig.getRGBAStringFromColor(c);
+    }
+
+    @JsonProperty("backgroundColor")
+    private void setBackgroundColor(final String c) {
+        m_backgroundColor = c;
     }
 
     /**
@@ -260,6 +271,11 @@ public class ROCCurveViewRepresentation extends JSONViewContent {
      */
     public void setDataAreaColor(final Color c) {
         m_dataAreaColor = ROCCurveViewConfig.getRGBAStringFromColor(c);//colorToRGBString(c);
+    }
+
+    @JsonProperty("dataAreaColor")
+    private void setDataAreaColor(final String c) {
+        m_dataAreaColor = c;
     }
 
     /**
