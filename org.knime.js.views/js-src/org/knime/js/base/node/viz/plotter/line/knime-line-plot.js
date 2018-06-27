@@ -24,6 +24,10 @@ knime_line_plot = function() {
 	var MISSING_VALUES_X_AXIS_NOT_SHOWN = "missingValuesXAxisNotShown";
 	var MISSING_VALUES_NOT_SHOWN = "missingValuesNotShown";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
+
+	var isTooManyColumns = false;
+	var errorSvgId = 'errorSvg';
+	var MAX_COLUMNS = 200;
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
@@ -285,8 +289,6 @@ knime_line_plot = function() {
 		
 		isEmptyPlot = true;
 		
-		var dataset = buildXYDataset();
-
 		//console.time("Building chart");
 		
 		var chartWidth = _representation.imageWidth + "px;"
@@ -296,14 +298,23 @@ knime_line_plot = function() {
 			chartHeight = "100%";
 		}
 		d3.select("#"+layoutContainer).append("div")
-			.attr("id", containerID)
-			.style("width", chartWidth)
-			.style("height", chartHeight)
-			.style("min-width", minWidth + "px")
-			.style("min-height", minHeight + "px")
-			.style("box-sizing", "border-box")
-			.style("overflow", "hidden")
-			.style("margin", "0");
+		.attr("id", containerID)
+		.style("width", chartWidth)
+		.style("height", chartHeight)
+		.style("min-width", minWidth + "px")
+		.style("min-height", minHeight + "px")
+		.style("box-sizing", "border-box")
+		.style("overflow", "hidden")
+		.style("margin", "0");
+		
+		var dataset;
+		if (_value.yColumns.length > MAX_COLUMNS) {
+			dataset = new jsfc.StandardXYDataset();
+			dataset.data.series = [];
+			tooManyColumnsError(true);
+		} else {
+			dataset = buildXYDataset();
+		}
 		
 		var plot = new jsfc.XYPlot(dataset);
 		// We comment this out and set the value always to false, as anyway the current chunk mechanism
@@ -375,7 +386,8 @@ knime_line_plot = function() {
 		if (_representation.resizeToWindow) {
 			chartHeight = "100%";
 		}
-		d3.select(svg).attr("id", "chart_svg").style("width", chartWidth).style("height", chartHeight);
+		d3.select(svg).attr("id", "chart_svg").style("width", chartWidth).style("height", chartHeight)
+			.style("display", isTooManyColumns ? "none" : "block");
         var zoomEnabled = _representation.enableZooming;
         var dragZoomEnabled = _representation.enableDragZooming;
         var panEnabled = _representation.enablePanning;
@@ -429,7 +441,10 @@ knime_line_plot = function() {
         
         checkWarningMessages();
         
-        initialAxisBounds = {xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(), yMax: yAxis.getUpperBound()};
+        initialAxisBounds = {
+        		xMin: xAxis.getLowerBound(), xMax: xAxis.getUpperBound(), yMin: yAxis.getLowerBound(),
+        		yMax: yAxis.getUpperBound()
+        	};
 	};
 	
 	getJsfcColor = function(colorString) {
@@ -457,7 +472,18 @@ knime_line_plot = function() {
 	updateChart = function() {
 		isEmptyPlot = true;
 		var plot = chartManager.getChart().getPlot();
-		plot.setDataset(buildXYDataset(), false);
+		var dataset;
+		if (_value.yColumns.length > MAX_COLUMNS) {
+			dataset = new jsfc.StandardXYDataset();
+			dataset.data.series = [];
+			tooManyColumnsError(true);
+			d3.select('#chart_svg').style('display', 'none');
+		} else {
+			dataset = buildXYDataset();	
+			tooManyColumnsError(false);
+			d3.select('#chart_svg').style('display', 'block');
+		}
+		plot.setDataset(dataset, false);
 		if (_value.xColumn) {
 			var dateProp = plot.getDataset().getSeriesProperty(_value.xColumn, "date");
 			if (dateProp) {
@@ -677,10 +703,15 @@ knime_line_plot = function() {
 		if (!chartManager || !chartManager.getElement()) {
 			return null;
 		}
-		var svg = chartManager.getElement();
-		d3.select(svg).selectAll("circle").each(function() {
-			this.removeAttributeNS("http://www.jfree.org", "ref");
-		});
+		var svg;
+		if (isTooManyColumns) {
+			svg = document.getElementById(errorSvgId);
+		} else {
+			svg = chartManager.getElement();
+			d3.select(svg).selectAll("circle").each(function () {
+				this.removeAttributeNS("http://www.jfree.org", "ref");
+			});
+		}
 		return (new XMLSerializer()).serializeToString(svg);
 	};
 	
@@ -763,7 +794,13 @@ knime_line_plot = function() {
 			if (isEmptyPlot) {
 				knimeService.clearWarningMessage(MISSING_VALUES_X_AXIS_NOT_SHOWN);
 				knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
-				knimeService.setWarningMessage("No chart was generated since data columns have only missing values.\nChoose another data columns or re-run the workflow with different data.", NO_DATA_AVAILABLE);
+				if (isTooManyColumns) {
+					knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
+				} else {
+					knimeService.setWarningMessage("No chart was generated since data columns have only missing values."
+							+ "\nChoose another data columns or re-run the workflow with different data.",
+							NO_DATA_AVAILABLE);
+				}
 			} else {
 				knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
 				if (xMissingValuesCount > 0 && _representation.reportOnMissingValues) {
@@ -777,6 +814,33 @@ knime_line_plot = function() {
 		        	knimeService.clearWarningMessage(MISSING_VALUES_NOT_SHOWN);
 		        }
 			}
+		}
+	}
+
+	tooManyColumnsError = function(isMany) {
+		isTooManyColumns = isMany;
+		if (document.getElementById(errorSvgId) !== null) {
+			d3.select('#'+errorSvgId).style('display', isTooManyColumns ? 'block' : 'none');
+		} else if (isTooManyColumns) {
+			var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+			document.getElementById(containerID).appendChild(svg);
+			d3.select(svg)
+				.attr('id', errorSvgId)
+				.style('display', 'block')
+				.attr('width', 600)
+				.attr('height', 100)
+				.append('rect')
+				.attr('x', 0)
+				.attr('y', 0)
+				.attr('width', 600)
+				.attr('height', 100)
+				.attr('fill', 'white');
+			d3.select(svg)
+				.append('text')
+				.text("Error: the Line Plot view does not support more than " + MAX_COLUMNS + " columns for y-axis.")
+				.attr('x', 20)
+				.attr('y', 30)
+				.attr('fill', 'red');
 		}
 	}
 	
