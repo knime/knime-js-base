@@ -152,7 +152,7 @@ public final class CredentialsInputQuickFormNodeModel extends
         final boolean isExecuted, final boolean isInactive) {
         String credentialsIdentifier = getConfig().getFlowVariableName();
         final CredentialsInputQuickFormValue value = getRelevantValue();
-        final String username = value != null ? value.getUsername() : null;
+        String username = value != null ? value.getUsername() : null;
         if (credentialsIdentifier == null || username == null) {
             // no configuration, nothing to fix
             return;
@@ -164,11 +164,21 @@ public final class CredentialsInputQuickFormNodeModel extends
             if (StringUtils.isEmpty(pair.getPassword())) {
                 Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
                 List<Credentials> loadCredentials = loadHelper.loadCredentials(Collections.singletonList(tempCredentials));
-                password = loadCredentials.iterator().next().getPassword();
+                Credentials cred = loadCredentials.iterator().next();
+
+                // set the new password
+                password = cred.getPassword();
                 value.setPassword(password);
                 if (password == null) {
                     setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
                 }
+
+                // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
+                // (since this is what the user would expect)
+                credentialsIdentifier = cred.getName();
+                getConfig().setFlowVariableName(credentialsIdentifier);
+                username = cred.getLogin();
+                value.setUsername(username);
             } else {
                 getLogger().debugWithFormat("Inheriting credentials \"%s\" from workflow", credentialsIdentifier);
             }
