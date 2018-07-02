@@ -315,6 +315,14 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        // check if min and max are valid dates
+        if (m_useMin.isSelected() && !m_useMinExecTime.isSelected()) {
+            m_min.validateSettingsBeforeSave();
+        }
+        if (m_useMax.isSelected() && !m_useMaxExecTime.isSelected()) {
+            m_max.validateSettingsBeforeSave();
+        }
+
         // check if min is before max
         final Optional<String> validationResult =
             DateInput2QuickFormNodeModel.validateMinMax(((SettingsModelDateTime)m_max.getModel()).getZonedDateTime(),
@@ -325,6 +333,8 @@ public class DateInput2QuickFormNodeDialog extends QuickFormNodeDialog {
         }
         // check if default is inside min/max
         if (!m_useDefaultExecTime.isSelected()) {
+            m_defaultField.validateSettingsBeforeSave();
+
             final Optional<String> validationResult2 = DateInput2QuickFormNodeModel.validateMinMax(
                 ((SettingsModelDateTime)m_defaultField.getModel()).getZonedDateTime(),
                 m_useMin.isSelected() && !m_useMinExecTime.isSelected(),
