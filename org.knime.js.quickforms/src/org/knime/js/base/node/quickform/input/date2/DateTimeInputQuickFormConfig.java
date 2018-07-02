@@ -48,6 +48,9 @@
  */
 package org.knime.js.base.node.quickform.input.date2;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -58,6 +61,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DateTimeUtils;
 
 /**
  * The config for the date input quick form node.
@@ -300,11 +304,38 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
         setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME));
         m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE));
         try {
-            m_min = ZonedDateTime.parse(settings.getString(CFG_MIN));
-            m_max = ZonedDateTime.parse(settings.getString(CFG_MAX));
+            m_min = parseZonedDateTime(settings.getString(CFG_MIN));
+            m_max = parseZonedDateTime(settings.getString(CFG_MAX));
         } catch (DateTimeParseException e) {
             throw e;
         }
+    }
+
+    private ZonedDateTime parseZonedDateTime(final String string) throws InvalidSettingsException {
+        if (DateTimeUtils.asZonedDateTime(string).isPresent()) {
+            return DateTimeUtils.asZonedDateTime(string).get();
+        } else if (DateTimeUtils.asLocalDateTime(string).isPresent()) {
+            if (m_type == DateTimeType.ZONED_DATE_TIME) {
+                throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");
+            }
+
+            return ZonedDateTime.of(DateTimeUtils.asLocalDateTime(string).get(), ZoneId.systemDefault());
+        } else if (DateTimeUtils.asLocalDate(string).isPresent()) {
+            if (m_type != DateTimeType.LOCAL_DATE) {
+                throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");
+            }
+
+            return ZonedDateTime.of(DateTimeUtils.asLocalDate(string).get(), LocalTime.now(), ZoneId.systemDefault());
+        } else if (DateTimeUtils.asLocalTime(string).isPresent()) {
+            if (m_type != DateTimeType.LOCAL_TIME) {
+                throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");
+            }
+
+            return ZonedDateTime.of(LocalDate.now(), DateTimeUtils.asLocalTime(string).get(), ZoneId.systemDefault());
+        }
+
+        throw new InvalidSettingsException(
+            "'" + string + "' could not be parsed as a date, time, or date&time with zone.");
     }
 
     /**
