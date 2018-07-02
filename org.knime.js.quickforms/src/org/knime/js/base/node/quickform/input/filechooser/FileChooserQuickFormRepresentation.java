@@ -79,6 +79,50 @@ public class FileChooserQuickFormRepresentation extends
     private Object m_tree;
 
     /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param selectWorkflows
+     * @param selectDirectories
+     * @param selectDataFiles
+     * @param useDefaultMountId
+     * @param customMountId
+     * @param rootDir
+     * @param fileTypes
+     * @param multipleSelection
+     * @param errorMessage
+     * @param tree
+     */
+    public FileChooserQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final FileChooserQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final FileChooserQuickFormValue currentValue,
+        @JsonProperty("selectWorkflows") final boolean selectWorkflows,
+        @JsonProperty("selectDirectories") final boolean selectDirectories,
+        @JsonProperty("selectDataFiles") final boolean selectDataFiles,
+        @JsonProperty("useDefaultMountId") final boolean useDefaultMountId,
+        @JsonProperty("customMountId") final String customMountId, @JsonProperty("rootDir") final String rootDir,
+        @JsonProperty("fileTypes") final String[] fileTypes,
+        @JsonProperty("multipleSelection") final boolean multipleSelection,
+        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("tree") final Object tree) {
+        super(label, description, required, defaultValue, currentValue);
+        m_selectWorkflows = selectWorkflows;
+        m_selectDirectories = selectDirectories;
+        m_selectDataFiles = selectDataFiles;
+        m_useDefaultMountId = useDefaultMountId;
+        m_customMountId = customMountId;
+        m_rootDir = rootDir;
+        m_fileTypes = fileTypes;
+        m_multipleSelection = multipleSelection;
+        m_errorMessage = errorMessage;
+        m_tree = tree;
+    }
+
+    /**
      * @param currentValue
      * @param config
      */

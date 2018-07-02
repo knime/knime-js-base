@@ -50,7 +50,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -62,6 +64,23 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class BooleanInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<BooleanInputQuickFormValue, BooleanInputQuickFormConfig> {
+
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     */
+    @JsonCreator
+    public BooleanInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final BooleanInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final BooleanInputQuickFormValue currentValue) {
+        super(label, description, required, defaultValue, currentValue);
+    }
 
     /**
      * @param currentValue The value currently used by the node

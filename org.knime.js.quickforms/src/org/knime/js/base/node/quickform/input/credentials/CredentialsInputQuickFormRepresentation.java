@@ -50,6 +50,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -68,6 +69,34 @@ public class CredentialsInputQuickFormRepresentation extends
     private final boolean m_useServerLoginCredentials;
     private final String m_errorMessage;
     private final boolean m_noDisplay;
+
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param promptUsername
+     * @param useServerLoginCredentials
+     * @param errorMessage
+     * @param noDisplay
+     */
+    @JsonCreator
+    public CredentialsInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final CredentialsInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final CredentialsInputQuickFormValue currentValue,
+        @JsonProperty("promptUsername") final boolean promptUsername,
+        @JsonProperty("useServerLoginCredentials") final boolean useServerLoginCredentials,
+        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("noDisplay") final boolean noDisplay) {
+        super(label, description, required, defaultValue, currentValue);
+        m_promptUsername = promptUsername;
+        m_useServerLoginCredentials = useServerLoginCredentials;
+        m_errorMessage = errorMessage;
+        m_noDisplay = noDisplay;
+    }
 
     /**
      * @param currentValue The value currently used by the node

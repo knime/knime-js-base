@@ -52,6 +52,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -65,6 +66,36 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DateInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<DateInputQuickFormValue, DateInputQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param useMin
+     * @param useMax
+     * @param min
+     * @param max
+     * @param withTime
+     */
+    @JsonCreator
+    public DateInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final DateInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final DateInputQuickFormValue currentValue,
+        @JsonProperty("useMin") final boolean useMin, @JsonProperty("useMax") final boolean useMax,
+        @JsonProperty("min") final Date min, @JsonProperty("max") final Date max,
+        @JsonProperty("withTime") final boolean withTime) {
+        super(label, description, required, defaultValue, currentValue);
+        m_useMin = useMin;
+        m_useMax = useMax;
+        m_min = min;
+        m_max = max;
+        m_withTime = withTime;
+    }
 
     /**
      * @param currentValue The value currently used by the node

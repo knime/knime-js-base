@@ -56,6 +56,7 @@ import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 import org.knime.time.util.DateTimeType;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -70,6 +71,50 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DateInput2QuickFormRepresentation
     extends QuickFormRepresentationImpl<DateInput2QuickFormValue, DateTimeInputQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param showNowButton
+     * @param granularity
+     * @param useMin
+     * @param useMax
+     * @param useMinExecTime
+     * @param useMaxExecTime
+     * @param useDefaultExecTime
+     * @param min
+     * @param max
+     * @param type
+     */
+    @JsonCreator
+    public DateInput2QuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final DateInput2QuickFormValue defaultValue,
+        @JsonProperty("currentValue") final DateInput2QuickFormValue currentValue,
+        @JsonProperty("shownowbutton") final boolean showNowButton,
+        @JsonProperty("granularity") final String granularity, @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax, @JsonProperty("useminexectime") final boolean useMinExecTime,
+        @JsonProperty("usemaxexectime") final boolean useMaxExecTime,
+        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime,
+        @JsonProperty("min") final String min, @JsonProperty("max") final String max,
+        @JsonProperty("type") final String type) {
+        super(label, description, required, defaultValue, currentValue);
+        m_showNowButton = showNowButton;
+        m_granularity = getGranularityFromString(granularity);
+        m_useMin = useMin;
+        m_useMax = useMax;
+        m_useMinExecTime = useMinExecTime;
+        m_useMaxExecTime = useMaxExecTime;
+        m_useDefaultExecTime = useDefaultExecTime;
+        m_min = ZonedDateTime.parse(min);
+        m_max = ZonedDateTime.parse(max);
+        m_type = getDateTimeTypeFromTypeDescription(type);
+    }
 
     /**
      * @param currentValue The value currently used by the node
@@ -142,6 +187,18 @@ public class DateInput2QuickFormRepresentation
             return "show_seconds";
         } else {
             return "show_millis";
+        }
+    }
+
+    private static GranularityTime getGranularityFromString(final String g) {
+        if (g.equals("show_minutes")) {
+            return GranularityTime.SHOW_MINUTES;
+        } else if (g.equals("show_seconds")) {
+            return GranularityTime.SHOW_SECONDS;
+        } else if (g.equals("show_millis")) {
+            return GranularityTime.SHOW_MILLIS;
+        } else {
+            throw new IllegalArgumentException("Not a granularity string");
         }
     }
 
@@ -238,6 +295,20 @@ public class DateInput2QuickFormRepresentation
             return "LDT";
         } else {
             return "ZDT";
+        }
+    }
+
+    private static DateTimeType getDateTimeTypeFromTypeDescription(final String d) {
+        if (d.equals("LD")) {
+            return DateTimeType.LOCAL_DATE;
+        } else if (d.equals("LT")) {
+            return DateTimeType.LOCAL_TIME;
+        } else if (d.equals("LDT")) {
+            return DateTimeType.LOCAL_DATE_TIME;
+        } else if (d.equals("ZDT")) {
+            return DateTimeType.ZONED_DATE_TIME;
+        } else {
+            throw new IllegalArgumentException("Not a data time type description");
         }
     }
 

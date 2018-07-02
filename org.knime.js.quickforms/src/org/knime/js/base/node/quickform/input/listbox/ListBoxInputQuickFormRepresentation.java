@@ -50,6 +50,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -63,6 +64,41 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ListBoxInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<ListBoxInputQuickFormValue, ListBoxInputQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param regex
+     * @param errorMessage
+     * @param separator
+     * @param separateEachCharacter
+     * @param omitEmpty
+     * @param separatorRegex
+     * @param numberVisOptions
+     */
+    @JsonCreator
+    public ListBoxInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final ListBoxInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final ListBoxInputQuickFormValue currentValue, @JsonProperty("regex") final String regex,
+        @JsonProperty("errormessage") final String errorMessage, @JsonProperty("separator") final String separator,
+        @JsonProperty("separateeachcharacter") final boolean separateEachCharacter,
+        @JsonProperty("omitempty") final boolean omitEmpty, @JsonProperty("separatorregex") final String separatorRegex,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue);
+        m_regex = regex;
+        m_errorMessage = errorMessage;
+        m_separator = separator;
+        m_separateEachCharacter = separateEachCharacter;
+        m_omitEmpty = omitEmpty;
+        m_separatorRegex = separatorRegex;
+        m_numberVisOptions = numberVisOptions;
+    }
 
     /**
      * @param currentValue The value currently used by the node

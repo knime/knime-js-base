@@ -72,6 +72,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Value for the column filter quick form node.
@@ -134,7 +136,8 @@ public class ColumnFilterQuickFormValue extends JSONViewContent implements Dialo
     /**
      * @return the settings
      */
-    @JsonIgnore
+    @JsonProperty("settings")
+    @JsonDeserialize(using = NodeSettingsDeserializer.class)
     public NodeSettings getSettings() {
         return m_settings;
     }
@@ -142,7 +145,8 @@ public class ColumnFilterQuickFormValue extends JSONViewContent implements Dialo
     /**
      * @param settings the settings to set
      */
-    @JsonIgnore
+    @JsonProperty("settings")
+    @JsonSerialize(using = NodeSettingsSerializer.class)
     public void setSettings(final NodeSettings settings) {
         m_settings = settings;
     }
@@ -152,6 +156,7 @@ public class ColumnFilterQuickFormValue extends JSONViewContent implements Dialo
      *
      * @param spec The current table spec
      */
+    @JsonIgnore
     public void updateFromSpec(final DataTableSpec spec) {
         if (m_settings != null) {
             DataColumnSpecFilterConfiguration config = new DataColumnSpecFilterConfiguration("columnFilter");
@@ -280,5 +285,4 @@ public class ColumnFilterQuickFormValue extends JSONViewContent implements Dialo
         }
         return builder.build();
     }
-
 }

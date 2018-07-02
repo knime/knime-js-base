@@ -54,6 +54,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -70,6 +71,31 @@ public class FileUploadQuickFormRepresentation extends
     private final String[] m_fileTypes;
     private final String m_errorMessage;
     private final boolean m_disableOutput;
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param fileTypes
+     * @param errorMessage
+     * @param disableOutput
+     */
+    @JsonCreator
+    public FileUploadQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final FileUploadQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final FileUploadQuickFormValue currentValue,
+        @JsonProperty("fileTypes") final String[] fileTypes, @JsonProperty("errorMessage") final String errorMessage,
+        @JsonProperty("disableOutput") final boolean disableOutput) {
+        super(label, description, required, defaultValue, currentValue);
+        m_fileTypes = fileTypes;
+        m_errorMessage = errorMessage;
+        m_disableOutput = disableOutput;
+    }
 
     /**
      * @param currentValue

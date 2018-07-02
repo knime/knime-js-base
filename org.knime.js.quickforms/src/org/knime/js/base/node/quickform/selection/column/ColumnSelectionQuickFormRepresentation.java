@@ -52,6 +52,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -65,6 +66,34 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ColumnSelectionQuickFormRepresentation extends
         QuickFormRepresentationImpl<ColumnSelectionQuickFormValue, ColumnSelectionQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param possibleColumns
+     * @param type
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     */
+    @JsonCreator
+    public ColumnSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final ColumnSelectionQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final ColumnSelectionQuickFormValue currentValue,
+        @JsonProperty("possibleColumns") final String[] possibleColumns, @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue);
+        m_possibleColumns = possibleColumns;
+        m_type = type;
+        m_limitNumberVisOptions = limitNumberVisOptions;
+        m_numberVisOptions = numberVisOptions;
+    }
 
     /**
      * @param currentValue The value currently used by the node

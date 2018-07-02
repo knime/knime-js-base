@@ -67,6 +67,33 @@ public class MultipleSelectionQuickFormRepresentation extends
         QuickFormRepresentationImpl<MultipleSelectionQuickFormValue, MultipleSelectionQuickFormConfig> {
 
     /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param possibleChoices
+     * @param type
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     */
+    public MultipleSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final MultipleSelectionQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final MultipleSelectionQuickFormValue currentValue,
+        @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue);
+        m_possibleChoices = possibleChoices;
+        m_type = type;
+        m_limitNumberVisOptions = limitNumberVisOptions;
+        m_numberVisOptions = numberVisOptions;
+    }
+
+    /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */

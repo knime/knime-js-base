@@ -52,6 +52,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -65,6 +66,34 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class SingleSelectionQuickFormRepresentation extends
         QuickFormRepresentationImpl<SingleSelectionQuickFormValue, SingleSelectionQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param possibleChoices
+     * @param type
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     */
+    @JsonCreator
+    public SingleSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final SingleSelectionQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final SingleSelectionQuickFormValue currentValue,
+        @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue);
+        m_possibleChoices = possibleChoices;
+        m_type = type;
+        m_limitNumberVisOptions = limitNumberVisOptions;
+        m_numberVisOptions = numberVisOptions;
+    }
 
     /**
      * @param currentValue The value currently used by the node

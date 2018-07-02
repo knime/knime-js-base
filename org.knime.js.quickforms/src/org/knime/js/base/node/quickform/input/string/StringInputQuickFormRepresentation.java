@@ -50,6 +50,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -63,6 +64,35 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class StringInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<StringInputQuickFormValue, StringInputQuickFormConfig> {
+
+    /**
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param regex
+     * @param errorMessage
+     * @param editorType
+     * @param multilineEditorWidth
+     * @param multilineEditorHeight
+     */
+    @JsonCreator
+    public StringInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final StringInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final StringInputQuickFormValue currentValue,
+        @JsonProperty("regex") final String regex, @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("editorType") final String editorType,
+        @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
+        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
+        super(label, description, required, defaultValue, currentValue);
+        m_regex = regex;
+        m_errorMessage = errorMessage;
+        m_editorType = editorType;
+        m_multilineEditorWidth = multilineEditorWidth;
+        m_multilineEditorHeight = multilineEditorHeight;
+    }
 
     /**
      * @param currentValue The value currently used by the node

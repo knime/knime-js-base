@@ -53,9 +53,12 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Representation for the column filter quick form node.
@@ -66,6 +69,37 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ColumnFilterQuickFormRepresentation extends
         QuickFormRepresentationImpl<ColumnFilterQuickFormValue, ColumnFilterQuickFormConfig> {
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param possibleColumns
+     * @param type
+     * @param spec
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     */
+    @JsonCreator
+    public ColumnFilterQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final ColumnFilterQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final ColumnFilterQuickFormValue currentValue,
+        @JsonProperty("possibleColumns") final String[] possibleColumns, @JsonProperty("type") final String type,
+        @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue);
+        m_possibleColumns = possibleColumns;
+        m_type = type;
+        m_spec = spec;
+        m_limitNumberVisOptions = limitNumberVisOptions;
+        m_numberVisOptions = numberVisOptions;
+    }
 
     /**
      * @param currentValue The value currently used by the node
@@ -105,7 +139,8 @@ public class ColumnFilterQuickFormRepresentation extends
     /**
      * @return Last known table spec
      */
-    @JsonIgnore
+    @JsonProperty("spec")
+    @JsonSerialize(using = DataTableSpecSerializer.class)
     public DataTableSpec getSpec() {
         return m_spec;
     }

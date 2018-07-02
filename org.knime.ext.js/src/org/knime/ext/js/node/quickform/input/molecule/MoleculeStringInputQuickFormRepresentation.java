@@ -48,8 +48,10 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
+import org.knime.js.base.node.quickform.input.bool.BooleanInputQuickFormValue;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -63,6 +65,37 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class MoleculeStringInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<MoleculeStringInputQuickFormValue, MoleculeStringInputQuickFormConfig> {
+    
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param sketcherLocation 
+     * @param format 
+     * @param sketcherPath 
+     * @param width 
+     * @param height 
+     */
+    @JsonCreator
+    public MoleculeStringInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final MoleculeStringInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final MoleculeStringInputQuickFormValue currentValue,
+        @JsonProperty("sketcherLocation") String sketcherLocation, @JsonProperty("format") String format,
+        @JsonProperty("sketcherPath") String sketcherPath, @JsonProperty("width") int width,
+        @JsonProperty("height") int height) {
+        super(label, description, required, defaultValue, currentValue);
+        m_sketcherLocation = sketcherLocation;
+        m_sketcherPath = sketcherPath;
+        m_format = format;
+        m_width = width;
+        m_height = height;
+    }
+
 
     /**
      * @param currentValue The value currently used by the node

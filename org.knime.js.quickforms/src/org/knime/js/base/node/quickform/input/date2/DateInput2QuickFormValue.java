@@ -168,7 +168,7 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
      */
     @JsonProperty("datestring")
     public void setDateTimeComponent(final String zdtString) {
-        m_date = ZonedDateTime.of(LocalDateTime.parse(zdtString), m_date.getZone());
+        m_date = ZonedDateTime.parse(zdtString);
     }
 
     /**

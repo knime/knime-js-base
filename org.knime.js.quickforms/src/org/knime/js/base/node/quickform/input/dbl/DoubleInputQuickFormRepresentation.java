@@ -50,6 +50,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -63,6 +64,33 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DoubleInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<DoubleInputQuickFormValue, DoubleInputQuickFormConfig> {
+
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param useMin
+     * @param useMax
+     * @param min
+     * @param max
+     */
+    @JsonCreator
+    public DoubleInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final DoubleInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final DoubleInputQuickFormValue currentValue,
+        @JsonProperty("usemin") final boolean useMin, @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("min") final int min, @JsonProperty("max") final int max) {
+        super(label, description, required, defaultValue, currentValue);
+        m_useMin = useMin;
+        m_useMax = useMax;
+        m_min = min;
+        m_max = max;
+    }
 
     /**
      * @param currentValue The value currently used by the node

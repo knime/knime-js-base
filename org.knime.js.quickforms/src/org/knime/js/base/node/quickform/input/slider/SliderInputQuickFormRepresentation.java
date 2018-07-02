@@ -51,6 +51,7 @@ import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 import org.knime.js.core.settings.slider.SliderSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -64,6 +65,26 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class SliderInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<SliderInputQuickFormValue, SliderInputQuickFormConfig> {
+
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param sliderSettings
+     */
+    @JsonCreator
+    public SliderInputQuickFormRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final SliderInputQuickFormValue defaultValue,
+        @JsonProperty("currentValue") final SliderInputQuickFormValue currentValue,
+        @JsonProperty("sliderSettings") final SliderSettings sliderSettings) {
+        super(label, description, required, defaultValue, currentValue);
+        m_sliderSettings = sliderSettings;
+    }
 
     /**
      * @param currentValue The value currently used by the node

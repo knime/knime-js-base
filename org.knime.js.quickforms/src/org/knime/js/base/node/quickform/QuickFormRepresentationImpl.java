@@ -58,6 +58,7 @@ import org.knime.core.quickform.QuickFormRepresentation;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -75,6 +76,27 @@ public abstract class QuickFormRepresentationImpl
         <VAL extends DialogNodeValue, CONF extends QuickFormConfig<VAL>>
         extends JSONViewContent
         implements QuickFormRepresentation<VAL> {
+
+    /**
+     * For deserialization.
+     *
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     */
+    @JsonCreator
+    public QuickFormRepresentationImpl(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue) {
+        super();
+        m_label = label;
+        m_description = description;
+        m_required = required;
+        m_defaultValue = defaultValue;
+        m_currentValue = currentValue;
+    }
 
     private final String m_label;
 
