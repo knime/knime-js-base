@@ -67,21 +67,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class ColumnSelectionQuickFormRepresentation extends
         QuickFormRepresentationImpl<ColumnSelectionQuickFormValue, ColumnSelectionQuickFormConfig> {
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param possibleColumns
-     * @param type
-     * @param limitNumberVisOptions
-     * @param numberVisOptions
-     */
     @JsonCreator
-    public ColumnSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
+    private ColumnSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final ColumnSelectionQuickFormValue defaultValue,
         @JsonProperty("currentValue") final ColumnSelectionQuickFormValue currentValue,

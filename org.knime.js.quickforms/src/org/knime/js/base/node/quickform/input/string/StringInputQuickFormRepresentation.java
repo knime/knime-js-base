@@ -65,20 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class StringInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<StringInputQuickFormValue, StringInputQuickFormConfig> {
 
-    /**
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param regex
-     * @param errorMessage
-     * @param editorType
-     * @param multilineEditorWidth
-     * @param multilineEditorHeight
-     */
     @JsonCreator
-    public StringInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private StringInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final StringInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final StringInputQuickFormValue currentValue,

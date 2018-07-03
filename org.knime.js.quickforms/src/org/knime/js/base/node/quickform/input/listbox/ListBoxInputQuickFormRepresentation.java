@@ -65,24 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class ListBoxInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<ListBoxInputQuickFormValue, ListBoxInputQuickFormConfig> {
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param regex
-     * @param errorMessage
-     * @param separator
-     * @param separateEachCharacter
-     * @param omitEmpty
-     * @param separatorRegex
-     * @param numberVisOptions
-     */
     @JsonCreator
-    public ListBoxInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private ListBoxInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final ListBoxInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final ListBoxInputQuickFormValue currentValue, @JsonProperty("regex") final String regex,

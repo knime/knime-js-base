@@ -70,21 +70,8 @@ public class CredentialsInputQuickFormRepresentation extends
     private final String m_errorMessage;
     private final boolean m_noDisplay;
 
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param promptUsername
-     * @param useServerLoginCredentials
-     * @param errorMessage
-     * @param noDisplay
-     */
     @JsonCreator
-    public CredentialsInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private CredentialsInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final CredentialsInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final CredentialsInputQuickFormValue currentValue,

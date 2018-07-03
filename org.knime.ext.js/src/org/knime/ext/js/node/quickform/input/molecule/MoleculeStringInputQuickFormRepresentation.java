@@ -48,7 +48,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
-import org.knime.js.base.node.quickform.input.bool.BooleanInputQuickFormValue;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -66,22 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class MoleculeStringInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<MoleculeStringInputQuickFormValue, MoleculeStringInputQuickFormConfig> {
     
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param sketcherLocation 
-     * @param format 
-     * @param sketcherPath 
-     * @param width 
-     * @param height 
-     */
     @JsonCreator
-    public MoleculeStringInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private MoleculeStringInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final MoleculeStringInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final MoleculeStringInputQuickFormValue currentValue,

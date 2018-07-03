@@ -58,7 +58,6 @@ import org.knime.core.quickform.QuickFormRepresentation;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -78,19 +77,16 @@ public abstract class QuickFormRepresentationImpl
         implements QuickFormRepresentation<VAL> {
 
     /**
-     * For deserialization.
+     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
      *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
+     * @param label the quickform's label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the quickform's default value
+     * @param currentValue the quickform's current value
      */
-    @JsonCreator
-    public QuickFormRepresentationImpl(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue) {
-        super();
+    protected QuickFormRepresentationImpl(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue) {
         m_label = label;
         m_description = description;
         m_required = required;

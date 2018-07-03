@@ -52,6 +52,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -66,20 +67,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class MultipleSelectionQuickFormRepresentation extends
         QuickFormRepresentationImpl<MultipleSelectionQuickFormValue, MultipleSelectionQuickFormConfig> {
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param possibleChoices
-     * @param type
-     * @param limitNumberVisOptions
-     * @param numberVisOptions
-     */
-    public MultipleSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
+    @JsonCreator
+    private MultipleSelectionQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final MultipleSelectionQuickFormValue defaultValue,
         @JsonProperty("currentValue") final MultipleSelectionQuickFormValue currentValue,

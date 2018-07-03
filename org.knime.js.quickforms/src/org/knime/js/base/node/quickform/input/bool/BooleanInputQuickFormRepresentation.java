@@ -65,17 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class BooleanInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<BooleanInputQuickFormValue, BooleanInputQuickFormConfig> {
 
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     */
     @JsonCreator
-    public BooleanInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private BooleanInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final BooleanInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final BooleanInputQuickFormValue currentValue) {

@@ -67,22 +67,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class DateInputQuickFormRepresentation extends
         QuickFormRepresentationImpl<DateInputQuickFormValue, DateInputQuickFormConfig> {
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param useMin
-     * @param useMax
-     * @param min
-     * @param max
-     * @param withTime
-     */
     @JsonCreator
-    public DateInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private DateInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final DateInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final DateInputQuickFormValue currentValue,

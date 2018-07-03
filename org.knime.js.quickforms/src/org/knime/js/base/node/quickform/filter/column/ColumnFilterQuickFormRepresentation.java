@@ -70,22 +70,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class ColumnFilterQuickFormRepresentation extends
         QuickFormRepresentationImpl<ColumnFilterQuickFormValue, ColumnFilterQuickFormConfig> {
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param possibleColumns
-     * @param type
-     * @param spec
-     * @param limitNumberVisOptions
-     * @param numberVisOptions
-     */
     @JsonCreator
-    public ColumnFilterQuickFormRepresentation(@JsonProperty("label") final String label,
+    private ColumnFilterQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final ColumnFilterQuickFormValue defaultValue,
         @JsonProperty("currentValue") final ColumnFilterQuickFormValue currentValue,

@@ -65,21 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class DoubleInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<DoubleInputQuickFormValue, DoubleInputQuickFormConfig> {
 
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param useMin
-     * @param useMax
-     * @param min
-     * @param max
-     */
     @JsonCreator
-    public DoubleInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private DoubleInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final DoubleInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final DoubleInputQuickFormValue currentValue,

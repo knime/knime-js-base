@@ -54,6 +54,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -78,26 +79,8 @@ public class FileChooserQuickFormRepresentation extends
     private final String m_errorMessage;
     private Object m_tree;
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param selectWorkflows
-     * @param selectDirectories
-     * @param selectDataFiles
-     * @param useDefaultMountId
-     * @param customMountId
-     * @param rootDir
-     * @param fileTypes
-     * @param multipleSelection
-     * @param errorMessage
-     * @param tree
-     */
-    public FileChooserQuickFormRepresentation(@JsonProperty("label") final String label,
+    @JsonCreator
+    private FileChooserQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final FileChooserQuickFormValue defaultValue,
         @JsonProperty("currentValue") final FileChooserQuickFormValue currentValue,

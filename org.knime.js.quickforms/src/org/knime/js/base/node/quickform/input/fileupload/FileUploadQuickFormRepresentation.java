@@ -72,20 +72,8 @@ public class FileUploadQuickFormRepresentation extends
     private final String m_errorMessage;
     private final boolean m_disableOutput;
 
-    /**
-     * Constructor for deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param fileTypes
-     * @param errorMessage
-     * @param disableOutput
-     */
     @JsonCreator
-    public FileUploadQuickFormRepresentation(@JsonProperty("label") final String label,
+    private FileUploadQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final FileUploadQuickFormValue defaultValue,
         @JsonProperty("currentValue") final FileUploadQuickFormValue currentValue,

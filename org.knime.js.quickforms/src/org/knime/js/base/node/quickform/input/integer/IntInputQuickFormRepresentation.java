@@ -65,21 +65,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class IntInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<IntInputQuickFormValue, IntInputQuickFormConfig> {
 
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param useMin
-     * @param useMax
-     * @param min
-     * @param max
-     */
     @JsonCreator
-    public IntInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private IntInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final IntInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final IntInputQuickFormValue currentValue,

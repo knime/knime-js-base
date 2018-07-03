@@ -66,18 +66,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class SliderInputQuickFormRepresentation extends
     QuickFormRepresentationImpl<SliderInputQuickFormValue, SliderInputQuickFormConfig> {
 
-    /**
-     * For deserialization.
-     *
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
-     * @param sliderSettings
-     */
     @JsonCreator
-    public SliderInputQuickFormRepresentation(@JsonProperty("label") final String label,
+    private SliderInputQuickFormRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final SliderInputQuickFormValue defaultValue,
         @JsonProperty("currentValue") final SliderInputQuickFormValue currentValue,
