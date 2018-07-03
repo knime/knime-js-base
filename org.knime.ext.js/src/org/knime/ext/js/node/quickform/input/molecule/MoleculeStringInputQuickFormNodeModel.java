@@ -62,7 +62,6 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
-import org.knime.ext.phantomjs.PhantomJSImageGenerator;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 import org.knime.js.core.AbstractImageGenerator;
 import org.knime.js.core.layout.LayoutTemplateProvider;
@@ -131,7 +130,7 @@ public class MoleculeStringInputQuickFormNodeModel
     }
 
     /**
-     * Renders the view with PhantomJS and retrieves the created SVG image.
+     * Renders the view with a headless browser and retrieves the created SVG image.
      *
      * @return A {@link PortObject} containing the SVG created by the view.
      * @throws IOException if an I/O error occurs
