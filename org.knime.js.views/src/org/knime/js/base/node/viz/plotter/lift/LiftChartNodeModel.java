@@ -223,6 +223,14 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final LiftChartPlotViewValue viewContent) {
         synchronized (getLock()) {
             // validate value, nothing to do atm

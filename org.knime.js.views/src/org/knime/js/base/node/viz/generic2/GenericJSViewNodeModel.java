@@ -297,6 +297,14 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
         // TODO Auto-generated method stub
 

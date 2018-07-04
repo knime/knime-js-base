@@ -365,6 +365,14 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
      * Returns the value that should currently be used.
      *
      * The priority of values is as follows:

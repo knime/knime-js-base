@@ -351,6 +351,14 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final RangeSliderFilterValue viewContent) {
         NumericColumnRangeSelection selection = (NumericColumnRangeSelection)viewContent.getFilter().getColumns()[0];
         double min = selection.getMinimum();

@@ -260,6 +260,14 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ValidationError validateViewValue(final ScatterPlotViewValue viewContent) {
         synchronized (getLock()) {
             // validate value, nothing to do atm

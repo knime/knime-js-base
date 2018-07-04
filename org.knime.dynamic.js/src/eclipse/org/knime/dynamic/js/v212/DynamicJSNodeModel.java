@@ -364,6 +364,14 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	    return m_config.getCustomCSS();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setCssStyles(final String styles) {
+	    m_config.setCustomCSS(styles);
+	}
+
 	@Override
 	public ValidationError validateViewValue(final DynamicJSViewValue value) {
 		//TODO: validate options, flow variables, tables and maps

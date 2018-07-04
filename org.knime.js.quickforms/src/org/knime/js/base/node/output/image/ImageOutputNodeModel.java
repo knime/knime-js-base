@@ -191,6 +191,14 @@ public class ImageOutputNodeModel extends AbstractWizardNodeModel<ImageOutputRep
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_config.saveSettings(settings);
     }

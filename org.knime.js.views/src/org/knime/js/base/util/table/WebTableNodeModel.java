@@ -417,6 +417,14 @@ public abstract class WebTableNodeModel<REP extends WebTableViewRepresentation, 
      * {@inheritDoc}
      */
     @Override
+    public void setCssStyles(final String styles) {
+        m_customCSS = styles;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_hideInWizard.saveSettingsTo(settings);
         m_maxRows.saveSettingsTo(settings);
