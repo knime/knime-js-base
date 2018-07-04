@@ -23,6 +23,7 @@ dynamicJSNode = function() {
 		
 		// Import style dependencies
 		var head = document.getElementsByTagName('head')[0];
+		var linkBefore = document.getElementsByTagName('link')[0] || head.firstChild;
 		for (var j = 0; j < representation.cssDependencies.length; j++) {
 			var href = representation.cssDependencies[j];
 			if (parent != undefined && parent.KnimePageLoader != undefined) {
@@ -32,14 +33,16 @@ dynamicJSNode = function() {
 			styleDep.type = 'text/css';
 			styleDep.rel = 'stylesheet';
 			styleDep.href = href;
-			head.insertBefore(styleDep, head.firstChild);
+			head.insertBefore(styleDep, linkBefore);
 		}
+		
 		// Import own style declaration
+		var styleBefore = document.getElementsByTagName('style')[0] || head.firstChild;
 		for (var j = 0; j < representation.cssCode.length; j++) {
 			var styleElement = document.createElement('style');
 			styleElement.type = 'text/css';
 			styleElement.appendChild(document.createTextNode(representation.cssCode[j]));
-			head.appendChild(styleElement);
+			head.insertBefore(styleElement, styleBefore);
 		}
 		
 		// Import JS dependencies and call JS code after loading

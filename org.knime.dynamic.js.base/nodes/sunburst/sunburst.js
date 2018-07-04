@@ -1451,6 +1451,7 @@
 
 	view.getSVG = function() {
 		var svgElement = d3.select("svg")[0][0];
+		knimeService.inlineSvgStyles(svgElement);
 		// Return the SVG as a string.
 		return (new XMLSerializer()).serializeToString(svgElement);
 	};

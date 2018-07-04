@@ -550,35 +550,7 @@
 		return _value;
 	}
 
-	pie.getSVG = function() {
-		// inline global style declarations for SVG export
-		var styles = document.styleSheets;
-		for (i = 0; i < styles.length; i++) {
-			if (!styles[i].cssRules && styles[i].rules) {
-				styles[i].cssRules = styles[i].rules;
-			}
-			// empty style declaration
-			if (!styles[i].cssRules) continue;
-			
-			for (var j = 0; j < styles[i].cssRules.length; j++) {
-				try {
-					var rule = styles[i].cssRules[j];
-					d3.selectAll(rule.selectorText).each(function(){
-						for (var k = 0; k < rule.style.length; k++) {
-							var curStyle = this.style.getPropertyValue(rule.style[k]);
-							var curPrio = this.style.getPropertyPriority(rule.style[k]);
-							var rulePrio = rule.style.getPropertyPriority(rule.style[k]);
-							//only overwrite style if not set or priority is overruled
-							if (!curStyle || (curPrio != "important" && rulePrio == "important")) {
-								d3.select(this).style(rule.style[k], rule.style[rule.style[k]]);
-							}
-						}
-					});
-				} catch(exception) {
-					continue;
-				}
-			}
-		}
+	pie.getSVG = function() {		
 		// correct faulty rect elements
 		d3.selectAll("rect").each(function() {
 			var rect = d3.select(this);
@@ -589,7 +561,10 @@
 				rect.attr("height", 0);
 			}
 		});
+		
 		var svgElement = d3.select("svg")[0][0];
+		knimeService.inlineSvgStyles(svgElement);
+
 		// Return the SVG as a string.
 		return (new XMLSerializer()).serializeToString(svgElement);
 	}

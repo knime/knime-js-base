@@ -626,8 +626,10 @@ knime_lift_chart = function() {
     }
     
     view.getSVG = function() {
-        var svg = d3.select("svg")[0][0];
-        return (new XMLSerializer()).serializeToString(svg);
+    	var svgElement = d3.select("svg")[0][0];
+		knimeService.inlineSvgStyles(svgElement);
+		// Return the SVG as a string.
+		return (new XMLSerializer()).serializeToString(svgElement);
     };
     
     function parseColor(col) {

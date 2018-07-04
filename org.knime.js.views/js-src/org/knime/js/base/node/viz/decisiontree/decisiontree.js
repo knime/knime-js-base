@@ -48,9 +48,9 @@ knime_decision_tree = function() {
     }
 
     input.getSVG = function() {
-//        var svg = d3.select("svg")[0][0];
-//    	var svg = d3.select("svg").node();
     	var svg = decTreeDrawer.getSVG();
+		knimeService.inlineSvgStyles(svg);
+		// Return the SVG as a string.
         return (new XMLSerializer()).serializeToString(svg);
     };
     

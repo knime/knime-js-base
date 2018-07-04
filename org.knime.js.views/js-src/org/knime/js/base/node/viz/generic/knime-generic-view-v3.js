@@ -25,19 +25,22 @@ knime_generic_view = function() {
 			// Import style dependencies
 			var head = document.getElementsByTagName('head')[0];
 			if (representation.cssDependencies) {
+				var linkBefore = document.getElementsByTagName('link')[0] || head.firstChild;
 				for ( var j = 0; j < representation.cssDependencies.length; j++) {
 					var styleDep = document.createElement('link');
 					styleDep.type = 'text/css';
 					styleDep.rel = 'stylesheet';
 					styleDep.href = representation.cssDependencies[j];
-					head.appendChild(styleDep);
+					head.insertBefore(styleDep, linkBefore);
 				}
 			}
+			
 			// Import own style declaration
+			var styleBefore = document.getElementsByTagName('style')[0] || head.firstChild;
 			var styleElement = document.createElement('style');
 			styleElement.type = 'text/css';
 			styleElement.appendChild(document.createTextNode(representation.cssCode));
-			head.appendChild(styleElement);
+			head.insertBefore(styleElement, styleBefore);
 			
 			// Import JS dependencies and call JS code after loading
 			var libs = representation.jsDependencies;
