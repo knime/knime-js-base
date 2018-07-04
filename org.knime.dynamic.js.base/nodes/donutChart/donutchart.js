@@ -170,7 +170,7 @@
 					.attr('y', 80)
 					.attr('font-size', 20)
 					.attr('fill', 'red')
-					.text('The plot is empty because all pies have values of 0');
+					.text('The plot is empty because all values are equal to 0.');
 			} else {
 				svg.datum(plotData).transition().duration(300).call(chart);
 			}
