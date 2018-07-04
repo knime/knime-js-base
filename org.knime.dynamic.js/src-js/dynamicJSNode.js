@@ -32,7 +32,7 @@ dynamicJSNode = function() {
 			styleDep.type = 'text/css';
 			styleDep.rel = 'stylesheet';
 			styleDep.href = href;
-			head.appendChild(styleDep);
+			head.insertBefore(styleDep, head.firstChild);
 		}
 		// Import own style declaration
 		for (var j = 0; j < representation.cssCode.length; j++) {

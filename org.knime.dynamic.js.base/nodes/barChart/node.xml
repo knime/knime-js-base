@@ -176,7 +176,6 @@
 	</ports>
 	<js:resources>
 		<!-- Added for inlining style rules when generating svg -->
-		<js:resource type="css" path="nv.d3.v1_8_1.min.css" />
 		<js:resource type="js" path="groupedbarchart.js" />
 		<js:resource type="css" path="groupedbarchart.css" />
 	</js:resources>
