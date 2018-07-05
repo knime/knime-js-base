@@ -46,6 +46,7 @@ package org.knime.js.base.node.quickform.selection.value;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTable;
@@ -58,6 +59,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.quickform.QuickFormNodeModel;
 
 /**
@@ -131,45 +133,55 @@ public class ValueSelectionQuickFormNodeModel
         ValueSelectionQuickFormValue rValue = getRelevantValue();
         String column = rValue.getColumn();
         String value = rValue.getValue();
-        Map<String, List<String>> possibleValues = getConfig().getPossibleValues();
-        if (possibleValues.size() < 1) {
-            throw new InvalidSettingsException("No column available for selection in input table.");
+        Map<String, List<String>> possibleValues = getConfig().getPossibleValues().entrySet().stream()//
+            .filter(e -> !e.getValue().isEmpty())//
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (possibleValues.isEmpty()) {
+            throw new InvalidSettingsException("The input table does not contain any column with domain information.");
         }
         if (!possibleValues.containsKey(column)) {
             String warning = "";
             if (!StringUtils.isEmpty(column)) {
                 if (getConfig().getLockColumn()) {
-                    throw new InvalidSettingsException("Locked column '" + column + "' is not part of the table spec anymore.");
+                    throw new InvalidSettingsException(
+                        "Locked column '" + column + "' is not part of the table spec anymore or its domain is empty.");
                 }
-                warning = "Column '" + column + "' is not part of the table spec anymore.\n";
+                warning = "Column '" + column + "' is not part of the table spec anymore or its domain is empty.\n";
             }
             warning += "Auto-guessing default column and value.";
-            column = possibleValues.keySet().toArray(new String[0])[0];
+            column = possibleValues.keySet().iterator().next();
             value = possibleValues.get(column).get(0);
             setWarningMessage(warning);
         }
-        List<String> values = possibleValues.get(column);
-        if (values == null || values.isEmpty()) {
-            throw new InvalidSettingsException("No possible values found for column '" + column + "'");
-        }
+        final List<String> values = possibleValues.get(column);
         if (!values.contains(value)) {
             setWarningMessage("The selected value '" + value + "' is not among the possible values in the column '"
-                    + column + "'.\nAuto-guessing new default value.");
+                + column + "'.\nAuto-guessing new default value.");
             value = values.get(0);
         }
         String variableName = getConfig().getFlowVariableName();
         pushFlowVariableString(variableName + " (column)", rValue.getColumn());
         switch (getConfig().getColumnType()) {
-        case Integer:
-            pushFlowVariableInt(variableName, Integer.parseInt(value));
-            break;
-        case Double:
-            pushFlowVariableDouble(variableName, Double.parseDouble(value));
-            break;
-        default:
-            pushFlowVariableString(variableName, value);
-            break;
+            case Integer:
+                pushFlowVariableInt(variableName, Integer.parseInt(value));
+                break;
+            case Double:
+                pushFlowVariableDouble(variableName, Double.parseDouble(value));
+                break;
+            default:
+                pushFlowVariableString(variableName, value);
+                break;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ValidationError validateViewValue(final ValueSelectionQuickFormValue viewContent) {
+        if (viewContent.getColumn() == null || viewContent.getValue() == null) {
+            return new ValidationError("The selected column/value cannot be empty.");
+        }
+        return null;
     }
 
     /**
