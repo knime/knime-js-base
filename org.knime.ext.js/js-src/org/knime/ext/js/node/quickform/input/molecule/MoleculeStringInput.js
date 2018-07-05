@@ -1179,6 +1179,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 			svg = jQuery("svg");
 		}
 		if (svg.length > 0) {
+			knimeService.inlineSvgStyles(svg.get(0));
 			return (new XMLSerializer()).serializeToString(svg.get(0));
 		}
 	};

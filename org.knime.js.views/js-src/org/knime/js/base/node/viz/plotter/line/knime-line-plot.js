@@ -712,6 +712,7 @@ knime_line_plot = function() {
 				this.removeAttributeNS("http://www.jfree.org", "ref");
 			});
 		}
+		knimeService.inlineSvgStyles(svg);
 		return (new XMLSerializer()).serializeToString(svg);
 	};
 	

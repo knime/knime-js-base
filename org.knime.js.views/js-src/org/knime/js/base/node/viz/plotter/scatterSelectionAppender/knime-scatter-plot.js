@@ -1026,6 +1026,7 @@ knime_scatter_plot_selection_appender = function() {
 			this.removeAttribute("ref");
 			this.removeAttribute("xmlns");
 		});
+		knimeService.inlineSvgStyles(svg);
 		return (new XMLSerializer()).serializeToString(svg);
 	};
 	
