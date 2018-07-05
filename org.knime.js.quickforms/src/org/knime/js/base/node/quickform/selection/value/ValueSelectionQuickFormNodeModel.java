@@ -46,8 +46,6 @@ package org.knime.js.base.node.quickform.selection.value;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTable;
@@ -60,8 +58,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.util.CheckUtils;
-import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.quickform.QuickFormNodeModel;
 
 /**
@@ -69,19 +65,17 @@ import org.knime.js.base.node.quickform.QuickFormNodeModel;
  *
  * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
-public class ValueSelectionQuickFormNodeModel extends
-    QuickFormNodeModel
-    <ValueSelectionQuickFormRepresentation,
-    ValueSelectionQuickFormValue,
-    ValueSelectionQuickFormConfig> {
+public class ValueSelectionQuickFormNodeModel
+        extends QuickFormNodeModel
+        <ValueSelectionQuickFormRepresentation,
+        ValueSelectionQuickFormValue,
+        ValueSelectionQuickFormConfig> {
 
-    /**
-     * Creates a new value selection node model.
-     *
-     * @param viewName the view name
-     */
+    /** Creates a new value selection node model.
+     * @param viewName the view name*/
     public ValueSelectionQuickFormNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+        super(new PortType[]{BufferedDataTable.TYPE},
+                new PortType[]{FlowVariablePortObject.TYPE}, viewName);
     }
 
     /**
@@ -104,7 +98,8 @@ public class ValueSelectionQuickFormNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
         updateValues((DataTableSpec)inSpecs[0]);
         createAndPushFlowVariable();
         return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
@@ -134,62 +129,47 @@ public class ValueSelectionQuickFormNodeModel extends
      */
     private void createAndPushFlowVariable() throws InvalidSettingsException {
         ValueSelectionQuickFormValue rValue = getRelevantValue();
-
-        Map<String, List<String>> possibleValues = getConfig().getPossibleValues();
-
-        final Optional<Entry<String, List<String>>> guess = possibleValues.entrySet().stream()//
-            .filter(e -> !e.getValue().isEmpty())//
-            .findFirst();
-
-        CheckUtils.checkSetting(guess.isPresent(),
-            "The input table does not contain any column with domain information.");
-
         String column = rValue.getColumn();
-
-        // auto-guessing
-        if (StringUtils.isEmpty(column)) {
-            // cannot fail since we already checked if the value is present
-            column = guess.get().getKey();
-            rValue.setColumn(column);
-            rValue.setValue(guess.get().getValue().get(0));
-            setWarningMessage("Auto-guessing: Setting default column to \"" + column + "\" and default value \""
-                + rValue.getValue() + "\"");
+        String value = rValue.getValue();
+        Map<String, List<String>> possibleValues = getConfig().getPossibleValues();
+        if (possibleValues.size() < 1) {
+            throw new InvalidSettingsException("No column available for selection in input table.");
         }
-
-        final String value = rValue.getValue();
-
-        CheckUtils.checkSetting(!StringUtils.isEmpty(value), "The (default) value for column \"%s\" is missing.",
-            column);
-
-        CheckUtils.checkSetting(possibleValues.containsKey(column),
-            "The selected column \"%s\" is not part of the table spec (anymore).", column);
-
-        CheckUtils.checkSetting(possibleValues.get(column).contains(value),
-            "The selected value \"%s\" is not part of the domain for column \"%s\" (anymore).", value, column);
-
+        if (!possibleValues.containsKey(column)) {
+            String warning = "";
+            if (!StringUtils.isEmpty(column)) {
+                if (getConfig().getLockColumn()) {
+                    throw new InvalidSettingsException("Locked column '" + column + "' is not part of the table spec anymore.");
+                }
+                warning = "Column '" + column + "' is not part of the table spec anymore.\n";
+            }
+            warning += "Auto-guessing default column and value.";
+            column = possibleValues.keySet().toArray(new String[0])[0];
+            value = possibleValues.get(column).get(0);
+            setWarningMessage(warning);
+        }
+        List<String> values = possibleValues.get(column);
+        if (values == null || values.isEmpty()) {
+            throw new InvalidSettingsException("No possible values found for column '" + column + "'");
+        }
+        if (!values.contains(value)) {
+            setWarningMessage("The selected value '" + value + "' is not among the possible values in the column '"
+                    + column + "'.\nAuto-guessing new default value.");
+            value = values.get(0);
+        }
         String variableName = getConfig().getFlowVariableName();
-
         pushFlowVariableString(variableName + " (column)", rValue.getColumn());
         switch (getConfig().getColumnType()) {
-            case Integer:
-                pushFlowVariableInt(variableName, Integer.parseInt(value));
-                break;
-            case Double:
-                pushFlowVariableDouble(variableName, Double.parseDouble(value));
-                break;
-            default:
-                pushFlowVariableString(variableName, value);
-                break;
+        case Integer:
+            pushFlowVariableInt(variableName, Integer.parseInt(value));
+            break;
+        case Double:
+            pushFlowVariableDouble(variableName, Double.parseDouble(value));
+            break;
+        default:
+            pushFlowVariableString(variableName, value);
+            break;
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ValidationError validateViewValue(final ValueSelectionQuickFormValue viewContent) {
-        if (viewContent.getColumn() == null || viewContent.getValue() == null) {
-            return new ValidationError("The selected column/value cannot be empty.");
-        }
-        return null;
     }
 
     /**

@@ -75,7 +75,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.quickform.QuickFormNodeDialog;
@@ -85,7 +84,7 @@ import org.knime.js.base.node.quickform.QuickFormNodeDialog;
  *
  * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes" })
 public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
 
     private final JComboBox<ColumnType> m_columnType;
@@ -103,7 +102,6 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
     private final JComboBox<String> m_type;
 
     private final JCheckBox m_limitNumberVisOptionsBox;
-
     private final JSpinner m_numberVisOptionSpinner;
 
     private ValueSelectionQuickFormConfig m_config;
@@ -121,7 +119,7 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
             }
         });
         m_defaultField = new JComboBox(m_defaultModel);
-        m_defaultColumnField = new ColumnSelectionPanel((Border)null, new Class[]{DataValue.class});
+        m_defaultColumnField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
         m_defaultColumnField.addItemListener(new ItemListener() {
             /** {@inheritDoc} */
             @Override
@@ -152,33 +150,33 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
     private void updateAvailableColumns() {
         List<DataColumnSpec> specs = new ArrayList<DataColumnSpec>();
         switch ((ColumnType)m_columnType.getSelectedItem()) {
-            case String:
-                for (DataColumnSpec colSpec : m_tableSpec) {
-                    if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(StringValue.class)) {
-                        specs.add(colSpec);
-                    }
+        case String:
+            for (DataColumnSpec colSpec : m_tableSpec) {
+                if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(StringValue.class)) {
+                    specs.add(colSpec);
                 }
-                break;
-            case Integer:
-                for (DataColumnSpec colSpec : m_tableSpec) {
-                    if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(IntValue.class)) {
-                        specs.add(colSpec);
-                    }
+            }
+            break;
+        case Integer:
+            for (DataColumnSpec colSpec : m_tableSpec) {
+                if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(IntValue.class)) {
+                    specs.add(colSpec);
                 }
-                break;
-            case Double:
-                for (DataColumnSpec colSpec : m_tableSpec) {
-                    if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(DoubleValue.class)) {
-                        specs.add(colSpec);
-                    }
+            }
+            break;
+        case Double:
+            for (DataColumnSpec colSpec : m_tableSpec) {
+                if (colSpec.getDomain().hasValues() && colSpec.getType().isCompatible(DoubleValue.class)) {
+                    specs.add(colSpec);
                 }
-                break;
-            default:
-                for (DataColumnSpec colSpec : m_tableSpec) {
-                    if (colSpec.getDomain().hasValues()) {
-                        specs.add(colSpec);
-                    }
+            }
+            break;
+        default:
+            for (DataColumnSpec colSpec : m_tableSpec) {
+                if (colSpec.getDomain().hasValues()) {
+                    specs.add(colSpec);
                 }
+            }
         }
         final DataTableSpec newDTS = new DataTableSpec(specs.toArray(new DataColumnSpec[0]));
         try {
@@ -245,10 +243,10 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-        throws NotConfigurableException {
+            throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         super.loadSettingsFrom(m_config);
-        m_tableSpec = (DataTableSpec)specs[0];
+        m_tableSpec = (DataTableSpec) specs[0];
         boolean hasValues = false;
         for (DataColumnSpec cspec : m_tableSpec) {
             if (cspec.getDomain().hasValues()) {
@@ -279,14 +277,12 @@ public class ValueSelectionQuickFormNodeDialog extends QuickFormNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        CheckUtils.checkSettingNotNull(m_defaultColumnField.getSelectedColumn(), "No default column selected");
-        CheckUtils.checkSettingNotNull(m_defaultField.getSelectedItem(),
-            "The domain of column \"%s\" is empty. Please ensure that the previous node is executed, otherwise"
-                + " a different default column has to be selected.",
-            m_defaultColumnField.getSelectedColumn());
+        if (m_defaultColumnField.getSelectedColumn() == null) {
+            throw new InvalidSettingsException("No default column selected");
+        }
         saveSettingsTo(m_config);
         m_config.setColumnType((ColumnType)m_columnType.getSelectedItem());
-        m_config.getDefaultValue().setValue((String)m_defaultField.getSelectedItem());
+        m_config.getDefaultValue().setValue((String) m_defaultField.getSelectedItem());
         m_config.setLockColumn(m_lockColumn.isSelected());
         m_config.setFromSpec(m_tableSpec);
         m_config.getDefaultValue().setColumn(m_defaultColumnField.getSelectedColumn());
