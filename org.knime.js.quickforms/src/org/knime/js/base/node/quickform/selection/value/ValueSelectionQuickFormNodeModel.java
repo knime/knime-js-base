@@ -178,8 +178,11 @@ public class ValueSelectionQuickFormNodeModel
     /** {@inheritDoc} */
     @Override
     public ValidationError validateViewValue(final ValueSelectionQuickFormValue viewContent) {
-        if (viewContent.getColumn() == null || viewContent.getValue() == null) {
-            return new ValidationError("The selected column/value cannot be empty.");
+        if (viewContent.getColumn() == null) {
+            return new ValidationError("Selected column(s) cannot be empty.");
+        }
+        if (viewContent.getValue() == null) {
+            return new ValidationError("Selected value(s) cannot be empty.");
         }
         return null;
     }
