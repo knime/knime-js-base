@@ -130,7 +130,7 @@ public final class LinePlotViewConfig {
     static final String SHOW_WARNING_IN_VIEW = "showWarningInView";
     static final String DATE_TIME_FORMATS = "dateTimeFormats";  // new date&time formats
     static final String REPORT_ON_MISSING_VALUES = "reportOnMissingValues";
-    static final String CUSTOM_CSS = "customCSS";
+    /*static final String CUSTOM_CSS = "customCSS";*/
 
     private boolean m_hideInWizard = false;
     private boolean m_generateImage = true;
@@ -179,7 +179,7 @@ public final class LinePlotViewConfig {
     private boolean m_showWarningInView = DEFAULT_SHOW_WARNING_IN_VIEW;
     private SettingsModelDateTimeOptions m_dateTimeFormats = new SettingsModelDateTimeOptions(DATE_TIME_FORMATS);
     private boolean m_reportOnMissingValues = DEFAULT_REPORT_ON_MISSING_VALUES;
-    private String m_customCSS;
+    /*private String m_customCSS;*/
 
     /**
      * The line will break and have gaps, if the value is missing
@@ -947,16 +947,16 @@ public final class LinePlotViewConfig {
     /**
      * @return the customCSS
      */
-    public String getCustomCSS() {
+    /*public String getCustomCSS() {
         return m_customCSS;
-    }
+    }*/
 
     /**
      * @param customCSS the customCSS to set
      */
-    public void setCustomCSS(final String customCSS) {
+    /*public void setCustomCSS(final String customCSS) {
         m_customCSS = customCSS;
-    }
+    }*/
 
     /** Saves current parameters to settings object.
      * @param settings To save to.
@@ -1019,7 +1019,7 @@ public final class LinePlotViewConfig {
         settings.addBoolean(REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
 
         //added with 3.6
-        settings.addString(CUSTOM_CSS, m_customCSS);
+        /*settings.addString(CUSTOM_CSS, m_customCSS);*/
     }
 
     /** Loads parameters in NodeModel.
@@ -1101,7 +1101,7 @@ public final class LinePlotViewConfig {
         }
 
         //added with 3.6
-        m_customCSS = settings.getString(CUSTOM_CSS, "");
+        /*m_customCSS = settings.getString(CUSTOM_CSS, "");*/
     }
 
     /** Loads parameters in Dialog.
@@ -1202,6 +1202,6 @@ public final class LinePlotViewConfig {
         }
 
         //added with 3.6
-        m_customCSS = settings.getString(CUSTOM_CSS, "");
+        /*m_customCSS = settings.getString(CUSTOM_CSS, "");*/
     }
 }

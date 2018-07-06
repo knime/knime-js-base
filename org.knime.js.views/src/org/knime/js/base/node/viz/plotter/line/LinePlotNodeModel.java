@@ -101,14 +101,13 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
-import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
  */
 final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRepresentation,
-        LinePlotViewValue> implements LayoutTemplateProvider, CSSModifiable {
+        LinePlotViewValue> implements LayoutTemplateProvider/*, CSSModifiable*/ {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LinePlotNodeModel.class);
 
@@ -249,21 +248,18 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         m_config.setHideInWizard(hide);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /*
+     * Re-enable once styling makes sense
     @Override
     public String getCssStyles() {
         return m_config.getCustomCSS();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setCssStyles(final String styles) {
         m_config.setCustomCSS(styles);
     }
+    */
 
     /**
      * {@inheritDoc}
