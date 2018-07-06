@@ -8,6 +8,12 @@
 			<p>Takes a data table and a selected column and returns a variable 
               with the selected value from this column. The selection can also
               be controlled from a quickfrom (WebPortal).</p>
+              <p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
 		</intro>
         <option name="Label">
           A descriptive label that will be shown in, for instance the web port.

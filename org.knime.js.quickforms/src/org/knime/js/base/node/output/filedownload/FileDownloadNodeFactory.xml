@@ -15,6 +15,12 @@
               CSV writer), whereby the writer exposes its destination file
               as variable that is selected in this node's configuration dialog.
             </p>
+            <p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>            
         </intro>
         <option name="Label">
           A descriptive label that will be shown.

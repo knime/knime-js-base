@@ -7,7 +7,9 @@
 	</shortDescription>
 		
 	<fullDescription>
-		<intro>Creates a lift chart. Additionally, a chart for the cumulative 
+		<intro>
+		<p>
+		Creates a lift chart. Additionally, a chart for the cumulative 
         percent of responses captured is shown. A lift chart is used to evaluate 
         a predictive model. The higher the lift (the difference between the "lift" line 
         and the base line), the better performs the predictive model.
@@ -19,6 +21,13 @@
         column, containing the actual labels.
         At first, the data is sorted by probability, divided into deciles,
         then the actual labels are counted and the average rate is calculated.
+        </p>
+        <p>
+        The node supports custom CSS styling. 
+        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+        in the node configuration dialog. 
+        You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+        </p>
         </intro>
         <tab name="Data Options">
 	        <option name="Response Column">Nominal column containing the actual labels, e. g. if a person responded</option>

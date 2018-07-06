@@ -11,7 +11,15 @@
     <shortDescription>This node provides a view with an autocomplete text input component.</shortDescription>
     <fullDescription>
 	    <intro>
+    	     <n:p>
     	     The possible values are taken from a selected column in the input table.
+    	     </n:p>
+    	     <n:p>
+             The node supports custom CSS styling. 
+             You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+             in the node configuration dialog. 
+             You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+             </n:p>
     	</intro>
     	<options>
     		<stringOption name="Label" id="label" label="Label" defaultValue="Label">

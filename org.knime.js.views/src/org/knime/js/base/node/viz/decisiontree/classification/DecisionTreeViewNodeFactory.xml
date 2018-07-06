@@ -21,6 +21,12 @@
             </p>
             <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
             <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
+            <p>
+	        The node supports custom CSS styling. 
+	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+	        in the node configuration dialog. 
+	        You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+	        </p>
 		</intro>
 		<tab name="Decision Tree Plot Options">
 		    <option name="Create image at outport">If an image is supposed to be rendered during execute for the upper outport. Disable this option if image is not needed or creation is too time consuming.</option>

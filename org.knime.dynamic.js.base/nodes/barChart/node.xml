@@ -10,6 +10,12 @@
 	<fullDescription>
 		<intro>
 			<n:p>A bar chart based on the NVD3 library.</n:p>
+			<n:p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+            </n:p>
 		</intro>
 		<tab name="Options">
 			<options>

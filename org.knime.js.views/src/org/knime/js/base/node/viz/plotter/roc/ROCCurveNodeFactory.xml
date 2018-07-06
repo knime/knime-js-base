@@ -7,28 +7,39 @@
 	</shortDescription>
 		
 	<fullDescription>
-		<intro>		
+		<intro>	
+		    <p>	
 		    This node draws ROC curves for two-class classification problems. The input table
             must contain a column with the real class values (including all class values as possible values)
             and a second column with the probabilities that an item (=row) will be classified as being
             from the selected class. Therefore only learners/predictors that output class probabilities can
             be used.
-            <br />
+            </p>
+            <p>
             In order to create a ROC curve for a model, the input table is first sorted by the class probabilities
             for the positive class i.e. rows for which the model is certain that it belongs to the positive class
             are sorted to front. Then the sorted rows are checked if the real class value is the actually the positive
             class. If so, the ROC curve goes up one step, if not it goes one step to the right. Ideally, all positive
             rows are sorted to front, so you have a line going up to 100% first and then going straight to right. As a
             rule of thumb, the greater the area under the curve, the better is the model.
-            <br />
+            </p>
+            <p>
             You may compare the ROC curves of several trained models by first joining the class probability columns
             from the different predictors into one table and then selecting several column in the column filter
             panel.
-            <br />
+            </p>
+            <p>
             The black diagonal line in the diagram is the random line which is the worst possible performance a
             model can achieve.
-    	   <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
+            </p>
+    	    <p>Additionally a static SVG image can be rendered, which is then made available at the first output port.</p>
             <p>Note, this node is currently under development. Future versions of the node might have more or changed functionality.</p>
+            <p>
+	        The node supports custom CSS styling. 
+	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+	        in the node configuration dialog. 
+	        You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+	        </p>
 		</intro>
 		
 		<tab name="ROC Curve Settings">

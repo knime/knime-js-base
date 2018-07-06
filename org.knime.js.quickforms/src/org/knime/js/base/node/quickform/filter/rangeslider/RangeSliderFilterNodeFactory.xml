@@ -6,6 +6,12 @@
 		<intro>
 			<p>A slider which can be used to trigger interactive filter events in a layout of views (e.g. the WebPortal). The node appends a filter definition to the table spec.</p>
 			<p>Only view nodes downstream of this node can receive interactive filter events.</p>
+			<p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
 		</intro>
 		<tab name="Options">
         	<option name="Merge With Existing Filter Definitions (Table)">

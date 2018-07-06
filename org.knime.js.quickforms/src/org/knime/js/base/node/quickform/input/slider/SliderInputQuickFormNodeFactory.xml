@@ -10,6 +10,12 @@
 				given number value. The value can also be controlled by a slider in
 				the view or on the WebPortal.
 			</p>
+			<p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
 		</intro>
 		<tab name="Control">
 			<option name="Label">A descriptive label that will be shown in, for

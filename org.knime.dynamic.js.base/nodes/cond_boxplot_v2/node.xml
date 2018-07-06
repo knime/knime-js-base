@@ -44,6 +44,12 @@
         In order to identify the outliers they can be selected and hilited.
         This provides a quick overview over extreme characteristics of a dataset.
         </n:p>
+        <n:p>
+        The node supports custom CSS styling. 
+        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+        in the node configuration dialog. 
+        You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+        </n:p>
 		</intro>
 		<tab name="Options">
 			<options>

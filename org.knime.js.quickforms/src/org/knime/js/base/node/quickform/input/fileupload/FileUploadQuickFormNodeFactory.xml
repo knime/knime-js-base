@@ -10,6 +10,12 @@
                 Quick Form node that allows uploading a file and exposing 
                 that uploaded file using a flow variable. The node view is available in the KNIME WebPortal.
             </p>
+            <p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
 		</intro>
 		<option name="Label">A descriptive label that will be shown in, for instance the WebPortal.</option>
 		<option name="Description">Some lines of description that will be shown in the remote control

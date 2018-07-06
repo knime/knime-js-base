@@ -15,6 +15,12 @@
 				Different stacking types can be chosen to guide the user's interpretation: The node can display Stacked Area Charts, Percentage Area Charts and Stream Graphs.
 				Different interpolation methods can be chosen to give the graph an organic appearance.
 			</n:p>
+			<n:p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+            </n:p>
 		</intro>
 		<tab name="Options">
 			<options>
