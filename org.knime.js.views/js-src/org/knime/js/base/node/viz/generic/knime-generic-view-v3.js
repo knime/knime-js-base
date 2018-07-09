@@ -36,11 +36,15 @@ knime_generic_view = function() {
 			}
 			
 			// Import own style declaration
-			var styleBefore = document.getElementsByTagName('style')[0] || head.firstChild;
+			var styleBefore = document.getElementsByTagName('style')[0];
 			var styleElement = document.createElement('style');
 			styleElement.type = 'text/css';
 			styleElement.appendChild(document.createTextNode(representation.cssCode));
-			head.insertBefore(styleElement, styleBefore);
+			if (styleBefore) {
+				head.insertBefore(styleElement, styleBefore);
+			} else {
+				head.appendChild(styleElement);
+			}
 			
 			// Import JS dependencies and call JS code after loading
 			var libs = representation.jsDependencies;
