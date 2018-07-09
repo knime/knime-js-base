@@ -19,7 +19,8 @@
             <p>
 	        The node supports custom CSS styling. 
 	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
-	        in the node configuration dialog. 
+	        in the node configuration dialog.<br />
+	        The style rules defined in such a way will override the style rules set in the node's dialog.<br/> 
 	        You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
 	        </p>     
 		</intro>
@@ -40,9 +41,12 @@
 		    <p>Enter optional CSS instructions for styling the view.</p>
 		    <p><b>Example</b></p>
 		    <p>Change the standard font used for rendering for the whole document:</p>
-		    <i>
-		      html, body {font-family: sans-serif;}
-		    </i>
+		    <pre>html, body {font-family: sans-serif;}</pre>
+		    <p>
+		    	If this node is used to also generate an image, style rules defined here need to be present 
+		    	in the svg as well. You can use a utility script in the image generation JavaScript to do so:		    	
+		    </p>
+		    <pre>knimeService.inlineSvgStyles(svgElement);</pre>
 		</option>
 		<option name="JavaScript">
 			<p>Enter the JavaScript code to be executed. All HTML elements have to be created in the JavaScript and appended to 
@@ -100,6 +104,7 @@ FLOW_VARIABLES["new string"] = "sample";</pre>
 				<p>Enter the JavaScript code to return the generated SVG as string.</p>
 				<p><b>Example</b></p>
 				<pre>var svgElement = document.getElementById("mySVG");
+knimeService.inlineSvgStyles(svgElement);
 return (new XMLSerializer()).serializeToString(svgElement);</pre>
 			</option>
 		</tab>
