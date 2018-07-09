@@ -52,6 +52,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -168,7 +169,9 @@ public class DateInput2QuickFormValue extends JSONViewContent implements DialogN
      */
     @JsonProperty("datestring")
     public void setDateTimeComponent(final String zdtString) {
-        m_date = ZonedDateTime.parse(zdtString);
+        Optional<ZonedDateTime> opt = DateTimeUtils.asZonedDateTime(zdtString);
+        m_date = opt.isPresent() ? opt.get()
+            : ZonedDateTime.of(DateTimeUtils.asLocalDateTime(zdtString).get(), ZoneId.systemDefault());
     }
 
     /**
