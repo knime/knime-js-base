@@ -40,12 +40,11 @@
 				<n:tr><n:td>Carnivora</n:td><n:td>Canidae</n:td><n:td>?</n:td><n:td>14</n:td></n:tr>
 			</n:table>	
 			
-			<n:p>
+			<n:h4>CSS Styling</n:h4>
             The node supports custom CSS styling. 
             You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
             in the node configuration dialog. 
-            You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
-            </n:p>		
+            You will find the list of available classes and their description on our documentation page at https://knime.com/css-styling.
 		</intro>
 		<tab name="Options">
 			<options>
