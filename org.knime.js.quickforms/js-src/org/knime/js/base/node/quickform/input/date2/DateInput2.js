@@ -206,7 +206,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		minInput.attr("aria-label", "Minutes");
 		timeElement.append(minInput);
 		minInput.spinner({
-			spin : function(event, ui) {
+			spin: function(event, ui) {
 				date.set('minute', ui.value);
 				refreshTime();
 				return false;
@@ -384,7 +384,7 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		}
 		resizeParent();
 	}
-
+	
 	function refreshTime() {
 		if (granularity == "show_minutes") {
 			date.set('second', 0);
@@ -397,13 +397,22 @@ org_knime_js_base_node_quickform_input_date2 = function() {
 		dateInput.datepicker('disable');
 		dateInput.datepicker('setDate', date.toDate());
 		dateInput.datepicker('enable');
-		hourInput.val(date.get('hour'));
-		minInput.val(date.get('minute'));
-		secInput.val(date.get('second'));
-		milliInput.val(date.get('millisecond'));
+		hourInput.val(padZero(date.get('hour'), 2));
+		minInput.val(padZero(date.get('minute'), 2));
+		secInput.val(padZero(date.get('second'), 2));
+		milliInput.val(padZero(date.get('millisecond'), 3));
 		zoneInput.val(zone);
 	}
-
+	
+	function padZero(value, pad) {
+		if (String.prototype.padStart) {
+			return value.toString().padStart(pad, "0");
+		} else {
+			//no extra effort taken here
+			return value;
+		}
+	}
+	
 	function validateMinMax() {
 		if (!viewValid) {
 			return null;
