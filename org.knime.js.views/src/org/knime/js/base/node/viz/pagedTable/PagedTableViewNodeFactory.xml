@@ -18,8 +18,12 @@
         	<description>
         		General view and display options.
         	</description>
-        	<option name="No. of rows to display">
+        	<option name="Maximum number of rows to display">
     	        Use this numerical value to restrict the number of rows used for this visualization.
+        	</option>
+        	<option name="Use lazy loading">
+        		Enables or disables lazy loading of the data. Lazy loading might be necessary when dealing
+        		with larger tables, but might make the view act less responsive.
         	</option>
 	        <option name="Title" optional="true">
 	        	An optional title to be displayed above the table. Leave blank if no title is desired.
