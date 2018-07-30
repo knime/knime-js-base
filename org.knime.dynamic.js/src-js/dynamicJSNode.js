@@ -26,7 +26,8 @@ dynamicJSNode = function() {
 		var linkBefore = document.getElementsByTagName('link')[0] || head.firstChild;
 		for (var j = 0; j < representation.cssDependencies.length; j++) {
 			var href = representation.cssDependencies[j];
-			if (parent != undefined && parent.KnimePageLoader != undefined) {
+			if (knimeService.isRunningInWebportal()) {
+				//TODO: this should not be a static prefix here
 				href = VAADIN_PREFIX + href;
 			}
 			var styleDep = document.createElement('link');
