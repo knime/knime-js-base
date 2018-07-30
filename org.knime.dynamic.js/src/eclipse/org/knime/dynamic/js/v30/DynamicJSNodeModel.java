@@ -989,7 +989,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 
 	@Override
 	protected void performReset() {
-		// nothing to do?
+	    //reset possible warning message set on processor
+	    if (m_processor != null && m_processor instanceof DynamicStatefulJSProcessor) {
+	        ((DynamicStatefulJSProcessor)m_processor).setWarningMessage(null);
+	    }
 	}
 
 	@Override
