@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="heatmap_namespace" nodeID="heatmapJS" categoryPath="/view/js-views"
-    icon="./box_plot.png" type="Visualizer">
+    icon="./heatmap.png" type="Visualizer">
 
 	<name>Heatmap (Javascript)</name>
 	<shortDescription>This node provides a view with a Heatmap implemented with D3.js.</shortDescription>
@@ -32,7 +32,7 @@
                 </checkBoxOption>
 			</options>
 		</tab>
-		<tab name="General Plot Options">
+		<tab name="General Heatmap Options">
 			<options>
 				<stringOption name="Title" id="title" label="Title"
 					defaultValue="heatmap" optional="true" saveInView="true">
