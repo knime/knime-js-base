@@ -1,0 +1,80 @@
+html,
+body {
+    height: 100%;
+    min-height: 100%;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.heatmap,
+.heatmap svg {
+    height: 100%;
+    width: 100%;
+}
+
+.heatmap line,
+.heatmap text {
+    fill: #222;
+}
+
+.heatmap text {
+    font-size: 1.1rem;
+}
+
+.cell {
+    stroke-width: 0.05rem;
+    stroke: #fff;
+}
+
+.cell[selection='active'] {
+    stroke-width: 0.3rem;
+    stroke: #fff;
+}
+
+.cell.active {
+    stroke-width: 0.3rem;
+}
+
+.tooltip {
+    position: absolute;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    color: #333;
+    background: #fff;
+    color: #444;
+    opacity: 0;
+
+    user-select: none; /* prevent mouse pointer icon change */
+    pointer-events: none; /* make sure mouseleave on the cell is always fired */
+
+    -webkit-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip.active {
+    opacity: 0.9;
+}
+
+.tooltip .position {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+.tooltip .value {
+    display: block;
+    font-size: 1.4rem;
+}
+
+form {
+    text-align: left;
+    margin: 50px;
+}
+
+.pagination {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}

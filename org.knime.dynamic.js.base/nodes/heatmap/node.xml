@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
+	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
+	jsNamespace="heatmap_namespace" nodeID="heatmapJS" categoryPath="/view/js-views"
+    icon="./box_plot.png" type="Visualizer">
+
+	<name>Heatmap (Javascript)</name>
+	<shortDescription>This node provides a view with a Heatmap implemented with D3.js.</shortDescription>
+	<fullDescription>
+		<intro>
+	        <n:p> TBD </n:p>
+	        <n:p>
+	        The node supports custom CSS styling. 
+	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+	        in the node configuration dialog. 
+	        You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+	        </n:p>
+		</intro>
+		<tab name="Options">
+			<options>
+			
+                <columnSelectorOption name="Selected column" saveInView="true" enableDependency="multi" enableValue="false"
+                    id="numCol" inPortIndex="0" label="Selected column" filterClasses="org.knime.core.data.DoubleValue">
+                    TBD
+                </columnSelectorOption>
+                
+                <checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
+                    label="Report on missing values" defaultValue="true" loadDefaults="true">
+                   TBD
+                </checkBoxOption>
+			</options>
+		</tab>
+		<tab name="General Plot Options">
+			<options>
+				<stringOption name="Title" id="title" label="Title"
+					defaultValue="heatmap" optional="true" saveInView="true">
+					The chart title.
+				</stringOption>
+				
+				<colorOption name="Background color" id="backgroundColor" label="Background color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                   TBD
+                </colorOption>
+                    
+                <colorOption name="Data area color" id="daColor" label="Data area color"
+                    format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+                    TBD
+                </colorOption>
+
+				<!-- Use a color selector to choose bar colors? -->
+				<colorOption name="Box color" id="boxColor" label="Box color"
+					format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
+					TBD
+	            </colorOption>
+	  
+			</options>
+		</tab>
+		
+		<tab name="Control Options">
+          <options>
+              <checkBoxOption name="Enable view controls" id="enableViewControls"
+                   label="Enable view controls" defaultValue="true">
+                   TBD
+               </checkBoxOption>
+              
+           </options>
+        </tab>
+
+	</fullDescription>
+	<outputOptions>
+		<dataOutputOption outPortIndex="0" id="chartImage" />
+	</outputOptions>
+	<interactiveView name="Heatmap">A JavaScript implementation of a Heatmap.</interactiveView>
+	<ports>
+		<inPort portType="Data" name="Input Data" index="0">
+			Data table containing the categories and values to be plotted in a heatmap.
+		</inPort>
+		<outPort portType="Image" name="Heatmap image" index="0">SVG image of the heatmap.</outPort>
+	</ports>
+	<js:resources>
+		<js:resource type="js" path="heatmap.js" />
+		<js:resource type="css" path="styles.css" />
+	</js:resources>
+	<js:dependencies>
+		<js:dependency name="D3" path="D3_4.2.6" type="local" />
+	</js:dependencies>
+	<js:javaProcessor className="org.knime.dynamic.js.base.heatmap.HeatmapProcessor" hidesLimitRowOption="true"/>
+</js:knimeNode>
