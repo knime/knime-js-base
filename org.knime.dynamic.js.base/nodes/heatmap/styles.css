@@ -21,6 +21,11 @@ body {
     font-size: 1.1rem;
 }
 
+.heatmap text.active {
+    fill: #003389;
+    cursor: default;
+}
+
 .cell {
     stroke-width: 0.05rem;
     stroke: #fff;
@@ -73,8 +78,13 @@ form {
 }
 
 .pagination {
+    margin: 0 auto;
+}
+
+.paginationWrapper {
     position: absolute;
-    bottom: 0;
+    bottom: 30px;
     left: 0;
     width: 100%;
+    text-align: center;
 }

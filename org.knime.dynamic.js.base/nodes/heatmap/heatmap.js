@@ -3,34 +3,49 @@
 	var heatmap = {};
 	var title;
 	var subtitle;
+	var _representation, _value, _table;
+	var _heatmapCols = [];
+
 
 	heatmap.init = function (representation, value) {
 
 		debugger;
 
-		// format table reader data
-		var data = JSON.parse(representation.inObjects[0].rows[0].data[0]);
-		var stat = representation.inObjects[0].rows[0].data[1];
+		if (!representation.inObjects[0]) {
+			//todo: error
+			return;
+		}
+		_representation = representation;
+		_value = value;
+		_table = new kt();
 
-		createPage(data, stat);
+		_table.setDataTable(representation.inObjects[0]);
+		colNames = _representation.inObjects[0].spec.colNames;
+
+		// Get index for heatmap cols of colNames
+		_representation.options.heatmapCols.map(function (hmColName, index) {
+			_heatmapCols[colNames.indexOf(hmColName)] = hmColName;
+		});
+
+		createPage();
 	}
 
 
 	/**
 	 * Start Javascript for the node
 	 */
-	function createPage(inputData, stat) {
+	function createPage() {
 		// Settings
 		var imageColumnName = 'svg';
 		var yAxisLabelColumn = 'ID';
-		var colorRange = ['#FF5858', '#fff', '#C6FD57'];
+		var colorRange = ['#FF0700', '#fff', '#00FF56'];
 		var itemSize = 20;
-		var margin = { top: 100, left: 100 };
+		var margin = { top: 150, left: 100 };
 
 		// State managment objects
 		viewValues = {
 			selectedRows: [],
-			scale: 'linear',
+			scaleType: 'linear',
 			currentPage: 1,
 			rowsPerPage: 100,
 			tooltipsEnabled: true,
@@ -48,10 +63,10 @@
 		// Run everything
 		function run() {
 			// make sure rows have an id
-			var dataWithId = createRowIds(inputData);
+			// var dataWithId = createRowIds(inputData);
 
 			// prepare data
-			var paginationData = createPagination(dataWithId);
+			var paginationData = createPagination(_table.getRows());
 
 			// prepare Html
 			var pagination = getPaginationHtml(paginationData);
@@ -69,77 +84,60 @@
 			registerDomEvents();
 		}
 
-		/**
-		 * If no yAxis label column is defined
-		 * create a temporary label column based on the row index
-		 */
-		function createRowIds(rawData) {
-			var dataWithId = rawData.map(function (row, index) {
-				if (!yAxisLabelColumn) {
-					yAxisLabelColumn = 'temporaryId';
-				}
-				if (!row[yAxisLabelColumn]) {
-					row[yAxisLabelColumn] = index;
-				}
-				return row;
-			});
-			return dataWithId;
-		}
-
 		function getControlHtml() {
 			return (
 				'<form class="wrapper">\
-				<div class="form-group col-xs-3 rowsPerPage">\
-						<label for="rowsPerPage">Rows per page</label>\
-						<select id="rowsPerPage" class="form-control">\
-							<option ' +
+			 <div class="form-group col-xs-3 rowsPerPage">\
+					 <label for="rowsPerPage">Rows per page</label>\
+					 <select id="rowsPerPage" class="form-control">\
+						 <option ' +
 				(viewValues.rowsPerPage === 10 ? 'selected ' : '') +
 				'value="10">10</option>\
-							<option ' +
+						 <option ' +
 				(viewValues.rowsPerPage === 20 ? 'selected ' : '') +
 				'value="20">20</option>\
-				<option ' +
+			 <option ' +
 				(viewValues.rowsPerPage === 50 ? 'selected ' : '') +
 				'value="50">50</option>\
-				<option ' +
+			 <option ' +
 				(viewValues.rowsPerPage === 100 ? 'selected ' : '') +
 				'value="100">100</option>\
-						</select>\
-					</div>\
-				<div class="form-group col-xs-3 scaleselector">\
-						<label for="scale">Scale type</label>\
-						<select id="scale" class="form-control">\
-							<option ' +
-				(viewValues.scale === 'linear' ? 'selected ' : '') +
+					 </select>\
+				 </div>\
+			 <div class="form-group col-xs-3 scaleselector">\
+					 <label for="scale">Scale type</label>\
+					 <select id="scale" class="form-control">\
+						 <option ' +
+				(viewValues.scaleType === 'linear' ? 'selected ' : '') +
 				'value="linear">Linear</option>\
-							<option ' +
-				(viewValues.scale === 'quantize' ? 'selected ' : '') +
+						 <option ' +
+				(viewValues.scaleType === 'quantize' ? 'selected ' : '') +
 				'value="quantize">Quantize</option>\
-						</select>\
-					</div>\
-					<div class="checkbox enableTooltips col-xs-3">\
-					<label>\
-						<input type="checkbox" ' +
+					 </select>\
+				 </div>\
+				 <div class="checkbox enableTooltips col-xs-3">\
+				 <label>\
+					 <input type="checkbox" ' +
 				(viewValues.tooltipsEnabled ? 'checked ' : '') +
 				'> Show tooltips\
-					</label>\
-					</div>\
-					<div class="checkbox enableZoom col-xs-3">\
-					<label>\
-						<input type="checkbox" ' +
+				 </label>\
+				 </div>\
+				 <div class="checkbox enableZoom col-xs-3">\
+				 <label>\
+					 <input type="checkbox" ' +
 				(viewValues.zoomEnabled ? 'checked ' : '') +
 				'> Enable Drag and Zoom\
-					</label>\
-					</div>\
-					<div class="checkbox enableSelection col-xs-3">\
-					<label>\
-						<input type="checkbox" ' +
+				 </label>\
+				 </div>\
+				 <div class="checkbox enableSelection col-xs-3">\
+				 <label>\
+					 <input type="checkbox" ' +
 				(viewValues.selectionEnabled ? 'checked ' : '') +
 				'> Enable Selection\
-					</label>\
-					</div>\
-					<button type="submit" class="btn btn-default hidden">Submit</button>\
-				</form>'
+				 </label>\
+				 </div>\
+				 <button type="submit" class="btn btn-default hidden">Submit</button>\
+			 </form>'
 			);
 		}
 
@@ -147,7 +145,7 @@
 			if (pagination.pageCount <= 1) {
 				return '';
 			}
-			var html = '<ul class="pagination">';
+			var html = '<div class="paginationWrapper"><ul class="pagination">';
 
 			if (pagination.prev) {
 				html += '<li><a href="#' + pagination.prev + '">&laquo;</a></li>';
@@ -171,7 +169,7 @@
 			} else {
 				html += '<li class="disabled"><span>&raquo;</span></li>';
 			}
-			html += '</ul>';
+			html += '</ul></div>';
 			return html;
 		}
 
@@ -197,7 +195,7 @@
 			body.querySelector('.scaleselector').addEventListener(
 				'change',
 				function (e) {
-					viewValues.scale = e.target.value;
+					viewValues.scaleType = e.target.value;
 					run();
 				}
 			);
@@ -229,25 +227,7 @@
 		}
 
 		function createPagination(data) {
-			// Reduce duplicates based on row id
-			if (yAxisLabelColumn) {
-				var reducedData = data
-					.reduce(function (accumulator, row) {
-						var id = row[yAxisLabelColumn];
-						if (!(id in accumulator)) {
-							accumulator[id] = row;
-						}
-						return accumulator;
-					}, [])
-					.filter(function (row) {
-						// filter empty rows by casting them to a boolean
-						return !!row;
-					});
-			} else {
-				var reducedData = data;
-			}
-
-			var pageCount = Math.ceil(reducedData.length / viewValues.rowsPerPage);
+			var pageCount = Math.ceil(data.length / viewValues.rowsPerPage);
 
 			// jump to page 1 if total number of pages exceeds current page
 			viewValues.currentPage =
@@ -256,49 +236,46 @@
 			var currentPage = viewValues.currentPage;
 			var nextPageRowEnd = viewValues.rowsPerPage * currentPage;
 			var nextPageRowStart = viewValues.rowsPerPage * (currentPage - 1);
-			var rows = reducedData.slice(nextPageRowStart, nextPageRowEnd);
+			var rows = data.slice(nextPageRowStart, nextPageRowEnd);
 
 			return {
 				rows: rows,
 				pageCount: pageCount,
-				next: nextPageRowEnd < reducedData.length ? currentPage + 1 : false,
+				next: nextPageRowEnd < data.length ? currentPage + 1 : false,
 				prev: nextPageRowStart > 0 ? currentPage - 1 : false
 			};
 		}
 
-		function getValidKeys(row) {
-			return Object.keys(row).filter(function (key) {
-				return [yAxisLabelColumn, imageColumnName].indexOf(key) === -1;
-			});
-		}
-
-		function formatTableReaderData(rows) {
+		function formatData(rows) {
 			var minimum = Number.POSITIVE_INFINITY;
 			var maximum = Number.NEGATIVE_INFINITY;
 			var images = [];
 
-			var allValues = rows.reduce(function (accumulator, row, currentIndex) {
-				var id = row[yAxisLabelColumn];
-				var rowIsSelected = viewValues.selectedRows.indexOf(id) != -1; // a bit slow
+			var allValues = rows.reduce(function (accumulator, row) {
+				var rowIsSelected = viewValues.selectedRows.indexOf(row.rowKey) != -1; // a bit slow
 
 				// Storing images in an separate array is enough
-				if (imageColumnName && row[imageColumnName]) {
-					images[id] = row[imageColumnName];
+				if (imageColumnName) {
+					images[row.rowKey] = _table.getCell(row.rowKey, imageColumnName);
 				}
 
 				// Set values for each cell
-				var vals = getValidKeys(row).map(function (key) {
+				var vals = row.data.reduce(function (rowAcc, value, currentIndex) {
+					if (_heatmapCols[currentIndex] === undefined) {
+						return rowAcc;
+					}
 					var newItem = {};
-					newItem.y = id;
-					newItem.x = key;
-					newItem.value = row[key];
+					newItem.y = row.rowKey;
+					newItem.x = _heatmapCols[currentIndex];
+					newItem.value = value;
 					newItem.initallySelected = rowIsSelected;
 
 					// Good opportunity to determine min and max
 					minimum = Math.min(minimum, newItem.value);
 					maximum = Math.max(maximum, newItem.value);
-					return newItem;
-				});
+					rowAcc.push(newItem);
+					return rowAcc;
+				}, []);
 				return accumulator.concat(vals);
 			}, []);
 
@@ -353,7 +330,7 @@
 						yElements.length * itemSize - 1 + margin.top
 					]),
 				colorScale:
-					viewValues.scale === 'quantize'
+					viewValues.scaleType === 'quantize'
 						? d3
 							.scaleQuantize()
 							.domain([
@@ -450,8 +427,25 @@
 			return zoom;
 		}
 
+		function showTooltip(e, innerHtml) {
+			if (!viewValues.tooltipsEnabled && innerHtml) {
+				return;
+			}
+			var tooltip = document.querySelector('.tooltip');
+			tooltip.classList.add('active');
+			e.target.classList.add('active');
+			tooltip.innerHTML = innerHtml;
+			tooltip.style.left = event.offsetX + itemSize + 'px';
+			tooltip.style.top = event.offsetY + 100 + itemSize + 'px'; // TODO: fix this
+		}
+
+		function hideTooltip() {
+			var tooltip = document.querySelector('.tooltip');
+			tooltip.classList.remove('active');
+		}
+
 		function buildSvg(rows) {
-			var formattedDataset = formatTableReaderData(rows);
+			var formattedDataset = formatData(rows);
 
 			var scales = getScales(formattedDataset);
 			var axis = getAxis(scales);
@@ -477,22 +471,6 @@
 				.attr('x', margin.left)
 				.attr('width', '100%')
 				.attr('height', '100%');
-
-			var maskAxis = defs.append('mask').attr('id', 'maskAxis');
-			maskAxis
-				.append('rect')
-				.attr('y', 0)
-				.attr('x', 0)
-				.attr('width', '100%')
-				.attr('height', '100%')
-				.attr('fill', 'white');
-			maskAxis
-				.append('rect')
-				.attr('y', 0)
-				.attr('x', 0)
-				.attr('width', margin.left + 1)
-				.attr('height', margin.top + 1)
-				.attr('fill', 'black');
 
 			var cells = wrapper
 				.selectAll('rect')
@@ -525,7 +503,6 @@
 					return;
 				}
 
-				var tooltip = document.querySelector('.tooltip');
 				var data = d3.select(e.target).data()[0];
 
 				// Select rows
@@ -533,14 +510,7 @@
 					selectCell(data);
 				}
 
-				if (!viewValues.tooltipsEnabled) {
-					return;
-				}
-				// Show tooltip
-				tooltip.classList.add('active');
-				e.target.classList.add('active');
-
-				tooltip.innerHTML =
+				toolTipInnerHTML =
 					'<span class="position">x:' +
 					data.x +
 					' y:' +
@@ -549,15 +519,12 @@
 					data.value +
 					'</span>';
 
-				// Add some style
-				tooltip.style.left = event.offsetX + itemSize + 'px';
-				tooltip.style.top = event.offsetY + 100 + itemSize + 'px'; // TODO: fix this
+				showTooltip(e, toolTipInnerHTML);
 			});
 
 			// Deactivation relies on gaps in the wrapper between the cells
 			domWrapper.addEventListener('mouseout', function (e) {
-				var tooltip = document.querySelector('.tooltip');
-				tooltip.classList.remove('active');
+				hideTooltip();
 				e.target.classList.remove('active');
 			});
 
@@ -570,6 +537,23 @@
 				selectCell(data);
 			});
 
+			// Append axis
+			var maskAxis = defs.append('mask').attr('id', 'maskAxis');
+			maskAxis
+				.append('rect')
+				.attr('y', 0)
+				.attr('x', 0)
+				.attr('width', '100%')
+				.attr('height', '100%')
+				.attr('fill', 'white');
+			maskAxis
+				.append('rect')
+				.attr('y', 0)
+				.attr('x', 0)
+				.attr('width', margin.left + 1)
+				.attr('height', margin.top + 1)
+				.attr('fill', 'black');
+
 			var axisWrapper = svg
 				.append('g')
 				.attr('class', 'axisWrapper')
@@ -579,7 +563,22 @@
 				.attr('class', 'yAxis')
 				.call(axis.y)
 				.selectAll('text')
-				.attr('font-weight', 'normal');
+				.attr('font-weight', 'normal')
+				.on('mouseover', function (d) {
+					if (!formattedDataset.images[d]) {
+						return;
+					}
+					d3.event.target.classList.add('active');
+					tooltipInnerHTML =
+						'<img src="' +
+						formatImage(formattedDataset.images[d]) +
+						'" alt/>';
+					showTooltip(d3.event, tooltipInnerHTML);
+				})
+				.on('mouseleave', function () {
+					hideTooltip();
+					d3.event.target.classList.remove('active');
+				});
 
 			axisWrapper
 				.append('g')
@@ -594,10 +593,105 @@
 					return 'rotate(-65)';
 				});
 
-			// initialize zoom
+			// Initialize zoom
 			var zoom = initializeZoom();
+			resetZoom(zoom);
 
-			// initial positioning via zoom
+			// Legend
+			var legendWidth = 200;
+			var legendHeight = 25;
+			var legendGradient = defs
+				.append('linearGradient')
+				.attr('id', 'legendGradient')
+				.attr('transform', 'translate(100, 100)');
+
+			var legend = svg
+				.append('g')
+				.attr('transform', 'translate(' + margin.left + ', 0)');
+
+			var colorDomain = getLinearColorDomain(
+				formattedDataset.minimum,
+				formattedDataset.maximum
+			);
+
+			// append a single rect to display a gradient
+			legend
+				.append('rect')
+				.attr('width', legendWidth)
+				.attr('height', legendHeight)
+				.attr('fill', 'url(#legendGradient)');
+
+			// set gradient stops
+			if (viewValues.scaleType === 'linear') {
+				for (var i = 0; i < colorDomain.length; i++) {
+					var percentage = (100 / (colorDomain.length - 1)) * i;
+					legendGradient
+						.append('stop')
+						.attr('offset', percentage + '%')
+						.attr(
+							'style',
+							'stop-opacity:1; stop-color:' +
+							scales.colorScale(colorDomain[i])
+						);
+				}
+			} else if (viewValues.scaleType === 'quantize') {
+				var legendCellPercentage = 100 / colorDomain.length;
+				var previousPercentage = 0;
+				var interpolator = d3.interpolateNumber(
+					formattedDataset.minimum,
+					formattedDataset.maximum
+				);
+				var tickValues = [];
+				tickValues.push(formattedDataset.minimum, formattedDataset.maximum);
+
+				for (var i = 0; i < colorDomain.length; i++) {
+					var currentPercentage = legendCellPercentage * (i + 1);
+
+					tickValues.push(interpolator(currentPercentage / 100));
+
+					legendGradient
+						.append('stop')
+						.attr('offset', previousPercentage + '%')
+						.attr(
+							'style',
+							'stop-opacity:1; stop-color:' +
+							scales.colorScale(colorDomain[i])
+						);
+					legendGradient
+						.append('stop')
+						.attr('offset', currentPercentage + '%')
+						.attr(
+							'style',
+							'stop-opacity:1; stop-color:' +
+							scales.colorScale(colorDomain[i])
+						);
+					previousPercentage = currentPercentage;
+				}
+			}
+
+			var legendScale = d3
+				.scaleLinear()
+				.domain([formattedDataset.minimum, formattedDataset.maximum])
+				.range([0, legendWidth]);
+
+			var legendAxis = d3
+				.axisBottom(legendScale)
+				.tickValues(tickValues || colorDomain)
+				.tickFormat(function (d) {
+					return Math.round(d * 1000) / 1000;
+				});
+
+			legend
+				.append('g')
+				.attr('transform', 'translate(0, ' + legendHeight + ')')
+				.attr('class', 'legendAxis')
+				.call(legendAxis)
+				.selectAll('text')
+				.attr('font-weight', 'normal');
+		}
+
+		function resetZoom(zoom) {
+			var svg = d3.select('.heatmap svg');
 			zoom.transform(svg, function () {
 				return d3.zoomIdentity
 					.translate(
