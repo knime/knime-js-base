@@ -6,7 +6,10 @@ body {
     text-align: center;
 }
 
-.heatmap,
+.heatmap {
+    height: 100%;
+    width: calc(100% - 100px);
+}
 .heatmap svg {
     height: 100%;
     width: 100%;
@@ -18,7 +21,7 @@ body {
 }
 
 .heatmap text {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
 }
 
 .heatmap text.active {
@@ -32,8 +35,8 @@ body {
 }
 
 .cell[selection='active'] {
-    stroke-width: 0.3rem;
-    stroke: #fff;
+    stroke-width: 0.1rem;
+    stroke: #bbb;
 }
 
 .cell.active {
@@ -42,16 +45,14 @@ body {
 
 .tooltip {
     position: absolute;
-    font-size: 1rem;
+    font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
     color: #333;
     background: #fff;
     color: #444;
     opacity: 0;
-
     user-select: none; /* prevent mouse pointer icon change */
     pointer-events: none; /* make sure mouseleave on the cell is always fired */
-
     -webkit-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
     box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
@@ -63,13 +64,13 @@ body {
 
 .tooltip .position {
     display: block;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin-bottom: 0.4rem;
 }
 
 .tooltip .value {
     display: block;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
 }
 
 form {
@@ -77,14 +78,38 @@ form {
     margin: 50px;
 }
 
-.pagination {
-    margin: 0 auto;
-}
-
 .paginationWrapper {
-    position: absolute;
-    bottom: 30px;
+    position: fixed;
+    bottom: 0;
     left: 0;
     width: 100%;
     text-align: center;
+    background-color: #fff;
+    padding-bottom: 3rem;
+    padding-top: 2rem
+}
+
+.pagination {
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    list-style-type: none;
+}
+
+.pagination li {
+    display: block;
+    margin-left: 1rem;
+}
+
+.pagination li a {
+    display: block;
+    padding: 0.3rem 0.3rem;
+    text-decoration: none;
+}
+
+.pagination .active a {
+    color: #000;
 }
