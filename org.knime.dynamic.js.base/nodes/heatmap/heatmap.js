@@ -2,7 +2,6 @@
 
     var heatmap = {};
     var _representation, _value, _table;
-    var _heatmapColsNames = [];
 
 
     heatmap.init = function (representation, value) {
@@ -24,12 +23,7 @@
         _table = new kt();
 
         _table.setDataTable(representation.inObjects[0]);
-        colNames = _representation.inObjects[0].spec.colNames;
 
-        // Get valid indexes for heatmap columns by comparing them to colNames
-        _representation.options.heatmapCols.map(function (hmColName) {
-            _heatmapColsNames[colNames.indexOf(hmColName)] = hmColName;
-        });
         createPage();
     }
 
@@ -256,6 +250,13 @@
             var maximum = Number.NEGATIVE_INFINITY;
             var images = [];
             var rowNames = [];
+            var colNames = [];
+
+            // Get valid indexes for heatmap columns by comparing them to input colNames
+            repColNames = _representation.inObjects[0].spec.colNames;
+            _representation.options.heatmapCols.map(function (hmColName) {
+                colNames[repColNames.indexOf(hmColName)] = hmColName;
+            });
 
             var allValues = rows.reduce(function (accumulator, row) {
                 rowNames.push(row.rowKey);
@@ -268,12 +269,12 @@
 
                 // Set values for each cell
                 var vals = row.data.reduce(function (rowAcc, value, currentIndex) {
-                    if (_heatmapColsNames[currentIndex] === undefined) {
+                    if (colNames[currentIndex] === undefined) {
                         return rowAcc;
                     }
                     var newItem = {};
                     newItem.y = row.rowKey;
-                    newItem.x = _heatmapColsNames[currentIndex];
+                    newItem.x = colNames[currentIndex];
                     newItem.value = value;
                     newItem.initallySelected = rowIsSelected;
 
@@ -290,6 +291,7 @@
                 images: images,
                 data: allValues,
                 rowNames: rowNames,
+                colNames: colNames,
                 minimum: minimum,
                 maximum: maximum
             };
@@ -308,10 +310,10 @@
             return {
                 x: d3
                     .scaleBand()
-                    .domain(_heatmapColsNames)
+                    .domain(formattedDataset.colNames)
                     .range([
                         margin.left,
-                        _heatmapColsNames.length * itemSize - 1 + margin.left
+                        formattedDataset.colNames.length * itemSize - 1 + margin.left
                     ]),
                 y: d3
                     .scaleBand()
