@@ -2,7 +2,7 @@
 
     var heatmap = {};
     var _representation, _value, _table;
-    var _heatmapCols = [];
+    var _heatmapColsNames = [];
 
 
     heatmap.init = function (representation, value) {
@@ -13,10 +13,12 @@
             //todo: error
             return;
         }
+
         if (!representation.options.heatmapCols.length) {
             //todo: error
             return;
         }
+
         _representation = representation;
         _value = value;
         _table = new kt();
@@ -24,9 +26,9 @@
         _table.setDataTable(representation.inObjects[0]);
         colNames = _representation.inObjects[0].spec.colNames;
 
-        // Get index for heatmap cols of colNames
+        // Get valid indexes for heatmap columns by comparing them to colNames
         _representation.options.heatmapCols.map(function (hmColName) {
-            _heatmapCols[colNames.indexOf(hmColName)] = hmColName;
+            _heatmapColsNames[colNames.indexOf(hmColName)] = hmColName;
         });
         createPage();
     }
@@ -61,9 +63,6 @@
 
         // Run everything
         function run() {
-            // make sure rows have an id
-            // var dataWithId = createRowIds(inputData);
-
             // prepare data
             var paginationData = createPagination(_table.getRows());
 
@@ -228,6 +227,10 @@
             );
         }
 
+        /**
+         * Create very basic pagination data from rows
+         * @param {Array} data 
+         */
         function createPagination(data) {
             var pageCount = Math.ceil(data.length / viewValues.rowsPerPage);
 
@@ -252,8 +255,10 @@
             var minimum = Number.POSITIVE_INFINITY;
             var maximum = Number.NEGATIVE_INFINITY;
             var images = [];
+            var rowNames = [];
 
             var allValues = rows.reduce(function (accumulator, row) {
+                rowNames.push(row.rowKey);
                 var rowIsSelected = viewValues.selectedRows.indexOf(row.rowKey) != -1; // a bit slow
 
                 // Storing images in an separate array is enough
@@ -263,12 +268,12 @@
 
                 // Set values for each cell
                 var vals = row.data.reduce(function (rowAcc, value, currentIndex) {
-                    if (_heatmapCols[currentIndex] === undefined) {
+                    if (_heatmapColsNames[currentIndex] === undefined) {
                         return rowAcc;
                     }
                     var newItem = {};
                     newItem.y = row.rowKey;
-                    newItem.x = _heatmapCols[currentIndex];
+                    newItem.x = _heatmapColsNames[currentIndex];
                     newItem.value = value;
                     newItem.initallySelected = rowIsSelected;
 
@@ -284,6 +289,7 @@
             return {
                 images: images,
                 data: allValues,
+                rowNames: rowNames,
                 minimum: minimum,
                 maximum: maximum
             };
@@ -299,37 +305,20 @@
         }
 
         function getScales(formattedDataset) {
-            var data = formattedDataset.data;
-            var xElements = d3
-                .set(
-                    data.map(function (item) {
-                        return item.x;
-                    })
-                )
-                .values();
-
-            var yElements = d3
-                .set(
-                    data.map(function (item) {
-                        return item.y;
-                    })
-                )
-                .values();
-
             return {
                 x: d3
                     .scaleBand()
-                    .domain(xElements)
+                    .domain(_heatmapColsNames)
                     .range([
                         margin.left,
-                        xElements.length * itemSize - 1 + margin.left
+                        _heatmapColsNames.length * itemSize - 1 + margin.left
                     ]),
                 y: d3
                     .scaleBand()
-                    .domain(yElements)
+                    .domain(formattedDataset.rowNames)
                     .range([
                         margin.top,
-                        yElements.length * itemSize - 1 + margin.top
+                        formattedDataset.rowNames.length * itemSize - 1 + margin.top
                     ]),
                 colorScale:
                     viewValues.scaleType === 'quantize'
