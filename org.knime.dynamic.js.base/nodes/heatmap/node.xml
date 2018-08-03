@@ -1,57 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
-	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-	jsNamespace="heatmap_namespace" nodeID="heatmapJS" categoryPath="/view/js-views"
-    icon="./heatmap.png" type="Visualizer">
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0" xmlns="http://knime.org/dynamicnode/v3.0"
+    xmlns:n="http://knime.org/node/v2.12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
+    jsNamespace="heatmap_namespace" nodeID="heatmapJS" categoryPath="/view/js-views" icon="./heatmap.png" type="Visualizer">
 
-	<name>Heatmap (Javascript)</name>
-	<shortDescription>This node provides a view with a Heatmap implemented with D3.js.</shortDescription>
-	<fullDescription>
-		<intro>
-	        <n:p> TBD </n:p>
-	        <n:p>
-	        The node supports custom CSS styling. 
-	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
-	        in the node configuration dialog. 
-	        You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
-	        </n:p>
-		</intro>
-		<tab name="Options">
-			<options>
-                <columnFilterOption id="heatmapCols" inPortIndex="0" label="Heatmap Columns" name="Heatmap Columns" filterClasses="org.knime.core.data.DoubleValue" >
-                	Choose the columns which should show up in the heatmap
+    <name>Heatmap (Javascript)</name>
+    <shortDescription>This node provides a view with a Heatmap implemented with D3.js.</shortDescription>
+    <fullDescription>
+        <intro>
+            <n:p> TBD </n:p>
+            <n:p>
+                The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a flow
+                variable 'customCSS' in the node configuration dialog. You will find the list of available classes and their
+                description on our
+                <n:a href="https://knime.com/css-styling">documentation page</n:a>
+                .
+            </n:p>
+        </intro>
+        <tab name="Options">
+            <options>
+                <columnFilterOption id="heatmapCols" inPortIndex="0" label="Heatmap Columns"
+                    name="Heatmap Columns" filterClasses="org.knime.core.data.DoubleValue">
+                    Choose the columns which should show up in the
+                    heatmap
                 </columnFilterOption>
-                
-               <!--  <columnSelectorOption name="SVG Label Column" id="svgLabelCol" inPortIndex="0" label="SVG Label Column">
-                	Choose a column with svg data which should be used as for the row labels
-                </columnSelectorOption> -->
-			<!-- 	<columnFilterOption name="Included columns"
-					id="test" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
-					Select the columns for which you wish to plot boxes.
-				</columnFilterOption> -->
-			</options>
-		</tab>
-		
-	</fullDescription>
-	<outputOptions>
-		<dataOutputOption outPortIndex="0" id="chartImage" />
-	</outputOptions>
-	<interactiveView name="Heatmap">A JavaScript implementation of a Heatmap.</interactiveView>
-	<ports>
-		<inPort portType="Data" name="Input Data" index="0">
-			Data table containing the categories and values to be plotted in a heatmap.
-		</inPort>
-		<outPort portType="Image" name="Heatmap image" index="0">SVG image of the heatmap.</outPort>
-	</ports>
-	<js:resources>
-		<js:resource type="js" path="heatmap.js" />
-		<js:resource type="css" path="styles.css" />
-	</js:resources>
-	<js:dependencies>
-		<js:dependency name="D3" path="D3_4.2.6" type="local" />
-		<js:dependency name="kt" path="KnimeTable_1.0.0" type="local"/>
-	</js:dependencies>
-	
+
+                <columnSelectorOption name="SVG Label Column" id="svgLabelCol" inPortIndex="0"
+                    label="SVG Label Column">
+                    Choose a column with svg
+                    data which should be used as for the row labels
+                </columnSelectorOption>
+
+            </options>
+        </tab>
+
+    </fullDescription>
+    <interactiveView name="Heatmap">A JavaScript implementation of a
+        Heatmap.
+    </interactiveView>
+    <ports>
+        <inPort portType="Data" name="Input Data" index="0">
+            Data table containing the categories and values to be plotted in
+            a heatmap.
+        </inPort>
+        <outPort portType="Image" name="Heatmap image" index="0">SVG image
+            of the heatmap.
+        </outPort>
+    </ports>
+    <js:resources>
+        <js:resource type="js" path="heatmap.js" />
+        <js:resource type="css" path="styles.css" />
+    </js:resources>
+    <js:dependencies>
+        <js:dependency name="D3" path="D3_4.2.6" type="local" />
+        <js:dependency name="kt" path="KnimeTable_1.0.0" type="local" />
+    </js:dependencies>
+
 </js:knimeNode>
