@@ -10,7 +10,7 @@ heatmap_namespace = (function() {
 
     // State managment objects
     var defaultViewValues = {
-        selectedRows: [],
+        selectedRowsBuffer: [],
         scaleType: 'linear',
         currentPage: 1,
         rowsPerPage: 200,
@@ -55,9 +55,8 @@ heatmap_namespace = (function() {
         drawChart();
     };
 
-    heatmap.getComponentVallues = function() {
-        //TODO
-        return {};
+    heatmap.getComponentValue = function() {
+        return _value;
     };
 
     /**
@@ -98,6 +97,8 @@ heatmap_namespace = (function() {
             }
         };
         knimeService.addButton('heatmap-mouse-mode-pan', 'arrows', 'Mouse Mode "Pan"', panButtonClicked);
+
+        knimeService.addMenuDivider();
 
         var selectionButtonClicked = function() {
             _value.selectionEnabled = !_value.selectionEnabled;
@@ -519,7 +520,6 @@ heatmap_namespace = (function() {
             .on('click', function(d) {
                 selectRow({ y: d });
             });
-
         axisWrapper
             .append('g')
             .attr('class', 'xAxis')
@@ -633,9 +633,16 @@ heatmap_namespace = (function() {
 
     function selectRow(d) {
         var selectedRowId = d.y;
+
         var tableId = _table.getTableId();
-        var selectedRows = [];
-        var deSelectedRows = [];
+        if (_value.selectedRowsBuffer.indexOf(d.y) != -1) {
+            console.log('remove');
+            delete _value.selectedRowsBuffer[d.y];
+            knimeService.removeRowsFromSelection(tableId, [d.y]);
+        } else {
+            _value.selectedRowsBuffer.push(d.y);
+            // knimeService.addRowsToSelection(tableId, [d.y]); // too buggy for now
+        }
 
         // We need to style all the cells
         d3.selectAll('.cell').attr('selection', function(d) {
@@ -643,11 +650,9 @@ heatmap_namespace = (function() {
             if (_value.selectionEnabled && d.y === selectedRowId) {
                 if (selected === 'active') {
                     // remove them from our selected rows and set inactive
-                    deSelectedRows[d.y] = d.y;
                     return 'inactive';
                 } else {
                     // add to selected rows and set to active
-                    selectedRows[d.y] = d.y;
                     return 'active';
                 }
             }
@@ -656,15 +661,11 @@ heatmap_namespace = (function() {
 
         for (var key in selectedRows) {
             d3.select('[data-id="' + key + '"]').attr('class', 'active');
-            // knimeService.addRowsToSelection(tableId, [key]);
         }
 
         for (var key in deSelectedRows) {
             d3.select('[data-id="' + key + '"]').attr('class', '');
-            // knimeService.addRowsToSelection(tableId, [key]);
         }
-        // knimeService.addRowsToSelection(tableId, selectedRows);
-        // knimeService.removeRowsFromSelection(tableId, deSelectedRows);
     }
 
     heatmap.getSVG = function() {
