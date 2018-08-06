@@ -6,13 +6,35 @@ body {
     text-align: center;
 }
 
+.chartContainer {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .heatmap {
     height: 100%;
-    width: calc(100% - 100px);
+    width: 98%;
+    overflow: hidden;
 }
-.heatmap svg {
+
+.heatmap .view {
     height: 100%;
     width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.axisWrapper {
+    overflow: hidden;
+}
+
+.axisWrapper .active text {
+    font-weight: bold;
+}
+
+.yAxis > g {
+    cursor: pointer;
 }
 
 .heatmap line,
@@ -21,7 +43,7 @@ body {
 }
 
 .heatmap text {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
 
 .heatmap text.active {
@@ -32,6 +54,7 @@ body {
 .cell {
     stroke-width: 0.05rem;
     stroke: #fff;
+    transition: stroke-width 0.1s ease-in;
 }
 
 .cell[selection='active'] {
@@ -56,6 +79,7 @@ body {
     -webkit-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
     box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease-out;
 }
 
 .tooltip.active {
@@ -83,33 +107,38 @@ form {
     bottom: 0;
     left: 0;
     width: 100%;
+    margin: 0;
+    padding: 0;
     text-align: center;
     background-color: #fff;
-    padding-bottom: 3rem;
-    padding-top: 2rem
 }
 
 .pagination {
     margin: 0 auto;
-    padding: 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     list-style-type: none;
+    padding: 0 1rem;
 }
 
 .pagination li {
     display: block;
-    margin-left: 1rem;
+    margin-left: 0.5rem;
 }
 
 .pagination li a {
     display: block;
-    padding: 0.3rem 0.3rem;
+    padding: 0.2rem 0.3rem;
     text-decoration: none;
 }
 
 .pagination .active a {
     color: #000;
+}
+
+.legend {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px;
 }

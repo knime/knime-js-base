@@ -2,20 +2,21 @@ heatmap_namespace = (function() {
     var heatmap = {};
     var _representation, _value, _table;
 
-    // Hardcoded Settings
+    // Hardcoded Default Settings
     var _imageColumnName = 'svg';
     var _colorRange = ['#FF0700', '#fff', '#00FF56'];
-    var _itemSize = 18;
-    var _margin = { top: 150, left: 100 };
+    var _itemSize = 14;
+    var _margin = { top: 125, left: 50 };
 
     // State managment objects
     var defaultViewValues = {
         selectedRows: [],
         scaleType: 'linear',
         currentPage: 1,
-        rowsPerPage: 100,
+        rowsPerPage: 200,
         tooltipsEnabled: true,
-        zoomEnabled: true,
+        zoomEnabled: false,
+        paginationEnabled: true,
         selectionEnabled: false,
         initialZoomLevel: {
             x: 0,
@@ -37,28 +38,42 @@ heatmap_namespace = (function() {
             return;
         }
 
+        // prepare data
         _representation = representation;
         _value = Object.assign(defaultViewValues, value);
         _table = new kt();
-
         _table.setDataTable(representation.inObjects[0]);
 
-        run();
-    };
+        knimeService.subscribeToSelection(_table.getTableId(), drawChart);
 
-    // Run everything
-    function run() {
-        // prepare data
-        var paginationData = createPagination(_table.getRows());
+        drawControls();
 
         // prepare Html
-        var pagination = getPaginationHtml(paginationData);
-        var wrapper = '<div class="heatmap"></div>';
-        var toolTip = '<div class="tooltip"></div>';
-        var controls = getControlHtml();
-
         var body = document.getElementsByTagName('body')[0];
-        body.innerHTML = controls + wrapper + pagination + toolTip;
+        body.insertAdjacentHTML('beforeend', '<div class="chartContainer"></div>');
+
+        drawChart();
+    };
+
+    heatmap.getComponentVallues = function() {
+        //TODO
+        return {};
+    };
+
+    /**
+     * Draw and re-draw the whole chart
+     */
+    function drawChart() {
+        var container = document.querySelector('.chartContainer');
+        container.innerHTML = '';
+
+        var svgWrapper = '<div class="heatmap"></div>';
+        var toolTipWrapper = '<div class="tooltip"></div>';
+
+        var paginationData = createPagination(_table.getRows());
+        var pagination = getPaginationHtml(paginationData);
+
+        container.insertAdjacentHTML('beforeend', svgWrapper + pagination + toolTipWrapper);
 
         // Build svg based on the current data
         buildSvg(paginationData.rows);
@@ -67,68 +82,70 @@ heatmap_namespace = (function() {
         registerDomEvents();
     }
 
-    function getControlHtml() {
-        return (
-            '<form class="wrapper">\
-             <div class="form-group col-xs-3 rowsPerPage">\
-                     <label for="rowsPerPage">Rows per page</label>\
-                     <select id="rowsPerPage" class="form-control">\
-                     <option ' +
-            (_value.rowsPerPage === 50 ? 'selected ' : '') +
-            'value="50">50</option>\
-                         <option ' +
-            (_value.rowsPerPage === 100 ? 'selected ' : '') +
-            'value="100">100</option>\
-                         <option ' +
-            (_value.rowsPerPage === 200 ? 'selected ' : '') +
-            'value="200">200</option>\
-             <option ' +
-            (_value.rowsPerPage === 500 ? 'selected ' : '') +
-            'value="500">500</option>\
-             <option ' +
-            (_value.rowsPerPage === 1000 ? 'selected ' : '') +
-            'value="1000">1000</option>\
-                     </select>\
-                 </div>\
-             <div class="form-group col-xs-3 scaleselector">\
-                     <label for="scale">Scale type</label>\
-                     <select id="scale" class="form-control">\
-                         <option ' +
-            (_value.scaleType === 'linear' ? 'selected ' : '') +
-            'value="linear">Linear</option>\
-                         <option ' +
-            (_value.scaleType === 'quantize' ? 'selected ' : '') +
-            'value="quantize">Quantize</option>\
-                     </select>\
-                 </div>\
-                 <div class="checkbox enableTooltips col-xs-3">\
-                 <label>\
-                     <input type="checkbox" ' +
-            (_value.tooltipsEnabled ? 'checked ' : '') +
-            '> Show tooltips\
-                 </label>\
-                 </div>\
-                 <div class="checkbox enableZoom col-xs-3">\
-                 <label>\
-                     <input type="checkbox" ' +
-            (_value.zoomEnabled ? 'checked ' : '') +
-            '> Enable Drag and Zoom\
-                 </label>\
-                 </div>\
-                 <div class="checkbox enableSelection col-xs-3">\
-                 <label>\
-                     <input type="checkbox" ' +
-            (_value.selectionEnabled ? 'checked ' : '') +
-            '> Enable Selection\
-                 </label>\
-                 </div>\
-                 <button type="submit" class="btn btn-default hidden">Submit</button>\
-             </form>'
+    function drawControls() {
+        knimeService.allowFullscreen();
+
+        // var chartTitleText = knimeService.createMenuTextField('chartTitleText', 'foobar', function() {}, true);
+        // knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
+
+        var panButtonClicked = function() {
+            _value.zoomEnabled = !_value.zoomEnabled;
+            initializeZoom();
+            var button = document.getElementById('heatmap-mouse-mode-pan');
+            button.classList.toggle('active');
+            if (_value.zoomEnabled === true) {
+                selectionButtonClicked();
+            }
+        };
+        knimeService.addButton('heatmap-mouse-mode-pan', 'arrows', 'Mouse Mode "Pan"', panButtonClicked);
+
+        var selectionButtonClicked = function() {
+            _value.selectionEnabled = !_value.selectionEnabled;
+            var button = document.getElementById('heatmap-selection-mode');
+            button.classList.toggle('active');
+            if (_value.selectionEnabled === true) {
+                panButtonClicked();
+            }
+        };
+        knimeService.addButton(
+            'heatmap-selection-mode',
+            'check-square-o',
+            'Mouse Mode "Select"',
+            selectionButtonClicked
         );
+        panButtonClicked();
+
+        var tooltipsEnabled = knimeService.createMenuCheckbox('tooltipsEnabled', _value.tooltipsEnabled, function() {
+            _value.tooltipsEnabled = this.checked;
+            applyFilter();
+        });
+        knimeService.addMenuItem('Show Tooltips', 'info', tooltipsEnabled);
+
+        var scaleType = knimeService.createMenuSelect(
+            'scaleType',
+            _value.scaleType,
+            ['linear', 'quantize'],
+            function() {
+                _value.scaleType = this.value;
+                drawChart();
+            }
+        );
+        knimeService.addMenuItem('Scale Type', 'long-arrow-right', scaleType);
+
+        var rowsPerPage = knimeService.createMenuSelect(
+            'rowsPerPage',
+            _value.rowsPerPage,
+            [100, 200, 500, 1000],
+            function() {
+                _value.rowsPerPage = this.value;
+                drawChart();
+            }
+        );
+        knimeService.addMenuItem('Rows per Page', 'long-arrow-right', rowsPerPage);
     }
 
     function getPaginationHtml(pagination) {
-        if (pagination.pageCount <= 1) {
+        if (pagination.pageCount <= 1 || !_value.paginationEnabled) {
             return '';
         }
         var html = '<div class="paginationWrapper"><ul class="pagination">';
@@ -168,28 +185,10 @@ heatmap_namespace = (function() {
                 if (e.target.tagName === 'A') {
                     var pageNumber = parseInt(e.target.getAttribute('href').substr(1), 10);
                     _value.currentPage = pageNumber;
-                    run();
+                    drawChart();
                 }
             });
         }
-        body.querySelector('.scaleselector').addEventListener('change', function(e) {
-            _value.scaleType = e.target.value;
-            run();
-        });
-        body.querySelector('.rowsPerPage').addEventListener('change', function(e) {
-            _value.rowsPerPage = parseInt(e.target.value, 10);
-            run();
-        });
-        body.querySelector('.enableTooltips input').addEventListener('change', function(e) {
-            _value.tooltipsEnabled = e.target.checked;
-        });
-        body.querySelector('.enableSelection input').addEventListener('change', function(e) {
-            _value.selectionEnabled = e.target.checked;
-        });
-        body.querySelector('.enableZoom input').addEventListener('change', function(e) {
-            _value.zoomEnabled = e.target.checked;
-            initializeZoom();
-        });
     }
 
     /**
@@ -197,6 +196,9 @@ heatmap_namespace = (function() {
      * @param {Array} data
      */
     function createPagination(data) {
+        if (!_value.paginationEnabled) {
+            return { rows: data };
+        }
         var pageCount = Math.ceil(data.length / _value.rowsPerPage);
 
         // jump to page 1 if total number of pages exceeds current page
@@ -221,6 +223,7 @@ heatmap_namespace = (function() {
         var images = [];
         var rowNames = [];
         var colNames = [];
+        var tableId = _table.getTableId();
 
         // Get valid indexes for heatmap columns by comparing them to input colNames
         repColNames = _representation.inObjects[0].spec.colNames;
@@ -230,7 +233,7 @@ heatmap_namespace = (function() {
 
         var allValues = rows.reduce(function(accumulator, row) {
             rowNames.push(row.rowKey);
-            var rowIsSelected = _value.selectedRows.indexOf(row.rowKey) != -1; // a bit slow
+            var rowIsSelected = knimeService.isRowSelected(tableId, row.rowKey);
 
             // Storing images in an separate array is enough
             if (_imageColumnName) {
@@ -374,7 +377,10 @@ heatmap_namespace = (function() {
         var scales = getScales(formattedDataset);
         var axis = getAxis(scales);
 
-        var svg = d3.select('.heatmap').append('svg');
+        var svg = d3
+            .select('.heatmap')
+            .append('svg')
+            .attr('class', 'view');
 
         var viewport = svg
             .append('g')
@@ -429,7 +435,7 @@ heatmap_namespace = (function() {
 
             // Select rows
             if (event.button || event.which) {
-                selectCell(data);
+                selectRow(data);
             }
 
             toolTipInnerHTML =
@@ -456,7 +462,7 @@ heatmap_namespace = (function() {
                 return;
             }
             var data = d3.select(e.target).data()[0];
-            selectCell(data);
+            selectRow(data);
         });
 
         // Append axis
@@ -498,6 +504,21 @@ heatmap_namespace = (function() {
                 hideTooltip();
                 d3.event.target.classList.remove('active');
             });
+        d3.select('.yAxis')
+            .selectAll('.tick')
+            .attr('data-id', function(d) {
+                return d;
+            })
+            .attr('class', function(d) {
+                if (knimeService.isRowSelected(_table.getTableId(), d)) {
+                    return 'active';
+                } else {
+                    return '';
+                }
+            })
+            .on('click', function(d) {
+                selectRow({ y: d });
+            });
 
         axisWrapper
             .append('g')
@@ -506,8 +527,8 @@ heatmap_namespace = (function() {
             .selectAll('text')
             .attr('font-weight', 'normal')
             .style('text-anchor', 'start')
-            .attr('dx', '1em')
-            .attr('dy', '.5em')
+            .attr('dx', '1rem')
+            .attr('dy', '.5rem')
             .attr('transform', function(d) {
                 return 'rotate(-65)';
             });
@@ -517,22 +538,34 @@ heatmap_namespace = (function() {
         resetZoom(zoom);
 
         // Legend
-        var legendWidth = 200;
+        var legendWidth = 100;
         var legendHeight = 25;
-        var legendGradient = defs
+        var legendMargin = 10;
+
+        var legend = d3
+            .select('.heatmap')
+            .append('svg')
+            .attr('class', 'legend')
+            .attr('width', legendWidth + 2 * legendMargin)
+            .attr('height', legendHeight + 2 * legendMargin)
+            .attr('style', 'position: absolute; left: ' + _margin.left + 'px; top:8px');
+
+        var legendDefs = legend.append('defs');
+        var legendGradient = legendDefs
             .append('linearGradient')
             .attr('id', 'legendGradient')
-            .attr('transform', 'translate(100, 100)');
-
-        var legend = svg.append('g').attr('transform', 'translate(' + _margin.left + ', 0)');
+            .attr('transform', 'translate(' + legendMargin + ', ' + legendHeight + ')');
 
         var colorDomain = getLinearColorDomain(formattedDataset.minimum, formattedDataset.maximum);
 
         // append a single rect to display a gradient
         legend
             .append('rect')
+            .attr('y', 0)
+            .attr('x', legendMargin)
             .attr('width', legendWidth)
             .attr('height', legendHeight)
+            .attr('right', legendMargin)
             .attr('fill', 'url(#legendGradient)');
 
         // set gradient stops
@@ -582,7 +615,7 @@ heatmap_namespace = (function() {
 
         legend
             .append('g')
-            .attr('transform', 'translate(0, ' + legendHeight + ')')
+            .attr('transform', 'translate(' + legendMargin + ', ' + legendHeight + ')')
             .attr('class', 'legendAxis')
             .call(legendAxis)
             .selectAll('text')
@@ -598,26 +631,49 @@ heatmap_namespace = (function() {
         });
     }
 
-    function selectCell(d) {
+    function selectRow(d) {
         var selectedRowId = d.y;
+        var tableId = _table.getTableId();
+        var selectedRows = [];
+        var deSelectedRows = [];
+
+        // We need to style all the cells
         d3.selectAll('.cell').attr('selection', function(d) {
             var selected = d3.select(this).attr('selection');
             if (_value.selectionEnabled && d.y === selectedRowId) {
                 if (selected === 'active') {
                     // remove them from our selected rows and set inactive
-                    if (_value.selectedRows[d.y]) {
-                        delete _value.selectedRows[d.y];
-                    }
+                    deSelectedRows[d.y] = d.y;
                     return 'inactive';
                 } else {
                     // add to selected rows and set to active
-                    _value.selectedRows[d.y] = d.y;
+                    selectedRows[d.y] = d.y;
                     return 'active';
                 }
             }
             return selected;
         });
+
+        for (var key in selectedRows) {
+            d3.select('[data-id="' + key + '"]').attr('class', 'active');
+            // knimeService.addRowsToSelection(tableId, [key]);
+        }
+
+        for (var key in deSelectedRows) {
+            d3.select('[data-id="' + key + '"]').attr('class', '');
+            // knimeService.addRowsToSelection(tableId, [key]);
+        }
+        // knimeService.addRowsToSelection(tableId, selectedRows);
+        // knimeService.removeRowsFromSelection(tableId, deSelectedRows);
     }
+
+    heatmap.getSVG = function() {
+        var svgElement = d3.select('svg')[0][0];
+        knimeService.inlineSvgStyles(svgElement);
+
+        // Return the SVG as a string.
+        return new XMLSerializer().serializeToString(svgElement);
+    };
 
     return heatmap;
 })();

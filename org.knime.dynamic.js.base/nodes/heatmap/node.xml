@@ -53,7 +53,6 @@
     </js:resources>
     <js:dependencies>
         <js:dependency name="D3" path="D3_4.2.6" type="local" />
-        <js:dependency name="kt" path="KnimeTable_1.0.0" type="local" />
     </js:dependencies>
 
 </js:knimeNode>
