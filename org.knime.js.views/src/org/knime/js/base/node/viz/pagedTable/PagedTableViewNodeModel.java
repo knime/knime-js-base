@@ -52,11 +52,16 @@ import java.util.List;
 
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.interactive.ViewRequestHandlingException;
 import org.knime.core.node.port.PortObject;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.JSONDataTable.Builder;
+import org.knime.js.core.JSONViewRequestHandler;
 import org.knime.js.core.node.table.AbstractTableNodeModel;
 import org.knime.js.core.settings.table.TableSettings;
 
@@ -65,7 +70,7 @@ import org.knime.js.core.settings.table.TableSettings;
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation,
-        PagedTableViewValue> {
+        PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse>{
 
     /**
      * @param viewName The name of the interactive view
@@ -136,5 +141,31 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     @Override
     protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         (new TableSettings()).loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PagedTableViewRequest createEmptyViewRequest() {
+        return new PagedTableViewRequest();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PagedTableViewResponse handleRequest(final PagedTableViewRequest request, final ExecutionMonitor exec)
+        throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
+        PagedTableViewResponse response = new PagedTableViewResponse(request);
+        Builder tableBuilder = getJsonDataTableBuilder(m_table);
+        tableBuilder.setFirstRow(request.getStart() + 1);
+        tableBuilder.setMaxRows(request.getLength());
+        try {
+            response.setTable(tableBuilder.build(exec));
+        } catch (Exception e) {
+            response.setError(e.getMessage());
+        }
+        return response;
     }
 }

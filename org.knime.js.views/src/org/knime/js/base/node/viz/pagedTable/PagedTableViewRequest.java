@@ -63,27 +63,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PagedTableViewRequest extends JSONViewRequest {
 
-    private int m_draw;
     private long m_start;
     private int m_length;
     private Search m_search;
     private Order[] m_order;
     private Column[] m_columns;
     //TODO: probably need to add selection here for 'show selected only' filtering and current filter rule
-
-    /**
-     * @return the draw
-     */
-    public int getDraw() {
-        return m_draw;
-    }
-
-    /**
-     * @param draw the draw to set
-     */
-    public void setDraw(final int draw) {
-        m_draw = draw;
-    }
 
     /**
      * @return the start
@@ -171,7 +156,6 @@ public class PagedTableViewRequest extends JSONViewRequest {
         }
         PagedTableViewRequest other = (PagedTableViewRequest)obj;
         return new EqualsBuilder()
-                .append(m_draw, other.m_draw)
                 .append(m_start, other.m_start)
                 .append(m_length, other.m_length)
                 .append(m_search, other.m_search)
@@ -186,7 +170,6 @@ public class PagedTableViewRequest extends JSONViewRequest {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_draw)
                 .append(m_start)
                 .append(m_length)
                 .append(m_search)
@@ -197,7 +180,7 @@ public class PagedTableViewRequest extends JSONViewRequest {
 
     private static class Search {
         private String m_value;
-        private String m_regex;
+        private boolean m_regex;
 
         /**
          * @return the value
@@ -216,14 +199,14 @@ public class PagedTableViewRequest extends JSONViewRequest {
         /**
          * @return the regex
          */
-        public String getRegex() {
+        public boolean isRegex() {
             return m_regex;
         }
 
         /**
          * @param regex the regex to set
          */
-        public void setRegex(final String regex) {
+        public void setRegex(final boolean regex) {
             m_regex = regex;
         }
 

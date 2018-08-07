@@ -64,23 +64,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewRequest> {
 
-    private int m_draw;
     private JSONDataTable m_table;
     private String m_error;
-
-    /**
-     * @return the draw
-     */
-    public int getDraw() {
-        return m_draw;
-    }
-
-    /**
-     * @param draw the draw to set
-     */
-    public void setDraw(final int draw) {
-        m_draw = draw;
-    }
 
     /**
      * @return the table
@@ -96,12 +81,26 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
         m_table = table;
     }
 
+    /**
+     * @return the error
+     */
+    public String getError() {
+        return m_error;
+    }
 
     /**
-     * @param jsonViewRequest
+     * @param error the error to set
      */
-    public PagedTableViewResponse(final PagedTableViewRequest jsonViewRequest) {
-        super(jsonViewRequest);
+    public void setError(final String error) {
+        m_error = error;
+    }
+
+
+    /**
+     * @param viewRequest
+     */
+    public PagedTableViewResponse(final PagedTableViewRequest viewRequest) {
+        super(viewRequest);
     }
 
     /**
@@ -120,7 +119,6 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
         }
         PagedTableViewResponse other = (PagedTableViewResponse)obj;
         return new EqualsBuilder()
-                .append(m_draw, other.m_draw)
                 .append(m_table, other.m_table)
                 .append(m_error, other.m_error)
                 .isEquals();
@@ -132,7 +130,6 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_draw)
                 .append(m_table)
                 .append(m_error)
                 .toHashCode();
