@@ -30,7 +30,10 @@
         // If no column to show is selected yet, we take the first from all candidates
         if (!_value.options.numCol) {
             _value.options.numCol = _representation.options.columns[0];
-        }                
+        }               
+        
+        d3.select("html").style("width", "100%").style("height", "100%");
+        d3.select("body").style("width", "100%").style("height", "100%");
 
         var body = d3.select("body");
         

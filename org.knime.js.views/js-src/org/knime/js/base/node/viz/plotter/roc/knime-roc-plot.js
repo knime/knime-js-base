@@ -14,6 +14,9 @@ knime_roc_curve = function() {
 		_value = value;
 		_representation = representation;
 		
+        d3.select("html").style("width", "100%").style("height", "100%");
+        d3.select("body").style("width", "100%").style("height", "100%");
+		
         var body = d3.select("body").attr("id", "body");
         
         var layoutContainer = body.append("div")

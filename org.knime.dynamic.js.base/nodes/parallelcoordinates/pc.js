@@ -26,6 +26,9 @@
         _representation = representation;
         //alert(JSON.stringify(_value.options.selectedrows));
         
+        d3.select("html").style("width", "100%").style("height", "100%");
+        d3.select("body").style("width", "100%").style("height", "100%");
+        
         var body = d3.select("body");
         
         _data = createData(representation);
