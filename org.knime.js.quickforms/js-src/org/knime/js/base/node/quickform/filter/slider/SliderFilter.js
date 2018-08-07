@@ -157,7 +157,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		
 		if (typeof representation.label == 'string' && '' != representation.label) {
 			var label = document.createElement('div');
-			label.setAttribute('class', 'label knime-title');
+			label.setAttribute('class', 'label knime-label');
 			if (settings.orientation == 'vertical') {
 				label.setAttribute('class', label.getAttribute('class') + ' vertical');
 				label.style.width = '500px';
