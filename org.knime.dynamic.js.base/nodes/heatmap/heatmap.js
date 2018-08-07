@@ -5,7 +5,7 @@ heatmap_namespace = (function() {
     // Hardcoded Default Settings
     var _imageColumnName = 'svg';
     var _colorRange = ['#FF0700', '#fff', '#00FF56'];
-    var _itemSize = 14;
+    var _itemSize = 17;
     var _margin = { top: 125, left: 50 };
 
     // State managment objects
@@ -434,11 +434,6 @@ heatmap_namespace = (function() {
 
             var data = d3.select(e.target).data()[0];
 
-            // Select rows
-            if (event.button || event.which) {
-                selectRow(data);
-            }
-
             toolTipInnerHTML =
                 '<span class="position">x:' +
                 data.x +
@@ -463,7 +458,13 @@ heatmap_namespace = (function() {
                 return;
             }
             var data = d3.select(e.target).data()[0];
-            selectRow(data);
+            if (e.shiftKey) {
+                return selectDeltaRow(data.y, formattedDataset);
+            }
+            if (event.ctrlKey || event.metaKey) {
+                return selectSingleRow(data.y, true);
+            }
+            return selectSingleRow(data.y);
         });
 
         // Append axis
@@ -505,6 +506,7 @@ heatmap_namespace = (function() {
                 hideTooltip();
                 d3.event.target.classList.remove('active');
             });
+
         d3.select('.yAxis')
             .selectAll('.tick')
             .attr('data-id', function(d) {
@@ -518,8 +520,9 @@ heatmap_namespace = (function() {
                 }
             })
             .on('click', function(d) {
-                selectRow({ y: d });
+                selectSingleRow(d.y);
             });
+
         axisWrapper
             .append('g')
             .attr('class', 'xAxis')
@@ -631,41 +634,97 @@ heatmap_namespace = (function() {
         });
     }
 
-    function selectRow(d) {
-        var selectedRowId = d.y;
+    function selectDeltaRow(selectedRowId, formattedDataset) {
+        // Get closest selected row to newly selected row
+        var currentIndex = formattedDataset.rowNames.indexOf(selectedRowId);
+        var closestRow = _value.selectedRowsBuffer.reduce(
+            function(closestRow, rowId) {
+                var rowIdIndex = formattedDataset.rowNames.indexOf(rowId);
+                var indexDistance = Math.abs(currentIndex - rowIdIndex);
+                if (indexDistance < closestRow.distance) {
+                    return {
+                        distance: indexDistance,
+                        index: rowIdIndex
+                    };
+                }
+                return closestRow;
+            },
+            {
+                distance: Number.POSITIVE_INFINITY,
+                index: Number.POSITIVE_INFINITY
+            }
+        );
+
+        var startIndex = Math.min(closestRow.index, currentIndex);
+        var endIndex = Math.max(closestRow.index, currentIndex);
+        var rowKey;
+        for (var i = startIndex; i <= endIndex; i++) {
+            rowKey = formattedDataset.rowNames[i];
+            styleSelectedRow(rowKey, true);
+            if (!_value.selectedRowsBuffer.indexOf(rowKey) > -1) {
+                _value.selectedRowsBuffer.push(rowKey);
+            }
+        }
 
         var tableId = _table.getTableId();
-        if (_value.selectedRowsBuffer.indexOf(d.y) != -1) {
-            console.log('remove');
-            delete _value.selectedRowsBuffer[d.y];
-            knimeService.removeRowsFromSelection(tableId, [d.y]);
+
+        knimeService.setSelectedRows(tableId, _value.selectedRowsBuffer);
+    }
+
+    function selectSingleRow(selectedRowId, keepCurrentSelections) {
+        if (!_value.selectionEnabled) {
+            return;
+        }
+
+        // Cast optional parameter to boolean
+        keepCurrentSelections = !!keepCurrentSelections;
+
+        var tableId = _table.getTableId();
+
+        if (!keepCurrentSelections) {
+            // Remove all selections
+            _value.selectedRowsBuffer = [];
+            knimeService.setSelectedRows(tableId, []);
+            styleSelectedRow();
+        }
+
+        if (_value.selectedRowsBuffer.indexOf(selectedRowId) != -1) {
+            styleSelectedRow(selectedRowId, false);
+            delete _value.selectedRowsBuffer[selectedRowId];
+            knimeService.removeRowsFromSelection(tableId, [selectedRowId]);
         } else {
-            _value.selectedRowsBuffer.push(d.y);
-            // knimeService.addRowsToSelection(tableId, [d.y]); // too buggy for now
+            styleSelectedRow(selectedRowId, true);
+            _value.selectedRowsBuffer.push(selectedRowId);
+            knimeService.addRowsToSelection(tableId, [selectedRowId]);
+        }
+    }
+
+    function styleSelectedRow(selectedRowId, selected) {
+        // If no selectedRowId is given, only reset everything
+        if (!selectedRowId) {
+            d3.selectAll('.yAxis > g').attr('class', '');
+            d3.selectAll('.cell').attr('selection', 'inactive');
+            return;
         }
 
-        // We need to style all the cells
+        // Style row labels
+        if (selected) {
+            d3.select('[data-id="' + selectedRowId + '"]').attr('class', 'active');
+        } else {
+            d3.select('[data-id="' + selectedRowId + '"]').attr('class', '');
+        }
+
+        // Style row cells
         d3.selectAll('.cell').attr('selection', function(d) {
-            var selected = d3.select(this).attr('selection');
-            if (_value.selectionEnabled && d.y === selectedRowId) {
-                if (selected === 'active') {
-                    // remove them from our selected rows and set inactive
-                    return 'inactive';
-                } else {
-                    // add to selected rows and set to active
-                    return 'active';
-                }
+            if (selected && d.y === selectedRowId) {
+                return 'active';
             }
-            return selected;
+            if (!selected && d.y === selectedRowId) {
+                return 'inactive';
+            }
+            // else return current state
+            return d3.select(this).attr('selection');
         });
-
-        for (var key in selectedRows) {
-            d3.select('[data-id="' + key + '"]').attr('class', 'active');
-        }
-
-        for (var key in deSelectedRows) {
-            d3.select('[data-id="' + key + '"]').attr('class', '');
-        }
     }
 
     heatmap.getSVG = function() {
