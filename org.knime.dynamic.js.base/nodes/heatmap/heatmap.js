@@ -49,7 +49,7 @@ heatmap_namespace = (function() {
 
         drawControls();
 
-        document.body.insertAdjacentHTML('beforeend', '<div class="chartContainer"></div>');
+        document.body.insertAdjacentHTML('beforeend', '<div class="knime-layout-container"></div>');
 
         drawChart();
     };
@@ -82,10 +82,10 @@ heatmap_namespace = (function() {
      * Draw and re-draw the whole chart
      */
     function drawChart() {
-        var container = document.querySelector('.chartContainer');
+        var container = document.querySelector('.knime-layout-container');
         container.innerHTML = '';
 
-        var svgWrapper = '<div class="heatmap"></div>';
+        var svgWrapper = '<div class="knime-svg-container"></div>';
         var toolTipWrapper = '<div class="tooltip"></div>';
 
         var paginationData = createPagination(getFilteredData());
@@ -250,7 +250,6 @@ heatmap_namespace = (function() {
         var images = [];
         var rowNames = [];
         var colNames = [];
-        var tableId = _table.getTableId();
 
         // Get valid indexes for heatmap columns by comparing them to input colNames
         repColNames = _representation.inObjects[0].spec.colNames;
@@ -307,7 +306,7 @@ heatmap_namespace = (function() {
         return domain;
     }
 
-    function getScales(formattedDataset) {
+    function createScales(formattedDataset) {
         return {
             x: d3
                 .scaleBand()
@@ -330,7 +329,7 @@ heatmap_namespace = (function() {
         };
     }
 
-    function getAxis(scales) {
+    function createAxis(scales) {
         return {
             x: d3.axisTop(scales.x).tickFormat(function(d) {
                 return d;
@@ -347,12 +346,12 @@ heatmap_namespace = (function() {
     }
 
     function initializeZoom() {
-        var svgEl = document.querySelector('.heatmap svg');
+        var svgEl = document.querySelector('.knime-svg-container  svg');
         var svgD3 = d3.select(svgEl);
 
         var wrapper = svgD3.select(':scope .wrapper');
-        var xAxisD3El = svgD3.select('.xAxis');
-        var yAxisD3El = svgD3.select('.yAxis');
+        var xAxisD3El = svgD3.select('.knime-axis.knime-x');
+        var yAxisD3El = svgD3.select('.knime-axis.knime-y');
 
         // Zoom and pan
         var zoom = d3
@@ -402,13 +401,13 @@ heatmap_namespace = (function() {
     function buildSvg(rows) {
         var formattedDataset = formatData(rows);
 
-        var scales = getScales(formattedDataset);
-        var axis = getAxis(scales);
+        var scales = createScales(formattedDataset);
+        var axis = createAxis(scales);
 
         var svg = d3
-            .select('.heatmap')
+            .select('.knime-svg-container')
             .append('svg')
-            .attr('class', 'view');
+            .attr('class', 'heatmap');
 
         var viewport = svg
             .append('g')
@@ -451,7 +450,7 @@ heatmap_namespace = (function() {
 
         // Events for the svg are native js event listeners not
         // d3 event listeners for better performance
-        var domWrapper = document.querySelector('.heatmap svg .wrapper');
+        var domWrapper = document.querySelector('.knime-svg-container svg .wrapper');
 
         // Highlight mouseover cell and show tooltip
         domWrapper.addEventListener('mouseover', function(e) {
@@ -466,7 +465,7 @@ heatmap_namespace = (function() {
                 data.x +
                 ' y:' +
                 data.y +
-                '</span><span class="value">' +
+                '</span><span class="value knime-double">' +
                 data.value +
                 '</span>';
 
@@ -517,7 +516,7 @@ heatmap_namespace = (function() {
             .attr('mask', 'url(#maskAxis)');
         axisWrapper
             .append('g')
-            .attr('class', 'yAxis')
+            .attr('class', 'knime-axis knime-y')
             .call(axis.y)
             .selectAll('text')
             .attr('font-weight', 'normal')
@@ -534,25 +533,9 @@ heatmap_namespace = (function() {
                 d3.event.target.classList.remove('active');
             });
 
-        d3.select('.yAxis')
-            .selectAll('.tick')
-            .attr('data-id', function(d) {
-                return d;
-            })
-            .attr('class', function(d) {
-                if (_value.selectedRowsBuffer.indexOf(d) > -1) {
-                    return 'active';
-                } else {
-                    return '';
-                }
-            })
-            .on('click', function(d) {
-                selectSingleRow(d.y);
-            });
-
         axisWrapper
             .append('g')
-            .attr('class', 'xAxis')
+            .attr('class', 'knime-axis knime-x')
             .call(axis.x)
             .selectAll('text')
             .attr('font-weight', 'normal')
@@ -561,6 +544,26 @@ heatmap_namespace = (function() {
             .attr('dy', '.5rem')
             .attr('transform', function(d) {
                 return 'rotate(-65)';
+            });
+
+        // general tick styling
+        var ticks = d3.selectAll('.tick').attr('class', 'knime-tick');
+        ticks.select('text').attr('class', 'knime-tick-label');
+        ticks.select('line').attr('class', 'knime-tick-line');
+
+        d3.selectAll('.knime-axis.knime-y .knime-tick')
+            .attr('class', function(d) {
+                if (_value.selectedRowsBuffer.indexOf(d) > -1) {
+                    return 'knime-tick active';
+                } else {
+                    return 'knime-tick';
+                }
+            })
+            .attr('data-id', function(d) {
+                return d;
+            })
+            .on('click', function(d) {
+                selectSingleRow(d.y);
             });
 
         // Initialize zoom
@@ -573,7 +576,7 @@ heatmap_namespace = (function() {
         var legendMargin = 10;
 
         var legend = d3
-            .select('.heatmap')
+            .select('.knime-svg-container')
             .append('svg')
             .attr('class', 'legend')
             .attr('width', legendWidth + 2 * legendMargin)
@@ -653,7 +656,7 @@ heatmap_namespace = (function() {
     }
 
     function resetZoom(zoom) {
-        var svg = d3.select('.heatmap svg');
+        var svg = d3.select('.knime-svg-container svg');
         zoom.transform(svg, function() {
             return d3.zoomIdentity
                 .translate(_value.initialZoomLevel.x, _value.initialZoomLevel.y)
@@ -735,16 +738,16 @@ heatmap_namespace = (function() {
     function styleSelectedRow(selectedRowId, selected) {
         // If no selectedRowId is given, only reset everything
         if (!selectedRowId) {
-            d3.selectAll('.yAxis > g').attr('class', '');
+            d3.selectAll('.knime-axis.knime-y .knime-tick').attr('class', 'knime-tick');
             d3.selectAll('.cell').attr('selection', 'inactive');
             return;
         }
 
         // Style row labels
         if (selected) {
-            d3.select('[data-id="' + selectedRowId + '"]').attr('class', 'active');
+            d3.select('[data-id="' + selectedRowId + '"]').attr('class', 'knime-tick active');
         } else {
-            d3.select('[data-id="' + selectedRowId + '"]').attr('class', '');
+            d3.select('[data-id="' + selectedRowId + '"]').attr('class', 'knime-tick');
         }
 
         // Style row cells

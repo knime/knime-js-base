@@ -6,19 +6,17 @@ body {
     text-align: center;
 }
 
-.chartContainer {
+.knime-layout-container {
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
-.heatmap {
+.knime-svg-container {
     height: 100%;
     width: 98%;
-    overflow: hidden;
 }
 
-.heatmap .view {
+.knime-svg-container .heatmap {
     height: 100%;
     width: 100%;
     padding: 0;
@@ -33,20 +31,20 @@ body {
     font-weight: bold;
 }
 
-.yAxis > g {
+.axisWrapper .knime-y > g {
     cursor: pointer;
 }
 
-.heatmap line,
-.heatmap text {
+.knime-svg-container line,
+.knime-svg-container text {
     fill: #222;
 }
 
-.heatmap text {
-    font-size: 0.7rem;
+.knime-svg-container .knime-tick text {
+    font-size: 0.8rem;
 }
 
-.heatmap text.active {
+.knime-svg-container text.active {
     fill: #003389;
     cursor: default;
 }
@@ -108,7 +106,7 @@ form {
     left: 0;
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0.5rem 0 0 0;
     text-align: center;
     background-color: #fff;
 }
