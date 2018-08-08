@@ -18,6 +18,7 @@ heatmap_namespace = (function() {
         zoomEnabled: false,
         paginationEnabled: true,
         selectionEnabled: false,
+        showOnlySelectedRows: false,
         initialZoomLevel: {
             x: 0,
             y: 0,
@@ -44,13 +45,11 @@ heatmap_namespace = (function() {
         _table = new kt();
         _table.setDataTable(representation.inObjects[0]);
 
-        knimeService.subscribeToSelection(_table.getTableId(), drawChart);
+        knimeService.subscribeToSelection(_table.getTableId(), onSelectionChange);
 
         drawControls();
 
-        // prepare Html
-        var body = document.getElementsByTagName('body')[0];
-        body.insertAdjacentHTML('beforeend', '<div class="chartContainer"></div>');
+        document.body.insertAdjacentHTML('beforeend', '<div class="chartContainer"></div>');
 
         drawChart();
     };
@@ -58,6 +57,26 @@ heatmap_namespace = (function() {
     heatmap.getComponentValue = function() {
         return _value;
     };
+
+    function onSelectionChange(data) {
+        _value.selectedRowsBuffer.concat(data.changeSet.added);
+        _value.selectedRowsBuffer.filter(function(rowId) {
+            if (data.changedSet.removed.indexOf(rowId)) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    function getFilteredData() {
+        var data = _table.getRows();
+        if (_value.showOnlySelectedRows) {
+            data = data.filter(function(row) {
+                return _value.selectedRowsBuffer.indexOf(row.rowKey) > -1;
+            });
+        }
+        return data;
+    }
 
     /**
      * Draw and re-draw the whole chart
@@ -69,7 +88,7 @@ heatmap_namespace = (function() {
         var svgWrapper = '<div class="heatmap"></div>';
         var toolTipWrapper = '<div class="tooltip"></div>';
 
-        var paginationData = createPagination(_table.getRows());
+        var paginationData = createPagination(getFilteredData());
         var pagination = getPaginationHtml(paginationData);
 
         container.insertAdjacentHTML('beforeend', svgWrapper + pagination + toolTipWrapper);
@@ -118,9 +137,18 @@ heatmap_namespace = (function() {
 
         var tooltipsEnabled = knimeService.createMenuCheckbox('tooltipsEnabled', _value.tooltipsEnabled, function() {
             _value.tooltipsEnabled = this.checked;
-            applyFilter();
         });
         knimeService.addMenuItem('Show Tooltips', 'info', tooltipsEnabled);
+
+        var showOnlySelectedRows = knimeService.createMenuCheckbox(
+            'showOnlySelectedRows',
+            _value.showOnlySelectedRows,
+            function() {
+                _value.showOnlySelectedRows = this.checked;
+                drawChart();
+            }
+        );
+        knimeService.addMenuItem('Show Selected Rows Only', 'filter', showOnlySelectedRows);
 
         var scaleType = knimeService.createMenuSelect(
             'scaleType',
@@ -178,11 +206,9 @@ heatmap_namespace = (function() {
     }
 
     function registerDomEvents() {
-        var body = document.getElementsByTagName('body')[0];
-
-        var pagination = body.querySelector('.pagination');
+        var pagination = document.body.querySelector('.pagination');
         if (pagination) {
-            body.querySelector('.pagination').addEventListener('click', function(e) {
+            document.body.querySelector('.pagination').addEventListener('click', function(e) {
                 if (e.target.tagName === 'A') {
                     var pageNumber = parseInt(e.target.getAttribute('href').substr(1), 10);
                     _value.currentPage = pageNumber;
@@ -234,7 +260,8 @@ heatmap_namespace = (function() {
 
         var allValues = rows.reduce(function(accumulator, row) {
             rowNames.push(row.rowKey);
-            var rowIsSelected = knimeService.isRowSelected(tableId, row.rowKey);
+            // var rowIsSelected = knimeService.isRowSelected(tableId, row.rowKey);
+            var rowIsSelected = _value.selectedRowsBuffer.indexOf(row.rowKey) > -1;
 
             // Storing images in an separate array is enough
             if (_imageColumnName) {
@@ -513,7 +540,7 @@ heatmap_namespace = (function() {
                 return d;
             })
             .attr('class', function(d) {
-                if (knimeService.isRowSelected(_table.getTableId(), d)) {
+                if (_value.selectedRowsBuffer.indexOf(d) > -1) {
                     return 'active';
                 } else {
                     return '';
@@ -690,12 +717,18 @@ heatmap_namespace = (function() {
 
         if (_value.selectedRowsBuffer.indexOf(selectedRowId) != -1) {
             styleSelectedRow(selectedRowId, false);
-            delete _value.selectedRowsBuffer[selectedRowId];
+            _value.selectedRowsBuffer = _value.selectedRowsBuffer.filter(function(rowId) {
+                return rowId !== selectedRowId;
+            });
             knimeService.removeRowsFromSelection(tableId, [selectedRowId]);
         } else {
             styleSelectedRow(selectedRowId, true);
             _value.selectedRowsBuffer.push(selectedRowId);
             knimeService.addRowsToSelection(tableId, [selectedRowId]);
+        }
+
+        if (_value.showOnlySelectedRows) {
+            drawChart();
         }
     }
 
