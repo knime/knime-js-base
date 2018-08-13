@@ -108,6 +108,7 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
             representation.setDescription(m_config.getDescription());
             representation.setLinkTitle(m_config.getLinkTitle());
             representation.setPath(getPathFromVariable().toString());
+            representation.setResourceName(m_config.getResourceName());
         }
         return new PortObject[0];
     }

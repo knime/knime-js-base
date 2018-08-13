@@ -80,6 +80,9 @@ public class FileDownloadRepresentation extends JSONViewContent {
     private static final String SETTINGS_PATH = "path";
     private String m_path = DEFAULT_STRING;
 
+    private static final String SETTINGS_RESOURCE_NAME = "resourceName";
+    private String m_resourceName = DEFAULT_STRING;
+
     /**
      * @return the label
      */
@@ -141,6 +144,21 @@ public class FileDownloadRepresentation extends JSONViewContent {
         return m_path;
     }
 
+    @JsonProperty("resourceName")
+    void setResourceName(final String name) {
+        m_resourceName = name;
+    }
+
+    /**
+     * Returns the resource name for this file download as configured in the dialog.
+     *
+     * @return a (possibly empty) resource name, never <code>null</code>
+     */
+    @JsonProperty("resourceName")
+    public String getResourceName() {
+        return m_resourceName;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -150,6 +168,7 @@ public class FileDownloadRepresentation extends JSONViewContent {
         settings.addString(SETTINGS_DESCRIPTION, m_description);
         settings.addString(SETTINGS_TITLE, m_linkTitle);
         settings.addString(SETTINGS_PATH, m_path);
+        settings.addString(SETTINGS_RESOURCE_NAME, m_resourceName);
     }
 
     /**
@@ -163,6 +182,7 @@ public class FileDownloadRepresentation extends JSONViewContent {
         m_label = settings.getString(SETTINGS_LABEL, DEFAULT_STRING);
         m_description = settings.getString(SETTINGS_DESCRIPTION, DEFAULT_STRING);
         m_linkTitle = settings.getString(SETTINGS_TITLE, DEFAULT_STRING);
+        m_resourceName = settings.getString(SETTINGS_RESOURCE_NAME, DEFAULT_STRING);
     }
 
     /**
@@ -180,6 +200,8 @@ public class FileDownloadRepresentation extends JSONViewContent {
         sb.append(m_linkTitle);
         sb.append(", path=");
         sb.append(m_path);
+        sb.append(", resourceName=");
+        sb.append(m_resourceName);
         return sb.toString();
     }
 
@@ -192,7 +214,9 @@ public class FileDownloadRepresentation extends JSONViewContent {
             .append(m_label)
             .append(m_description)
             .append(m_linkTitle)
-            .append(m_path).toHashCode();
+            .append(m_path)
+            .append(m_resourceName)
+            .toHashCode();
     }
 
     /**
@@ -214,7 +238,9 @@ public class FileDownloadRepresentation extends JSONViewContent {
             .append(m_label, other.m_label)
             .append(m_description, other.m_description)
             .append(m_linkTitle, other.m_linkTitle)
-            .append(m_path, other.m_path).isEquals();
+            .append(m_path, other.m_path)
+            .append(m_resourceName, other.m_resourceName)
+            .isEquals();
     }
 
 }
