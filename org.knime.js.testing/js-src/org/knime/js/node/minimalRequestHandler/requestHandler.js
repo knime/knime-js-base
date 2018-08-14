@@ -34,6 +34,7 @@ requestHandler = function() {
 		textArea = document.createElement("textarea");
 		textArea.setAttribute("rows", 40);
 		textArea.setAttribute("columns", 100);
+		textArea.style.display = "block";
 		textArea.style.width = "calc(100% - 40px)";
 		textArea.style.margin = "0 20px";
 		textArea.setAttribute("readonly", "");
@@ -43,7 +44,7 @@ requestHandler = function() {
 		knimeService.addButton("clear-button", "ban", "Clear All", function() {
 			textArea.value = "";
 			for (var i = 0; i < curRequests.length; i++) {
-				knimeService.cancelViewRequest(curRequests[i]);
+				curRequests[i].cancel(false);
 			}
 			curRequests = [];
 		});
@@ -54,7 +55,7 @@ requestHandler = function() {
 			var request = {"dummy": "I am sending a request"};
 			if (_representation.cancelPrevious) {
 				for (var i = 0; i < curRequests.length; i++) {
-					knimeService.cancelViewRequest(curRequests[i], true);
+					curRequests[i].cancel(true);
 				}
 				curRequests = [];
 			}
@@ -67,10 +68,10 @@ requestHandler = function() {
 			/* end magic */
 			
 			if (promise.monitor && promise.monitor.requestSequence) {
-				curRequests.push(promise.monitor.requestSequence);
+				curRequests.push(promise);
 				var text = "Issued request sequences: [";
 				for (var i = 0; i < curRequests.length; i++) {
-					text += curRequests[i];
+					text += curRequests[i].monitor.requestSequence;
 					if (i < curRequests.length - 1) {
 						text += ", ";
 					}
@@ -112,7 +113,7 @@ requestHandler = function() {
 		textArea.value += textToAdd;
 		textArea.scrollTop = textArea.scrollHeight;
 		for (var i = 0; i < curRequests.length; i++) {
-			if (response.sequence === curRequests[i]) {
+			if (response.sequence === curRequests[i].monitor.requestSequence) {
 				curRequests.splice(i, 1);
 				break;
 			}
@@ -131,7 +132,7 @@ requestHandler = function() {
 		textArea.value += textToAdd;
 		textArea.scrollTop = textArea.scrollHeight;
 		for (var i = 0; i < curRequests.length; i++) {
-			if (sequence === curRequests[i]) {
+			if (sequence === curRequests[i].monitor.requestSequence) {
 				curRequests.splice(i, 1);
 				break;
 			}
