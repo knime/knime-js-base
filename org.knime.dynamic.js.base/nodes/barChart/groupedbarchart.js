@@ -9,6 +9,7 @@
 	var knimeTable;
 		
 	var plotData; 
+	var wrapedPlotData;
 	var colorRange;
 	var categories;
 	var freqCols;
@@ -65,6 +66,7 @@
 	var CATEGORY_MISSING_VALUES_ONLY = "categoryMissingValuesOnly";
 	var NO_DATA_AVAILABLE = "noDataAvailable";
 	
+	
 	barchart.init = function(representation, value) {  
 		_value = value;
 		_representation = representation;
@@ -87,8 +89,7 @@
 
 	function drawChart(redraw) {
 		d3.select("html").style("width", "100%").style("height", "100%");
-        d3.select("body").style("width", "100%").style("height", "100%");
-        
+		d3.select("body").style("width", "100%").style("height", "100%");
 		/*
 		 * Process options
 		 */
@@ -120,6 +121,7 @@
 			width = "100%";
 			height = (isTitle) ? "100%" : "calc(100% - " + knimeService.headerHeight() + "px)";
 		}
+
 		
 		var div;
 		if (redraw) {
@@ -220,12 +222,11 @@
 			chart.showLegend(optLegend);
 
 			updateAxisLabels(false);
-
 			svg.datum(plotData)
 				.transition().duration(300)
 				.call(chart);
-			nv.utils.windowResize(chart.update);
-			
+			nv.utils.windowResize(function(){updateAxisLabels(true);updateYAxisLabels();setCssClasses();});
+		
 			return chart;
 		})	
 	}
@@ -632,6 +633,131 @@
 		}
 	}
 	
+	/**
+	 * Updates the axis labels after they have been wrapped. And add a title to show the full name.
+	 */
+	function updateYAxisLabels() {
+		var texts = svg.select(".knime-x").selectAll("text");
+		texts.each(function(d,i) {
+			if(typeof wrapedPlotData[0].values[i] !== "undefined"){
+				var self = d3.select(this);
+				self.text(wrapedPlotData[0].values[i].x);
+				self.append("title")
+					.classed("axisLabelTooltip",true);
+			}
+		});	
+		
+		var labelTooltip = texts.selectAll(".axisLabelTooltip");
+		var counter = 0;
+		labelTooltip.each(function(d,i) {
+			var self = d3.select(this);
+			self.text(plotData[0].values[counter].x);	
+			counter ++;
+		});
+		
+		// Create titles for the Axis-Tooltips 
+		svg.select(".knime-y text.knime-axis-label").append("title").classed("axisLabelTooltip",true).text(_value.options["freqLabel"]);
+		svg.select(".knime-x text.knime-axis-label").append("title").classed("axisLabelTooltip",true).text(_value.options["catLabel"]);
+	}
+	
+	/**
+	 * Find the max size of one element on the y-axis to see how much space is needed.
+	 * To find out the max size, a temp-text object is created and measured.
+	 * Afterwards that temp-text is deleted (is not visible in the view).
+	 */
+	function checkMaxSizeYAxis(number){
+		var maxValue = Math.max(d3.max(number[0].values,function(d){return d.y;}),0);
+		var minValue = Math.min(d3.min(number[0].values,function(d){return d.y;}),0);
+		var wrapFactor = 0.4;
+		
+		
+		// Calculate values of the y-axis to get an impression about the precision.
+		var scale = d3.scale.linear().domain([minValue,maxValue]).range([0,_representation.options["svg"]["height"]]),
+	    ticks = scale.ticks(4);
+		
+		var results = calculateTextSize(ticks, 'knime-tick-label', function(d) {return (d)}, wrapFactor, false);
+		
+		// Return the format to show the result and the space needed the left border.
+		return (['~.f',Math.max(results[0],70),results[1]]);
+
+	}
+	
+	/**
+	 * Find the max size of the biggest element on the x-Axis. Move the Graph so that this object
+	 * is completely visible.
+	 */
+	function checkMaxSizeXAxis(number) {
+		var wrapFactor = 0.4;
+		var optOrientation = _value.options["orientation"];
+		
+		// Calculate the size when to wrap the text labels
+		if(!optOrientation) {
+			wrapFactor = 1/(number[0].values.length+1);
+		} 
+
+		var results = calculateTextSize(number[0].values, 'knime-tick-label', function(d) {return (d.x)}, wrapFactor, false);
+		
+		// Return either the largest element or if its to small 70 and add 30 to have space to the border.
+		return [Math.max(results[0],70)+30,results[1]];
+	}
+	
+	/**
+	 * Function to calculate the max width and height of a data array. Automatically assigns the given strings to the provided cssClass
+	 * to get the right styling. TextFunction is used to extract strings out of the given data array.
+	 * The text is wrapped when it exceeds the svg.width * wrapFactor. If meassureHeight is set true, svg.height is used instead.
+	 * The function returns an array with 1. max width, 2. max height, 3. the wrapped text string.
+	 */
+	function calculateTextSize(data, cssClass, textFunction, wrapFactor, meassureHeight) {
+		var maxWidth = 0;
+		var maxHeight = 0;
+		var group = svg.append("g").classed('knime-tick', true);
+		var wrapedText = "";
+		
+		group.selectAll('.tempText')
+			.data(data)
+			.enter()
+			.append("text")
+			.classed(cssClass,true)
+			.text(textFunction)
+		    .each(function(d,i) {
+		        wrapedText = wrap(d, this, wrapFactor, meassureHeight);
+		        var tempWidth = this.getComputedTextLength();
+		        maxHeight = this.getBBox().height;
+		        if(tempWidth > maxWidth) {
+		        	maxWidth = tempWidth;
+		        }
+		    });
+		group.remove();
+		return [maxWidth, maxHeight, wrapedText];
+	}
+	
+	/**
+	 * Function to wrap text after it exceeds a calculated size. The size depends on the svg 
+	 * width/height and a provided wrapFacot. Returns the calculated wraped string.
+	 */
+	function wrap(d, context, wrapFactor, meassureHeight) {
+		
+		
+		var svgWidth = meassureHeight ? parseInt(d3.select("svg").style("height")) :
+										parseInt(d3.select("svg").style("width"));
+		
+        var self = d3.select(context),
+       		textLength = self.node().getComputedTextLength(),
+	        text = self.text();
+		// Make sure, that the chart takes at least half of the screen
+		while (textLength > (wrapFactor*svgWidth) && text.length > 0) {
+            text = text.slice(0, -1);
+            self.text(text + '...');
+            textLength = context.getComputedTextLength();
+        }
+		text = self.text();
+		if(typeof d.x !== "undefined"){
+			d.x = text;
+		}
+		return text;
+	}
+	
+	
 	function updateAxisLabels(updateChart) {
 		if (chart) {
 			var optOrientation = _value.options["orientation"];
@@ -639,45 +765,64 @@
 			var curCatAxisLabel, curFreqAxisLabel;
 			var curCatAxisLabelElement = d3.select(".nv-x.nv-axis .nv-axis-label");
 			var curFreqAxisLabelElement = d3.select(".nv-y.nv-axis .nv-axis-label");
+			var freqLabel = _value.options["freqLabel"];
+			var catLabel = _value.options["catLabel"];
+			
+			
+			wrapedPlotData = JSON.parse(JSON.stringify(plotData));
+			
 			if (!curCatAxisLabelElement.empty()) {
 				curCatAxisLabel = curCatAxisLabelElement.text();
+				
 			}
+			
 			if (!curFreqAxisLabelElement.empty()) {
 				curFreqAxisLabel = curCatAxisLabelElement.text();
 			}
+			
 			var chartNeedsUpdating = curCatAxisLabel != _value.options.catLabel
 				|| curFreqAxisLabel != _value.options.freqLabel;
 			if (!chartNeedsUpdating) return;
 			
-			chart.xAxis
-				.axisLabel(_value.options.catLabel)
-				.axisLabelDistance(optOrientation ? 30 : optStaggerLabels ? 10 : -5)
-				.showMaxMin(false);
-
-			// tick format needed?
-			chart.yAxis
-				.axisLabel(_value.options.freqLabel)
-				.axisLabelDistance(optOrientation ? -5 : 0)
-				/*.tickFormat(d3.format(',.01f'))*/;
+			var maxSizeYAxis = checkMaxSizeYAxis(wrapedPlotData);
+			var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData);
+			var freqLabelSize = calculateTextSize(freqLabel ? [freqLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.3, optOrientation ? false : true);
+			var catLabelSize = calculateTextSize(catLabel ? [catLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.3, optOrientation ? true : false);
+			freqLabel = freqLabelSize[2];
+			catLabel = catLabelSize[2];
 			
-			var leftMargin = optOrientation ? 100 : 70;
-			var bottomMargin = 35;
+
+			
+			chart.xAxis
+				.axisLabel(catLabel)
+				.axisLabelDistance(optOrientation ? maxSizeXAxis[0]-70 : optStaggerLabels ? maxSizeXAxis[1] : maxSizeXAxis[1]+freqLabelSize[1]-20)
+				.showMaxMin(false);
+	
+			chart.yAxis
+				.axisLabel(freqLabel)
+				.axisLabelDistance(optOrientation ? maxSizeYAxis[2]+freqLabelSize[1]-20 : (maxSizeYAxis[1]-50))
+				.tickFormat(d3.format(maxSizeYAxis[0]))
+				.showMaxMin(false);
+			
+				
+			var leftMargin = optOrientation ? maxSizeXAxis[0] + freqLabelSize[1] : maxSizeYAxis[1] + freqLabelSize[1];
+			var bottomMargin = optOrientation ? maxSizeYAxis[2] + freqLabelSize[1] +20 : maxSizeXAxis[1] + freqLabelSize[1] +20;
 			if (!_value.options.catLabel) {
-				bottomMargin = optOrientation ? bottomMargin : 25;
-				leftMargin = optOrientation ? 70 : leftMargin;
+				bottomMargin = optOrientation ? maxSizeXAxis[1]+25 : maxSizeXAxis[1]+25;
+				leftMargin = optOrientation ? maxSizeXAxis[0] : maxSizeYAxis[1];
 			}
 			if (!_value.options.freqLabel) {
-				bottomMargin = optOrientation ? 25 : bottomMargin;
-				leftMargin = optOrientation ? leftMargin : 50;
+				bottomMargin = optOrientation ? maxSizeXAxis[1]+25 : maxSizeXAxis[1]+25;
+				leftMargin = optOrientation ? maxSizeXAxis[0] : maxSizeYAxis[1];
 			}
 			if (!optOrientation) {
 				chart.staggerLabels(optStaggerLabels);
 				if (optStaggerLabels) {
-					bottomMargin += _value.options.catLabel ? 25 : 15;
+					bottomMargin += _value.options.catLabel ? maxSizeXAxis[1]+25 : maxSizeXAxis[1]+15;
 				}
 			}
 			
-			chart.margin({left: leftMargin, bottom: bottomMargin})
+			chart.margin({left: leftMargin, bottom: bottomMargin});
 			
 			if (updateChart) {
 				chart.update();
@@ -846,6 +991,13 @@
 			.classed('knime-legend-symbol', true);
 		d3.selectAll('.nv-legend-text')
 			.classed('knime-legend-label', true);
+		
+		// Tooltip for axis labels allows to receive all mouse events
+		var axisToolTip = svg.selectAll('.knime-tick-label');
+		var labelToolTip = svg.selectAll('.knime-axis-label');
+		axisToolTip.style('pointer-events', 'all');
+		labelToolTip.style('pointer-events', 'all');
+		updateYAxisLabels();
 	}
 	
 	function setTooltipCssClasses() {
@@ -861,6 +1013,7 @@
 		.classed('knime-tooltip-key', true);
 		tooltip.selectAll('.value')
 		.classed('knime-tooltip-value', true);
+	
 	}
 
 	/*function createControls(controlsContainer) {
