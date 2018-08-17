@@ -212,7 +212,7 @@
 						
 			chart
 				.color(colorRange)
-				.duration(300)
+				.duration(0)
 				.margin({right: 20, top: 60})
 				.groupSpacing(0.1);
 			
@@ -223,9 +223,9 @@
 
 			updateAxisLabels(false);
 			svg.datum(plotData)
-				.transition().duration(300)
+				.transition().duration(0)
 				.call(chart);
-			nv.utils.windowResize(function(){updateAxisLabels(true);updateYAxisLabels();setCssClasses();});
+			nv.utils.windowResize(function(){updateAxisLabels(true);updateLabels();setCssClasses();});
 		
 			return chart;
 		})	
@@ -636,7 +636,7 @@
 	/**
 	 * Updates the axis labels after they have been wrapped. And add a title to show the full name.
 	 */
-	function updateYAxisLabels() {
+	function updateLabels() {
 		var texts = svg.select(".knime-x").selectAll("text");
 		texts.each(function(d,i) {
 			if(typeof wrapedPlotData[0].values[i] !== "undefined"){
@@ -651,7 +651,9 @@
 		var counter = 0;
 		labelTooltip.each(function(d,i) {
 			var self = d3.select(this);
-			self.text(plotData[0].values[counter].x);	
+			if(typeof plotData[0].values[counter] !== "undefined"){
+				self.text(plotData[0].values[counter].x);
+			}
 			counter ++;
 		});
 		
@@ -997,7 +999,7 @@
 		var labelToolTip = svg.selectAll('.knime-axis-label');
 		axisToolTip.style('pointer-events', 'all');
 		labelToolTip.style('pointer-events', 'all');
-		updateYAxisLabels();
+		updateLabels();
 	}
 	
 	function setTooltipCssClasses() {
