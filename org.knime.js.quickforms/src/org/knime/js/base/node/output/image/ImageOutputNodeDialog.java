@@ -74,11 +74,13 @@ public class ImageOutputNodeDialog extends LabeledViewNodeDialog {
     private final JSpinner m_maxWidthSpinner;
     private final JCheckBox m_maxHeightChecker;
     private final JSpinner m_maxHeightSpinner;
+    private final ImageOutputConfig m_config;
 
     /**
      * Create new dialog.
      */
     public ImageOutputNodeDialog() {
+        m_config = new ImageOutputConfig();
         m_maxWidthChecker = new JCheckBox("Maximum Width", true);
         m_maxHeightChecker = new JCheckBox("Maximum Height", true);
         m_maxWidthSpinner = new JSpinner(new SpinnerNumberModel(300, 20, Integer.MAX_VALUE, 50));
@@ -116,11 +118,10 @@ public class ImageOutputNodeDialog extends LabeledViewNodeDialog {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
-        ImageOutputConfig config = new ImageOutputConfig();
-        config.loadSettingsInDialog(settings);
-        loadSettingsFrom(config);
-        int maxWidth = config.getMaxWidth();
-        int maxHeight = config.getMaxHeight();
+        m_config.loadSettingsInDialog(settings);
+        loadSettingsFrom(m_config);
+        int maxWidth = m_config.getMaxWidth();
+        int maxHeight = m_config.getMaxHeight();
         if ((maxHeight > 0) != m_maxHeightChecker.isSelected()) {
             m_maxHeightChecker.doClick();
         }
@@ -136,12 +137,11 @@ public class ImageOutputNodeDialog extends LabeledViewNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        ImageOutputConfig config = new ImageOutputConfig();
-        saveSettingsTo(config);
+        saveSettingsTo(m_config);
         int maxWidth = m_maxWidthChecker.isSelected() ? (Integer)m_maxWidthSpinner.getValue() : -1;
         int maxHeight = m_maxHeightChecker.isSelected() ? (Integer)m_maxHeightSpinner.getValue() : -1;
-        config.setMaxWidth(maxWidth);
-        config.setMaxHeight(maxHeight);
-        config.saveSettings(settings);
+        m_config.setMaxWidth(maxWidth);
+        m_config.setMaxHeight(maxHeight);
+        m_config.saveSettings(settings);
     }
 }

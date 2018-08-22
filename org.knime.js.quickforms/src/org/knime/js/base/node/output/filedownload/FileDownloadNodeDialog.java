@@ -73,11 +73,13 @@ public class FileDownloadNodeDialog extends LabeledViewNodeDialog {
     private final JComboBox<FlowVariable> m_filePathVariableNameCombo;
     private final JTextField m_linkTitle;
     private final JTextField m_resourceName;
+    private final FileDownloadConfig m_config;
 
     /**
      * Create new dialog.
      */
     public FileDownloadNodeDialog() {
+        m_config = new FileDownloadConfig();
         m_filePathVariableNameCombo = new JComboBox<FlowVariable>(new DefaultComboBoxModel<FlowVariable>());
         m_filePathVariableNameCombo.setRenderer(new FlowVariableListCellRenderer());
         m_linkTitle = new JTextField(DEF_TEXTFIELD_WIDTH);
@@ -109,12 +111,11 @@ public class FileDownloadNodeDialog extends LabeledViewNodeDialog {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
-        FileDownloadConfig config = new FileDownloadConfig();
-        config.loadSettingsInDialog(settings);
-        loadSettingsFrom(config);
-        m_linkTitle.setText(config.getLinkTitle());
-        m_resourceName.setText(config.getResourceName());
-        String flowVariableName = config.getFlowVariable();
+        m_config.loadSettingsInDialog(settings);
+        loadSettingsFrom(m_config);
+        m_linkTitle.setText(m_config.getLinkTitle());
+        m_resourceName.setText(m_config.getResourceName());
+        String flowVariableName = m_config.getFlowVariable();
 
         FlowVariable selectedVar = null;
         DefaultComboBoxModel<FlowVariable> m =
@@ -138,11 +139,10 @@ public class FileDownloadNodeDialog extends LabeledViewNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        FileDownloadConfig config = new FileDownloadConfig();
-        saveSettingsTo(config);
-        config.setLinkTitle(m_linkTitle.getText());
-        config.setResourceName(m_resourceName.getText());
-        config.setFlowVariable(getFlowVariableName());
-        config.saveSettings(settings);
+        saveSettingsTo(m_config);
+        m_config.setLinkTitle(m_linkTitle.getText());
+        m_config.setResourceName(m_resourceName.getText());
+        m_config.setFlowVariable(getFlowVariableName());
+        m_config.saveSettings(settings);
     }
 }

@@ -86,6 +86,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
+    private final DecisionTreeViewConfig m_config;
+
     private final JCheckBox m_generateImageCheckBox;
 
     private final JCheckBox m_displayFullscreenButtonCheckBox;
@@ -131,6 +133,8 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public DecisionTreeViewNodeDialogPane() {
+        m_config = new DecisionTreeViewConfig();
+
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_enableViewConfigCheckBox = new JCheckBox("Enable view edit controls");
@@ -417,20 +421,19 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
-        DecisionTreeViewConfig config = new DecisionTreeViewConfig();
-        config.loadInDialog(settings);
-        m_generateImageCheckBox.setSelected(config.isGenerateImage());
+        m_config.loadInDialog(settings);
+        m_generateImageCheckBox.setSelected(m_config.isGenerateImage());
 
-        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullScreenButton());
+        m_displayFullscreenButtonCheckBox.setSelected(m_config.getDisplayFullScreenButton());
 
 
-        m_enableViewConfigCheckBox.setSelected(config.isEnableViewConfiguration());
-        m_enableTitleChangeCheckBox.setSelected(config.isEnableTitleChange());
-        m_enableSubtitleChangeCheckBox.setSelected(config.isEnableSubtitleChange());
-        //        m_allowPanningCheckBox.setSelected(config.getEnablePanning());
-        //        m_showZoomResetCheckBox.setSelected(config.getShowZoomResetButton());
-        m_appendedColumnName.setText(config.getSelectionColumnName());
-        m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
+        m_enableViewConfigCheckBox.setSelected(m_config.isEnableViewConfiguration());
+        m_enableTitleChangeCheckBox.setSelected(m_config.isEnableTitleChange());
+        m_enableSubtitleChangeCheckBox.setSelected(m_config.isEnableSubtitleChange());
+        //        m_allowPanningCheckBox.setSelected(m_config.getEnablePanning());
+        //        m_showZoomResetCheckBox.setSelected(m_config.getShowZoomResetButton());
+        m_appendedColumnName.setText(m_config.getSelectionColumnName());
+        m_enableSelectionCheckBox.setSelected(m_config.getEnableSelection());
         if (specs[1] != null) {
             m_enableSelectionCheckBox.setEnabled(true);
             m_appendedColumnName.setEnabled(true);
@@ -439,32 +442,32 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
             m_enableSelectionCheckBox.setEnabled(false);
             m_appendedColumnName.setEnabled(false);
         }
-        m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
-        m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
-        m_displaySelectionResetButtonCheckBox.setSelected(config.getDisplaySelectionResetButton());
+        m_publishSelectionCheckBox.setSelected(m_config.getPublishSelection());
+        m_subscribeSelectionCheckBox.setSelected(m_config.getSubscribeSelection());
+        m_displaySelectionResetButtonCheckBox.setSelected(m_config.getDisplaySelectionResetButton());
 
-        m_chartTitleTextField.setText(config.getTitle());
-        m_chartSubtitleTextField.setText(config.getSubtitle());
+        m_chartTitleTextField.setText(m_config.getTitle());
+        m_chartSubtitleTextField.setText(m_config.getSubtitle());
 
-        m_maxRowsSpinner.setValue(config.getMaxRows());
+        m_maxRowsSpinner.setValue(m_config.getMaxRows());
 
-        m_backgroundColorChooser.setColor(config.getBackgroundColor());
-        m_dataAreaColorChooser.setColor(config.getDataAreaColor());
-        m_nodeBackgroundColorChooser.setColor(config.getNodeBackgroundColor());
+        m_backgroundColorChooser.setColor(m_config.getBackgroundColor());
+        m_dataAreaColorChooser.setColor(m_config.getDataAreaColor());
+        m_nodeBackgroundColorChooser.setColor(m_config.getNodeBackgroundColor());
 
-        m_numberFormatUI.loadSettingsFrom(config.getNumberFormat());
+        m_numberFormatUI.loadSettingsFrom(m_config.getNumberFormat());
 
-        m_expandedLevelSpinner.setValue(config.getExpandedLevel());
-        m_expandedLevelSpinner.setEnabled(!config.isNodeStatusFromView());
-        m_resetNodeStatusButton.setEnabled(config.isNodeStatusFromView());
-        m_nodeStatusFromViewAlert.setVisible(config.isNodeStatusFromView());
-        m_nodeStatus = config.getNodeStatus();
+        m_expandedLevelSpinner.setValue(m_config.getExpandedLevel());
+        m_expandedLevelSpinner.setEnabled(!m_config.isNodeStatusFromView());
+        m_resetNodeStatusButton.setEnabled(m_config.isNodeStatusFromView());
+        m_nodeStatusFromViewAlert.setVisible(m_config.isNodeStatusFromView());
+        m_nodeStatus = m_config.getNodeStatus();
 
-        m_enableZoomingCheckBox.setSelected(config.getEnableZooming());
-        m_showZoomResetButton.setSelected(config.getShowZoomResetButton());
-        m_zoomLevelSpinner.setValue(config.getScale());
+        m_enableZoomingCheckBox.setSelected(m_config.getEnableZooming());
+        m_showZoomResetButton.setSelected(m_config.getShowZoomResetButton());
+        m_zoomLevelSpinner.setValue(m_config.getScale());
 
-        m_truncationLimitSpinner.setValue(config.getTruncationLimit());
+        m_truncationLimitSpinner.setValue(m_config.getTruncationLimit());
 
         enableViewControls();
         enableSelectionControls();
@@ -475,46 +478,45 @@ public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        DecisionTreeViewConfig config = new DecisionTreeViewConfig();
-        config.setGenerateImage(m_generateImageCheckBox.isSelected());
+        m_config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
-        config.setDisplayFullScreenButton(m_displayFullscreenButtonCheckBox.isSelected());
+        m_config.setDisplayFullScreenButton(m_displayFullscreenButtonCheckBox.isSelected());
 
-        config.setSelectionColumnName(m_appendedColumnName.getText());
-        config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
-        config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
-        config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
-        //        config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
-        config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
-        config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
-        config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
-        config.setDisplaySelectionResetButton(m_displaySelectionResetButtonCheckBox.isSelected());
-        config.setExpandedLevel((int)m_expandedLevelSpinner.getValue());
+        m_config.setSelectionColumnName(m_appendedColumnName.getText());
+        m_config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
+        m_config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
+        m_config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
+        //        m_config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
+        m_config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
+        m_config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
+        m_config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
+        m_config.setDisplaySelectionResetButton(m_displaySelectionResetButtonCheckBox.isSelected());
+        m_config.setExpandedLevel((int)m_expandedLevelSpinner.getValue());
         boolean resetNodeStatus = !(m_resetNodeStatusButton.isEnabled());
         if (resetNodeStatus) {
             m_nodeStatus = null;
-            config.setNodeStatusFromView(false);
+            m_config.setNodeStatusFromView(false);
         } else {
-            config.setNodeStatusFromView(m_resetNodeStatusButton.isEnabled());
+            m_config.setNodeStatusFromView(m_resetNodeStatusButton.isEnabled());
         }
-        config.setNodeStatus(m_nodeStatus);
+        m_config.setNodeStatus(m_nodeStatus);
 
-        config.setTitle(m_chartTitleTextField.getText());
-        config.setSubtitle(m_chartSubtitleTextField.getText());
-        config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
+        m_config.setTitle(m_chartTitleTextField.getText());
+        m_config.setSubtitle(m_chartSubtitleTextField.getText());
+        m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
-        config.setBackgroundColor(m_backgroundColorChooser.getColor());
-        config.setDataAreaColor(m_dataAreaColorChooser.getColor());
-        config.setNodeBackgroundColor(m_nodeBackgroundColorChooser.getColor());
-        config.setNumberFormat(m_numberFormatUI.saveSettingsTo());
+        m_config.setBackgroundColor(m_backgroundColorChooser.getColor());
+        m_config.setDataAreaColor(m_dataAreaColorChooser.getColor());
+        m_config.setNodeBackgroundColor(m_nodeBackgroundColorChooser.getColor());
+        m_config.setNumberFormat(m_numberFormatUI.saveSettingsTo());
 
-        config.setEnableZooming(m_enableZoomingCheckBox.isSelected());
-        config.setShowZoomResetButton(m_showZoomResetButton.isSelected());
-        config.setScale((double)m_zoomLevelSpinner.getValue());
+        m_config.setEnableZooming(m_enableZoomingCheckBox.isSelected());
+        m_config.setShowZoomResetButton(m_showZoomResetButton.isSelected());
+        m_config.setScale((double)m_zoomLevelSpinner.getValue());
 
-        config.setTruncationLimit((int)m_truncationLimitSpinner.getValue());
+        m_config.setTruncationLimit((int)m_truncationLimitSpinner.getValue());
 
-        config.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
 }

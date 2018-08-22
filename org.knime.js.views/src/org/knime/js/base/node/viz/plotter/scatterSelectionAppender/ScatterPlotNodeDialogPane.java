@@ -90,6 +90,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
+    private final ScatterPlotViewConfig m_config;
+
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_displayFullscreenButtonCheckBox;
@@ -142,6 +144,8 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public ScatterPlotNodeDialogPane() {
+        m_config = new ScatterPlotViewConfig();
+
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
@@ -565,79 +569,78 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec[] specs)
             throws NotConfigurableException {
-        ScatterPlotViewConfig config = new ScatterPlotViewConfig();
-        config.loadSettingsForDialog(settings);
-        m_generateImageCheckBox.setSelected(config.getGenerateImage());
+        m_config.loadSettingsForDialog(settings);
+        m_generateImageCheckBox.setSelected(m_config.getGenerateImage());
 
         boolean legendAvailable = hasColorModelNominal(specs[0]);
-        m_showLegendCheckBox.setSelected(config.getShowLegend() && legendAvailable);
+        m_showLegendCheckBox.setSelected(m_config.getShowLegend() && legendAvailable);
         m_showLegendCheckBox.setEnabled(legendAvailable);
-        m_enableSwitchLegendBox.setSelected(config.getEnableSwitchLegend() && legendAvailable);
+        m_enableSwitchLegendBox.setSelected(m_config.getEnableSwitchLegend() && legendAvailable);
         m_enableSwitchLegendBox.setEnabled(legendAvailable);
         if (!legendAvailable) {
             m_showLegendCheckBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
             m_enableSwitchLegendBox.setToolTipText("Color legend is available only if a color model with nominal values is set. E.g. use Color Manager node ahead.");
         }
 
-        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
-        m_autoRangeAxisCheckBox.setSelected(config.getAutoRangeAxes());
-        m_useDomainInformationCheckBox.setSelected(config.getUseDomainInfo());
-        m_showGridCheckBox.setSelected(config.getShowGrid());
-        m_showCrosshairCheckBox.setSelected(config.getShowCrosshair());
-        m_snapToPointsCheckBox.setSelected(config.getSnapToPoints());
-        m_resizeViewToWindow.setSelected(config.getResizeToWindow());
+        m_displayFullscreenButtonCheckBox.setSelected(m_config.getDisplayFullscreenButton());
+        m_autoRangeAxisCheckBox.setSelected(m_config.getAutoRangeAxes());
+        m_useDomainInformationCheckBox.setSelected(m_config.getUseDomainInfo());
+        m_showGridCheckBox.setSelected(m_config.getShowGrid());
+        m_showCrosshairCheckBox.setSelected(m_config.getShowCrosshair());
+        m_snapToPointsCheckBox.setSelected(m_config.getSnapToPoints());
+        m_resizeViewToWindow.setSelected(m_config.getResizeToWindow());
 
-        m_appendedColumnName.setText(config.getSelectionColumnName());
-        m_enableViewConfigCheckBox.setSelected(config.getEnableViewConfiguration());
-        m_enableTitleChangeCheckBox.setSelected(config.getEnableTitleChange());
-        m_enableSubtitleChangeCheckBox.setSelected(config.getEnableSubtitleChange());
-        m_enableXColumnChangeCheckBox.setSelected(config.getEnableXColumnChange());
-        m_enableYColumnChangeCheckBox.setSelected(config.getEnableYColumnChange());
-        m_enableXAxisLabelEditCheckBox.setSelected(config.getEnableXAxisLabelEdit());
-        m_enableYAxisLabelEditCheckBox.setSelected(config.getEnableYAxisLabelEdit());
-        m_enableDotSizeChangeCheckBox.setSelected(config.getEnableDotSizeChange());
-        m_allowMouseWheelZoomingCheckBox.setSelected(config.getEnableZooming());
-        m_allowDragZoomingCheckBox.setSelected(config.getEnableDragZooming());
-        m_allowPanningCheckBox.setSelected(config.getEnablePanning());
-        m_showZoomResetCheckBox.setSelected(config.getShowZoomResetButton());
-        m_enableSelectionCheckBox.setSelected(config.getEnableSelection());
-        m_allowRectangleSelectionCheckBox.setSelected(config.getEnableRectangleSelection());
-        m_allowLassoSelectionCheckBox.setSelected(config.getEnableLassoSelection());
-        m_publishSelectionCheckBox.setSelected(config.getPublishSelection());
-        m_subscribeSelectionCheckBox.setSelected(config.getSubscribeSelection());
-        m_enableShowSelectedOnlyCheckBox.setSelected(config.getEnableShowSelectedOnly());
-        m_subscribeFilterCheckBox.setSelected(config.getSubscribeFilter());
+        m_appendedColumnName.setText(m_config.getSelectionColumnName());
+        m_enableViewConfigCheckBox.setSelected(m_config.getEnableViewConfiguration());
+        m_enableTitleChangeCheckBox.setSelected(m_config.getEnableTitleChange());
+        m_enableSubtitleChangeCheckBox.setSelected(m_config.getEnableSubtitleChange());
+        m_enableXColumnChangeCheckBox.setSelected(m_config.getEnableXColumnChange());
+        m_enableYColumnChangeCheckBox.setSelected(m_config.getEnableYColumnChange());
+        m_enableXAxisLabelEditCheckBox.setSelected(m_config.getEnableXAxisLabelEdit());
+        m_enableYAxisLabelEditCheckBox.setSelected(m_config.getEnableYAxisLabelEdit());
+        m_enableDotSizeChangeCheckBox.setSelected(m_config.getEnableDotSizeChange());
+        m_allowMouseWheelZoomingCheckBox.setSelected(m_config.getEnableZooming());
+        m_allowDragZoomingCheckBox.setSelected(m_config.getEnableDragZooming());
+        m_allowPanningCheckBox.setSelected(m_config.getEnablePanning());
+        m_showZoomResetCheckBox.setSelected(m_config.getShowZoomResetButton());
+        m_enableSelectionCheckBox.setSelected(m_config.getEnableSelection());
+        m_allowRectangleSelectionCheckBox.setSelected(m_config.getEnableRectangleSelection());
+        m_allowLassoSelectionCheckBox.setSelected(m_config.getEnableLassoSelection());
+        m_publishSelectionCheckBox.setSelected(m_config.getPublishSelection());
+        m_subscribeSelectionCheckBox.setSelected(m_config.getSubscribeSelection());
+        m_enableShowSelectedOnlyCheckBox.setSelected(m_config.getEnableShowSelectedOnly());
+        m_subscribeFilterCheckBox.setSelected(m_config.getSubscribeFilter());
 
-        m_chartTitleTextField.setText(config.getChartTitle());
-        m_chartSubtitleTextField.setText(config.getChartSubtitle());
-        String xCol = config.getxColumn();
+        m_chartTitleTextField.setText(m_config.getChartTitle());
+        m_chartSubtitleTextField.setText(m_config.getChartSubtitle());
+        String xCol = m_config.getxColumn();
         if (((xCol == null) || xCol.isEmpty()) && (specs[0].getNumColumns() > 0)) {
             xCol = specs[0].getColumnNames()[0];
         }
 
-        String yCol = config.getyColumn();
+        String yCol = m_config.getyColumn();
         if (((yCol == null) || yCol.isEmpty()) && (specs[0].getNumColumns() > 0)) {
             yCol = specs[0].getColumnNames()[specs[0].getNumColumns() > 1 ? 1 : 0];
         }
 
         m_xColComboBox.update(specs[0], xCol);
         m_yColComboBox.update(specs[0], yCol);
-        m_xAxisLabelField.setText(config.getxAxisLabel());
-        m_yAxisLabelField.setText(config.getyAxisLabel());
-        m_dotSize.setValue(config.getDotSize());
-        m_maxRowsSpinner.setValue(config.getMaxRows());
+        m_xAxisLabelField.setText(m_config.getxAxisLabel());
+        m_yAxisLabelField.setText(m_config.getyAxisLabel());
+        m_dotSize.setValue(m_config.getDotSize());
+        m_maxRowsSpinner.setValue(m_config.getMaxRows());
 
-        m_imageWidthSpinner.setValue(config.getImageWidth());
-        m_imageHeightSpinner.setValue(config.getImageHeight());
-        m_backgroundColorChooser.setColor(config.getBackgroundColor());
-        m_dataAreaColorChooser.setColor(config.getDataAreaColor());
-        m_gridColorChooser.setColor(config.getGridColor());
+        m_imageWidthSpinner.setValue(m_config.getImageWidth());
+        m_imageHeightSpinner.setValue(m_config.getImageHeight());
+        m_backgroundColorChooser.setColor(m_config.getBackgroundColor());
+        m_dataAreaColorChooser.setColor(m_config.getDataAreaColor());
+        m_gridColorChooser.setColor(m_config.getGridColor());
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
 
-        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
-        m_reportOnMissingValuesCheckBox.setSelected(config.getReportOnMissingValues());
+        m_showWarningInViewCheckBox.setSelected(m_config.getShowWarningInView());
+        m_reportOnMissingValuesCheckBox.setSelected(m_config.getReportOnMissingValues());
 
-        m_dateTimeFormats.loadSettingsFromModel(config.getDateTimeFormats());
+        m_dateTimeFormats.loadSettingsFromModel(m_config.getDateTimeFormats());
 
         enableViewControls();
         enableCrosshairControls();
@@ -650,61 +653,60 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        ScatterPlotViewConfig config = new ScatterPlotViewConfig();
-        config.setGenerateImage(m_generateImageCheckBox.isSelected());
+        m_config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
-        config.setShowLegend(m_showLegendCheckBox.isSelected());
-        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
-        config.setAutoRangeAxes(m_autoRangeAxisCheckBox.isSelected());
-        config.setUseDomainInfo(m_useDomainInformationCheckBox.isSelected());
-        config.setShowGrid(m_showGridCheckBox.isSelected());
-        config.setShowCrosshair(m_showCrosshairCheckBox.isSelected());
-        config.setSnapToPoints(m_snapToPointsCheckBox.isSelected());
-        config.setResizeToWindow(m_resizeViewToWindow.isSelected());
+        m_config.setShowLegend(m_showLegendCheckBox.isSelected());
+        m_config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
+        m_config.setAutoRangeAxes(m_autoRangeAxisCheckBox.isSelected());
+        m_config.setUseDomainInfo(m_useDomainInformationCheckBox.isSelected());
+        m_config.setShowGrid(m_showGridCheckBox.isSelected());
+        m_config.setShowCrosshair(m_showCrosshairCheckBox.isSelected());
+        m_config.setSnapToPoints(m_snapToPointsCheckBox.isSelected());
+        m_config.setResizeToWindow(m_resizeViewToWindow.isSelected());
 
-        config.setSelectionColumnName(m_appendedColumnName.getText());
-        config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
-        config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
-        config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
-        config.setEnableXColumnChange(m_enableXColumnChangeCheckBox.isSelected());
-        config.setEnableYColumnChange(m_enableYColumnChangeCheckBox.isSelected());
-        config.setEnableXAxisLabelEdit(m_enableXAxisLabelEditCheckBox.isSelected());
-        config.setEnableYAxisLabelEdit(m_enableYAxisLabelEditCheckBox.isSelected());
-        config.setEnableDotSizeChange(m_enableDotSizeChangeCheckBox.isSelected());
-        config.setEnableSwitchLegend(m_enableSwitchLegendBox.isSelected());
-        config.setEnableZooming(m_allowMouseWheelZoomingCheckBox.isSelected());
-        config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
-        config.setEnablePanning(m_allowPanningCheckBox.isSelected());
-        config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
-        config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
-        config.setEnableRectangleSelection(m_allowRectangleSelectionCheckBox.isSelected());
-        config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
-        config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
-        config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
-        config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
-        config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
+        m_config.setSelectionColumnName(m_appendedColumnName.getText());
+        m_config.setEnableViewConfiguration(m_enableViewConfigCheckBox.isSelected());
+        m_config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
+        m_config.setEnableSubtitleChange(m_enableSubtitleChangeCheckBox.isSelected());
+        m_config.setEnableXColumnChange(m_enableXColumnChangeCheckBox.isSelected());
+        m_config.setEnableYColumnChange(m_enableYColumnChangeCheckBox.isSelected());
+        m_config.setEnableXAxisLabelEdit(m_enableXAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableYAxisLabelEdit(m_enableYAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableDotSizeChange(m_enableDotSizeChangeCheckBox.isSelected());
+        m_config.setEnableSwitchLegend(m_enableSwitchLegendBox.isSelected());
+        m_config.setEnableZooming(m_allowMouseWheelZoomingCheckBox.isSelected());
+        m_config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
+        m_config.setEnablePanning(m_allowPanningCheckBox.isSelected());
+        m_config.setShowZoomResetButton(m_showZoomResetCheckBox.isSelected());
+        m_config.setEnableSelection(m_enableSelectionCheckBox.isSelected());
+        m_config.setEnableRectangleSelection(m_allowRectangleSelectionCheckBox.isSelected());
+        m_config.setEnableLassoSelection(m_allowLassoSelectionCheckBox.isSelected());
+        m_config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
+        m_config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
+        m_config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
+        m_config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
 
-        config.setChartTitle(m_chartTitleTextField.getText());
-        config.setChartSubtitle(m_chartSubtitleTextField.getText());
-        config.setxColumn(m_xColComboBox.getSelectedColumn());
-        config.setyColumn(m_yColComboBox.getSelectedColumn());
-        config.setxAxisLabel(m_xAxisLabelField.getText());
-        config.setyAxisLabel(m_yAxisLabelField.getText());
-        config.setDotSize((Integer)m_dotSize.getValue());
-        config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
+        m_config.setChartTitle(m_chartTitleTextField.getText());
+        m_config.setChartSubtitle(m_chartSubtitleTextField.getText());
+        m_config.setxColumn(m_xColComboBox.getSelectedColumn());
+        m_config.setyColumn(m_yColComboBox.getSelectedColumn());
+        m_config.setxAxisLabel(m_xAxisLabelField.getText());
+        m_config.setyAxisLabel(m_yAxisLabelField.getText());
+        m_config.setDotSize((Integer)m_dotSize.getValue());
+        m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
-        config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
-        config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
-        config.setBackgroundColor(m_backgroundColorChooser.getColor());
-        config.setDataAreaColor(m_dataAreaColorChooser.getColor());
-        config.setGridColor(m_gridColorChooser.getColor());
+        m_config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
+        m_config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
+        m_config.setBackgroundColor(m_backgroundColorChooser.getColor());
+        m_config.setDataAreaColor(m_dataAreaColorChooser.getColor());
+        m_config.setGridColor(m_gridColorChooser.getColor());
 
-        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
-        config.setReportOnMissingValues(m_reportOnMissingValuesCheckBox.isSelected());
+        m_config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+        m_config.setReportOnMissingValues(m_reportOnMissingValuesCheckBox.isSelected());
 
-        config.setDateTimeFormats((SettingsModelDateTimeOptions)m_dateTimeFormats.getModel());
+        m_config.setDateTimeFormats((SettingsModelDateTimeOptions)m_dateTimeFormats.getModel());
 
-        config.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
     /**

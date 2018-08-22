@@ -95,6 +95,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
+    private final LiftChartViewConfig m_config;
+
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showGridCheckBox;
     private final JCheckBox m_resizeViewToWindow;
@@ -157,6 +159,8 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public LiftChartNodeDialogPane() {
+        m_config = new LiftChartViewConfig();
+
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_resizeViewToWindow = new JCheckBox("Resize view to fill window");
@@ -495,20 +499,19 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
             throw new NotConfigurableException("No column specs given.");
         }
 
-        LiftChartViewConfig config = new LiftChartViewConfig();
-        config.loadSettingsForDialog(settings, specs[0]);
-        m_generateImageCheckBox.setSelected(config.getGenerateImage());
+        m_config.loadSettingsForDialog(settings, specs[0]);
+        m_generateImageCheckBox.setSelected(m_config.getGenerateImage());
 
-        m_showGridCheckBox.setSelected(config.getShowGrid());
-        m_resizeViewToWindow.setSelected(config.getResizeToWindow());
+        m_showGridCheckBox.setSelected(m_config.getShowGrid());
+        m_resizeViewToWindow.setSelected(m_config.getResizeToWindow());
 
-        m_imageWidthSpinner.setValue(config.getImageWidth());
-        m_imageHeightSpinner.setValue(config.getImageHeight());
-        m_backgroundColorChooser.setColor(config.getBackgroundColor());
-        m_dataAreaColorChooser.setColor(config.getDataAreaColor());
-        m_gridColorChooser.setColor(config.getGridColor());
+        m_imageWidthSpinner.setValue(m_config.getImageWidth());
+        m_imageHeightSpinner.setValue(m_config.getImageHeight());
+        m_backgroundColorChooser.setColor(m_config.getBackgroundColor());
+        m_dataAreaColorChooser.setColor(m_config.getDataAreaColor());
+        m_gridColorChooser.setColor(m_config.getGridColor());
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
-        m_lineWidthSpinner.setValue(config.getLineWidth());
+        m_lineWidthSpinner.setValue(m_config.getLineWidth());
 
         DataTableSpec specNull = specs[0];
         if (specNull.getNumColumns() == 0) {
@@ -532,11 +535,11 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         m_responseColumnElement.loadSettingsFrom(settings, specs);
         m_probabilityColumnElement.loadSettingsFrom(settings, specs);
         m_signDC.loadSettingsFrom(settings, specs);
-        m_responseColumn.setStringValue(config.getResponseColumn());
-        m_probabilityColumn.setStringValue(config.getProbabilityColumn());
-        m_responseLabel.setStringValue(config.getResponseLabel());
+        m_responseColumn.setStringValue(m_config.getResponseColumn());
+        m_probabilityColumn.setStringValue(m_config.getProbabilityColumn());
+        m_responseLabel.setStringValue(m_config.getResponseLabel());
 
-        String intervalWidth = Double.toString(config.getIntervalWidth());
+        String intervalWidth = Double.toString(m_config.getIntervalWidth());
         if (intervalWidth.endsWith(".0")) {
             intervalWidth = intervalWidth.split("\\.")[0];
         }
@@ -546,32 +549,32 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
         m_signDC.replaceListItems(getPossibleLabels(m_responseColumn
                 .getStringValue()), null);
 
-        m_showLegendCheckBox.setSelected(config.getShowLegend());
+        m_showLegendCheckBox.setSelected(m_config.getShowLegend());
 
-        m_xAxisLiftLabelField.setText(config.getxAxisTitleLift());
-        m_yAxisLiftLabelField.setText(config.getyAxisTitleLift());
-        m_chartLiftTitleTextField.setText(config.getTitleLift());
-        m_chartLiftSubtitleTextField.setText(config.getSubtitleLift());
+        m_xAxisLiftLabelField.setText(m_config.getxAxisTitleLift());
+        m_yAxisLiftLabelField.setText(m_config.getyAxisTitleLift());
+        m_chartLiftTitleTextField.setText(m_config.getTitleLift());
+        m_chartLiftSubtitleTextField.setText(m_config.getSubtitleLift());
 
-        m_xAxisGainLabelField.setText(config.getxAxisTitleGain());
-        m_yAxisGainLabelField.setText(config.getyAxisTitleGain());
-        m_chartGainTitleTextField.setText(config.getTitleGain());
-        m_chartGainSubtitleTextField.setText(config.getSubtitleGain());
-        m_showGain.setSelected(config.getShowGainChart());
-        m_showLift.setSelected(!config.getShowGainChart());
+        m_xAxisGainLabelField.setText(m_config.getxAxisTitleGain());
+        m_yAxisGainLabelField.setText(m_config.getyAxisTitleGain());
+        m_chartGainTitleTextField.setText(m_config.getTitleGain());
+        m_chartGainSubtitleTextField.setText(m_config.getSubtitleGain());
+        m_showGain.setSelected(m_config.getShowGainChart());
+        m_showLift.setSelected(!m_config.getShowGainChart());
 
-        m_enableViewConfigCheckBox.setSelected(config.getEnableControls());
-        m_enableTitleChangeCheckBox.setSelected(config.getEnableEditTitle());
-        m_enableSubtitleChangeCheckBox.setSelected(config.getEnableEditSubtitle());
-        m_enableXAxisLabelEditCheckBox.setSelected(config.getEnableEditXAxisLabel());
-        m_enableYAxisLabelEditCheckBox.setSelected(config.getEnableEditYAxisLabel());
-        m_enableViewToggleCheckBox.setSelected(config.getEnableViewToggle());
-        m_enableSmoothingCheckBox.setSelected(config.getEnableSmoothing());
-        m_smoothing.setSelectedItem(LiftChartViewConfig.mapSmoothingValueToInput(config.getSmoothing()));
+        m_enableViewConfigCheckBox.setSelected(m_config.getEnableControls());
+        m_enableTitleChangeCheckBox.setSelected(m_config.getEnableEditTitle());
+        m_enableSubtitleChangeCheckBox.setSelected(m_config.getEnableEditSubtitle());
+        m_enableXAxisLabelEditCheckBox.setSelected(m_config.getEnableEditXAxisLabel());
+        m_enableYAxisLabelEditCheckBox.setSelected(m_config.getEnableEditYAxisLabel());
+        m_enableViewToggleCheckBox.setSelected(m_config.getEnableViewToggle());
+        m_enableSmoothingCheckBox.setSelected(m_config.getEnableSmoothing());
+        m_smoothing.setSelectedItem(LiftChartViewConfig.mapSmoothingValueToInput(m_config.getSmoothing()));
 
-        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+        m_showWarningInViewCheckBox.setSelected(m_config.getShowWarningInView());
 
-        m_ignoreMissingValuesCheckBox.setSelected(config.getIgnoreMissingValues());
+        m_ignoreMissingValuesCheckBox.setSelected(m_config.getIgnoreMissingValues());
     }
 
     private List<String> getPossibleLabels(final String resColumn) {
@@ -603,49 +606,48 @@ public class LiftChartNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        LiftChartViewConfig config = new LiftChartViewConfig();
-        config.setGenerateImage(m_generateImageCheckBox.isSelected());
+        m_config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
-        config.setResizeToWindow(m_resizeViewToWindow.isSelected());
+        m_config.setResizeToWindow(m_resizeViewToWindow.isSelected());
 
-        config.setTitleLift(m_chartLiftTitleTextField.getText());
-        config.setSubtitleLift(m_chartLiftSubtitleTextField.getText());
-        config.setxAxisTitleLift(m_xAxisLiftLabelField.getText());
-        config.setyAxisTitleLift(m_yAxisLiftLabelField.getText());
+        m_config.setTitleLift(m_chartLiftTitleTextField.getText());
+        m_config.setSubtitleLift(m_chartLiftSubtitleTextField.getText());
+        m_config.setxAxisTitleLift(m_xAxisLiftLabelField.getText());
+        m_config.setyAxisTitleLift(m_yAxisLiftLabelField.getText());
 
-        config.setTitleGain(m_chartGainTitleTextField.getText());
-        config.setSubtitleGain(m_chartGainSubtitleTextField.getText());
-        config.setxAxisTitleGain(m_xAxisGainLabelField.getText());
-        config.setyAxisTitleGain(m_yAxisGainLabelField.getText());
+        m_config.setTitleGain(m_chartGainTitleTextField.getText());
+        m_config.setSubtitleGain(m_chartGainSubtitleTextField.getText());
+        m_config.setxAxisTitleGain(m_xAxisGainLabelField.getText());
+        m_config.setyAxisTitleGain(m_yAxisGainLabelField.getText());
 
-        config.setShowLegend(m_showLegendCheckBox.isSelected());
+        m_config.setShowLegend(m_showLegendCheckBox.isSelected());
 
-        config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
-        config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
-        config.setBackgroundColor(m_backgroundColorChooser.getColor());
-        config.setDataAreaColor(m_dataAreaColorChooser.getColor());
-        config.setGridColor(m_gridColorChooser.getColor());
-        config.setShowGrid(m_showGridCheckBox.isSelected());
-        config.setResponseColumn(m_responseColumn.getStringValue());
-        config.setResponseLabel(m_responseLabel.getStringValue());
-        config.setProbabilityColumn(m_probabilityColumn.getStringValue());
-        config.setIntervalWidth(Double.parseDouble(m_intervalWidth.getStringValue()));
-        config.setLineWidth((int)m_lineWidthSpinner.getValue());
-        config.setShowGainChart(m_showGain.isSelected());
+        m_config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
+        m_config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
+        m_config.setBackgroundColor(m_backgroundColorChooser.getColor());
+        m_config.setDataAreaColor(m_dataAreaColorChooser.getColor());
+        m_config.setGridColor(m_gridColorChooser.getColor());
+        m_config.setShowGrid(m_showGridCheckBox.isSelected());
+        m_config.setResponseColumn(m_responseColumn.getStringValue());
+        m_config.setResponseLabel(m_responseLabel.getStringValue());
+        m_config.setProbabilityColumn(m_probabilityColumn.getStringValue());
+        m_config.setIntervalWidth(Double.parseDouble(m_intervalWidth.getStringValue()));
+        m_config.setLineWidth((int)m_lineWidthSpinner.getValue());
+        m_config.setShowGainChart(m_showGain.isSelected());
 
-        config.setEnableControls(m_enableViewConfigCheckBox.isSelected());
-        config.setEnableEditTitle(m_enableTitleChangeCheckBox.isSelected());
-        config.setEnableEditSubtitle(m_enableSubtitleChangeCheckBox.isSelected());
-        config.setEnableEditXAxisLabel(m_enableXAxisLabelEditCheckBox.isSelected());
-        config.setEnableEditYAxisLabel(m_enableYAxisLabelEditCheckBox.isSelected());
-        config.setEnableViewToggle(m_enableViewToggleCheckBox.isSelected());
-        config.setEnableSmoothing(m_enableSmoothingCheckBox.isSelected());
-        config.setSmoothing(LiftChartViewConfig.mapSmoothingInputToValue(m_smoothing.getSelectedItem().toString()));
+        m_config.setEnableControls(m_enableViewConfigCheckBox.isSelected());
+        m_config.setEnableEditTitle(m_enableTitleChangeCheckBox.isSelected());
+        m_config.setEnableEditSubtitle(m_enableSubtitleChangeCheckBox.isSelected());
+        m_config.setEnableEditXAxisLabel(m_enableXAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableEditYAxisLabel(m_enableYAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableViewToggle(m_enableViewToggleCheckBox.isSelected());
+        m_config.setEnableSmoothing(m_enableSmoothingCheckBox.isSelected());
+        m_config.setSmoothing(LiftChartViewConfig.mapSmoothingInputToValue(m_smoothing.getSelectedItem().toString()));
 
-        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+        m_config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
 
-        config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
+        m_config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
 
-        config.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 }

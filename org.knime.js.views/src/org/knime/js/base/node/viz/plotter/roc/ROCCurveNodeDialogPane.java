@@ -95,6 +95,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;
 
+    private final ROCCurveViewConfig m_config;
+
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showArea;
 
@@ -150,6 +152,8 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
      * Creates a new dialog pane.
      */
     public ROCCurveNodeDialogPane() {
+        m_config = new ROCCurveViewConfig();
+
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showArea = new JCheckBox("Show area under curve");
         m_showGridCheckBox = new JCheckBox("Show grid");
@@ -481,45 +485,44 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec[] specs)
             throws NotConfigurableException {
-        ROCCurveViewConfig config = new ROCCurveViewConfig();
-        config.loadSettingsForDialog(settings, specs[0]);
-        m_generateImageCheckBox.setSelected(config.getGenerateImage());
+        m_config.loadSettingsForDialog(settings, specs[0]);
+        m_generateImageCheckBox.setSelected(m_config.getGenerateImage());
 
-        m_showArea.setSelected(config.getShowArea());
-        m_showGridCheckBox.setSelected(config.getShowGrid());
-        m_resizeViewToWindow.setSelected(config.getResizeToWindow());
-        m_displayFullscreenButtonCheckBox.setSelected(config.getDisplayFullscreenButton());
+        m_showArea.setSelected(m_config.getShowArea());
+        m_showGridCheckBox.setSelected(m_config.getShowGrid());
+        m_resizeViewToWindow.setSelected(m_config.getResizeToWindow());
+        m_displayFullscreenButtonCheckBox.setSelected(m_config.getDisplayFullscreenButton());
 
-        m_lineWidthSpinner.setValue(config.getLineWidth());
-        m_imageWidthSpinner.setValue(config.getImageWidth());
-        m_imageHeightSpinner.setValue(config.getImageHeight());
-        m_backgroundColorChooser.setColor(config.getBackgroundColor());
-        m_dataAreaColorChooser.setColor(config.getDataAreaColor());
-        m_gridColorChooser.setColor(config.getGridColor());
+        m_lineWidthSpinner.setValue(m_config.getLineWidth());
+        m_imageWidthSpinner.setValue(m_config.getImageWidth());
+        m_imageHeightSpinner.setValue(m_config.getImageHeight());
+        m_backgroundColorChooser.setColor(m_config.getBackgroundColor());
+        m_dataAreaColorChooser.setColor(m_config.getDataAreaColor());
+        m_gridColorChooser.setColor(m_config.getGridColor());
         m_gridColorChooser.getModel().setEnabled(m_showGridCheckBox.isSelected());
 
-        m_showLegendCheckBox.setSelected(config.getShowLegend());
-        m_xAxisLabelField.setText(config.getxAxisTitle());
-        m_yAxisLabelField.setText(config.getyAxisTitle());
-        m_chartTitleTextField.setText(config.getTitle());
-        m_chartSubtitleTextField.setText(config.getSubtitle());
+        m_showLegendCheckBox.setSelected(m_config.getShowLegend());
+        m_xAxisLabelField.setText(m_config.getxAxisTitle());
+        m_yAxisLabelField.setText(m_config.getyAxisTitle());
+        m_chartTitleTextField.setText(m_config.getTitle());
+        m_chartSubtitleTextField.setText(m_config.getSubtitle());
 
         m_spec = specs[0];
-        m_classColumn.update(specs[0], config.getRocSettings().getClassColumn());
-        m_positiveClass.setSelectedItem(config.getRocSettings().getPositiveClass());
+        m_classColumn.update(specs[0], m_config.getRocSettings().getClassColumn());
+        m_positiveClass.setSelectedItem(m_config.getRocSettings().getPositiveClass());
 
-        m_enableViewConfigCheckBox.setSelected(config.getEnableControls());
-        m_enableTitleChangeCheckBox.setSelected(config.getEnableEditTitle());
-        m_enableSubtitleChangeCheckBox.setSelected(config.getEnableEditSubtitle());
-        m_enableXAxisLabelEditCheckBox.setSelected(config.getEnableEditXAxisLabel());
-        m_enableYAxisLabelEditCheckBox.setSelected(config.getEnableEditYAxisLabel());
-        m_maxPoints.setValue(config.getRocSettings().getMaxPoints());
+        m_enableViewConfigCheckBox.setSelected(m_config.getEnableControls());
+        m_enableTitleChangeCheckBox.setSelected(m_config.getEnableEditTitle());
+        m_enableSubtitleChangeCheckBox.setSelected(m_config.getEnableEditSubtitle());
+        m_enableXAxisLabelEditCheckBox.setSelected(m_config.getEnableEditXAxisLabel());
+        m_enableYAxisLabelEditCheckBox.setSelected(m_config.getEnableEditYAxisLabel());
+        m_maxPoints.setValue(m_config.getRocSettings().getMaxPoints());
 
-        m_showWarningInViewCheckBox.setSelected(config.getShowWarningInView());
+        m_showWarningInViewCheckBox.setSelected(m_config.getShowWarningInView());
 
-        m_ignoreMissingValuesCheckBox.setSelected(config.getIgnoreMissingValues());
+        m_ignoreMissingValuesCheckBox.setSelected(m_config.getIgnoreMissingValues());
 
-        DataColumnSpecFilterConfiguration cfg = config.getRocSettings().getNumericCols();
+        DataColumnSpecFilterConfiguration cfg = m_config.getRocSettings().getNumericCols();
         cfg.loadConfigurationInDialog(settings, specs[0]);
         m_sortColumns.loadConfiguration(cfg, specs[0]);
     }
@@ -529,44 +532,43 @@ public class ROCCurveNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        ROCCurveViewConfig config = new ROCCurveViewConfig();
-        config.setGenerateImage(m_generateImageCheckBox.isSelected());
+        m_config.setGenerateImage(m_generateImageCheckBox.isSelected());
 
-        config.setShowArea(m_showArea.isSelected());
-        config.setShowGrid(m_showGridCheckBox.isSelected());
-        config.setResizeToWindow(m_resizeViewToWindow.isSelected());
-        config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
+        m_config.setShowArea(m_showArea.isSelected());
+        m_config.setShowGrid(m_showGridCheckBox.isSelected());
+        m_config.setResizeToWindow(m_resizeViewToWindow.isSelected());
+        m_config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
 
-        config.setLineWidth((Integer)m_lineWidthSpinner.getValue());
-        config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
-        config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
-        config.setBackgroundColor(m_backgroundColorChooser.getColor());
-        config.setDataAreaColor(m_dataAreaColorChooser.getColor());
-        config.setGridColor(m_gridColorChooser.getColor());
+        m_config.setLineWidth((Integer)m_lineWidthSpinner.getValue());
+        m_config.setImageWidth((Integer)m_imageWidthSpinner.getValue());
+        m_config.setImageHeight((Integer)m_imageHeightSpinner.getValue());
+        m_config.setBackgroundColor(m_backgroundColorChooser.getColor());
+        m_config.setDataAreaColor(m_dataAreaColorChooser.getColor());
+        m_config.setGridColor(m_gridColorChooser.getColor());
 
-        config.setTitle(m_chartTitleTextField.getText());
-        config.setSubtitle(m_chartSubtitleTextField.getText());
-        config.setxAxisTitle(m_xAxisLabelField.getText());
-        config.setyAxisTitle(m_yAxisLabelField.getText());
-        config.setShowLegend(m_showLegendCheckBox.isSelected());
+        m_config.setTitle(m_chartTitleTextField.getText());
+        m_config.setSubtitle(m_chartSubtitleTextField.getText());
+        m_config.setxAxisTitle(m_xAxisLabelField.getText());
+        m_config.setyAxisTitle(m_yAxisLabelField.getText());
+        m_config.setShowLegend(m_showLegendCheckBox.isSelected());
 
-        config.setEnableControls(m_enableViewConfigCheckBox.isSelected());
-        config.setEnableEditTitle(m_enableTitleChangeCheckBox.isSelected());
-        config.setEnableEditSubtitle(m_enableSubtitleChangeCheckBox.isSelected());
-        config.setEnableEditXAxisLabel(m_enableXAxisLabelEditCheckBox.isSelected());
-        config.setEnableEditYAxisLabel(m_enableYAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableControls(m_enableViewConfigCheckBox.isSelected());
+        m_config.setEnableEditTitle(m_enableTitleChangeCheckBox.isSelected());
+        m_config.setEnableEditSubtitle(m_enableSubtitleChangeCheckBox.isSelected());
+        m_config.setEnableEditXAxisLabel(m_enableXAxisLabelEditCheckBox.isSelected());
+        m_config.setEnableEditYAxisLabel(m_enableYAxisLabelEditCheckBox.isSelected());
 
-        config.getRocSettings().setClassColumn(m_classColumn.getSelectedColumn());
-        config.getRocSettings()
+        m_config.getRocSettings().setClassColumn(m_classColumn.getSelectedColumn());
+        m_config.getRocSettings()
                 .setPositiveClass((DataCell)m_positiveClass.getSelectedItem());
-        config.getRocSettings().setMaxPoints((Integer) m_maxPoints.getValue());
+        m_config.getRocSettings().setMaxPoints((Integer) m_maxPoints.getValue());
 
-        config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
+        m_config.setShowWarningInView(m_showWarningInViewCheckBox.isSelected());
 
-        config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
+        m_config.setIgnoreMissingValues(m_ignoreMissingValuesCheckBox.isSelected());
 
-        m_sortColumns.saveConfiguration(config.getRocSettings().getNumericCols());
+        m_sortColumns.saveConfiguration(m_config.getRocSettings().getNumericCols());
 
-        config.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 }

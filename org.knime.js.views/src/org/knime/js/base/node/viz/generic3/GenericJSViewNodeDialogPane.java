@@ -118,6 +118,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private static final String ATTR_RES_BUNDLE_DESCRIPTION = "description";
 
     private BiMap<String, String> m_availableLibraries;
+    private final GenericJSViewConfig m_config;
 
     //private final JTextField m_viewName;
     private final JCheckBox m_generateViewCheckBox;
@@ -139,6 +140,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     GenericJSViewNodeDialogPane() {
+        m_config = new GenericJSViewConfig();
+
         //m_viewName = new JTextField(20);
         m_generateViewCheckBox = new JCheckBox("Generate image at outport");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
@@ -374,9 +377,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         for (String lib : libNameList) {
             tableModel.addRow(new Object[]{false, lib});
         }
-        GenericJSViewConfig config = new GenericJSViewConfig();
-        config.loadSettingsForDialog(settings);
-        String[] activeLibs = config.getDependencies();
+        m_config.loadSettingsForDialog(settings);
+        String[] activeLibs = m_config.getDependencies();
         for (String lib: activeLibs) {
             String displayLib = m_availableLibraries.get(lib);
             for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -387,14 +389,14 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
             }
         }
         //m_viewName.setText(m_config.getViewName());
-        m_generateViewCheckBox.setSelected(config.getGenerateView());
-        m_maxRowsSpinner.setValue(config.getMaxRows());
-        m_jsTextArea.setText(config.getJsCode());
-        m_jsSVGTextArea.setText(config.getJsSVGCode());
-        m_cssTextArea.setText(config.getCssCode());
-        m_WaitTimeSpinner.setValue(config.getWaitTime());
+        m_generateViewCheckBox.setSelected(m_config.getGenerateView());
+        m_maxRowsSpinner.setValue(m_config.getMaxRows());
+        m_jsTextArea.setText(m_config.getJsCode());
+        m_jsSVGTextArea.setText(m_config.getJsSVGCode());
+        m_cssTextArea.setText(m_config.getCssCode());
+        m_WaitTimeSpinner.setValue(m_config.getWaitTime());
         DataTableSpec spec = specs[0] == null ? new DataTableSpec() : (DataTableSpec)specs[0];
-        m_outFieldsTable.updateData(config.getFieldCollection(), spec, getAvailableFlowVariables());
+        m_outFieldsTable.updateData(m_config.getFieldCollection(), spec, getAvailableFlowVariables());
     }
 
     private BiMap<String, String> getAvailableLibraries() {
@@ -450,21 +452,20 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
                 dependencies.add(m_availableLibraries.inverse().get(libDisplay));
             }
         }
-        final GenericJSViewConfig config = new GenericJSViewConfig();
         //m_config.setViewName(m_viewName.getText());
-        config.setGenerateView(m_generateViewCheckBox.isSelected());
-        config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
-        config.setJsCode(m_jsTextArea.getText());
-        config.setJsSVGCode(m_jsSVGTextArea.getText());
-        config.setCssCode(m_cssTextArea.getText());
-        config.setDependencies(dependencies.toArray(new String[0]));
-        config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
+        m_config.setGenerateView(m_generateViewCheckBox.isSelected());
+        m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
+        m_config.setJsCode(m_jsTextArea.getText());
+        m_config.setJsSVGCode(m_jsSVGTextArea.getText());
+        m_config.setCssCode(m_cssTextArea.getText());
+        m_config.setDependencies(dependencies.toArray(new String[0]));
+        m_config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
         FieldsTableModel outFieldsModel = (FieldsTableModel)m_outFieldsTable.getTable().getModel();
         if (!outFieldsModel.validateValues()) {
             throw new IllegalArgumentException("The variable fields table has errors.");
         }
-        config.setOutVarList(m_outFieldsTable.getOutVarFields());
-        config.saveSettings(settings);
+        m_config.setOutVarList(m_outFieldsTable.getOutVarFields());
+        m_config.saveSettings(settings);
     }
 
     /*public static class JSLibrary {
