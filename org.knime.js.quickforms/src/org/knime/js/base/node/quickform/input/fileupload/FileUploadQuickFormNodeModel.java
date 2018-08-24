@@ -49,12 +49,15 @@
 package org.knime.js.base.node.quickform.input.fileupload;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -62,7 +65,10 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Vector;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -75,7 +81,10 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
+import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
 /**
@@ -171,32 +180,43 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         Vector<String> vector = new Vector<String>();
         try {
             URL url = new URL(path);
-            if (openStream) {
-                try (InputStream stream = FileUtil.openStreamWithTimeout(url, getConfig().getTimeout())) {
-                    /* just testing if connection can be achieved */
-                } catch (Exception e) {
-                    StringBuilder b = new StringBuilder("Connection to given URL: \"");
-                    b.append(url.toString());
-                    if (e instanceof SocketTimeoutException) {
-                        b.append(
-                            "\" timed out. Check that the file is accessible from your network, and consider increasing the default timeout value.");
-                    } else {
-                        b.append("\" could not be achieved. ");
-                        b.append(e.getMessage());
-                    }
-                    throw new InvalidSettingsException(b.toString(), e);
-                }
-            }
             if ("file".equalsIgnoreCase(url.getProtocol())) {
                 Path p = Paths.get(url.toURI());
                 if (!Files.exists(p)) {
                     throw new InvalidSettingsException("No such file: \"" + p +"\"");
                 }
-                vector.addElement(p.toString());
+                vector.add(p.toString());
+                vector.add(url.toString());
             } else {
-                vector.add(null);
+                if (openStream) {
+                    // For a remote resource we always copy it locally first, because it may be accessed several times
+                    // and if it's an upload from the WebPortal it requires special authentication.
+                    String extension = FilenameUtils.getExtension(path);
+                    String basename = FilenameUtils.getBaseName(path);
+                    File tempFile =
+                        FileUtil.createTempFile(basename, "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
+
+                    try (InputStream is = openStream(url); OutputStream os = Files.newOutputStream(tempFile.toPath())) {
+                        IOUtils.copyLarge(is, os);
+                    } catch (Exception e) {
+                        StringBuilder b = new StringBuilder("Connection to given URL: \"");
+                        b.append(url.toString());
+                        if (e instanceof SocketTimeoutException) {
+                            b.append("\" timed out. Check that the file is accessible from your network, "
+                                + "and consider increasing the default timeout value.");
+                        } else {
+                            b.append("\" could not be achieved. ");
+                            b.append(e.getMessage());
+                        }
+                        throw new InvalidSettingsException(b.toString(), e);
+                    }
+                    vector.add(tempFile.getAbsolutePath());
+                    vector.add(tempFile.toURI().toString());
+                } else {
+                    vector.add(null);
+                    vector.add(url.toString());
+                }
             }
-            vector.add(url.toString());
         } catch (MalformedURLException ex) {
             File f = new File(path);
             if (!f.exists()) {
@@ -218,8 +238,39 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         } catch (URISyntaxException ex) {
             // shouldn't happen
             NodeLogger.getLogger(getClass()).debug("Invalid file URI encountered: " + ex.getMessage());
+        } catch (IOException ex) {
+            throw new InvalidSettingsException(
+                "Could not download uploaded file to local temp directory: " + ex.getMessage(), ex);
         }
         return vector;
+    }
+
+
+    private InputStream openStream(final URL url)
+        throws IOException, URISyntaxException {
+        if ("file".equalsIgnoreCase(url.getProtocol())) {
+            return Files.newInputStream(Paths.get(url.toURI()));
+        } else {
+            WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+            URLConnection conn = url.openConnection();
+
+            if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
+                // only pass on the auth token if it's the originating server, we don't want to send it to someone else
+                URI repoUri = wfContext.getRemoteRepositoryAddress().get();
+                if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
+                        && repoUri.getScheme().equals(url.getProtocol())) {
+                    conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
+                }
+            }
+
+            if (conn instanceof HttpsURLConnection) {
+                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+            }
+            conn.setConnectTimeout(getConfig().getTimeout());
+            conn.setReadTimeout(getConfig().getTimeout());
+
+            return conn.getInputStream();
+        }
     }
 
     /**
