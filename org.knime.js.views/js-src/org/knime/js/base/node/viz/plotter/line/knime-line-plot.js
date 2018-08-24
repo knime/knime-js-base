@@ -31,11 +31,11 @@ knime_line_plot = function() {
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
-			d3.select("body").text("Error: No data available");
+			d3.select("body").append("p").text("Error: No data available");
 			return;
 		}
 		if (value.xColumn && representation.keyedDataset.columnKeys.indexOf(value.xColumn) == -1) {
-			d3.select("body").text("Error: Selected column for x-axis: \"" + value.xColumn + "\" not available.");
+			d3.select("body").append("p").text("Error: Selected column for x-axis: \"" + value.xColumn + "\" not available.");
 			return;
 		}
 		_representation = representation;

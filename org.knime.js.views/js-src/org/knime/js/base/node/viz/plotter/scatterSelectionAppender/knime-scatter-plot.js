@@ -32,11 +32,11 @@ knime_scatter_plot_selection_appender = function() {
 	
 	view.init = function(representation, value) {
 		if (!representation.keyedDataset) {
-			d3.select("body").text("Error: No data available");
+			d3.select("body").append("p").text("Error: No data available");
 			return;
 		}
 		if (representation.keyedDataset.columnKeys.indexOf(value.xColumn) == -1) {
-			d3.select("body").text("Error: Selected column for x-axis: \"" + value.xColumn + "\" not available.");
+			d3.select("body").append("p").text("Error: Selected column for x-axis: \"" + value.xColumn + "\" not available.");
 			return;
 		}
 		_representation = representation;

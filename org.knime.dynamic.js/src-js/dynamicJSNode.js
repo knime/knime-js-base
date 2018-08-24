@@ -11,7 +11,7 @@ dynamicJSNode = function() {
 			return;
 		}
 		if (!representation.jsNamespace) {
-			document.body.innerHTML = 'No data to display.';
+			document.body.innerHTML = '<p>No data to display.</p>';
 			return;
 		}
 		_innerNamespace = representation.jsNamespace;
