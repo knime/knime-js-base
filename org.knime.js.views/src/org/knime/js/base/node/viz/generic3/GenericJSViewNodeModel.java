@@ -301,6 +301,20 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      * {@inheritDoc}
      */
     @Override
+    public GenericJSViewRepresentation getViewRepresentation() {
+        GenericJSViewRepresentation representation = super.getViewRepresentation();
+        synchronized(getLock()) {
+            if (representation.getTable() != null) {
+                representation.getTable().setId(getTableId(0));
+            }
+        }
+        return representation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public GenericJSViewValue createEmptyViewValue() {
         return new GenericJSViewValue();
     }

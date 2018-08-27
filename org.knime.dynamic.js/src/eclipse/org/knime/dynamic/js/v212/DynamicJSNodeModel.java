@@ -332,6 +332,28 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return new DynamicJSViewRepresentation();
 	}
 
+	/**
+     * {@inheritDoc}
+	 * @since 3.7
+     */
+    @Override
+    public DynamicJSViewRepresentation getViewRepresentation() {
+        DynamicJSViewRepresentation representation = super.getViewRepresentation();
+        synchronized(getLock()) {
+            if (representation != null) {
+                Object[] inObjects = representation.getInObjects();
+                if (inObjects != null) {
+                    for (int i = 0; i < inObjects.length; i++) {
+                        if (inObjects[i] != null && inObjects[i] instanceof JSONDataTable) {
+                            ((JSONDataTable)inObjects[i]).setId(getTableId(i));
+                        }
+                    }
+                }
+            }
+        }
+        return representation;
+    }
+
 	@Override
 	public DynamicJSViewValue createEmptyViewValue() {
 		return new DynamicJSViewValue();

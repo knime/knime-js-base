@@ -311,6 +311,21 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      * {@inheritDoc}
      */
     @Override
+    public RangeSliderFilterRepresentation getViewRepresentation() {
+        RangeSliderFilterRepresentation rep = super.getViewRepresentation();
+        synchronized(getLock()) {
+            //make sure current table ids are used at all times
+            if (rep != null) {
+                rep.setTableId(getTableId(0));
+            }
+        }
+        return rep;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public RangeSliderFilterValue createEmptyViewValue() {
         return new RangeSliderFilterValue();
     }

@@ -216,6 +216,10 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
     public ScatterPlotViewRepresentation getViewRepresentation() {
         ScatterPlotViewRepresentation rep = super.getViewRepresentation();
         synchronized (getLock()) {
+            if (rep.getKeyedDataset() != null) {
+                //make sure current table ids are used at all times
+                rep.getKeyedDataset().setId(getTableId(0));
+            }
             if (rep.getDateTimeFormats() == null) {
                 rep.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
             }

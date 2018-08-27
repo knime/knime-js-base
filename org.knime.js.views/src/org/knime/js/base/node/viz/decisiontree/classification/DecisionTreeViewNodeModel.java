@@ -456,11 +456,14 @@ public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<Decisi
      */
     @Override
     public void setInternalPortObjects(final PortObject[] portObjects) {
+        DecisionTreeViewRepresentation representation = getViewRepresentation();
         m_pmmlTree = (PMMLPortObject)portObjects[0];
         if (portObjects.length == 2) {
             m_table = (BufferedDataTable)portObjects[1];
+            if (representation != null) {
+                representation.setTableId(getTableId(1));
+            }
         }
-        DecisionTreeViewRepresentation representation = getViewRepresentation();
         if (m_pmmlTree != null && representation != null) {
             try {
                 writeTreeToRepresentation();

@@ -217,6 +217,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
     public LinePlotViewRepresentation getViewRepresentation() {
         LinePlotViewRepresentation rep = super.getViewRepresentation();
         synchronized (getLock()) {
+            if (rep.getKeyedDataset() != null) {
+                rep.getKeyedDataset().setId(getTableId(0));
+            }
             if (rep.getDateTimeFormats() == null) {
                 rep.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
             }

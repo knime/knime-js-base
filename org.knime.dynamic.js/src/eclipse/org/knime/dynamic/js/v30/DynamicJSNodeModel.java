@@ -109,6 +109,7 @@ import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.port.viewproperty.ColorHandlerPortObject;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.FlowVariable;
@@ -395,6 +396,35 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	@Override
 	public DynamicJSViewRepresentation createEmptyViewRepresentation() {
 		return new DynamicJSViewRepresentation();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @since 3.7
+	 */
+	@Override
+	public DynamicJSViewRepresentation getViewRepresentation() {
+	    DynamicJSViewRepresentation representation = super.getViewRepresentation();
+	    synchronized(getLock()) {
+	        if (representation != null) {
+	            Object[] inObjects = representation.getInObjects();
+	            String[] tableIds = representation.getTableIds();
+	            if (inObjects != null && tableIds != null) {
+                    CheckUtils.checkArgument(inObjects.length == tableIds.length,
+                            "inObjects and tableIds need to have the same length, "
+                            + "possible impelementation error!");
+                    for (int i = 0; i < tableIds.length; i++) {
+                        if (tableIds[i] != null) {
+                            tableIds[i] = getTableId(i);
+                        }
+                        if (inObjects[i] != null && inObjects[i] instanceof JSONDataTable) {
+                            ((JSONDataTable)inObjects[i]).setId(getTableId(i));
+                        }
+                    }
+	            }
+	        }
+	    }
+	    return representation;
 	}
 
 	@Override
