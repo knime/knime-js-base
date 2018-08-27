@@ -27,8 +27,15 @@
 		<tab name="JavaScript View">
 		<option name="Flow Variables">
 		    <p>
-		      The list contains the flow variables that are currently available at the node input. Double clicking any of 
-		      the entries will insert the respective identifier at the current cursor position in the JavaScript editor.
+		      The list contains the flow variables that are currently available at the node input. Double 
+		      clicking any of the entries will insert the respective identifier at the current cursor 
+		      position in the JavaScript editor.
+		    </p>
+		    <p>
+		    	Flow variable identifiers are replaced literally by their content during view generation. 
+		    	In particular, this means that a string flow variable has to be wrapped in "" to use it as a 
+		    	string in JavaScript, but a flow variable containing a JSON string can be used without the 
+		    	need to parse the string in JavaScript.
 		    </p>
 		</option>
 		<option name="Dependencies">
