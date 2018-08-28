@@ -268,7 +268,7 @@ public class ValueFilterQuickFormNodeModel
      */
     @Override
     public void setInternalTables(final BufferedDataTable[] tables) {
-        if (tables != null && tables.length > 0) {
+        if (tables != null && tables.length > 0 && tables[0] != null) {
             m_table = tables[0];
             updateValues(m_table.getDataTableSpec());
         }
