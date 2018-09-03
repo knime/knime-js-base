@@ -193,8 +193,8 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
                     // and if it's an upload from the WebPortal it requires special authentication.
                     String extension = FilenameUtils.getExtension(path);
                     String basename = FilenameUtils.getBaseName(path);
-                    File tempFile =
-                        FileUtil.createTempFile(basename, "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
+                    File tempFile = FileUtil.createTempFile((basename.length() < 3) ? "prefix" + basename : basename,
+                        "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
 
                     try (InputStream is = openStream(url); OutputStream os = Files.newOutputStream(tempFile.toPath())) {
                         IOUtils.copyLarge(is, os);
