@@ -103,8 +103,8 @@
 		var optFreqLabel = _value.options["freqLabel"];
 		
 		var optStaggerLabels = _representation.options["staggerLabels"];
-		var optLegend = _representation.options["legend"];		
-
+		var optLegend = _representation.options["legend"];	
+		
 		var optOrientation = _value.options["orientation"];	
 
 		var optFullscreen = _representation.options["svg"]["fullscreen"] && _representation.runningInView;
@@ -712,7 +712,7 @@
 	function calculateTextSize(data, cssClass, textFunction, wrapFactor, meassureHeight) {
 		var maxWidth = 0;
 		var maxHeight = 0;
-		var group = svg.append("g").classed('knime-tick', true);
+		var group = svg.append("g").classed('knime-axis', true);
 		var wrapedText = "";
 		
 		group.selectAll('.tempText')
@@ -764,11 +764,16 @@
 		if (chart) {
 			var optOrientation = _value.options["orientation"];
 			var optStaggerLabels = _value.options["staggerLabels"];
+			var optShowMaximum = _value.options.showMaximum;
 			var curCatAxisLabel, curFreqAxisLabel;
 			var curCatAxisLabelElement = d3.select(".nv-x.nv-axis .nv-axis-label");
 			var curFreqAxisLabelElement = d3.select(".nv-y.nv-axis .nv-axis-label");
 			var freqLabel = _value.options["freqLabel"];
 			var catLabel = _value.options["catLabel"];
+			
+			if(typeof optShowMaximum == "undefined") {
+				optShowMaximum = _representation.options.showMaximum;
+			}
 			
 			
 			wrapedPlotData = JSON.parse(JSON.stringify(plotData));
@@ -804,7 +809,7 @@
 				.axisLabel(freqLabel)
 				.axisLabelDistance(optOrientation ? maxSizeYAxis[2]+freqLabelSize[1]-20 : (maxSizeYAxis[1]-50))
 				.tickFormat(d3.format(maxSizeYAxis[0]))
-				.showMaxMin(false);
+				.showMaxMin(optShowMaximum);
 			
 				
 			var leftMargin = optOrientation ? maxSizeXAxis[0] + freqLabelSize[1] : maxSizeYAxis[1] + freqLabelSize[1];
@@ -861,6 +866,7 @@
 	    var orientationEdit = _representation.options.enableHorizontalToggle;
 		var staggerLabels = _representation.options.enableStaggerToggle;
 		var switchMissValCat = _representation.options.enableSwitchMissValCat;
+		var displayMaximum = _representation.options.enableMaximumValue;
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -960,6 +966,16 @@
 	    	});
 	    	staggerCbx.disabled = _value.options.orientation;
 	    	knimeService.addMenuItem('Stagger labels:', 'map-o', staggerCbx);
+	    }
+	    
+	    if (displayMaximum) {
+	    	var displayMaximumCbx = knimeService.createMenuCheckbox('displayMaximumCbx', _representation.options.showMaximum, function () {
+    			if (_value.options.showMaximum != this.checked) {
+					_value.options.showMaximum = this.checked;
+					drawChart(true);
+				}
+	    	});
+	    	knimeService.addMenuItem('Display maximum value:', 'arrows-v', displayMaximumCbx);
 	    }
 	};
 
