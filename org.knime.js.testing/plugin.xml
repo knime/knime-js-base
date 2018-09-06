@@ -27,6 +27,9 @@
                relativePath="org/knime/js/node/minimalRequestHandler/requestHandler.js"
                type="JAVASCRIPT">
          </importResource>
+         <webDependency
+               webResourceBundleID="knimeLazyLoadingService_1.0">
+         </webDependency>
       </webResourceBundle>
    </extension>
    <extension
