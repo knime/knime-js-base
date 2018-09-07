@@ -5,6 +5,10 @@ requestHandler = function() {
 	var textArea;
 	var curRequests = [];
 	
+	if (knimeService.isViewRequestsSupported()) {
+		knimeService.loadConditionally(["org/knime/js/node/minimalRequestHandler/requestHandlerLazyLoad"]);
+	}
+	
 	handler.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
@@ -60,28 +64,12 @@ requestHandler = function() {
 				curRequests = [];
 			}
 			
-			/* this is where the magic happens */
-			var promise = knimeService.requestViewUpdate(request, _representation.keepOrder);
-			promise.progress(monitor => displayProgress(monitor))
-				.then(response => displayResponse(response))
-				.catch(error => displayError(request.sequence, error));
-			/* end magic */
-			
-			if (promise.monitor && promise.monitor.requestSequence) {
-				curRequests.push(promise);
-				var text = "Issued request sequences: [";
-				for (var i = 0; i < curRequests.length; i++) {
-					text += curRequests[i].monitor.requestSequence;
-					if (i < curRequests.length - 1) {
-						text += ", ";
-					}
-				}
-				text += "]\n";
-				textArea.value += text;
-				textArea.scrollTop = textArea.scrollHeight;
+			if (knimeService.isViewRequestsSupported()) {
+				requestHandler.initRequest(request, textArea, _representation, curRequests);
+			} else {
+				alert("The current browser does not support lazy loading!");
 			}
 		});
-		
 	}
 	
 	pad = function (number, padAmount) {
@@ -96,7 +84,7 @@ requestHandler = function() {
 		return text;
 	}
 	
-	displayProgress = function(monitor) {
+	handler.displayProgress = function(monitor) {
 		if (!monitor.progress) {
 			return;
 		}
@@ -107,7 +95,7 @@ requestHandler = function() {
 		textArea.scrollTop = textArea.scrollHeight;
 	}
 	
-	displayResponse = function(response) {
+	handler.displayResponse = function(response) {
 		var textToAdd = getNowTimestamp();
 		textToAdd += ": RESPONSE for sequence [" + response.sequence + "] - " + response.dummy + "\n";
 		textArea.value += textToAdd;
@@ -120,7 +108,7 @@ requestHandler = function() {
 		}
 	}
 	
-	displayError = function(sequence, error) {
+	handler.displayError = function(sequence, error) {
 		var textToAdd = getNowTimestamp();
 		textToAdd += ": CATCH for sequence [" + sequence + "] - ";
 		if (error) {
