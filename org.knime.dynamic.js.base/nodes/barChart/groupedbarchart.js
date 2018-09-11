@@ -657,26 +657,29 @@
 			if(tickAmount < 2) {tickAmount = 2;}
 		
 			var scale = d3.scale.linear().domain([minValue,maxValue]);
-			
-			if(optOrientation) {
-				var textsYMin = svg.select(".nv-axisMin-x").selectAll("text");
-				var textsYMax = svg.select(".nv-axisMax-x").selectAll("text");
-			} else {
-				var textsYMin = svg.select(".nv-axisMin-y").selectAll("text");
-				var textsYMax = svg.select(".nv-axisMax-y").selectAll("text");
-			}
-		    var ticks = scale.ticks(tickAmount);
-			
-			if(textsYMin.text().includes('.')  && !textsYMin.text().includes('e') && minValue < 0) {
-				var precision = Math.max((ticks[0].toString().length-2),0);
-				textsYMin.text((Math.floor(parseFloat(textsYMin.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
-			} else if(minValue < 0) {
-				textsYMin.text(minValue);
-			}
+			if(typeof textsYMax !== "undefined"){
 				
-			if(textsYMax.text().includes('.')  && !textsYMax.text().includes('e')) {
-				var precision = Math.max((ticks[ticks.length-1].toString().length-2),0);
-				textsYMax.text((Math.ceil(parseFloat(textsYMax.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
+				if(optOrientation) {
+					var textsYMin = svg.select(".nv-axisMin-x").selectAll("text");
+					var textsYMax = svg.select(".nv-axisMax-x").selectAll("text");
+				} else {
+					var textsYMin = svg.select(".nv-axisMin-y").selectAll("text");
+					var textsYMax = svg.select(".nv-axisMax-y").selectAll("text");
+				}
+			    var ticks = scale.ticks(tickAmount);
+				
+				if(textsYMin.text().includes('.')  && !textsYMin.text().includes('e') && minValue < 0) {
+					var precision = Math.max((ticks[0].toString().length-2),0);
+					textsYMin.text((Math.floor(parseFloat(textsYMin.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
+				} else if(minValue < 0) {
+					textsYMin.text(minValue);
+				}
+					
+				if(textsYMax.text().includes('.')  && !textsYMax.text().includes('e')) {
+					var precision = Math.max((ticks[ticks.length-1].toString().length-2),0);
+					
+						textsYMax.text((Math.ceil(parseFloat(textsYMax.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
+				}
 			}
 		
 		var labelTooltip = texts.selectAll(".axisLabelTooltip");
