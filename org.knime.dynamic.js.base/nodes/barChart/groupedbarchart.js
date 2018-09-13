@@ -638,6 +638,10 @@
 	 * Additionally adjust the length of the maximum and minimum value on the y-axis.
 	 */
 	function updateLabels() {
+		var optShowMaximum = _value.options.showMaximum;
+		if(typeof optShowMaximum == "undefined") {
+			optShowMaximum = _representation.options.showMaximum;
+		}
 		var optOrientation = _value.options["orientation"];
 		var texts = svg.select(".knime-x").selectAll("text");
 		texts.each(function(d,i) {
@@ -657,8 +661,8 @@
 			if(tickAmount < 2) {tickAmount = 2;}
 		
 			var scale = d3.scale.linear().domain([minValue,maxValue]);
-			if(typeof textsYMax !== "undefined"){
-				
+		
+			if(optShowMaximum){ 
 				if(optOrientation) {
 					var textsYMin = svg.select(".nv-axisMin-x").selectAll("text");
 					var textsYMax = svg.select(".nv-axisMax-x").selectAll("text");
@@ -677,8 +681,7 @@
 					
 				if(textsYMax.text().includes('.')  && !textsYMax.text().includes('e')) {
 					var precision = Math.max((ticks[ticks.length-1].toString().length-2),0);
-					
-						textsYMax.text((Math.ceil(parseFloat(textsYMax.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
+					textsYMax.text((Math.ceil(parseFloat(textsYMax.text())* Math.pow(10,precision)) / Math.pow(10,precision)));
 				}
 			}
 		
@@ -838,8 +841,8 @@
 			
 			var maxSizeYAxis = checkMaxSizeYAxis(wrapedPlotData, optShowMaximum);
 			var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData);
-			var freqLabelSize = calculateTextSize(freqLabel ? [freqLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.4, optOrientation ? false : true);
-			var catLabelSize = calculateTextSize(catLabel ? [catLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.4, optOrientation ? true : false);
+			var freqLabelSize = calculateTextSize(freqLabel ? [freqLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.6, optOrientation ? false : true);
+			var catLabelSize = calculateTextSize(catLabel ? [catLabel] : [""], 'knime-axis-label', function(d) {return d}, 0.6, optOrientation ? true : false);
 			var svgSize = optOrientation ? parseInt(d3.select("svg").style("width")) :
 											parseInt(d3.select("svg").style("height"));
 			
@@ -858,7 +861,7 @@
 			
 			chart.xAxis
 				.axisLabel(catLabel)
-				.axisLabelDistance(optOrientation ? maxSizeXAxis[0]-70 : optStaggerLabels ? maxSizeXAxis[1] : maxSizeXAxis[1]+freqLabelSize[1]-20)
+				.axisLabelDistance(optOrientation ? maxSizeXAxis[0]-70 : optStaggerLabels ? maxSizeXAxis[1] : maxSizeXAxis[1]+freqLabelSize[1]-15)
 				.showMaxMin(false);
 			
 			chart.yAxis
@@ -869,14 +872,14 @@
 				.tickFormat(d3.format('~.g'));
 
 			var leftMargin = optOrientation ? maxSizeXAxis[0] + freqLabelSize[1] : maxSizeYAxis[1] + freqLabelSize[1];
-			var bottomMargin = optOrientation ? maxSizeYAxis[2] + freqLabelSize[1] +20 : maxSizeXAxis[1] + freqLabelSize[1] +20;
+			var bottomMargin = optOrientation ? maxSizeYAxis[2] + freqLabelSize[1] +30 : maxSizeXAxis[1] + freqLabelSize[1] +25;
 			if (!_value.options.catLabel) {
-				bottomMargin = optOrientation ? maxSizeXAxis[1]+25 : maxSizeXAxis[1]+25;
-				leftMargin = optOrientation ? maxSizeXAxis[0] : maxSizeYAxis[1];
+				bottomMargin = optOrientation ? maxSizeXAxis[1] + freqLabelSize[1] +20 : maxSizeXAxis[1]+25;
+				leftMargin = optOrientation ?  maxSizeYAxis[1] : maxSizeYAxis[1] + freqLabelSize[1];
 			}
 			if (!_value.options.freqLabel) {
-				bottomMargin = optOrientation ? maxSizeXAxis[1]+25 : maxSizeXAxis[1]+25;
-				leftMargin = optOrientation ? maxSizeXAxis[0] : maxSizeYAxis[1];
+				bottomMargin = optOrientation ? maxSizeXAxis[1]+25 : maxSizeXAxis[1] + freqLabelSize[1] +25;
+				leftMargin = optOrientation ? maxSizeXAxis[0] + freqLabelSize[1] : maxSizeYAxis[1];
 			}
 			if (!optOrientation) {
 				chart.staggerLabels(optStaggerLabels);
