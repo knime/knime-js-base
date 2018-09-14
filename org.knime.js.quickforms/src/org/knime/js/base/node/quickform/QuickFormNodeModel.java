@@ -67,10 +67,10 @@ import org.knime.core.node.dialog.InputNode;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.web.WebViewContent;
+import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
-import org.knime.js.core.node.CSSModifiable;
 
 /**
  * Model of a quick form node.

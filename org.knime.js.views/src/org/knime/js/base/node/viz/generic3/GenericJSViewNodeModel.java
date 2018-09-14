@@ -75,11 +75,11 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.dialog.field.DefaultOutFlowVariableField;
 import org.knime.core.node.util.dialog.field.OutFlowVariableField;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.js.base.node.viz.generic3.GenericJSViewValue.FlowVariableValue;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
-import org.knime.js.core.node.CSSModifiable;
 
 /**
  *
