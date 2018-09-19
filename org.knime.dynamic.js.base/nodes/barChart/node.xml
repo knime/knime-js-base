@@ -95,7 +95,7 @@
                 </checkBoxOption>
 				
                 <checkBoxOption name="Show maximum value" id="showMaximum"
-                    label="Display maximum value" defaultValue="true" loadDefaults="true">
+                    label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check if the maximum of the Y-Axis should be displayed.
                 </checkBoxOption>
 

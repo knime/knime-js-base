@@ -924,7 +924,7 @@
 	    var orientationEdit = _representation.options.enableHorizontalToggle;
 		var staggerLabels = _representation.options.enableStaggerToggle;
 		var switchMissValCat = _representation.options.enableSwitchMissValCat;
-		var displayMaximum = _representation.options.enableMaximumValue;
+		var showMaximum = _representation.options.enableMaximumValue;
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -1026,9 +1026,10 @@
 	    	knimeService.addMenuItem('Stagger labels:', 'map-o', staggerCbx);
 	    }
 	    
-	    if (displayMaximum) {
-	    	var displayMaximumCbx = knimeService.createMenuCheckbox('displayMaximumCbx', _representation.options.showMaximum, function () {
-    			if (_value.options.showMaximum != this.checked) {
+	    if (showMaximum) {
+	    	var displayMaximumCbx = knimeService.createMenuCheckbox('displayMaximumCbx', _value.options.showMaximum, function () {
+    			console.log(_value.options.showMaximum);
+	    		if (_value.options.showMaximum != this.checked) {
 					_value.options.showMaximum = this.checked;
 					drawChart(true);
 				}
