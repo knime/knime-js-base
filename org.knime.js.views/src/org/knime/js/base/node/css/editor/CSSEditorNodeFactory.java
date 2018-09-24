@@ -43,74 +43,57 @@
  * ------------------------------------------------------------------------
  *
  * History
- *   05.05.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   30.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.ui;
+package org.knime.js.base.node.css.editor;
 
-import java.awt.Color;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
-import org.knime.base.node.jsnippet.guarded.GuardedDocument;
-import org.knime.base.node.jsnippet.guarded.GuardedSection;
-import org.knime.base.node.jsnippet.guarded.GuardedSectionsFoldParser;
-import org.knime.js.base.node.css.editor.autocompletion.KnimeCssLanguageSupport;
-import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
 
 /**
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("serial")
-public class CSSSnippetTextArea extends RSyntaxTextArea {
+public final class CSSEditorNodeFactory extends NodeFactory<CSSEditorNodeModel>  {
 
     /**
-     *
+     * {@inheritDoc}
      */
-    public CSSSnippetTextArea() {
-        super(20,60);
-        boolean parserInstalled = FoldParserManager.get().getFoldParser(
-            SYNTAX_STYLE_CSS) instanceof GuardedSectionsFoldParser;
-        if (!parserInstalled) {
-            FoldParserManager.get().addFoldParserMapping(SYNTAX_STYLE_CSS,new GuardedSectionsFoldParser());
-        }
-        setDocument(new CssSnippetDocument());
-        setCodeFoldingEnabled(true);
-        setSyntaxEditingStyle(SYNTAX_STYLE_CSS);
-        setAntiAliasingEnabled(true);
-
-        KnimeCssLanguageSupport cssLangSup = new KnimeCssLanguageSupport();
-        cssLangSup.install(this);
+    @Override
+    public CSSEditorNodeModel createNodeModel() {
+        return new CSSEditorNodeModel();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Color getForegroundForToken(final Token t) {
-        if (isInGuardedSection(t.getOffset())) {
-            return Color.gray;
-        } else {
-            return super.getForegroundForToken(t);
-        }
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
-     * Returns true when offset is within a guarded section.
-     *
-     * @param offset the offset to test
-     * @return true when offset is within a guarded section.
+     * {@inheritDoc}
      */
-    private boolean isInGuardedSection(final int offset) {
-        GuardedDocument doc = (GuardedDocument)getDocument();
+    @Override
+    public NodeView<CSSEditorNodeModel> createNodeView(final int viewIndex, final CSSEditorNodeModel nodeModel) {
+        return null;
+    }
 
-        for (String name : doc.getGuardedSections()) {
-            GuardedSection gs = doc.getGuardedSection(name);
-            if (gs.contains(offset)) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean hasDialog() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected NodeDialogPane createNodeDialogPane() {
+        return new CSSEditorNodeDialogPane();
     }
 }

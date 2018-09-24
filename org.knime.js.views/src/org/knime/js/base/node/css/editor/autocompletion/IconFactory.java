@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,77 +41,84 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   05.05.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   Sep 12, 2018 (daniel): created
  */
-package org.knime.js.base.node.ui;
+package org.knime.js.base.node.css.editor.autocompletion;
 
-import java.awt.Color;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
-import org.knime.base.node.jsnippet.guarded.GuardedDocument;
-import org.knime.base.node.jsnippet.guarded.GuardedSection;
-import org.knime.base.node.jsnippet.guarded.GuardedSectionsFoldParser;
-import org.knime.js.base.node.css.editor.autocompletion.KnimeCssLanguageSupport;
-import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
- *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ *  Classes needed to show the knime icon next to knime completions
+ *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("serial")
-public class CSSSnippetTextArea extends RSyntaxTextArea {
+class IconFactory {
+
+    private static IconFactory INSTANCE;
+
+    private Map<String, Icon> iconMap;
+
 
     /**
+     * Private constructor to prevent instantiation.
+     */
+    private IconFactory() {
+        iconMap = new HashMap<String, Icon>();
+    }
+
+
+    /**
+     * Returns the singleton instance of this class.
      *
+     * @return The singleton instance.
      */
-    public CSSSnippetTextArea() {
-        super(20,60);
-        boolean parserInstalled = FoldParserManager.get().getFoldParser(
-            SYNTAX_STYLE_CSS) instanceof GuardedSectionsFoldParser;
-        if (!parserInstalled) {
-            FoldParserManager.get().addFoldParserMapping(SYNTAX_STYLE_CSS,new GuardedSectionsFoldParser());
+    public static IconFactory get() {
+        if (INSTANCE==null) {
+            INSTANCE = new IconFactory();
         }
-        setDocument(new CssSnippetDocument());
-        setCodeFoldingEnabled(true);
-        setSyntaxEditingStyle(SYNTAX_STYLE_CSS);
-        setAntiAliasingEnabled(true);
-
-        KnimeCssLanguageSupport cssLangSup = new KnimeCssLanguageSupport();
-        cssLangSup.install(this);
+        return INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Color getForegroundForToken(final Token t) {
-        if (isInGuardedSection(t.getOffset())) {
-            return Color.gray;
-        } else {
-            return super.getForegroundForToken(t);
-        }
-    }
 
     /**
-     * Returns true when offset is within a guarded section.
+     * Returns the icon requested.
      *
-     * @param offset the offset to test
-     * @return true when offset is within a guarded section.
+     * @param key The key for the icon.
+     * @return The icon.
      */
-    private boolean isInGuardedSection(final int offset) {
-        GuardedDocument doc = (GuardedDocument)getDocument();
-
-        for (String name : doc.getGuardedSections()) {
-            GuardedSection gs = doc.getGuardedSection(name);
-            if (gs.contains(offset)) {
-                return true;
-            }
+    public Icon getIcon(final String key) {
+        Icon icon = iconMap.get(key);
+        if (icon==null) {
+            icon = loadIcon("../data/images/" + key + ".png");
+            iconMap.put(key, icon);
         }
-        return false;
+        return icon;
     }
+
+
+    /**
+     * Loads an icon by file name.
+     *
+     * @param name The icon file name.
+     * @return The icon.
+     */
+    private Icon loadIcon(final String name) {
+        URL res = getClass().getResource(name);
+        if (res==null) {
+            // IllegalArgumentException is what would be thrown if res
+            // was null anyway, we're just giving the actual arg name to
+            // make the message more descriptive
+            throw new IllegalArgumentException("icon not found: img/" + name);
+        }
+        return new ImageIcon(res);
+    }
+
+
 }

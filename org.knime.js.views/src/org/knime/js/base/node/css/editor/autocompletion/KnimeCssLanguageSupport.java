@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,77 +41,55 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   05.05.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   Sep 11, 2018 (daniel): created
  */
-package org.knime.js.base.node.ui;
+package org.knime.js.base.node.css.editor.autocompletion;
 
-import java.awt.Color;
-
+import org.fife.rsta.ac.css.CssLanguageSupport;
+import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
-import org.knime.base.node.jsnippet.guarded.GuardedDocument;
-import org.knime.base.node.jsnippet.guarded.GuardedSection;
-import org.knime.base.node.jsnippet.guarded.GuardedSectionsFoldParser;
-import org.knime.js.base.node.css.editor.autocompletion.KnimeCssLanguageSupport;
-import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
 
 /**
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("serial")
-public class CSSSnippetTextArea extends RSyntaxTextArea {
+public class KnimeCssLanguageSupport extends CssLanguageSupport{
+
+    private KnimeCssCompletionProvider provider;
 
     /**
-     *
+     * {@inheritDoc}
      */
-    public CSSSnippetTextArea() {
-        super(20,60);
-        boolean parserInstalled = FoldParserManager.get().getFoldParser(
-            SYNTAX_STYLE_CSS) instanceof GuardedSectionsFoldParser;
-        if (!parserInstalled) {
-            FoldParserManager.get().addFoldParserMapping(SYNTAX_STYLE_CSS,new GuardedSectionsFoldParser());
-        }
-        setDocument(new CssSnippetDocument());
-        setCodeFoldingEnabled(true);
-        setSyntaxEditingStyle(SYNTAX_STYLE_CSS);
-        setAntiAliasingEnabled(true);
-
-        KnimeCssLanguageSupport cssLangSup = new KnimeCssLanguageSupport();
-        cssLangSup.install(this);
+    @Override
+    protected KnimeCssCompletionProvider createProvider() {
+        return new KnimeCssCompletionProvider();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Color getForegroundForToken(final Token t) {
-        if (isInGuardedSection(t.getOffset())) {
-            return Color.gray;
-        } else {
-            return super.getForegroundForToken(t);
-        }
+    public void install(final RSyntaxTextArea textArea) {
+        KnimeCssCompletionProvider knimeCssCompletionProvider = getCssProvider();
+        AutoCompletion ac = createAutoCompletion(knimeCssCompletionProvider);
+        ac.install(textArea);
+        ac.setShowDescWindow(true);
+        installImpl(textArea, ac);
+
+        textArea.setToolTipSupplier(knimeCssCompletionProvider);
     }
 
-    /**
-     * Returns true when offset is within a guarded section.
-     *
-     * @param offset the offset to test
-     * @return true when offset is within a guarded section.
-     */
-    private boolean isInGuardedSection(final int offset) {
-        GuardedDocument doc = (GuardedDocument)getDocument();
-
-        for (String name : doc.getGuardedSections()) {
-            GuardedSection gs = doc.getGuardedSection(name);
-            if (gs.contains(offset)) {
-                return true;
-            }
+    private KnimeCssCompletionProvider getCssProvider() {
+        if (provider==null) {
+            provider = createProvider();
         }
-        return false;
+        return provider;
     }
+
+
+
+
 }

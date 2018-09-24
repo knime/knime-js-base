@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,77 +41,75 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   05.05.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   Sep 13, 2018 (daniel): created
  */
-package org.knime.js.base.node.ui;
+package org.knime.js.base.node.css.editor.guarded;
 
-import java.awt.Color;
+import javax.swing.text.BadLocationException;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.knime.base.node.jsnippet.guarded.GuardedDocument;
 import org.knime.base.node.jsnippet.guarded.GuardedSection;
-import org.knime.base.node.jsnippet.guarded.GuardedSectionsFoldParser;
-import org.knime.js.base.node.css.editor.autocompletion.KnimeCssLanguageSupport;
-import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
 
 /**
- *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ *  A document with guarded, non editable sections
+ *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("serial")
-public class CSSSnippetTextArea extends RSyntaxTextArea {
+public class CssSnippetDocument extends GuardedDocument{
 
+    /**
+     * 
+     */
+    private static final String IMPLEMENTATION_ERROR = "Implementation error.";
+
+    /** The name of the guarded section for the start of the body. */
+    public static final String GUARDED_APPENDED_STYLE = "appendedStyle";
+
+    private GuardedSection appendedStyle;
     /**
      *
      */
-    public CSSSnippetTextArea() {
-        super(20,60);
-        boolean parserInstalled = FoldParserManager.get().getFoldParser(
-            SYNTAX_STYLE_CSS) instanceof GuardedSectionsFoldParser;
-        if (!parserInstalled) {
-            FoldParserManager.get().addFoldParserMapping(SYNTAX_STYLE_CSS,new GuardedSectionsFoldParser());
-        }
-        setDocument(new CssSnippetDocument());
-        setCodeFoldingEnabled(true);
-        setSyntaxEditingStyle(SYNTAX_STYLE_CSS);
-        setAntiAliasingEnabled(true);
-
-        KnimeCssLanguageSupport cssLangSup = new KnimeCssLanguageSupport();
-        cssLangSup.install(this);
+    public CssSnippetDocument() {
+        super(SyntaxConstants.SYNTAX_STYLE_NONE);
     }
 
+
     /**
-     * {@inheritDoc}
+     * @param name Name of the to be created guarded section
+     * @param text  The text that is in the guarded section
+     * @param flowVariableName Name of the flow variable the text is from
+     * @throws BadLocationException
      */
-    @Override
-    public Color getForegroundForToken(final Token t) {
-        if (isInGuardedSection(t.getOffset())) {
-            return Color.gray;
+    public void insertNewGuardedSection(final String name, final String text, final String flowVariableName){
+        if(getGuardedSection(name) != null) {
+            try {
+                String tempText = "/* Appended stylesheet from (" + flowVariableName + ") */ \n" + text +  "\n /* End of appended stylesheet */";
+                getGuardedSection("appendedStylesheet").setText(tempText);
+            } catch (BadLocationException e) {
+                throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
+            }
         } else {
-            return super.getForegroundForToken(t);
-        }
-    }
-
-    /**
-     * Returns true when offset is within a guarded section.
-     *
-     * @param offset the offset to test
-     * @return true when offset is within a guarded section.
-     */
-    private boolean isInGuardedSection(final int offset) {
-        GuardedDocument doc = (GuardedDocument)getDocument();
-
-        for (String name : doc.getGuardedSections()) {
-            GuardedSection gs = doc.getGuardedSection(name);
-            if (gs.contains(offset)) {
-                return true;
+            try {
+                appendedStyle = addGuardedSection(name, 0);
+                appendedStyle.setText("/* Appended stylesheet from (" + flowVariableName + ") */ \n" + text +  "\n /* End of appended stylesheet */");
+            } catch (BadLocationException e) {
+                throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
             }
         }
-        return false;
+    }
+
+    @Override
+    public void removeGuardedSection(final String name) {
+        if(getGuardedSections().contains(name)) {
+            super.removeGuardedSection(name);
+            try {
+                super.remove(0, appendedStyle.getText().length());
+            } catch (BadLocationException e) {
+                throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
+            }
+        }
     }
 }

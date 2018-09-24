@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode type="Manipulator" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd" icon="css_node.png">
+	<name>CSS Editor</name>
+	
+	<shortDescription>
+	    Provides CSS Code for other JS nodes.
+	</shortDescription>
+	
+	<fullDescription>
+		<intro>		
+    	    <p>
+    	    With this node you can create custom CSS styling.
+            You can simply put CSS rules into the editor and set the output either to create a new flow variable,
+            or replace an existing one. With the ability to prepend existing stylesheets its easy to override existing styles,
+            or use the already existing styles.
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
+            <p>Note, this node is currently under development. Future versions of the node will have more functionality,
+            including the ability to define and use templates and to generate a preview of the defined style rules.</p>  
+            <p></p>          
+		</intro>
+		<option name="Prepend existing stylesheet">
+		    <p>
+		      The list contains the flow variables that are currently available at the node input. 
+		      By checking this checkbox, the selected flow variable will be prepended to the newly created CSS-stylesheet.
+		    </p>
+		</option>
+		<option name="Append new variable">
+		    <p>If selected the newly created CSS-stylesheet will be put in a new flow variable with the specified name</p>
+		</option>
+		<option name="Replace existing variable">
+		    <p>If selected the newly created CSS-stylesheet will replace an existing flow variable</p>
+		</option>
+	</fullDescription>
+	
+	<ports>
+		<inPort index="0" name="Prepend CSS script" optional="true">Existing CSS string flow variable.</inPort>
+		<outPort index="0" name="Output CSS script">String flow variable, that outputs the created CSS file.</outPort>
+	</ports>	
+</knimeNode>

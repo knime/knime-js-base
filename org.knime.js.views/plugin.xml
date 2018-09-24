@@ -64,6 +64,11 @@
             category-path="/view/js-views"
             factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
       </node>
+      <node
+            after="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"
+            category-path="/view/js-views"
+            factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
