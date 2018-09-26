@@ -10,196 +10,196 @@
 	<keywords>
 		<!-- General -->
 		<keyword name="knime-title" type="knime" icon="knime">
-			<desc>view's title</desc>
+			<desc>View's title</desc>
 		</keyword>
 		<keyword name="knime-subtitle" type="knime" icon="knime">
-			<desc>view's subtitle</desc>
+			<desc>View's subtitle</desc>
 		</keyword>
 		<keyword name="knime-label" type="knime" icon="knime">
-			<desc>text component of the labels in the view (e.g. on sectors of
+			<desc>Text component of the labels in the view (e.g. on sectors of
 				pie chart, or values of box plot)</desc>
 		</keyword>
 
 		<!-- Groups -->
 		<keyword name="knime-axis" type="knime" icon="knime">
-			<desc> selector to address a group of components related to an axis.
+			<desc>Selector to address a group of components related to an axis.
 				One can specify the axis by combining the selector with a class
 				knime-x or knime y. E.g. select('.knime-axis.knime-x') will address
 				only X axis group.</desc>
 		</keyword>
 		<keyword name="knime-axis-label" type="knime" icon="knime">
-			<desc>text component of the axis label</desc>
+			<desc>Text component of the axis label</desc>
 		</keyword>
 		<keyword name="knime-axis-line" type="knime" icon="knime">
-			<desc>line or path component of the axis</desc>
+			<desc>Line or path component of the axis</desc>
 		</keyword>
 		<keyword name="knime-axis-max-min" type="knime" icon="knime">
-			<desc>group of components related to max or min axis values</desc>
+			<desc>Group of components related to max or min axis values</desc>
 		</keyword>
 		<keyword name="knime-tick" type="knime" icon="knime">
-			<desc> group of components related to a certain axis tick (for slider
+			<desc>Group of components related to a certain axis tick (for slider
 				it represents pips group)</desc>
 		</keyword>
 		<keyword name="knime-tick-label" type="knime" icon="knime">
-			<desc>text component of the axis tick (for slider it represents a pip
+			<desc>Text component of the axis tick (for slider it represents a pip
 				label)</desc>
 		</keyword>
 		<keyword name="knime-tick-line" type="knime" icon="knime">
-			<desc>line or path component of the axis tick (for slider it
+			<desc>Line or path component of the axis tick (for slider it
 				represents a pip tick)</desc>
 		</keyword>
 		<keyword name="knime-legend" type="knime" icon="knime">
-			<desc>group of components representing the legend</desc>
+			<desc>Group of components representing the legend</desc>
 		</keyword>
 		<keyword name="knime-legend-symbol" type="knime" icon="knime">
-			<desc>graphic component of the symbol legend (e.g. a colorful circle)</desc>
+			<desc>Graphic component of the symbol legend (e.g. a colorful circle)</desc>
 		</keyword>
 		<keyword name="knime-legend-label" type="knime" icon="knime">
-			<desc>text component of the legend</desc>
+			<desc>Text component of the legend</desc>
 		</keyword>
 		<keyword name="knime-tooltip" type="knime" icon="knime">
-			<desc>group of components representing the tooltip. This also serves
+			<desc>Group of components representing the tooltip. This also serves
 				as a styling for collapsed columns in Data Explorer (when they are
 				displayed in an extra rows), using knime-tooltip-caption and
 				knime-tooltip-value.</desc>
 		</keyword>
 		<keyword name="knime-tooltip-caption" type="knime"
 			icon="knime">
-			<desc>text component for the caption of tooltip</desc>
+			<desc>Text component for the caption of tooltip</desc>
 		</keyword>
 		<keyword name="knime-tooltip-color" type="knime" icon="knime">
-			<desc>container for a color guide of tooltip</desc>
+			<desc>Container for a color guide of tooltip</desc>
 		</keyword>
 		<keyword name="knime-tooltip-key" type="knime" icon="knime">
-			<desc>text component representing the key of tooltip</desc>
+			<desc>Text component representing the key of tooltip</desc>
 		</keyword>
 		<keyword name="knime-tooltip-value" type="knime" icon="knime">
-			<desc>text component representing the value of tooltip</desc>
+			<desc>Text component representing the value of tooltip</desc>
 		</keyword>
 		<keyword name="knime-tab" type="knime" icon="knime">
-			<desc>tab component, e.g. in Data Explorer</desc>
+			<desc>Tab component, e.g. in Data Explorer</desc>
 		</keyword>
 		<keyword name="knime-spinner" type="knime" icon="knime">
-			<desc>spinner component</desc>
+			<desc>Spinner component</desc>
 		</keyword>
 		<keyword name="knime-slider" type="knime" icon="knime">
-			<desc>slider component</desc>
+			<desc>Slider component</desc>
 		</keyword>
 		<keyword name="knime-slider-base" type="knime" icon="knime">
-			<desc>base of slider</desc>
+			<desc>Base of slider</desc>
 		</keyword>
 		<keyword name="knime-slider-handle" type="knime" icon="knime">
-			<desc>handle(s) of slider</desc>
+			<desc>Handle(s) of slider</desc>
 		</keyword>
 		<keyword name="knime-slider-connect" type="knime" icon="knime">
-			<desc>connect bar(s) of slider</desc>
+			<desc>Connect bar(s) of slider</desc>
 		</keyword>
 
 		<!-- Quickforms -->
 		<keyword name="knime-qf-title" type="knime" icon="knime">
-			<desc>title of quickform. This one is called "Label" in the node
+			<desc>Title of quickform. This one is called "Label" in the node
 				dialog, but don't mix it up with knime-qf-label</desc>
 		</keyword>
 		<keyword name="knime-qf-label" type="knime" icon="knime">
-			<desc>label in front of input controls (e.g. "Date", in Date and or
+			<desc>Label in front of input controls (e.g. "Date", in Date and or
 				"User", "Password" in Credentials)</desc>
 		</keyword>
 		<keyword name="knime-qf-input" type="knime" icon="knime">
-			<desc>input component. Might be used with a specificator (e.g.
+			<desc>Input component. Might be used with a specificator (e.g.
 				knime-boolean)</desc>
 		</keyword>
 		<keyword name="knime-qf-select" type="knime" icon="knime">
-			<desc>select component. Can be used with a specificator
+			<desc>Select component. Can be used with a specificator
 				knime-single-line and knime-multi-line</desc>
 		</keyword>
 		<keyword name="knime-qf-button" type="knime" icon="knime">
-			<desc>button control</desc>
+			<desc>Button control</desc>
 		</keyword>
 		<keyword name="knime-qf-tree" type="knime" icon="knime">
-			<desc>tree component</desc>
+			<desc>Tree component</desc>
 		</keyword>
 		<keyword name="knime-qf-text" type="knime" icon="knime">
-			<desc>text of output components</desc>
+			<desc>Text of output components</desc>
 		</keyword>
 		<keyword name="knime-qf-error" type="knime" icon="knime">
-			<desc>element to display error messages</desc>
+			<desc>Element to display error messages</desc>
 		</keyword>
 
 		<!-- Table base views -->
 		<keyword name="knime-table" type="knime" icon="knime">
-			<desc>table</desc>
+			<desc>Table</desc>
 		</keyword>
 		<keyword name="knime-table-control-text" type="knime"
 			icon="knime">
-			<desc>text of control elements, like Search, Paging etc</desc>
+			<desc>Text of control elements, like Search, Paging etc</desc>
 		</keyword>
 		<keyword name="knime-table-search" type="knime" icon="knime">
-			<desc>search group</desc>
+			<desc>Search group</desc>
 		</keyword>
 		<keyword name="knime-table-paging" type="knime" icon="knime">
-			<desc>pagination group</desc>
+			<desc>Pagination group</desc>
 		</keyword>
 		<keyword name="knime-table-info" type="knime" icon="knime">
-			<desc>info group</desc>
+			<desc>Info group</desc>
 		</keyword>
 		<keyword name="knime-table-length" type="knime" icon="knime">
-			<desc>length group</desc>
+			<desc>Length group</desc>
 		</keyword>
 		<keyword name="knime-table-buttons" type="knime" icon="knime">
-			<desc>buttons group</desc>
+			<desc>Buttons group</desc>
 		</keyword>
 		<keyword name="knime-table-row" type="knime" icon="knime">
-			<desc>table row</desc>
+			<desc>Table row</desc>
 		</keyword>
 		<keyword name="knime-table-cell" type="knime" icon="knime">
-			<desc>table cell</desc>
+			<desc>Table cell</desc>
 		</keyword>
 		<keyword name="knime-table-header" type="knime" icon="knime">
-			<desc>table header specificator</desc>
+			<desc>Table header specificator</desc>
 		</keyword>
 		<keyword name="knime-table-footer" type="knime" icon="knime">
-			<desc>table footer specificator</desc>
+			<desc>Table footer specificator</desc>
 		</keyword>
 
 		<!-- Table base views -->
 		<keyword name="knime-x" type="knime" icon="knime">
-			<desc>specifies the dimension when needed. Should be used in a
+			<desc>Specifies the dimension when needed. Should be used in a
 				combination with knime classes, e.g. knime-axis</desc>
 		</keyword>
 		<keyword name="knime-y" type="knime" icon="knime">
-			<desc>specifies the dimension when needed. Should be used in a
+			<desc>Specifies the dimension when needed. Should be used in a
 				combination with knime classes, e.g. knime-axis</desc>
 		</keyword>
 		<keyword name="knime-boolean" type="knime" icon="knime">
-			<desc>type Boolean (e.g. in Boolean Input or row selection in Table
+			<desc>Type Boolean (e.g. in Boolean Input or row selection in Table
 				View)</desc>
 		</keyword>
 		<keyword name="knime-double" type="knime" icon="knime">
-			<desc>type Double (e.g. in Double Input or Table Editor)</desc>
+			<desc>Type Double (e.g. in Double Input or Table Editor)</desc>
 		</keyword>
 		<keyword name="knime-integer" type="knime" icon="knime">
-			<desc>type Integer</desc>
+			<desc>Type Integer</desc>
 		</keyword>
 		<keyword name="knime-string" type="knime" icon="knime">
-			<desc>type String</desc>
+			<desc>Type String</desc>
 		</keyword>
 		<keyword name="knime-datetime" type="knime" icon="knime">
-			<desc>type Date and Time.</desc>
+			<desc>Type Date and Time.</desc>
 		</keyword>
 		<keyword name="knime-date" type="knime" icon="knime">
-			<desc>elements of the Date part</desc>
+			<desc>Elements of the Date part</desc>
 		</keyword>
 		<keyword name="knime-time" type="knime" icon="knime">
-			<desc>elements of the Time part</desc>
+			<desc>Elements of the Time part</desc>
 		</keyword>
 		<keyword name="knime-now" type="knime" icon="knime">
 			<desc>Now button</desc>
 		</keyword>
 		<keyword name="knime-timezone" type="knime" icon="knime">
-			<desc>elements of Timezone part</desc>
+			<desc>Elements of Timezone part</desc>
 		</keyword>
 		<keyword name="knime-image" type="knime" icon="knime">
-			<desc>type Image</desc>
+			<desc>Type Image</desc>
 		</keyword>
 		<keyword name="knime-png" type="knime" icon="knime">
 			<desc>PNG image</desc>
@@ -208,38 +208,38 @@
 			<desc>SVG image</desc>
 		</keyword>
 		<keyword name="knime-single-line" type="knime" icon="knime">
-			<desc>for single-line components (text, select)</desc>
+			<desc>For single-line components (text, select)</desc>
 		</keyword>
 		<keyword name="knime-multi-line" type="knime" icon="knime">
-			<desc>for multi-line components (text, select)</desc>
+			<desc>For multi-line components (text, select)</desc>
 		</keyword>
 		<keyword name="knime-editable" type="knime" icon="knime">
-			<desc>refers to editable data</desc>
+			<desc>Refers to editable data</desc>
 		</keyword>
 		<keyword name="knime-selected" type="knime" icon="knime">
-			<desc>refers to selected data</desc>
+			<desc>Refers to selected data</desc>
 		</keyword>
 		<keyword name="knime-filter" type="knime" icon="knime">
-			<desc>refers to filter/search elements</desc>
+			<desc>Refers to filter/search elements</desc>
 		</keyword>
 
 		<!-- Containers -->
 		<keyword name="knime-service-header" type="knime" icon="knime">
-			<desc>component with control buttons (menu, selection etc.)</desc>
+			<desc>Component with control buttons (menu, selection etc.)</desc>
 		</keyword>
 		<keyword name="knime-layout-container" type="knime"
 			icon="knime">
-			<desc>wrapper component for the chart</desc>
+			<desc>Wrapper component for the chart</desc>
 		</keyword>
 		<keyword name="knime-svg-container" type="knime" icon="knime">
-			<desc>component with svg plot</desc>
+			<desc>Component with SVG plot</desc>
 		</keyword>
 		<keyword name="knime-qf-container" type="knime" icon="knime">
-			<desc>wrapper container of a quickform control</desc>
+			<desc>Wrapper container of a quickform control</desc>
 		</keyword>
 		<keyword name="knime-table-container" type="knime"
 			icon="knime">
-			<desc>wrapper container of a table based view</desc>
+			<desc>Wrapper container of a table based view</desc>
 		</keyword>
 
 	</keywords>

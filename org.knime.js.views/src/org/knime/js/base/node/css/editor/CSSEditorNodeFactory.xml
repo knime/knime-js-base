@@ -34,7 +34,7 @@
 	</fullDescription>
 	
 	<ports>
-		<inPort index="0" name="Prepend CSS script" optional="true">Existing CSS string flow variable.</inPort>
-		<outPort index="0" name="Output CSS script">String flow variable, that outputs the created CSS file.</outPort>
+		<inPort index="0" name="Existing CSS script" optional="true">Existing CSS string flow variable.</inPort>
+		<outPort index="0" name="CSS script">String flow variable, that outputs the created CSS script.</outPort>
 	</ports>	
 </knimeNode>

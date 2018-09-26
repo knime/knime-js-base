@@ -63,6 +63,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.util.UniqueNameGenerator;
 
 /**
  *
@@ -72,9 +73,7 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
 
     private final CSSEditorConfig m_config;
 
-    /**
-     */
-    protected CSSEditorNodeModel() {
+    CSSEditorNodeModel() {
         super(new PortType[]{FlowVariablePortObject.TYPE_OPTIONAL}, new PortType[]{FlowVariablePortObject.TYPE});
         m_config = new CSSEditorConfig();
     }
@@ -87,13 +86,22 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
         if (m_config.getCssCode() == null || m_config.getCssCode().trim().isEmpty()) {
             throw new InvalidSettingsException("Not possible to execute with an empty stylesheet!");
         }
-        if (m_config.getAppendCheckbox()) {
-            pushFlowVariableString(m_config.getFlowVariableName(),
-                m_config.getGuardedDocument() + m_config.getCssCode());
-        } else {
-            pushFlowVariableString(m_config.getFlowVariableName(), m_config.getCssCode());
-        }
+        pushFlowVariable();
         return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+    }
+
+    private void pushFlowVariable() {
+        String varName = m_config.getFlowVariableName();
+        if (!m_config.isReplace()) {
+            varName = new UniqueNameGenerator(getAvailableInputFlowVariables().keySet()).newName(varName);
+        }
+        String varContent;
+        if (m_config.getAppendCheckbox()) {
+            varContent = m_config.getGuardedDocument() + m_config.getCssCode();
+        } else {
+            varContent = m_config.getCssCode();
+        }
+        pushFlowVariableString(varName, varContent);
     }
 
     /**
@@ -101,6 +109,7 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec) throws Exception {
+        // must not call pushFlowVariable() as it has been done in configure()
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
 

@@ -52,9 +52,9 @@ import java.awt.Color;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
-import org.knime.base.node.jsnippet.guarded.GuardedDocument;
-import org.knime.base.node.jsnippet.guarded.GuardedSection;
-import org.knime.base.node.jsnippet.guarded.GuardedSectionsFoldParser;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedDocument;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSection;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSectionsFoldParser;
 import org.knime.js.base.node.css.editor.autocompletion.KnimeCssLanguageSupport;
 import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
 

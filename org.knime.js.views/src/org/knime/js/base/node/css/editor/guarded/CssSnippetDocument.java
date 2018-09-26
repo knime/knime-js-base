@@ -51,26 +51,25 @@ package org.knime.js.base.node.css.editor.guarded;
 import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.knime.base.node.jsnippet.guarded.GuardedDocument;
-import org.knime.base.node.jsnippet.guarded.GuardedSection;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedDocument;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSection;
 
 /**
  *  A document with guarded, non editable sections
  *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class CssSnippetDocument extends GuardedDocument{
+@SuppressWarnings("serial")
+public class CssSnippetDocument extends GuardedDocument {
 
-    /**
-     * 
-     */
     private static final String IMPLEMENTATION_ERROR = "Implementation error.";
 
-    /** The name of the guarded section for the start of the body. */
-    public static final String GUARDED_APPENDED_STYLE = "appendedStyle";
+    private static final String GUARDED_SECTION_COMMENT_FORMAT =
+        "/* Prepended stylesheet from (%s) */ \n%s\n /* End of prepended stylesheet */";
 
-    private GuardedSection appendedStyle;
+    private GuardedSection prependedStyle;
+
     /**
-     *
+     * Creates a new guarded CSS document
      */
     public CssSnippetDocument() {
         super(SyntaxConstants.SYNTAX_STYLE_NONE);
@@ -81,23 +80,19 @@ public class CssSnippetDocument extends GuardedDocument{
      * @param name Name of the to be created guarded section
      * @param text  The text that is in the guarded section
      * @param flowVariableName Name of the flow variable the text is from
-     * @throws BadLocationException
      */
-    public void insertNewGuardedSection(final String name, final String text, final String flowVariableName){
-        if(getGuardedSection(name) != null) {
-            try {
-                String tempText = "/* Appended stylesheet from (" + flowVariableName + ") */ \n" + text +  "\n /* End of appended stylesheet */";
-                getGuardedSection("appendedStylesheet").setText(tempText);
-            } catch (BadLocationException e) {
-                throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
+    public void insertNewGuardedSection(final String name, final String text, final String flowVariableName) {
+        GuardedSection section = getGuardedSection(name);
+        try {
+            if (section != null) {
+                String tempText = String.format(GUARDED_SECTION_COMMENT_FORMAT, flowVariableName, text);
+                section.setText(tempText);
+            } else {
+                prependedStyle = addGuardedSection(name, 0);
+                prependedStyle.setText(String.format(GUARDED_SECTION_COMMENT_FORMAT, flowVariableName, text));
             }
-        } else {
-            try {
-                appendedStyle = addGuardedSection(name, 0);
-                appendedStyle.setText("/* Appended stylesheet from (" + flowVariableName + ") */ \n" + text +  "\n /* End of appended stylesheet */");
-            } catch (BadLocationException e) {
-                throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
-            }
+        } catch (BadLocationException e) {
+            throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
         }
     }
 
@@ -106,7 +101,7 @@ public class CssSnippetDocument extends GuardedDocument{
         if(getGuardedSections().contains(name)) {
             super.removeGuardedSection(name);
             try {
-                super.remove(0, appendedStyle.getText().length());
+                super.remove(0, prependedStyle.getText().length());
             } catch (BadLocationException e) {
                 throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
             }

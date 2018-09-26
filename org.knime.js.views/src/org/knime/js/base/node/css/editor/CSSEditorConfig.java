@@ -50,11 +50,6 @@ package org.knime.js.base.node.css.editor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.util.dialog.field.FieldCollection;
-import org.knime.core.node.util.dialog.field.FieldList.InColumnList;
-import org.knime.core.node.util.dialog.field.FieldList.InFlowVariableList;
-import org.knime.core.node.util.dialog.field.FieldList.OutColumnList;
-import org.knime.core.node.util.dialog.field.FieldList.OutFlowVariableList;
 
 /**
  *
@@ -62,9 +57,7 @@ import org.knime.core.node.util.dialog.field.FieldList.OutFlowVariableList;
  */
 final class CSSEditorConfig {
 
-    private static final String HIDE_IN_WIZARD = "hideInWizard";
     private static final String CSS_CODE = "cssCode";
-    private static final String OUT_VARS = "outputVariables";
     private static final String VARIABLE_NAME = "variableName";
     private static final String GUARDED_DOCUMENT = "guardedDocument";
     private static final String APPEND_CHECKBOX = "appendCheckbox";
@@ -73,9 +66,7 @@ final class CSSEditorConfig {
     private static final String REPLACE_VARIABLE = "replaceVariable";
     private static final String WAS_COLLAPSED = "wasCollapsed";
 
-    private boolean m_hideInWizard = false;
     private String m_cssCode;
-    private OutFlowVariableList m_outVarList;
     private String m_newFlowVariableName = "css-stylesheet";
     private String m_guardedDocument;
     private boolean m_appendCheckbox = false;
@@ -83,28 +74,6 @@ final class CSSEditorConfig {
     private String m_prependVariable;
     private String m_replaceVariable;
     private boolean m_wasCollapsed;
-
-
-    /**
-    *
-    */
-   public CSSEditorConfig() {
-       m_outVarList = new OutFlowVariableList(true);
-   }
-
-    /**
-     * @return the hideInWizard
-     */
-    public boolean getHideInWizard() {
-        return m_hideInWizard;
-    }
-
-    /**
-     * @param hideInWizard the hideInWizard to set
-     */
-    public void setHideInWizard(final boolean hideInWizard) {
-        m_hideInWizard = hideInWizard;
-    }
 
     /**
      * @return the cssCode
@@ -133,34 +102,6 @@ final class CSSEditorConfig {
      */
     public void setFlowVariableName(final String flowVariableName) {
         m_newFlowVariableName = flowVariableName;
-    }
-
-    /**
-     * @return the outVarList
-     */
-    public OutFlowVariableList getOutVarList() {
-        return m_outVarList;
-    }
-
-    /**
-     * @param outVarList the outVarList to set
-     */
-    public void setOutVarList(final OutFlowVariableList outVarList) {
-        m_outVarList = outVarList;
-    }
-
-    /**
-     * @return a {@link FieldCollection} object. Only the output flow variable is filled, all other elements are empty lists
-     */
-    public FieldCollection getFieldCollection() {
-        return new FieldCollection(new InColumnList(), new InFlowVariableList(), new OutColumnList(), m_outVarList);
-    }
-
-    /**
-     * @param fields sets a {@link FieldCollection} object. Only the output flow variable list is imported.
-     */
-    public void setFieldCollection(final FieldCollection fields) {
-        m_outVarList = fields.getOutFlowVariableList();
     }
 
     public void setGuardedDocument(final String guardedDocument) {
@@ -207,18 +148,18 @@ final class CSSEditorConfig {
         m_wasCollapsed = wasCollapsed;
     }
 
-    public Boolean getWasCollapsed() {
+    public boolean getWasCollapsed() {
         return m_wasCollapsed;
+    }
+
+    public boolean isReplace() {
+        return getSelectedButton() == 1;
     }
 
     /** Saves current parameters to settings object.
      * @param settings To save to.
      */
     public void saveSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(HIDE_IN_WIZARD, getHideInWizard());
-        m_outVarList.saveSettings(settings.addConfig(OUT_VARS));
-
-      //added with 3.7
         settings.addString(CSS_CODE, m_cssCode);
         settings.addString(VARIABLE_NAME, m_newFlowVariableName);
         settings.addString(GUARDED_DOCUMENT, m_guardedDocument);
@@ -234,33 +175,20 @@ final class CSSEditorConfig {
      * @throws InvalidSettingsException If incomplete or wrong.
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-        m_outVarList.loadSettings(settings.getConfig(OUT_VARS));
-
-        //added with 3.7
         m_cssCode = settings.getString(CSS_CODE);
-        m_newFlowVariableName = settings.getString(VARIABLE_NAME, "");
-        m_guardedDocument = settings.getString(GUARDED_DOCUMENT, "");
-        m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX, false);
-        m_selectedButton = settings.getInt(SELECTED_BUTTON, 0);
-        m_prependVariable = settings.getString(PREPEND_VARIABLE, "");
-        m_replaceVariable = settings.getString(REPLACE_VARIABLE, "");
-        m_wasCollapsed = settings.getBoolean(WAS_COLLAPSED, true);
+        m_newFlowVariableName = settings.getString(VARIABLE_NAME);
+        m_guardedDocument = settings.getString(GUARDED_DOCUMENT);
+        m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX);
+        m_selectedButton = settings.getInt(SELECTED_BUTTON);
+        m_prependVariable = settings.getString(PREPEND_VARIABLE);
+        m_replaceVariable = settings.getString(REPLACE_VARIABLE);
+        m_wasCollapsed = settings.getBoolean(WAS_COLLAPSED);
     }
 
     /** Loads parameters in Dialog.
      * @param settings To load from.
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings) {
-        setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-
-        try {
-            m_outVarList.loadSettingsForDialog(settings.getConfig(OUT_VARS));
-        } catch (InvalidSettingsException e) {
-           m_outVarList = new OutFlowVariableList(true);
-        }
-
-        //added with 3.7
         m_cssCode = settings.getString(CSS_CODE, "");
         m_guardedDocument = settings.getString(GUARDED_DOCUMENT, null);
         m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX, false);
