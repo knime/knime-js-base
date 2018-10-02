@@ -80,6 +80,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.util.ViewUtils;
+import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSection;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
@@ -120,7 +121,7 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
 
         // Handle prepend stylesheet checkbox
         m_prependStylesheetCheckbox = new JCheckBox("Prepend existing stylesheet:");
-        m_prependStylesheetCheckbox.addActionListener(e -> prependStylesheetChanged());
+        m_prependStylesheetCheckbox.addActionListener(e -> prependStylesheetChanged(false));
 
         // Handle flow variable dropdown
         m_flowVariableDropdown = new JComboBox<>(new DefaultComboBoxModel<FlowVariable>());
@@ -173,10 +174,12 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
         }
     }
 
-    private void prependStylesheetChanged() {
+    private void prependStylesheetChanged(final boolean load) {
         if (m_prependStylesheetCheckbox.isSelected()) {
             m_config.setAppendCheckbox(true);
-
+            if (!load) {
+                m_config.setCssCode(getCurrentCSSCode(GUARDED_SECTION_NAME));
+            }
             if (m_flowVariableDropdown.getItemCount() > 0) {
                 m_flowVariableDropdown.setEnabled(true);
                 if (m_flowVariableDropdown.getSelectedIndex() >= 0) {
@@ -232,6 +235,22 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
 
         } catch (BadLocationException e) {
             throw new IllegalStateException("Implementation error.", e);
+        }
+    }
+
+    private String getCurrentCSSCode(final String sectionName) {
+        CssSnippetDocument doc = (CssSnippetDocument)m_cssTextArea.getDocument();
+        GuardedSection guardedSection = doc.getGuardedSection(sectionName);
+        if (guardedSection != null) {
+            try {
+                final int sectionLength = guardedSection.getText().length();
+                return doc.getText(sectionLength, doc.getLength() - sectionLength);
+            } catch (BadLocationException e) {
+                /* this should never happen */
+                throw new IllegalStateException();
+            }
+        } else {
+            return m_cssTextArea.getText();
         }
     }
 
@@ -344,8 +363,11 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
             if (m_config.getAppendCheckbox()) {
                 m_prependStylesheetCheckbox.setSelected(true);
             }
+            if (m_config.getSelectedButton() == 1) {
+                m_replaceVariableRadioButton.setSelected(true);
+            }
         }
-        prependStylesheetChanged();
+        prependStylesheetChanged(true);
         m_newVariableEditText.setText(m_config.getFlowVariableName());
 
         appendVariableChanged();
@@ -362,6 +384,8 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
         DefaultComboBoxModel replaceComboboxModel = (DefaultComboBoxModel)m_replaceVariableDropdown.getModel();
         prependComboboxModel.removeAllElements();
         replaceComboboxModel.removeAllElements();
+        ((CssSnippetDocument)m_cssTextArea.getDocument()).removeGuardedSection(GUARDED_SECTION_NAME);
+        m_cssTextArea.setText(null);
 
         m_flowVariableDropdown.setEnabled(false);
         m_replaceVariableDropdown.setEnabled(false);
@@ -378,12 +402,6 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         final CSSEditorConfig config = new CSSEditorConfig();
-        if (m_newVariableRadioButton.isSelected()) {
-            config.setFlowVariableName(m_newVariableEditText.getText());
-        } else {
-            config.setFlowVariableName(((FlowVariable)m_replaceVariableDropdown.getSelectedItem()).getName());
-        }
-
         CssSnippetDocument doc = (CssSnippetDocument)m_cssTextArea.getDocument();
         try {
             if (doc.getGuardedSection(GUARDED_SECTION_NAME) != null) {
@@ -400,12 +418,13 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
             m_guardedDocumentText = ((FlowVariable)m_flowVariableDropdown.getSelectedItem()).getStringValue();
             config.setGuardedDocument(m_guardedDocumentText);
             config.setPrependVariable(((FlowVariable)m_flowVariableDropdown.getSelectedItem()).getName());
-            config.setReplaceVariable(((FlowVariable)m_replaceVariableDropdown.getSelectedItem()).getName());
         }
         if (m_newVariableRadioButton.isSelected()) {
             config.setSelectedButton(0);
+            config.setFlowVariableName(m_newVariableEditText.getText());
         } else {
             config.setSelectedButton(1);
+            config.setReplaceVariable(((FlowVariable)m_replaceVariableDropdown.getSelectedItem()).getName());
         }
         if (m_cssTextArea.getFoldManager().getDeepestFoldContaining(1) != null) {
             config.setWasCollapsed(m_cssTextArea.getFoldManager().getDeepestFoldContaining(1).isCollapsed());
