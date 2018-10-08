@@ -48,12 +48,19 @@
  */
 package org.knime.js.base.node.css.editor.autocompletion;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  *  Classes needed to show the knime icon next to knime completions
@@ -96,7 +103,7 @@ class IconFactory {
     public Icon getIcon(final String key) {
         Icon icon = iconMap.get(key);
         if (icon==null) {
-            icon = loadIcon("../data/images/" + key + ".png");
+            icon = loadIcon("data/images/" + key + ".png");
             iconMap.put(key, icon);
         }
         return icon;
@@ -109,13 +116,18 @@ class IconFactory {
      * @param name The icon file name.
      * @return The icon.
      */
-    private Icon loadIcon(final String name) {
-        URL res = getClass().getResource(name);
-        if (res==null) {
-            // IllegalArgumentException is what would be thrown if res
-            // was null anyway, we're just giving the actual arg name to
-            // make the message more descriptive
-            throw new IllegalArgumentException("icon not found: img/" + name);
+    private static Icon loadIcon(final String name) {
+        Bundle bundle = FrameworkUtil.getBundle(IconFactory.class);
+        IPath path = new Path("src/org/knime/js/base/node/css/editor/autocompletion/" + name);
+        URL bundleURL = FileLocator.find(bundle, path, null);
+        if (bundleURL == null) {
+            throw new IllegalArgumentException("icon not found: " + name);
+        }
+        URL res;
+        try {
+            res = FileLocator.toFileURL(bundleURL);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("icon not found: " + name);
         }
         return new ImageIcon(res);
     }

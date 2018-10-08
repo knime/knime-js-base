@@ -49,11 +49,9 @@
 package org.knime.js.base.node.css.editor.autocompletion;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +63,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.fife.rsta.ac.css.PropertyValueCompletionProvider;
 import org.fife.ui.autocomplete.AbstractCompletionProvider;
 import org.fife.ui.autocomplete.Completion;
@@ -73,6 +74,8 @@ import org.fife.ui.autocomplete.Util;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -82,9 +85,8 @@ import org.xml.sax.SAXException;
  */
 public class CssPropertyValueCompletionProvider extends PropertyValueCompletionProvider {
 
-    private boolean isLess;
-
-    private AbstractCompletionProvider.CaseInsensitiveComparator comparator;
+    private boolean m_isLess;
+    private AbstractCompletionProvider.CaseInsensitiveComparator m_comparator;
 
     /**
      * The most common vendor prefixes. We ignore these.
@@ -96,7 +98,8 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
      */
     public CssPropertyValueCompletionProvider(final boolean isLess) {
         super(isLess);
-        comparator = new AbstractCompletionProvider.CaseInsensitiveComparator();
+        m_isLess = isLess;
+        m_comparator = new AbstractCompletionProvider.CaseInsensitiveComparator();
     }
 
     /**
@@ -127,16 +130,18 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         if (lex == LexerState.SELECTOR) {
             if (getAlreadyEnteredText(comp).endsWith(".")) {
                 try {
+                    //FIXME: the xml should only be parsed once
                     List<Completion> tempList = loadKnimeClassCompletions(comp, true);
                     completionList.addAll(tempList);
-                } catch (IOException e) {
+                } catch (IOException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
             } else {
                 try {
+                    //FIXME: the xml should only be parsed once
                     List<Completion> tempList = loadKnimeClassCompletions(comp, false);
                     completionList.addAll(tempList);
-                } catch (IOException e) {
+                } catch (IOException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -153,16 +158,16 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
      * @param showAll true if not only knime-classes should be shown
      * @return returns either the knime-classes or the full list of completions
      * @throws IOException
+     * @throws URISyntaxException
      */
     private List<Completion> loadKnimeClassCompletions( final JTextComponent textComp,
-        final boolean showAll) throws IOException {
+        final boolean showAll) throws IOException, URISyntaxException {
 
         List<Completion> completions;
-        URL url = getClass().getResource("../data/knime.xml");
         if (showAll) {
-            completions = loadFromXML(url.getPath(), getAlreadyEnteredText(textComp));
+            completions = loadFromXML(getAlreadyEnteredText(textComp));
         } else {
-            completions = loadFromXML(url.getPath(), ".");
+            completions = loadFromXML(".");
         }
         List<Completion> retVal = new ArrayList<>();
 
@@ -170,7 +175,8 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         String text = getAlreadyEnteredText(textComp);
 
         if (!showAll) {
-            int index = Collections.binarySearch(completions, text, comparator);
+            @SuppressWarnings("unchecked")
+            int index = Collections.binarySearch(completions, text, m_comparator);
             if (index < 0) { // No exact match
                 index = -index - 1;
             } else {
@@ -179,7 +185,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                 // of one of those overloads, but we must return all of them,
                 // so search backward until we find the first one.
                 int pos = index - 1;
-                while (pos > 0 && comparator.compare(completions.get(pos), text) == 0) {
+                while (pos > 0 && m_comparator.compare(completions.get(pos), text) == 0) {
                     retVal.add(completions.get(pos));
                     pos--;
                 }
@@ -203,25 +209,14 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
     /**
      * Loads completions from an XML file. The XML should validate against <code>CompletionXml.dtd</code>.
      *
-     * @param resource A resource the current ClassLoader can get to.
      * @throws IOException If an IO error occurs.
      */
-    protected List<Completion> loadFromXML(final String resource, final String prependString) throws IOException {
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(resource);
-        if (in == null) {
-            File file = new File(resource);
-            if (file.isFile()) {
-                in = new FileInputStream(file);
-            } else {
-                throw new IOException("No such resource: " + resource);
-            }
-        }
-        BufferedInputStream bin = new BufferedInputStream(in);
-        try {
-            return loadFromXML(bin, null, prependString);
-        } finally {
-            bin.close();
+    @Override
+    protected List<Completion> loadFromXML(final String prependString) throws IOException {
+        Bundle bundle = FrameworkUtil.getBundle(CssPropertyValueCompletionProvider.class);
+        IPath path = new Path("src/org/knime/js/base/node/css/editor/autocompletion/data/knime.xml");
+        try (InputStream in = FileLocator.openStream(bundle, path, false)) {
+            return loadFromXML(in, this.getClass().getClassLoader(), prependString);
         }
     }
 
@@ -242,8 +237,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(true);
         KnimeCssCompletionXMLParser handler = new KnimeCssCompletionXMLParser(this, cl, prependString);
-        BufferedInputStream bin = new BufferedInputStream(in);
-        try {
+        try (BufferedInputStream bin = new BufferedInputStream(in)){
             SAXParser saxParser = factory.newSAXParser();
             saxParser.parse(bin, handler);
             completions = handler.getCompletions();
@@ -252,8 +246,6 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
             throw new IOException(se.toString());
         } catch (ParserConfigurationException pce) {
             throw new IOException(pce.toString());
-        } finally {
-            bin.close();
         }
 
         return completions;
@@ -271,7 +263,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                     state = LexerState.PROPERTY;
                     removeVendorPrefix(t.getLexeme());
                     somethingFound = true;
-                } else if (!isLess && t.getType() == TokenTypes.VARIABLE) {
+                } else if (!m_isLess && t.getType() == TokenTypes.VARIABLE) {
                     // TokenTypes.VARIABLE == IDs in CSS, variables in Less
                     state = LexerState.SELECTOR;
                     somethingFound = true;
