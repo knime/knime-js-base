@@ -8,8 +8,8 @@ knime_line_plot = function() {
 	var containerID = "lineContainer";
 	var initialAxisBounds;
 	
-	var minWidth = 400;
-	var minHeight = 300;
+	var minWidth = 100;
+	var minHeight = 100;
 	var defaultFont = "sans-serif";
 	var defaultFontSize = 12;
 	

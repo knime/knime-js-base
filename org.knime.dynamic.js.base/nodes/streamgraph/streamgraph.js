@@ -5,7 +5,7 @@
   var _data;
   var _colorRange;
   var layoutContainer;
-  var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+  var MIN_HEIGHT = 100, MIN_WIDTH = 100;
   var chart, svg;
   var knimeTable1, knimeTable2;
   var xAxisType, xAxisData;

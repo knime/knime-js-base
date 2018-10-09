@@ -3,7 +3,7 @@
     var input = {};
     var _data;
     var layoutContainer;
-    var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+    var MIN_HEIGHT = 100, MIN_WIDTH = 100;
     var MISSING_VALUE_MODE = "Show\u00A0missing\u00A0values";
     
     var _representation, _value;

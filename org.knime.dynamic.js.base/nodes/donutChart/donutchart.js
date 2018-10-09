@@ -3,7 +3,7 @@
 	var pie = {};
 	var _representation, _value;
 	var layoutContainer;
-	var MIN_HEIGHT = 200, MIN_WIDTH = 300;
+	var MIN_HEIGHT = 100, MIN_WIDTH = 100;
 	var chart, svg;
 	var knimeTable;
 	

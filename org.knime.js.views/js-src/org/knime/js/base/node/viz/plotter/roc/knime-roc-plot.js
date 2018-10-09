@@ -5,8 +5,8 @@ knime_roc_curve = function() {
 	var _value = null;
 	var containerID = "lineContainer";
 	var layoutContainerID = "layoutContainer";
-	var minWidth = 400;
-	var minHeight = 300;
+	var minWidth = 100;
+	var minHeight = 100;
 	var xy = {};
 	var legendHeight = 0;
 	

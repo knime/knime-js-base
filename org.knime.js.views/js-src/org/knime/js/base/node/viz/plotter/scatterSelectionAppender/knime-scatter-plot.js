@@ -10,8 +10,8 @@ knime_scatter_plot_selection_appender = function() {
 	var containerID = "scatterContainer";
 	var initialAxisBounds;
 	
-	var minWidth = 400;
-	var minHeight = 300;
+	var minWidth = 100;
+	var minHeight = 100;
 	var defaultFont = "sans-serif";
 	var defaultFontSize = 12;
 	

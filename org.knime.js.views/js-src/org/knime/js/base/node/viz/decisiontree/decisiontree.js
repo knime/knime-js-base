@@ -2,7 +2,7 @@ knime_decision_tree = function() {
     var input = {};
     var _data = {};
     var layoutContainer;
-    var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+    var MIN_HEIGHT = 100, MIN_WIDTH = 100;
     var maxY = 0, minY = 0;
     var _representation, _value;
     var decTreeDrawer;

@@ -18,7 +18,7 @@
 
 
 	var layoutContainer;
-	var MIN_HEIGHT = 300, MIN_WIDTH = 400;
+	var MIN_HEIGHT = 100, MIN_WIDTH = 100;
 
 	var rootNodeName = "root";
 	var nullNodeName = "?";
