@@ -87,6 +87,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
 
     private boolean m_isLess;
     private AbstractCompletionProvider.CaseInsensitiveComparator m_comparator;
+    private List<Completion> m_knimeCompletions = new ArrayList<>();
 
     /**
      * The most common vendor prefixes. We ignore these.
@@ -100,6 +101,11 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         super(isLess);
         m_isLess = isLess;
         m_comparator = new AbstractCompletionProvider.CaseInsensitiveComparator();
+        try {
+            m_knimeCompletions = loadKnimeClassCompletions();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -130,16 +136,14 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         if (lex == LexerState.SELECTOR) {
             if (getAlreadyEnteredText(comp).endsWith(".")) {
                 try {
-                    //FIXME: the xml should only be parsed once
-                    List<Completion> tempList = loadKnimeClassCompletions(comp, true);
+                    List<Completion> tempList = updateKnimeClassCompletions(comp, true, m_knimeCompletions);
                     completionList.addAll(tempList);
                 } catch (IOException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
             } else {
                 try {
-                    //FIXME: the xml should only be parsed once
-                    List<Completion> tempList = loadKnimeClassCompletions(comp, false);
+                    List<Completion> tempList = updateKnimeClassCompletions(comp, false, m_knimeCompletions);
                     completionList.addAll(tempList);
                 } catch (IOException | URISyntaxException e) {
                     throw new RuntimeException(e);
@@ -148,6 +152,14 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         }
 
         return completionList;
+    }
+
+    private List<Completion> loadKnimeClassCompletions () throws IOException {
+        List<Completion> knimeCompletions = new ArrayList<Completion>();
+        knimeCompletions = loadKnimeClassesFromXML(".");
+        Collections.sort(knimeCompletions);
+
+        return knimeCompletions;
     }
 
 
@@ -160,23 +172,27 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
      * @throws IOException
      * @throws URISyntaxException
      */
-    private List<Completion> loadKnimeClassCompletions( final JTextComponent textComp,
-        final boolean showAll) throws IOException, URISyntaxException {
-
-        List<Completion> completions;
-        if (showAll) {
-            completions = loadFromXML(getAlreadyEnteredText(textComp));
-        } else {
-            completions = loadFromXML(".");
-        }
+    private List<Completion> updateKnimeClassCompletions ( final JTextComponent textComp,
+        final boolean showAll, final List<Completion> knimeCompletions) throws IOException, URISyntaxException {
         List<Completion> retVal = new ArrayList<>();
-
-        Collections.sort(completions);
+        List<Completion> tempCompletions = new ArrayList<>();
         String text = getAlreadyEnteredText(textComp);
+        if (showAll) {
+            for(Completion compl : knimeCompletions) {
+                KnimeBasicCssCompletion basicKnimeCompletion = (KnimeBasicCssCompletion)compl;
+                KnimeBasicCssCompletion bcc = new KnimeBasicCssCompletion(compl.getProvider(),
+                    getAlreadyEnteredText(textComp) + compl.getReplacementText().substring(1),
+                    basicKnimeCompletion.getIconKey());
+                bcc.setSummary(compl.getSummary());
+                tempCompletions.add(bcc);
+            }
+        } else {
+            tempCompletions = knimeCompletions;
+        }
 
         if (!showAll) {
             @SuppressWarnings("unchecked")
-            int index = Collections.binarySearch(completions, text, m_comparator);
+            int index = Collections.binarySearch(tempCompletions, text, m_comparator);
             if (index < 0) { // No exact match
                 index = -index - 1;
             } else {
@@ -185,14 +201,14 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                 // of one of those overloads, but we must return all of them,
                 // so search backward until we find the first one.
                 int pos = index - 1;
-                while (pos > 0 && m_comparator.compare(completions.get(pos), text) == 0) {
-                    retVal.add(completions.get(pos));
+                while (pos > 0 && m_comparator.compare(tempCompletions.get(pos), text) == 0) {
+                    retVal.add(tempCompletions.get(pos));
                     pos--;
                 }
             }
 
-            while (index < completions.size()) {
-                Completion c = completions.get(index);
+            while (index < tempCompletions.size()) {
+                Completion c = tempCompletions.get(index);
                 if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
                     retVal.add(c);
                     index++;
@@ -201,7 +217,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                 }
             }
         } else {
-            return completions;
+            return tempCompletions;
         }
         return retVal;
     }
@@ -211,8 +227,7 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
      *
      * @throws IOException If an IO error occurs.
      */
-    @Override
-    protected List<Completion> loadFromXML(final String prependString) throws IOException {
+    protected List<Completion> loadKnimeClassesFromXML(final String prependString) throws IOException {
         Bundle bundle = FrameworkUtil.getBundle(CssPropertyValueCompletionProvider.class);
         IPath path = new Path("src/org/knime/js/base/node/css/editor/autocompletion/data/knime.xml");
         try (InputStream in = FileLocator.openStream(bundle, path, false)) {

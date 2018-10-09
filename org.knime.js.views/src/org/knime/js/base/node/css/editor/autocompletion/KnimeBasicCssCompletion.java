@@ -68,11 +68,16 @@ class KnimeBasicCssCompletion extends BasicCompletion {
         this.iconKey = iconKey;
     }
 
+    public String getIconKey() {
+        return iconKey;
+    }
+
 
     @Override
     public Icon getIcon() {
         return IconFactory.get().getIcon(iconKey);
     }
+
 
 
 }
