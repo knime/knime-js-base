@@ -94,6 +94,8 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
         String varName = m_config.getFlowVariableName();
         if (!m_config.isReplace()) {
             varName = new UniqueNameGenerator(getAvailableInputFlowVariables().keySet()).newName(varName);
+        } else {
+            varName = m_config.getReplaceVariable();
         }
         String varContent;
         if (m_config.getAppendCheckbox()) {
