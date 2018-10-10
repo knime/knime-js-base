@@ -92,6 +92,11 @@
                     label="Display fullscreen button" defaultValue="true" loadDefaults="true">
                     Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
                 </checkBoxOption>
+                <checkBoxOption name="Process in memory" id="processInMemory"
+                    label="Process table in memory" defaultValue="true" loadDefaults="true">
+                    Check to process the input table in memory.
+                </checkBoxOption>
+                
 				<svgOption name="Image" id="svg" portIndex="0" label="Image" additionalWait="500" defaultWidth="600" defaultHeight="400" defaultFullscreen="true">
 					Settings for image generation.
 				</svgOption>

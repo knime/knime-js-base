@@ -13,6 +13,8 @@ import org.knime.base.data.aggregation.numerical.MeanOperator;
 import org.knime.base.data.aggregation.numerical.SumOperator;
 import org.knime.base.node.preproc.groupby.BigGroupByTable;
 import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
+import org.knime.base.node.preproc.groupby.GroupByTable;
+import org.knime.base.node.preproc.groupby.MemoryGroupByTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
@@ -110,8 +112,15 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 			colAggregators = new ColumnAggregator[]{new ColumnAggregator(table.getDataTableSpec().getColumnSpec(catColName), operator)};
 		}
 		
-        BigGroupByTable groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, true);
+		Boolean inMemory = ((SettingsModelBoolean)config.getModel("processInMemory")).getBooleanValue();
+		GroupByTable groupTable;
+		if(inMemory) {
+		    groupTable = new MemoryGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
+            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+		} else {
+	        groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
+            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+		}
 
         // Missing values processing        
         if (((SettingsModelBoolean)config.getModel("reportOnMissingValues")).getBooleanValue()) {

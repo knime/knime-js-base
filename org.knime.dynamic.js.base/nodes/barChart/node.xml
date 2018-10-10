@@ -98,6 +98,11 @@
                     label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check if the maximum of the Y-Axis should be displayed.
                 </checkBoxOption>
+                
+                <checkBoxOption name="Process in memory" id="processInMemory"
+                    label="Process table in memory" defaultValue="true" loadDefaults="true">
+                    Check to process the input table in memory.
+                </checkBoxOption>
 
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="500" defaultWidth="800" defaultHeight="600"
@@ -159,6 +164,7 @@
                     label="Enable showing maximum value on y-axis" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
                     Check to enable to show and hide maximum value on the y-axis.
                 </checkBoxOption>
+                
 				<!-- <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
 					label="Enable Category Chooser" defaultValue="false"
 					enableDependency="enableViewControls" enableValue="true">
