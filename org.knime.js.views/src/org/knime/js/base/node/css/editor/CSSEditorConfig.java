@@ -47,7 +47,12 @@
  */
 package org.knime.js.base.node.css.editor;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
@@ -56,6 +61,10 @@ import org.knime.core.node.NodeSettingsWO;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 final class CSSEditorConfig {
+
+    /** File containing default script. */
+    private static final String DEFAULT_SCRIPT_CSS = "default_style.css";
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(CSSEditorConfig.class);
 
     private static final String CSS_CODE = "cssCode";
     private static final String VARIABLE_NAME = "variableName";
@@ -189,7 +198,16 @@ final class CSSEditorConfig {
      * @param settings To load from.
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings) {
-        m_cssCode = settings.getString(CSS_CODE, "");
+        m_cssCode = settings.getString(CSS_CODE, null);
+        if (m_cssCode == null) {
+            try {
+                m_cssCode = IOUtils.toString(CSSEditorConfig.class.getResource(DEFAULT_SCRIPT_CSS),
+                    StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                LOGGER.error(String.format("Could not read default css from file \"%s\"", DEFAULT_SCRIPT_CSS), e);
+                m_cssCode = "";
+            }
+        }
         m_guardedDocument = settings.getString(GUARDED_DOCUMENT, null);
         m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX, false);
         m_newFlowVariableName = settings.getString(VARIABLE_NAME, "");

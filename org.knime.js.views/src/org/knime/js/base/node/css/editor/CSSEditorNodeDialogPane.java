@@ -95,21 +95,13 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
     private static final String GUARDED_SECTION_NAME = "prependedStylesheet";
 
     private final CSSEditorConfig m_config;
-
     private final CSSSnippetTextArea m_cssTextArea;
-
     private final JCheckBox m_prependStylesheetCheckbox;
-
     private final JComboBox<FlowVariable> m_flowVariableDropdown;
-
     private final JRadioButton m_newVariableRadioButton;
-
     private final JTextField m_newVariableEditText;
-
     private final JRadioButton m_replaceVariableRadioButton;
-
     private final JComboBox<FlowVariable> m_replaceVariableDropdown;
-
     private String m_guardedDocumentText;
 
     /**

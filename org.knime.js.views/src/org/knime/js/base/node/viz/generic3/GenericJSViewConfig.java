@@ -48,8 +48,8 @@
 package org.knime.js.base.node.viz.generic3;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -326,7 +326,8 @@ final class GenericJSViewConfig {
         m_jsCode = settings.getString(JS_CODE, null);
         if (m_jsCode == null) {
             try {
-                m_jsCode = IOUtils.toString(GenericJSViewConfig.class.getResource(DEFAULT_SCRIPT_JS), Charsets.UTF_8);
+                m_jsCode = IOUtils.toString(GenericJSViewConfig.class.getResource(DEFAULT_SCRIPT_JS),
+                    StandardCharsets.UTF_8);
             } catch (IOException e) {
                 LOGGER.error(String.format("Could not read default javascript from file \"%s\"", DEFAULT_SCRIPT_JS), e);
                 m_jsCode = "";
@@ -336,7 +337,8 @@ final class GenericJSViewConfig {
         m_cssCode = settings.getString(CSS_CODE, null);
         if (m_cssCode == null) {
             try {
-                m_cssCode = IOUtils.toString(GenericJSViewConfig.class.getResource(DEFAULT_SCRIPT_CSS), Charsets.UTF_8);
+                m_cssCode = IOUtils.toString(GenericJSViewConfig.class.getResource(DEFAULT_SCRIPT_CSS),
+                    StandardCharsets.UTF_8);
             } catch (IOException e) {
                 LOGGER.error(String.format("Could not read default css from file \"%s\"", DEFAULT_SCRIPT_CSS), e);
                 m_cssCode = "";

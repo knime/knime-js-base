@@ -9,15 +9,13 @@
 	<fullDescription>
 		<intro>		
     	    <p>
-    	    With this node you can create custom CSS styling.
-            You can simply put CSS rules into the editor and set the output either to create a new flow variable,
-            or replace an existing one. With the ability to prepend existing stylesheets its easy to override existing styles,
-            or use the already existing styles.
-            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+    	    With this node custom CSS styling for JavaScript views and Quickforms can be created.<br/>
+            Write CSS rules into the editor of the node dialog and set the output either to create a new flow variable,
+            or replace an existing one. With the ability to prepend existing stylesheets it's easy to override existing styles,
+            or use the already existing styles.<br/>
+            Please refer to the more extensive explanation of CSS styling on our <a href="https://knime.com/css-styling">documentation page</a> for further reference.<br/>
+            Available CSS-class names used by views and common HTML elements and properties are also present in the CSS editor as code completions when pressing <i>Ctrl+Space</i>.
             </p>
-            <p>Note, this node is currently under development. Future versions of the node will have more functionality,
-            including the ability to define and use templates and to generate a preview of the defined style rules.</p>  
-            <p></p>          
 		</intro>
 		<option name="Prepend existing stylesheet">
 		    <p>
