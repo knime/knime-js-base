@@ -68,7 +68,6 @@ final class CSSEditorConfig {
 
     private static final String CSS_CODE = "cssCode";
     private static final String VARIABLE_NAME = "variableName";
-    private static final String GUARDED_DOCUMENT = "guardedDocument";
     private static final String APPEND_CHECKBOX = "appendCheckbox";
     private static final String SELECTED_BUTTON = "selectedButton";
     private static final String PREPEND_VARIABLE = "prependVariable";
@@ -77,7 +76,6 @@ final class CSSEditorConfig {
 
     private String m_cssCode;
     private String m_newFlowVariableName = "css-stylesheet";
-    private String m_guardedDocument;
     private boolean m_appendCheckbox = false;
     private int m_selectedButton;
     private String m_prependVariable;
@@ -111,14 +109,6 @@ final class CSSEditorConfig {
      */
     public void setFlowVariableName(final String flowVariableName) {
         m_newFlowVariableName = flowVariableName;
-    }
-
-    public void setGuardedDocument(final String guardedDocument) {
-        m_guardedDocument = guardedDocument;
-    }
-
-    public String getGuardedDocument() {
-        return m_guardedDocument;
     }
 
     public void setAppendCheckbox(final boolean appendCheckbox) {
@@ -171,7 +161,6 @@ final class CSSEditorConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CSS_CODE, m_cssCode);
         settings.addString(VARIABLE_NAME, m_newFlowVariableName);
-        settings.addString(GUARDED_DOCUMENT, m_guardedDocument);
         settings.addBoolean(APPEND_CHECKBOX, m_appendCheckbox);
         settings.addInt(SELECTED_BUTTON, m_selectedButton);
         settings.addString(PREPEND_VARIABLE, m_prependVariable);
@@ -186,7 +175,6 @@ final class CSSEditorConfig {
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_cssCode = settings.getString(CSS_CODE);
         m_newFlowVariableName = settings.getString(VARIABLE_NAME);
-        m_guardedDocument = settings.getString(GUARDED_DOCUMENT);
         m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX);
         m_selectedButton = settings.getInt(SELECTED_BUTTON);
         m_prependVariable = settings.getString(PREPEND_VARIABLE);
@@ -208,7 +196,6 @@ final class CSSEditorConfig {
                 m_cssCode = "";
             }
         }
-        m_guardedDocument = settings.getString(GUARDED_DOCUMENT, null);
         m_appendCheckbox = settings.getBoolean(APPEND_CHECKBOX, false);
         m_newFlowVariableName = settings.getString(VARIABLE_NAME, "");
         m_selectedButton = settings.getInt(SELECTED_BUTTON, 0);

@@ -63,6 +63,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.core.util.UniqueNameGenerator;
 
 /**
@@ -97,13 +99,16 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
         } else {
             varName = m_config.getReplaceVariable();
         }
-        String varContent;
-        if (m_config.getAppendCheckbox()) {
-            varContent = m_config.getGuardedDocument() + m_config.getCssCode();
-        } else {
-            varContent = m_config.getCssCode();
+        StringBuilder varContent = new StringBuilder();
+        if (m_config.getAppendCheckbox() && m_config.getPrependVariable() != null) {
+            FlowVariable prependVar = getAvailableInputFlowVariables().get(m_config.getPrependVariable());
+            if (prependVar != null && prependVar.getType() == Type.STRING) {
+                varContent.append(prependVar.getStringValue());
+                varContent.append("\n");
+            }
         }
-        pushFlowVariableString(varName, varContent);
+        varContent.append(m_config.getCssCode());
+        pushFlowVariableString(varName, varContent.toString());
     }
 
     /**
@@ -111,7 +116,7 @@ final class CSSEditorNodeModel extends NodeModel implements FlowVariableProvider
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec) throws Exception {
-        // must not call pushFlowVariable() as it has been done in configure()
+        pushFlowVariable();
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
 

@@ -408,7 +408,6 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
         config.setAppendCheckbox(m_prependStylesheetCheckbox.isSelected());
         if (m_prependStylesheetCheckbox.isSelected()) {
             m_guardedDocumentText = ((FlowVariable)m_flowVariableDropdown.getSelectedItem()).getStringValue();
-            config.setGuardedDocument(m_guardedDocumentText);
             config.setPrependVariable(((FlowVariable)m_flowVariableDropdown.getSelectedItem()).getName());
         }
         if (m_newVariableRadioButton.isSelected()) {
