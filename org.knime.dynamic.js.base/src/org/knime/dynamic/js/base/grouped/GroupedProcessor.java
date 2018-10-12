@@ -53,20 +53,6 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Index for category column with name " + catColName + " not found.");
 		}
-		//Check uniqueness of category values
-		/*
-		Set<String> possibleValues = new HashSet<String>();
-		try (CloseableRowIterator iterator = table.iterator()) {
-			while (iterator.hasNext()) {
-				StringCell cell = (StringCell)iterator.next().getCell(columnIndex);
-				String value = cell.getStringValue();
-				if (possibleValues.contains(value)) {
-					throw new IllegalArgumentException("Selected category column contains non unique values. Please use a \"GroupBy\" node, or similar, to aggregate data first.");
-				} else {
-					possibleValues.add(value);
-				}
-			}
-		}*/
 		
 		//Check frequency column(s) settings
 		ColumnAggregator[] colAggregators = null;
