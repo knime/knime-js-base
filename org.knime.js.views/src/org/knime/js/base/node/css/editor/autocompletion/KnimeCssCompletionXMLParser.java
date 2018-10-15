@@ -60,30 +60,30 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- *  Extends CompletionXMLParser in order to also parse a given icon path
- *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * Extends CompletionXMLParser in order to also parse a given icon path
+ *
+ * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
-
+public class KnimeCssCompletionXMLParser extends CompletionXMLParser {
 
     /**
      * The completions found after parsing the XML.
      */
-    private List<Completion> completions;
+    private List<Completion> m_completions;
 
     /**
      * The provider we're getting completions for.
      */
-    private CompletionProvider provider;
+    private CompletionProvider m_provider;
+    private String m_icon;
+    private String m_name;
+    private boolean m_doingKeywords;
+    private String m_type;
+    private StringBuilder m_desc;
+    private boolean m_gettingDesc;
+    private boolean m_inKeyword;
+    private String m_prependString;
 
-    private String icon;
-    private String name;
-    private boolean doingKeywords;
-    private String type;
-    private StringBuilder desc;
-    private boolean gettingDesc;
-    private boolean inKeyword;
-    private String prependString;
     /**
      * @param provider
      */
@@ -95,18 +95,18 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
      * Constructor.
      *
      * @param provider The provider to get completions for.
-     * @param cl The class loader to use, if necessary, when loading classes
-     *        from the XML  (custom {@link FunctionCompletion}s, for example).
-     *        This may be <code>null</code> if the default is to be used, or
-     *        if the XML does not define specific classes for completion types.
+     * @param cl The class loader to use, if necessary, when loading classes from the XML (custom
+     *            {@link FunctionCompletion}s, for example). This may be <code>null</code> if the default is to be used,
+     *            or if the XML does not define specific classes for completion types.
      * @see #reset(CompletionProvider)
      */
-    public KnimeCssCompletionXMLParser(final CompletionProvider provider, final ClassLoader cl , final String prependString) {
-       super(provider,cl);
-       this.provider = provider;
-       completions = new ArrayList<>();
-       desc = new StringBuilder();
-       this.prependString = prependString;
+    public KnimeCssCompletionXMLParser(final CompletionProvider provider, final ClassLoader cl,
+        final String prependString) {
+        super(provider, cl);
+        m_provider = provider;
+        m_completions = new ArrayList<>();
+        m_desc = new StringBuilder();
+        m_prependString = prependString;
     }
 
     /**
@@ -115,8 +115,8 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
     @Override
     public void characters(final char[] ch, final int start, final int length) {
         super.characters(ch, start, length);
-        if (gettingDesc) {
-            desc.append(ch, start, length);
+        if (m_gettingDesc) {
+            m_desc.append(ch, start, length);
         }
     }
 
@@ -125,34 +125,33 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
      */
     @Override
     public void endElement(final String uri, final String localName, final String qName) {
-
         if ("keywords".equals(qName)) {
-            doingKeywords = false;
+            m_doingKeywords = false;
             super.endElement(uri, localName, qName);
-        } else if (doingKeywords) {
+        } else if (m_doingKeywords) {
             if ("keyword".equals(qName)) {
-               Completion c  = null;
-               if("knime".equals(type)) {
-                   c = createKnimeCompletion();
-                   completions.add(c);
-               } else {
-                   super.endElement(uri, localName, qName);
-                   completions.add(super.getCompletions().get(super.getCompletions().size()-1));
-               }
+                Completion c = null;
+                if ("knime".equals(m_type)) {
+                    c = createKnimeCompletion();
+                    m_completions.add(c);
+                } else {
+                    super.endElement(uri, localName, qName);
+                    m_completions.add(super.getCompletions().get(super.getCompletions().size() - 1));
+                }
             } else {
                 super.endElement(uri, localName, qName);
             }
-            inKeyword = false;
-        } else if (inKeyword && "desc".equals(qName)) {
-                gettingDesc = false;
+            m_inKeyword = false;
+        } else if (m_inKeyword && "desc".equals(qName)) {
+            m_gettingDesc = false;
         }
     }
 
     private KnimeBasicCssCompletion createKnimeCompletion() {
-        KnimeBasicCssCompletion bcc = new KnimeBasicCssCompletion(provider, prependString + name, icon);
-        if (desc.length()>0) {
-            bcc.setSummary("<div><a><b>" + name + ":</b></a><hr></div>" + "<div><br>" + desc.toString() +"</div>");
-            desc.setLength(0);
+        KnimeBasicCssCompletion bcc = new KnimeBasicCssCompletion(m_provider, m_prependString + m_name, m_icon);
+        if (m_desc.length() > 0) {
+            bcc.setSummary("<div><a><b>" + m_name + ":</b></a><hr></div>" + "<div><br>" + m_desc.toString() + "</div>");
+            m_desc.setLength(0);
         }
         return bcc;
     }
@@ -163,16 +162,14 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
     @Override
     public void reset(final CompletionProvider provider) {
         super.reset(provider);
-        this.provider = provider;
-        completions.clear();
-        doingKeywords = gettingDesc = inKeyword = false;
+        m_provider = provider;
+        m_completions.clear();
+        m_doingKeywords = m_gettingDesc = m_inKeyword = false;
     }
 
     @Override
-    public InputSource resolveEntity(final String publicID,
-            final String systemID) throws SAXException {
-        return new InputSource(getClass().
-                getResourceAsStream("CompletionXmlKnime.dtd"));
+    public InputSource resolveEntity(final String publicID, final String systemID) throws SAXException {
+        return new InputSource(getClass().getResourceAsStream("CompletionXmlKnime.dtd"));
     }
 
     /**
@@ -182,16 +179,15 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
     public void startElement(final String uri, final String localName, final String qName, final Attributes attrs) {
         super.startElement(uri, localName, qName, attrs);
         if ("keywords".equals(qName)) {
-            doingKeywords = true;
-        }
-        else if (doingKeywords) {
+            m_doingKeywords = true;
+        } else if (m_doingKeywords) {
             if ("keyword".equals(qName)) {
-                name = attrs.getValue("name");
-                type = attrs.getValue("type");
-                icon = attrs.getValue("icon");
-                inKeyword = true;
-            } else if (inKeyword && "desc".equals(qName)) {
-                    gettingDesc = true;
+                m_name = attrs.getValue("name");
+                m_type = attrs.getValue("type");
+                m_icon = attrs.getValue("icon");
+                m_inKeyword = true;
+            } else if (m_inKeyword && "desc".equals(qName)) {
+                m_gettingDesc = true;
             }
         }
     }
@@ -201,13 +197,7 @@ public class KnimeCssCompletionXMLParser extends CompletionXMLParser{
      */
     @Override
     public List<Completion> getCompletions() {
-        return completions;
+        return m_completions;
     }
 
-
-
-
-
-
 }
-

@@ -58,7 +58,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  */
 public class KnimeCssLanguageSupport extends CssLanguageSupport{
 
-    private KnimeCssCompletionProvider provider;
+    private KnimeCssCompletionProvider m_provider;
 
     /**
      * {@inheritDoc}
@@ -85,10 +85,10 @@ public class KnimeCssLanguageSupport extends CssLanguageSupport{
     }
 
     private KnimeCssCompletionProvider getKnimeCssProvider() {
-        if (provider==null) {
-            provider = createProvider();
+        if (m_provider == null) {
+            m_provider = createProvider();
         }
-        return provider;
+        return m_provider;
     }
 
 

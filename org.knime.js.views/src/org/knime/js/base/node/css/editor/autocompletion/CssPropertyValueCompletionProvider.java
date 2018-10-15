@@ -174,10 +174,12 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         List<Completion> tempCompletions = new ArrayList<>();
         String text = getAlreadyEnteredText(textComp);
         int lastDotIndex = text.lastIndexOf(".");
-        if(lastDotIndex<0) {lastDotIndex = 0;}
+        if (lastDotIndex < 0) {
+            lastDotIndex = 0;
+        }
         String enteredRelevantText = text.substring(lastDotIndex, text.length());
         if (showAll) {
-            for(Completion compl : knimeCompletions) {
+            for (Completion compl : knimeCompletions) {
                 KnimeBasicCssCompletion basicKnimeCompletion = (KnimeBasicCssCompletion)compl;
                 KnimeBasicCssCompletion bcc = new KnimeBasicCssCompletion(compl.getProvider(),
                     getAlreadyEnteredText(textComp) + compl.getReplacementText().substring(1),

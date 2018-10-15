@@ -66,7 +66,7 @@ public class CssSnippetDocument extends GuardedDocument {
     private static final String GUARDED_SECTION_COMMENT_FORMAT =
         "/* Prepended stylesheet from (%s) */ \n%s\n /* End of prepended stylesheet */";
 
-    private GuardedSection prependedStyle;
+    private GuardedSection m_prependedStyle;
 
     /**
      * Creates a new guarded CSS document
@@ -88,8 +88,8 @@ public class CssSnippetDocument extends GuardedDocument {
                 String tempText = String.format(GUARDED_SECTION_COMMENT_FORMAT, flowVariableName, text);
                 section.setText(tempText);
             } else {
-                prependedStyle = addGuardedSection(name, 0);
-                prependedStyle.setText(String.format(GUARDED_SECTION_COMMENT_FORMAT, flowVariableName, text));
+                m_prependedStyle = addGuardedSection(name, 0);
+                m_prependedStyle.setText(String.format(GUARDED_SECTION_COMMENT_FORMAT, flowVariableName, text));
             }
         } catch (BadLocationException e) {
             throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
@@ -101,7 +101,7 @@ public class CssSnippetDocument extends GuardedDocument {
         if(getGuardedSections().contains(name)) {
             super.removeGuardedSection(name);
             try {
-                super.remove(0, prependedStyle.getText().length());
+                super.remove(0, m_prependedStyle.getText().length());
             } catch (BadLocationException e) {
                 throw new IllegalStateException(IMPLEMENTATION_ERROR, e);
             }

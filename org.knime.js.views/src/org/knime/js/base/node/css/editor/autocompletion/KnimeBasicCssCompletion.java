@@ -54,37 +54,35 @@ import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 
 /**
- *  Container to store a knime css completions with an icon
- *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * Container to store a knime css completions with an icon
+ *
+ * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 class KnimeBasicCssCompletion extends BasicCompletion {
 
-    private String iconKey;
+    private String m_iconKey;
 
-
-    public KnimeBasicCssCompletion(final CompletionProvider provider, final String value,
-            final String iconKey) {
+    public KnimeBasicCssCompletion(final CompletionProvider provider, final String value, final String iconKey) {
         super(provider, value);
-        this.iconKey = iconKey;
+        m_iconKey = iconKey;
     }
 
     public String getIconKey() {
-        return iconKey;
+        return m_iconKey;
     }
-
 
     @Override
     public Icon getIcon() {
-        return IconFactory.get().getIcon(iconKey);
+        return IconFactory.get().getIcon(m_iconKey);
     }
 
     @Override
     public String getInputText() {
         int lastDotIndex = getReplacementText().lastIndexOf(".");
-        if(lastDotIndex < 0) { lastDotIndex = 0;}
+        if (lastDotIndex < 0) {
+            lastDotIndex = 0;
+        }
         return getReplacementText().substring(lastDotIndex, getReplacementText().length());
     }
-
-
 
 }
