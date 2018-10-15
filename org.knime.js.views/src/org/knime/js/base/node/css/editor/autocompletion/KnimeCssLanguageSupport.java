@@ -73,16 +73,18 @@ public class KnimeCssLanguageSupport extends CssLanguageSupport{
      */
     @Override
     public void install(final RSyntaxTextArea textArea) {
-        KnimeCssCompletionProvider knimeCssCompletionProvider = getCssProvider();
+        KnimeCssCompletionProvider knimeCssCompletionProvider = getKnimeCssProvider();
         AutoCompletion ac = createAutoCompletion(knimeCssCompletionProvider);
         ac.install(textArea);
         ac.setShowDescWindow(true);
+        ac.setAutoActivationEnabled(false);
+        ac.setAutoCompleteSingleChoices(false);
         installImpl(textArea, ac);
 
         textArea.setToolTipSupplier(knimeCssCompletionProvider);
     }
 
-    private KnimeCssCompletionProvider getCssProvider() {
+    private KnimeCssCompletionProvider getKnimeCssProvider() {
         if (provider==null) {
             provider = createProvider();
         }

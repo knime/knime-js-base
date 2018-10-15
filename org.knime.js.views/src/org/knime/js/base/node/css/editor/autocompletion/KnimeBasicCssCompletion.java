@@ -78,6 +78,13 @@ class KnimeBasicCssCompletion extends BasicCompletion {
         return IconFactory.get().getIcon(iconKey);
     }
 
+    @Override
+    public String getInputText() {
+        int lastDotIndex = getReplacementText().lastIndexOf(".");
+        if(lastDotIndex < 0) { lastDotIndex = 0;}
+        return getReplacementText().substring(lastDotIndex, getReplacementText().length());
+    }
+
 
 
 }

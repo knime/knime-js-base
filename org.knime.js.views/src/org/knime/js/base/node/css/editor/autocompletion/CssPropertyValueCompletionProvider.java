@@ -134,20 +134,16 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         LexerState lex = getLexerCssState(textArea, textArea.getCaretLineNumber());
 
         if (lex == LexerState.SELECTOR) {
-            if (getAlreadyEnteredText(comp).endsWith(".")) {
-                try {
-                    List<Completion> tempList = updateKnimeClassCompletions(comp, true, m_knimeCompletions);
-                    completionList.addAll(tempList);
-                } catch (IOException | URISyntaxException e) {
-                    throw new RuntimeException(e);
+            try {
+                if (getAlreadyEnteredText(comp).endsWith(".")) {
+                        List<Completion> tempList = updateKnimeClassCompletions(comp, true, m_knimeCompletions);
+                        completionList.addAll(tempList);
+                } else {
+                        List<Completion> tempList = updateKnimeClassCompletions(comp, false, m_knimeCompletions);
+                        completionList.addAll(tempList);
                 }
-            } else {
-                try {
-                    List<Completion> tempList = updateKnimeClassCompletions(comp, false, m_knimeCompletions);
-                    completionList.addAll(tempList);
-                } catch (IOException | URISyntaxException e) {
-                    throw new RuntimeException(e);
-                }
+            } catch (IOException | URISyntaxException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -177,6 +173,9 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
         List<Completion> retVal = new ArrayList<>();
         List<Completion> tempCompletions = new ArrayList<>();
         String text = getAlreadyEnteredText(textComp);
+        int lastDotIndex = text.lastIndexOf(".");
+        if(lastDotIndex<0) {lastDotIndex = 0;}
+        String enteredRelevantText = text.substring(lastDotIndex, text.length());
         if (showAll) {
             for(Completion compl : knimeCompletions) {
                 KnimeBasicCssCompletion basicKnimeCompletion = (KnimeBasicCssCompletion)compl;
@@ -186,13 +185,11 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                 bcc.setSummary(compl.getSummary());
                 tempCompletions.add(bcc);
             }
+            return tempCompletions;
         } else {
             tempCompletions = knimeCompletions;
-        }
-
-        if (!showAll) {
             @SuppressWarnings("unchecked")
-            int index = Collections.binarySearch(tempCompletions, text, m_comparator);
+            int index = Collections.binarySearch(tempCompletions, enteredRelevantText, m_comparator);
             if (index < 0) { // No exact match
                 index = -index - 1;
             } else {
@@ -201,24 +198,29 @@ public class CssPropertyValueCompletionProvider extends PropertyValueCompletionP
                 // of one of those overloads, but we must return all of them,
                 // so search backward until we find the first one.
                 int pos = index - 1;
-                while (pos > 0 && m_comparator.compare(tempCompletions.get(pos), text) == 0) {
+                while (pos > 0 && m_comparator.compare(tempCompletions.get(pos), enteredRelevantText) == 0) {
                     retVal.add(tempCompletions.get(pos));
                     pos--;
                 }
             }
 
             while (index < tempCompletions.size()) {
-                Completion c = tempCompletions.get(index);
-                if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
-                    retVal.add(c);
+                if(lastDotIndex<0) {lastDotIndex = 0;}
+                String enteredRelevantPreText = text.substring(0,lastDotIndex);
+                KnimeBasicCssCompletion basicKnimeCompletion = (KnimeBasicCssCompletion)tempCompletions.get(index);
+                KnimeBasicCssCompletion bcc = new KnimeBasicCssCompletion(basicKnimeCompletion.getProvider(),
+                    enteredRelevantPreText + basicKnimeCompletion.getReplacementText(),
+                    basicKnimeCompletion.getIconKey());
+                bcc.setSummary(basicKnimeCompletion.getSummary());
+                if (Util.startsWithIgnoreCase(bcc.getInputText(), enteredRelevantText)) {
+                    retVal.add(bcc);
                     index++;
                 } else {
                     break;
                 }
             }
-        } else {
-            return tempCompletions;
         }
+
         return retVal;
     }
 
