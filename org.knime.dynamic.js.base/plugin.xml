@@ -10,5 +10,34 @@
             path="nodes/">
       </dynamicNodeFolder>
    </extension>
+   <extension
+         point="org.knime.js.core.webResources">
+      <webResourceBundle
+            debug="true"
+            name="Bar Chart"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="org.knime.dynamic.js.base.barChartBundle">
+         <webResource
+               relativePathSource="nodes/barChart/groupedbarchart.js"
+               relativePathTarget="org/knime/dynamic/js/base/barChart/groupedbarchart.js">
+         </webResource>
+         <webResource
+               relativePathSource="nodes/barChart/groupedbarchart.css"
+               relativePathTarget="org/knime/dynamic/js/base/barChart/groupedbarchart.css">
+         </webResource>
+         <importResource
+               relativePath="org/knime/dynamic/js/base/barChart/groupedbarchart.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/dynamic/js/base/barChart/groupedbarchart.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="NVD3_1.8.6">
+         </webDependency>
+      </webResourceBundle>
+   </extension>
 
 </plugin>

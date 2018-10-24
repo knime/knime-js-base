@@ -1,0 +1,26 @@
+(histogram_namespace = function() {
+	
+	var histogram = {};
+	var _representation, _value;
+	
+	histogram.init = function(representation, value) {
+		_value = value;
+		_representation = representation;
+		grouped_bar_chart_namespace.init(representation, value);
+	}
+	
+	histogram.validate = function() {
+        return grouped_bar_chart_namespace.validate();
+    };
+
+    histogram.getComponentValue = function() {
+        return grouped_bar_chart_namespace.getComponentValue();
+    };
+
+    histogram.getSVG = function() {
+    	return grouped_bar_chart_namespace.getSVG();
+    }
+	
+	return histogram;
+	
+}());
