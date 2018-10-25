@@ -157,7 +157,7 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	protected boolean hasDialog() {
 	    DynamicFullDescription desc = m_doc.getKnimeNode().getFullDescription();
 		boolean hasDialog = desc.getOptions() != null;
-		hasDialog |= desc.getTabList() != null && desc.getTabList().size() > 0;
+		hasDialog |= desc.getTabArray() != null && desc.getTabArray().length > 0;
 		return hasDialog;
 	}
 

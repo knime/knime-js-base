@@ -146,11 +146,11 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 		    createAdditionalOptions();
 			fillOptions(desc.getOptions());
 		}
-		if (desc.getTabList() != null && desc.getTabList().size() > 0) {
+		if (desc.getTabArray() != null && desc.getTabArray().length > 0) {
 			removeTab(m_firstTab);
 			m_firstTab = desc.getTabArray(0).getName();
 		}
-		for (DynamicTab tab : desc.getTabList()) {
+		for (DynamicTab tab : desc.getTabArray()) {
 		    createNewTab(tab.getName());
 		    if (tab.getName().equals(m_firstTab)) {
 		        createAdditionalOptions();

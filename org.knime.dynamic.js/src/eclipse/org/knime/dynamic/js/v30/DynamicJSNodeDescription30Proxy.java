@@ -182,7 +182,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (DynamicInPort inPort : m_document.getKnimeNode().getPorts().getInPortList()) {
+        for (DynamicInPort inPort : m_document.getKnimeNode().getPorts().getInPortArray()) {
             if (inPort.getIndex().intValue() == index) {
                 return stripXmlFragment(inPort);
             }
@@ -199,7 +199,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (DynamicInPort inPort : m_document.getKnimeNode().getPorts().getInPortList()) {
+        for (DynamicInPort inPort : m_document.getKnimeNode().getPorts().getInPortArray()) {
             if (inPort.getIndex().intValue() == index) {
                 return inPort.getName();
             }
@@ -241,7 +241,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (DynamicOutPort outPort : m_document.getKnimeNode().getPorts().getOutPortList()) {
+        for (DynamicOutPort outPort : m_document.getKnimeNode().getPorts().getOutPortArray()) {
             if (outPort.getIndex().intValue() == index) {
                 return stripXmlFragment(outPort);
             }
@@ -258,7 +258,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (DynamicOutPort outPort : m_document.getKnimeNode().getPorts().getOutPortList()) {
+        for (DynamicOutPort outPort : m_document.getKnimeNode().getPorts().getOutPortArray()) {
             if (outPort.getIndex().intValue() == index) {
                 return outPort.getName();
             }
@@ -298,7 +298,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (View view : m_document.getKnimeNode().getViews().getViewList()) {
+        for (View view : m_document.getKnimeNode().getViews().getViewArray()) {
             if (view.getIndex().intValue() == index) {
                 return stripXmlFragment(view);
             }
@@ -315,7 +315,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             return null;
         }
 
-        for (View view : m_document.getKnimeNode().getViews().getViewList()) {
+        for (View view : m_document.getKnimeNode().getViews().getViewArray()) {
             if (view.getIndex().intValue() == index) {
                 return view.getName();
             }

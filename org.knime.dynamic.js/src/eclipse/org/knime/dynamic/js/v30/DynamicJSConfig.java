@@ -49,6 +49,7 @@ package org.knime.dynamic.js.v30;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -148,17 +149,17 @@ public class DynamicJSConfig {
         m_hasSVGImageOutport = false;
         if (m_nodeConfig.getFullDescription().getOptions() != null) {
             fillOptions(m_nodeConfig.getFullDescription().getOptions());
-            svgOptionList = m_nodeConfig.getFullDescription().getOptions().getSvgOptionList();
+            svgOptionList = Arrays.asList(m_nodeConfig.getFullDescription().getOptions().getSvgOptionArray());
         }
-        for (DynamicTab tab : m_nodeConfig.getFullDescription().getTabList()) {
+        for (DynamicTab tab : m_nodeConfig.getFullDescription().getTabArray()) {
             fillOptions(tab.getOptions());
-            svgOptionList.addAll(tab.getOptions().getSvgOptionList());
+            svgOptionList.addAll(Arrays.asList(tab.getOptions().getSvgOptionArray()));
         }
         int svgMatches = 0;
         if (!svgOptionList.isEmpty()) {
             for (SvgOption option : svgOptionList) {
                 try {
-                    DynamicOutPort port = m_nodeConfig.getPorts().getOutPortList().get(option.getPortIndex());
+                    DynamicOutPort port = m_nodeConfig.getPorts().getOutPortArray(option.getPortIndex());
                     if (port.getPortType().equals(PortType.IMAGE)) {
                         svgMatches++;
                     } else {
@@ -174,7 +175,7 @@ public class DynamicJSConfig {
             m_generateImage = DEFAULT_GENERATE_IMAGE;
             m_hasSVGImageOutport = true;
         }
-        for (DynamicInPort port : m_nodeConfig.getPorts().getInPortList()) {
+        for (DynamicInPort port : m_nodeConfig.getPorts().getInPortArray()) {
             if (port.getPortType().equals(PortType.DATA)) {
                 m_numberDataInports++;
             }

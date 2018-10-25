@@ -199,13 +199,13 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		DynamicPorts ports = nodeConfig.getPorts();
 		if (getInPorts) {
 			List<PortType> inPorts = new ArrayList<PortType>();
-			for (DynamicInPort port : ports.getInPortList()) {
+			for (DynamicInPort port : ports.getInPortArray()) {
 				inPorts.add(getPortType(port.getPortType(), port.getOptional()));
 			}
 			return inPorts.toArray(new PortType[0]);
 		} else {
 			List<PortType> outPorts = new ArrayList<PortType>();
-			for (DynamicOutPort port : ports.getOutPortList()) {
+			for (DynamicOutPort port : ports.getOutPortArray()) {
 				outPorts.add(getPortType(port.getPortType(), false));
 			}
 			return outPorts.toArray(new PortType[0]);
@@ -238,7 +238,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		    boolean portIndexIsAppendColumn = false;
 		    DataOutOption newTableOption = null;
             if (m_node.getOutputOptions() != null) {
-                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
+                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == portIndex) {
                         org.knime.dynamicnode.v30.DataOutputType.Enum oType = option.getOutputType();
                         if (DataOutputType.APPEND_COLUMN.equals(oType)) {
@@ -318,14 +318,14 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	}
 
 	private PortObject getPortObject(final int outPortIndex, final PortObject[] inObjects, final ExecutionContext exec) throws CanceledExecutionException {
-	    DynamicOutPort port = m_node.getPorts().getOutPortList().get(outPortIndex);
+	    DynamicOutPort port = m_node.getPorts().getOutPortArray(outPortIndex);
 	    Enum portType = port.getPortType();
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.DATA)) {
 		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
 		    DataOutOption newTableOption = null;
 		    Integer inSpecIndex = null;
             if (m_node.getOutputOptions() != null) {
-                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionList()) {
+                for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == outPortIndex) {
                         if (DataOutputType.APPEND_COLUMN.equals(option.getOutputType())) {
                             optionList.add(option);
@@ -496,10 +496,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 	    pushFlowVariables();
-		List<DynamicOutPort> ports = m_node.getPorts().getOutPortList();
-		PortObjectSpec[] specs = new PortObjectSpec[ports.size()];
-		for (int i = 0; i < ports.size(); i++) {
-			specs[i] = getPortSpec(ports.get(i).getPortType(), inSpecs, i);
+		DynamicOutPort[] ports = m_node.getPorts().getOutPortArray();
+		PortObjectSpec[] specs = new PortObjectSpec[ports.length];
+		for (int i = 0; i < ports.length; i++) {
+			specs[i] = getPortSpec(ports[i].getPortType(), inSpecs, i);
 		}
 		return specs;
 	}
@@ -654,10 +654,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects, final ExecutionContext exec)
 	        throws Exception {
 	    pushFlowVariables();
-	    List<DynamicOutPort> ports = m_node.getPorts().getOutPortList();
-        PortObject[] pOArray = new PortObject[ports.size()];
-        for (int i = 0; i < ports.size(); i++) {
-            if (ports.get(i).getPortType().equals(org.knime.dynamicnode.v30.PortType.IMAGE)) {
+	    DynamicOutPort[] ports = m_node.getPorts().getOutPortArray();
+        PortObject[] pOArray = new PortObject[ports.length];
+        for (int i = 0; i < ports.length; i++) {
+            if (ports[i].getPortType().equals(org.knime.dynamicnode.v30.PortType.IMAGE)) {
                 pOArray[i] = svgImageFromView;
             } else {
                 pOArray[i] = getPortObject(i, inObjects, exec);
@@ -671,7 +671,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         if (m_node.getOutputOptions() == null) {
             return;
         }
-        for (FlowVariableOutOption option : m_node.getOutputOptions().getFlowVariableOutputOptionList()) {
+        for (FlowVariableOutOption option : m_node.getOutputOptions().getFlowVariableOutputOptionArray()) {
             String var = null;
             if (getViewValue() != null) {
                 var = getViewValue().getFlowVariables().get(option.getId());
@@ -735,7 +735,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		for (Entry<String, SettingsModel> entry : m_config.getModels().entrySet()) {
 		    SettingsModel model = entry.getValue();
 		    DynamicOption option = getOptionForId(entry.getKey());
-		    if (option == null) {
+		    if (option == null || option.getConfigOnly()) {
 		        continue;
 		    }
 		    Object value = null;
@@ -844,7 +844,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 return option;
             }
         }
-        for (DynamicTab tab : m_node.getFullDescription().getTabList()) {
+        for (DynamicTab tab : m_node.getFullDescription().getTabArray()) {
             option = getOptionForId(key, tab.getOptions());
             if (option != null) {
                 return option;
@@ -853,7 +853,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         return null;
     }
 
-    private DynamicOption getOptionForId(final String key, final DynamicOptions options) {
+    private static DynamicOption getOptionForId(final String key, final DynamicOptions options) {
         XmlObject[] oOptions = options.selectPath("$this/*");
         for (XmlObject option : oOptions) {
             if (option instanceof DynamicOption) {
@@ -871,7 +871,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		List<String> cssCode = new ArrayList<String>();
 		Map<String, String> binaryFiles = new HashMap<String, String>();
 		if (resources != null) {
-			for (WebResource res : resources.getResourceList()) {
+			for (WebResource res : resources.getResourceArray()) {
 				if (res.getType().equals(WebResource.Type.JS)) {
 					jsCode.add(fileToString(res.getPath(), false));
 				} else if (res.getType().equals(WebResource.Type.CSS)) {
@@ -913,7 +913,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private List<DynamicJSDependency> getDependencies(final boolean local) {
 		List<DynamicJSDependency> deps = new ArrayList<DynamicJSDependency>();
 		if (m_node.getDependencies() != null) {
-			for (WebDependency dep : m_node.getDependencies().getDependencyList()) {
+			for (WebDependency dep : m_node.getDependencies().getDependencyArray()) {
 			    DynamicJSDependency jsDep = new DynamicJSDependency();
 			    jsDep.setName(dep.getName());
 			    jsDep.setPath(dep.getPath());
@@ -1021,7 +1021,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	protected void performReset() {
 	    //reset possible warning message set on processor
 	    if (m_processor != null && m_processor instanceof DynamicStatefulJSProcessor) {
-	        ((DynamicStatefulJSProcessor)m_processor).setWarningMessage(null);
+	        DynamicStatefulJSProcessor dp = (DynamicStatefulJSProcessor)m_processor;
+	        dp.setWarningMessage(null);
 	    }
 	}
 
