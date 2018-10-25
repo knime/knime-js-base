@@ -78,55 +78,26 @@
 					defaultValue="Box Plot" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
-				
+
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle"
                     defaultValue="" optional="true" saveInView="true">
                     The chart subtitle.
                 </stringOption>
-<!-- 
-				<stringOption name="catLabel" id="catLabel" label="Category-axis label"
-					optional="true" defaultValue="Category-axis label">
-					The label used for the category axis.
-				</stringOption>
 
-				<stringOption name="freqLabel" id="freqLabel"
-					label="y-axis label" optional="true" defaultValue="y-axis label">
-					The label used for the Y axis.
-				</stringOption>
- -->
 				<checkBoxOption name="Display fullscreen button" id="displayFullscreen" label="Display fullscreen button" defaultValue="true" loadDefaults="true">
 					Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
 				</checkBoxOption>
-				
+
 				<svgOption name="Image" additionalWait="500"
 					id="svg" portIndex="0" label="Image">
 					Settings for image generation.
 				</svgOption>
-				
-<!-- 
-                <checkBoxOption name="Resize to window" id="resizeToWindow"
-                    label="Resize to window" defaultValue="true">
-                    Check to let the chart fill all available space in the window.
-                </checkBoxOption>
-                
-				<integerOption name="Image width (in pixels)" id="width"
-					label="Image width (in pixels)" defaultValue="800" minValue="1"
-					maxValue="20000">
-					Image width (in pixels)
-				</integerOption>
 
-				<integerOption name="Image height (in pixels)" id="height"
-					label="Image height (in pixels)" defaultValue="600" minValue="1"
-					maxValue="20000">
-					Image height (in pixels)
-				</integerOption>
-				 -->
-				 
 				<colorOption name="Background color" id="backgroundColor" label="Background color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
                     The color of the background.
                 </colorOption>
-                    
+
                 <colorOption name="Data area color" id="daColor" label="Data area color"
                     format="HexString" defaultR="255" defaultG="255" defaultB="255" defaultAlpha="255">
                     The background color of the data area, within the axes.
