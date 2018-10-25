@@ -4,7 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="histogram_namespace" nodeID="dynamic_histogram"
-    categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer" afterID="dynamic_grouped_bar_chart">
+    categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer" 
+    afterID="org.knime.dynamic.js.base:nodes:dynamic_grouped_bar_chart">
 	<name>Histogram (JavaScript)</name>
 	<shortDescription>A histogram based on the NVD3 library.</shortDescription>
 	<fullDescription>
@@ -17,11 +18,6 @@
             You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
             </n:p>
 		</intro>
-		<!-- <tab name="Binning">
-			<options>
-				<integerOption name="" id="" label=""></integerOption>
-			</options>
-		</tab> -->
 		<tab name="Options">
 			<options>
 				<columnSelectorOption name="Histogram Column"
@@ -63,9 +59,50 @@
                 </checkBoxOption>
 			</options>
 		</tab>
+		<tab name="Binning">
+			<options>
+				<radioButtonOption name="Binning method" id="bin_method" label="Binning method" possibleValues="Fixed&#160;number&#160;of&#160;bins Sample&#160;quantiles" defaultValue="Fixed&#160;number&#160;of&#160;bins">
+				</radioButtonOption>
+				<integerOption name="Number of bins" id="num_bins" label="Number of bins" defaultValue="5" minValue="1" maxValue="100" stepSize="1" enableDependency="bin_method" 
+					enableValue="Fixed&#160;number&#160;of&#160;bins" configOnly="true">
+				</integerOption>
+				<stringListOption name="Bin to equal" id="bin_equal" possibleValues="width frequency" label="Equal" defaultValues="width" enableDependency="bin_method" 
+					enableValue="Fixed&#160;number&#160;of&#160;bins" configOnly="true">
+				</stringListOption>
+				<stringOption name="Quantiles" id="bin_quantiles" label="Quantiles (comma separated)" 
+					defaultValue="0.0, 0.25, 0.5, 0.75, 1.0" enableDependency="bin_method" 
+					enableValue="Sample&#160;quantiles" configOnly="true">
+				</stringOption>
+				<radioButtonOption name="Bin Naming" id="bin_naming" possibleValues="Numbered Borders Midpoints" label="Bin Naming" configOnly="true">
+				</radioButtonOption>
+				<checkBoxOption name="Force integer bounds" id="bin_force_int" label="Force integer bounds" defaultValue="false" configOnly="true">
+				</checkBoxOption>
+				<radioButtonOption name="Number format settings" id="num_format" label="Number format settings" 
+					possibleValues="Default&#160;formatting Advanced&#160;formatting" 
+					defaultValue="Default&#160;formatting" configOnly="true">
+				</radioButtonOption>
+				<stringListOption name="Output format" id="out_format" label="Output format" 
+					possibleValues="Standard&#160;String Plain&#160;String&#160;(no&#160;exponent) Engineering&#160;String" 
+					defaultValues="Standard&#160;String" configOnly="true" enableDependency="num_format" 
+					enableValue="Advanced&#160;formatting">
+				</stringListOption>
+				<integerOption name="Precision" id="format_precision" label="Precision" defaultValue="3" minValue="0" 
+					maxValue="100" stepSize="1" configOnly="true" enableDependency="num_format" 
+					enableValue="Advanced&#160;formatting" >
+				</integerOption>
+				<stringListOption name="Precision mode" id="format_prec_mode" label="Precision mode" configOnly="true" 
+					possibleValues="Decimal&#160;places Significant&#160;figures" defaultValues="Decimal&#160;places" 
+					enableDependency="num_format" enableValue="Advanced&#160;formatting">
+				</stringListOption>
+				<stringListOption name="Rounding mode" id="format_rounding" label="Rounding mode" configOnly="true"
+					possibleValues="UP DOWN CEILING FLOOR HALF_UP HALF_DOWN HALF_EVEN" defaultValues="HALF_UP" 
+					enableDependency="num_format" enableValue="Advanced&#160;formatting">
+				</stringListOption>
+			</options>
+		</tab>
 		<tab name="General Plot Options">
 			<options>
-				<stringOption name="Title" id="title" label="Title" defaultValue="Bar Chart" optional="true" saveInView="true">
+				<stringOption name="Title" id="title" label="Title" defaultValue="Histogram" optional="true" saveInView="true">
 					The chart title.
 				</stringOption>
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
@@ -195,12 +232,8 @@
 			Data table containing the categories and values to be plotted in a bar
 			chart.
 		</inPort>
-		<inPort portType="Data" name="Bar color data" index="1" optional="true">
-			Data table containing one column with the column names of table which has in addition a color assigned.
-			<n:b>Note:</n:b> for the "Occurrence Count" aggregation method the column name in the color table should be also "Occurrence Count".
-		</inPort>
-		<outPort portType="Image" name="Bar chart image" index="0">
-			SVG image of the bar chart.
+		<outPort portType="Image" name="Histogram image" index="0">
+			SVG image of the histogram.
 		</outPort>
 	</ports>
 	<js:resources>
