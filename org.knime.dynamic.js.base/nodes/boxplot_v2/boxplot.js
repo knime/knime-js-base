@@ -4,6 +4,8 @@ window.boxplot_namespace = (function () {
     var layoutContainer;
     var MIN_HEIGHT = 100, MIN_WIDTH = 100;
     var maxY = 0, minY = 0;
+    var Y_TICK_COUNT = 5;
+    var Y_LABEL_MAX_WIDTH = 200;
     var _representation, _value;
     var drawControls, drawChart, updateTitle, updateSubtitle, processMissingValues, resize;
 
@@ -88,7 +90,7 @@ window.boxplot_namespace = (function () {
             drawControls();
         }
 
-        if (window.parent && window.parent.KnimePageLoader) {
+        if (window.parent.KnimePageLoader) {
             window.parent.KnimePageLoader.autoResize(window.frameElement.id);
         }
     };
@@ -107,6 +109,7 @@ window.boxplot_namespace = (function () {
                 var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, updateTitle, true);
                 knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
             }
+
             if (_representation.options.enableSubtitleEdit) {
                 var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, updateSubtitle, true);
                 knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
@@ -181,7 +184,7 @@ window.boxplot_namespace = (function () {
             chartWidth = '100%';
             chartHeight = '100%';
         } else {
-            chartWidth = cw + 'px;';
+            chartWidth = cw + 'px';
             chartHeight = ch + 'px';
         }
 
@@ -195,9 +198,8 @@ window.boxplot_namespace = (function () {
             topMargin += 26;
         }
 
-        var margin = {
+        var margins = {
             top: topMargin,
-            left: 40,
             bottom: 40,
             right: 10
         };
@@ -208,13 +210,30 @@ window.boxplot_namespace = (function () {
             .attr({ width: cw, height: ch })
             .style({ width: chartWidth, height: chartHeight });
 
+        // Calculate height of the plot area (without x-axis)
+        var h = Math.max(50, parseInt(d3svg.style('height'), 10) - margins.top - margins.bottom);
+
+        // y-axis scale
+        var yScale = d3.scale.linear().domain([minY, maxY]).range([h, 0]).nice();
+
+        // determine required margin-left
+        var yLabels = yScale.ticks(Y_TICK_COUNT).map(yScale.tickFormat(Y_TICK_COUNT)).map(String);
+        var maxYLabelWidth = knimeService.measureAndTruncate(yLabels, {
+            container: d3svg.node(),
+            classes: 'knime-tick-label',
+            maxWidth: Y_LABEL_MAX_WIDTH
+        }).max.maxWidth;
+        margins.left = 15 + maxYLabelWidth;
+
+        // Calculate width of the plot area (without y-axis)
+        var w = Math.max(50, parseInt(d3svg.style('width'), 10) - margins.left - margins.right);
+
+        // x-axis scale
+        var xScale = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0, w], 0.75, 0.5);
+
         // Position the plot group based on the margins
         var plotG = d3svg.select('#plotG')
-            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-        // Calculate size of the plot area (without axes)
-        var w = Math.max(50, parseInt(d3svg.style('width'), 10) - margin.left - margin.right);
-        var h = Math.max(50, parseInt(d3svg.style('height'), 10) - margin.top - margin.bottom);
+            .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
 
         // Resize background rectangles
         plotG.select('#da').attr({
@@ -222,20 +241,15 @@ window.boxplot_namespace = (function () {
             height: h + 5
         });
         d3svg.select('#bgr').attr({
-            width: w + margin.left + margin.right,
-            height: h + margin.top + margin.bottom
+            width: w + margins.left + margins.right,
+            height: h + margins.top + margins.bottom
         });
 
-        // Scales for mapping input to screen
-        var x = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0, w], 0.75, 0.5);
-        var y = d3.scale.linear().domain([minY, maxY]).range([h, 0]).nice();
-
         // d3 axes
-        var xAxis = d3.svg.axis().scale(x)
+        var xAxis = d3.svg.axis().scale(xScale)
             .orient('bottom');
-        var yAxis = d3.svg.axis().scale(y)
-            .orient('left').ticks(5);
-
+        var yAxis = d3.svg.axis().scale(yScale)
+            .orient('left').ticks(Y_TICK_COUNT);
         // Remove axes so they are redrawn
         d3.selectAll('.axis').remove();
 
@@ -285,11 +299,11 @@ window.boxplot_namespace = (function () {
         // Append a group element for each new box and shift it according to the class
         var box = boxG.enter().append('g')
             .attr('class', 'box')
-            .attr('transform', function (d) { return 'translate(' + x(d.key) + ',0)'; });
+            .attr('transform', function (d) { return 'translate(' + xScale(d.key) + ',0)'; });
 
         // Transition all boxes to their position
         d3.selectAll('.box').transition().duration(duration)
-            .attr('transform', function (d) { return 'translate(' + x(d.key) + ',0)'; });
+            .attr('transform', function (d) { return 'translate(' + xScale(d.key) + ',0)'; });
 
         // The main rectangle for the box
         box.append('rect')
@@ -301,12 +315,12 @@ window.boxplot_namespace = (function () {
         boxG.selectAll('.boxrect')
             .data(function (d) { return [d]; })
             .transition().duration(duration)
-            .attr('y', function (d) { return y(d.value.upperQuartile); })
-            .attr('height', function (d) { return y(d.value.lowerQuartile) - y(d.value.upperQuartile); })
-            .attr('width', x.rangeBand());
+            .attr('y', function (d) { return yScale(d.value.upperQuartile); })
+            .attr('height', function (d) { return yScale(d.value.lowerQuartile) - yScale(d.value.upperQuartile); })
+            .attr('width', xScale.rangeBand());
 
         // The middle of the box on the x-axis
-        var middle = x.rangeBand() / 2;
+        var middle = xScale.rangeBand() / 2;
 
         // Text for the upper quartile
         box.append('text')
@@ -316,7 +330,7 @@ window.boxplot_namespace = (function () {
         boxG.selectAll('.uqText')
             .data(function (d) { return [d]; })
             .transition().duration(duration)
-            .attr('y', function (d) { return y(d.value.upperQuartile) + 3; })
+            .attr('y', function (d) { return yScale(d.value.upperQuartile) + 3; })
             .text(function (d) { return Math.round(d.value.upperQuartile * 100) / 100; });
 
         // Text for the lower quartile
@@ -327,7 +341,7 @@ window.boxplot_namespace = (function () {
         boxG.selectAll('.lqText')
             .data(function (d) { return [d]; })
             .transition().duration(duration)
-            .attr('y', function (d) { return y(d.value.lowerQuartile) + 3; })
+            .attr('y', function (d) { return yScale(d.value.lowerQuartile) + 3; })
             .text(function (d) { return Math.round(d.value.lowerQuartile * 100) / 100; });
 
 
@@ -341,9 +355,9 @@ window.boxplot_namespace = (function () {
         boxG.selectAll('.median')
             .data(function (d) { return [d]; })
             .transition().duration(duration)
-            .attr('x2', x.rangeBand())
-            .attr('y1', function (d) { return y(d.value.median); })
-            .attr('y2', function (d) { return y(d.value.median); });
+            .attr('x2', xScale.rangeBand())
+            .attr('y1', function (d) { return yScale(d.value.median); })
+            .attr('y2', function (d) { return yScale(d.value.median); });
 
         box.append('text')
             .attr('class', 'medianText knime-label');
@@ -351,8 +365,8 @@ window.boxplot_namespace = (function () {
         boxG.selectAll('.medianText')
             .data(function (d) { return [d]; })
             .transition().duration(duration)
-            .attr('x', x.rangeBand() + 5)
-            .attr('y', function (d) { return y(d.value.median) + 3; })
+            .attr('x', xScale.rangeBand() + 5)
+            .attr('y', function (d) { return yScale(d.value.median) + 3; })
             .text(function (d) { return Math.round(d.value.median * 100) / 100; });
 
         // Upper whisker
@@ -367,8 +381,8 @@ window.boxplot_namespace = (function () {
             .attr('x1', middle)
             .attr('x2', middle)
             .attr('stroke-dasharray', '5,5')
-            .attr('y1', function (d) { return y(d.value.upperQuartile); })
-            .attr('y2', function (d) { return y(d.value.upperWhisker); });
+            .attr('y1', function (d) { return yScale(d.value.upperQuartile); })
+            .attr('y2', function (d) { return yScale(d.value.upperWhisker); });
 
 
         box.append('line')
@@ -380,9 +394,9 @@ window.boxplot_namespace = (function () {
             .data(function (d) { return [d]; })
             .transition().duration(duration)
             .attr('opacity', function (d) { return d.value.valid ? 1 : 0; })
-            .attr('x2', x.rangeBand())
-            .attr('y1', function (d) { return y(d.value.upperWhisker); })
-            .attr('y2', function (d) { return y(d.value.upperWhisker); });
+            .attr('x2', xScale.rangeBand())
+            .attr('y1', function (d) { return yScale(d.value.upperWhisker); })
+            .attr('y2', function (d) { return yScale(d.value.upperWhisker); });
 
         box.append('text')
             .attr('class', 'uwText knime-label');
@@ -391,8 +405,8 @@ window.boxplot_namespace = (function () {
             .data(function (d) { return [d]; })
             .transition().duration(duration)
             .attr('opacity', function (d) { return d.value.valid ? 1 : 0; })
-            .attr('x', x.rangeBand() + 5)
-            .attr('y', function (d) { return y(d.value.upperWhisker) + 10; })
+            .attr('x', xScale.rangeBand() + 5)
+            .attr('y', function (d) { return yScale(d.value.upperWhisker) + 10; })
             .text(function (d) { return Math.round(d.value.upperWhisker * 100) / 100; });
 
         // Lower whisker
@@ -407,8 +421,8 @@ window.boxplot_namespace = (function () {
             .attr('x1', middle)
             .attr('x2', middle)
             .attr('stroke-dasharray', '5,5')
-            .attr('y1', function (d) { return y(d.value.lowerQuartile); })
-            .attr('y2', function (d) { return y(d.value.lowerWhisker); });
+            .attr('y1', function (d) { return yScale(d.value.lowerQuartile); })
+            .attr('y2', function (d) { return yScale(d.value.lowerWhisker); });
 
         box.append('line')
             .attr('stroke', 'black')
@@ -419,9 +433,9 @@ window.boxplot_namespace = (function () {
             .data(function (d) { return [d]; })
             .transition().duration(duration)
             .attr('opacity', function (d) { return d.value.valid ? 1 : 0; })
-            .attr('x2', x.rangeBand())
-            .attr('y1', function (d) { return y(d.value.lowerWhisker); })
-            .attr('y2', function (d) { return y(d.value.lowerWhisker); });
+            .attr('x2', xScale.rangeBand())
+            .attr('y1', function (d) { return yScale(d.value.lowerWhisker); })
+            .attr('y2', function (d) { return yScale(d.value.lowerWhisker); });
 
         box.append('text')
             .attr('class', 'ulText knime-label');
@@ -430,8 +444,8 @@ window.boxplot_namespace = (function () {
             .data(function (d) { return [d]; })
             .transition().duration(duration)
             .attr('opacity', function (d) { return d.value.valid ? 1 : 0; })
-            .attr('x', x.rangeBand() + 5)
-            .attr('y', function (d) { return y(d.value.lowerWhisker) - 3; })
+            .attr('x', xScale.rangeBand() + 5)
+            .attr('y', function (d) { return yScale(d.value.lowerWhisker) - 3; })
             .text(function (d) { return Math.round(d.value.lowerWhisker * 100) / 100; });
 
         // Mild outliers
@@ -444,14 +458,14 @@ window.boxplot_namespace = (function () {
             .attr('fill', _representation.options.daColor)
             .attr('stroke', 'black')
             .attr('cx', middle)
-            .attr('cy', function (d) { return y(d.value); })
+            .attr('cy', function (d) { return yScale(d.value); })
             .append('title')
             .attr('class', 'knime-label')
             .text(function (d) { return d.rowKey; });
 
         outl.transition().duration(duration)
             .attr('cx', middle)
-            .attr('cy', function (d) { return y(d.value); });
+            .attr('cy', function (d) { return yScale(d.value); });
 
         outl.exit().transition().style('opacity', 0).each('end', function () { d3.select(this).remove(); });
 
@@ -461,7 +475,7 @@ window.boxplot_namespace = (function () {
 
         var enterG = exoutl.enter().append('g')
             .attr('class', 'eo')
-            .attr('transform', function (d) { return 'translate(' + middle + ',' + y(d.value) + ')'; });
+            .attr('transform', function (d) { return 'translate(' + middle + ',' + yScale(d.value) + ')'; });
 
         var crossSize = 4;
 
@@ -492,7 +506,7 @@ window.boxplot_namespace = (function () {
             .text(function (d) { return d.rowKey; });
 
         exoutl.transition().duration(duration)
-            .attr('transform', function (d) { return 'translate(' + middle + ',' + y(d.value) + ')'; });
+            .attr('transform', function (d) { return 'translate(' + middle + ',' + yScale(d.value) + ')'; });
 
         // Fade out outliers
         exoutl.exit().transition().style('opacity', 0).each('end', function () { d3.select(this).remove(); });
