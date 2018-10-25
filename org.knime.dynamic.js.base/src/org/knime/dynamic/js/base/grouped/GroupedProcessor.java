@@ -2,6 +2,8 @@ package org.knime.dynamic.js.base.grouped;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.knime.base.data.aggregation.AggregationOperator;
@@ -16,16 +18,24 @@ import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
 import org.knime.base.node.preproc.groupby.GroupByTable;
 import org.knime.base.node.preproc.groupby.MemoryGroupByTable;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.property.hilite.DefaultHiLiteMapper;
+import org.knime.core.node.property.hilite.HiLiteHandler;
+import org.knime.core.node.property.hilite.HiLiteTranslator;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
+import org.knime.dynamic.js.v30.DynamicJSViewRepresentation;
 import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
+import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.selections.json.JSONSelectionTranslator;
 
 public class GroupedProcessor extends DynamicStatefulJSProcessor {
 	
@@ -102,10 +112,10 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 		GroupByTable groupTable;
 		if(inMemory) {
 		    groupTable = new MemoryGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+            colAggregators, GlobalSettings.DEFAULT, true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
 		} else {
 	        groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, false, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+            colAggregators, GlobalSettings.DEFAULT, true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
 		}
 
         // Missing values processing        
@@ -121,9 +131,27 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
             }
         }
 
-		PortObject[] processedObjects = new PortObject[inObjects.length];
-		processedObjects[0] = groupTable.getBufferedTable();
+		Object[] processedObjects = new Object[inObjects.length];
+		HiLiteTranslator translator = new HiLiteTranslator();
+		translator.setMapper(new DefaultHiLiteMapper(groupTable.getHiliteMapping()));
+		Object[] outputObject = new Object[2];
+		JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(
+            exec,
+            groupTable.getBufferedTable(), UUID.randomUUID().toString());
+		outputObject[0] = jsonTable;
+		outputObject[1] = new JSONSelectionTranslator(translator);
+		processedObjects[0] = outputObject;
 		System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
 		return processedObjects;
 	}
+	
+	   private static JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable, final String tableId) throws CanceledExecutionException {
+	        JSONDataTable table = JSONDataTable.newBuilder()
+	                .setDataTable(inTable)
+	                .setId(tableId)
+	                .setFirstRow(1)
+	                .setMaxRows((int)inTable.size())
+	                .build(exec);
+	        return table;
+	    }
 }

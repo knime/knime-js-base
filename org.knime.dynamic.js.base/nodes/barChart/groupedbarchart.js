@@ -14,6 +14,7 @@
     var colorRange;
     var categories;
     var freqCols;
+    var _translator;
 
     /**
 	 * 2d-array where for each category (indexing follows categories array) we
@@ -73,8 +74,16 @@
 
     barchart.init = function (representation, value) {
         _value = value;
+        _value.selection = value.selection || [];
         _representation = representation;
-        
+
+        if(_representation.inObjects[0]) {
+        	_translator = _representation.inObjects[0][1];
+        	_translator.sourceID = _representation.tableIds[0];
+        	_translator.targetID = _representation.inObjects[0][1].sourceID
+        }	
+        //knimeService.registerSelectionTranslator(_translator, _translator.sourceID, onSelectionChanged);
+
         showWarnings = _representation.options.showWarnings;
 
         if (_representation.warnMessage && showWarnings) {
@@ -85,11 +94,6 @@
         if (_representation.options.enableViewControls) {
             drawControls();
         }
-
-        if (parent != undefined && parent.KnimePageLoader != undefined) {
-        	parent.KnimePageLoader.autoResize(window.frameElement.id);
-        }
-
     };
 
     function drawChart(redraw) {
@@ -185,7 +189,7 @@
 			 */
             knimeTable = new kt();
             // Add the data from the input port to the knimeTable.
-            var port0dataTable = _representation.inObjects[0];
+            var port0dataTable = _representation.inObjects[0][0];
             knimeTable.setDataTable(port0dataTable);
 
             processData();
@@ -234,8 +238,72 @@
             nv.utils.windowResize(function () { updateAxisLabels(true); updateLabels(); setCssClasses(); });
 
             return chart;
-        });
+        },function(){
+          d3.selectAll(".nv-bar").on('click',
+              function(data){
+        	  	var clusterName = data.x;
+        	  	var clusterKey;
+        	  	console.log(_representation.inObjects[0][0],"dataTable");
+        	  	for(var j = 0; j < _representation.inObjects[0][0].rows.length; j++) {
+        	  		if(_representation.inObjects[0][0].rows[j].data[0] === clusterName) {
+        	  			clusterKey = _representation.inObjects[0][0].rows[j].rowKey;
+        	  			console.log(d3.selectAll(".knime-x text")[0][j]);
+        	  			////d3.selectAll(".knime-x text").each(function(d) {
+        	  		    //  d3.select(this).style('fill', 'black')
+        	  		    //});
+        	  			d3.selectAll(".hilightBar").remove();
+        	  			d3.selectAll(".knime-x text").style("fill",function(d,i) {
+        	  				if(i==j) {
+	        	  				console.log(plotData.length);
+	        	  				d3.select(this.parentNode).append("rect").classed("hilightBar",true)
+	        	  				.attr({ x: -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * plotData.length),
+	        	  					y: 20, width: (d3.select(".nv-bar.positive").node().getBBox().width) * plotData.length,
+	        	  					height: 5, fill: 'darkOrange' })
+	        	  				.style("fill", "darkOrange");
+	        	  				return "darkOrange";
+        	  				} else {
+        	  					return "black"
+        	  				}
+        	  				});
+        	  			//d3.select(".knime-x text:nth-child(j)").style('fill', 'darkOrange');
+        	  			//d3.selectAll(".knime-x text")[0][j].style.fill = 'darkOrange';
+        	  			//d3.selectAll(".knime-x text")[0][j]
+        	  		}
+        	  	}
+        	  	_value.selection1 = _representation.inObjects[0][1].mapping[clusterKey];
+        	  	
+        	  	
+                knimeService.setSelectedRows(_representation.tableIds[0],_value.selection1);
+          });
+      });
     }
+    
+    function onSelectionChanged(data) {
+    	console.log("changed");
+    	if (data.reevaluate) {
+    		// not Happy with that solution, find out why knimeTable has a strange id
+            _value.selection = knimeService.getAllRowsForSelection(_translator.sourceID);
+        } else if (data.changeSet) {
+	        if (data.changeSet.added) {
+	            data.changeSet.added.map(function(rowId) {
+	                var index = _value.selection.indexOf(rowId);
+	                if (index === -1) {
+	                    _value.selection.push(rowId);
+	                }
+	            });
+	        }
+	        if (data.changeSet.removed) {
+	            data.changeSet.removed.map(function(rowId) {
+	                var index = _value.selection.indexOf(rowId);
+	                if (index > -1) {
+	                    _value.selection.splice(index, 1);
+	                }
+	            });
+	        }
+	     }
+    	console.log("changed again",_value.selection);
+    }
+
 
     processData = function () {
         var optMethod = _representation.options['aggr'];
