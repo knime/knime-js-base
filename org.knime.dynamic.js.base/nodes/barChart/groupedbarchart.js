@@ -62,7 +62,7 @@
 	 * handling.
 	 */
     var excludeFreqColCatMap;
-
+    
     var showWarnings;
 
     var MISSING_VALUES_LABEL = 'Missing values';
@@ -74,7 +74,7 @@
     barchart.init = function (representation, value) {
         _value = value;
         _representation = representation;
-
+        
         showWarnings = _representation.options.showWarnings;
 
         if (_representation.warnMessage && showWarnings) {
@@ -87,7 +87,7 @@
         }
 
         if (parent != undefined && parent.KnimePageLoader != undefined) {
-            parent.KnimePageLoader.autoResize(window.frameElement.id);
+        	parent.KnimePageLoader.autoResize(window.frameElement.id);
         }
 
     };
@@ -775,7 +775,7 @@
             var ticks = scale.ticks(tickAmount);
             if(textsYMin !== null){
 	            if (textsYMin.text().indexOf('.') > 0 && textsYMin.text().indexOf('e') < 0) {
-	                var precision = Math.max((ticks[0].toString().length - 2), 0);
+	                var precision = Math.max((ticks[0].toString().length - 2), 1);
 	                textsYMin.text((Math.floor(parseFloat(textsYMin.text()) * Math.pow(10, precision)) / Math.pow(10,
 	                    precision)));
 	            } else if (minValue < 0) {
@@ -805,20 +805,19 @@
      	var maxValue = 0;
      	var minValue = 0;
      	if(isStacked) {
-     		var sumList = [];
+        	var sumList = [];
 	        for (var i = 0; i < plotData.length; i++) {
 	        	for (var j = 0; j < plotData[i].values.length; j++) { 
-	        		if(plotData[j].disabled !== true) {
-		        		if (typeof sumList[i] !== 'undefined') {
-		        			sumList[i] += plotData[j].values[i].y;
-		        		} else {
-		        			sumList[i] = plotData[j].values[i].y;
-		        		}
+		        	if(sumList.length < plotData[i].values.length) {
+		        		sumList.push(0);
+		        	}
+	        		if(plotData[i].disabled !== true) {
+	        			sumList[j] += plotData[i].values[j].y;
+	        			if(plotData[i].values[j].y < minValue) {minValue = plotData[i].values[j].y;}
 	        		} 
 	        	}
 	        }
 	        maxValue = d3.max(sumList);
-	        minValue = d3.min(sumList);
      	} else {
 	        for (var i = 0; i < plotData.length; i++) {
 	        	if(plotData[i].disabled !== true) {
@@ -829,7 +828,7 @@
 		            var tempMinValue = Math.min(d3.min(plotData[i].values, function (d) {
 		                return parseFloat(d.y);
 		            }), 0);
-		            if(tempMinValue > minValue) {minValue = tempMinValue;}
+		            if(tempMinValue < minValue) {minValue = tempMinValue;}
 	        	}
 	        }
      	}
@@ -840,17 +839,18 @@
         }
 
         var scale = d3.scale.linear().domain([minValue, maxValue]);
-
     	var ticks = scale.ticks(tickAmount);
-    	if (ticks[ticks.length - 1].toString().indexOf('.') > 0) {
-    		var precision = Math.max((ticks[ticks.length - 2].toString().split('.')[1].length), 0);
+    	if (ticks.length >= 2 && ticks[ticks.length - 1].toString().indexOf('.') > 0) {
+    		var precision = Math.max((ticks[ticks.length - 1].toString().split('.')[1].length), 0);
+    	} else if(ticks[ticks.length - 1].toString().indexOf('e') > 0) {
+    		var precision = Math.max(Math.abs((ticks[ticks.length - 1].toString().split('e')[1])), 0);
     	} else {
     		precision = 1;
     	}
     	
-    	var roundedMaxValue = Math.ceil(parseFloat(maxValue) * Math.pow(10, precision)) / Math.pow(10,
-                precision);
-    	return roundedMaxValue;
+    	var roundedMaxValue = Math.ceil(parseFloat(maxValue) * Math.pow(10, precision)) / Math.pow(10, precision);
+    	var roundedMinValue = Math.floor(parseFloat(minValue) * Math.pow(10, precision)) / Math.pow(10, precision);
+    	return [roundedMinValue,roundedMaxValue];
     }
 
     /**
@@ -883,7 +883,7 @@
             [0, _representation.options['svg']['height']]);
         var ticks = scale.ticks(4);
         if (optShowMaximum) {
-            if (maxValue.toString().indexOf('.') > 0 && maxValue.toString().indexOf('e') < 0) {
+            if (maxValue.toString().indexOf('.') > 0 ) {
                 ticks.push(parseFloat((maxValue.toFixed(ticks[(ticks.length) - 1].toString().length - 1))));
             } else {
                 ticks.push(maxValue);
@@ -914,33 +914,50 @@
 	 * Find the max size of the biggest element on the x-Axis. Move the Graph so
 	 * that this object is completely visible.
 	 */
-    function checkMaxSizeXAxis(number) {
+    function checkMaxSizeXAxis(number, staggerLabels) {
         var optOrientation = _value.options['orientation'];
         var svgHeight = parseInt(d3.select('svg').style('height'));
         var svgWidth = parseInt(d3.select('svg').style('width'));
         var amountOfBars = number[0].values.length;
+        
+        var maxWidth;
+        if(staggerLabels) {
+        	maxWidth = ((svgWidth / amountOfBars)-53) * 2;
+        } else {
+        	maxWidth = (svgWidth / amountOfBars) - 53;
+        }
 
         var configObject = {
             container: document.querySelector('svg'),
             tempContainerClasses: 'knime-axis',
-            maxWidth: (svgWidth / amountOfBars) - 53,
+            maxWidth: maxWidth,
             maxHeight: svgHeight / amountOfBars,
             minimalChars: 1,
         };
         var xValues = [];
-        for (var group in number) {
-            for (var value in number[group].values) {
-                xValues.push(number[group].values[value].x);
-            }
+        for (var value in number[0].values) {
+            xValues.push(number[0].values[value].x);
         }
 
         var results = knimeService.measureAndTruncate(xValues, configObject);
+        
+        var xExtremValues = [];
+        xExtremValues.push(number[0].values[0].x);
+        xExtremValues.push(number[0].values[number[0].values.length-1].x);
+        
+        configObject.maxWidth = (svgWidth / amountOfBars) - 53;
+        var extremResults = knimeService.measureAndTruncate(xExtremValues, configObject);
 
         // Update the cloned data array to contain the wrapped labels
         for (var group in number) {
             for (var value in number[group].values) {
-                wrapedPlotData[group].values[value].x = results.values[group * (number.length)
-					+ parseInt(value)].truncated;
+            	if(value == 0) {
+            		wrapedPlotData[group].values[value].x = extremResults.values[0].truncated;
+            	} else if(value == number[group].values.length-1) {
+            		wrapedPlotData[group].values[value].x = extremResults.values[1].truncated;
+            	} else {
+            		wrapedPlotData[group].values[value].x = results.values[parseInt(value)].truncated;
+            	}
             }
         }
         return results;
@@ -995,7 +1012,7 @@
             var freqLabelSize = knimeService.measureAndTruncate(freqLabel ? [freqLabel] : [''], configObject);
 
             var maxSizeYAxis = checkMaxSizeYAxis(wrapedPlotData, optShowMaximum);
-            var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData);
+            var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData, optStaggerLabels);
             var svgSize = optOrientation ? parseInt(d3.select('svg').style('width')) : parseInt(d3.select('svg').style(
                 'height'));
 
@@ -1006,7 +1023,7 @@
             if (optOrientation) {
                 var tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + 150));
                 if (optShowMaximum) {
-                    var rightMargin = 0.65 * maxSizeYAxis.max.maxWidth;
+                   var rightMargin = 0.65 * maxSizeYAxis.max.maxWidth;
                 }
             } else {
                 var tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + 100));
@@ -1027,10 +1044,11 @@
                 .tickFormat(d3.format('~.g'));
             
         	if(stacked == "Grouped") {
-        		chart.yDomain([0,getRoundedMaxValue(false)]);
+        		var extremValues = getRoundedMaxValue(false);
         	} else {
-        		chart.yDomain([0,getRoundedMaxValue(true)]);
+        		var extremValues = getRoundedMaxValue(true);
         	}
+        	chart.yDomain([extremValues[0],extremValues[1]]);
             
             var bottomMargin = optOrientation ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 15
                 : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + 15;
@@ -1072,7 +1090,7 @@
             var stacked = this.value == 'Stacked';
             fixStackedData(stacked);
             chart.stacked(stacked);
-            chart.update();
+            drawChart(true);
         }
     }
 
