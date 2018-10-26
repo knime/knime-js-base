@@ -5,42 +5,47 @@
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="histogram_namespace" nodeID="dynamic_histogram"
     categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer" 
-    afterID="org.knime.dynamic.js.base:nodes:dynamic_grouped_bar_chart">
+    afterID="org.knime.dynamic.js.base:nodes:barChart">
 	<name>Histogram (JavaScript)</name>
 	<shortDescription>A histogram based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
-			<n:p>A bar chart based on the NVD3 library.</n:p>
+			<n:p>A histogram based on the NVD3 library.</n:p>
 			<n:p>
-            The node supports custom CSS styling. 
-            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
-            in the node configuration dialog. 
-            You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
+            	The node supports custom CSS styling. 
+            	You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            	in the node configuration dialog. 
+            	You will find the list of available classes and their description on our 
+            	<n:a href="https://knime.com/css-styling">documentation page</n:a>.
             </n:p>
 		</intro>
 		<tab name="Options">
 			<options>
 				<columnSelectorOption name="Histogram Column"
 					id="cat" inPortIndex="0" label="Histogram Column" filterClasses="org.knime.core.data.DoubleValue">
-					Select the column that contains the category values.
+					Select the column that contains the values used to calculate the bins for the histogram.
 				</columnSelectorOption>
 
 				<radioButtonOption name="Aggregation Method" id="aggr" 
-					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">
-					Select the aggregation method used on the selected frequency columns. In case of <n:i>Occurence Count</n:i> the occurence of the unique values
-					of the selected category columns are determined.
+					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" 
+					defaultValue="Occurence&#160;Count">
+					Select the aggregation method used on the selected frequency columns. In case of 
+					<n:i>Occurrence Count</n:i> the occurrence of the unique values of the selected category columns 
+					are determined.
 				</radioButtonOption>
 
 				<columnFilterOption name="Frequency columns"
 					id="freq" inPortIndex="0" label="Frequency columns" filterClasses="org.knime.core.data.DoubleValue"
 					enableDependency="aggr" enableValue="Sum Average">
 					Select the columns with frequencies for which you wish to plot bars.
-					<n:i>Note:</n:i> Missing values in the frequency column will be ignored with a corresponding warning message.<n:br/>
-					If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.
+					<n:i>Note:</n:i> Missing values in the frequency column will be ignored with a corresponding warning
+					message.<n:br/>
+					If, after aggregation, some bars or entire categories contain only missing values, they will be 
+					excluded from the view and a warning message will be raised.
 				</columnFilterOption>
 				
 				<checkBoxOption name="Process in memory" id="processInMemory"
-                    label="Process table in memory" defaultValue="true" loadDefaults="true">
+                    label="Process table in memory" defaultValue="true">
                     Process the table in the memory. Requires more memory but is faster
                 	since the table needs not to be sorted prior aggregation. 
                 	The memory consumption depends on the number of unique groups and
@@ -48,115 +53,195 @@
                 </checkBoxOption>
 				
 				<checkBoxOption name="Report on missing values" id="reportOnMissingValues" 
-                    label="Report on missing values" defaultValue="true" loadDefaults="true">
-                    Check to get the detailed warning messages in the view about missing values and enable 'Missing values' category.
-                    If not checked, missing values will be ignored without raising a warning. 'Missing values' category will not be present.
+                    label="Report on missing values" defaultValue="true">
+                    Check to get the detailed warning messages in the view about missing values and enable 'Missing 
+                    values' category.<n:br/>
+                    If not checked, missing values will be ignored without raising a warning. 'Missing values' 
+                    category will not be present.
                 </checkBoxOption>
                 
-				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" label="Include 'Missing values' category" 
-                    defaultValue="true" saveInView="true" loadDefaults="true" enableDependency="reportOnMissingValues" enableValue="true">
-                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
+				<checkBoxOption name="Include 'Missing values' category" id="includeMissValCat" 
+					label="Include 'Missing values' category" defaultValue="true" saveInView="true" 
+					enableDependency="reportOnMissingValues" enableValue="true">
+                    If checked, missing values in the category column will form a separate class named "Missing values".
+                    Otherwise they will be ignored.                     
                 </checkBoxOption>
 			</options>
 		</tab>
 		<tab name="Binning">
 			<options>
-				<radioButtonOption name="Binning method" id="bin_method" label="Binning method" possibleValues="Fixed&#160;number&#160;of&#160;bins Sample&#160;quantiles" defaultValue="Fixed&#160;number&#160;of&#160;bins">
+				<radioButtonOption name="Binning method" id="bin_method" label="Binning method" 
+					possibleValues="Fixed&#160;number&#160;of&#160;bins Sample&#160;quantiles" 
+					defaultValue="Fixed&#160;number&#160;of&#160;bins">
+					Use <n:b>Fixed number</n:b> of bins for bins with equal <n:b>width</n:b> over the domain range or 
+					bins that have an equal <n:b>frequency</n:b> of element occurrences.<n:br/>
+					Use <n:b>Sample quantiles</n:b> to produces bins corresponding to the given list of probabilities. 
+					The smallest element corresponds to a probability of 0 and the largest do probability of 1. 
+					The applied estimation method is <n:a 
+					href="https://en.wikipedia.org/wiki/Quantile#Estimating_quantiles_from_a_sample">Type 7</n:a> 
+					which is the default method in R, S and Excel.
 				</radioButtonOption>
-				<integerOption name="Number of bins" id="num_bins" label="Number of bins" defaultValue="5" minValue="1" maxValue="100" stepSize="1" enableDependency="bin_method" 
+				
+				<integerOption name="Number of bins" id="num_bins" label="Number of bins" defaultValue="5" minValue="1" 
+					maxValue="100" stepSize="1" enableDependency="bin_method" 
 					enableValue="Fixed&#160;number&#160;of&#160;bins" configOnly="true">
+					Number of bins for the <n:b>fixed number</n:b> binning method.
 				</integerOption>
-				<stringListOption name="Bin to equal" id="bin_equal" possibleValues="width frequency" label="Equal" defaultValues="width" enableDependency="bin_method" 
+				
+				<stringListOption name="Bin to equal" id="bin_equal" possibleValues="width frequency" label="Equal" 
+					defaultValues="width" enableDependency="bin_method" 
 					enableValue="Fixed&#160;number&#160;of&#160;bins" configOnly="true">
+					Choose bins of equal width or equal frequency for the <n:b>fixed number</n:b> binning method.
 				</stringListOption>
+				
 				<stringOption name="Quantiles" id="bin_quantiles" label="Quantiles (comma separated)" 
 					defaultValue="0.0, 0.25, 0.5, 0.75, 1.0" enableDependency="bin_method" 
 					enableValue="Sample&#160;quantiles" configOnly="true">
+					Provide a comma separated list of quantiles for the <n:b>sample quantiles</n:b> binning method.
 				</stringOption>
-				<radioButtonOption name="Bin Naming" id="bin_naming" possibleValues="Numbered Borders Midpoints" label="Bin Naming" configOnly="true">
+				
+				<radioButtonOption name="Bin Naming" id="bin_naming" possibleValues="Numbered Borders Midpoints" 
+					defaultValue="Numbered" label="Bin Naming" configOnly="true">
+					Use <n:b>Numbered</n:b> for bins labeled by an integer with prefix "Bin", <n:b>Borders</n:b> for 
+					labels using '"(a,b]"' interval notation or <n:b>Midpoints</n:b> for labels that show the midpoint 
+					of the interval.
 				</radioButtonOption>
-				<checkBoxOption name="Force integer bounds" id="bin_force_int" label="Force integer bounds" defaultValue="false" configOnly="true">
+				
+				<checkBoxOption name="Force integer bounds" id="bin_force_int" label="Force integer bounds" 
+					defaultValue="false" configOnly="true">
+					<n:p>
+						Forces the bounds of the interval to be integers. The decimal bounds will be converted so that 
+						the lower bound of the first interval will be the floor of the lowest value and the upper bound 
+						of the last interval will be the ceiling of the highest value. The edges that separate the 
+						intervals will be the ceiling of the decimal edges. Duplicates of edges will be removed.
+					</n:p>
+					<n:p>
+						Examples:<n:br/>
+						[0.1,0.9], (0.9,1.8] -> [0,1], (1,2]<n:br/> 
+						[3.9,4.1], (4.1,4.9], (4.9,5.1] -> [3,5], (5,6]
+					</n:p>
 				</checkBoxOption>
+				
 				<radioButtonOption name="Number format settings" id="num_format" label="Number format settings" 
 					possibleValues="Default&#160;formatting Advanced&#160;formatting" 
 					defaultValue="Default&#160;formatting" configOnly="true">
+					If <n:b>advanced formatting</n:b> is enabled the format of the doubles in the labels can be 
+					configured by the options in this tab.
 				</radioButtonOption>
+				
 				<stringListOption name="Output format" id="out_format" label="Output format" 
 					possibleValues="Standard&#160;String Plain&#160;String&#160;(no&#160;exponent) Engineering&#160;String" 
 					defaultValues="Standard&#160;String" configOnly="true" enableDependency="num_format" 
 					enableValue="Advanced&#160;formatting">
+					Specify the output format.<n:br/>
+					The number 0.00000035239 will be displayed as 3.52E-7 with <n:b>Standard String</n:b>, 0.000000352 
+					with <n:b>Plain String (no exponent)</n:b> and 352E-9 with <n:b>Engineering String</n:b>.
 				</stringListOption>
+				
 				<integerOption name="Precision" id="format_precision" label="Precision" defaultValue="3" minValue="0" 
 					maxValue="100" stepSize="1" configOnly="true" enableDependency="num_format" 
 					enableValue="Advanced&#160;formatting" >
+					The scale of the double values to round to. If the scale is reduced the specified rounding mode 
+					is applied.
 				</integerOption>
+				
 				<stringListOption name="Precision mode" id="format_prec_mode" label="Precision mode" configOnly="true" 
 					possibleValues="Decimal&#160;places Significant&#160;figures" defaultValues="Decimal&#160;places" 
 					enableDependency="num_format" enableValue="Advanced&#160;formatting">
+					The type of precision to which the values are rounded. <n:b>Decimal places</n:b>, the default option
+					rounds to the specified decimal places, whereas <n:b>significant figures</n:b> rounds to significant
+					figures or numbers.
 				</stringListOption>
+				
 				<stringListOption name="Rounding mode" id="format_rounding" label="Rounding mode" configOnly="true"
 					possibleValues="UP DOWN CEILING FLOOR HALF_UP HALF_DOWN HALF_EVEN" defaultValues="HALF_UP" 
 					enableDependency="num_format" enableValue="Advanced&#160;formatting">
+					The rounding mode which is applied when double values are rounded.<n:br/>
+					The rounding mode specifies the rounding behavior. Seven different rounding modes are 
+					available:<n:br/>
+					<n:ul>
+						<n:li>UP: Rounding mode to round away from zero.</n:li>
+						<n:li>DOWN: Rounding mode to round towards zero.</n:li>
+						<n:li>CEILING: Rounding mode to round towards positive infinity.</n:li>
+						<n:li>FLOOR: Rounding mode to round towards negative infinity.</n:li>
+						<n:li>HALF_UP: Rounding mode to round towards "nearest neighbor"
+							unless both neighbors are equidistant, in which case round up.
+						</n:li>
+						<n:li>HALF_DOWN: Rounding mode to round towards "nearest neighbor"
+							unless both neighbors are equidistant, in which case round down.
+						</n:li>
+						<n:li>HALF_EVEN: Rounding mode to round towards the "nearest neighbor"
+							unless both neighbors are equidistant, in which case, round towards
+							the even neighbor.
+						</n:li>
+					</n:ul>
+					For a detailed description of each rounding mode please see the
+					<n:a href="http://docs.oracle.com/javase/6/docs/api/index.html?java/math/RoundingMode.html">
+					Java documentation</n:a>.
 				</stringListOption>
 			</options>
 		</tab>
 		<tab name="General Plot Options">
 			<options>
-				<stringOption name="Title" id="title" label="Title" defaultValue="Histogram" optional="true" saveInView="true">
+				<stringOption name="Title" id="title" label="Title" defaultValue="Histogram" optional="true" 
+					saveInView="true">
 					The chart title.
 				</stringOption>
 				<stringOption name="Subtitle" id="subtitle" label="Subtitle" optional="true" saveInView="true">
 					The chart subtitle.
 				</stringOption>
 
-				<stringOption name="Category-axis label" id="catLabel" label="Category-axis label" optional="true" saveInView="true">
+				<stringOption name="Category-axis label" id="catLabel" label="Category-axis label" optional="true" 
+					saveInView="true">
 					The label used for the category axis.
 				</stringOption>
 
-				<stringOption name="Frequency-axis label" id="freqLabel" label="Frequency-axis label" optional="true" saveInView="true">
+				<stringOption name="Frequency-axis label" id="freqLabel" label="Frequency-axis label" optional="true" 
+					saveInView="true">
 					The label used for the frequency axis.
 				</stringOption>
 				
 				<radioButtonOption name="Chart type" id="chartType" 
-                    possibleValues="Grouped Stacked" label="Chart type" defaultValue="Grouped" loadDefaults="true" saveInView="true">
-                    Select how to display the bar chart columns. In <n:i>Grouped</n:i> chart one bar indicates a separate value from a column, while in <n:i>Stacked</n:i> chart a bar is a stack of all values in a column.                  
+                    possibleValues="Grouped Stacked" label="Chart type" defaultValue="Grouped" saveInView="true">
+                    Select how to display the histogram columns. In <n:b>Grouped</n:b> chart one bar indicates a 
+                    separate value from a column, while in <n:b>Stacked</n:b> chart a bar is a stack of all values in 
+                    a column.                  
                 </radioButtonOption>
 
 				<checkBoxOption name="Stagger labels" id="staggerLabels"
-					label="Stagger labels" defaultValue="false" saveInView="true" enableDependency="orientation" enableValue="false">
-					When checked, the bar chart category legend is rendered in a staggered fashion to
-					allow more room for readability for long category names.
+					label="Stagger labels" defaultValue="false" saveInView="true" enableDependency="orientation" 
+					enableValue="false">
+					When checked, the histogram category legend is rendered in a staggered fashion to allow more room 
+					for readability for long category names.
 				</checkBoxOption>
 
-				<checkBoxOption name="Display legend" id="legend"
-					label="Display legend" defaultValue="true">
-					When checked, the bar chart legend is displayed.
+				<checkBoxOption name="Display legend" id="legend" label="Display legend" defaultValue="true">
+					When checked, the histogram legend is displayed.
 				</checkBoxOption>
 
-				<checkBoxOption name="Plot horizontal bar chart" id="orientation"
-					label="Plot horizontal bar chart" defaultValue="false" saveInView="true">
-					Check to plot the bar chart horizontally. By default bar chart is
-					plotted with vertical bars.
+				<checkBoxOption name="Plot horizontal bar chart" id="orientation" label="Plot horizontal bar chart" 
+					defaultValue="false" saveInView="true">
+					Check to plot the histogram horizontally. By default the histogram is plotted with vertical bars.
 				</checkBoxOption>
 				
 				<checkBoxOption name="Display fullscreen button" id="displayFullscreenButton"
-                    label="Display fullscreen button" defaultValue="true" loadDefaults="true">
-                    Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.
+                    label="Display fullscreen button" defaultValue="true">
+                    Check to display a button which switches the view into fullscreen mode. The button is only available
+                    in the KNIME WebPortal.
                 </checkBoxOption>
 				
-                <checkBoxOption name="Show maximum value" id="showMaximum"
-                    label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
+                <checkBoxOption name="Show maximum value" id="showMaximum" label="Display maximum value" 
+                	defaultValue="true" saveInView="true">
                     Check if the maximum of the Y-Axis should be displayed.
                 </checkBoxOption>
                 
-				<svgOption name="Image" id="svg" portIndex="0" label="Image"
-					additionalWait="500" defaultWidth="800" defaultHeight="600"
-					defaultFullscreen="true">
+				<svgOption name="Image" id="svg" portIndex="0" label="Image" additionalWait="500" defaultWidth="800" 
+					defaultHeight="600" defaultFullscreen="true">
 					Settings for SVG image generation.
 				</svgOption>
 				
-				<checkBoxOption name="Show warnings in view" id="showWarnings" 
-				    label="Show warnings in view" defaultValue="true" loadDefaults="true">
+				<checkBoxOption name="Show warnings in view" id="showWarnings" label="Show warnings in view" 
+					defaultValue="true">
                     If checked, warning messages will be displayed in the view when they occur.
                 </checkBoxOption>
 				
@@ -164,73 +249,56 @@
 		</tab>
 		<tab name="Control Options">
 			<options>
-				<checkBoxOption name="Enable view controls" id="enableViewControls"
-					label="Enable view controls" defaultValue="true">
+				<checkBoxOption name="Enable view controls" id="enableViewControls" label="Enable view controls" 
+					defaultValue="true">
 					Check to enable controls in the chart.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Grouped/Stacked Chooser" id="enableStackedEdit"
+				<checkBoxOption name="Enable Grouped/Stacked Chooser" id="enableStackedEdit" 
 					label="Enable Grouped/Stacked Chooser" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable the display a control to choose grouped or stacked display of the bars.
 				</checkBoxOption>
 				<checkBoxOption name="Enable plot orientation change"
-					id="enableHorizontalToggle" label="Enable plot orientation change"
-					defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable interactive toggling between a horizontal or
-					vertical bar chart.
+					id="enableHorizontalToggle" label="Enable plot orientation change" defaultValue="true" 
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable interactive toggling between a horizontal or vertical histogram.
 				</checkBoxOption>
-				<checkBoxOption name="Enable stagger label change"
-					id="enableStaggerToggle" label="Enable stagger label change"
-					defaultValue="true" enableDependency="enableViewControls"
+				<checkBoxOption name="Enable stagger label change" id="enableStaggerToggle" 
+					label="Enable stagger label change" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable editing whether or not the labels for the category axis are rendered staggered.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Title editing" id="enableTitleEdit"
-					label="Enable Title editing" defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
+				<checkBoxOption name="Enable Title editing" id="enableTitleEdit" label="Enable Title editing" 
+					defaultValue="true" enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the title within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit"
-					label="Enable Subtitle editing" defaultValue="true" enableDependency="enableViewControls"
-					enableValue="true">
+				<checkBoxOption name="Enable Subtitle editing" id="enableSubtitleEdit" label="Enable Subtitle editing" 
+					defaultValue="true" enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the subtitle within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable Axis title editing" id="enableAxisEdit"
-					label="Enable Axis title editing" defaultValue="true"
-					enableDependency="enableViewControls" enableValue="true">
+				<checkBoxOption name="Enable Axis title editing" id="enableAxisEdit" label="Enable Axis title editing" 
+					defaultValue="true" enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the axis titles within the view.
 				</checkBoxOption>
-				<checkBoxOption name="Enable switching 'Missing values' category" id="enableSwitchMissValCat"
-                    label="Enable switching 'Missing values' category" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
+				<checkBoxOption name="Enable switching 'Missing values' category" id="enableSwitchMissValCat" 
+					label="Enable switching 'Missing values' category" defaultValue="true" 
+					enableDependency="enableViewControls" enableValue="true">
                     Check to enable to show and hide 'Missing values' category in the view.
                 </checkBoxOption>
                 <checkBoxOption name="Enable showing maximum value on y-axis" id="enableMaximumValue"
-                    label="Enable showing maximum value on y-axis" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
+                    label="Enable showing maximum value on y-axis" defaultValue="true" 
+                    enableDependency="enableViewControls" enableValue="true">
                     Check to enable to show and hide maximum value on the y-axis.
                 </checkBoxOption>
-                
-				<!-- <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
-					label="Enable Category Chooser" defaultValue="false"
-					enableDependency="enableViewControls" enableValue="true">
-					Check to enable the interactive selection of a category column.
-				</checkBoxOption> -->
-				<!-- <checkBoxOption name="Enable Frequency Column Chooser"
-					id="enableFrequencyColumnChooser" label="Enable Frequency Column Chooser"
-					defaultValue="false" enableDependency="enableViewControls"
-					enableValue="true">
-					Check to enable the interactive selection of a frequency columns.
-				</checkBoxOption> -->
 			</options>
 		</tab>
 	</fullDescription>
-	<interactiveView name="Grouped Bar Chart">
-		A bar chart based on the NVD3 library.
+	<interactiveView name="Histogram View">
+		A histogram based on the NVD3 library.
 	</interactiveView>
 	<ports>
 		<inPort portType="Data" name="Display data" index="0">
-			Data table containing the categories and values to be plotted in a bar
-			chart.
+			Data table containing the values to be plotted in a histogram.
 		</inPort>
 		<outPort portType="Image" name="Histogram image" index="0">
 			SVG image of the histogram.

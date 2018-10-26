@@ -71,8 +71,8 @@ public class BinningProcessor extends GroupedProcessor {
 
         //Create bin column with user settings
         AutoBinnerLearnSettings binnerSettings = new AutoBinnerLearnSettings();
-        binnerSettings.setFilterConfiguration(new DataColumnSpecFilterConfiguration("filter", new InputFilter<DataColumnSpec>() {
-            
+        binnerSettings.setFilterConfiguration(new DataColumnSpecFilterConfiguration("filter", 
+            new InputFilter<DataColumnSpec>() {
             @Override
             public boolean include(DataColumnSpec name) {
                 return name.getName().equals(m_binColumn);
@@ -86,7 +86,8 @@ public class BinningProcessor extends GroupedProcessor {
             binnerSettings.setEqualityMethod(eq);
         } else {
             String[] splittedQuantiles = binQuantiles.split(",");
-            double[] dQuantiles = Arrays.stream(splittedQuantiles).mapToDouble(v -> Double.parseDouble(v.trim())).toArray();
+            double[] dQuantiles =
+                Arrays.stream(splittedQuantiles).mapToDouble(v -> Double.parseDouble(v.trim())).toArray();
             binnerSettings.setSampleQuantiles(dQuantiles);
         }
         BinNaming naming = BinNaming.numbered;
@@ -113,24 +114,36 @@ public class BinningProcessor extends GroupedProcessor {
             binnerSettings.setRoundingMode(RoundingMode.valueOf(roundingMode));
         }
         AutoBinner binner = new AutoBinner(binnerSettings, table.getDataTableSpec());
-        BufferedDataTable inData = binner.calcDomainBoundsIfNeccessary(table, exec, Arrays.asList(m_binColumn));
-        PMMLPreprocDiscretize op = binner.execute(inData, exec.createSubExecutionContext(0.25));
+        exec.setMessage("Calculating domain bounds...");
+        final ExecutionContext domainExec = exec.createSubExecutionContext(0.1);
+        BufferedDataTable inData = binner.calcDomainBoundsIfNeccessary(table, domainExec, Arrays.asList(m_binColumn));
+        domainExec.setProgress(1.0);
+        exec.setMessage("Binning input table...");
+        final ExecutionContext preprocExec = exec.createSubExecutionContext(0.05);
+        PMMLPreprocDiscretize op = binner.execute(inData, preprocExec);
+        preprocExec.setProgress(1.0);
         List<String> binnedNames = op.getConfiguration().getNames();
         assert binnedNames.size() == 1;
         String binnedColName = binnedNames.get(0);
         List<String> orderedBinNames = op.getConfiguration().getDiscretize(binnedColName).getBins().stream()
             .map(e -> e.getBinValue()).collect(Collectors.toList());
         AutoBinnerApply applier = new AutoBinnerApply();
-        BufferedDataTable outData = applier.execute(op, table, exec.createSubExecutionContext(0.25));
+        final ExecutionContext binExec = exec.createSubExecutionContext(0.4);
+        BufferedDataTable outData = applier.execute(op, table, binExec);
+        binExec.setProgress(1.0);
 
         //Group table with bin column according to user settings on GroupedProcessor
+        exec.setMessage("");
         catCol.setStringValue(binnedColName);
+        final ExecutionContext groupExec = exec.createSubExecutionContext(0.4);
         Object[] grouped =
-            super.processInputObjects(new PortObject[]{outData}, exec.createSubExecutionContext(0.5), config);
+            super.processInputObjects(new PortObject[]{outData}, groupExec, config);
+        groupExec.setProgress(1.0);
         BufferedDataTable groupedTable = (BufferedDataTable)grouped[0];
         catCol.setStringValue(m_binColumn);
         
         //Make sure bins are sorted correctly in output table
+        exec.setMessage("Sorting histogram table...");
         final int binIndex =
             Arrays.asList(groupedTable.getDataTableSpec().getColumnNames()).indexOf(binnedColName);
         Comparator<DataRow> comp = new Comparator<DataRow>() {
@@ -154,14 +167,15 @@ public class BinningProcessor extends GroupedProcessor {
         };
         BufferedDataTableSorter sorter = new BufferedDataTableSorter(groupedTable, comp);
         sorter.setSortInMemory(true);
-        BufferedDataTable sortedTable = sorter.sort(exec.createSubExecutionContext(0.01));
+        BufferedDataTable sortedTable = sorter.sort(preprocExec);
         Builder builder = JSONDataTable.newBuilder()
                 .setDataTable(sortedTable)
                 .setFirstRow(1)
                 .setMaxRows(Math.toIntExact(sortedTable.size()));
         BinningResult res = new BinningResult();
-        res.setTable(builder.build(exec.createSubExecutionContext(0.01)));
+        res.setTable(builder.build(exec.createSubExecutionContext(0.05)));
         res.setBinnedColumn(binnedColName);
+        exec.setProgress(1.0);
         return new Object[]{res};
     }
     
@@ -171,6 +185,7 @@ public class BinningProcessor extends GroupedProcessor {
         private JSONDataTable m_table;
         private String m_binnedColumn;
         
+        @SuppressWarnings("unused")
         public JSONDataTable getTable() {
             return m_table;
         }
@@ -179,6 +194,7 @@ public class BinningProcessor extends GroupedProcessor {
             m_table = table;
         }
         
+        @SuppressWarnings("unused")
         public String getBinnedColumn() {
             return m_binnedColumn;
         }

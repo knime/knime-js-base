@@ -576,14 +576,15 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     // try pre-processing input
                     Object[] processedInputs = inObjects;
                     if (m_processor != null) {
-                        processedInputs = m_processor.processInputObjects(inObjects, exec, m_config);
+                        processedInputs =
+                            m_processor.processInputObjects(inObjects, exec.createSubExecutionContext(0.9), m_config);
                         if (m_processor instanceof DynamicStatefulJSProcessor) {
-                        String warnMessage = ((DynamicStatefulJSProcessor)m_processor).getWarningMessage();
-                        if (warnMessage != null) {
-                            viewRepresentation.setWarnMessage(warnMessage);
-                            setWarningMessage(warnMessage);
+                            String warnMessage = ((DynamicStatefulJSProcessor)m_processor).getWarningMessage();
+                            if (warnMessage != null) {
+                                viewRepresentation.setWarnMessage(warnMessage);
+                                setWarningMessage(warnMessage);
+                            }
                         }
-                    }
                     }
 
                     List<Object> viewInObjects = new ArrayList<Object>();
