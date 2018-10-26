@@ -1,32 +1,33 @@
 window.parallelcoords_namespace = (function () {
-    var extraRows, isRowIncludedInFilter, getExtents, applyFilter, filterChanged, isSorted, saveSelected, selectRows,
-        key, drawSavedBrushes, createXAxis, drawBrushes, brushstart, getLine, drawElements, position, resize, brush,
-        noBrushes, saveSelectedRows, getTableRow, getTableColumnId, saveSettingsToValue, containMissing, clearBrushes,
-        checkClearSelectionButton, drawChart, createControls, getDataColumnID, createData, publishCurrentSelection,
-        selectionChanged, mzd, w, h, plotG, bottomBar, scales, scaleCols, extents, _data, layoutContainer,
-        _representation, _value;
+    var extraRows, getExtents, applyFilter, filterChanged, saveSelected, selectRows, drawSavedBrushes, createXAxis,
+        drawBrushes, brushstart, getLine, drawElements, position, resize, brush, noBrushes, saveSelectedRows,
+        saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
+        getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
+        scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight, oldWidth,
+        ordinalScale, xBrushScale, xBrush, xExtent;
 
     var MIN_HEIGHT = 100;
     var MIN_WIDTH = 100;
     var MISSING_VALUE_MODE = 'Show\u00A0missing\u00A0values';
 
     var pcPlot = {};
+
     var brushes = {};
-    var xBrush, xExtent;
     var draggingNow = false;
     var dragging = {};
-    var line;
     var rowsSelected = false;
-    var colors;
     var sortedCols = [];
-    var oldHeight, oldWidth, ordinalScale, xBrushScale;
     var filterIds = [];
     var currentFilter = null;
+
+    var knimeTable;
 
     pcPlot.init = function (representation, value) {
         _value = value;
         _representation = representation;
-        // alert(JSON.stringify(_value.options.selectedrows));
+
+        knimeTable = new kt();
+        knimeTable.setDataTable(_representation.inObjects[0]);
 
         d3.select('html').style('width', '100%').style('height', '100%');
         d3.select('body').style('width', '100%').style('height', '100%');
@@ -220,15 +221,6 @@ window.parallelcoords_namespace = (function () {
         return data;
     };
 
-    isSorted = function (cols) {
-        for (var i = 1; i < cols.length; i++) {
-            if (position(cols[i]) < position(cols[i - 1])) {
-                return false;
-            }
-        }
-        return true;
-    };
-
     getDataColumnID = function (columnName, table) {
         var colID = null;
         for (var i = 0; i < table.spec.numColumns; i++) {
@@ -243,11 +235,6 @@ window.parallelcoords_namespace = (function () {
     };
 
     createControls = function () {
-
-        if (!knimeService) {
-            // TODO: error handling?
-            return;
-        }
 
         // -- Buttons --
         if (_representation.options.displayFullscreenButton) {
@@ -523,7 +510,8 @@ window.parallelcoords_namespace = (function () {
     applyFilter = function (clear) {
         if (currentFilter) {
             d3.selectAll('.row').each(function (d) {
-                d3.select(this).classed('filtered', !isRowIncludedInFilter(d.id));
+                var included = knimeTable.isRowIncludedInFilter(d.id, currentFilter);
+                d3.select(this).classed('filtered', !included);
             });
             if (clear) {
                 clearBrushes();
@@ -587,8 +575,8 @@ window.parallelcoords_namespace = (function () {
     };
 
     drawChart = function () {
-        var path,
-            transition;
+
+        var transition;
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
         var ch = Math.max(MIN_HEIGHT, _representation.options.svg.height);
         var chartWidth = cw + 'px;';
@@ -636,8 +624,7 @@ window.parallelcoords_namespace = (function () {
             legendG.attr('transform', 'translate(' + (parseInt(d3svg.style('width'), 10) - maxLength) + ',' + (mTop + 20) + ')');
         }
 
-        var bottomMargin;
-        _value.options.mValues == MISSING_VALUE_MODE && containMissing() ? bottomMargin = 60 : bottomMargin = 30;
+        var bottomMargin = (_value.options.mValues == MISSING_VALUE_MODE && containMissing()) ? 60 : 30;
 
         var margin = { top: mTop, left: 40, bottom: bottomMargin, right: 10 + maxLength };
 
@@ -651,7 +638,6 @@ window.parallelcoords_namespace = (function () {
         d3svg.select('#bgr').attr({ width: w + margin.left + margin.right, height: h + margin.top + margin.bottom });
 
         scaleCols = d3.scale.ordinal().domain(_data.colNames).rangePoints([0, w], 0.5);
-
         scales = {};
 
         for (var c = 0; c < _data.colNames.length; c++) {
@@ -675,13 +661,11 @@ window.parallelcoords_namespace = (function () {
 
         // create an additional axis for the missing values selection
         if (_representation.options.enableMValuesHandling &&
-            _representation.options.enableViewControls &&
-            _representation.runningInView) {
-            if (_value.options.mValues == MISSING_VALUE_MODE && _representation.options.enableSelection &&
+                _representation.options.enableViewControls &&
+                _representation.runningInView && _value.options.mValues == MISSING_VALUE_MODE &&
+                _representation.options.enableSelection &&
                 _representation.options.enableBrushing && containMissing()) {
-                createXAxis();
-            }
-
+            createXAxis();
         }
 
 
@@ -727,16 +711,15 @@ window.parallelcoords_namespace = (function () {
                         dragging[d] = Math.min(w, Math.max(0, d3.event.x));
                         _data.colNames.sort(function (a, b) { return position(a) - position(b); });
                         scaleCols.domain(_data.colNames);
-                        d3.selectAll('.row').attr('d', path);
+                        d3.selectAll('.row').attr('d', getLine);
                         g.attr('transform', function (d) { return 'translate(' + position(d) + ',0)'; });
                     }
-
                 })
                 .on('dragend', function (d) {
                     delete dragging[d];
                     draggingNow = false;
                     transition(d3.select(this)).attr('transform', 'translate(' + scaleCols(d) + ')');
-                    transition(d3.selectAll('.row')).attr('d', path);
+                    transition(d3.selectAll('.row')).attr('d', getLine);
                     if (_value.options.mValues == MISSING_VALUE_MODE && containMissing()) {
                         if (!xBrush.empty()) {
                             xBrush.extent(xBrush.extent());
@@ -776,10 +759,6 @@ window.parallelcoords_namespace = (function () {
 
         transition = function (g) {
             return g.transition().duration(500);
-        };
-
-        path = function (d) {
-            return getLine(d);
         };
 
         // representation.options.enableViewControls
@@ -865,10 +844,6 @@ window.parallelcoords_namespace = (function () {
         return line(_data.colNames.map(function (col) {
             return dp[col];
         }));
-    };
-
-    key = function (d) {
-        return d.id;
     };
 
     drawElements = function (data) {
@@ -968,14 +943,6 @@ window.parallelcoords_namespace = (function () {
             });
         }
 
-
-        // render rows with a delay
-        /* d3.selectAll(".row").style("visibility", "hidden");
-        d3.selectAll(".row").transition().style("visibility", "visible").delay(function(d,i){
-            arraySize = d3.selectAll(".row").length;
-            return arraySize / i * 5000;
-        }); */
-
     };
 
     position = function (d) {
@@ -1007,6 +974,9 @@ window.parallelcoords_namespace = (function () {
             .attr('fill-opacity', '0.2')
             .attr('stroke', '#fff')
             .attr('shape-rendering', 'crispEdges');
+
+        var dataBg = plotG.select('#da');
+        dataBg.attr({ height: Number(dataBg.attr('height')) + 30 });
     };
 
     clearBrushes = function () {
@@ -1279,66 +1249,6 @@ window.parallelcoords_namespace = (function () {
             });
         }
 
-    };
-
-    isRowIncludedInFilter = function (rowId) {
-        if (currentFilter && currentFilter.elements) {
-            var included = true;
-            var row = getTableRow(rowId);
-            for (var i = 0; i < currentFilter.elements.length; i++) {
-                var filterElement = currentFilter.elements[i];
-                if (filterElement.type == 'range' && filterElement.columns) {
-                    for (var col = 0; col < filterElement.columns.length; col++) {
-                        var column = filterElement.columns[col];
-                        var columnIndex = getTableColumnId(column.columnName);
-                        if (columnIndex != null) {
-                            var rowValue = row.data[columnIndex];
-                            if (column.type = 'numeric') {
-                                if (column.minimumInclusive) {
-                                    included &= rowValue >= column.minimum;
-                                } else {
-                                    included &= rowValue > column.minimum;
-                                }
-                                if (column.maximumInclusive) {
-                                    included &= rowValue <= column.maximum;
-                                } else {
-                                    included &= rowValue < column.maximum;
-                                }
-                            } else if (column.type = 'nominal') {
-                                included &= column.values.indexOf(rowValue) >= 0;
-                            }
-                        }
-                    }
-                } else {
-                    // TODO row filter - currently not possible
-                }
-            }
-            return included;
-        }
-        return true;
-    };
-
-    getTableColumnId = function (columnName) {
-        var table = _representation.inObjects[0];
-        var colID = null;
-        for (var i = 0; i < table.spec.numColumns; i++) {
-            if (table.spec.colNames[i] === columnName) {
-                colID = i;
-                break;
-            }
-
-        }
-
-        return colID;
-    };
-
-    getTableRow = function (rowId) {
-        var table = _representation.inObjects[0];
-        for (var i = 0; i < table.spec.numRows; i++) {
-            if (table.rows[i].rowKey == rowId) {
-                return table.rows[i];
-            }
-        }
     };
 
     noBrushes = function () {
