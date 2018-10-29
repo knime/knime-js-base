@@ -75,7 +75,7 @@
 					Use <n:b>Fixed number</n:b> of bins for bins with equal <n:b>width</n:b> over the domain range or 
 					bins that have an equal <n:b>frequency</n:b> of element occurrences.<n:br/>
 					Use <n:b>Sample quantiles</n:b> to produces bins corresponding to the given list of probabilities. 
-					The smallest element corresponds to a probability of 0 and the largest do probability of 1. 
+					The smallest element corresponds to a probability of 0 and the largest to probability of 1. 
 					The applied estimation method is <n:a 
 					href="https://en.wikipedia.org/wiki/Quantile#Estimating_quantiles_from_a_sample">Type 7</n:a> 
 					which is the default method in R, S and Excel.
