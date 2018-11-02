@@ -117,7 +117,6 @@
 				    label="Show warnings in view" defaultValue="true" loadDefaults="true">
                     If checked, warning messages will be displayed in the view when they occur.
                 </checkBoxOption>
-				
 			</options>
 		</tab>
 		<tab name="Control Options">
@@ -181,6 +180,29 @@
 				</checkBoxOption> -->
 			</options>
 		</tab>
+		<tab name="Interactivity">
+        	<description>
+        		The JavaScript bar chart view allows for several ways of interactivity. Please use the options below to configure which features will be activated on the view and further configuration of interactive properties.
+        	</description>
+        	<options>
+	            <checkBoxOption name="Enable selection" id="enableSelection" label="Enable selection" 
+	        		defaultValue="true" loadDefaults="true">
+	        		If checked a separate column containing checkboxes is rendered in the view. The selection, when applied, will be represented in the output table as a new boolean column.
+	        	</checkBoxOption>
+	        	<checkBoxOption name="Subscribe to selection events" id="subscribeToSelection" 
+	        		label="Subscribe to selection events" defaultValue="true" loadDefaults="true" saveInView="true">
+	        	    If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".
+	        	</checkBoxOption>
+	        	<checkBoxOption name="Publish selection events" id="publishSelection" 
+	        		label="Publish selection events" defaultValue="true" loadDefaults="true" saveInView="true">
+	        	    If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".
+	        	</checkBoxOption>
+	        	<checkBoxOption name="Display clear selection button" id="displayClearSelectionButton"
+	               label="Display clear selection button" defaultValue="true" enableDependency="enableSelection" enableValue="true">
+	               Displays a button to clear current selection.
+	           </checkBoxOption>
+        	</options>
+        </tab>
 	</fullDescription>
 	<interactiveView name="Grouped Bar Chart">
 		A bar chart based on the NVD3 library.

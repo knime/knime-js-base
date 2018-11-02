@@ -73,8 +73,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
  *
@@ -427,8 +427,8 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                         jsonObject = c.newInstance();
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                        ObjectReader reader = mapper.readerForUpdating(jsonObject);
-                        reader.readValue(jsonString);
+                        JsonNode tree = mapper.readTree(jsonString);
+                        jsonObject = tree;
                     } catch (Exception e) {
                         LOGGER.error("Unable to deserialize inObject from JSON: " + e.getMessage(), e);
                     }

@@ -2,7 +2,6 @@ package org.knime.dynamic.js.base.grouped;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,9 +17,7 @@ import org.knime.base.node.preproc.groupby.ColumnNamePolicy;
 import org.knime.base.node.preproc.groupby.GroupByTable;
 import org.knime.base.node.preproc.groupby.MemoryGroupByTable;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
@@ -28,14 +25,15 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.property.hilite.DefaultHiLiteMapper;
-import org.knime.core.node.property.hilite.HiLiteHandler;
 import org.knime.core.node.property.hilite.HiLiteTranslator;
 import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.dynamic.js.v30.DynamicJSConfig;
-import org.knime.dynamic.js.v30.DynamicJSViewRepresentation;
 import org.knime.dynamic.js.v30.DynamicStatefulJSProcessor;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.JSONDataTable.Builder;
 import org.knime.js.core.selections.json.JSONSelectionTranslator;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 public class GroupedProcessor extends DynamicStatefulJSProcessor {
 	
@@ -134,24 +132,53 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 		Object[] processedObjects = new Object[inObjects.length];
 		HiLiteTranslator translator = new HiLiteTranslator();
 		translator.setMapper(new DefaultHiLiteMapper(groupTable.getHiliteMapping()));
-		Object[] outputObject = new Object[2];
-		JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(
-            exec,
-            groupTable.getBufferedTable(), UUID.randomUUID().toString());
-		outputObject[0] = jsonTable;
-		outputObject[1] = new JSONSelectionTranslator(translator);
-		processedObjects[0] = outputObject;
+		Builder builder = JSONDataTable.newBuilder()
+		        .setDataTable(groupTable.getBufferedTable())
+		        .setId(UUID.randomUUID().toString())
+                .setFirstRow(1)
+                .setMaxRows((int)groupTable.getBufferedTable().size());
+		GroupingResult result = new GroupingResult();
+		result.setTable(builder.build(exec));
+		result.setUUID(UUID.randomUUID().toString());
+		result.setTranslator(new JSONSelectionTranslator(translator));
+		
+		processedObjects[0] = result;
 		System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
-		return processedObjects;
+		return new Object[]{result};
 	}
-	
-	   private static JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable, final String tableId) throws CanceledExecutionException {
-	        JSONDataTable table = JSONDataTable.newBuilder()
-	                .setDataTable(inTable)
-	                .setId(tableId)
-	                .setFirstRow(1)
-	                .setMaxRows((int)inTable.size())
-	                .build(exec);
-	        return table;
-	    }
+	   
+    @JsonAutoDetect
+    public static final class GroupingResult {
+        
+        private JSONDataTable m_table;
+        private String m_UUID;
+        private JSONSelectionTranslator m_translator;
+        
+        @SuppressWarnings("unused")
+        public JSONDataTable getTable() {
+            return m_table;
+        }
+        
+        public void setTable(JSONDataTable table) {
+            m_table = table;
+        }
+        
+        @SuppressWarnings("unused")
+        public String getUUID() {
+            return m_UUID;
+        }
+        
+        public void setUUID(String uuid) {
+            m_UUID = uuid;
+        }
+        
+        @SuppressWarnings("unused")
+        public JSONSelectionTranslator getTranslator() {
+            return m_translator;
+        }
+        
+        public void setTranslator(JSONSelectionTranslator translator) {
+            m_translator = translator;
+        }
+    }
 }

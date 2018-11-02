@@ -5,3 +5,21 @@ svg.colored .nvd3 .nv-discretebar .nv-groups rect {
 	fill: inherit !important;
 	stroke: inherit !important;
 }
+
+text.knime-tick-label.knime-selected {
+	font-weight: bold;
+}
+rect.knime-selected {
+	fill: orange;
+	
+}
+rect.knime-partially-selected {
+	fill: grey;
+}
+text.knime-tick-label.knime-partially-selected {
+	font-weight: bold;
+}
+
+rect.nv-bar.positive {
+	cursor:pointer;
+}

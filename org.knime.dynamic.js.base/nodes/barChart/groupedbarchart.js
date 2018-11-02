@@ -6,7 +6,6 @@
     var MIN_HEIGHT = 100, MIN_WIDTH = 100;
     var _representation, _value;
     var chart, svg;
-    var staggerCheckbox;
     var knimeTable;
 
     var plotData;
@@ -15,8 +14,7 @@
     var categories;
     var freqCols;
     var _translator;
-    var _selectedBars;
-    var _selectedBarKeys;
+    var _keyNameMap;
 
     /**
 	 * 2d-array where for each category (indexing follows categories array) we
@@ -76,17 +74,17 @@
 
     barchart.init = function (representation, value) {
         _value = value;
-        _value.selection = value.selection || [];
+        _value.options['selection'] = _value.options['selection'] || [];
         _representation = representation;
-        _selectedBars = [];
-        _selectedBarKeys = [];
-        if(_representation.inObjects[0]) {
-        	_translator = _representation.inObjects[0][1];
-        	_translator.sourceID = _representation.tableIds[0];
-        	_translator.targetID = _representation.inObjects[0][1].sourceID
-        }	
-        //knimeService.registerSelectionTranslator(_translator, _translator.sourceID, onSelectionChanged);
-
+        if(_representation.inObjects[0].translator) {
+        	_translator = _representation.inObjects[0].translator;
+        	_translator.sourceID = _representation.inObjects[0].uuid;
+        	_translator.targetIDs = [_representation.tableIds[0]];
+        	knimeService.registerSelectionTranslator(_translator, _translator.sourceID);
+        	subscribeToSelection(_value.options.subscribeToSelection);
+        	_keyNameMap = new KeyNameMap(getClusterToRowMapping());
+        }
+        
         showWarnings = _representation.options.showWarnings;
 
         if (_representation.warnMessage && showWarnings) {
@@ -98,6 +96,7 @@
             drawControls();
         }
     };
+    
 
     function drawChart(redraw) {
 
@@ -161,6 +160,15 @@
         svg = d3.select('svg')
             .style('display', 'block')
             .classed('colored', true);
+        
+        
+        // handle clicks on background to deselect current selection
+        svg.on("click", function() {
+        	removeHilightBar("",true);
+        	_value.options['selection'] = [];
+        	publishSelection(true);
+        });
+        
 
         if (!optFullscreen) {
             if (optWidth > 0) {
@@ -192,7 +200,7 @@
 			 */
             knimeTable = new kt();
             // Add the data from the input port to the knimeTable.
-            var port0dataTable = _representation.inObjects[0][0];
+            var port0dataTable = _representation.inObjects[0].table;
             knimeTable.setDataTable(port0dataTable);
 
             processData();
@@ -239,119 +247,236 @@
             updateAxisLabels(false);
             svg.datum(plotData).transition().duration(0).call(chart);
             nv.utils.windowResize(function () { updateAxisLabels(true); updateLabels(); setCssClasses(); });
-
+            
+            // redraws selection
+            redrawSelection();
             return chart;
-        },function(){ 
-        	d3.selectAll(".nv-bar").on('click',function(event) {
-        		showHighlighting(event);
-        	});
-      });
+        });
     }
     
-    function showHighlighting(event) {
-	  	var clusterName = event.x;
-	  	var barIndex = _selectedBars.indexOf(clusterName);
-	  	if((barIndex >= 0 && (d3.event.ctrlKey || _selectedBars.length == 1))){
-		  	var circle = d3.select(".hilightBar_" + _selectedBars[barIndex]); 
-		  	g = circle.select(function() { return this.parentNode; })
-		  	g.select("text").style("fill", "black");
-		  	d3.select(".hilightBar_" + _selectedBars[barIndex]).remove();
-	  		_selectedBars.splice(barIndex,1);
-	  		_selectedBarKeys.splice(barIndex,1);
-	  	} else {
-	  		if(!d3.event.ctrlKey){
-		  		var length = _selectedBars.length;
-		  		for(var i = 0; i < length;i++) {
-		  			d3.select(".hilightBar_" + _selectedBars.pop()).remove();
-		  			_selectedBarKeys.pop();
-		  			selectionEvent = "removedAll"
-		  		}
-		  	}
-	  		var clusterKey = createHilightBar(clusterName);
-		  	
-		  	_selectedBars.push(clusterName);
-		  	_selectedBarKeys.push(clusterKey);
-	  	}
-	  	_value.selection1 = new Array();
-	  	for(key in _selectedBarKeys) {
-	  		var tempKey = _selectedBarKeys[key];
-	  		_value.selection1 = _value.selection1.concat(_representation.inObjects[0][1].mapping[tempKey]);
-	  	}
-	    knimeService.setSelectedRows(_representation.tableIds[0],_value.selection1);
+    function registerClickHandler () {
+    	d3.selectAll(".nv-bar").on('click',function(event) {
+			handleHighlightClick(event);
+			d3.event.stopPropagation();
+    	});
     }
     
-    function createHilightBar (clusterName) {
-	  	var clusterKey;
+    function redrawSelection() {
+    	for(var i = 0; i < _value.options['selection'].length; i++) {
+    		createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]), 
+    				_value.options['selection'][i][1]);
+    	}
+    }
+    
+    function subscribeToSelection(subscribeBool) {
+    	if(_representation.options.enableSelection) {
+    		if(subscribeBool) {
+    			knimeService.subscribeToSelection(_translator.sourceID, onSelectionChanged);
+    		} else {
+    			knimeService.unsubscribeSelection(_translator.sourceID, onSelectionChanged);
+    		}
+    	}
+    }
+    
+    function publishSelection(shouldPublish){
+    	if(shouldPublish) {
+    		knimeService.setSelectedRows(_translator.sourceID, getSelectedRowIDs(), _translator.sourceID);
+    	}
+    }
+    
+	function checkClearSelectionButton(){
+		var button = d3.select("#clearSelectionButton");
+		if (button){
+			button.classed("inactive", function(){return !_value.options['selection'].length > 0});
+		}
+	}
+    
+    function getSelectedRowIDs() {
+    	var selectedRowIDs = [];
+    	for (var i = 0; i< _value.options['selection'].length; i++) {
+    		selectedRowIDs.push( _value.options['selection'][i][0]);
+    	}
+    	return selectedRowIDs;
+    }
+    
+    // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
+    function removeHilightBar(clusterName, removeAll) {
+    	if(removeAll) {
+    		var length = _value.options['selection'].length;
+	  		for(var i = 0; i < length; i++) {
+	  			let selectedEntry = _value.options['selection'][i];
+	  			let bar = d3.select(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])); 
+	  			let barParent = bar.select(function() { return this.parentNode; });
+	  			barParent.select("text").classed(selectedEntry[1], false);
+	  			d3.selectAll(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])).remove();
+	  		}
+    	} else {
+	    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
+	    	if(barIndex > -1) {
+		    	let selectedEntry = _value.options['selection'][barIndex];
+		    	let bar = d3.select(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])); 
+		    	let barParent = bar.select(function() { return this.parentNode; });
+		    	barParent.select("text").classed(selectedEntry[1], false);
+			  	d3.selectAll(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])).remove();
+	    	}
+    	}
+    } 
+    
+    // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
+    function createHilightBar (clusterName, selectionClass) {
     	var optOrientation = _value.options['orientation'];
-    	var optStaggerLabels = _value.options['staggerLabels'];
-	  	for(var j = 0; j < _representation.inObjects[0][0].rows.length; j++) {
-	  		if(_representation.inObjects[0][0].rows[j].data[0] === clusterName) {
-	  			clusterKey = _representation.inObjects[0][0].rows[j].rowKey;
-	  			d3.selectAll(".knime-x text").style("fill",function(d,i) {
+	  	for(var j = 0; j < _representation.inObjects[0].table.rows.length; j++) {
+	  		if(_representation.inObjects[0].table.rows[j].data[0] === clusterName) {
+	  			d3.selectAll(".knime-x text").each(function(d,i) {
 	  				if(i==j) {
+	  					d3.select(this).classed(selectionClass,true);
 	  					var posX = 0;
 	  					var posY = 0;
-	  					var highlightWidth = 0;
 	  					var highlightHeight = 0;
-	  					var highlighColor = 'darkOrange';
+	  					var highlightWidth = 5;
 	  					if(optOrientation) {
 	  						posY = -0.5*(d3.select(".nv-bar.positive").node().getBBox().height * plotData.length);
-	  						highlightWidth = 5;
-	  						posX = -d3.select(this.parentNode).select("text").node().getBBox().width-8;
+	  						posX = -1.5*highlightWidth;
 	  						highlightHeight = (d3.select(".nv-bar.positive").node().getBBox().height) * plotData.length;
 	  					} else {
-	  						if(optStaggerLabels) {
 	  							posX = -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * plotData.length);
-	  							console.log(d3.select(this.parentNode).select("text")[0][0].transform.baseVal[0].matrix.f);
-		  						posY = d3.select(this.parentNode).select("text")[0][0].transform.baseVal[0].matrix.f -2;
 		  						highlightWidth = (d3.select(".nv-bar.positive").node().getBBox().width) * plotData.length;
 		  						highlightHeight = 5;
-	  						} else {
-		  						posX = -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * plotData.length);
-		  						posY = 20;
-		  						highlightWidth = (d3.select(".nv-bar.positive").node().getBBox().width) * plotData.length;
-		  						highlightHeight = 5;
-	  						}
+		  						posY = 0.5*highlightHeight;
 	  					}
     	  				d3.select(this.parentNode).append("rect").classed("hilightBar_"+ clusterName,true)
-    	  				.attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight, fill: highlighColor })
-    	  				.style("fill", "darkOrange");
-	    	  			return "darkOrange";
-	  				} else {
-	  					if(_selectedBars.indexOf(d) < 0) {
-	  						return "black"
-	  					}
-	  					else {
-	  						return "darkOrange";
-	  					}
-	  				}
+    	  				.classed(selectionClass, true)
+    	  				.attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight});
+	  				} 
   				});
 	  		}
 	  	}
-	  	return clusterKey;
+    }
+    
+    function getClusterToRowMapping() {
+    	var map = {};
+    	for (var i = 0; i < _representation.inObjects[0].table.rows.length; i++) {
+    		map[_representation.inObjects[0].table.rows[i].data[0]] = _representation.inObjects[0].table.rows[i].rowKey;
+    	}
+    	return map;
+    }
+    
+    // Helper class to handle conversion from cluster name to row key
+    class KeyNameMap{
+    	constructor(map){
+		   this.map = map;
+		   this.reverseMap = {};
+		   for(var key in map){
+		      var value = map[key];
+		      this.reverseMap[value] = key;   
+		   }
+    	}
+		getKeyFromName(name){ 
+			return this.map[name]; 
+		};
+		getNameFromKey(key){
+			return this.reverseMap[key];
+		};
+    }
+    
+    function handleHighlightClick(event) {
+    	var clusterName = event.x;
+    	var clusterKey = _keyNameMap.getKeyFromName(clusterName);
+    	var barIndex = getSelectedRowIDs().indexOf(clusterKey);
+    	// Deselect already selected bar when clicking again on it
+    	if((barIndex > -1 && (!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) 
+    			&& _value.options['selection'].length == 1)
+    			|| (barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey))){
+    		if(_representation.options.enableSelection) {
+        		if(_value.options.publishSelection) {
+        			knimeService.removeRowsFromSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+        		}
+    		}
+			removeHilightBar(clusterName, false);
+			_value.options['selection'].splice(barIndex, 1);
+    	} else if(!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) {
+    		// Deselect all previously selected bars and select the newly clicked one
+    		if(_representation.options.enableSelection) {
+        		if(_value.options.publishSelection) {
+        			knimeService.setSelectedRows(_translator.sourceID,[clusterKey], _translator.sourceID);
+        		}
+    		}
+			removeHilightBar(clusterName, true);
+			_value.options['selection']= [];
+    		createHilightBar(clusterName, "knime-selected");
+    		_value.options['selection'].push([clusterKey, "knime-selected"]);
+    	} else {
+    		// Select the clicked bar, as it is either a new selection or a additional selection
+    		if(_representation.options.enableSelection) {
+        		if(_value.options.publishSelection) {
+        			knimeService.addRowsToSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+        		}
+    		}
+    		createHilightBar(clusterName, "knime-selected");
+    		_value.options['selection'].push([clusterKey, "knime-selected"]);
+    	}
+    	checkClearSelectionButton();
     }
     
     function onSelectionChanged(data) {
     	if (data.reevaluate) {
-            _value.selection = knimeService.getAllRowsForSelection(_translator.sourceID);
+    		removeHilightBar("", true);
+    		var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
+    		var partiallySelectedRows = knimeService.getAllPartiallySelectedRows(_translator.sourceID);
+    		_value.options['selection'] = [];
+    		for (let selectedRow in selectedRows) {
+    			let length = _value.options['selection'].length;
+    			_value.options['selection'][length] = [selectedRows[selectedRow], "knime-selected"];
+    			createHilightBar(_keyNameMap.getNameFromKey(selectedRows[selectedRow]),
+    					"knime-selected");
+    		}
+    		for (let partiallySelectedRow in partiallySelectedRows) {
+    			let length = _value.options['selection'].length;
+    			_value.options['selection'][length] = [partiallySelectedRows[partiallySelectedRow], "knime-partially-selected"];
+    			createHilightBar(_keyNameMap.getNameFromKey(partiallySelectedRows[partiallySelectedRow]),
+    					"knime-partially-selected");
+    		}
         } else if (data.changeSet) {
+        	if (data.changeSet.removed) {
+        		data.changeSet.removed.map(function(rowId) {
+        			var clusterName = rowId;
+        			var index = getSelectedRowIDs().indexOf(clusterName);
+        			if (index > -1) {
+        				removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
+        				_value.options['selection'].splice(index, 1);
+        			}
+        		});
+        	}
+        	if(data.changeSet.partialRemoved) {
+        		data.changeSet.partialRemoved.map(function(rowId) {
+        			var clusterName = rowId;
+        			var index = getSelectedRowIDs().indexOf(clusterName);
+        			if (index > -1) {
+        				removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
+        				_value.options['selection'].splice(index, 1);
+        			}
+        		});
+        	}
 	        if (data.changeSet.added) {
 	            data.changeSet.added.map(function(rowId) {
-	                var index = _value.selection.indexOf(rowId);
+	                var index = getSelectedRowIDs().indexOf(rowId);
 	                if (index === -1) {
-	                    _value.selection.push(rowId);
+	                	_value.options['selection'].push([rowId, "knime-selected"]);
+	                	createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-selected");
 	                }
 	            });
 	        }
-	        if (data.changeSet.removed) {
-	            data.changeSet.removed.map(function(rowId) {
-	                var index = _value.selection.indexOf(rowId);
-	                if (index > -1) {
-	                    _value.selection.splice(index, 1);
+	        if(data.changeSet.partialAdded) {
+	        	data.changeSet.partialAdded.map(function(rowId) {
+	                var index = getSelectedRowIDs().indexOf(rowId);
+	                if (index === -1) {
+	                	_value.options['selection'].push([rowId, "knime-partially-selected"]);
+	                    createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-partially-selected");
 	                }
 	            });
 	        }
 	     }
+    	checkClearSelectionButton();
     }
 
 
@@ -868,7 +993,6 @@
                 self.append('title').classed('axisLabelTooltip', true);
             }
         });
-        var textsY1 = svg.select('.knime-y').selectAll('text');
         
 
     	var minMaxValues = d3.extent(chart.yAxis.domain());
@@ -958,10 +1082,11 @@
 
         var scale = d3.scale.linear().domain([minValue, maxValue]);
     	var ticks = scale.ticks(tickAmount);
-    	if (ticks.length >= 2 && ticks[ticks.length - 1].toString().indexOf('.') > 0) {
-    		var precision = Math.max((ticks[ticks.length - 1].toString().split('.')[1].length), 0);
+    	if (ticks[ticks.length - 1].toString().indexOf('.') > 0) {
+    		// +1 because the precision of the maximum should be one decimal more then the normal ticks
+    		var precision = Math.max((ticks[ticks.length - 1].toString().split('.')[1].length)+1, 1);
     	} else if(ticks[ticks.length - 1].toString().indexOf('e') > 0) {
-    		var precision = Math.max(Math.abs((ticks[ticks.length - 1].toString().split('e')[1])), 0);
+    		var precision = Math.max(Math.abs((ticks[ticks.length - 1].toString().split('e')[1])), 1);
     	} else {
     		precision = 1;
     	}
@@ -1002,7 +1127,12 @@
         var ticks = scale.ticks(4);
         if (optShowMaximum) {
             if (maxValue.toString().indexOf('.') > 0 ) {
-                ticks.push(parseFloat((maxValue.toFixed(ticks[(ticks.length) - 1].toString().length - 1))));
+            	if(ticks[ticks.length-1].toString().indexOf('.') > 0) {
+            		var decimalString = ticks[ticks.length - 1].toString().split('.')[1];
+            		ticks.push(parseFloat((maxValue.toFixed(decimalString.length)+1)));            		
+            	} else {
+            		ticks.push(parseFloat(maxValue.toFixed(0)));
+            	}
             } else {
                 ticks.push(maxValue);
             }
@@ -1012,12 +1142,10 @@
                 ticks.push(minValue);
             }
         }
-        if (optChartTypeEdit) {
-        }
         var configObject = {
             container: document.querySelector('svg'),
             tempContainerClasses: 'knime-axis',
-            maxWidth: svgWidth * 0.1,
+            maxWidth: svgWidth,
             maxHeight: svgHeight * 0.1,
         };
 
@@ -1037,12 +1165,24 @@
         var svgHeight = parseInt(d3.select('svg').style('height'));
         var svgWidth = parseInt(d3.select('svg').style('width'));
         var amountOfBars = number[0].values.length;
+        var amountOfDimensions = number.length;
         
+        var spaceBetweenBars = 40; 
         var maxWidth;
-        if(staggerLabels) {
-        	maxWidth = ((svgWidth / amountOfBars)-53) * 2;
+        if(optOrientation) {
+        	maxWidth = 0.5*svgWidth;
         } else {
-        	maxWidth = (svgWidth / amountOfBars) - 53;
+        	var barWidth;
+        	if((d3.select(".nv-groups").node()) !== null) {
+        		barWidth = d3.select(".nv-groups").select("rect")[0][0].width.baseVal.value * amountOfDimensions;
+        	} else {
+        		barWidth = (svgWidth / amountOfBars) - spaceBetweenBars
+        	}
+        	if(staggerLabels) {
+        		maxWidth = barWidth * 2;
+        	} else {
+        		maxWidth = barWidth;
+        	}
         }
 
         var configObject = {
@@ -1063,7 +1203,9 @@
         xExtremValues.push(number[0].values[0].x);
         xExtremValues.push(number[0].values[number[0].values.length-1].x);
         
-        configObject.maxWidth = (svgWidth / amountOfBars) - 53;
+        if(staggerLabels) {
+        	configObject.maxWidth = (svgWidth / amountOfBars) - spaceBetweenBars;
+        }
         var extremResults = knimeService.measureAndTruncate(xExtremValues, configObject);
 
         // Update the cloned data array to contain the wrapped labels
@@ -1117,7 +1259,7 @@
 
             var configObject = {
                 container: document.querySelector('svg'),
-                classes: 'knime-axis',
+                tempContainerClasses: 'knime-axis',
                 maxWidth: svgWidth * 0.5,
                 maxHeight: svgHeight * 0.5,
                 minimalChars: 1,
@@ -1137,26 +1279,42 @@
             freqLabel = freqLabelSize.values[0].truncated;
             catLabel = catLabelSize.values[0].truncated;
 
-            // calculate the max ticks to display without overlapping
+            // space between two labels
+            var distanceBetweenLabels = 150;
             if (optOrientation) {
-                var tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + 150));
+            	var tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + distanceBetweenLabels));
                 if (optShowMaximum) {
-                   var rightMargin = 0.65 * maxSizeYAxis.max.maxWidth;
+                	// extend the border of the svg to be able to see the complete maximum label 
+                	// factor 0.6 is chosen to give the label a little space to the border
+                	var rightMargin = 0.6 * maxSizeYAxis.max.maxWidth;
                 }
             } else {
-                var tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + 100));
+            	var tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + distanceBetweenLabels));
             }
+            
+            // nvd3 sets the cat label 55 pixel away from the axis. As with changing font size this
+            // is not enough, it is easier to calculate it ourselves
+            var spacingCatLabel = 55;
+            
+            // nvd3 sets the freq label 20 pixel away from the axis. As with changing font size this
+            // is not enough, it is easier to calculate it ourselves
+            var spacingFreqLabel = 20;
+            
+            // add some empty space, so that two labels are not to close together
+            var additionalEmptySpace = 15;
 
+            var paddingAmount = 15;
             chart.xAxis
                 .axisLabel(catLabel)
-                .axisLabelDistance(optOrientation ? maxSizeXAxis.max.maxWidth - 55 + 15
-                    : optStaggerLabels ? maxSizeXAxis.max.maxHeight
-                    : -20 + maxSizeXAxis.max.maxHeight * 1.5)
+                .axisLabelDistance(optOrientation ? maxSizeXAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace + paddingAmount
+                		: optStaggerLabels ? maxSizeXAxis.max.maxHeight*2 -spacingCatLabel + additionalEmptySpace *2 + paddingAmount
+                		: -spacingFreqLabel + maxSizeXAxis.max.maxHeight * 1.5)
+                .tickPadding(paddingAmount)
                 .showMaxMin(false);
 
             chart.yAxis.axisLabel(freqLabel)
-                .axisLabelDistance(optOrientation ? -20 + maxSizeYAxis.max.maxHeight * 1.5
-                    : (maxSizeYAxis.max.maxWidth - 48 + 20))
+                .axisLabelDistance(optOrientation ? -spacingFreqLabel + maxSizeYAxis.max.maxHeight
+                		: (maxSizeYAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace))
                 .showMaxMin(optShowMaximum)
                 .ticks(tickAmount)
                 .tickFormat(d3.format('~.g'));
@@ -1168,26 +1326,26 @@
         	}
         	chart.yDomain([extremValues[0],extremValues[1]]);
             
-            var bottomMargin = optOrientation ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 15
-                : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + 15;
-            var leftMargin = optOrientation ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + 10
-                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + 25;
+        	var bottomMargin = optOrientation ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + additionalEmptySpace
+        			: maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + additionalEmptySpace;
+        	var leftMargin = optOrientation ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + additionalEmptySpace + paddingAmount
+        			: maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
             if (!_value.options.catLabel) {
                 bottomMargin = optOrientation ? bottomMargin
-                    : maxSizeXAxis.max.maxHeight + 15;
+                		: maxSizeXAxis.max.maxHeight + additionalEmptySpace;
                 leftMargin = optOrientation ? leftMargin : maxSizeYAxis.max.maxWidth
-					+ freqLabelSize.max.maxWidth + 25;
+                		+ freqLabelSize.max.maxWidth + additionalEmptySpace;
             }
             if (!_value.options.freqLabel) {
-                bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + 15 : bottomMargin;
-                leftMargin = optOrientation ? leftMargin
-                    : maxSizeYAxis.max.maxWidth + 20;
+            	bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
+                leftMargin = optOrientation ? leftMargin + paddingAmount
+                		: maxSizeYAxis.max.maxWidth + additionalEmptySpace;
             }
             if (!optOrientation) {
                 chart.staggerLabels(optStaggerLabels);
                 if (optStaggerLabels) {
-                    bottomMargin += _value.options.catLabel ? maxSizeXAxis.max.maxHeight
-                        : 0.5 * maxSizeXAxis.max.maxHeight;
+                	bottomMargin += _value.options.catLabel ? 0.25 *maxSizeXAxis.max.maxHeight + paddingAmount
+                        : 0.5 * maxSizeXAxis.max.maxHeight + paddingAmount;
                 }
             }
             chart.margin({
@@ -1233,6 +1391,8 @@
         var staggerLabels = _representation.options.enableStaggerToggle;
         var switchMissValCat = _representation.options.enableSwitchMissValCat;
         var showMaximum = _representation.options.enableMaximumValue;
+        var enableSelection = _representation.options.enableSelection;
+        var disableClearButton = _representation.options.displayClearSelectionButton;
 
         if (titleEdit || subtitleEdit) {
             if (titleEdit) {
@@ -1351,6 +1511,39 @@
                 });
             knimeService.addMenuItem('Display maximum value:', 'arrows-v', displayMaximumCbx);
         }
+        
+        if (enableSelection) {
+        	knimeService.addMenuDivider();
+        	var subscribeToSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+        	var subscribeToSelectionMenu = knimeService.createMenuCheckbox('subscribeToSelection', 
+        			_value.options.subscribeToSelection, function () {
+        		if (_value.options.subscribeToSelection != this.checked) {
+        			_value.options.subscribeToSelection = this.checked;
+        			subscribeToSelection(_value.options.subscribeToSelection);
+        		}
+        	});
+        	knimeService.addMenuItem('Subscribe to selection:', subscribeToSelectionIcon, subscribeToSelectionMenu);
+        	
+        	var publishSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+            var publishSelectionMenu = knimeService.createMenuCheckbox('publishSelection', _value.options.publishSelection,
+                function () {
+                    if (_value.options.publishSelection != this.checked) {
+                        _value.options.publishSelection = this.checked;
+                        publishSelection(this.checked);
+                    }
+                });
+            knimeService.addMenuItem('Publish selection:', publishSelectionIcon, publishSelectionMenu);
+        }
+        
+        if (disableClearButton &&  _representation.options.enableSelection) {
+			knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
+				d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false });
+				removeHilightBar("",true);
+				_value.options['selection'] = [];
+				publishSelection(true);
+			});
+			d3.select("#clearSelectionButton").classed("inactive", true);
+		}
     };
 
     function setCssClasses() {
@@ -1390,6 +1583,7 @@
         axisToolTip.style('pointer-events', 'all');
         labelToolTip.style('pointer-events', 'all');
         updateLabels();
+        registerClickHandler();
     }
 
     function setTooltipCssClasses() {
@@ -1425,5 +1619,4 @@
     };
 
     return barchart;
-
 }());
