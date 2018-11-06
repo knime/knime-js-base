@@ -638,7 +638,11 @@
         	if (_data.colTypes[colName] === "number" || _data.colTypes[colName] === "dateTime") {
         		scale = d3.scale.linear().range([h, 0]).domain(_data.minmax[colName]).nice();
         	} else {
-        		scale = d3.scale.ordinal().domain(_data.domains[colName].values()).rangePoints([h, 0], 1.0);
+        		// sort domain alphabetically, needs to be reverse to fit the axis top to bottom (AP-10540) 
+        		var colDomain = _data.domains[colName].values().sort(function(val1, val2) {
+        			return val2.localeCompare(val1);
+        		});
+        		scale = d3.scale.ordinal().domain(colDomain).rangePoints([h, 0], 1.0);
         	}
         	scales[colName] = scale;
         } 
