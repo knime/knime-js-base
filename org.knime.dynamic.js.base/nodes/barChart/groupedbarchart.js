@@ -330,6 +330,12 @@
 	  			d3.selectAll(".knime-x text").each(function(d,i) {
 	  				if(i==j) {
 	  					d3.select(this).classed(selectionClass,true);
+	  					var selectionTitle;
+	  					if(selectionClass == "knime-selected") {
+	  						selectionTitle = "Selected";
+	  					} else {
+	  						selectionTitle = "Partially selected";
+	  					}
 	  					var posX = 0;
 	  					var posY = 0;
 	  					var highlightHeight = 0;
@@ -346,7 +352,11 @@
 	  					}
     	  				d3.select(this.parentNode).append("rect").classed("hilightBar_"+ clusterName,true)
     	  				.classed(selectionClass, true)
-    	  				.attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight});
+    	  				.attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight})
+    	  				.style('pointer-events', 'all')
+    	  				.append("title")
+    	  				.classed('knime-tooltip', true)
+    	  				.text(selectionTitle);
 	  				} 
   				});
 	  		}
@@ -990,7 +1000,7 @@
             if (typeof wrapedPlotData[0].values[i] !== 'undefined') {
                 var self = d3.select(this);
                 self.text(wrapedPlotData[0].values[i].x);
-                self.append('title').classed('axisLabelTooltip', true);
+                self.append('title').classed('knime-tooltip', true);
             }
         });
         
@@ -1026,7 +1036,7 @@
         	}
         }
 
-        var labelTooltip = texts.selectAll('.axisLabelTooltip');
+        var labelTooltip = texts.selectAll('.knime-tooltip');
         var counter = 0;
         labelTooltip.each(function (d, i) {
             var self = d3.select(this);
@@ -1037,9 +1047,9 @@
         });
 
         // Create titles for the Axis-Tooltips
-        svg.select('.knime-y text.knime-axis-label').append('title').classed('axisLabelTooltip', true).text(
+        svg.select('.knime-y text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
             _value.options['freqLabel']);
-        svg.select('.knime-x text.knime-axis-label').append('title').classed('axisLabelTooltip', true).text(
+        svg.select('.knime-x text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
             _value.options['catLabel']);
     }
     

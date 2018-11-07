@@ -187,7 +187,7 @@
         	<options>
 	            <checkBoxOption name="Enable selection" id="enableSelection" label="Enable selection" 
 	        		defaultValue="true" loadDefaults="true">
-	        		If checked a separate column containing checkboxes is rendered in the view. The selection, when applied, will be represented in the output table as a new boolean column.
+	        		If checked a separate column containing checkboxes is rendered in the view.
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Subscribe to selection events" id="subscribeToSelection" 
 	        		label="Subscribe to selection events" defaultValue="true" loadDefaults="true" saveInView="true">
