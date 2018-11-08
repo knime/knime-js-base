@@ -1,0 +1,17 @@
+text.knime-tick-label.knime-selected {
+	font-weight: bold;
+}
+path.knime-selected {
+	fill: orange;
+	
+}
+path.knime-partially-selected {
+	fill: grey;
+}
+text.knime-tick-label.knime-partially-selected {
+	font-weight: bold;
+}
+
+path.nv-bar.positive {
+	cursor:pointer;
+}

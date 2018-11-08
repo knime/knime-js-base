@@ -11,6 +11,8 @@
 	var colorRange;
 	var excludeCat;
 	var missValCatValue;
+    var _translator;
+    var _keyNameMap;
 	
 	var showWarnings;
 	
@@ -20,6 +22,16 @@
 	pie.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
+		_value.options['selection'] = _value.options['selection'] || [];
+		
+		if(_representation.inObjects[0].translator) {
+        	_translator = _representation.inObjects[0].translator;
+        	_translator.sourceID = _representation.inObjects[0].uuid;
+        	_translator.targetIDs = [_representation.tableIds[0]];
+        	knimeService.registerSelectionTranslator(_translator, _translator.sourceID);
+        	subscribeToSelection(_value.options.subscribeToSelection);
+        	_keyNameMap = new KeyNameMap(getClusterToRowMapping());
+        }
 		
 		showWarnings = _representation.options.showWarnings;
 		
@@ -95,7 +107,7 @@
 		 */
 		knimeTable = new kt();
 		// Add the data from the input port to the knimeTable.
-		var port0dataTable = _representation.inObjects[0];
+		var port0dataTable = _representation.inObjects[0].table;
 		knimeTable.setDataTable(port0dataTable);
 		
 		processData(true);	
@@ -133,7 +145,7 @@
 				.x(function(d) { return d.label })
 				.y(function(d) { return d.value })
 				.color(colorRange)
-				.duration(300)
+				.duration(0)
 				.showLegend(showLegend)
 				.showLabels(showLabels)
 				.labelThreshold(labelThreshold) 
@@ -167,13 +179,250 @@
 					.attr('fill', 'red')
 					.text('The plot is empty because all values are equal to 0.');
 			} else {
-				svg.datum(plotData).transition().duration(300).call(chart);
+				svg.datum(plotData).transition().duration(0).call(chart);
 			}
-			nv.utils.windowResize(chart.update);
+			//nv.utils.windowResize(chart.update);
+			nv.utils.windowResize(function () { 
+				chart.update(); 
+				removeHilightBar("",true); 
+				redrawSelection();
+			});
+			
+			// redraws selection
+            redrawSelection();
 
 			return chart;
 		});
 	}
+	
+	 function registerClickHandler () {
+	    	d3.selectAll(".nv-slice").on('click',function(event) {
+				handleHighlightClick(event);
+				d3.event.stopPropagation();
+	    	});
+	    }
+	    
+	    function redrawSelection() {
+	    	for(var i = 0; i < _value.options['selection'].length; i++) {
+	    		createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]), 
+	    				_value.options['selection'][i][1]);
+	    	}
+	    }
+	    
+	    function subscribeToSelection(subscribeBool) {
+	    	if(_representation.options.enableSelection) {
+	    		if(subscribeBool) {
+	    			knimeService.subscribeToSelection(_translator.sourceID, onSelectionChanged);
+	    		} else {
+	    			knimeService.unsubscribeSelection(_translator.sourceID, onSelectionChanged);
+	    		}
+	    	}
+	    }
+	    
+	    function publishSelection(shouldPublish){
+	    	if(shouldPublish) {
+	    		knimeService.setSelectedRows(_translator.sourceID, getSelectedRowIDs(), _translator.sourceID);
+	    	}
+	    }
+	    
+		function checkClearSelectionButton(){
+			var button = d3.select("#clearSelectionButton");
+			if (button){
+				button.classed("inactive", function(){return !_value.options['selection'].length > 0});
+			}
+		}
+	    
+	    function getSelectedRowIDs() {
+	    	var selectedRowIDs = [];
+	    	for (var i = 0; i< _value.options['selection'].length; i++) {
+	    		selectedRowIDs.push( _value.options['selection'][i][0]);
+	    	}
+	    	return selectedRowIDs;
+	    }
+	    
+	    // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
+	    function removeHilightBar(clusterName, removeAll) {
+	    	if(removeAll) {
+	    		var length = _value.options['selection'].length;
+		  		for(var i = 0; i < length; i++) {
+		  			let selectedEntry = _value.options['selection'][i];
+		  			d3.selectAll(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])).remove();
+		  		}
+	    	} else {
+		    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
+		    	if(barIndex > -1) {
+				  	d3.selectAll(".hilightBar_" + clusterName).remove();
+		    	}
+	    	}
+	    } 
+	    
+	    // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
+	    function createHilightBar (clusterName, selectionClass) {
+	    	var optOrientation = _value.options['orientation'];
+		  	for(var j = 0; j < _representation.inObjects[0].table.rows.length; j++) {
+		  		if(_representation.inObjects[0].table.rows[j].data[0] === clusterName) {
+		  			var slices = d3.selectAll(".nv-slice");
+		  			for(var i = 0; i < slices[0].length; i++) {
+		  				if(i==j) {
+		  					var slice = d3.select(slices[0][i]).select("path");
+		  					var availableWidth = chart.width() - 20;
+		  					var availableHeight = chart.height();
+		  					var radius = Math.min(availableWidth, availableHeight) / 2;
+		  	                var donutRatio = chart.donutRatio();
+		  					var selectionTitle;
+		  					if(selectionClass == "knime-selected") {
+		  						selectionTitle = "Selected";
+		  					} else {
+		  						selectionTitle = "Partially selected";
+		  					}
+		  	                console.log(donutRatio,chart.margin().top, chart.margin().bottom, "donutChart");
+		  					//PieChart Code
+		  					var arc = d3.svg.arc()
+			  				    .innerRadius((radius - radius / 5))
+			  				    .outerRadius((radius - radius / 5)+8)
+			  				    .startAngle(slice.data()[0].startAngle) //converting from degs to radians
+			  				    .endAngle(slice.data()[0].endAngle); //just radians
+
+			  				slice.select(function() { return this.parentNode; }).append("path")
+			  				    .attr("d", arc)
+			  				    .classed("hilightBar_" + clusterName,true)
+			  				    .classed(selectionClass, true)
+		    	  				.append("title")
+		    	  				.classed('knime-tooltip', true)
+		    	  				.text(selectionTitle);
+		  				} 
+		  			}
+		  		}
+		  	}
+	    }
+	    
+	    function getClusterToRowMapping() {
+	    	var map = {};
+	    	for (var i = 0; i < _representation.inObjects[0].table.rows.length; i++) {
+	    		map[_representation.inObjects[0].table.rows[i].data[0]] = _representation.inObjects[0].table.rows[i].rowKey;
+	    	}
+	    	return map;
+	    }
+	    
+	    // Helper class to handle conversion from cluster name to row key
+	    class KeyNameMap{
+	    	constructor(map){
+			   this.map = map;
+			   this.reverseMap = {};
+			   for(var key in map){
+			      var value = map[key];
+			      this.reverseMap[value] = key;   
+			   }
+	    	}
+			getKeyFromName(name){ 
+				return this.map[name]; 
+			};
+			getNameFromKey(key){
+				return this.reverseMap[key];
+			};
+	    }
+	    
+	    function handleHighlightClick(event) {
+	    	console.log(event);
+	    	var clusterName = event.data.label;
+	    	var clusterKey = _keyNameMap.getKeyFromName(clusterName);
+	    	var barIndex = getSelectedRowIDs().indexOf(clusterKey);
+	    	// Deselect already selected bar when clicking again on it
+	    	if((barIndex > -1 && (!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) 
+	    			&& _value.options['selection'].length == 1)
+	    			|| (barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey))){
+	    		if(_representation.options.enableSelection) {
+	        		if(_value.options.publishSelection) {
+	        			knimeService.removeRowsFromSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+	        		}
+	    		}
+				removeHilightBar(clusterName, false);
+				_value.options['selection'].splice(barIndex, 1);
+	    	} else if(!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) {
+	    		// Deselect all previously selected bars and select the newly clicked one
+	    		if(_representation.options.enableSelection) {
+	        		if(_value.options.publishSelection) {
+	        			knimeService.setSelectedRows(_translator.sourceID,[clusterKey], _translator.sourceID);
+	        		}
+	    		}
+				removeHilightBar(clusterName, true);
+				_value.options['selection']= [];
+	    		createHilightBar(clusterName, "knime-selected");
+	    		_value.options['selection'].push([clusterKey, "knime-selected"]);
+	    	} else {
+	    		// Select the clicked bar, as it is either a new selection or a additional selection
+	    		if(_representation.options.enableSelection) {
+	        		if(_value.options.publishSelection) {
+	        			knimeService.addRowsToSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+	        		}
+	    		}
+	    		createHilightBar(clusterName, "knime-selected");
+	    		_value.options['selection'].push([clusterKey, "knime-selected"]);
+	    	}
+	    	checkClearSelectionButton();
+	    }
+	    
+	    function onSelectionChanged(data) {
+	    	if (data.reevaluate) {
+	    		removeHilightBar("", true);
+	    		var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
+	    		var partiallySelectedRows = knimeService.getAllPartiallySelectedRows(_translator.sourceID);
+	    		_value.options['selection'] = [];
+	    		for (let selectedRow in selectedRows) {
+	    			let length = _value.options['selection'].length;
+	    			_value.options['selection'][length] = [selectedRows[selectedRow], "knime-selected"];
+	    			createHilightBar(_keyNameMap.getNameFromKey(selectedRows[selectedRow]),
+	    					"knime-selected");
+	    		}
+	    		for (let partiallySelectedRow in partiallySelectedRows) {
+	    			let length = _value.options['selection'].length;
+	    			_value.options['selection'][length] = [partiallySelectedRows[partiallySelectedRow], "knime-partially-selected"];
+	    			createHilightBar(_keyNameMap.getNameFromKey(partiallySelectedRows[partiallySelectedRow]),
+	    					"knime-partially-selected");
+	    		}
+	        } else if (data.changeSet) {
+	        	if (data.changeSet.removed) {
+	        		data.changeSet.removed.map(function(rowId) {
+	        			var clusterName = rowId;
+	        			var index = getSelectedRowIDs().indexOf(clusterName);
+	        			if (index > -1) {
+	        				removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
+	        				_value.options['selection'].splice(index, 1);
+	        			}
+	        		});
+	        	}
+	        	if(data.changeSet.partialRemoved) {
+	        		data.changeSet.partialRemoved.map(function(rowId) {
+	        			var clusterName = rowId;
+	        			var index = getSelectedRowIDs().indexOf(clusterName);
+	        			if (index > -1) {
+	        				removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
+	        				_value.options['selection'].splice(index, 1);
+	        			}
+	        		});
+	        	}
+		        if (data.changeSet.added) {
+		            data.changeSet.added.map(function(rowId) {
+		                var index = getSelectedRowIDs().indexOf(rowId);
+		                if (index === -1) {
+		                	_value.options['selection'].push([rowId, "knime-selected"]);
+		                	createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-selected");
+		                }
+		            });
+		        }
+		        if(data.changeSet.partialAdded) {
+		        	data.changeSet.partialAdded.map(function(rowId) {
+		                var index = getSelectedRowIDs().indexOf(rowId);
+		                if (index === -1) {
+		                	_value.options['selection'].push([rowId, "knime-partially-selected"]);
+		                    createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-partially-selected");
+		                }
+		            });
+		        }
+		     }
+	    	checkClearSelectionButton();
+	    }
+
 	
 	function updateData(updateChart) {
 		processData();
@@ -384,6 +633,8 @@
 		//var colChooser = _representation.options.enableColumnChooser;
 		var labelEdit = _representation.options.enableLabelEdit;
 		var switchMissValCat = _representation.options.enableSwitchMissValCat;
+		var enableSelection = _representation.options.enableSelection;
+		var disableClearButton = _representation.options.disableClearButton;
 	    
 	    if (titleEdit || subtitleEdit) {	    	    
 	    	if (titleEdit) {
@@ -514,6 +765,39 @@
 	    		insideTitleText.disabled = !_value.options.togglePie;
 	    		knimeService.addMenuItem('Title inside:', 'header', insideTitleText, null, knimeService.SMALL_ICON);
 	    	}*/
+	    	
+	        if (enableSelection) {
+	        	knimeService.addMenuDivider();
+	        	var subscribeToSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
+	        	var subscribeToSelectionMenu = knimeService.createMenuCheckbox('subscribeToSelection', 
+	        			_value.options.subscribeToSelection, function () {
+	        		if (_value.options.subscribeToSelection != this.checked) {
+	        			_value.options.subscribeToSelection = this.checked;
+	        			subscribeToSelection(_value.options.subscribeToSelection);
+	        		}
+	        	});
+	        	knimeService.addMenuItem('Subscribe to selection:', subscribeToSelectionIcon, subscribeToSelectionMenu);
+	        	
+	        	var publishSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
+	            var publishSelectionMenu = knimeService.createMenuCheckbox('publishSelection', _value.options.publishSelection,
+	                function () {
+	                    if (_value.options.publishSelection != this.checked) {
+	                        _value.options.publishSelection = this.checked;
+	                        publishSelection(this.checked);
+	                    }
+	                });
+	            knimeService.addMenuItem('Publish selection:', publishSelectionIcon, publishSelectionMenu);
+	        }
+	        
+	        if (disableClearButton &&  _representation.options.enableSelection) {
+				knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
+					d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false });
+					removeHilightBar("",true);
+					_value.options['selection'] = [];
+					publishSelection(true);
+				});
+				d3.select("#clearSelectionButton").classed("inactive", true);
+			}
     	}
 	};
 
@@ -528,6 +812,7 @@
 			.classed('knime-legend-symbol', true);
 		d3.selectAll('.nv-legend-text')
 			.classed('knime-legend-label', true);
+		registerClickHandler();
 	}
 	
 	function setTooltipCssClasses() {
