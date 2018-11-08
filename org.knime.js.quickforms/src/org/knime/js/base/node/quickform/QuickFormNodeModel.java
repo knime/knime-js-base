@@ -512,8 +512,7 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
             } else if (inputData.getStringValue() != null) {
                 dialogValue.loadFromString(inputData.getStringValue());
             } else {
-                throw new IllegalArgumentException("No suitable input data for node \"" + getParameterName()
-                    + "\" provided, only string or JSON are supported.");
+                return null;
             }
             validateDialogValue(dialogValue);
             return dialogValue;
