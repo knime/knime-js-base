@@ -218,13 +218,16 @@
                 chart.reduceXTicks(false);
             }
 
-            chart.dispatch.on('renderEnd.css', setCssClasses);
+            chart.dispatch.on('renderEnd.css', function() {
+            	setCssClasses();
+            });
             // tooltip is re-created every time therefore we need to assign
             // classes accordingly
             chart.multibar.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
             chart.multibar.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
             chart.legend.dispatch.on('legendClick', function(series, index) {
             	drawChart(true);
+            	d3.event.stopPropagation();
             });
 
             var stacked = _value.options.chartType == 'Stacked';
@@ -246,7 +249,13 @@
 
             updateAxisLabels(false);
             svg.datum(plotData).transition().duration(0).call(chart);
-            nv.utils.windowResize(function () { updateAxisLabels(true); updateLabels(); setCssClasses(); });
+            nv.utils.windowResize(function () { 
+            	updateAxisLabels(true); 
+            	updateLabels(); 
+            	setCssClasses(); 
+            	removeHilightBar("",true);
+            	redrawSelection();
+        	});
             
             // redraws selection
             redrawSelection();
@@ -259,6 +268,16 @@
 			handleHighlightClick(event);
 			d3.event.stopPropagation();
     	});
+    }
+    
+    function getActiveBars() {
+    	var counter = 0;
+    		for (var j = 0; j < plotData.length; j++) { 
+    			if(plotData[j].disabled !== true) {
+    				counter ++;
+    			} 
+    		}
+    	return counter;
     }
     
     function redrawSelection() {
@@ -341,12 +360,12 @@
 	  					var highlightHeight = 0;
 	  					var highlightWidth = 5;
 	  					if(optOrientation) {
-	  						posY = -0.5*(d3.select(".nv-bar.positive").node().getBBox().height * plotData.length);
+	  						posY = -0.5*(d3.select(".nv-bar.positive").node().getBBox().height * getActiveBars());
 	  						posX = -1.5*highlightWidth;
-	  						highlightHeight = (d3.select(".nv-bar.positive").node().getBBox().height) * plotData.length;
+	  						highlightHeight = (d3.select(".nv-bar.positive").node().getBBox().height) * getActiveBars();
 	  					} else {
-	  							posX = -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * plotData.length);
-		  						highlightWidth = (d3.select(".nv-bar.positive").node().getBBox().width) * plotData.length;
+	  							posX = -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * getActiveBars());
+		  						highlightWidth = (d3.select(".nv-bar.positive").node().getBBox().width) * getActiveBars();
 		  						highlightHeight = 5;
 		  						posY = 0.5*highlightHeight;
 	  					}
@@ -1025,8 +1044,8 @@
                 var textsYMax = svg.select('.nv-axisMax-y').selectAll('text');
             }
             var ticks = scale.ticks(tickAmount);
-            if(textsYMin !== null){
-	            if (textsYMin.text().indexOf('.') > 0 && textsYMin.text().indexOf('e') < 0) {
+            if(textsYMin !== null && textsYMin.length > 0){
+	            if (textsYMin.text().indexOf('.') > -1 && textsYMin.text().indexOf('e') < 0) {
 	                var precision = Math.max((ticks[0].toString().length - 2), 1);
 	                textsYMin.text((Math.floor(parseFloat(textsYMin.text()) * Math.pow(10, precision)) / Math.pow(10,
 	                    precision)));
