@@ -4,7 +4,7 @@ window.parallelcoords_namespace = (function () {
         saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
         getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
         scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight, oldWidth,
-        ordinalScale, xBrushScale, xBrush, xExtent;
+        ordinalScale, xBrushScale, xBrush, xExtent, legendWidth;
 
     var MIN_HEIGHT = 100;
     var MIN_WIDTH = 100;
@@ -44,8 +44,7 @@ window.parallelcoords_namespace = (function () {
             .style('min-width', MIN_WIDTH + 'px');
 
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
-            layoutContainer.style('width', '100%')
-                .style('height', '100%');
+            layoutContainer.style('width', '100%').style('height', '100%');
         } else {
             layoutContainer.style('width', _representation.options.svg.width + 'px')
                 .style('height', _representation.options.svg.height + 'px');
@@ -574,34 +573,9 @@ window.parallelcoords_namespace = (function () {
         checkClearSelectionButton();
     };
 
-    drawChart = function () {
-
-        var transition;
-        var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
-        var ch = Math.max(MIN_HEIGHT, _representation.options.svg.height);
-        var chartWidth = cw + 'px;';
-        var chartHeight = ch + 'px';
-
-        if (_representation.options.svg.fullscreen && _representation.runningInView) {
-            chartWidth = '100%';
-            chartHeight = '100%';
-        }
-
-        d3.select('#svgContainer')
-            .style('height', chartHeight)
-            .style('width', chartWidth);
-
-        var d3svg = d3.select('svg').attr({ width: cw, height: ch }).style({ width: chartWidth, height: chartHeight });
-
-        var mTop = _value.options.subtitle || _value.options.title ? 80 : 30;
-
-        colors = _representation.options.catCol
-            ? d3.scale.category10().domain(_data.domains[_representation.options.catCol].values())
-            : null;
-
-        var maxLength = 0;
-
+    var drawLegend = function (d3svg, mTop) {
         d3.select('.legend').remove();
+        legendWidth = 0;
         if (_representation.options.catCol && _representation.options.showLegend && !_representation.options.useColors) {
             var legendG = d3svg.append('g').attr('class', 'legend knime-legend');
             var catValues = _data.domains[_representation.options.catCol].values();
@@ -612,7 +586,7 @@ window.parallelcoords_namespace = (function () {
                     .attr('x', 20)
                     .attr('y', i * 23)
                     .text(cat);
-                maxLength = Math.max(maxLength, txt.node().getComputedTextLength());
+                legendWidth = Math.max(legendWidth, txt.node().getComputedTextLength());
                 legendG.append('circle')
                     .attr('class', 'knime-legend-symbol')
                     .attr('cx', 5)
@@ -620,13 +594,44 @@ window.parallelcoords_namespace = (function () {
                     .attr('r', 5)
                     .attr('fill', colors(cat));
             }
-            maxLength += 35;
-            legendG.attr('transform', 'translate(' + (parseInt(d3svg.style('width'), 10) - maxLength) + ',' + (mTop + 20) + ')');
+            var svgWidth = parseInt(d3svg.style('width'), 10);
+            legendWidth += 35;
+            legendWidth = Math.min(svgWidth / 2, legendWidth);
+            legendG.attr('transform', 'translate(' + (svgWidth - legendWidth) + ',' + (mTop + 20) + ')');
         }
+    };
+
+    drawChart = function () {
+
+        var transition;
+        var naturalChartWidth = Math.max(MIN_WIDTH, _representation.options.svg.width);
+        var naturalChartHeight = Math.max(MIN_HEIGHT, _representation.options.svg.height);
+        var chartWidth = naturalChartWidth + 'px';
+        var chartHeight = naturalChartHeight + 'px';
+
+        if (_representation.options.svg.fullscreen && _representation.runningInView) {
+            chartWidth = '100%';
+            chartHeight = '100%';
+        }
+
+        d3.select('#svgContainer')
+            .style('height', chartHeight)
+            .style('width', chartWidth);
+
+        var d3svg = d3.select('svg').attr({ width: naturalChartWidth, height: naturalChartHeight }).style({ width: chartWidth, height: chartHeight });
+
+
+        colors = _representation.options.catCol
+            ? d3.scale.category10().domain(_data.domains[_representation.options.catCol].values())
+            : null;
+
+        var mTop = _value.options.subtitle || _value.options.title ? 80 : 30;
+
+        drawLegend(d3svg, mTop);
 
         var bottomMargin = (_value.options.mValues == MISSING_VALUE_MODE && containMissing()) ? 60 : 30;
 
-        var margin = { top: mTop, left: 40, bottom: bottomMargin, right: 10 + maxLength };
+        var margin = { top: mTop, left: 40, bottom: bottomMargin, right: 10 + legendWidth };
 
         plotG = d3svg.select('#plotG')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -683,7 +688,7 @@ window.parallelcoords_namespace = (function () {
             .each(function (d, i) {
                 d3.select(this).append('text').datum(_data.colNames[i])
                     .attr('class', 'label knime-axis-label').attr('text-anchor', 'middle')
-                    .attr('transform', function (d) { return 'translate(0,' + -15 + ')'; })// h + 40
+                    .attr('transform', function (d) { return 'translate(0, -15)'; })// h + 40
                     .attr('text-anchor', 'middle')
                     .text(function (d) { return d; });
             });
