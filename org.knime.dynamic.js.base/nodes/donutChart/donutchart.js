@@ -151,10 +151,18 @@
 				.labelThreshold(labelThreshold) 
 				.labelType(labelType); // "key", "value" or "percent"
 
-			chart.dispatch.on('renderEnd.css', setCssClasses);
+			chart.dispatch.on('renderEnd.css', function() {
+				setCssClasses();
+				redrawSelection();
+			});
 			// tooltip is re-created every time therefore we need to assign classes accordingly
 			chart.pie.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
 			chart.pie.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
+			chart.legend.dispatch.on('legendClick', function(series, index) {
+            	//drawChart(true);
+            	removeHilightBar("",true);
+            	d3.event.stopPropagation();
+            });
 			
 			chart.width(optFullscreen ? "100%" : optWidth);
 			chart.height(optFullscreen ? "100%" : optHeight);
