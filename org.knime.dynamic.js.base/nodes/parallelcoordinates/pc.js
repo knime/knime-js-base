@@ -1,10 +1,10 @@
 window.parallelcoords_namespace = (function () {
     var extraRows, getExtents, applyFilter, filterChanged, saveSelected, selectRows, drawSavedBrushes, createXAxis,
-        drawBrushes, brushstart, getLine, drawElements, position, resize, brush, noBrushes, saveSelectedRows,
+        drawBrushes, brushstart, getLine, drawElements, position, refreshView, brush, noBrushes, saveSelectedRows,
         saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
         getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
         scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight, oldWidth,
-        ordinalScale, xBrushScale, xBrush, xExtent, legendWidth;
+        ordinalScale, xBrushScale, xBrush, xExtent, legendWidth, maxLeftLabelWidth, firstColumn;
 
     var MIN_HEIGHT = 100;
     var MIN_WIDTH = 100;
@@ -271,7 +271,7 @@ window.parallelcoords_namespace = (function () {
                 var hasTitles = _value.options.title.length > 0 || _value.options.subtitle.length > 0;
                 d3.select('#title').text(this.value);
                 if (hasTitles != hadTitles) {
-                    drawChart(true);
+                    drawChart();
                     applyFilter();
                 }
             }, true);
@@ -286,7 +286,7 @@ window.parallelcoords_namespace = (function () {
                 var hasTitles = _value.options.title.length > 0 || _value.options.subtitle.length > 0;
                 d3.select('#subtitle').text(this.value);
                 if (hasTitles != hadTitles) {
-                    drawChart(true);
+                    drawChart();
                     applyFilter();
                 }
             }, true);
@@ -601,6 +601,34 @@ window.parallelcoords_namespace = (function () {
         }
     };
 
+    var makeScales = function (d3svg) {
+        scales = {};
+
+        for (var c = 0; c < _data.colNames.length; c++) {
+            var colName = _data.colNames[c];
+            var scale;
+            if (_data.colTypes[colName] === 'number' || _data.colTypes[colName] === 'dateTime') {
+                scale = d3.scale.linear().range([h, 0]).domain(_data.minmax[colName]).nice();
+            } else {
+                // sort domain alphabetically, needs to be reverse to fit the axis top to bottom (AP-10540)
+                var colDomain = _data.domains[colName].values().sort(function (val1, val2) {
+                    return val2.localeCompare(val1);
+                });
+                scale = d3.scale.ordinal().domain(colDomain).rangePoints([h, 0], 1.0);
+            }
+            scales[colName] = scale;
+            if (c === 0) { // measure label widths of leftmost axis
+                var labels = scale.domain();
+                maxLeftLabelWidth = knimeService.measureAndTruncate(labels, {
+                    container: d3svg.node(),
+                    tempContainerClasses: 'axis knime-axis knime-y',
+                    classes: 'knime-tick-label'
+                }).max.maxWidth;
+            }
+        }
+
+    };
+
     drawChart = function () {
 
         var transition;
@@ -631,34 +659,24 @@ window.parallelcoords_namespace = (function () {
 
         var bottomMargin = (_value.options.mValues == MISSING_VALUE_MODE && containMissing()) ? 60 : 30;
 
-        var margin = { top: mTop, left: 40, bottom: bottomMargin, right: 10 + legendWidth };
+        var margin = { top: mTop, bottom: bottomMargin, right: 10 + legendWidth };
+
+        h = Math.max(50, parseInt(d3svg.style('height'), 10) - margin.top - margin.bottom);
+
+        makeScales(d3svg);
+
+        margin.left = Math.max(40, 10 + maxLeftLabelWidth);
 
         plotG = d3svg.select('#plotG')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-        w = Math.max(50, parseInt(d3svg.style('width'), 10) - margin.left - margin.right);
-        h = Math.max(50, parseInt(d3svg.style('height'), 10) - margin.top - margin.bottom);
+        var svgWidth = parseInt(d3svg.style('width'), 10);
+        w = Math.max(50, svgWidth - margin.left - margin.right);
 
         plotG.select('#da').attr({ y: -10, width: w, height: h + 45 });
         d3svg.select('#bgr').attr({ width: w + margin.left + margin.right, height: h + margin.top + margin.bottom });
 
         scaleCols = d3.scale.ordinal().domain(_data.colNames).rangePoints([0, w], 0.5);
-        scales = {};
-
-        for (var c = 0; c < _data.colNames.length; c++) {
-            var colName = _data.colNames[c];
-            var scale;
-            if (_data.colTypes[colName] === 'number' || _data.colTypes[colName] === 'dateTime') {
-                scale = d3.scale.linear().range([h, 0]).domain(_data.minmax[colName]).nice();
-            } else {
-                // sort domain alphabetically, needs to be reverse to fit the axis top to bottom (AP-10540)
-                var colDomain = _data.domains[colName].values().sort(function (val1, val2) {
-                    return val2.localeCompare(val1);
-                });
-                scale = d3.scale.ordinal().domain(colDomain).rangePoints([h, 0], 1.0);
-            }
-            scales[colName] = scale;
-        }
 
         mzd = _data.objects;
 
@@ -708,6 +726,7 @@ window.parallelcoords_namespace = (function () {
                     return { x: scaleCols(d) };
                 })
                 .on('dragstart', function (d) {
+                    firstColumn = _data.colNames[0];
                     dragging[d] = scaleCols(d);
                     draggingNow = true;
                 })
@@ -723,6 +742,12 @@ window.parallelcoords_namespace = (function () {
                 .on('dragend', function (d) {
                     delete dragging[d];
                     draggingNow = false;
+                    if (_data.colNames[0] !== firstColumn) {
+                        // if the leftmost column has changed, we redraw the whole diagram because the labels might
+                        // need different spacing on the left
+                        refreshView();
+                        return;
+                    }
                     transition(d3.select(this)).attr('transform', 'translate(' + scaleCols(d) + ')');
                     transition(d3.selectAll('.row')).attr('d', getLine);
                     if (_value.options.mValues == MISSING_VALUE_MODE && containMissing()) {
@@ -840,7 +865,7 @@ window.parallelcoords_namespace = (function () {
 
         if (_representation.options.svg.fullscreen) {
             var win = document.defaultView || document.parentWindow;
-            win.onresize = resize;
+            win.onresize = refreshView;
         }
 
     };
@@ -1192,7 +1217,7 @@ window.parallelcoords_namespace = (function () {
 
     };
 
-    resize = function (event) {
+    refreshView = function (event) {
         if (_representation.options.enableSelection && _representation.options.enableBrushing && brushes && !rowsSelected) {
             getExtents();
             oldHeight = h;
