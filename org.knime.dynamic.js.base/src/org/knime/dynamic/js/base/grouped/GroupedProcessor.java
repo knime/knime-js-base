@@ -130,13 +130,14 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 		}
 		
 		Boolean inMemory = ((SettingsModelBoolean)config.getModel("processInMemory")).getBooleanValue();
+		Boolean enableHilight = ((SettingsModelBoolean)config.getModel("enableSelection")).getBooleanValue();
 		GroupByTable groupTable;
 		if(inMemory) {
 		    groupTable = new MemoryGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, /*FIXME: I need to be configurable! */true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+            colAggregators, GlobalSettings.DEFAULT, enableHilight, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
 		} else {
 	        groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+            colAggregators, GlobalSettings.DEFAULT, enableHilight, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
 		}
 
         // Missing values processing        
