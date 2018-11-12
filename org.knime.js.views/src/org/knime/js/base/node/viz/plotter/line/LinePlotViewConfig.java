@@ -77,8 +77,8 @@ public final class LinePlotViewConfig {
     static final int DEFAULT_DOT_SIZE = 3;
     static final String COLOR_STRING_PREFIX = "rgba(";
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
-    static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
-    static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    static final Color DEFAULT_DATA_AREA_COLOR = new Color(255, 255, 255);
+    static final Color DEFAULT_GRID_COLOR = new Color(230, 230, 230);
     static final boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     static final boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
     static final boolean DEFAULT_REPORT_ON_MISSING_VALUES = true;

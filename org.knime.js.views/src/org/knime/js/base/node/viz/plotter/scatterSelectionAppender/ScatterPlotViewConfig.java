@@ -72,8 +72,8 @@ final class ScatterPlotViewConfig {
     static final int DEFAULT_DOT_SIZE = 3;
     static final String COLOR_STRING_PREFIX = "rgba(";
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
-    static final Color DEFAULT_DATA_AREA_COLOR = new Color(230, 230, 230);
-    static final Color DEFAULT_GRID_COLOR = new Color(255, 255, 255);
+    static final Color DEFAULT_DATA_AREA_COLOR = new Color(255, 255, 255);
+    static final Color DEFAULT_GRID_COLOR = new Color(230, 230, 230);
     final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
     final static boolean DEFAULT_ENABLE_SHOW_SELECTED_ONLY = true;
