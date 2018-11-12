@@ -34,18 +34,41 @@ import org.knime.js.core.JSONDataTable.Builder;
 import org.knime.js.core.selections.json.JSONSelectionTranslator;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ *
+ */
 public class GroupedProcessor extends DynamicStatefulJSProcessor {
 	
     private static final String COUNT = "Occurence\u00A0Count";
 	private static final String SUM = "Sum";
 	private static final String AVG = "Average";
 	private static final String[] AVAILABLE_METHODS = new String[]{COUNT, SUM, AVG};
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public Object[] processInputObjects(PortObject[] inObjects,
-			ExecutionContext exec, DynamicJSConfig config) throws Exception {
-		BufferedDataTable table = (BufferedDataTable)inObjects[0];
+    public Object[] processInputObjects(PortObject[] inObjects, ExecutionContext exec, DynamicJSConfig config)
+        throws Exception {
+	    GroupingResult result = processInputObjects(inObjects, exec, config, true); 
+        return new Object[] {result};
+	}
+	
+    /**
+     * @param inObjects The input objects.
+     * @param exec An execution context used during execute to set progress and check for cancellation.
+     * @param config The configuration object containing the current node settings.
+     * @param serializeTable true if the result should contain the serialized {@link JSONDataTable}, false if the 
+     * generated {@link BufferedDataTable} should be contained 
+     * @return a {@link GroupingResult} containing the grouped table and a row map for interactive selections support.
+     * @throws Exception If processing the inputs fails for any reason.
+     */
+    protected GroupingResult processInputObjects(final PortObject[] inObjects, final ExecutionContext exec,
+        final DynamicJSConfig config, final boolean serializeTable) throws Exception {
+    	BufferedDataTable table = (BufferedDataTable)inObjects[0];
 		//Check aggregation method
 		String method = ((SettingsModelString)config.getModel("aggr")).getStringValue();
 		if (!Arrays.asList(AVAILABLE_METHODS).contains(method)) {
@@ -110,7 +133,7 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 		GroupByTable groupTable;
 		if(inMemory) {
 		    groupTable = new MemoryGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
-            colAggregators, GlobalSettings.DEFAULT, true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
+            colAggregators, GlobalSettings.DEFAULT, /*FIXME: I need to be configurable! */true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
 		} else {
 	        groupTable = new BigGroupByTable(exec, table, Arrays.asList(new String[]{catColName}),
             colAggregators, GlobalSettings.DEFAULT, true, ColumnNamePolicy.KEEP_ORIGINAL_NAME, false);
@@ -129,32 +152,32 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
             }
         }
 
-		Object[] processedObjects = new Object[inObjects.length];
+        GroupingResult result = new GroupingResult();
+		if (serializeTable) {
+		    Builder builder = JSONDataTable.newBuilder()
+		            .setDataTable(groupTable.getBufferedTable())
+		            .setId(UUID.randomUUID().toString())
+		            .setFirstRow(1)
+		            .setMaxRows((int)groupTable.getBufferedTable().size());
+		    result.setTable(builder.build(exec));
+		} else {
+		    result.setDataTable(groupTable.getBufferedTable());
+		}
+		result.setUUID(UUID.randomUUID().toString());
 		HiLiteTranslator translator = new HiLiteTranslator();
 		translator.setMapper(new DefaultHiLiteMapper(groupTable.getHiliteMapping()));
-		Builder builder = JSONDataTable.newBuilder()
-		        .setDataTable(groupTable.getBufferedTable())
-		        .setId(UUID.randomUUID().toString())
-                .setFirstRow(1)
-                .setMaxRows((int)groupTable.getBufferedTable().size());
-		GroupingResult result = new GroupingResult();
-		result.setTable(builder.build(exec));
-		result.setUUID(UUID.randomUUID().toString());
 		result.setTranslator(new JSONSelectionTranslator(translator));
-		
-		processedObjects[0] = result;
-		System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
-		return new Object[]{result};
+		return result;
 	}
 	   
     @JsonAutoDetect
     public static final class GroupingResult {
         
         private JSONDataTable m_table;
+        private BufferedDataTable m_dataTable;
         private String m_UUID;
         private JSONSelectionTranslator m_translator;
         
-        @SuppressWarnings("unused")
         public JSONDataTable getTable() {
             return m_table;
         }
@@ -163,7 +186,16 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
             m_table = table;
         }
         
-        @SuppressWarnings("unused")
+        @JsonIgnore
+        protected BufferedDataTable getDataTable() {
+            return m_dataTable;
+        }
+        
+        @JsonIgnore
+        protected void setDataTable(BufferedDataTable dataTable) {
+            m_dataTable = dataTable;
+        }
+        
         public String getUUID() {
             return m_UUID;
         }
@@ -172,7 +204,6 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
             m_UUID = uuid;
         }
         
-        @SuppressWarnings("unused")
         public JSONSelectionTranslator getTranslator() {
             return m_translator;
         }

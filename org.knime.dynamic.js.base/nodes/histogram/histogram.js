@@ -8,7 +8,7 @@
 		_representation = representation;
 		var binningResult = _representation.inObjects[0];
 		var binColName = binningResult.binnedColumn;
-		_representation.inObjects[0] = binningResult.table;
+		_representation.inObjects[0] = binningResult.groups;
 		_representation.options['cat'] = binColName;
 		grouped_bar_chart_namespace.init(_representation, _value);
 	}

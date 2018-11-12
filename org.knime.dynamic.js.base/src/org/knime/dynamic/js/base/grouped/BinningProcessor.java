@@ -136,16 +136,14 @@ public class BinningProcessor extends GroupedProcessor {
         exec.setMessage("");
         catCol.setStringValue(binnedColName);
         final ExecutionContext groupExec = exec.createSubExecutionContext(0.4);
-        Object[] grouped =
-            super.processInputObjects(new PortObject[]{outData}, groupExec, config);
+        GroupingResult groupingResult = super.processInputObjects(new PortObject[]{outData}, groupExec, config, false);
         groupExec.setProgress(1.0);
-        BufferedDataTable groupedTable = (BufferedDataTable)grouped[0];
         catCol.setStringValue(m_binColumn);
         
         //Make sure bins are sorted correctly in output table
         exec.setMessage("Sorting histogram table...");
         final int binIndex =
-            Arrays.asList(groupedTable.getDataTableSpec().getColumnNames()).indexOf(binnedColName);
+            Arrays.asList(groupingResult.getDataTable().getDataTableSpec().getColumnNames()).indexOf(binnedColName);
         Comparator<DataRow> comp = new Comparator<DataRow>() {
 
             @Override
@@ -165,7 +163,7 @@ public class BinningProcessor extends GroupedProcessor {
                 }
             }
         };
-        BufferedDataTableSorter sorter = new BufferedDataTableSorter(groupedTable, comp);
+        BufferedDataTableSorter sorter = new BufferedDataTableSorter(groupingResult.getDataTable(), comp);
         sorter.setSortInMemory(true);
         BufferedDataTable sortedTable = sorter.sort(preprocExec);
         Builder builder = JSONDataTable.newBuilder()
@@ -173,28 +171,27 @@ public class BinningProcessor extends GroupedProcessor {
                 .setFirstRow(1)
                 .setMaxRows(Math.toIntExact(sortedTable.size()));
         BinningResult res = new BinningResult();
-        res.setTable(builder.build(exec.createSubExecutionContext(0.05)));
+        groupingResult.setTable(builder.build(exec.createSubExecutionContext(0.05)));
+        res.setGroups(groupingResult);
         res.setBinnedColumn(binnedColName);
         exec.setProgress(1.0);
         return new Object[]{res};
     }
     
     @JsonAutoDetect
-    private static final class BinningResult {
+    public static final class BinningResult {
         
-        private JSONDataTable m_table;
+        private GroupingResult m_groups;
         private String m_binnedColumn;
         
-        @SuppressWarnings("unused")
-        public JSONDataTable getTable() {
-            return m_table;
+        public GroupingResult getGroups() {
+            return m_groups;
         }
         
-        public void setTable(JSONDataTable table) {
-            m_table = table;
+        public void setGroups(GroupingResult groups) {
+            m_groups = groups;
         }
         
-        @SuppressWarnings("unused")
         public String getBinnedColumn() {
             return m_binnedColumn;
         }

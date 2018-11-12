@@ -422,11 +422,10 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                 Object jsonObject = null;
                 if (jsonString != null && !jsonString.isEmpty()) {
                     try {
-                        // TODO: Possibly use URLClassLoader for inner classes of DynamicJSProcessors
-                        Class<?> c = Class.forName(objectSettings.getString(CLASS_NAME));
-                        jsonObject = c.newInstance();
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                        //Deserialize into generic JSON tree, because classes from other plugins might not be able to
+                        //instantiate
                         JsonNode tree = mapper.readTree(jsonString);
                         jsonObject = tree;
                     } catch (Exception e) {

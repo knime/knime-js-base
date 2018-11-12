@@ -65,7 +65,7 @@ public interface DynamicJSProcessor {
      * transformation that is not intended to be run in JavaScript.
      *
      * @param inObjects The input objects.
-     * @param exec The original execution context used during execute. Implementations can
+     * @param exec An execution context used during execute to set progress and check for cancellation.
      * @param config The configuration object containing the current node settings.
      * @return An array of processed input objects. If an object is not modified the original PortObject is expected,
      *         otherwise new PortObjects can be created or arbitrary Java objects, that can be serialized directly to
