@@ -133,7 +133,7 @@ public final class LinePlotViewConfig {
     /*static final String CUSTOM_CSS = "customCSS";*/
 
     private boolean m_hideInWizard = false;
-    private boolean m_generateImage = true;
+    private boolean m_generateImage = false;
     private boolean m_showLegend = true;
     private boolean m_autoRangeAxes = true;
     private boolean m_useDomainInfo = false;
@@ -1110,7 +1110,7 @@ public final class LinePlotViewConfig {
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, true));
+        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, false));
 
         setShowLegend(settings.getBoolean(SHOW_LEGEND, true));
         setAutoRangeAxes(settings.getBoolean(AUTO_RANGE_AXES, true));

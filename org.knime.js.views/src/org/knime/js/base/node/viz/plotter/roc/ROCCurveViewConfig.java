@@ -112,7 +112,7 @@ public final class ROCCurveViewConfig {
     static final String CUSTOM_CSS = "customCSS";
 
     private boolean m_hideInWizard = false;
-    private boolean m_generateImage = true;
+    private boolean m_generateImage = false;
     private boolean m_showGrid = true;
     private boolean m_showArea = true;
     private boolean m_showLegend = true;
@@ -655,7 +655,7 @@ public final class ROCCurveViewConfig {
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, true));
+        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, false));
 
         setShowArea(settings.getBoolean(SHOW_AREA, true));
         setShowGrid(settings.getBoolean(SHOW_GRID, true));

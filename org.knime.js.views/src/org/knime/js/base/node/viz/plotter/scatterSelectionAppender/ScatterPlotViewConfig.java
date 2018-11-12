@@ -137,7 +137,7 @@ final class ScatterPlotViewConfig {
     /*static final String CUSTOM_CSS = "customCSS";*/
 
     private boolean m_hideInWizard = false;
-    private boolean m_generateImage = true;
+    private boolean m_generateImage = false;
     private boolean m_showLegend = true;
     private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_autoRangeAxes = true;
@@ -1102,7 +1102,7 @@ final class ScatterPlotViewConfig {
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings) {
         setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, true));
+        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, false));
 
         setShowLegend(settings.getBoolean(SHOW_LEGEND, true));
         setAutoRangeAxes(settings.getBoolean(AUTO_RANGE_AXES, true));

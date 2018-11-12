@@ -66,7 +66,7 @@ public class MoleculeStringInputQuickFormConfig extends QuickFormFlowVariableCon
     private static final String DEFAULT_FORMAT = MoleculeStringInputQuickFormNodeModel.DEFAULT_FORMATS[0];
     private String m_format = DEFAULT_FORMAT;
     private static final String CFG_GENERATE_IMAGE = "generateImage";
-    private static final boolean DEFAULT_GENERATE = true;
+    private static final boolean DEFAULT_GENERATE = false;
     private boolean m_generateImage = DEFAULT_GENERATE;
 
     private static final String CFG_WIDTH = "width";

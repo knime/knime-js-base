@@ -175,7 +175,7 @@ public final class LiftChartViewConfig {
     private String m_yAxisTitleGain = DEFAULT_Y_TITLE_GAIN;
 
     private boolean m_hideInWizard = false;
-    private boolean m_generateImage = true;
+    private boolean m_generateImage = false;
     private boolean m_showGrid = true;
     private int m_lineWidth = 1;
     private boolean m_resizeToWindow = true;
@@ -863,7 +863,7 @@ public final class LiftChartViewConfig {
      */
     public void loadSettingsForDialog(final NodeSettingsRO settings, final DataTableSpec spec) {
         setHideInWizard(settings.getBoolean(HIDE_IN_WIZARD, false));
-        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, true));
+        setGenerateImage(settings.getBoolean(GENERATE_IMAGE, false));
         setLineWidth(settings.getInt(LINE_WIDTH, 1));
 
         setShowGrid(settings.getBoolean(SHOW_GRID, true));

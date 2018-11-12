@@ -93,7 +93,7 @@ public class DecisionTreeViewConfig {
     static final Color DEFAULT_NODE_BACKGROUND_COLOR = DEFAULT_BACKGROUND_COLOR;
     static final int DEFAULT_MAX_ROWS = 10000;
     static final String DEFAULT_SELECTION_COLUMN_NAME = "Selected (Decision Tree View)";
-    static final boolean DEFAULT_GENERATE_IMAGE = true;
+    static final boolean DEFAULT_GENERATE_IMAGE = false;
     final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;

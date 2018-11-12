@@ -117,7 +117,7 @@ public class DynamicJSConfig {
     static final String MAX_ROWS_CONF = "maxRows";
     private int m_maxRows = DEFAULT_MAX_ROWS;
 
-    static final boolean DEFAULT_GENERATE_IMAGE = true;
+    static final boolean DEFAULT_GENERATE_IMAGE = false;
     static final String GENERATE_IMAGE_CONF = "generateImage";
     private boolean m_generateImage = DEFAULT_GENERATE_IMAGE;
 
