@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./tag_cloud.png" type="Visualizer" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Tag Cloud (JavaScript)</name>
+    <shortDescription>Displays a tag cloud.</shortDescription>
+    <fullDescription>
+        <intro>
+        	<p>A tag cloud view using JavaScript libraries. The view can be accessed either in KNIME Analytics Platform by right-clicking on an executed node and selecting "Interactive View: JavaScript Tag Cloud View" or on the WebPortal.</p>
+            <p>The implementation is based on the popular JavaScript library <a href="https://d3js.org/">D3</a> 
+            and the layout extension by <a href="https://github.com/jasondavies/d3-cloud">Jason Davies</a>, which is inspired
+            by the popular Java based <a href="http://www.wordle.net/">Wordle</a>. See the links for details.</p>
+            <p>The configuration of the node lets you choose the size of the sample to display and enable certain controls, 
+            which are then available in the view. This includes the ability to choose different font sizes or a title. Enabling or disabling these controls via the configuration dialog is useful in a web portal/wizard execution, where the end user has no access to the 
+            workflow itself.</p>
+            <p>Since missing values cannot be displayed in the view, a warning message is displayed instead.</p>
+            <p>Additionally, a static SVG image can be rendered, which is then made available at the image output port.</p>
+            <p>
+	        The node supports custom CSS styling. 
+	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+	        in the node configuration dialog. 
+	        You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+	        </p>
+        </intro>
+        <tab name="Options">
+        	<description>This tab contains all general options for controlling the generation and output of the view.</description>
+        	<option name="Number of words to display">
+        		Use this numerical value to restrict the number of tags used for this visualization. This number takes into account
+        		aggregation settings.  The largest tags are retained. 
+        		A warning message can be displayed if the number of tags in the input table exceeds this value.
+        	</option>
+        	<option name="Display warnings in view">
+        		Enables the display of warning messages about missing values, exceeding word count, limited layout space, etc.
+        	</option>
+        	<option name="Report on missing values">
+        		Missing values in the selected word or size column lead to the omission of the corresponding row. If this
+        		option is checked and missing values are encountered, a warning is issued; otherwise the rows are simply ignored.
+        	</option>
+        	<option name="Create image at outport">
+        		Leave this option checked if an image is to be rendered during execution for the image outport; uncheck it if an image is not needed or if creation of an image is too time consuming.
+        		Unchecking the option disables the outport.
+        	</option>
+        	<option name="Title" optional="true">
+        		The title of the visualization shown above the generated tag cloud. If left blank, no title will be shown.
+        	</option>
+        	<option name="Subtitle" optional="true">
+        		The subtitle of the visualization shown above the generated tag cloud. If left blank, no subtitle will be shown.
+        	</option>
+        	<option name="Tag column">
+        		Defines the column containing the string values for the tags to display. Both string and term cells are supported.
+        	</option>
+        	<option name="Aggregate tags">
+        		Setting this option aggregates the tags from the input table whose values are the same. The size of the resulting
+        		tag is determined as the sum of all values in the selected size column or property. Use this option in conjunction 
+        		with 'Ignore term tags' when selecting a tag column of type 'term'.
+        	</option>
+        	<option name="Ignore term tags">
+        		If selected, the term tags are ignored. Thus, two terms are equal when their words are equal. The new value of the 
+        		term will be the sum over all terms containing the same word.
+        	</option>
+        	<option name="Size column" optional="true">
+        		Defines the column that contains the numerical size values for the tags to display.
+        		This can also be set to <i>'&lt;none&gt;'</i>, in which case the size property for the individual row is used.
+        	</option>
+        	<option name="Use row size property">
+        		In case no size column is used, the size property for each row is extracted as a size measure for the tags.
+        	</option>
+        	<option name="Width of view/image">
+        		Static width of view and generated image. If 'resize view to fill window' is used, this value has no effect.
+        	</option>
+        	<option name="Height of view/image">
+        		Static height of view and generated image. If 'resize view to fill window' is used, this value has no effect.
+        	</option>
+        	<option name="Resize view to fill window">
+        		Setting this option resizes view and image to the available area of the window. 
+        		If disabled, the view size is static according to the set width and height.
+        	</option>
+        	<option name="Display full screen button">
+        		Displays a button that enables full screen mode.
+        	</option>
+        </tab>
+        <tab name="Display">
+        	<description>This tab contains specific display settings controlling font and layout of the tags in the view.</description>
+        	<option name="Font family">
+        		A font family string used to render the tags. Values can be comma-separated for fallback declaration, e.g. <i>'Helvetica, Arial, sans-serif'</i>.
+        	</option>
+        	<option name="Font scale">
+        		The font sizes are calculated as an interpolation between specified minimum and maximum font sizes. There are four
+        		interpolation methods to choose from:
+        		<ul>
+        			<li>linear</li>
+        			<li>logarithmic</li>
+        			<li>square root</li>
+        			<li>exponential</li>
+        		</ul>
+        		Depending on the size distribution in the data and the desired layout one or another 
+        		interpolation method might be more fitting. 
+        	</option>
+        	<option name="Minimum and maximum font size">
+        		Specification of the minimum and maximum font sizes of the rendered tags. Please note that if the values
+        		are too large for all words to fit in the designated view area, tags may be omitted from the layout or overlap.
+        		In this case a warning is displayed in the view.
+        	</option>
+        	<option name="Use bold font face">
+        		Check to use a bold variant of the selected font family for display.
+        	</option>
+        	<option name="Use row color property">
+        		If checked, the color property of each tag is extracted from the input table. Use a 'Color Manager' to assign
+        		colors to the data in advance. If not checked, colors are randomly drawn from a default color scale. 
+        	</option>
+        	<option name="Spiral type">
+        		Defines the type of spiral used to position the tags. There are two types to choose from:
+        		<ul>
+        			<li>archimedean</li>
+        			<li>rectangular</li>
+        		</ul>
+        	</option>
+        	<option name="Number of orientations">
+        		The number of orientations randomly assigned to tags. The rotation angles are
+        		calculated according to the specified start and end angles with number of orientations taken into account.
+        		For example, to create a strict perpendicular layout, set the number to 2, with start angle at -90&#176; and 
+        		end angle at 0&#176;. By default, there are 5 orientations between -60&#176; and +60&#176;, which results in the
+        		following set of orientations: [-60&#176;, -30&#176;, 0&#176;, +30&#176; +60&#176;].
+        	</option>
+        	<option name="Start and end angle">
+        		Numerical values for start and end angles of orientations. The values need to be in the range from -90&#176; to +90&#176;.
+        		See 'number of orientations' for more details.
+        	</option>
+        	<option name="Display refresh button">
+        		Displays a button to refresh the tag cloud layout with the current settings. As orientation and placement
+        		of tags have a random component, the layout will look different each time. To achieve a desired look or
+        		placement of certain key tags, etc., this button can be pressed multiple times. When the view's value is
+        		applied, the last layout is remembered for image creation and subsequent opening of the view.  
+        	</option>
+        	<option name="Disable animations">
+        		If checked, all view animations will be disabled.
+        	</option>
+        </tab>
+        <tab name="Interactivity">
+        	<description>
+        		This tab contains all settings controlling the interactive menu displayable in the view, 
+        		as well as all selection and filter settings.
+        	</description>
+        	<option name="Enable view edit controls">
+        		Enables or disables all view menu controls.
+        	</option>
+        	<option name="Enable title edit control">
+        		Renders a text input field to change the visualization's title in the view.
+        	</option>
+        	<option name="Enable subtitle edit control">
+        		Renders a text input field to change the visualization's subtitle in the view.
+        	</option>
+        	<option name="Enable font scale control">
+        		Renders a selection box to change the interpolation method for font sizes in the view.
+        	</option>
+        	<option name="Enable font size controls">
+        		Renders numerical inputs to change minimum and maximum font sizes in the view.
+        	</option>
+        	<option name="Enable spiral type control">
+        		Renders a selection box to change the spiral type in the view.
+        	</option>
+        	<option name="Enable orientation count control">
+        		Renders a numerical input field to change the number of orientations used in tag rotation in the view.
+        	</option>
+        	<option name="Enable angle controls">
+        		Renders numerical inputs to change the start and end angles used for word rotation in the view.
+        	</option>
+        	<option name="Enable selection">
+        		If checked, tags can be selected by clicking on them in the view. Multiple tags can be selected by holding down the 
+        		Ctrl-Key (Cmd-Key on Mac). Any selection will be represented as a new boolean column in the output table.
+        	</option>
+        	<option name="Selection outline color">
+        		Selected words are indicated by an added outline in the view. Select a color that does not interfere with the 
+        		colors applied to the tags themselves.
+        	</option>
+        	<option name="Publish selection events">
+        		If checked, other interactive views are notified when the user changes the selection in the current view. See also "Subscribe to selection events".
+        	</option>
+        	<option name="Subscribe to selection events">
+        		If checked, the view reacts to notifications from other interactive views that the selection has been changed. See also "Publish selection events".
+        	</option>
+        	<option name="Show selected tags only">
+        		If checked, only selected tags are displayed.
+        	</option>
+        	<option name="Enable 'Show selected tags only' option">
+        		If checked, a checkbox for displaying only selected tags is rendered in the view.
+        	</option>
+        	<option name="Display 'Clear selection' button">
+        		If checked, a button to clear the selection is displayed.
+        	</option><option name="Selection column name">
+        		The name of the boolean column containing the selection.
+        	</option>
+        	<option name="Subscribe to filter events">
+        		If checked, the view reacts when applied filters are changed.
+        	</option>     	
+        </tab>
+    </fullDescription>
+    <interactiveView name="JavaScript Tag Cloud View">
+        Displays the selected strings in a tag cloud.
+    </interactiveView>
+    <ports>
+        <inPort index="0" name="Input to display">
+            Input table containing tags to display.
+        </inPort>
+        <outPort index="0" name="SVG Image">
+        	Generated SVG image of tag cloud visualization.
+        </outPort>
+        <outPort index="1" name="Input data and view selection">
+        	Data table containing the input data with an appended column representing the selection made in the tag cloud view.
+        	Selected tags are denoted by 'true', unselected tags by 'false'. Rows with tags not shown in the view (because of missing values or an exceeded tag limit, for example) are denoted by a missing 
+        	value.
+        </outPort>
+    </ports>
+</knimeNode>
