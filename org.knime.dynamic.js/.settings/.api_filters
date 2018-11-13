@@ -72,39 +72,4 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicJSProcessor.java" type="org.knime.dynamic.js.v30.DynamicJSProcessor">
-        <filter comment="Removed as the warning message implementation has been revised" id="405864542">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
-                <message_argument value="WARNING_MESSAGE"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
-                <message_argument value="getWarningMessage()"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor"/>
-                <message_argument value="setWarningMessage(String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405995624">
-            <message_arguments>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicJSProcessor.WarningMessage"/>
-                <message_argument value="org.knime.dynamic.js_3.5.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/dynamic/js/v30/DynamicStatefulJSProcessor.java" type="org.knime.dynamic.js.v30.DynamicStatefulJSProcessor">
-        <filter id="1108344834">
-            <message_arguments>
-                <message_argument value="3.4"/>
-                <message_argument value="3.5"/>
-                <message_argument value="org.knime.dynamic.js.v30.DynamicStatefulJSProcessor"/>
-            </message_arguments>
-        </filter>
-    </resource>
 </component>
