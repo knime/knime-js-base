@@ -220,7 +220,7 @@
                 chart = nv.models.multiBarHorizontalChart();
             } else {
                 chart = nv.models.multiBarChart();
-                chart.reduceXTicks(false);
+                chart.reduceXTicks(!!_representation.isHistogram);
             }
 
             chart.dispatch.on('renderEnd.css', function() {
@@ -245,7 +245,7 @@
                 .color(colorRange)
                 .duration(0)
                 .margin({ right: 20, top: 60 })
-                .groupSpacing(0.1);
+                .groupSpacing(_representation.isHistogram ? 0.01 : 0.1);
 
             updateTitles(false);
 
@@ -329,7 +329,7 @@
     }
     
     function selectCorrectBar(clusterName) {
-    	let allBars = d3.selectAll(".knime-x text.knime-tick-label");
+    	var allBars = d3.selectAll(".knime-x text.knime-tick-label");
     	for(var j = 0; j < allBars[0].length; j++) {
     		if(d3.select(allBars[0][j]).data()[0] == clusterName) {
     			return d3.select(allBars[0][j]);
@@ -341,20 +341,20 @@
     function removeHilightBar(clusterName, removeAll) {
     	if(removeAll) {
     		var length = _value.options['selection'].length;
-	  		for(var i = 0; i < length; i++) {
-	  			let selectedEntry = _value.options['selection'][i];
-	  			let bars = d3.selectAll(".hilightBar");
-	  			let barParent = bars.select(function() { return this.parentNode; });
+	  		for(var i = 0; i < length; i++) { 
+	  			var selectedEntry = _value.options['selection'][i];
+	  			var bars = d3.selectAll(".hilightBar");
+	  			var barParent = bars.select(function() { return this.parentNode; });
 	  			barParent.select("text").classed(selectedEntry[1], false);
 	  			d3.selectAll(".hilightBar").remove();
 	  		}
     	} else {
 	    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
 	    	if(barIndex > -1) {
-		    	let selectedEntry = _value.options['selection'][barIndex];
-		    	let bar = selectCorrectBar(clusterName);
+		    	var selectedEntry = _value.options['selection'][barIndex];
+		    	var bar = selectCorrectBar(clusterName);
 		    	if(bar){
-			    	let barParent = bar.select(function() { return this.parentNode; });
+			    	var barParent = bar.select(function() { return this.parentNode; });
 			    	barParent.select("text").classed(selectedEntry[1], false);
 				  	d3.selectAll(".hilightBar").remove();
 		    	}
@@ -482,14 +482,14 @@
     		var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
     		var partiallySelectedRows = knimeService.getAllPartiallySelectedRows(_translator.sourceID);
     		_value.options['selection'] = [];
-    		for (let selectedRow in selectedRows) {
-    			let length = _value.options['selection'].length;
+    		for (var selectedRow in selectedRows) {
+    			var length = _value.options['selection'].length;
     			_value.options['selection'][length] = [selectedRows[selectedRow], "knime-selected"];
     			createHilightBar(_keyNameMap.getNameFromKey(selectedRows[selectedRow]),
     					"knime-selected");
     		}
-    		for (let partiallySelectedRow in partiallySelectedRows) {
-    			let length = _value.options['selection'].length;
+    		for (var partiallySelectedRow in partiallySelectedRows) {
+    			var length = _value.options['selection'].length;
     			_value.options['selection'][length] = [partiallySelectedRows[partiallySelectedRow], "knime-partially-selected"];
     			createHilightBar(_keyNameMap.getNameFromKey(partiallySelectedRows[partiallySelectedRow]),
     					"knime-partially-selected");

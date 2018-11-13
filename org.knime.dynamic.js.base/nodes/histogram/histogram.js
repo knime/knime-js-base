@@ -10,6 +10,7 @@
 		var binColName = binningResult.binnedColumn;
 		_representation.inObjects[0] = binningResult.groups;
 		_representation.options['cat'] = binColName;
+		_representation.isHistogram = true;
 		grouped_bar_chart_namespace.init(_representation, _value);
 	}
 
