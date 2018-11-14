@@ -75,7 +75,7 @@
 
     barchart.init = function (representation, value) {
         _value = value;
-        _value.options['selection'] = _value.options['selection'] || [];
+        _value.options['selection'] = _value.options['selection'];
         _representation = representation;
         if(_representation.inObjects[0].translator) {
         	_translator = _representation.inObjects[0].translator;
@@ -263,7 +263,9 @@
         	});
             
             // redraws selection
-            redrawSelection();
+            if(_value.options['selection']) {
+            	redrawSelection();
+            }
             return chart;
         });
     }
@@ -321,11 +323,15 @@
 	}
     
     function getSelectedRowIDs() {
-    	var selectedRowIDs = [];
-    	for (var i = 0; i< _value.options['selection'].length; i++) {
-    		selectedRowIDs.push( _value.options['selection'][i][0]);
+    	if(_value.options['selection']) {
+	    	var selectedRowIDs = [];
+	    	for (var i = 0; i< _value.options['selection'].length; i++) {
+	    		selectedRowIDs.push( _value.options['selection'][i][0]);
+	    	}
+	    	return selectedRowIDs;
+    	} else {
+    		return [];
     	}
-    	return selectedRowIDs;
     }
     
     function selectCorrectBar(clusterName) {
@@ -339,27 +345,29 @@
     
     // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
     function removeHilightBar(clusterName, removeAll) {
-    	if(removeAll) {
-    		var length = _value.options['selection'].length;
-	  		for(var i = 0; i < length; i++) { 
-	  			var selectedEntry = _value.options['selection'][i];
-	  			var bars = d3.selectAll(".hilightBar");
-	  			var barParent = bars.select(function() { return this.parentNode; });
-	  			barParent.select("text").classed(selectedEntry[1], false);
-	  			d3.selectAll(".hilightBar").remove();
-	  		}
-    	} else {
-	    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
-	    	if(barIndex > -1) {
-		    	var selectedEntry = _value.options['selection'][barIndex];
-		    	var bar = selectCorrectBar(clusterName);
-		    	if(bar){
-			    	var barParent = bar.select(function() { return this.parentNode; });
-			    	barParent.select("text").classed(selectedEntry[1], false);
-				  	d3.selectAll(".hilightBar").remove();
+		if(_value.options['selection']){
+		    	if(removeAll) {
+		    		var length = _value.options['selection'].length;
+			  		for(var i = 0; i < length; i++) {
+			  			var selectedEntry = _value.options['selection'][i];
+			  			var bars = d3.selectAll(".hilightBar");
+			  			var barParent = bars.select(function() { return this.parentNode; });
+			  			barParent.select("text").classed(selectedEntry[1], false);
+			  			d3.selectAll(".hilightBar").remove();
+			  		}
+		    	} else {
+			    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
+			    	if(barIndex > -1) {
+				    	var selectedEntry = _value.options['selection'][barIndex];
+				    	var bar = selectCorrectBar(clusterName);
+				    	if(bar){
+					    	var barParent = bar.select(function() { return this.parentNode; });
+					    	barParent.select("text").classed(selectedEntry[1], false);
+					    	barParent.selectAll(".hilightBar").remove();
+				    	}
+			    	}
 		    	}
-	    	}
-    	}
+		}
     } 
     
     // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
@@ -420,31 +428,28 @@
     }
     
     // Helper class to handle conversion from cluster name to row key
-    class KeyNameMap{
-    	constructor(map){
+    function KeyNameMap(map) {
 		   this.map = map;
 		   this.reverseMap = {};
 		   for(var key in map){
 		      var value = map[key];
 		      this.reverseMap[value] = key;   
-		   }
     	}
-		getKeyFromName(name){ 
-			return this.map[name]; 
-		};
-		getNameFromKey(key){
-			return this.reverseMap[key];
-		};
     }
+		   
+	KeyNameMap.prototype.getKeyFromName = function(name){ 
+		return this.map[name]; 
+	}
+	KeyNameMap.prototype.getNameFromKey = function(key){
+		return this.reverseMap[key];
+	}
     
     function handleHighlightClick(event) {
     	var clusterName = event.x;
     	var clusterKey = _keyNameMap.getKeyFromName(clusterName);
     	var barIndex = getSelectedRowIDs().indexOf(clusterKey);
     	// Deselect already selected bar when clicking again on it
-    	if((barIndex > -1 && (!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) 
-    			&& _value.options['selection'].length == 1)
-    			|| (barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey))){
+    	if(barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey)){
     		if(_representation.options.enableSelection) {
         		if(_value.options.publishSelection) {
         			knimeService.removeRowsFromSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
