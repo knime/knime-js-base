@@ -75,7 +75,6 @@
 
     barchart.init = function (representation, value) {
         _value = value;
-        _value.options['selection'] = _value.options['selection'];
         _representation = representation;
         if(_representation.inObjects[0].translator) {
         	_translator = _representation.inObjects[0].translator;
@@ -206,6 +205,7 @@
             knimeTable = new kt();
             // Add the data from the input port to the knimeTable.
             var port0dataTable = _representation.inObjects[0].table;
+            port0dataTable.rows = sortByClusterName(port0dataTable.rows);
             knimeTable.setDataTable(port0dataTable);
 
             processData();
@@ -270,6 +270,30 @@
         });
     }
     
+    function sortByClusterName(array) {
+        return array.sort(function(a, b) {
+            var x = a.data[0];
+            var y = b.data[0];
+            
+            // Make sure, that missing values are displayed last
+            if(x == null) {
+            	return 1
+            } else if (y == null) {
+            	return -1;
+            }
+            
+            if (typeof x == "string")
+            {
+                x = (""+x).toLowerCase(); 
+            }
+            if (typeof y == "string")
+            {
+                y = (""+y).toLowerCase();
+            }
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+    
     function registerClickHandler () {
     	d3.selectAll(".nv-bar").on('click',function(event) {
 			handleHighlightClick(event);
@@ -316,9 +340,11 @@
     }
     
 	function checkClearSelectionButton(){
-		var button = d3.select("#clearSelectionButton");
-		if (button){
-			button.classed("inactive", function(){return !_value.options['selection'].length > 0});
+		if(_value.options['selection']){
+			var button = d3.select("#clearSelectionButton");
+			if (button){
+				button.classed("inactive", function(){return !_value.options['selection'].length > 0});
+			}
 		}
 	}
     
@@ -445,6 +471,9 @@
 	}
     
     function handleHighlightClick(event) {
+    	if(!_value.options['selection']) {
+    		_value.options['selection'] = [];
+    	}
     	var clusterName = event.x;
     	var clusterKey = _keyNameMap.getKeyFromName(clusterName);
     	var barIndex = getSelectedRowIDs().indexOf(clusterKey);
@@ -465,8 +494,8 @@
         		}
     		}
 			removeHilightBar(clusterName, true);
-			_value.options['selection']= [];
     		createHilightBar(clusterName, "knime-selected");
+    		_value.options['selection'] = [];
     		_value.options['selection'].push([clusterKey, "knime-selected"]);
     	} else {
     		// Select the clicked bar, as it is either a new selection or a additional selection
@@ -482,11 +511,13 @@
     }
     
     function onSelectionChanged(data) {
+    	if(!_value.options['selection']) {
+    		_value.options['selection'] = [];
+    	}
     	if (data.reevaluate) {
     		removeHilightBar("", true);
     		var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
     		var partiallySelectedRows = knimeService.getAllPartiallySelectedRows(_translator.sourceID);
-    		_value.options['selection'] = [];
     		for (var selectedRow in selectedRows) {
     			var length = _value.options['selection'].length;
     			_value.options['selection'][length] = [selectedRows[selectedRow], "knime-selected"];
