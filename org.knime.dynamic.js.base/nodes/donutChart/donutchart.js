@@ -13,6 +13,7 @@
 	var missValCatValue;
     var _translator;
     var _keyNameMap;
+    var _incomingTable;
 	
 	var showWarnings;
 	
@@ -22,7 +23,7 @@
 	pie.init = function(representation, value) {
 		_representation = representation;
 		_value = value;
-		_value.options['selection'] = _value.options['selection'] || [];
+		_value.options['selection'] = _value.options['selection'];
 		
 		if(_representation.inObjects[0].translator) {
         	_translator = _representation.inObjects[0].translator;
@@ -30,7 +31,7 @@
         	_translator.targetIDs = [_representation.tableIds[0]];
         	knimeService.registerSelectionTranslator(_translator, _translator.sourceID);
         	subscribeToSelection(_value.options.subscribeToSelection);
-        	_keyNameMap = new KeyNameMap(getClusterToRowMapping());
+        	_incomingTable = _representation.inObjects[0].table;
         }
 		
 		showWarnings = _representation.options.showWarnings;
@@ -43,6 +44,7 @@
 		if (_representation.options.enableViewControls) {
 			drawControls();
 		}
+		_keyNameMap = new KeyNameMap(getClusterToRowMapping());
 	}
 
 	function drawChart(redraw) {		
@@ -63,6 +65,8 @@
 		var optFullscreen = _representation.options["svg"]["fullscreen"] && _representation.runningInView;
 		var optWidth = _representation.options["svg"]["width"]
 		var optHeight = _representation.options["svg"]["height"]
+		
+		var optEnableSelection = _representation.options['enableSelection'];
 		
 		var isTitle = optTitle || optSubtitle;
 
@@ -108,6 +112,7 @@
 		knimeTable = new kt();
 		// Add the data from the input port to the knimeTable.
 		var port0dataTable = _representation.inObjects[0].table;
+		port0dataTable.rows = sortByClusterName(port0dataTable.rows);
 		knimeTable.setDataTable(port0dataTable);
 		
 		processData(true);	
@@ -196,12 +201,44 @@
 				redrawSelection();
 			});
 			
+			if(optEnableSelection) {
+				svg.on("click", function() {
+					removeHilightBar("",true);
+				_value.options['selection'] = [];
+				publishSelection(true);
+				});
+			}
+			
 			// redraws selection
             redrawSelection();
 
 			return chart;
 		});
 	}
+	
+    function sortByClusterName(array) {
+        return array.sort(function(a, b) {
+            var x = a.data[0];
+            var y = b.data[0];
+            
+            // Make sure, that missing values are displayed last
+            if(x == null) {
+            	return 1
+            } else if (y == null) {
+            	return -1;
+            }
+            
+            if (typeof x == "string")
+            {
+                x = (""+x).toLowerCase(); 
+            }
+            if (typeof y == "string")
+            {
+                y = (""+y).toLowerCase();
+            }
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
 	
 	 function registerClickHandler () {
 	    	d3.selectAll(".nv-slice").on('click',function(event) {
@@ -211,9 +248,11 @@
 	    }
 	    
 	    function redrawSelection() {
-	    	for(var i = 0; i < _value.options['selection'].length; i++) {
-	    		createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]), 
-	    				_value.options['selection'][i][1]);
+	    	if(_value.options['selection']) {
+		    	for(var i = 0; i < _value.options['selection'].length; i++) {
+		    		createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]), 
+		    				_value.options['selection'][i][1]);
+		    	}
 	    	}
 	    }
 	    
@@ -241,11 +280,15 @@
 		}
 	    
 	    function getSelectedRowIDs() {
-	    	var selectedRowIDs = [];
-	    	for (var i = 0; i< _value.options['selection'].length; i++) {
-	    		selectedRowIDs.push( _value.options['selection'][i][0]);
+	    	if(_value.options['selection']) {
+		    	var selectedRowIDs = [];
+		    	for (var i = 0; i< _value.options['selection'].length; i++) {
+		    		selectedRowIDs.push( _value.options['selection'][i][0]);
+		    	}
+		    	return selectedRowIDs;
+	    	} else {
+	    		return [];
 	    	}
-	    	return selectedRowIDs;
 	    }
 	    
 	    // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
@@ -253,22 +296,32 @@
 	    	if(removeAll) {
 	    		var length = _value.options['selection'].length;
 		  		for(var i = 0; i < length; i++) {
-		  			let selectedEntry = _value.options['selection'][i];
-		  			d3.selectAll(".hilightBar_" + _keyNameMap.getNameFromKey(selectedEntry[0])).remove();
+		  			d3.selectAll(".hilightBar").remove();
 		  		}
 	    	} else {
 		    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
 		    	if(barIndex > -1) {
-				  	d3.selectAll(".hilightBar_" + clusterName).remove();
+		    		let pie = selectCorrectBar(clusterName);
+		    		if(pie){
+		    			pie.remove();
+		    		}
 		    	}
 	    	}
 	    } 
 	    
+	    function selectCorrectBar(clusterName) {
+	    	let allSlices = d3.selectAll(".nv-slice");
+	    	for(var j = 0; j < allSlices[0].length; j++) {
+	    		if(d3.select(allSlices[0][j]).data()[0].data.label == clusterName) {
+	    			return d3.select(allSlices[0][j]).select(".hilightBar");
+	    		}
+	    	}
+	    }
+	    
 	    // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
 	    function createHilightBar (clusterName, selectionClass) {
-	    	var optOrientation = _value.options['orientation'];
-		  	for(var j = 0; j < _representation.inObjects[0].table.rows.length; j++) {
-		  		if(_representation.inObjects[0].table.rows[j].data[0] === clusterName) {
+    		for(var j = 0; j < plotData.length; j++) {
+    			if(plotData[j].label === clusterName) {
 		  			var slices = d3.selectAll(".nv-slice");
 		  			for(var i = 0; i < slices[0].length; i++) {
 		  				if(i==j) {
@@ -276,14 +329,12 @@
 		  					var availableWidth = chart.width() - 20;
 		  					var availableHeight = chart.height();
 		  					var radius = Math.min(availableWidth, availableHeight) / 2;
-		  	                var donutRatio = chart.donutRatio();
 		  					var selectionTitle;
 		  					if(selectionClass == "knime-selected") {
 		  						selectionTitle = "Selected";
 		  					} else {
 		  						selectionTitle = "Partially selected";
 		  					}
-		  	                console.log(donutRatio,chart.margin().top, chart.margin().bottom, "donutChart");
 		  					//PieChart Code
 		  					var arc = d3.svg.arc()
 			  				    .innerRadius((radius - radius / 5))
@@ -293,52 +344,55 @@
 
 			  				slice.select(function() { return this.parentNode; }).append("path")
 			  				    .attr("d", arc)
-			  				    .classed("hilightBar_" + clusterName,true)
+			  				    .classed("hilightBar",true)
 			  				    .classed(selectionClass, true)
 		    	  				.append("title")
 		    	  				.classed('knime-tooltip', true)
 		    	  				.text(selectionTitle);
 		  				} 
 		  			}
-		  		}
-		  	}
+    			}
+	    	}
 	    }
 	    
 	    function getClusterToRowMapping() {
 	    	var map = {};
-	    	for (var i = 0; i < _representation.inObjects[0].table.rows.length; i++) {
-	    		map[_representation.inObjects[0].table.rows[i].data[0]] = _representation.inObjects[0].table.rows[i].rowKey;
+	    	for (var i = 0; i < _incomingTable.rows.length; i++) {
+	    		if(_incomingTable.rows[i].data[0]) {
+	    			map[_incomingTable.rows[i].data[0]] = _incomingTable.rows[i].rowKey;
+	    		} else {
+	    			map["Missing values"] = _incomingTable.rows[i].rowKey;
+	    		}
 	    	}
 	    	return map;
 	    }
 	    
-	    // Helper class to handle conversion from cluster name to row key
-	    class KeyNameMap{
-	    	constructor(map){
+	 // Helper class to handle conversion from cluster name to row key
+	    function KeyNameMap(map) {
 			   this.map = map;
 			   this.reverseMap = {};
 			   for(var key in map){
 			      var value = map[key];
 			      this.reverseMap[value] = key;   
-			   }
 	    	}
-			getKeyFromName(name){ 
-				return this.map[name]; 
-			};
-			getNameFromKey(key){
-				return this.reverseMap[key];
-			};
 	    }
+			   
+		KeyNameMap.prototype.getKeyFromName = function(name){ 
+			return this.map[name]; 
+		}
+		KeyNameMap.prototype.getNameFromKey = function(key){
+			return this.reverseMap[key];
+		}
 	    
 	    function handleHighlightClick(event) {
-	    	console.log(event);
+	    	if(!_value.options['selection']) {
+	    		_value.options['selection'] = [];
+	    	}
 	    	var clusterName = event.data.label;
 	    	var clusterKey = _keyNameMap.getKeyFromName(clusterName);
 	    	var barIndex = getSelectedRowIDs().indexOf(clusterKey);
 	    	// Deselect already selected bar when clicking again on it
-	    	if((barIndex > -1 && (!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) 
-	    			&& _value.options['selection'].length == 1)
-	    			|| (barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey))){
+	    	if(barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey)){
 	    		if(_representation.options.enableSelection) {
 	        		if(_value.options.publishSelection) {
 	        			knimeService.removeRowsFromSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
@@ -371,6 +425,9 @@
 	    }
 	    
 	    function onSelectionChanged(data) {
+	    	if(!_value.options['selection']) {
+	    		_value.options['selection'] = [];
+	    	}
 	    	if (data.reevaluate) {
 	    		removeHilightBar("", true);
 	    		var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
@@ -820,7 +877,9 @@
 			.classed('knime-legend-symbol', true);
 		d3.selectAll('.nv-legend-text')
 			.classed('knime-legend-label', true);
-		registerClickHandler();
+		if(_representation.options['enableSelection']) {
+			registerClickHandler();
+		}
 	}
 	
 	function setTooltipCssClasses() {
