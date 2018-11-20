@@ -370,7 +370,7 @@
 			return;
 		}
 		
-		if (_representation.displayFullscreenButton) {
+		if (_representation.options.displayFullscreenButton) {
 			knimeService.allowFullscreen();
 		}
 		

@@ -147,7 +147,8 @@
                    Check to enable the editing of the chart labels within the view.
                </checkBoxOption>
                <checkBoxOption name="Enable switching 'Missing values' category" id="enableSwitchMissValCat"
-                    label="Enable switching 'Missing values' category" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
+                    label="Enable switching 'Missing values' category" defaultValue="true" 
+                    enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
                     Check to enable to show and hide 'Missing values' category in the view.
                </checkBoxOption>
            </options>
