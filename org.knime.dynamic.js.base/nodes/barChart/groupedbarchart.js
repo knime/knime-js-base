@@ -76,13 +76,14 @@
     barchart.init = function (representation, value) {
         _value = value;
         _representation = representation;
-        if(_representation.inObjects[0].translator) {
+        _incomingTable = _representation.inObjects[0].table;
+
+        if (_representation.options.enableSelection && _representation.inObjects[0].translator) {
         	_translator = _representation.inObjects[0].translator;
         	_translator.sourceID = _representation.inObjects[0].uuid;
         	_translator.targetIDs = [_representation.tableIds[0]];
         	knimeService.registerSelectionTranslator(_translator, _translator.sourceID);
         	subscribeToSelection(_value.options.subscribeToSelection);
-        	_incomingTable = _representation.inObjects[0].table;
         }
         
         showWarnings = _representation.options.showWarnings;
@@ -335,7 +336,7 @@
     
     function publishSelection(shouldPublish){
     	if(shouldPublish) {
-    		knimeService.setSelectedRows(_translator.sourceID, getSelectedRowIDs(), _translator.sourceID);
+    		knimeService.setSelectedRows(_translator.sourceID, getSelectedRowIDs(), onSelectionChanged);
     	}
     }
     
