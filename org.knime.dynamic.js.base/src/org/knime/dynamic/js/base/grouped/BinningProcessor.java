@@ -175,7 +175,11 @@ public class BinningProcessor extends GroupedProcessor {
         res.setGroups(groupingResult);
         res.setBinnedColumn(binnedColName);
         exec.setProgress(1.0);
-        return new Object[]{res};
+        
+        Object[] processedObjects = new Object[inObjects.length];
+        processedObjects[0] = res;
+        System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
+        return processedObjects;
     }
     
     @JsonAutoDetect

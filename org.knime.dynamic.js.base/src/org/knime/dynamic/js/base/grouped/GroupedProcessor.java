@@ -53,8 +53,10 @@ public class GroupedProcessor extends DynamicStatefulJSProcessor {
 	@Override
     public Object[] processInputObjects(PortObject[] inObjects, ExecutionContext exec, DynamicJSConfig config)
         throws Exception {
-	    GroupingResult result = processInputObjects(inObjects, exec, config, true); 
-        return new Object[] {result};
+	    Object[] processedObjects = new Object[inObjects.length];
+        processedObjects[0] = processInputObjects(inObjects, exec, config, true);
+        System.arraycopy(inObjects, 1, processedObjects, 1, inObjects.length-1);
+        return processedObjects;
 	}
 	
     /**
