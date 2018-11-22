@@ -372,29 +372,29 @@
     
     // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
     function removeHilightBar(clusterName, removeAll) {
-		if(_value.options['selection']){
-		    	if(removeAll) {
-		    		var length = _value.options['selection'].length;
-			  		for(var i = 0; i < length; i++) {
-			  			var selectedEntry = _value.options['selection'][i];
-			  			var bars = d3.selectAll(".hilightBar");
-			  			var barParent = bars.select(function() { return this.parentNode; });
-			  			barParent.select("text").classed(selectedEntry[1], false);
-			  			d3.selectAll(".hilightBar").remove();
-			  		}
-		    	} else {
-			    	var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
-			    	if(barIndex > -1) {
-				    	var selectedEntry = _value.options['selection'][barIndex];
-				    	var bar = selectCorrectBar(clusterName);
-				    	if(bar){
-					    	var barParent = bar.select(function() { return this.parentNode; });
-					    	barParent.select("text").classed(selectedEntry[1], false);
-					    	barParent.selectAll(".hilightBar").remove();
-				    	}
-			    	}
-		    	}
-		}
+        if (_value.options['selection']){
+            if (removeAll) {
+                var length = _value.options['selection'].length;
+                for (var i = 0; i < length; i++) {
+                    var selectedEntry = _value.options['selection'][i];
+                    var bars = d3.selectAll(".hilightBar");
+                    var barParent = bars.select(function() { return this.parentNode; });
+                    barParent.select("text").classed(selectedEntry[1], false);
+                    d3.selectAll(".hilightBar").remove();
+                }
+            } else {
+                var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
+                if (barIndex > -1) {
+                    var selectedEntry = _value.options['selection'][barIndex];
+                    var bar = selectCorrectBar(clusterName);
+                    if(bar){
+                        var barParent = bar.select(function() { return this.parentNode; });
+                        barParent.select("text").classed(selectedEntry[1], false);
+                        barParent.selectAll(".hilightBar").remove();
+                    }
+                }
+            }
+        }
     } 
     
     // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
@@ -1467,7 +1467,6 @@
 
     drawControls = function () {
         if (!knimeService) {
-            // TODO: error handling?
             return;
         }
 
@@ -1487,7 +1486,7 @@
         var switchMissValCat = _representation.options.enableSwitchMissValCat;
         var showMaximum = _representation.options.enableMaximumValue;
         var enableSelection = _representation.options.enableSelection;
-        var disableClearButton = _representation.options.displayClearSelectionButton;
+        var displayClearButton = _representation.options.displayClearSelectionButton;
 
         if (titleEdit || subtitleEdit) {
             if (titleEdit) {
@@ -1630,7 +1629,7 @@
             knimeService.addMenuItem('Publish selection:', publishSelectionIcon, publishSelectionMenu);
         }
         
-        if (disableClearButton &&  _representation.options.enableSelection) {
+        if (displayClearButton &&  _representation.options.enableSelection) {
 			knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
 				d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false });
 				removeHilightBar("",true);
