@@ -315,22 +315,23 @@
     	}
     	return counter;
     }
-    
-    function redrawSelection() {
-    	for(var i = 0; i < _value.options['selection'].length; i++) {
-    		createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]), 
-    				_value.options['selection'][i][1]);
-    	}
+
+	function redrawSelection() {
+	    var length = _value.options['selection'] ? _value.options['selection'].length : 0;
+        for (var i = 0; i < length; i++) {
+            createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]),
+                _value.options['selection'][i][1]);
+        }
     }
     
     function subscribeToSelection(subscribeBool) {
-    	if(_representation.options.enableSelection) {
-    		if(subscribeBool) {
-    			knimeService.subscribeToSelection(_translator.sourceID, onSelectionChanged);
-    		} else {
-    			knimeService.unsubscribeSelection(_translator.sourceID, onSelectionChanged);
-    		}
-    	}
+        if (_representation.options.enableSelection) {
+            if (subscribeBool) {
+                knimeService.subscribeToSelection(_translator.sourceID, onSelectionChanged);
+            } else {
+                knimeService.unsubscribeSelection(_translator.sourceID, onSelectionChanged);
+            }
+        }
     }
     
     function publishSelection(shouldPublish){
