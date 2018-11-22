@@ -193,13 +193,13 @@
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Subscribe to selection events" id="subscribeToSelection" 
 	        		label="Subscribe to selection events" defaultValue="true" loadDefaults="true" 
-	        		enableDependency="enableSelection" saveInView="true">
+	        		enableDependency="enableSelection" enableValue="true" saveInView="true">
 	        	    If checked, the view reacts on notifications from other interactive views that the selection has 
 	        	    been changed. See also "Publish selection events".
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Publish selection events" id="publishSelection" 
 	        		label="Publish selection events" defaultValue="true" loadDefaults="true" 
-	        		enableDependency="enableSelection" saveInView="true">
+	        		enableDependency="enableSelection" enableValue="true" saveInView="true">
 	        	    If checked, notifies other interactive views when user changes the selection in the current view. 
 	        	    See also "Subscribe to selection events".
 	        	</checkBoxOption>

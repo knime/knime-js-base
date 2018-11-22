@@ -99,8 +99,8 @@
 					Provide a comma separated list of quantiles for the <n:b>sample quantiles</n:b> binning method.
 				</stringOption>
 				
-				<radioButtonOption name="Bin Naming" id="bin_naming" possibleValues="Numbered Borders Midpoints" 
-					defaultValue="Numbered" label="Bin Naming" configOnly="true">
+				<radioButtonOption name="Bin Naming" id="bin_naming" possibleValues="Midpoints Borders Numbered" 
+					defaultValue="Midpoints" label="Bin Naming" configOnly="true">
 					Use <n:b>Numbered</n:b> for bins labeled by an integer with prefix "Bin", <n:b>Borders</n:b> for 
 					labels using '"(a,b]"' interval notation or <n:b>Midpoints</n:b> for labels that show the midpoint 
 					of the interval.
@@ -297,19 +297,24 @@
         	</description>
         	<options>
 	            <checkBoxOption name="Enable selection" id="enableSelection" label="Enable selection" 
-	        		defaultValue="true" loadDefaults="true">
+	        		defaultValue="true">
 	        		If checked a separate column containing checkboxes is rendered in the view.
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Subscribe to selection events" id="subscribeToSelection" 
-	        		label="Subscribe to selection events" defaultValue="true" loadDefaults="true" saveInView="true">
-	        	    If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".
+	        		label="Subscribe to selection events" defaultValue="true" 
+	        		enableDependency="enableSelection" enableValue="true" saveInView="true">
+	        	    If checked, the view reacts on notifications from other interactive views that the selection has 
+	        	    been changed. See also "Publish selection events".
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Publish selection events" id="publishSelection" 
-	        		label="Publish selection events" defaultValue="true" loadDefaults="true" saveInView="true">
-	        	    If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".
+	        		label="Publish selection events" defaultValue="true" 
+	        		enableDependency="enableSelection" enableValue="true" saveInView="true">
+	        	    If checked, notifies other interactive views when user changes the selection in the current view. 
+	        	    See also "Subscribe to selection events".
 	        	</checkBoxOption>
 	        	<checkBoxOption name="Display clear selection button" id="displayClearSelectionButton"
-	               label="Display clear selection button" defaultValue="true" enableDependency="enableSelection" enableValue="true">
+	               label="Display clear selection button" defaultValue="true" enableDependency="enableSelection" 
+	               enableValue="true">
 	               Displays a button to clear current selection.
 	           </checkBoxOption>
         	</options>

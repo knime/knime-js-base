@@ -115,7 +115,7 @@
         var optCatLabel = _value.options['catLabel'];
         var optFreqLabel = _value.options['freqLabel'];
 
-        var optStaggerLabels = _representation.options['staggerLabels'];
+        var optStaggerLabels = _value.options['staggerLabels'];
         var optLegend = _representation.options['legend'];
 
         var optOrientation = _value.options['orientation'];
@@ -215,12 +215,11 @@
 		 * Plot chart
 		 */
         nv.addGraph(function () {
-
             if (optOrientation) {
                 chart = nv.models.multiBarHorizontalChart();
             } else {
                 chart = nv.models.multiBarChart();
-                chart.reduceXTicks(!!_representation.isHistogram);
+                chart.reduceXTicks(!!_representation.isHistogram && !optStaggerLabels);
             }
 
             chart.dispatch.on('renderEnd.css', function() {
@@ -1262,10 +1261,10 @@
         var amountOfBars = number[0].values.length;
         var amountOfDimensions = number.length;
         
-        var spaceBetweenBars = 40; 
+        var spaceBetweenBars = _representation.isHistogram ? 0 : 40; 
         var maxWidth;
         if(optOrientation) {
-        	maxWidth = 0.5*svgWidth;
+        	maxWidth = 0.5 * svgWidth;
         } else {
         	var barWidth;
         	if((d3.select(".nv-groups").node()) !== null) {
@@ -1283,8 +1282,8 @@
         var configObject = {
             container: document.querySelector('svg'),
             tempContainerClasses: 'knime-axis',
-            maxWidth: maxWidth,
-            maxHeight: svgHeight / amountOfBars,
+            maxWidth: _representation.isHistogram ? undefined : maxWidth,
+            /*maxHeight: svgHeight / amountOfBars,*/
             minimalChars: 1,
         };
         var xValues = [];
