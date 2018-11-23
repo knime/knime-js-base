@@ -51,6 +51,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.Credentials;
 import org.knime.core.node.workflow.CredentialsProvider;
@@ -225,4 +226,14 @@ public final class CredentialsInputQuickFormNodeModel extends
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setInputData(final ExternalNodeData inputData) {
+        super.setInputData(inputData);
+        if (CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD.equals(getDialogValue().getPassword())) {
+            getDialogValue().setPassword(getConfig().getDefaultValue().getPassword());
+        }
+    }
 }

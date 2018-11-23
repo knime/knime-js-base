@@ -75,6 +75,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CredentialsInputQuickFormValue extends JSONViewContent implements DialogNodeValue {
+    // Wince we don't expose the real password to the world, we need to send a magic placeholder instead.
+    // When sent back to the node it indicates that the default password from the node settings should be used.
+    static final String MAGIC_DEFAULT_PASSWORD = "*************";
 
     private static final String CFG_USERNAME = "username";
     private static final String CFG_PASSWORD = "password";
@@ -258,7 +261,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
         if (m_password == null) {
             builder.addNull(CFG_PASSWORD);
         } else {
-            builder.add(CFG_PASSWORD, "******");
+            builder.add(CFG_PASSWORD, MAGIC_DEFAULT_PASSWORD);
         }
         return builder.build();
     }
