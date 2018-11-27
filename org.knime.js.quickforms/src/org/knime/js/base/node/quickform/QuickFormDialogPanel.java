@@ -94,7 +94,7 @@ public abstract class QuickFormDialogPanel
             @Override
             public void itemStateChanged(final ItemEvent e) {
                 setEnabled(m_checkBox.isSelected());
-                if (m_checkBox.isSelected()) {
+                if (!m_checkBox.isSelected()) {
                     resetToDefault();
                 }
             }
