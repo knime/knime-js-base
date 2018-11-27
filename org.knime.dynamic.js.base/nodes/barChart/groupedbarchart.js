@@ -222,7 +222,10 @@
                 chart = nv.models.multiBarHorizontalChart();
             } else {
                 chart = nv.models.multiBarChart();
-                chart.reduceXTicks(!!_representation.isHistogram && !optStaggerLabels);
+                chart.reduceXTicks(!!_representation.isHistogram);
+                /*if (_representation.options.rotateLabels) {
+                    chart.rotateLabels(_representation.options.rotateLabels);
+                }*/
             }
 
             chart.dispatch.on('renderEnd.css', function() {
@@ -634,7 +637,7 @@
             for (var j = 0; j < freqCols.length; j++) {
 
                 var col = freqCols[j];
-                if (optMethod == 'Occurence\u00A0Count') {
+                if (optMethod == 'Occurence\u00A0Count' && !_representation.isHistogram) {
                     col = 'Occurrence Count';
                 }
                 var values = [];
