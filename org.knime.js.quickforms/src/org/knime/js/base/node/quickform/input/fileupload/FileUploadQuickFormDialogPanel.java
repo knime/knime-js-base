@@ -75,6 +75,7 @@ public class FileUploadQuickFormDialogPanel extends QuickFormDialogPanel<FileUpl
         }
         m_historyPanel = new FilesHistoryPanel(historyID, extensions);
         setComponent(m_historyPanel);
+        m_historyPanel.setSelectedFile(getDefaultValue().getPath());
     }
 
     /**
