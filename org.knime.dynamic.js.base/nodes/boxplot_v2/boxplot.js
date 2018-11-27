@@ -540,37 +540,37 @@ window.boxplot_namespace = (function () {
 
         // temporary workaround for being able to select a data column which was not included in the node settings
         if (dataCols.indexOf(_value.options.numCol) == -1) {
-            knimeService.setWarningMessage('No chart was generated since the Selected Column was not included in the node configuration dialog.\nPlease choose another column or add the Selected Column to the list of included columns.', NO_DATA_COLUMN);
+            knimeService.setWarningMessage('No chart was generated since the selected column was not included in the node configuration dialog.\nPlease choose another column or add the selected column to the list of included columns.', NO_DATA_COLUMN);
             return;
         }
 
         if (_representation.options.multi) {
             // plot multiple boxes
             if (excludedDataCols.length == dataCols.length) {
-                knimeService.setWarningMessage('No chart was generated since all data columns have only missing values.\nRe-run the workflow with different data.', NO_DATA_AVAILABLE);
+                knimeService.setWarningMessage('No chart was generated since all data columns have only missing values or special doubles.\nRe-run the workflow with different data.', NO_DATA_AVAILABLE);
             } else {
                 if (!_representation.options.reportOnMissingValues) {
                     return;
                 }
                 if (excludedDataCols.length > 0) {
-                    knimeService.setWarningMessage('Following data columns contain only missing values and were excluded from the view:\n    ' + excludedDataCols.join('\n    '), MISSING_VALUES_ONLY);
+                    knimeService.setWarningMessage('Following data columns contain only missing values or special doubles and were excluded from the view:\n    ' + excludedDataCols.join('\n    '), MISSING_VALUES_ONLY);
                 }
                 if (Object.keys(numMissValPerCol).length > 0) {
                     var str = '';
                     for (var key in numMissValPerCol) {
                         if (numMissValPerCol.hasOwnProperty(key)) {
-                            str += '    ' + key + ' - ' + numMissValPerCol[key] + ' missing value(s)\n';
+                            str += '    ' + key + ' - ' + numMissValPerCol[key] + ' missing value(s) or special double(s)\n';
                         }
                     }
-                    knimeService.setWarningMessage('Missing values ignored during statistics calculations per data column:\n' + str, IGNORED_MISSING_VALUES);
+                    knimeService.setWarningMessage('Missing values or special doubles ignored during statistics calculations per data column:\n' + str, IGNORED_MISSING_VALUES);
                 }
             }
         } else {
             // plot a box for only one data column
             if (excludedDataCols.indexOf(_value.options.numCol) != -1) {
-                knimeService.setWarningMessage('No chart was generated since the selected data column has only missing values.\nChoose another data column or re-run the workflow with different data.', NO_DATA_AVAILABLE);
+                knimeService.setWarningMessage('No chart was generated since the selected data column has only missing values or special doubles.\nChoose another data column or re-run the workflow with different data.', NO_DATA_AVAILABLE);
             } else if (numMissValPerCol[_value.options.numCol] !== undefined && _representation.options.reportOnMissingValues) {
-                knimeService.setWarningMessage('Missing values ignored during statistics calculations:\n' + numMissValPerCol[_value.options.numCol] + ' missing value(s).', IGNORED_MISSING_VALUES);
+                knimeService.setWarningMessage('Missing values or special doubles ignored during statistics calculations:\n' + numMissValPerCol[_value.options.numCol] + ' missing value(s) or special double(s).', IGNORED_MISSING_VALUES);
             }
         }
     };

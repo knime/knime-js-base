@@ -1,18 +1,17 @@
 package org.knime.dynamic.js.base.boxplot;
-import java.util.LinkedHashMap;
-
 import org.knime.base.node.viz.plotter.box.BoxplotCalculator;
-import org.knime.base.node.viz.plotter.box.BoxplotStatistics;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v212.DynamicJSConfig;
 import org.knime.dynamic.js.v212.DynamicJSProcessor;
 
+/**
+ * @author Alexander Fillbrunn, University of Konstanz, Germany
+ *
+ */
 public class BoxplotProcessor implements DynamicJSProcessor {
              
     @Override

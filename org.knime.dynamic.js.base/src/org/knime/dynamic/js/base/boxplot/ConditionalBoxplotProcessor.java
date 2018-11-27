@@ -9,6 +9,10 @@ import org.knime.core.node.port.PortObject;
 import org.knime.dynamic.js.v212.DynamicJSConfig;
 import org.knime.dynamic.js.v212.DynamicJSProcessor;
 
+/**
+ * @author Alexander Fillbrunn, University of Konstanz, Germany
+ *
+ */
 public class ConditionalBoxplotProcessor implements DynamicJSProcessor {
              
     @Override

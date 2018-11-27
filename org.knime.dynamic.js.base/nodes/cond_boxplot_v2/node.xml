@@ -78,10 +78,18 @@
                     Check to get the detailed warning messages in the view about missing values and enable 'Missing values' class.
                     If not checked, missing values will be ignored without raising a warning. 'Missing values' class will not be present.
                 </checkBoxOption>
-                
-                <checkBoxOption name="Include 'Missing values' class" id="includeMissValClass" label="Include 'Missing values' class" 
-                    defaultValue="true" saveInView="true" loadDefaults="true" enableDependency="reportOnMissingValues" enableValue="true">
-                    If checked, missing values in the category column will form a separate class named "Missing values". Otherwise they will be ignored.                     
+                <checkBoxOption name="Include 'Missing values' class" id="includeMissValClass" 
+                	label="Include 'Missing values' class" defaultValue="true" saveInView="true" loadDefaults="true" 
+                	enableDependency="reportOnMissingValues" enableValue="true">
+                    If checked, missing values in the category column will form a separate class named "Missing values".
+                    Otherwise they will be ignored.                     
+                </checkBoxOption>
+                <checkBoxOption name="Fail on special doubles" id="failOnSpecialDoubles"
+                	label="Fail on special doubles" defaultValue="true" loadDefaults="true" configOnly="true">
+                	If checked the option will let the execution of the node fail, when it encounters a special double 
+                	in the input data. This can either be <n:i>NaN</n:i>, negative or positive infinity values. When
+                	unchecked special doubles are treated the same as missing values and be reported together if <n:i>
+                	Report on missing values</n:i> is set.
                 </checkBoxOption>
 			</options>
 		</tab>

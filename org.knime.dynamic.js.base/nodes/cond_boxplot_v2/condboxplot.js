@@ -605,7 +605,7 @@ window.boxplot_namespace = (function () {
 
         // temporary workaround for being able to select a data column which was not included in the node settings
         if (_data === undefined) {
-            knimeService.setWarningMessage('No chart was generated since the Selected Column was not included in the node configuration dialog. Please choose another column or add the Selected Column to the list of included columns.', NO_DATA_COLUMN);
+            knimeService.setWarningMessage('No chart was generated since the selected column was not included in the node configuration dialog. Please choose another column or add the selected column to the list of included columns.', NO_DATA_COLUMN);
             return;
         }
 
@@ -639,22 +639,22 @@ window.boxplot_namespace = (function () {
 
         if (Object.keys(_data).length == 0) {
             if (_missValClass !== undefined && _representation.options.reportOnMissingValues) {
-                knimeService.setWarningMessage('No chart was generated since all classes have only missing values.\nThere are values where the class name is missing.\nTo see them switch on the option "Include \'Missing values\' class" in the view settings.', NO_DATA_AVAILABLE);
+                knimeService.setWarningMessage('No chart was generated since all classes have only missing values or special doubles.\nThere are values where the class name is missing.\nTo see them switch on the option "Include \'Missing values\' class" in the view settings.', NO_DATA_AVAILABLE);
             } else {
-                knimeService.setWarningMessage('No chart was generated since all classes have only missing values.\nChoose another data column or re-run the workflow with different data.', NO_DATA_AVAILABLE);
+                knimeService.setWarningMessage('No chart was generated since all classes have only missing values or special doubles.\nChoose another data column or re-run the workflow with different data.', NO_DATA_AVAILABLE);
             }
         } else if (_representation.options.reportOnMissingValues) {
             if (excludedClasses.length > 0) {
-                knimeService.setWarningMessage('Following classes contain only missing values and were excluded from the view:\n    ' + excludedClasses.join('\n    '), MISSING_VALUES_ONLY);
+                knimeService.setWarningMessage('Following classes contain only missing values or special doubles and were excluded from the view:\n    ' + excludedClasses.join('\n    '), MISSING_VALUES_ONLY);
             }
             if (Object.keys(ignoredMissVals).length > 0) {
                 var str = '';
                 for (var key in ignoredMissVals) {
                     if (ignoredMissVals.hasOwnProperty(key) && (_value.options.includeMissValClass || key != MISSING_VALUES_CLASS)) {  // if option "Include 'Missing values'" is off, we don't show a warning about them
-                        str += '    ' + key + ' - ' + ignoredMissVals[key] + ' missing value(s)\n';
+                        str += '    ' + key + ' - ' + ignoredMissVals[key] + ' missing value(s) or special double(s)\n';
                     }
                 }
-                knimeService.setWarningMessage('Missing values ignored during statistics calculations per class:\n' + str, IGNORED_MISSING_VALUES);
+                knimeService.setWarningMessage('Missing values or special doubles ignored during statistics calculations per class:\n' + str, IGNORED_MISSING_VALUES);
             }
         }
 

@@ -7,6 +7,7 @@ import org.knime.base.node.viz.plotter.box.BoxplotStatistics;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
@@ -15,11 +16,15 @@ import org.knime.dynamic.js.v30.DynamicJSProcessor;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+/**
+ * @author Alexander Fillbrunn, University of Konstanz, Germany
+ *
+ */
 public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
-             
+
     @Override
-    public Object[] processInputObjects(PortObject[] inObjects,
-            ExecutionContext exec, DynamicJSConfig config) throws Exception {
+    public Object[] processInputObjects(PortObject[] inObjects, ExecutionContext exec, DynamicJSConfig config)
+        throws Exception {
         BufferedDataTable dt = (BufferedDataTable)inObjects[0];
         BoxplotCalculator bc = new BoxplotCalculator();
 
@@ -28,19 +33,23 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
             throw new InvalidSettingsException("No category column given");
         }
         if (dt.getSpec().getColumnSpec(catCol) == null) {
-        	throw new InvalidSettingsException("Configured category column '" + catCol + "' is not available anymore.");
+            throw new InvalidSettingsException("Configured category column '" + catCol + "' is not available anymore.");
         }
-        String[] numColumns = ((SettingsModelColumnFilter2)config.getModel("columns")).applyTo(dt.getDataTableSpec()).getIncludes();
+        String[] numColumns =
+            ((SettingsModelColumnFilter2)config.getModel("columns")).applyTo(dt.getDataTableSpec()).getIncludes();
         if (numColumns.length == 0) {
             throw new InvalidSettingsException("No numeric columns given");
         }
+        boolean failOnSpecialDoubles =
+            ((SettingsModelBoolean)config.getModel("failOnSpecialDoubles")).getBooleanValue();
 
         LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats =
-            bc.calculateMultipleConditional(dt, catCol, numColumns, exec);
+            bc.calculateMultipleConditional(dt, catCol, numColumns, failOnSpecialDoubles, exec);
         CondBoxPlotResult res = new CondBoxPlotResult(stats, catCol, bc.getExcludedClasses(), bc.getIgnoredMissVals());
         return new Object[]{res, inObjects[1]};
     }
 
+    @SuppressWarnings("javadoc")
     @JsonAutoDetect
     public static class CondBoxPlotResult {
         private LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> m_stats;
@@ -113,8 +122,7 @@ public class ConditionalBoxplotProcessor_v2 implements DynamicJSProcessor {
          * @param excludedClasses
          * @param ignoredMissVals
          */
-        public CondBoxPlotResult(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats,
-            String catCol,
+        public CondBoxPlotResult(LinkedHashMap<String, LinkedHashMap<String, BoxplotStatistics>> stats, String catCol,
             LinkedHashMap<String, String[]> excludedClasses,
             LinkedHashMap<String, LinkedHashMap<String, Long>> ignoredMissVals) {
             m_stats = stats;

@@ -70,6 +70,13 @@
                     Check to get the detailed warning messages in the view about missing values.
                     If not checked, missing values will be ignored without raising a warning.
                 </checkBoxOption>
+                <checkBoxOption name="Fail on special doubles" id="failOnSpecialDoubles"
+                	label="Fail on special doubles" defaultValue="true" loadDefaults="true" configOnly="true">
+                	If checked the option will let the execution of the node fail, when it encounters a special double 
+                	in the input data. This can either be <n:i>NaN</n:i>, negative or positive infinity values. When
+                	unchecked special doubles are treated the same as missing values and be reported together if <n:i>
+                	Report on missing values</n:i> is set.
+                </checkBoxOption>
 			</options>
 		</tab>
 		<tab name="General Plot Options">
