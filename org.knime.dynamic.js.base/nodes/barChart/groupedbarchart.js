@@ -206,7 +206,9 @@
             knimeTable = new kt();
             // Add the data from the input port to the knimeTable.
             var port0dataTable = _representation.inObjects[0].table;
-            port0dataTable.rows = sortByClusterName(port0dataTable.rows);
+            if (!_representation.isHistogram) {
+                port0dataTable.rows = sortByClusterName(port0dataTable.rows);
+            }
             knimeTable.setDataTable(port0dataTable);
 
             processData();
