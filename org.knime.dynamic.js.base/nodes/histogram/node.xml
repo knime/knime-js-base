@@ -206,13 +206,17 @@
                     separate value from a column, while in <n:b>Stacked</n:b> chart a bar is a stack of all values in 
                     a column.                  
                 </radioButtonOption>
+                
+                <!-- <integerOption name="Rotate labels" id="rotateLabels" label="Rotate labels" minValue="-90" 
+                	maxValue="90" defaultValue="0" stepSize="5" loadDefaults="true">
+                </integerOption>-->
 
-				<checkBoxOption name="Stagger labels" id="staggerLabels"
+				<!-- <checkBoxOption name="Stagger labels" id="staggerLabels"
 					label="Stagger labels" defaultValue="false" saveInView="true" enableDependency="orientation" 
 					enableValue="false">
 					When checked, the histogram category legend is rendered in a staggered fashion to allow more room 
 					for readability for long category names.
-				</checkBoxOption>
+				</checkBoxOption> -->
 
 				<checkBoxOption name="Display legend" id="legend" label="Display legend" defaultValue="true">
 					When checked, the histogram legend is displayed.
@@ -262,11 +266,11 @@
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable interactive toggling between a horizontal or vertical histogram.
 				</checkBoxOption>
-				<checkBoxOption name="Enable stagger label change" id="enableStaggerToggle" 
+				<!-- <checkBoxOption name="Enable stagger label change" id="enableStaggerToggle" 
 					label="Enable stagger label change" defaultValue="true" enableDependency="enableViewControls"
 					enableValue="true">
 					Check to enable editing whether or not the labels for the category axis are rendered staggered.
-				</checkBoxOption>
+				</checkBoxOption> -->
 				<checkBoxOption name="Enable Title editing" id="enableTitleEdit" label="Enable Title editing" 
 					defaultValue="true" enableDependency="enableViewControls" enableValue="true">
 					Check to enable the editing of the title within the view.

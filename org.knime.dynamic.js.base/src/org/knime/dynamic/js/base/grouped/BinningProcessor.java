@@ -1,11 +1,15 @@
 package org.knime.dynamic.js.base.grouped;
 
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.knime.base.node.preproc.autobinner.apply.AutoBinnerApply;
+import org.knime.base.node.preproc.autobinner.pmml.PMMLPreprocDiscretize;
 import org.knime.base.node.preproc.autobinner3.AutoBinner;
 import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings;
 import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings.BinNaming;
@@ -13,13 +17,16 @@ import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings.EqualityM
 import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings.Method;
 import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings.OutputFormat;
 import org.knime.base.node.preproc.autobinner3.AutoBinnerLearnSettings.PrecisionMode;
-import org.knime.base.node.preproc.autobinner.apply.AutoBinnerApply;
-import org.knime.base.node.preproc.autobinner.pmml.PMMLPreprocDiscretize;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
+import org.knime.core.data.StringValue;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.IntCell.IntCellFactory;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.def.StringCell.StringCellFactory;
 import org.knime.core.data.sort.BufferedDataTableSorter;
+import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
@@ -140,10 +147,42 @@ public class BinningProcessor extends GroupedProcessor {
         groupExec.setProgress(1.0);
         catCol.setStringValue(m_binColumn);
         
+        //Add empty bins back to table
+        final BufferedDataTable groupedTable = groupingResult.getDataTable();
+        final int binIndex =
+            Arrays.asList(groupedTable.getDataTableSpec().getColumnNames()).indexOf(binnedColName);
+        if (orderedBinNames.size() != groupedTable.size()) {
+            BufferedDataContainer cont = exec.createDataContainer(groupedTable.getDataTableSpec(), false);
+            try {
+                List<String> containedBins = new ArrayList<String>((int)groupedTable.size());
+                groupedTable.forEach(row -> {
+                    containedBins.add(((StringValue)row.getCell(binIndex)).getStringValue());
+                    cont.addRowToTable(row);
+                });
+                final AtomicInteger emptyBinCounter = new AtomicInteger(0);
+                final String keyPrefix = "org.knime.dynamic.js.base.grouped.BinningProcessor - Empty bin ";
+                orderedBinNames.stream().filter(bin -> !containedBins.contains(bin)).forEach(row -> {
+                    List<DataCell> rowList = new ArrayList<DataCell>(groupedTable.getSpec().getNumColumns());
+                    for (int col = 0; col < groupedTable.getSpec().getNumColumns(); col++) {
+                        if (col == binIndex) {
+                            rowList.add(StringCellFactory.create(row));
+                        } else {
+                            rowList.add(IntCellFactory.create(0));
+                        }
+                    }
+                    cont.addRowToTable(new DefaultRow(keyPrefix + emptyBinCounter.getAndIncrement(), rowList));
+                });
+            } finally {
+                if (cont != null) {
+                    cont.close();
+                }
+            }
+            if (cont != null) {
+                groupingResult.setDataTable(cont.getTable());
+            }
+        }
         //Make sure bins are sorted correctly in output table
         exec.setMessage("Sorting histogram table...");
-        final int binIndex =
-            Arrays.asList(groupingResult.getDataTable().getDataTableSpec().getColumnNames()).indexOf(binnedColName);
         Comparator<DataRow> comp = new Comparator<DataRow>() {
 
             @Override
