@@ -3,13 +3,14 @@ window.parallelcoords_namespace = (function () {
         drawBrushes, brushstart, getLine, drawElements, position, refreshView, brush, noBrushes, saveSelectedRows,
         saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
         getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
-        scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight, oldWidth,
-        ordinalScale, xBrushScale, xBrush, xExtent, legendWidth, maxLeftLabelWidth, firstColumn;
+        measuredLabels, scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight,
+        oldWidth, ordinalScale, xBrushScale, xBrush, xExtent, legendWidth, maxLeftLabelWidth, firstColumn;
 
     var MIN_HEIGHT = 100;
     var MIN_WIDTH = 100;
     var MISSING_VALUE_MODE = 'Show\u00A0missing\u00A0values';
 
+    var leftLabelsMaxPercentage = 0.33;
     var pcPlot = {};
 
     var brushes = {};
@@ -617,17 +618,20 @@ window.parallelcoords_namespace = (function () {
                 scale = d3.scale.ordinal().domain(colDomain).rangePoints([h, 0], 1.0);
             }
             scales[colName] = scale;
+
             if (c === 0) { // measure label widths of leftmost axis
                 var labels = scale.domain();
                 maxLeftLabelWidth = knimeService.measureAndTruncate(labels, {
                     container: d3svg.node(),
                     tempContainerClasses: 'axis knime-axis knime-y',
-                    classes: 'knime-tick-label'
+                    classes: 'knime-tick-label',
+                    maxWidth: d3svg.node().getBoundingClientRect().width * leftLabelsMaxPercentage
                 }).max.maxWidth;
             }
         }
 
     };
+
 
     drawChart = function () {
 
@@ -665,8 +669,8 @@ window.parallelcoords_namespace = (function () {
 
         makeScales(d3svg);
 
-        margin.left = Math.max(40, 10 + maxLeftLabelWidth);
-
+        margin.left = Math.max(40,  maxLeftLabelWidth);
+        
         plotG = d3svg.select('#plotG')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -693,14 +697,46 @@ window.parallelcoords_namespace = (function () {
 
 
         var g;
+        var axisPositions = [];
         g = plotG.selectAll('g.axis')
             .data(_data.colNames, function (d) { return d; })
             .enter().append('g').attr('class', 'axis knime-axis knime-y').attr('id', function (d) { return d; })
-            .attr('transform', function (d) { return 'translate(' + scaleCols(d) + ',0)'; })
+            .attr('transform', function (d) {
+                axisPositions.push(scaleCols(d));
+                return 'translate(' + scaleCols(d) + ',0)';
+            });
+        
+        // get difference position of first and second axis as distances are equal for the others
+        var axisDistance = axisPositions[0] && axisPositions[1] ? axisPositions[1] - axisPositions[0] : 0;
+        var axisLabelsBuffer = 15;
+        
+        var svgNS = 'http://www.w3.org/2000/svg';
+
+        plotG.selectAll('g.axis')
             .each(function (d) {
                 var scale = scales[d];
+                var isFirstCol = d === Object.keys(scales)[0];
+                var labels = scale.domain();
+                
+                var measuredLabels = knimeService.measureAndTruncate(labels, {
+                    container: d3svg.node(),
+                    tempContainerClasses: 'axis knime-axis knime-y',
+                    classes: 'knime-tick-label',
+                    maxWidth: isFirstCol ? maxLeftLabelWidth : axisDistance - axisLabelsBuffer
+                });
+
                 var axis = d3.svg.axis()
-                    .scale(scale).orient('left');
+                    .scale(scale)
+                    .tickFormat(function (d) {
+                        var label = measuredLabels.values.filter(function (value) {
+                            return value && value.originalData === d;
+                        })[0];
+                        var title = document.createElementNS(svgNS, 'title');
+                        title.innerHTML = d;
+                        this.parentNode.appendChild(title);
+                        return label && label.truncated ? label.truncated : d;
+                    })
+                    .orient('left');
                 d3.select(this).call(axis);
             })
             .each(function (d, i) {
