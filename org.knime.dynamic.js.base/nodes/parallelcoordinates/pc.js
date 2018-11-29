@@ -3,7 +3,7 @@ window.parallelcoords_namespace = (function () {
         drawBrushes, brushstart, getLine, drawElements, position, refreshView, brush, noBrushes, saveSelectedRows,
         saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
         getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
-        scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight,
+        escapeId, scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight,
         oldWidth, ordinalScale, xBrushScale, xBrush, xExtent, legendWidth, maxLeftLabelWidth, firstColumn;
 
     var MIN_HEIGHT = 100;
@@ -232,6 +232,12 @@ window.parallelcoords_namespace = (function () {
         }
 
         return colID;
+    };
+
+    escapeId = function (str) {
+        // html5 can handle any type of id character, but d3 v3 can not
+        var string = 'knid_' + str;
+        return string.replace(/^[^a-z]+|[^\w:-]+/gi, '_______');
     };
 
     createControls = function () {
@@ -547,7 +553,7 @@ window.parallelcoords_namespace = (function () {
             if (data.changeSet.removed) {
                 for (i = 0; i < data.changeSet.removed.length; i++) {
                     var removedId = data.changeSet.removed[i];
-                    row = d3.select('#' + removedId);
+                    row = d3.select('#' + escapeId(removedId));
                     if (!row.empty() && !row.classed('filtered')) {
                         row.classed({ unselected: true, selected: false, 'knime-selected': false });
                     }
@@ -560,7 +566,7 @@ window.parallelcoords_namespace = (function () {
             if (data.changeSet.added) {
                 for (i = 0; i < data.changeSet.added.length; i++) {
                     var addedId = data.changeSet.added[i];
-                    row = d3.select('#' + addedId);
+                    row = d3.select('#' + escapeId(addedId));
                     if (!row.empty() && !row.classed('filtered')) {
                         if (d3.selectAll('.selected').empty()) {
                             d3.selectAll('.row').classed('unselected', true);
@@ -701,7 +707,7 @@ window.parallelcoords_namespace = (function () {
         var axisPositions = [];
         g = plotG.selectAll('g.axis')
             .data(_data.colNames, function (d) { return d; })
-            .enter().append('g').attr('class', 'axis knime-axis knime-y').attr('id', function (d) { return d; })
+            .enter().append('g').attr('class', 'axis knime-axis knime-y')
             .attr('transform', function (d) {
                 axisPositions.push(scaleCols(d));
                 return 'translate(' + scaleCols(d) + ',0)';
@@ -827,7 +833,7 @@ window.parallelcoords_namespace = (function () {
                 .each(function (d, i) {
                     d3.select(this).call(brushes[d] = d3.svg.brush().y(scales[d]).on('brush', brush)
                         .on('brushend', publishCurrentSelection).on('brushstart', brushstart));
-                    d3.select(this).attr('id', i);
+                    d3.select(this).attr('id', escapeId(i));
                 })
                 .selectAll('rect')
                 .attr('x', -8)
@@ -930,7 +936,7 @@ window.parallelcoords_namespace = (function () {
     drawElements = function (data) {
         var rows = plotG.selectAll('path.row').data(data).enter()
             .insert('path', '.axis').attr('class', 'row')
-            .attr('id', function (d) { return d.id; })
+            .attr('id', function (d) { return escapeId(d.id); })
             .attr('d', getLine)
             .attr('stroke', function (d) {
                 if (_representation.options.useColors) {
