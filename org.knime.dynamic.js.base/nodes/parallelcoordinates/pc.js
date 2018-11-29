@@ -706,7 +706,7 @@ window.parallelcoords_namespace = (function () {
                 return 'translate(' + scaleCols(d) + ',0)';
             });
         
-        // get difference position of first and second axis as distances are equal for the others
+        // calculate distances of first and second axis as other distances are the same
         var axisDistance = axisPositions[0] && axisPositions[1] ? axisPositions[1] - axisPositions[0] : 0;
         var axisLabelsBuffer = 15;
         
@@ -744,7 +744,21 @@ window.parallelcoords_namespace = (function () {
                     .attr('class', 'label knime-axis-label').attr('text-anchor', 'middle')
                     .attr('transform', function (d) { return 'translate(0, -15)'; })// h + 40
                     .attr('text-anchor', 'middle')
-                    .text(function (d) { return d; });
+                    .text(function (d) { 
+                        // Axis labels are positioned in the middle of an axis,
+                        // so they as well can take up the space of the distances of axis 
+                        var measuredLabels = knimeService.measureAndTruncate([d], {
+                            container: d3svg.node(),
+                            tempContainerClasses: 'axis knime-axis knime-y',
+                            classes: 'label knime-axis-label',
+                            maxWidth: axisDistance - axisLabelsBuffer
+                        });
+                        var label = measuredLabels.values[0];
+                        var title = document.createElementNS(svgNS, 'title');
+                        title.innerHTML = d;
+                        this.parentNode.appendChild(title);
+                        return label && label.truncated ? label.truncated : d;
+                     });
             });
 
         d3.selectAll('.domain')
