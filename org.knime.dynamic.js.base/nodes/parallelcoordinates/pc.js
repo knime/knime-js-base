@@ -3,7 +3,7 @@ window.parallelcoords_namespace = (function () {
         drawBrushes, brushstart, getLine, drawElements, position, refreshView, brush, noBrushes, saveSelectedRows,
         saveSettingsToValue, containMissing, clearBrushes, checkClearSelectionButton, drawChart, createControls,
         getDataColumnID, createData, publishCurrentSelection, selectionChanged, mzd, w, h, plotG, bottomBar, scales,
-        measuredLabels, scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight,
+        scaleCols, extents, _data, layoutContainer, _representation, _value, line, colors, oldHeight,
         oldWidth, ordinalScale, xBrushScale, xBrush, xExtent, legendWidth, maxLeftLabelWidth, firstColumn;
 
     var MIN_HEIGHT = 100;
