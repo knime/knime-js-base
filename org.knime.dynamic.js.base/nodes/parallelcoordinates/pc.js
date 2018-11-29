@@ -566,6 +566,7 @@ window.parallelcoords_namespace = (function () {
                             d3.selectAll('.row').classed('unselected', true);
                         }
                         row.classed({ selected: true, 'knime-selected': true, unselected: false });
+                        rowsSelected = true;
                     }
                 }
             }
