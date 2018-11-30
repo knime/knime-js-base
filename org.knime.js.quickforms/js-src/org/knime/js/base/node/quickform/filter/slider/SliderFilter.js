@@ -195,6 +195,9 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		if (settings.pips && settings.pips.format) {
 			settings.pips.format = wNumb(settings.pips.format);
 		}
+		settings.format = {
+			'to': Number, 'from': Number
+		};
 	}
 	
 	setStartValuesToRange = function(settings) {

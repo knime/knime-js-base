@@ -160,6 +160,9 @@ org_knime_js_base_node_quickform_input_slider = function() {
 			}
 			settings.pips.format = wNumb(settings.pips.format);
 		}
+		settings.format = {
+			'to': Number, 'from': Number
+		};
 	}
 	
 	sliderInput.validate = function() {
