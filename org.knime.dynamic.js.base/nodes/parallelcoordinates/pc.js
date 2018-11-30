@@ -619,9 +619,9 @@ window.parallelcoords_namespace = (function () {
                 scale = d3.scale.ordinal().domain(colDomain).rangePoints([h, 0], 1.0);
             }
             scales[colName] = scale;
-
             if (c === 0) { // measure label widths of leftmost axis
-                var labels = scale.domain();
+                var tickNumber = d3.svg.axis().scale(scale).ticks();
+                var labels = scale.ticks ? scale.ticks(tickNumber) : scale.domain();
                 maxLeftLabelWidth = knimeService.measureAndTruncate(labels, {
                     container: d3svg.node(),
                     tempContainerClasses: 'axis knime-axis knime-y',
@@ -718,8 +718,9 @@ window.parallelcoords_namespace = (function () {
             .each(function (d) {
                 var scale = scales[d];
                 var isFirstCol = d === Object.keys(scales)[0];
-                var labels = scale.domain();
-                
+                var tickNumber = d3.svg.axis().scale(scale).ticks();
+                var labels = scale.ticks ? scale.ticks(tickNumber) : scale.domain();
+
                 var measuredLabels = knimeService.measureAndTruncate(labels, {
                     container: d3svg.node(),
                     tempContainerClasses: 'axis knime-axis knime-y',
