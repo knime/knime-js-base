@@ -605,6 +605,7 @@ window.parallelcoords_namespace = (function () {
 
     var makeScales = function (d3svg) {
         scales = {};
+        maxLeftLabelWidth = 0;
 
         for (var c = 0; c < _data.colNames.length; c++) {
             var colName = _data.colNames[c];
