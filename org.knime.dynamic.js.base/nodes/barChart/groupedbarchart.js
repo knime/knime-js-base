@@ -1166,8 +1166,6 @@
 	        maxValue = d3.max(sumListPositive);
 	        if(considerNegativeList) {
 	        	minValue = d3.min(sumListNegative);
-	        } else {
-	        	minValue = d3.min(sumListPositive);
 	        }
      	} else {
 	        for (var i = 0; i < plotData.length; i++) {
