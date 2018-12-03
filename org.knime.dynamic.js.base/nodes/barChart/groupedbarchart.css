@@ -23,3 +23,8 @@ text.knime-tick-label.knime-partially-selected {
 rect.nv-bar.positive {
 	cursor:pointer;
 }
+
+/* don't display the maximum grid line if present on vertical bar chart */
+.nv-multiBarWithLegend .knime-axis.knime-y g.tick.knime-tick:nth-last-child(3) line {
+    display: none;
+}
