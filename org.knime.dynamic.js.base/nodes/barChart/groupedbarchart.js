@@ -118,6 +118,7 @@
 
         var optStaggerLabels = _value.options['staggerLabels'];
         var optLegend = _representation.options['legend'];
+        var optTooltips = _representation.options['tooltip'];
 
         var optOrientation = _value.options['orientation'];
 
@@ -254,8 +255,9 @@
 
             updateTitles(false);
 
-            chart.showControls(false); // all the controls moved to Settings menu
+            chart.showControls(false); // all the controls moved to settings menu
             chart.showLegend(optLegend);
+            chart.tooltip.enabled((typeof optTooltips === 'undefined') || optTooltips);
 
             updateAxisLabels(false);
             svg.datum(plotData).transition().duration(0).call(chart);

@@ -221,6 +221,11 @@
 				<checkBoxOption name="Display legend" id="legend" label="Display legend" defaultValue="true">
 					When checked, the histogram legend is displayed.
 				</checkBoxOption>
+				
+				<checkBoxOption name="Display rich tooltips" id="tooltip"
+					label="Display rich tooltips" defaultValue="true" loadDefaults="true">
+					When checked, a rich tooltip is displayed when hovering over the individual bars of the histogram.
+				</checkBoxOption>
 
 				<checkBoxOption name="Plot horizontal bar chart" id="orientation" label="Plot horizontal bar chart" 
 					defaultValue="false" saveInView="true">
