@@ -23,6 +23,13 @@
 					id="cat" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
 					Select the column that contains the category values.
 				</columnSelectorOption>
+				
+				<checkBoxOption name="Sort bars alphabetically" id="sort"
+					label="Sort bars alphabetically" defaultValue="false" loadDefaults="true">
+					When checked the bars are sorted alphabetically with respect to their label derived from the 
+					category column. If not checked the order is derived from the first appearance of the value in the
+					input table.
+				</checkBoxOption>
 
 				<radioButtonOption name="Aggregation Method" id="aggr" 
 					possibleValues="Occurence&#160;Count Sum Average" label="Aggregation Method" defaultValue="Occurence&#160;Count">

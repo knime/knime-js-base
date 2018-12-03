@@ -116,6 +116,7 @@
         var optCatLabel = _value.options['catLabel'];
         var optFreqLabel = _value.options['freqLabel'];
 
+        var sortLabels = _representation.options['sort'];
         var optStaggerLabels = _value.options['staggerLabels'];
         var optLegend = _representation.options['legend'];
         var optTooltips = _representation.options['tooltip'];
@@ -207,7 +208,7 @@
             knimeTable = new kt();
             // Add the data from the input port to the knimeTable.
             var port0dataTable = _representation.inObjects[0].table;
-            if (!_representation.isHistogram) {
+            if (!_representation.isHistogram && sortLabels) {
                 port0dataTable.rows = sortByClusterName(port0dataTable.rows);
             }
             knimeTable.setDataTable(port0dataTable);
