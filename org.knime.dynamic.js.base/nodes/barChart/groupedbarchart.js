@@ -91,11 +91,11 @@
         if (_representation.warnMessage && showWarnings) {
             knimeService.setWarningMessage(_representation.warnMessage);
         }
-
-        drawChart();
         if (_representation.options.enableViewControls) {
             drawControls();
         }
+        drawChart();
+
         _keyNameMap = new KeyNameMap(getClusterToRowMapping());
     };
     
@@ -135,6 +135,7 @@
         var width = optWidth + 'px';
         var height = optHeight + 'px';
         if (optFullscreen) {
+            knimeService.floatingHeader(isTitle);
             width = '100%';
             height = (isTitle) ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
         }
@@ -170,7 +171,7 @@
         // handle clicks on background to deselect current selection
         if(optEnableSelection) {
 	        svg.on("click", function() {
-	        	removeHilightBar("",true);
+	        	removeHilightBar("", true);
 	        	_value.options['selection'] = [];
 	        	publishSelection(true);
 	        });
@@ -195,7 +196,7 @@
         } else {
             // Set full screen height/width
             div.style('width', '100%');
-            div.style('height', height);
+            div.style('height', height /*TODO: this should be 100% always, but for some reason that doesn't work*/);
 
             svg.attr('width', '100%');
             svg.attr('height', '100%');
@@ -251,7 +252,7 @@
             chart
                 .color(colorRange)
                 .duration(0)
-                .margin({ right: 20})
+                .margin({ right: 20 })
                 .groupSpacing(_representation.isHistogram ? 0.01 : 0.1);
 
             updateTitles(false);
@@ -1054,10 +1055,16 @@
             var topMargin = 10;
             topMargin += _value.options.title ? 10 : 0;
             topMargin += _value.options.subtitle ? 8 : 0;
-            chart.legend.margin({
-                top: topMargin,
-                bottom: topMargin
-            });
+            if (_representation.options['legend']) {
+                chart.legend.margin({
+                    top : topMargin,
+                    bottom : topMargin
+                });
+            } else {
+                chart.margin({
+                    top : topMargin * 2
+                });
+            }
 
             var isTitle = _value.options.title || _value.options.subtitle;
             knimeService.floatingHeader(isTitle);
