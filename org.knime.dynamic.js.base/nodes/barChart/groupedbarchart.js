@@ -251,7 +251,7 @@
             chart
                 .color(colorRange)
                 .duration(0)
-                .margin({ right: 20, top: 60 })
+                .margin({ right: 20})
                 .groupSpacing(_representation.isHistogram ? 0.01 : 0.1);
 
             updateTitles(false);
