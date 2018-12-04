@@ -552,9 +552,9 @@ window.parallelcoords_namespace = (function () {
                         row.classed({ unselected: true, selected: false, 'knime-selected': false });
                     }
                 }
-                if (d3.selectAll('.selected').empty()) {
+                rowsSelected = !d3.selectAll('.selected').empty();
+                if (!rowsSelected) {
                     d3.selectAll('.row').classed('unselected', false);
-                    rowsSelected = false;
                 }
             }
             if (data.changeSet.added) {
@@ -969,15 +969,8 @@ window.parallelcoords_namespace = (function () {
                     var selected = d3.select(this).classed('selected');
                     d3.select(this)
                         .classed({ selected: !selected, 'knime-selected': !selected, unselected: selected });
-                    if (selected && d3.selectAll('.selected').empty()) {
-                        rowsSelected = false;
-                    }
-                    if (!selected && d3.selectAll('.selected').empty()) {
-                        rowsSelected = false;
-                    }
-                    if (!selected && !d3.selectAll('.selected').empty()) {
-                        rowsSelected = true;
-                    }
+                    rowsSelected = !d3.selectAll('.selected').empty();
+                    
                     if (knimeService && knimeService.isInteractivityAvailable() && _value.options.publishSelection) {
                         if (selected) {
                             knimeService.removeRowsFromSelection(_representation.inObjects[0].id, [this.getAttribute('id')], selectionChanged);
@@ -985,13 +978,12 @@ window.parallelcoords_namespace = (function () {
                             knimeService.addRowsToSelection(_representation.inObjects[0].id, [this.getAttribute('id')], selectionChanged);
                         }
                     }
-                    if (d3.selectAll('.selected').empty()) {
+                    if (!rowsSelected) {
                         d3.selectAll('.row').classed('unselected', false);
                         d3.selectAll('.row').datum(function (d) {
                             delete d.selected;
                             return d;
                         });
-                        rowsSelected = false;
                     }
                 }
 
