@@ -250,7 +250,7 @@
             chart.stacked(stacked);
 
             chart
-                .color(colorRange) 
+                .color(colorRange)
                 .duration(0)
                 .margin({ right: 20 })
                 .groupSpacing(_representation.isHistogram ? 0.01 : 0.1);
@@ -1200,20 +1200,18 @@
         var scale = d3.scale.linear().domain([minValue, maxValue]);
     	var ticks = scale.ticks(tickAmount);
     	var precision = 1;
-    	for(var i = 0; i<ticks.length;i++) {
-    		if(ticks[i]) {
-		    	if (ticks[0].toString().indexOf('.') >= 0) {
-		    		// +1 because the precision of the maximum should be one decimal more then the normal ticks
-		    		precision = Math.max((ticks[0].toString().split('.')[1].length)+1, 1);
-		    	} else if(ticks[0].toString().indexOf('e') >= 0) {
-		    		precision = Math.max(Math.abs(parseFloat(ticks[0].toString().split('e')[1])), 1);
-		    	} else {
-		    		precision = 1;
-		    	}
-    		} else if(i == ticks.length-1) {
-    			precision = 1;
-    		}
-    	} 
+    	for (var i = 0; i < ticks.length; i++) {
+            if (ticks[i] !== 0) {
+                var curTick = ticks[i];
+                if (curTick.toString().indexOf('.') >= 0) {
+                    // +1 because the precision of the maximum should be one
+                    // decimal more then the normal ticks
+                    precision = Math.max((curTick.toString().split('.')[1].length) + 1, precision);
+                } else if (curTick.toString().indexOf('e') >= 0) {
+                    precision = Math.max(Math.abs(parseFloat(curTick.toString().split('e')[1])), precision);
+                }
+            }
+        }
     	
     	var roundedMaxValue = Math.ceil(parseFloat(maxValue) * Math.pow(10, precision)) / Math.pow(10, precision);
     	var roundedMinValue = Math.floor(parseFloat(minValue) * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -1247,10 +1245,25 @@
             [0, _representation.options['svg']['height']]);
         var ticks = scale.ticks(4);
         if (optShowMaximum) {
-        	ticks.push(getRoundedMaxValue(stacked !== "Grouped")[1]); 
-        	if(getRoundedMaxValue(stacked !== "Grouped")[0] !== 0) {
-        		ticks.push(getRoundedMaxValue(stacked !== "Grouped")[0]);
-        	}
+            if (maxValue.toString().indexOf('.') > 0 ) {
+            	if(ticks[ticks.length-1].toString().indexOf('.') > 0) {
+            		var decimalString = ticks[ticks.length - 1].toString().split('.')[1];
+            		ticks.push(parseFloat((maxValue.toFixed(decimalString.length)+1)));            		
+            	} else {
+            		ticks.push(parseFloat(maxValue.toFixed(0)));
+            	}
+            } else {
+                ticks.push(maxValue);
+            }
+            if (minValue < 0 && minValue.toString().indexOf('e') < 0) {
+            	if(ticks[0].toString().split('.')[1]) {
+            		ticks.push((minValue.toFixed(ticks[0].toString().split('.')[1].length - 1)));
+            	} else {
+            		ticks.push((minValue.toFixed(1)));
+            	}
+            } else if (minValue < 0) {
+                ticks.push(minValue);
+            }
         }
         var configObject = {
             container: document.querySelector('svg'),
@@ -1393,16 +1406,15 @@
             
             // space between two labels
             var distanceBetweenLabels = 150;
-            
             if (optOrientation) {
-            	tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + distanceBetweenLabels));
+            	var tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + distanceBetweenLabels));
                 if (optShowMaximum) {
                 	// extend the border of the svg to be able to see the complete maximum label 
                 	// factor 0.6 is chosen to give the label a little space to the border
                 	var rightMargin = 0.6 * maxSizeYAxis.max.maxWidth;
                 }
             } else {
-            	tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + distanceBetweenLabels));
+            	var tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + distanceBetweenLabels));
             }
             
             // nvd3 sets the cat label 55 pixel away from the axis. As with changing font size this
@@ -1424,24 +1436,12 @@
                 		: -spacingFreqLabel + maxSizeXAxis.max.maxHeight * 1.5)
                 .tickPadding(paddingAmount)
                 .showMaxMin(false);
-            
-            var extremValues;
-            if(stacked == "Grouped") {
-            	extremValues = getRoundedMaxValue(false);	
-            } else {
-            	extremValues = getRoundedMaxValue(true);
-            }
-            var minValue = extremValues[0];
-            var maxValue = extremValues[1];
-            var tickStep = (maxValue - minValue) / (tickAmount);
-            var step = Math.ceil(tickStep / 5) * 5;
 
             chart.yAxis.axisLabel(freqLabel)
                 .axisLabelDistance(optOrientation ? -spacingFreqLabel + maxSizeYAxis.max.maxHeight
                 		: (maxSizeYAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace))
                 .showMaxMin(optShowMaximum)
                 .ticks(tickAmount)
-                .tickValues(d3.range(minValue, maxValue + step, step))
                 .tickFormat(d3.format('~.g'));
             
             var extremValues = [];

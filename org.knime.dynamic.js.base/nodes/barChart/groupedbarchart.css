@@ -25,6 +25,6 @@ rect.nv-bar.positive {
 }
 
 /* don't display the maximum grid line if present on vertical bar chart */
-.nv-multiBarWithLegend .knime-axis.knime-y g.tick.knime-tick:nth-last-child(3) line {
+/*.nv-multiBarWithLegend .knime-axis.knime-y g.tick.knime-tick:nth-last-child(3) line {
     display: none;
-}
+}*/
