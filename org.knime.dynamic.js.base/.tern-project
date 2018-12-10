@@ -1,0 +1,30 @@
+{
+  "ecmaVersion": 5,
+  "plugins": {
+    "guess-types": {
+      
+    },
+    "outline": {
+      
+    },
+    "eslint": {
+      "configFile": "eslint.json"
+    },
+    "requirejs": {
+      "paths": {
+        
+      }
+    },
+    "browser-extension": {
+      
+    },
+    "bootstrap": {
+      
+    }
+  },
+  "libs": [
+    "ecma5",
+    "browser",
+    "jquery"
+  ]
+}
