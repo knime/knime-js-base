@@ -45,6 +45,7 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
+/* globals twinlist:true */
 function twinlistMultipleSelections() {
 	var list;
 	this.addValueChangedListener = function(listener) {

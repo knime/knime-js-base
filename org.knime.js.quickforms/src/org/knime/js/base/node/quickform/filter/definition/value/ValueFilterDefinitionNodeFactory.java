@@ -52,13 +52,15 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.quickform.filter.definition.RangeFilterValue;
 
 /**
+ * Factory for the value filter definition node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDefinitionNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterDefinitionNodeModel, ValueFilterDefinitionRepresentation, ValueFilterDefinitionValue> {
+    WizardNodeFactoryExtension<ValueFilterDefinitionNodeModel, ValueFilterDefinitionRepresentation, RangeFilterValue> {
 
     /**
      * {@inheritDoc}

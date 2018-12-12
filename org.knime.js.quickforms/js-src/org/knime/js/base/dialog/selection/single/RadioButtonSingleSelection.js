@@ -45,12 +45,14 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
+/* globals $:true */
 function radioButtonSingleSelection(vertical) {
 	var valueChangedListeners = new Array();
 	this.addValueChangedListener = function(listener) {
 		valueChangedListeners.push(listener);
 	}
-	notifyListeners = function() {
+	
+	function notifyListeners() {
 		for (var i = 0; i < valueChangedListeners.length; i++) {
 			valueChangedListeners[i]();
 		}
@@ -62,7 +64,7 @@ function radioButtonSingleSelection(vertical) {
 	};
 	this.setChoices = function(choices) {
 		span.empty();
-		for ( var i in choices) {
+		for (var i in choices) {
 			var choice = choices[i];
 			var button = $('<input id="choice'+i+'" type="radio" name="singleSelection" value="'
 					+ choice + '" class="knime-qf-select knime-single-line"></input>');
@@ -75,7 +77,7 @@ function radioButtonSingleSelection(vertical) {
 			if (vert) {
 				span.append('<br>');
 			}
-			button.blur(notifyListeners());
+			button.click(notifyListeners);
 		}
 		var elements = span.find('label');
 		elements.width(getMaxWidth(elements));
@@ -94,12 +96,13 @@ function radioButtonSingleSelection(vertical) {
 			}
 		});
 	};
-	getMaxWidth = function(elements) {
-		return Math.max.apply(null, elements.map(function ()
-				{
-				    return $(this).width();
-				}).get());
-	};
+	
+	function getMaxWidth(elements) {
+        return Math.max.apply(null, elements.map(function() {
+            return $(this).width();
+        }).get());
+    }
+	
 	span = $('<span>');
 	vert = vertical;
 }

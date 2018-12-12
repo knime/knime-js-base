@@ -1,102 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./value_filter.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
 	<name>Value Filter Definition</name>
-	<shortDescription>Defines a filter definition to the input table and provides an interactive value filter.</shortDescription>
+	<shortDescription>
+		Defines a filter definition to the input table and provides an interactive value filter on nominal columns.
+	</shortDescription>
 	<fullDescription>
 		<intro>
-			<p>A slider which can be used to trigger interactive filter events in a layout of views (e.g. the WebPortal). The node appends a filter definition to the table spec.</p>
+			<p>A value filter which can be used to trigger interactive filter events in a layout of views (e.g. the 
+				WebPortal). The node appends a filter definition to the table spec.</p>
 			<p>Only view nodes downstream of this node can receive interactive filter events.</p>
+			<p>Note that the filter uses the possible values set on a nominal column's domain as configuration. To 
+			ensure the values are reflected and sorted correctly the <i>Domain Calculator</i> and/or 
+			<i>Edit Nominal Domain</i> nodes can be used beforehand.</p>
 		</intro>
 		<tab name="Options">
-        	<option name="Merge With Existing Filter Definitions (Table)">
-        		Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.
+        	<option name="Show Label">
+        		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define 
+        		an arbitrary label.
+        	</option>
+			<option name="Filter Column">
+				Select the column to apply the filter definition to. The domain of possible values of the column is used
+				to configure the filter. 
+			</option>
+			<option name="Default Values">
+				Select the default values to be used for filtering from the possible values of the chosen filter 
+				column. If <i>Single Values</i> is selected only the first value in the includes list will be present on
+				the filter.
+			</option>
+		</tab>
+		<tab name="Filter">
+			<option name="Merge With Existing Filter Definitions (Table)">
+        		Check this setting to keep any pre-existing filter definitions on the output table. If not set only 
+        		this node's filter definition is present on the output table.
         	</option>
         	<option name="Merge With Existing Filter Definitions (Model Port)">
-        		Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.
+        		Check this setting to keep any pre-existing filter definitions on the model output port. If not set 
+        		only this node's filter definition is present on the output model.
         	</option>
-        	<option name="Show Label">
-        		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define an arbitrary label.
+        	<option name="Multiple / Single Values">
+        		Choose multiple to be able to select multiple nominal values for filtering and single if only one value
+        		should be part of the filter at any given time. Depending on the selection here the type field will 
+        		offer different options for the display of the filter in the view.
         	</option>
-			<option name="Range Column">
-				Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider. 
-			</option>
-			<option name="Range Minimum">
-				Select the minimum value for the slider range. If <i>Custom</i> is checked a custom value can be entered, otherwise the minimum from the selected range column is used.
-			</option>
-			<option name="Range Maximum">
-				Select the maximum value for the slider range. If <i>Custom</i> is checked a custom value can be entered, otherwise the maximum from the selected range column is used.
-			</option>
-			<option name="Default Minimum Value">
-				Set the value for the minimum slider handle. If <i>Use Domain Extent</i> is checked the value from the range minimum will be used.
-			</option>
-			<option name="Default Maximum Value">
-				Set the value for the maximum slider handle. If <i>Use Domain Extent</i> is checked the value from the range maximum will be used.
-			</option>
-		</tab>
-		<tab name="Slider">
-			<option name="Use Stepping">
-				Check this option to enable stepping on the slider. If disabled the slider values are continuous.
-			</option>
-			<option name="Step Size">
-				Define the step size to be used for stepping.
-			</option>
-			<option name="Connect">
-				Check the parts of the slider, which should be displayed as a colored bar. Unchecked parts will be grey.
-			</option>
-			<option name="Orientation">
-				Select the orientation of the slider.
-			</option>
-			<option name="Direction">
-				Select the direction of the slider.
-			</option>
-			<option name="Tooltips">
-				Check the appropriate options to show the current value as a tooltip on the slider handle. 
-				Additionally a number formatting can be applied by selecting <i>Use Formatter for Tooltips</i> and then adjusting the settings by clicking <i>Format Options</i>. 
-				The options are the same as for the tick label format options further down.
-			</option>
-		</tab>
-		<tab name="Label">
-			<option name="Enable Labels and Ticks">
-				Check this option to enable ticks and labels shown under or beside the slider.
-			</option>
-			<option name="Ticks Mode">The mode after which the ticks and labels are
-				displayed. Possible values are:
-				<ul>
-					<li><b>Range</b>: Draw labels at the specified range points. For linear sliders this is only minimum and maximum.</li>
-					<li><b>Steps</b>: Draws labels at specified steps (See <i>Step Size</i> option). Major ticks and labels are generated at the minimum and maximum and smaller labels at each step size.</li>
-					<li><b>Positions</b>: Draw labels and major ticks at set positions (percentages). Use the <i>Values</i> field to specify the positions as a comma separated list of values between 0 and 100.</li>
-					<li><b>Count</b>: Draws the number of labels specified. Use the <i>Values</i> field to provide the count as an integer number.</li>
-					<li><b>Values</b>: Draw labels and major ticks at positions of the actual values.  Use the <i>Values</i> field to specify the values as a comma separated list of numbers.</li>
-				</ul>
-			</option>
-			<option name="Density">A measure to pre-scale the number of ticks. Higher number means less ticks.</option>
-			<option name="Values">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Set the appropriate values either as number or comma separated list of numbers.</option>
-			<option name="Stepped">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Check to override calculated or given label positions, to match the values to the provided slider steps.</option>
-			<option name="Lable Format Options">Set formatting options for all labels drawn.</option>
-			<option name="Decimal Digits">The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.</option>
-			<option name="Decimal Separator">
-				The decimal separator character. Defaults to <i>.</i>
-			</option>
-			<option name="Thousands Separator">The thousands separator character. Leave blank
-				for displaying no separator character.</option>
-			<option name="Custom Prefix">A custom prefix string. A common use case for
-				this is a currency symbol.</option>
-			<option name="Custom Postfix">A custom string rendered after the number.
-			</option>
-			<option name="Negative Sign">
-				The string used to denote a negative number. Defaults to
-				<i>-</i>
-			</option>
-			<option name="Negative Before String">A custom string rendered before any custom
-				prefix, when number is negative.</option>
+        	<option name="Type">
+        		Select the display type of the filter. Depending on the selection of multiple / single values, different
+        		options are offered.
+        	</option>
+        	<option name="Limit number of visible options">
+          		By default the List and Twinlist components adjust their height to display all possible choices without
+          		a scroll bar. If this option is enabled, you will be able to limit the number of visible options in
+          		case there is too many. The setting is available only for the List or Twinlist selection type.</option>
+        	<option name="Number of visible options">
+            	A number of options visible in the List or Twinlist component without a vertical scroll bar. 
+            	Changing this value will also affect the component's height. Notice that for Twinlist the height cannot
+            	be less than the overall height of the control buttons in the middle. The setting is available only for
+            	List or Twinlist selection type.
+        	</option>
 		</tab>
 	</fullDescription>
-	<interactiveView name="Range Slider Filter">
-    	Select a range for interactive filtering.
+	<interactiveView name="Value Filter">
+    	Select nominal values for interactive filtering.
     </interactiveView>
 	<ports>
-		<inPort index="0" name="Input Table">Input table which contains at least one double column with domain values set, which can be used to control the minimum and maximum values of the slider.</inPort>
-		<outPort index="0" name="Table with Filter Definition">Input table with filter definition appended to one column.</outPort>
-		<outPort index="1" name="Filter Definition">Filter definition applied to the input column.</outPort>
+		<inPort index="0" name="Input Table">
+			Input table which contains at least one nominal column with domain including possible values set, which 
+			is used to control the filter view.
+		</inPort>
+		<outPort index="0" name="Table with Filter Definition">
+			Input table with filter definition appended to the selected column.
+		</outPort>
+		<outPort index="1" name="Filter Definition">
+			Filter definition applied to the selected column.
+		</outPort>
 	</ports>
 </knimeNode>

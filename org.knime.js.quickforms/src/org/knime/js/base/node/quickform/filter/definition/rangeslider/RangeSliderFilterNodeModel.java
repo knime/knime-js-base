@@ -68,6 +68,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.viewproperty.FilterDefinitionHandlerPortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.js.base.node.quickform.filter.definition.RangeFilterValue;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 import org.knime.js.core.selections.json.AbstractColumnRangeSelection;
 import org.knime.js.core.selections.json.NumericColumnRangeSelection;
@@ -81,7 +82,7 @@ import org.knime.js.core.settings.slider.SliderSettings;
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSliderFilterRepresentation,
-        RangeSliderFilterValue> implements CSSModifiable {
+        RangeFilterValue> implements CSSModifiable {
 
     private final RangeSliderFilterConfig m_config;
 
@@ -227,7 +228,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         if (columnName == null) {
             throw new InvalidSettingsException("No domain column set");
         }
-        RangeSliderFilterValue value = getViewValue();
+        RangeFilterValue value = getViewValue();
         FilterModelRange model;
         if (value != null && value.getFilter() != null) {
             try {
@@ -284,7 +285,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
     }
 
     private void setFilterOnValue() {
-        RangeSliderFilterValue value = getViewValue();
+        RangeFilterValue value = getViewValue();
         if (value != null && m_config.getSliderSettings() != null) {
             if (value.getFilter() == null) {
                 RangeSelection filter = new RangeSelection();
@@ -326,8 +327,8 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      * {@inheritDoc}
      */
     @Override
-    public RangeSliderFilterValue createEmptyViewValue() {
-        return new RangeSliderFilterValue();
+    public RangeFilterValue createEmptyViewValue() {
+        return new RangeFilterValue();
     }
 
     /**
@@ -374,7 +375,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final RangeSliderFilterValue viewContent) {
+    public ValidationError validateViewValue(final RangeFilterValue viewContent) {
         NumericColumnRangeSelection selection = (NumericColumnRangeSelection)viewContent.getFilter().getColumns()[0];
         double min = selection.getMinimum();
         double max = selection.getMaximum();
@@ -404,7 +405,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        RangeSliderFilterValue value = getViewValue();
+        RangeFilterValue value = getViewValue();
         if (value != null && value.getFilter() != null && m_config.getSliderSettings() != null) {
             AbstractColumnRangeSelection[] columns = value.getFilter().getColumns();
             if (columns != null && columns.length > 0 && columns[0] instanceof NumericColumnRangeSelection) {

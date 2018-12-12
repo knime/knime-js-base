@@ -13,6 +13,10 @@
 	overflow: hidden;
 }
 
+.noUi-handle {
+	outline: none;
+}
+
 .noUi-value, .noUi-tooltip {
 	white-space: nowrap;
 }

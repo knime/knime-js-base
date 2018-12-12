@@ -48,6 +48,7 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.quickform.filter.definition.RangeFilterValue;
 
 /**
  * Factory for the range slider filter appender node.
@@ -55,7 +56,7 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class RangeSliderFilterNodeFactory extends NodeFactory<RangeSliderFilterNodeModel>
-        implements WizardNodeFactoryExtension<RangeSliderFilterNodeModel, RangeSliderFilterRepresentation, RangeSliderFilterValue> {
+        implements WizardNodeFactoryExtension<RangeSliderFilterNodeModel, RangeSliderFilterRepresentation, RangeFilterValue> {
 
     /**
      * {@inheritDoc}

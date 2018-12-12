@@ -43,7 +43,7 @@
  * ------------------------------------------------------------------------
  * 
  * History
- *   Sep 28, 2016 (Christian Albrecht, KNIME.com Gmbh, Konstanz, Germany): created
+ *   Sep 28, 2016 (Christian Albrecht, KNIME.com GmbH, Konstanz, Germany): created
  */
 org_knime_js_base_node_quickform_filter_slider = function() {
 	var sliderFilter = {

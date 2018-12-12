@@ -48,23 +48,51 @@
  */
 package org.knime.js.base.node.quickform.filter.definition.value;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import javax.naming.OperationNotSupportedException;
+
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.StringValue;
+import org.knime.core.data.def.StringCell.StringCellFactory;
+import org.knime.core.data.property.filter.FilterHandler;
+import org.knime.core.data.property.filter.FilterModel;
+import org.knime.core.data.property.filter.FilterModelNominal;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.viewproperty.FilterDefinitionHandlerPortObject;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
+import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
+import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.js.base.node.quickform.filter.definition.RangeFilterValue;
 import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.core.selections.json.AbstractColumnRangeSelection;
+import org.knime.js.core.selections.json.NominalColumnRangeSelection;
+import org.knime.js.core.selections.json.RangeSelection;
 
 /**
+ * Node model for the value filter definition node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterDefinitionNodeModel
-    extends AbstractWizardNodeModel<ValueFilterDefinitionRepresentation, ValueFilterDefinitionValue> {
+    extends AbstractWizardNodeModel<ValueFilterDefinitionRepresentation, RangeFilterValue>
+    implements CSSModifiable {
+
+    private final ValueFilterDefinitionConfig m_config;
 
     /**
      * @param viewName
@@ -72,6 +100,7 @@ public class ValueFilterDefinitionNodeModel
     public ValueFilterDefinitionNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE},
             new PortType[]{BufferedDataTable.TYPE, FilterDefinitionHandlerPortObject.TYPE}, viewName);
+        m_config = new ValueFilterDefinitionConfig();
     }
 
     /**
@@ -79,17 +108,15 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     public ValueFilterDefinitionRepresentation createEmptyViewRepresentation() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ValueFilterDefinitionRepresentation();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValueFilterDefinitionValue createEmptyViewValue() {
-        // TODO Auto-generated method stub
-        return null;
+    public RangeFilterValue createEmptyViewValue() {
+        return new RangeFilterValue();
     }
 
     /**
@@ -97,8 +124,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     public String getJavascriptObjectID() {
-        // TODO Auto-generated method stub
-        return null;
+        return "org_knime_js_base_node_quickform_filter_definition_value";
     }
 
     /**
@@ -106,8 +132,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     public boolean isHideInWizard() {
-        // TODO Auto-generated method stub
-        return false;
+        return m_config.isHideInWizard();
     }
 
     /**
@@ -115,16 +140,31 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     public void setHideInWizard(final boolean hide) {
-        // TODO Auto-generated method stub
-
+        m_config.setHideInWizard(hide);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final ValueFilterDefinitionValue viewContent) {
-        // TODO Auto-generated method stub
+    public String getCssStyles() {
+        return m_config.getCustomCSS();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCssStyles(final String styles) {
+        m_config.setCustomCSS(styles);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ValidationError validateViewValue(final RangeFilterValue viewContent) {
+        /* no validation atm */
         return null;
     }
 
@@ -133,8 +173,20 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
-        // TODO Auto-generated method stub
+        /* nothing to do */
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        DataTableSpec spec = (DataTableSpec)inSpecs[0];
+        DataTableSpec outSpec = setFilter(spec);
+        String colName = m_config.getColumn();
+        DataColumnSpec colSpec = spec.getColumnSpec(colName);
+        DataTableSpec modelSpec = colSpec == null ? new DataTableSpec() : new DataTableSpec(colSpec);
+        return new PortObjectSpec[] {outSpec, modelSpec};
     }
 
     /**
@@ -142,8 +194,142 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        BufferedDataTable in = (BufferedDataTable)inObjects[0];
+        DataTableSpec inSpec = in.getDataTableSpec();
+        synchronized (getLock()) {
+            DataTableSpec outSpec = setFilter(inSpec);
+            BufferedDataTable changedSpecTable = exec.createSpecReplacerTable(in, outSpec);
+            setFilterOnValue(outSpec);
+            String colName = m_config.getColumn();
+            DataColumnSpec colSpec = outSpec.getColumnSpec(colName);
+            DataTableSpec modelSpec;
+            if (m_config.isMergeWithExistingFiltersModel()) {
+                List<DataColumnSpec> allColSpecs = new ArrayList<>();
+                for (final DataColumnSpec columnSpec : outSpec) {
+                    if (columnSpec.getFilterHandler().isPresent()) {
+                        allColSpecs.add(columnSpec);
+                    }
+                }
+                modelSpec = new DataTableSpec(allColSpecs.toArray(new DataColumnSpec[allColSpecs.size()]));
+            } else {
+                modelSpec = new DataTableSpec(colSpec);
+            }
+            FilterDefinitionHandlerPortObject viewModel =
+                    new FilterDefinitionHandlerPortObject(modelSpec, "Filter definition on \"" + colName + "\"");
+
+            return new PortObject[]{changedSpecTable, viewModel};
+        }
+    }
+
+    private DataTableSpec setFilter(final DataTableSpec spec) throws InvalidSettingsException {
+        String colName = m_config.getColumn();
+        if (colName == null || colName.isEmpty()) {
+            throw new InvalidSettingsException("No domain column set");
+        }
+        RangeFilterValue value = getViewValue();
+        String[] possibleValues = getPossibleValuesForColumn(colName, spec);
+        FilterModelNominal model;
+        if (value != null && value.getFilter() != null) {
+            try {
+                model = (FilterModelNominal)value.getFilter().createFilterModel();
+            } catch (OperationNotSupportedException e) {
+                throw new InvalidSettingsException(e);
+            }
+        } else {
+            FilterResult filterResult =
+                    m_config.getFilterValues().applyTo(possibleValues);
+            Stream<DataCell> valStream = Arrays.stream(filterResult.getIncludes())
+                    .map(val -> StringCellFactory.create(val));
+            final List<DataCell> filterCells = new ArrayList<DataCell>();
+            if (m_config.isUseMultiple()) {
+                valStream.forEachOrdered(val -> filterCells.add(val));
+            } else {
+                valStream.findFirst().ifPresent(val -> filterCells.add(val));
+            }
+            model = FilterModel.newNominalModel(filterCells);
+        }
+        ValueFilterDefinitionRepresentation rep = getViewRepresentation();
+        if (rep != null) {
+            rep.setTableID(getTableId(0));
+            rep.setFilterID(model.getFilterUUID().toString());
+            rep.setPossibleValues(possibleValues);
+            rep.setConfig(m_config);
+        }
+        return getOutSpec(spec, colName, FilterHandler.from(model));
+    }
+
+    static String[] getPossibleValuesForColumn(final String colName, final DataTableSpec spec) {
+        DataColumnSpec columnSpec = spec.getColumnSpec(colName);
+        String[] possibleValues = new String[0];
+        if (columnSpec != null && columnSpec.getDomain().getValues() != null) {
+            possibleValues = columnSpec.getDomain().getValues().stream()
+                    .map(cell -> ((StringValue)cell).getStringValue()).toArray(String[]::new);
+        }
+        return possibleValues;
+    }
+
+    private DataTableSpec getOutSpec(final DataTableSpec inSpec, final String columnName, final FilterHandler filter) {
+        if (!inSpec.containsName(columnName)) {
+            setWarningMessage("The defined filter column " + columnName
+                + " is not part of the spec anymore. No filter definition appended. Filter will be disabled.");
+        }
+        DataColumnSpec[] cspecs = new DataColumnSpec[inSpec.getNumColumns()];
+        for (int i = 0; i < cspecs.length; i++) {
+            DataColumnSpec cspec = inSpec.getColumnSpec(i);
+            DataColumnSpecCreator cr = new DataColumnSpecCreator(cspec);
+            if (cspec.getName().equals(columnName)) {
+                if (cspec.getFilterHandler().isPresent()) {
+                    setWarningMessage("A filter handler on column " + columnName
+                        + " already exists. Overwriting previous definition.");
+                }
+                // set new filter
+                cr.setFilterHandler(filter);
+            } else if (!m_config.isMergeWithExistingFiltersTable()) {
+                // delete previously defined filters on demand
+                cr.setFilterHandler(null);
+            }
+            cspecs[i] = cr.createSpec();
+        }
+        DataTableSpec outSpec = new DataTableSpec(cspecs);
+        return outSpec;
+    }
+
+    private void setFilterOnValue(final DataTableSpec spec) {
+        RangeFilterValue value = getViewValue();
+        if (value != null) {
+            if (value.getFilter() == null) {
+                RangeSelection filter = new RangeSelection();
+                NominalColumnRangeSelection range = new NominalColumnRangeSelection();
+                String columnName = m_config.getColumn();
+                range.setColumnName(columnName);
+                String[] possibleValues = getPossibleValuesForColumn(columnName, spec);
+                FilterResult filterResult =
+                        m_config.getFilterValues().applyTo(possibleValues);
+                String[] includes = filterResult.getIncludes();
+                if (!m_config.isUseMultiple() && includes.length > 1) {
+                    includes = new String[] {includes[0]};
+                }
+                range.setValues(includes);
+                filter.setColumns(new AbstractColumnRangeSelection[]{range});
+                value.setFilter(filter);
+            }
+            value.getFilter().setId(getViewRepresentation().getFilterID());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ValueFilterDefinitionRepresentation getViewRepresentation() {
+        ValueFilterDefinitionRepresentation rep = super.getViewRepresentation();
+        synchronized(getLock()) {
+            //make sure current table ids are used at all times
+            if (rep != null) {
+                rep.setTableID(getTableId(0));
+            }
+        }
+        return rep;
     }
 
     /**
@@ -151,8 +337,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected void performReset() {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
 
     /**
@@ -160,8 +345,17 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
-
+        RangeFilterValue value = getViewValue();
+        if (value != null && value.getFilter() != null) {
+            AbstractColumnRangeSelection[] columns = value.getFilter().getColumns();
+            if (columns != null && columns.length > 0 && columns[0] instanceof NominalColumnRangeSelection) {
+                NominalColumnRangeSelection filter = (NominalColumnRangeSelection)columns[0];
+                ValueFilterPanelConfiguration filterConfig = m_config.getFilterValues();
+                filterConfig.setIncludeList(filter.getValues());
+                filterConfig.setExcludeList(new String[0]);
+                filterConfig.setEnforceOption(EnforceOption.EnforceInclusion);
+            }
+        }
     }
 
     /**
@@ -169,8 +363,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        // TODO Auto-generated method stub
-
+        m_config.saveSettings(settings);
     }
 
     /**
@@ -178,8 +371,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
+        (new ValueFilterDefinitionConfig()).loadSettings(settings);
     }
 
     /**
@@ -187,8 +379,7 @@ public class ValueFilterDefinitionNodeModel
      */
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
+        m_config.loadSettings(settings);
     }
 
 }

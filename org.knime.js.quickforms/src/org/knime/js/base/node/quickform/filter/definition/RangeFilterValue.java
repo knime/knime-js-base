@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,56 +40,84 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  *
  * History
- *   14 Apr 2018 (albrecht): created
+ *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.quickform.filter.definition.value;
+package org.knime.js.base.node.quickform.filter.definition;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.selections.json.RangeSelection;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
+ * View value for filter definition nodes.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME.com AG, Konstanz, Germany
  */
-public class ValueFilterDefinitionValue extends JSONViewContent {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class RangeFilterValue extends JSONViewContent {
 
-    /**
-     *
-     */
-    public ValueFilterDefinitionValue() {
-        // TODO Auto-generated constructor stub
-    }
+    private static final String CFG_FILTER = "filter";
+    private RangeSelection m_filter;
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        // TODO Auto-generated method stub
-
+        NodeSettingsWO filterSettings = settings.addNodeSettings(CFG_FILTER);
+        m_filter.saveToNodeSettings(filterSettings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
+        NodeSettingsRO filterSettings = settings.getNodeSettings(CFG_FILTER);
+        m_filter = new RangeSelection();
+        m_filter.loadFromNodeSettings(filterSettings);
+    }
 
+    /**
+     * @return the filter
+     */
+    @JsonProperty("filter")
+    public RangeSelection getFilter() {
+        return m_filter;
+    }
+
+    /**
+     * @param filter the filter to set
+     */
+    @JsonProperty("filter")
+    public void setFilter(final RangeSelection filter) {
+        m_filter = filter;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object obj) {
-        // TODO Auto-generated method stub
-        return false;
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("filter=");
+        sb.append(m_filter);
+        return sb.toString();
     }
 
     /**
@@ -98,8 +125,29 @@ public class ValueFilterDefinitionValue extends JSONViewContent {
      */
     @Override
     public int hashCode() {
-        // TODO Auto-generated method stub
-        return 0;
+        return new HashCodeBuilder()
+                .append(m_filter)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        RangeFilterValue other = (RangeFilterValue)obj;
+        return new EqualsBuilder()
+                .append(m_filter, other.m_filter)
+                .isEquals();
     }
 
 }

@@ -72,7 +72,6 @@ import org.knime.js.base.node.quickform.QuickFormDialogPanel;
 public class ValueFilterQuickFormDialogPanel extends QuickFormDialogPanel<ValueFilterQuickFormValue> {
 
     private JComboBox<String> m_column;
-
     private MultipleSelectionsComponent m_values;
 
     /**

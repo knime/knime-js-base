@@ -45,12 +45,14 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
+/* globals $:true */
 function listMultipleSelections() {
 	var valueChangedListeners = new Array();
 	this.addValueChangedListener = function(listener) {
 		valueChangedListeners.push(listener);
 	}
-	notifyListeners = function() {
+	
+	function notifyListeners() {
 		for (var i = 0; i < valueChangedListeners.length; i++) {
 			valueChangedListeners[i]();
 		}
@@ -68,7 +70,7 @@ function listMultipleSelections() {
 			var choice = choices[i];
 			var option = $('<option>' + choice + '</option>');
 			option.appendTo(select);
-			option.blur(notifyListeners());
+			//option.blur(notifyListeners);
 		}
 		select.attr('size', choices.length < sizeLimit ? choices.length : sizeLimit);
 	};
@@ -92,4 +94,5 @@ function listMultipleSelections() {
 	select = $('<select class="knime-qf-select knime-multi-line">');
 	select.prop('multiple', true);
 	select.attr('data-iframe-height', '');
+	select.change(notifyListeners);
 }

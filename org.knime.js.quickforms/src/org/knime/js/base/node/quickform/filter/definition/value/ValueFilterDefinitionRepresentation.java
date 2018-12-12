@@ -48,22 +48,158 @@
  */
 package org.knime.js.base.node.quickform.filter.definition.value;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
+ * View representation for the value filter definition node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ValueFilterDefinitionRepresentation extends JSONViewContent {
 
+    private static final String CFG_TABLE_ID = "tableID";
+    private String m_tableID;
+
+    private static final String CFG_FILTER_ID = "filterID";
+    private String m_filterID;
+
+    private static final String CFG_DISABLED = "disabled";
+    private boolean m_disabled = false;
+
+    private static final String CFG_POSSIBLE_VALUES = "possibleValues";
+    private String[] m_possibleValues;
+
+    private String m_column;
+    private String m_label;
+    private boolean m_multipleValues;
+    private String m_type;
+    private boolean m_limitNumberVisOptions;
+    private Integer m_numberVisOptions;
+
+
     /**
-     *
+     * @return the tableID
      */
-    public ValueFilterDefinitionRepresentation() {
-        // TODO Auto-generated constructor stub
+    public String getTableID() {
+        return m_tableID;
+    }
+
+    /**
+     * @param tableID the tableID to set
+     */
+    public void setTableID(final String tableID) {
+        m_tableID = tableID;
+    }
+
+    /**
+     * @return the filterID
+     */
+    public String getFilterID() {
+        return m_filterID;
+    }
+
+    /**
+     * @param filterID the filterID to set
+     */
+    public void setFilterID(final String filterID) {
+        m_filterID = filterID;
+    }
+
+    /**
+     * @return the disabled
+     */
+    public boolean isDisabled() {
+        return m_disabled;
+    }
+
+    /**
+     * @param disabled the disabled to set
+     */
+    public void setDisabled(final boolean disabled) {
+        m_disabled = disabled;
+    }
+
+    /**
+     * @return the possibleValues
+     */
+    public String[] getPossibleValues() {
+        return m_possibleValues;
+    }
+
+    /**
+     * @param possibleValues the possibleValues to set
+     */
+    public void setPossibleValues(final String[] possibleValues) {
+        m_possibleValues = possibleValues;
+    }
+
+    /**
+     * @param config the config to set
+     */
+    @JsonIgnore
+    public void setConfig(final ValueFilterDefinitionConfig config) {
+        m_column = config.getColumn();
+        m_label = null;
+        if (config.isUseLabel()) {
+            m_label = config.isCustomLabel() ? config.getLabel() : m_column;
+        }
+        m_multipleValues = config.isUseMultiple();
+        m_type = config.getType();
+        m_limitNumberVisOptions = config.isLimitNumberVisOptions();
+        m_numberVisOptions = config.getNumberVisOptions();
+    }
+
+    /**
+     * @return the column
+     */
+    public String getColumn() {
+        return m_column;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return m_label;
+    }
+
+    /**
+     * @return the multipleValues
+     */
+    public boolean isMultipleValues() {
+        return m_multipleValues;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return m_type;
+    }
+
+    /**
+     * @return the limitNumberVisOptions
+     */
+    public boolean isLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
+    }
+
+    /**
+     * @return the numberVisOptions
+     */
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
     }
 
     /**
@@ -71,8 +207,16 @@ public class ValueFilterDefinitionRepresentation extends JSONViewContent {
      */
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        // TODO Auto-generated method stub
-
+        settings.addString(CFG_TABLE_ID, m_tableID);
+        settings.addString(CFG_FILTER_ID, m_filterID);
+        settings.addBoolean(CFG_DISABLED, m_disabled);
+        settings.addStringArray(CFG_POSSIBLE_VALUES, m_possibleValues);
+        settings.addString(ValueFilterDefinitionConfig.CFG_COLUMN, m_column);
+        settings.addString(ValueFilterDefinitionConfig.CFG_LABEL, m_label);
+        settings.addBoolean(ValueFilterDefinitionConfig.CFG_USE_MULTIPLE, m_multipleValues);
+        settings.addString(ValueFilterDefinitionConfig.CFG_TYPE, m_type);
+        settings.addBoolean(ValueFilterDefinitionConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
+        settings.addInt(ValueFilterDefinitionConfig.CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -80,8 +224,16 @@ public class ValueFilterDefinitionRepresentation extends JSONViewContent {
      */
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
+        m_tableID = settings.getString(CFG_TABLE_ID);
+        m_filterID = settings.getString(CFG_FILTER_ID);
+        m_disabled = settings.getBoolean(CFG_DISABLED);
+        m_possibleValues = settings.getStringArray(CFG_POSSIBLE_VALUES);
+        m_column = settings.getString(ValueFilterDefinitionConfig.CFG_COLUMN);
+        m_label = settings.getString(ValueFilterDefinitionConfig.CFG_LABEL);
+        m_multipleValues = settings.getBoolean(ValueFilterDefinitionConfig.CFG_USE_MULTIPLE);
+        m_type = settings.getString(ValueFilterDefinitionConfig.CFG_TYPE);
+        m_limitNumberVisOptions = settings.getBoolean(ValueFilterDefinitionConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(ValueFilterDefinitionConfig.CFG_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -89,8 +241,28 @@ public class ValueFilterDefinitionRepresentation extends JSONViewContent {
      */
     @Override
     public boolean equals(final Object obj) {
-        // TODO Auto-generated method stub
-        return false;
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        ValueFilterDefinitionRepresentation other = (ValueFilterDefinitionRepresentation)obj;
+        return new EqualsBuilder()
+                .append(m_tableID, m_tableID)
+                .append(m_filterID, other.m_filterID)
+                .append(m_disabled, other.m_disabled)
+                .append(m_column, other.m_column)
+                .append(m_label, other.m_label)
+                .append(m_possibleValues, other.m_possibleValues)
+                .append(m_multipleValues, other.m_multipleValues)
+                .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
+                .isEquals();
     }
 
     /**
@@ -98,8 +270,18 @@ public class ValueFilterDefinitionRepresentation extends JSONViewContent {
      */
     @Override
     public int hashCode() {
-        // TODO Auto-generated method stub
-        return 0;
+        return new HashCodeBuilder()
+                .append(m_tableID)
+                .append(m_filterID)
+                .append(m_disabled)
+                .append(m_column)
+                .append(m_label)
+                .append(m_possibleValues)
+                .append(m_multipleValues)
+                .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
+                .toHashCode();
     }
 
 }

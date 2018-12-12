@@ -45,12 +45,13 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
+/* globals $:true */
 function checkBoxesMultipleSelections(vertical) {
 	var valueChangedListeners = new Array();
 	this.addValueChangedListener = function(listener) {
 		valueChangedListeners.push(listener);
 	}
-	notifyListeners = function() {
+	function notifyListeners() {
 		for (var i = 0; i < valueChangedListeners.length; i++) {
 			valueChangedListeners[i]();
 		}
@@ -75,7 +76,7 @@ function checkBoxesMultipleSelections(vertical) {
 			if (vert) {
 				span.append('<br>');
 			}
-			button.blur(notifyListeners());
+			button.click(notifyListeners);
 		}
 		var elements = span.find('label');
 		elements.width(getMaxWidth(elements));
@@ -98,12 +99,13 @@ function checkBoxesMultipleSelections(vertical) {
 			}
 		});
 	};
-	getMaxWidth = function(elements) {
-		return Math.max.apply(null, elements.map(function ()
-				{
-				    return $(this).width();
-				}).get());
-	};
-	span = $('<span>');
-	vert = vertical;
+	
+	function getMaxWidth(elements) {
+        return Math.max.apply(null, elements.map(function() {
+            return $(this).width();
+        }).get());
+    }
+	
+    span = $('<span>');
+    vert = vertical;
 }

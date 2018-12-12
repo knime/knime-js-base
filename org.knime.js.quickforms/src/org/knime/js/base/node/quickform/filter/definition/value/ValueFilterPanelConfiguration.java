@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,58 +41,76 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
- * 
+ * ---------------------------------------------------------------------
+ *
  * History
- *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
+ *   4 Jan 2019 (albrecht): created
  */
-/* globals $:true */
-function listSingleSelection() {
-	var valueChangedListeners = new Array();
-	this.addValueChangedListener = function(listener) {
-		valueChangedListeners.push(listener);
-	}
-	
-	function notifyListeners() {
-		for (var i = 0; i < valueChangedListeners.length; i++) {
-			valueChangedListeners[i]();
-		}
-	}
-	var select;
-	this.getComponent = function() {
-		return select;
-	};
-	this.setChoices = function(choices, sizeLimit) {
-		if (sizeLimit === undefined) {
-			sizeLimit = Number.MAX_VALUE;
-		}
-		select.empty();
-		var size = choices.length;
-		if (size < 2) {
-			size = 2;
-		}
-		select.attr('size', size < sizeLimit ? size : sizeLimit);
-		for ( var i in choices) {
-			var choice = choices[i];
-			var option = $('<option>' + choice + '</option>');
-			option.appendTo(select);
-		}
-	};
-	this.getSelection = function() {
-		return select.find(':selected').text();
-	};
-	this.setSelection = function(selection) {
-		select.find('option').each(function() {
-			var element = $(this);
-			if (element.text() == selection) {
-				element.prop('selected', true);
-			} else {
-				element.prop('selected', false);
-			}
-		});
-	};
-	select = $('<select class="knime-qf-select knime-multi-line">');
-	select.attr('size', 0);
-	select.attr('data-iframe-height', '');
-	select.change(notifyListeners);
+package org.knime.js.base.node.quickform.filter.definition.value;
+
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.util.filter.NameFilterConfiguration;
+
+/**
+ * Configuration for a generic filter that can includes and excludes possible string values and takes care on
+ * additional/missing names using the enforce inclusion/exclusion option. It also supports filtering based on name
+ * patterns.
+ *
+ * Subclass to enable certain methods to be called from the containing package. No additional functionality.
+ *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ */
+public class ValueFilterPanelConfiguration extends NameFilterConfiguration {
+
+    /**
+     * Creates a new name filter configuration with the given settings name. Also enables the name pattern filter.
+     *
+     * @param configRootName the config name to used to store the settings
+     * @throws IllegalArgumentException If config name is null or empty
+     */
+    public ValueFilterPanelConfiguration(final String configRootName) {
+        super(configRootName);
+    }
+
+    /**
+     * Load config in dialog, init defaults if necessary.
+     *
+     * @param settings to load from.
+     * @param names all names available for filtering
+     */
+    protected void loadConfigInDialog(final NodeSettingsRO settings, final String[] names) {
+        super.loadConfigurationInDialog(settings, names);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FilterResult applyTo(final String[] names) {
+        return super.applyTo(names);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setIncludeList(final String[] includeList) {
+        super.setIncludeList(includeList);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setExcludeList(final String[] excludeList) {
+        super.setExcludeList(excludeList);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setEnforceOption(final EnforceOption enforceOption) {
+        super.setEnforceOption(enforceOption);
+    }
 }

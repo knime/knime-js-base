@@ -609,6 +609,29 @@
                webResourceBundleID="noUISlider_12_1_0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Value Filter Definition"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.quickform.filter.definition.value.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/quickform/filter/definition/value/"
+               relativePathTarget="org/knime/js/base/node/quickform/filter/definition/value/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/quickform/filter/definition/value/ValueFilterDefinition.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="SingleSelection">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="MultipleSelections">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -804,6 +827,16 @@
             javascriptComponentID="org_knime_js_base_node_quickform_filter_slider"
             name="Range Slider Filter"
             namespace="org_knime_js_base_node_quickform_filter_slider"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.quickform.filter.definition.value.bundle"
+            init-method-name="init"
+            javascriptComponentID="org_knime_js_base_node_quickform_filter_definition_value"
+            name="Value Filter Definition"
+            namespace="org_knime_js_base_node_quickform_filter_definition_value"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
