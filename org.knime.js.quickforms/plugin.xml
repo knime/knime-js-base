@@ -580,7 +580,7 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
          <webDependency
-               webResourceBundleID="noUISlider_9_0_0">
+               webResourceBundleID="noUISlider_12_1_0">
          </webDependency>
       </webResourceBundle>
       <webResourceBundle
@@ -601,7 +601,7 @@
                type="CSS">
          </importResource>
          <webDependency
-               webResourceBundleID="noUISlider_9_0_0">
+               webResourceBundleID="noUISlider_12_1_0">
          </webDependency>
       </webResourceBundle>
    </extension>
