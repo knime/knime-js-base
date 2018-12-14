@@ -75,6 +75,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
  *
@@ -317,6 +318,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                     try {
                         // assume object is serializable into JSON
                         ObjectMapper mapper = new ObjectMapper();
+                        mapper.registerModule(new Jdk8Module());
                         jsonString = mapper.writeValueAsString(m_inObjects[i]);
                     } catch (JsonProcessingException e) {
                         LOGGER.error("Failed to write inObject from port index " + i
@@ -424,6 +426,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
                     try {
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                        mapper.registerModule(new Jdk8Module());
                         //Deserialize into generic JSON tree, because classes from other plugins might not be able to
                         //instantiate
                         JsonNode tree = mapper.readTree(jsonString);
