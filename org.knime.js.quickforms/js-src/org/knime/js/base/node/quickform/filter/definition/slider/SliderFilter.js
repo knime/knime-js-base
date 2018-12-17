@@ -50,24 +50,59 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 			version: "1.0.0"
 	};
 	sliderFilter.name = "Slider Filter";
-	var _representation, _value;
-	var errorMessage;
-	var viewValid = false;
-	var slider;
+//	var viewValid = false;
+	var _representation, _value,
+	 errorMessage,
+	 slider,
+	 
+	 setNumberFormatOptions, setStartValuesToRange, setFilterOnValue, addClassToElements, checkIfOverflowNeeded;
+	 
 
 	sliderFilter.init = function(representation, value) {
-		
 		_representation = representation;
 		_value = value;
 		var settings = representation.sliderSettings;
 		
 		var body = document.getElementsByTagName('body')[0];
-		
 		var sliderContainer = document.createElement('div');
 		sliderContainer.setAttribute('class', 'slidercontainer knime-slider');
+		debugger;
 		
+		// The framework cannot handle more then 7 decimals. So we have to make sure, that either both values are at max
+		// 7 decimals long or that they would be the same otherwise.
+		var tempMin, tempMax, precision;
+        if(settings.pips.format.decimals) {
+            precision = settings.pips.format.decimals;
+        } else {
+            precision = 7;
+        }
+        tempMin = parseFloat(settings.range.min[0].toFixed(precision));
+        tempMax = parseFloat(settings.range.max[0].toFixed(precision));
+        if(tempMin < tempMax) {
+            settings.range.min[0] = tempMin;
+            settings.range.max[0] = tempMax;
+        }
+		
+		if(settings.fix[0]) {
+			settings.connect = [true,false];
+			if(settings.tooltips){
+				settings.tooltips = [settings.tooltips[0]];
+			}
+			settings.start = [settings.start[0]];
+		} else if(settings.fix[2]) {
+			settings.connect = [false,true];
+			if(settings.tooltips){
+				settings.tooltips = [settings.tooltips[1]];
+			}
+
+			settings.start = [settings.start[1]];
+		} else {
+			settings.connect = [false,true,false];
+		}
+
 		body.appendChild(sliderContainer);
 		slider = document.createElement('div');
+		
 		sliderContainer.appendChild(slider);
 		setNumberFormatOptions(settings);
 		setStartValuesToRange(settings);
@@ -136,7 +171,13 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		if (value.filter && value.filter.columns) {
 			var filter = value.filter.columns[0];
 			var startValue = [filter.minimum, filter.maximum];
-			slider.noUiSlider.set(startValue);
+			if(settings.fix[0]) {
+				slider.noUiSlider.set(startValue[1]);
+			} else if(settings.fix[2]) {
+				slider.noUiSlider.set(startValue[0]);
+			} else {
+				slider.noUiSlider.set(startValue);
+			}
 		}
 		
 		if (representation.disabled) {
@@ -193,6 +234,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 			}
 		}
 		if (settings.pips && settings.pips.format) {
+
 			settings.pips.format = wNumb(settings.pips.format);
 		}
 		settings.format = {
@@ -202,17 +244,28 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 	
 	setStartValuesToRange = function(settings) {
 		if (settings.tooltips && settings.tooltips.length > 0) {
-			if (settings.tooltips[0]) {
-				settings.start[0] = settings.range.min;
-			}
-			if (settings.tooltips.length > 1 && settings.tooltips[1]) {
-				settings.start[1] = settings.range.max;
-			}
+			if (settings.fix[1]){
+				if (settings.tooltips[0]) {
+					settings.start[0] = settings.range.min;
+				}
+				if (settings.tooltips.length > 1 && settings.tooltips[1]) {
+					settings.start[1] = settings.range.max;
+				}
+			} else if (settings.fix[0]){
+			    if (settings.tooltips[0]) {
+			        settings.start[0] = settings.range.max;
+			    }
+			} else if (settings.fix[2]){
+			    if (settings.tooltips[0]) {
+			        settings.start[0] = settings.range.min;
+			    }
+            }
 		}
 	}
 	
-	setFilterOnValue = function() {
+	var setFilterOnValue = function() {
 		var changed = true;
+		var settings = _representation.sliderSettings;
 		if (!_value.filter) {
 			_value.filter = {"id": _representation.filterId, "columns": []}
 			_value.filter.columns.push({"minimum": null, "maximum": null});
@@ -221,8 +274,14 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		if (_value.filter.columns[0].minimum == sliderValues[0] && _value.filter.columns[0].maximum == sliderValues[1]) {
 			changed = false;
 		}
-		_value.filter.columns[0].minimum = sliderValues[0];
-		_value.filter.columns[0].maximum = sliderValues[1];
+		if(settings.fix[0]) {
+			_value.filter.columns[0].maximum = sliderValues;
+		} else if(settings.fix[2]) {
+			_value.filter.columns[0].minimum = sliderValues;
+		} else {
+			_value.filter.columns[0].minimum = sliderValues[0];
+			_value.filter.columns[0].maximum = sliderValues[1];
+		}
 		return changed;
 	}
 	
@@ -256,7 +315,7 @@ org_knime_js_base_node_quickform_filter_slider = function() {
 		return _value;
 	};
 	
-	function addClassToElements(elSelector, className) {
+	addClassToElements = function (elSelector, className) {
 		var el = document.getElementsByClassName(elSelector);
 		for (var i = 0; i < el.length; i++) {
 			el[i].classList.add(className);

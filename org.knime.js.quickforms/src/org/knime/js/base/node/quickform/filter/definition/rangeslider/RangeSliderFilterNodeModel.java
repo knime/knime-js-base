@@ -286,6 +286,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
 
     private void setFilterOnValue() {
         RangeFilterValue value = getViewValue();
+        boolean[] fixSlider = m_config.getSliderSettings().getFix();
         if (value != null && m_config.getSliderSettings() != null) {
             if (value.getFilter() == null) {
                 RangeSelection filter = new RangeSelection();
@@ -295,6 +296,14 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
                 range.setMaximum(m_config.getSliderSettings().getStart()[1]);
                 filter.setColumns(new AbstractColumnRangeSelection[]{range});
                 value.setFilter(filter);
+                // Set the maximum to positive or negative infinity when the slider is fixed to one side.
+                // As it is not possible to pass infinity values with jackson we need this hack.
+                if(fixSlider[0]) {
+                    range.setMinimum(Double.NEGATIVE_INFINITY);
+                }
+                if(fixSlider[2]) {
+                    range.setMaximum(Double.POSITIVE_INFINITY);
+                }
             }
             value.getFilter().setId(getViewRepresentation().getFilterId());
         }

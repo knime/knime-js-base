@@ -46,8 +46,9 @@
 			<option name="Step Size">
 				Define the step size to be used for stepping.
 			</option>
-			<option name="Connect">
-				Check the parts of the slider, which should be displayed as a colored bar. Unchecked parts will be grey.
+			<option name="Set Handle Position">
+				Select on which side of the bar there should be a handle. When only one side is chosen, 
+				the not movable side is not limited to a minimum/maximum value.
 			</option>
 			<option name="Orientation">
 				Select the orientation of the slider.
