@@ -911,7 +911,7 @@ knime_scatter_plot_selection_appender = function() {
 						var columnIndex = _keyedDataset.data.columnKeys.indexOf(column.columnName);
 						if (columnIndex > -1) {
 							var rowValue = row.values[columnIndex];
-							if (column.type = "numeric") {
+							if (column.type === "numeric") {
 								if (column.minimumInclusive) {
 									included &= (rowValue >= column.minimum);
 								} else {
@@ -922,8 +922,9 @@ knime_scatter_plot_selection_appender = function() {
 								} else {
 									included &= (rowValue < column.maximum);
 								}
-							} else if (column.type = "nominal") {
-								included &= (column.values.indexOf(rowValue) >= 0);
+							} else if (column.type === "nominal") {
+							    var symbol =_keyedDataset.getColumnProperty(column.columnName, "symbols")[rowValue].symbol;
+								included &= (column.values.indexOf(symbol) >= 0);
 							}
 						}
 					}
