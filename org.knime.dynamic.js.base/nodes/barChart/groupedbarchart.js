@@ -1,21 +1,23 @@
 /* global d3:false, kt:false, nv:false */
-window.grouped_bar_chart_namespace = (function () {
-
+window.knimeGroupedBarChart = (function () {
+    
     var barchart = {};
-    var layoutContainer;
-    var MIN_HEIGHT = 100, MIN_WIDTH = 100;
-    var _representation, _value;
-    var chart, svg;
-    var knimeTable;
-
-    var plotData;
-    var wrapedPlotData;
-    var colorRange;
-    var categories;
-    var freqCols;
-    var _translator;
-    var _keyNameMap;
-    var _incomingTable;
+    var MIN_HEIGHT = 100;
+    var MIN_WIDTH = 100;
+    var layoutContainer,
+        _representation,
+        _value,
+        chart,
+        svg,
+        knimeTable,
+        plotData,
+        wrapedPlotData,
+        colorRange,
+        categories,
+        freqCols,
+        _translator,
+        _keyNameMap,
+        _incomingTable,
 
     /**
      * 2d-array where for each category (indexing follows categories array) we
@@ -24,7 +26,7 @@ window.grouped_bar_chart_namespace = (function () {
      * whole category. Storing by category helps to group warnings also by
      * category. Required for missing values handling.
      */
-    var missValInCat;
+        missValInCat,
 
     /**
      * Array where for each frequency column, which has in all other categories
@@ -36,7 +38,7 @@ window.grouped_bar_chart_namespace = (function () {
      * value in the Missing values category (true/false) Required for missing
      * values handling.
      */
-    var freqColValueOnMissValCat;
+        freqColValueOnMissValCat,
 
     /**
      * Array where for each frequency column, which has non-missing value in the
@@ -46,13 +48,13 @@ window.grouped_bar_chart_namespace = (function () {
      * name of freq column value - non-missing value, this freq column has in
      * the Missing values category Required for missing values handling.
      */
-    var missValCatValues;
+        missValCatValues,
 
     /**
      * Boolean flag - is the Missing values category present in the dataset.
      * Required for missing values handling.
      */
-    var isMissValCat;
+        isMissValCat,
 
     /**
      * Map where keys - frequency column names, values - array of those
@@ -63,9 +65,17 @@ window.grouped_bar_chart_namespace = (function () {
      * since the plot dataset has to be key->values. Required for missing values
      * handling.
      */
-    var excludeFreqColCatMap;
-
-    var showWarnings;
+        excludeFreqColCatMap,
+        showWarnings,
+    
+    /**
+     * Function declarations
+     */
+        drawChart, drawControls, fixStackedData, createHilightBar, removeHilightBar, getClusterToRowMapping,
+        subscribeToSelection, publishSelection, processData, getRoundedMaxValue, getSelectedRowIDs,
+        handleHighlightClick, sortByClusterName, setCssClasses, setTooltipCssClasses, updateTitles, updateAxisLabels,
+        updateLabels, updateChartType, redrawSelection, onSelectionChanged, registerClickHandler, getActiveBars,
+        checkClearSelectionButton, selectCorrectBar, processMissingValues, checkMaxSizeXAxis, KeyNameMap;
 
     var MISSING_VALUES_LABEL = 'Missing values';
     var MISSING_VALUES_ONLY = 'missingValuesOnly';
@@ -100,26 +110,26 @@ window.grouped_bar_chart_namespace = (function () {
     };
 
 
-    function drawChart(redraw) {
+    drawChart = function (redraw) {
 
         d3.select('html').style('width', '100%').style('height', '100%');
         d3.select('body').style('width', '100%').style('height', '100%');
         
         // Process options
-        var optWidth = _representation.options['width'];
-        var optHeight = _representation.options['height'];
+        var optWidth = _representation.options.width;
+        var optHeight = _representation.options.height;
 
-        var optTitle = _value.options['title'];
-        var optSubtitle = _value.options['subtitle'];
+        var optTitle = _value.options.title;
+        var optSubtitle = _value.options.subtitle;
 
-        var sortLabels = _representation.options['sort'];
-        var optLegend = _representation.options['legend'];
-        var optTooltips = _representation.options['tooltip'];
+        var sortLabels = _representation.options.sort;
+        var optLegend = _representation.options.legend;
+        var optTooltips = _representation.options.tooltip;
 
-        var optOrientation = _value.options['orientation'];
+        var optOrientation = _value.options.orientation;
 
-        var optFullscreen = _representation.options['svg']['fullscreen'] && _representation.runningInView;
-        var optEnableSelection = _representation.options['enableSelection'];
+        var optFullscreen = _representation.options.svg.fullscreen && _representation.runningInView;
+        var optEnableSelection = _representation.options.enableSelection;
 
         var isTitle = optTitle || optSubtitle;
 
@@ -130,7 +140,7 @@ window.grouped_bar_chart_namespace = (function () {
         if (optFullscreen) {
             knimeService.floatingHeader(isTitle);
             width = '100%';
-            height = (isTitle) ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
+            height = isTitle ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
         }
 
         var div;
@@ -162,16 +172,23 @@ window.grouped_bar_chart_namespace = (function () {
 
 
         // handle clicks on background to deselect current selection
-        if(optEnableSelection) {
-            svg.on("click", function() {
-                removeHilightBar("", true);
-                _value.options['selection'] = [];
+        if (optEnableSelection) {
+            svg.on('click', function () {
+                removeHilightBar('', true);
+                _value.options.selection = [];
                 publishSelection(true);
             });
         }
 
 
-        if (!optFullscreen) {
+        if (optFullscreen) {
+            // Set full screen height/width
+            div.style('width', '100%');
+            div.style('height', height /* this should be 100% always, but for some reason that doesn't work */);
+
+            svg.attr('width', '100%');
+            svg.attr('height', '100%');
+        } else {
             if (optWidth > 0) {
                 div.style('width', optWidth + 'px');
                 svg.attr('width', optWidth);
@@ -186,13 +203,6 @@ window.grouped_bar_chart_namespace = (function () {
                 // above does work...
                 // chart.height(optHeight);
             }
-        } else {
-            // Set full screen height/width
-            div.style('width', '100%');
-            div.style('height', height /*TODO: this should be 100% always, but for some reason that doesn't work*/);
-
-            svg.attr('width', '100%');
-            svg.attr('height', '100%');
         }
 
         if (!redraw) {
@@ -218,25 +228,25 @@ window.grouped_bar_chart_namespace = (function () {
                 chart = nv.models.multiBarHorizontalChart();
             } else {
                 chart = nv.models.multiBarChart();
-                chart.reduceXTicks(!!_representation.isHistogram);
-                /*if (_representation.options.rotateLabels) {
+                chart.reduceXTicks(Boolean(_representation.isHistogram));
+                /* if (_representation.options.rotateLabels) {
                     chart.rotateLabels(_representation.options.rotateLabels);
-                }*/
+                } */
             }
 
-            chart.dispatch.on('renderEnd.css', function() {
+            chart.dispatch.on('renderEnd.css', function () {
                 setCssClasses();
             });
             // tooltip is re-created every time therefore we need to assign
             // classes accordingly
             chart.multibar.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
             chart.multibar.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
-            chart.legend.dispatch.on('legendClick', function() {
+            chart.legend.dispatch.on('legendClick', function () {
                 drawChart(true);
                 d3.event.stopPropagation();
             });
 
-            var stacked = _value.options.chartType == 'Stacked';
+            var stacked = _value.options.chartType === 'Stacked';
             if (stacked) {
                 fixStackedData(true); // add dummy nulls
             }
@@ -252,81 +262,85 @@ window.grouped_bar_chart_namespace = (function () {
 
             chart.showControls(false); // all the controls moved to settings menu
             chart.showLegend(optLegend);
-            chart.tooltip.enabled((typeof optTooltips === 'undefined') || optTooltips);
+            chart.tooltip.enabled(typeof optTooltips === 'undefined' || optTooltips);
 
             updateAxisLabels(false);
             svg.datum(plotData).transition().duration(0).call(chart);
-            nv.utils.windowResize(function () { 
-                updateAxisLabels(true); 
-                updateLabels(); 
-                setCssClasses(); 
-                removeHilightBar("",true);
+            nv.utils.windowResize(function () {
+                updateAxisLabels(true);
+                updateLabels();
+                setCssClasses();
+                removeHilightBar('', true);
                 redrawSelection();
             });
 
             // redraws selection
-            if(_value.options['selection']) {
+            if (_value.options.selection) {
                 redrawSelection();
             }
             return chart;
         });
-    }
+    };
 
-    function sortByClusterName(array) {
-        return array.sort(function(a, b) {
+    sortByClusterName = function (array) {
+        return array.sort(function (a, b) {
             var x = a.data[0];
             var y = b.data[0];
 
             // Make sure, that missing values are displayed last
-            if(x == null) {
-                return 1
-            } else if (y == null) {
+            if (x === null) {
+                return 1;
+            } else if (y === null) {
                 return -1;
             }
 
-            if (typeof x == "string")
-            {
-                x = (""+x).toLowerCase(); 
+            if (typeof x === 'string') {
+                x = (String(x)).toLowerCase();
             }
-            if (typeof y == "string")
-            {
-                y = (""+y).toLowerCase();
+            if (typeof y === 'string') {
+                y = (String(y)).toLowerCase();
             }
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            var compare = 0;
+            if (x < y) {
+                compare = -1;
+            } else if (x > y) {
+                compare = 1;
+            }
+            return compare;
         });
-    }
+    };
 
-    function registerClickHandler () {
-        d3.selectAll(".nv-bar").on('click',function(event) {
+    registerClickHandler = function () {
+        d3.selectAll('.nv-bar').on('click', function (event) {
             handleHighlightClick(event);
             d3.event.stopPropagation();
         });
-    }
+    };
 
-    function getActiveBars() {
-        var stacked = _value.options['chartType'];
+    getActiveBars = function () {
+        var stacked = _value.options.chartType;
         var counter = 0;
-        if(stacked == "Stacked") {
+        if (stacked === 'Stacked') {
             counter = 1;
         } else {
-            for (var j = 0; j < plotData.length; j++) { 
-                if(plotData[j].disabled !== true) {
-                    counter ++;
-                } 
+            for (var j = 0; j < plotData.length; j++) {
+                if (plotData[j].disabled !== true) {
+                    counter++;
+                }
             }
         }
         return counter;
-    }
+    };
 
-    function redrawSelection() {
-        var length = _value.options['selection'] ? _value.options['selection'].length : 0;
+    redrawSelection = function () {
+        var length = _value.options.selection ? _value.options.selection.length : 0;
         for (var i = 0; i < length; i++) {
-            createHilightBar(_keyNameMap.getNameFromKey(_value.options['selection'][i][0]),
-                    _value.options['selection'][i][1]);
+            createHilightBar(_keyNameMap.getNameFromKey(_value.options.selection[i][0]),
+                    _value.options.selection[i][1]);
         }
-    }
+    };
 
-    function subscribeToSelection(subscribeBool) {
+    subscribeToSelection = function (subscribeBool) {
         if (_representation.options.enableSelection) {
             if (subscribeBool) {
                 knimeService.subscribeToSelection(_translator.sourceID, onSelectionChanged);
@@ -334,262 +348,273 @@ window.grouped_bar_chart_namespace = (function () {
                 knimeService.unsubscribeSelection(_translator.sourceID, onSelectionChanged);
             }
         }
-    }
+    };
 
-    function publishSelection(shouldPublish){
-        if(shouldPublish) {
+    publishSelection = function (shouldPublish) {
+        if (shouldPublish) {
             knimeService.setSelectedRows(_translator.sourceID, getSelectedRowIDs(), onSelectionChanged);
         }
-    }
+    };
 
-    function checkClearSelectionButton(){
-        if(_value.options['selection']){
-            var button = d3.select("#clearSelectionButton");
-            if (button){
-                button.classed("inactive", function(){return !_value.options['selection'].length > 0});
+    checkClearSelectionButton = function () {
+        if (_value.options.selection) {
+            var button = d3.select('#clearSelectionButton');
+            if (button) {
+                button.classed('inactive', function () {
+                    return !_value.options.selection.length > 0;
+                });
             }
         }
-    }
+    };
 
-    function getSelectedRowIDs() {
-        if(_value.options['selection']) {
+    getSelectedRowIDs = function () {
+        if (_value.options.selection) {
             var selectedRowIDs = [];
-            for (var i = 0; i< _value.options['selection'].length; i++) {
-                selectedRowIDs.push( _value.options['selection'][i][0]);
+            for (var i = 0; i < _value.options.selection.length; i++) {
+                selectedRowIDs.push(_value.options.selection[i][0]);
             }
             return selectedRowIDs;
         } else {
             return [];
         }
-    }
+    };
 
-    function selectCorrectBar(clusterName) {
-        var allBars = d3.selectAll(".knime-x text.knime-tick-label");
-        for(var j = 0; j < allBars[0].length; j++) {
-            if(d3.select(allBars[0][j]).data()[0] == clusterName) {
+    selectCorrectBar = function (clusterName) {
+        var allBars = d3.selectAll('.knime-x text.knime-tick-label');
+        for (var j = 0; j < allBars[0].length; j++) {
+            if (d3.select(allBars[0][j]).data()[0] === clusterName) {
                 return d3.select(allBars[0][j]);
             }
         }
-    }
+        // no bar found
+        return null;
+    };
 
     // Removes the clusterName with the given cluster name. If "removeAll" is true all bars are removed
-    function removeHilightBar(clusterName, removeAll) {
-        if (_value.options['selection']){
+    removeHilightBar = function (clusterName, removeAll) {
+        if (_value.options.selection) {
             var selectedEntry, barParent;
             if (removeAll) {
-                var length = _value.options['selection'].length;
+                var length = _value.options.selection.length;
                 for (var i = 0; i < length; i++) {
-                    selectedEntry = _value.options['selection'][i];
-                    var bars = d3.selectAll(".hilightBar");
-                    barParent = bars.select(function() { return this.parentNode; });
-                    barParent.select("text").classed(selectedEntry[1], false);
-                    d3.selectAll(".hilightBar").remove();
+                    selectedEntry = _value.options.selection[i];
+                    var bars = d3.selectAll('.hilightBar');
+                    barParent = bars.select(function () {
+                        return this.parentNode;
+                    });
+                    barParent.select('text').classed(selectedEntry[1], false);
+                    d3.selectAll('.hilightBar').remove();
                 }
             } else {
                 var barIndex = getSelectedRowIDs().indexOf(_keyNameMap.getKeyFromName(clusterName));
                 if (barIndex > -1) {
-                    selectedEntry = _value.options['selection'][barIndex];
+                    selectedEntry = _value.options.selection[barIndex];
                     var bar = selectCorrectBar(clusterName);
-                    if(bar){
-                        barParent = bar.select(function() { return this.parentNode; });
-                        barParent.select("text").classed(selectedEntry[1], false);
-                        barParent.selectAll(".hilightBar").remove();
+                    if (bar) {
+                        barParent = bar.select(function () {
+                            return this.parentNode;
+                        });
+                        barParent.select('text').classed(selectedEntry[1], false);
+                        barParent.selectAll('.hilightBar').remove();
                     }
                 }
             }
         }
-    } 
+    };
 
     // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
-    function createHilightBar (clusterName, selectionClass) {
-        var optOrientation = _value.options['orientation'];
-        for(var k = 0; k < plotData.length; k++) {
-            for(var j = 0; j < plotData[k].values.length; j++) {
-                if(plotData[k].values[j].x === clusterName) {
-                    d3.selectAll(".knime-x text").each(function(d,i) {
-                        if(i==j) {
-                            d3.select(this).classed(selectionClass,true);
+    createHilightBar = function (clusterName, selectionClass) {
+        var optOrientation = _value.options.orientation;
+        for (var k = 0; k < plotData.length; k++) {
+            for (var j = 0; j < plotData[k].values.length; j++) {
+                if (plotData[k].values[j].x === clusterName) {
+                    d3.selectAll('.knime-x text').each(function (d, i) {
+                        if (i === j) {
+                            d3.select(this).classed(selectionClass, true);
                             var selectionTitle;
-                            if(selectionClass == "knime-selected") {
-                                selectionTitle = "Selected";
+                            if (selectionClass === 'knime-selected') {
+                                selectionTitle = 'Selected';
                             } else {
-                                selectionTitle = "Partially selected";
+                                selectionTitle = 'Partially selected';
                             }
                             var posX = 0;
                             var posY = 0;
                             var highlightHeight = 0;
                             var highlightWidth = 5;
-                            if(optOrientation) {
-                                posY = -0.5*(d3.select(".nv-bar.positive").node().getBBox().height * getActiveBars());
-                                posX = -1.5*highlightWidth;
-                                highlightHeight = (d3.select(".nv-bar.positive").node().getBBox().height) * getActiveBars();
+                            if (optOrientation) {
+                                // FIXME: the following statement is calculated twice
+                                posY = -0.5 * (d3.select('.nv-bar.positive').node().getBBox().height * getActiveBars());
+                                posX = -1.5 * highlightWidth;
+                                highlightHeight = d3.select('.nv-bar.positive').node().getBBox().height *
+                                    getActiveBars();
                             } else {
-                                posX = -0.5*(d3.select(".nv-bar.positive").node().getBBox().width * getActiveBars());
-                                highlightWidth = (d3.select(".nv-bar.positive").node().getBBox().width) * getActiveBars();
+                                // FIXME: the following statement is calculated twice
+                                posX = -0.5 * (d3.select('.nv-bar.positive').node().getBBox().width * getActiveBars());
+                                highlightWidth = d3.select('.nv-bar.positive').node().getBBox().width * getActiveBars();
                                 highlightHeight = 5;
-                                posY = 0.5*highlightHeight;
+                                posY = highlightHeight / 2;
                             }
-                            d3.select(this.parentNode).append("rect").classed("hilightBar",true)
-                            .classed(selectionClass, true)
-                            .attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight})
-                            .style('pointer-events', 'all')
-                            .append("title")
-                            .classed('knime-tooltip', true)
-                            .text(selectionTitle);
-                        } 
+                            d3.select(this.parentNode).append('rect').classed('hilightBar', true)
+                                .classed(selectionClass, true)
+                                .attr({ x: posX, y: posY, width: highlightWidth, height: highlightHeight })
+                                .style('pointer-events', 'all')
+                                .append('title')
+                                .classed('knime-tooltip', true)
+                                .text(selectionTitle);
+                        }
                     });
                     j = plotData[k].values.length;
-                    k = plotData.length-1;
+                    k = plotData.length - 1;
                 }
             }
         }
-    }
+    };
 
-    function getClusterToRowMapping() {
+    getClusterToRowMapping = function () {
         var map = {};
         for (var i = 0; i < _incomingTable.rows.length; i++) {
-            if(_incomingTable.rows[i].data[0]) {
+            if (_incomingTable.rows[i].data[0]) {
                 map[_incomingTable.rows[i].data[0]] = _incomingTable.rows[i].rowKey;
             } else {
-                map["Missing values"] = _incomingTable.rows[i].rowKey;
+                map['Missing values'] = _incomingTable.rows[i].rowKey;
             }
         }
         return map;
-    }
+    };
 
     // Helper class to handle conversion from cluster name to row key
-    function KeyNameMap(map) {
+    KeyNameMap = function (map) {
         this.map = map;
         this.reverseMap = {};
-        for(var key in map){
+        for (var key in map) {
             var value = map[key];
-            this.reverseMap[value] = key;   
+            this.reverseMap[value] = key;
         }
-    }
+    };
 
-    KeyNameMap.prototype.getKeyFromName = function(name){ 
-        return this.map[name]; 
-    }
-    KeyNameMap.prototype.getNameFromKey = function(key){
+    KeyNameMap.prototype.getKeyFromName = function (name) {
+        return this.map[name];
+    };
+    KeyNameMap.prototype.getNameFromKey = function (key) {
         return this.reverseMap[key];
-    }
+    };
 
-    function handleHighlightClick(event) {
-        if(!_value.options['selection']) {
-            _value.options['selection'] = [];
+    handleHighlightClick = function (event) {
+        if (!_value.options.selection) {
+            _value.options.selection = [];
         }
         var clusterName = event.x;
         var clusterKey = _keyNameMap.getKeyFromName(clusterName);
         var barIndex = getSelectedRowIDs().indexOf(clusterKey);
         // Deselect already selected bar when clicking again on it
-        if(barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey)){
-            if(_representation.options.enableSelection) {
-                if(_value.options.publishSelection) {
-                    knimeService.removeRowsFromSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+        if (barIndex > -1 && (d3.event.ctrlKey || d3.event.shiftKey || d3.event.metaKey)) {
+            if (_representation.options.enableSelection) {
+                if (_value.options.publishSelection) {
+                    knimeService.removeRowsFromSelection(_translator.sourceID, [clusterKey], _translator.sourceID);
                 }
             }
             removeHilightBar(clusterName, false);
-            _value.options['selection'].splice(barIndex, 1);
-        } else if(!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) {
+            _value.options.selection.splice(barIndex, 1);
+        } else if (!d3.event.ctrlKey && !d3.event.shiftKey && !d3.event.metaKey) {
             // Deselect all previously selected bars and select the newly clicked one
-            if(_representation.options.enableSelection) {
-                if(_value.options.publishSelection) {
-                    knimeService.setSelectedRows(_translator.sourceID,[clusterKey], _translator.sourceID);
+            if (_representation.options.enableSelection) {
+                if (_value.options.publishSelection) {
+                    knimeService.setSelectedRows(_translator.sourceID, [clusterKey], _translator.sourceID);
                 }
             }
             removeHilightBar(clusterName, true);
-            createHilightBar(clusterName, "knime-selected");
-            _value.options['selection'] = [];
-            _value.options['selection'].push([clusterKey, "knime-selected"]);
+            createHilightBar(clusterName, 'knime-selected');
+            _value.options.selection = [];
+            _value.options.selection.push([clusterKey, 'knime-selected']);
         } else {
             // Select the clicked bar, as it is either a new selection or a additional selection
-            if(_representation.options.enableSelection) {
-                if(_value.options.publishSelection) {
-                    knimeService.addRowsToSelection(_translator.sourceID,[clusterKey], _translator.sourceID);
+            if (_representation.options.enableSelection) {
+                if (_value.options.publishSelection) {
+                    knimeService.addRowsToSelection(_translator.sourceID, [clusterKey], _translator.sourceID);
                 }
             }
-            createHilightBar(clusterName, "knime-selected");
-            _value.options['selection'].push([clusterKey, "knime-selected"]);
+            createHilightBar(clusterName, 'knime-selected');
+            _value.options.selection.push([clusterKey, 'knime-selected']);
         }
         checkClearSelectionButton();
-    }
+    };
 
-    function onSelectionChanged(data) {
-        if(!_value.options['selection']) {
-            _value.options['selection'] = [];
+    onSelectionChanged = function (data) {
+        if (!_value.options.selection) {
+            _value.options.selection = [];
         }
         if (data.reevaluate) {
-            removeHilightBar("", true);
+            removeHilightBar('', true);
             var selectedRows = knimeService.getAllRowsForSelection(_translator.sourceID);
             var partiallySelectedRows = knimeService.getAllPartiallySelectedRows(_translator.sourceID);
-            var length;
-            for (var selectedRow in selectedRows) {
-                length = _value.options['selection'].length;
-                _value.options['selection'][length] = [selectedRows[selectedRow], "knime-selected"];
-                createHilightBar(_keyNameMap.getNameFromKey(selectedRows[selectedRow]),
-                "knime-selected");
+            var length, selectedRow, partiallySelectedRow;
+            for (selectedRow in selectedRows) {
+                length = _value.options.selection.length;
+                _value.options.selection[length] = [selectedRows[selectedRow], 'knime-selected'];
+                createHilightBar(_keyNameMap.getNameFromKey(selectedRows[selectedRow]), 'knime-selected');
             }
-            for (var partiallySelectedRow in partiallySelectedRows) {
-                length = _value.options['selection'].length;
-                _value.options['selection'][length] = [partiallySelectedRows[partiallySelectedRow], "knime-partially-selected"];
+            for (partiallySelectedRow in partiallySelectedRows) {
+                length = _value.options.selection.length;
+                _value.options.selection[length] = [partiallySelectedRows[partiallySelectedRow],
+                    'knime-partially-selected'];
                 createHilightBar(_keyNameMap.getNameFromKey(partiallySelectedRows[partiallySelectedRow]),
-                "knime-partially-selected");
+                    'knime-partially-selected');
             }
         } else if (data.changeSet) {
             if (data.changeSet.removed) {
-                data.changeSet.removed.map(function(rowId) {
+                data.changeSet.removed.map(function (rowId) {
                     var clusterName = rowId;
                     var index = getSelectedRowIDs().indexOf(clusterName);
                     if (index > -1) {
                         removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
-                        _value.options['selection'].splice(index, 1);
+                        _value.options.selection.splice(index, 1);
                     }
                 });
             }
-            if(data.changeSet.partialRemoved) {
-                data.changeSet.partialRemoved.map(function(rowId) {
+            if (data.changeSet.partialRemoved) {
+                data.changeSet.partialRemoved.map(function (rowId) {
                     var clusterName = rowId;
                     var index = getSelectedRowIDs().indexOf(clusterName);
                     if (index > -1) {
                         removeHilightBar(_keyNameMap.getNameFromKey(rowId), false);
-                        _value.options['selection'].splice(index, 1);
+                        _value.options.selection.splice(index, 1);
                     }
                 });
             }
             if (data.changeSet.added) {
-                data.changeSet.added.map(function(rowId) {
+                data.changeSet.added.map(function (rowId) {
                     var index = getSelectedRowIDs().indexOf(rowId);
                     if (index === -1) {
-                        _value.options['selection'].push([rowId, "knime-selected"]);
-                        createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-selected");
+                        _value.options.selection.push([rowId, 'knime-selected']);
+                        createHilightBar(_keyNameMap.getNameFromKey(rowId), 'knime-selected');
                     }
                 });
             }
-            if(data.changeSet.partialAdded) {
-                data.changeSet.partialAdded.map(function(rowId) {
+            if (data.changeSet.partialAdded) {
+                data.changeSet.partialAdded.map(function (rowId) {
                     var index = getSelectedRowIDs().indexOf(rowId);
                     if (index === -1) {
-                        _value.options['selection'].push([rowId, "knime-partially-selected"]);
-                        createHilightBar(_keyNameMap.getNameFromKey(rowId), "knime-partially-selected");
+                        _value.options.selection.push([rowId, 'knime-partially-selected']);
+                        createHilightBar(_keyNameMap.getNameFromKey(rowId), 'knime-partially-selected');
                     }
                 });
             }
         }
         checkClearSelectionButton();
-    }
+    };
 
-
-    function processData() {
-        var optMethod = _representation.options['aggr'];
-        var optFreqCol = _representation.options['freq'];
-        var optCat = _representation.options['cat'];
+    // eslint-disable-next-line complexity
+    processData = function () {
+        var optMethod = _representation.options.aggr;
+        var optFreqCol = _representation.options.freq;
+        var optCat = _representation.options.cat;
 
         var customColors, colorScale;
         if (_representation.inObjects[1]) {
             // Custom color scale
             var colorTable = new kt();
             colorTable.setDataTable(_representation.inObjects[1]);
-            if (colorTable.getColumnTypes()[0] == 'string') {
+            if (colorTable.getColumnTypes()[0] === 'string') {
                 customColors = {};
                 var colorCol = colorTable.getColumn(0);
                 for (var color = 0; color < colorCol.length; color++) {
@@ -602,7 +627,7 @@ window.grouped_bar_chart_namespace = (function () {
         categories = knimeTable.getColumn(optCat);
         var numCat = categories.length;
 
-        if (optMethod == 'Occurence\u00A0Count') {
+        if (optMethod === 'Occurence\u00A0Count') {
             optFreqCol = [knimeTable.getColumnNames()[1]];
         }
 
@@ -613,8 +638,8 @@ window.grouped_bar_chart_namespace = (function () {
 
         for (var k = 0; k < optFreqCol.length; k++) {
             var valCol = knimeTable.getColumn(optFreqCol[k]);
-            // ToDo: Add an isDuplicate test here...
-            if (isDuplicate != true) {
+            // TODO: Add an isDuplicate test here...
+            if (isDuplicate !== true) {
                 valCols.push(valCol);
                 freqCols.push(optFreqCol[k]);
             }
@@ -628,15 +653,13 @@ window.grouped_bar_chart_namespace = (function () {
         }
         isMissValCat = false;
         missValCatValues = [];
-        var numFreqColsNoMissVal = 0; // number of freq columns which have
-        // non-missing values (needed for color
-        // scale)
+        var numFreqColsNoMissVal = 0; // number of freq columns which have non-missing values (needed for color scale)
         if (valCols.length > 0) {
             var numDataPoints = valCols[0].length;
             for (var j = 0; j < freqCols.length; j++) {
 
                 var col = freqCols[j];
-                if (optMethod == 'Occurence\u00A0Count' && !_representation.isHistogram) {
+                if (optMethod === 'Occurence\u00A0Count' && !_representation.isHistogram) {
                     col = 'Occurrence Count';
                 }
                 var values = [];
@@ -650,39 +673,37 @@ window.grouped_bar_chart_namespace = (function () {
                 // category
 
                 for (var i = 0; i < numDataPoints; i++) {
-                    if (categories != undefined) {
-                        if (isDuplicate == true) {
+                    if (typeof categories !== 'undefined') {
+                        if (isDuplicate === true) {
                             alert('Duplicate categories found in column.');
-                            return 'duplicate';
+                            return;
                         }
 
                         var cat = categories[i];
                         var val = valCols[j][i];
 
-                        if (cat !== null) {
-                            if (val !== null) {
-                                // if both cat and value are not null - normal
-                                // case, just add the value
-                                onlyMissValInCats = false;
-                                values.push({
-                                    'x': cat,
-                                    'y': val
-                                });
-                            }
-                        } else {
+                        if (cat === null) {
                             // Missing values category
                             isMissValCat = true;
                             if (val !== null) {
                                 // save the non-missing value for the
                                 // corresponding freq col
                                 missValCatValues.push({
-                                    'col': col,
-                                    'value': val
+                                    col: col,
+                                    value: val
                                 });
                                 // this freq col has non-missing value in the
                                 // Missing value category
                                 hasValueOnMissValCat = true;
                             }
+                        } else if (val !== null) {
+                            // if both cat and value are not null - normal
+                            // case, just add the value
+                            onlyMissValInCats = false;
+                            values.push({
+                                x: cat,
+                                y: val
+                            });
                         }
 
                         if (val === null) {
@@ -693,24 +714,7 @@ window.grouped_bar_chart_namespace = (function () {
                     }
                 }
 
-                if (!onlyMissValInCats) {
-                    // the freq col has non-missing values in normal categories
-                    // - add this column to the view
-                    var plotStream = {
-                            'key': col,
-                            'values': values
-                    };
-                    plotData.push(plotStream);
-
-                    if (customColors) {
-                        var customColor = customColors[col];
-                        if (!customColor) {
-                            customColor = '#7C7C7C';
-                        }
-                        colorScale.push(customColor);
-                    }
-                    numFreqColsNoMissVal++;
-                } else {
+                if (onlyMissValInCats) {
                     // The freq col has only missing values in normal categories
                     // -
                     // we save whether it has a non-missing value in the Missing
@@ -723,8 +727,8 @@ window.grouped_bar_chart_namespace = (function () {
                     // missValCatValues - hence, enough to store only a boolean
                     // flag
                     freqColValueOnMissValCat.push({
-                        'col': col,
-                        'hasValueOnMissValCat': hasValueOnMissValCat
+                        col: col,
+                        hasValueOnMissValCat: hasValueOnMissValCat
                     });
                     if (hasValueOnMissValCat) {
                         // If there is a non-missing value, then the presence of
@@ -734,17 +738,32 @@ window.grouped_bar_chart_namespace = (function () {
                         // scale, so we count it
                         numFreqColsNoMissVal++;
                     }
+                } else {
+                    // the freq col has non-missing values in normal categories
+                    // - add this column to the view
+                    var plotStream = {
+                        key: col,
+                        values: values
+                    };
+                    plotData.push(plotStream);
+
+                    if (customColors) {
+                        var customColor = customColors[col];
+                        if (!customColor) {
+                            customColor = '#7C7C7C';
+                        }
+                        colorScale.push(customColor);
+                    }
+                    numFreqColsNoMissVal++;
                 }
             }
         } else {
-            //FIXME: hasNull is not defined!
-            if (hasNull == false) {
+            if (hasNull === false) {
                 alert('No numeric columns detected.');
-                return 'numeric';
             } else {
                 alert('Numeric columns detected, but contains missing values.');
-                return 'missing';
             }
+            return;
         }
 
         if (customColors) {
@@ -760,13 +779,14 @@ window.grouped_bar_chart_namespace = (function () {
         }
 
         processMissingValues();
-    }
+    };
 
     /**
-     * switched - if the chart update was triggered by changing the "include
-     * 'Missing values' category" option in the view
+     * @param {bool} switched - if the chart update was triggered by changing the "include 'Missing values' category"
+     * option in the view
+     * @returns {undefined}
      */
-    function processMissingValues(switched) {
+    processMissingValues = function (switched) {
         // Make a list of freq columns to exclude
         var excludeCols = []; // column names to exclude
         // Go through the list of those freq cols which have only missing values
@@ -789,7 +809,8 @@ window.grouped_bar_chart_namespace = (function () {
         // columns left
         // after
         // excluded ones
-        var missValCatBars; // bars for Missing values category we add to the
+        var missValCatBars, // bars for Missing values category we add to the
+            data, dataInd;
         // end, so we store them separately
         var excludeWholeMissValCat = false;
         excludeFreqColCatMap = {};
@@ -799,28 +820,25 @@ window.grouped_bar_chart_namespace = (function () {
             // take only those freq cols which have missing values in the
             // current category and were not whole excluded
             var cols = missValInCat[catI].filter(function (x) {
-                return excludeCols.indexOf(x) == -1;
+                return excludeCols.indexOf(x) === -1;
             });
             if (cols.length > 0) {
-                if (cols.length == numLeftCols) {
+                if (cols.length === numLeftCols) {
                     // if all the left freq cols have missing values - exclude
                     // the whole category
-                    if (cat !== null) {
-                        excludeCats.push(cat);
+                    if (cat === null) {
+                        excludeWholeMissValCat = true; // Missing values category will be appended to the end
                     } else {
-                        excludeWholeMissValCat = true; // Missing values
-                        // category will be
-                        // appended to the end
+                        excludeCats.push(cat);
                     }
                 } else {
                     // build a string of excluded bars (cat - col1, col2 ...)
-                    var label = cat !== null ? cat : MISSING_VALUES_LABEL;
+                    var label = cat === null ? MISSING_VALUES_LABEL : cat;
                     var exclStr = label + ' - ' + cols.join(', ');
-                    if (cat !== null) {
-                        excludeBars.push(exclStr);
+                    if (cat === null) {
+                        missValCatBars = exclStr; // Missing values category will be appended to the end
                     } else {
-                        missValCatBars = exclStr; // Missing values category will
-                        // be appended to the end
+                        excludeBars.push(exclStr);
                     }
                     // for normal categories and also for the Missing values
                     // category (if it's included in the view)
@@ -828,10 +846,10 @@ window.grouped_bar_chart_namespace = (function () {
                     // needed for Stacked plot
                     if (cat !== null || _value.options.includeMissValCat) {
                         cols.forEach(function (col) {
-                            if (excludeFreqColCatMap[col] != undefined) {
-                                excludeFreqColCatMap[col].push(cat);
-                            } else {
+                            if (typeof excludeFreqColCatMap[col] === 'undefined') {
                                 excludeFreqColCatMap[col] = [cat];
+                            } else {
+                                excludeFreqColCatMap[col].push(cat);
                             }
                         });
                     }
@@ -843,7 +861,7 @@ window.grouped_bar_chart_namespace = (function () {
         if (_value.options.includeMissValCat && _representation.options.reportOnMissingValues) {
             if (excludeWholeMissValCat) {
                 excludeCats.push(MISSING_VALUES_LABEL);
-            } else if (missValCatBars !== undefined) {
+            } else if (typeof missValCatBars !== 'undefined') {
                 excludeBars.push(missValCatBars);
             }
         }
@@ -851,7 +869,7 @@ window.grouped_bar_chart_namespace = (function () {
         // Add or remove the non-missing values of the Missing values category
         for (var i = 0; i < missValCatValues.length; i++) {
             var item = missValCatValues[i];
-            if (excludeCols.indexOf(item.col) != -1 && !(!_value.options.includeMissValCat && switched)) {
+            if (excludeCols.indexOf(item.col) !== -1 && !(!_value.options.includeMissValCat && switched)) {
                 // Fact that the freq col is in missValCatValues means it has a
                 // non-missing value in Missing values category.
                 // If this col was excluded, that means it has only missing
@@ -866,12 +884,10 @@ window.grouped_bar_chart_namespace = (function () {
             }
             // find if the plot has already the data (key->values) for the
             // current freq col == key
-            var data = undefined;
-            var dataInd;
             for (var j = 0; j < plotData.length; j++) { // many thanks to IE -
                 // we cannot use find()
                 // or findIndex() here
-                if (plotData[j].key == item.col) {
+                if (plotData[j].key === item.col) {
                     data = plotData[j];
                     dataInd = j;
                     break;
@@ -881,24 +897,24 @@ window.grouped_bar_chart_namespace = (function () {
                 // if we include Missing values category to the view, we need to
                 // add its values
                 var val = {
-                        'x': MISSING_VALUES_LABEL,
-                        'y': item.value
+                    x: MISSING_VALUES_LABEL,
+                    y: item.value
                 };
-                if (data !== undefined) {
-                    data.values.push(val);
-                } else {
+                if (typeof data === 'undefined') {
                     plotData.push({
-                        'key': item.col,
-                        'values': [val]
+                        key: item.col,
+                        values: [val]
                     });
+                } else {
+                    data.values.push(val);
                 }
             } else if (switched) {
                 // if we don't include Missing values category to the view AND
                 // this option was switched in the view, we need to remove its
                 // value
-                if (data !== undefined) {
+                if (typeof data !== 'undefined') {
                     data.values.pop();
-                    if (data.values.length == 0) {
+                    if (data.values.length === 0) {
                         plotData.splice(dataInd, 1);
                     }
                 }
@@ -909,13 +925,16 @@ window.grouped_bar_chart_namespace = (function () {
         if (!showWarnings) {
             return;
         }
-        if (plotData.length == 0) {
+        if (plotData.length === 0) {
             // No data available warnings
-            var warning;
-            if (missValCatValues.length != 0 && _representation.options.reportOnMissingValues) {
-                warning = 'No chart was generated since all frequency columns have only missing values.\nThere are values where the category name is missing.\nTo see them switch on the option "Include \'Missing values\' category" in the view settings.';
+            var warning = '';
+            if (missValCatValues.length !== 0 && _representation.options.reportOnMissingValues) {
+                warning = 'No chart was generated since all frequency columns have only missing values.\n' +
+                    'There are values where the category name is missing.\nTo see them switch on the option "Include ' +
+                    '\'Missing values\' category" in the view settings.';
             } else {
-                warning = 'No chart was generated since all frequency columns have only missing values or empty.\nRe-run the workflow with different data.';
+                warning = 'No chart was generated since all frequency columns have only missing values or empty.\n' +
+                    'Re-run the workflow with different data.';
             }
             knimeService.setWarningMessage(warning, NO_DATA_AVAILABLE);
         } else {
@@ -923,29 +942,29 @@ window.grouped_bar_chart_namespace = (function () {
             // All other warnings
             if (excludeCols.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                        'Following frequency columns are not present or contain only missing values and were excluded from the view:\n    '
-                        + excludeCols.join(', '), FREQ_COLUMN_MISSING_VALUES_ONLY);
+                   'Following frequency columns are not present or contain only missing values and were ' +
+                        'excluded from the view:\n    ' + excludeCols.join(', '), FREQ_COLUMN_MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
             }
 
             if (excludeCats.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                        'Following categories contain only missing values and were excluded from the view:\n    '
-                        + excludeCats.join(', '), CATEGORY_MISSING_VALUES_ONLY);
+                        'Following categories contain only missing values and were excluded from the view:\n    ' +
+                            excludeCats.join(', '), CATEGORY_MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(CATEGORY_MISSING_VALUES_ONLY);
             }
 
             if (excludeBars.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                        'Following bars contain only missing values in frequency column and were excluded from the view:\n    '
-                        + excludeBars.join('\n    '), MISSING_VALUES_ONLY);
+                        'Following bars contain only missing values in frequency column and were excluded from the ' +
+                        'view:\n    ' + excludeBars.join('\n    '), MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
             }
         }
-    }
+    };
 
     /**
      * This is a workaround for the stacked plot problem coming from the nvd3
@@ -958,11 +977,13 @@ window.grouped_bar_chart_namespace = (function () {
      * Missing values may lead to different lengths. A workaround here is to add
      * dummy null values in place of excluded bars before drawing to Stacked
      * plot. And remove them before switching to Grouped plot.
+     * @param {bool} addDummy - true if dummy is supposed to be added, false otherwise
+     * @returns {undefined}
      */
-    function fixStackedData(addDummy) {
+    fixStackedData = function (addDummy) {
         plotData.forEach(function (dataValues) {
             var excludeCats = excludeFreqColCatMap[dataValues.key];
-            if (excludeCats == undefined) {
+            if (typeof excludeCats === 'undefined') {
                 // if this freq col does not have excluded bars at all - nothing
                 // to do
                 return;
@@ -974,30 +995,31 @@ window.grouped_bar_chart_namespace = (function () {
                 // Instead we need to replace the whole "values" array.
                 // We go over the categories and add either a real value or a
                 // dummy null depending on what's present.
-                var i = 0, j = 0;
+                var i = 0;
+                var j = 0;
                 var values = dataValues.values;
                 var newValues = [];
                 categories.forEach(function (cat) {
-                    if (cat == null) {
+                    if (cat === null) {
                         return;
                     }
-                    if (i < values.length && values[i].x == cat) {
+                    if (i < values.length && values[i].x === cat) {
                         newValues.push(values[i]);
                         i++;
-                    } else if (j < excludeCats.length && excludeCats[j] == cat) {
+                    } else if (j < excludeCats.length && excludeCats[j] === cat) {
                         newValues.push({
-                            'x': cat,
-                            'y': null
+                            x: cat,
+                            y: null
                         });
                         j++;
                     }
                 });
-                if (i < values.length && values[i].x == MISSING_VALUES_LABEL) {
+                if (i < values.length && values[i].x === MISSING_VALUES_LABEL) {
                     newValues.push(values[i]);
-                } else if (j < excludeCats.length && excludeCats[j] == null) {
+                } else if (j < excludeCats.length && excludeCats[j] === null) {
                     newValues.push({
-                        'x': MISSING_VALUES_LABEL,
-                        'y': null
+                        x: MISSING_VALUES_LABEL,
+                        y: null
                     });
                 }
                 dataValues.values = newValues;
@@ -1009,14 +1031,14 @@ window.grouped_bar_chart_namespace = (function () {
                 });
             }
         });
-    }
+    };
 
-    function updateTitles(updateChart) {
+    updateTitles = function (updateChart) {
         if (chart) {
             var curTitle = d3.select('#title');
             var curSubtitle = d3.select('#subtitle');
-            var chartNeedsUpdating = curTitle.empty() != !(_value.options.title)
-            || curSubtitle.empty() != !(_value.options.subtitle);
+            var chartNeedsUpdating = curTitle.empty() !== !_value.options.title ||
+                curSubtitle.empty() !== !_value.options.subtitle;
             if (!_value.options.title) {
                 curTitle.remove();
             }
@@ -1051,14 +1073,14 @@ window.grouped_bar_chart_namespace = (function () {
             var topMargin = 10;
             topMargin += _value.options.title ? 10 : 0;
             topMargin += _value.options.subtitle ? 8 : 0;
-            if (_representation.options['legend']) {
+            if (_representation.options.legend) {
                 chart.legend.margin({
-                    top : topMargin,
-                    bottom : topMargin
+                    top: topMargin,
+                    bottom: topMargin
                 });
             } else {
                 chart.margin({
-                    top : topMargin * 2
+                    top: topMargin * 2
                 });
             }
 
@@ -1067,7 +1089,7 @@ window.grouped_bar_chart_namespace = (function () {
 
             if (updateChart && chartNeedsUpdating) {
                 if (_representation.options.svg.fullscreen && _representation.runningInView) {
-                    var height = (isTitle) ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
+                    var height = isTitle ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
                     layoutContainer.style('height', height)
                     // two rows below force to invalidate the container which
                     // solves a weird problem with vertical scroll bar in IE
@@ -1078,31 +1100,32 @@ window.grouped_bar_chart_namespace = (function () {
                 chart.update();
             }
         }
-    }
+    };
 
     /**
      * Updates the axis labels after they have been wrapped. And add a title to
      * show the full name. Additionally adjust the length of the maximum and
      * minimum value on the y-axis.
+     * @returns {undefined}
      */
-    function updateLabels() {
+    updateLabels = function () {
         var optShowMaximum = _value.options.showMaximum;
-        if (typeof optShowMaximum == 'undefined') {
+        if (typeof optShowMaximum === 'undefined') {
             optShowMaximum = _representation.options.showMaximum;
         }
-        var optOrientation = _value.options['orientation'];
+        var optOrientation = _value.options.orientation;
         var texts = svg.select('.knime-x').selectAll('text');
         texts.each(function (d, i) {
             if (typeof wrapedPlotData[0].values[i] !== 'undefined') {
-                var self = d3.select(this);
-                self.text(wrapedPlotData[0].values[i].x);
-                self.append('title').classed('knime-tooltip', true);
+                var me = d3.select(this);
+                me.text(wrapedPlotData[0].values[i].x);
+                me.append('title').classed('knime-tooltip', true);
             }
         });
-        var stacked = _value.options['chartType'];
+        var stacked = _value.options.chartType;
         var extremValues = [];
-        if(stacked == "Grouped") {
-            extremValues = getRoundedMaxValue(false);	
+        if (stacked === 'Grouped') {
+            extremValues = getRoundedMaxValue(false);
         } else {
             extremValues = getRoundedMaxValue(true);
         }
@@ -1130,58 +1153,62 @@ window.grouped_bar_chart_namespace = (function () {
         var labelTooltip = texts.selectAll('.knime-tooltip');
         var counter = 0;
         labelTooltip.each(function () {
-            var self = d3.select(this);
+            var me = d3.select(this);
             if (typeof plotData[0].values[counter] !== 'undefined') {
-                self.text(plotData[0].values[counter].x);
+                me.text(plotData[0].values[counter].x);
             }
             counter++;
         });
 
         // Create titles for the Axis-Tooltips
         svg.select('.knime-y text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
-                _value.options['freqLabel']);
+                _value.options.freqLabel);
         svg.select('.knime-x text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
-                _value.options['catLabel']);
-    }
+                _value.options.catLabel);
+    };
 
-    function getRoundedMaxValue(isStacked) {
+    getRoundedMaxValue = function (isStacked) {
         var maxValue = 0;
         var minValue = 0;
         var considerNegativeList = false;
-        if(isStacked) {
+        if (isStacked) {
             var sumListPositive = [];
             var sumListNegative = [];
             for (var dataI = 0; dataI < plotData.length; dataI++) {
-                for (var valueI = 0; valueI < plotData[dataI].values.length; valueI++) { 
+                for (var valueI = 0; valueI < plotData[dataI].values.length; valueI++) {
                     if (sumListPositive.length < plotData[dataI].values.length) {
                         sumListPositive.push(0);
                         sumListNegative.push(0);
-                    } 
+                    }
                     if (plotData[dataI].disabled !== true) {
-                        if (plotData[i].values[valueI].y > 0) {
+                        if (plotData[dataI].values[valueI].y > 0) {
                             sumListPositive[valueI] += plotData[dataI].values[valueI].y;
                         } else {
                             sumListNegative[valueI] += plotData[dataI].values[valueI].y;
                             considerNegativeList = true;
                         }
-                    } 
+                    }
                 }
             }
             maxValue = d3.max(sumListPositive);
-            if(considerNegativeList) {
+            if (considerNegativeList) {
                 minValue = d3.min(sumListNegative);
             }
         } else {
             for (var i = 0; i < plotData.length; i++) {
-                if(plotData[i].disabled !== true) {
+                if (plotData[i].disabled !== true) {
                     var tempMaxValue = Math.max(d3.max(plotData[i].values, function (d) {
                         return parseFloat(d.y);
                     }), 0);
-                    if(tempMaxValue > maxValue) {maxValue = tempMaxValue;}
+                    if (tempMaxValue > maxValue) {
+                        maxValue = tempMaxValue;
+                    }
                     var tempMinValue = Math.min(d3.min(plotData[i].values, function (d) {
                         return parseFloat(d.y);
                     }), 0);
-                    if(tempMinValue < minValue) {minValue = tempMinValue;}
+                    if (tempMinValue < minValue) {
+                        minValue = tempMinValue;
+                    }
                 }
             }
         }
@@ -1200,7 +1227,7 @@ window.grouped_bar_chart_namespace = (function () {
                 if (curTick.toString().indexOf('.') >= 0) {
                     // +1 because the precision of the maximum should be one
                     // decimal more then the normal ticks
-                    precision = Math.max((curTick.toString().split('.')[1].length) + 1, precision);
+                    precision = Math.max(curTick.toString().split('.')[1].length + 1, precision);
                 } else if (curTick.toString().indexOf('e') >= 0) {
                     precision = Math.max(Math.abs(parseFloat(curTick.toString().split('e')[1])), precision);
                 }
@@ -1209,40 +1236,41 @@ window.grouped_bar_chart_namespace = (function () {
 
         var roundedMaxValue = Math.ceil(parseFloat(maxValue) * Math.pow(10, precision)) / Math.pow(10, precision);
         var roundedMinValue = Math.floor(parseFloat(minValue) * Math.pow(10, precision)) / Math.pow(10, precision);
-        return [roundedMinValue,roundedMaxValue];
-    }
+        return [roundedMinValue, roundedMaxValue];
+    };
 
     /**
-     * Find the max size of one element on the y-axis to see how much space is
-     * needed. To find out the max size, a temp-text object is created and
-     * measured. Afterwards that temp-text is deleted (is not visible in the
-     * view).
+     * Find the max size of one element on the y-axis to see how much space is needed. To find out the max size, a
+     * temp-text object is created and measured. Afterwards that temp-text is deleted (is not visible in the view).
+     * @param {array} number - not used
+     * @param {bool} optShowMaximum
+     * @returns {object}
      */
-    function checkMaxSizeYAxis(number, optShowMaximum) {
-        var maxValue = 0, minValue = 0;
+    function checkMaxSizeYAxis(number /* TODO: this doesn't seem to be used */, optShowMaximum) {
+        var maxValue = 0;
+        var minValue = 0;
         var extremValues = [];
-        var stacked = _value.options['chartType'];
-        if(stacked == "Grouped") {
-            extremValues = getRoundedMaxValue(false);	
+        var stacked = _value.options.chartType;
+        if (stacked === 'Grouped') {
+            extremValues = getRoundedMaxValue(false);
         } else {
             extremValues = getRoundedMaxValue(true);
         }
         minValue = extremValues[0];
         maxValue = extremValues[1];
 
-        var svgHeight = parseInt(d3.select('svg').style('height'));
-        var svgWidth = parseInt(d3.select('svg').style('width'));
+        var svgHeight = parseInt(d3.select('svg').style('height'), 10);
+        var svgWidth = parseInt(d3.select('svg').style('width'), 10);
 
-        // Calculate values of the y-axis to get an impression about the
-        // precision.
+        // Calculate values of the y-axis to get an impression about the precision.
         var scale = d3.scale.linear().domain([minValue, maxValue]).range(
-                [0, _representation.options['svg']['height']]);
+            [0, _representation.options.svg.height]);
         var ticks = scale.ticks(4);
         if (optShowMaximum) {
-            if (maxValue.toString().indexOf('.') > 0 ) {
-                if(ticks[ticks.length-1].toString().indexOf('.') > 0) {
+            if (maxValue.toString().indexOf('.') > 0) {
+                if (ticks[ticks.length - 1].toString().indexOf('.') > 0) {
                     var decimalString = ticks[ticks.length - 1].toString().split('.')[1];
-                    ticks.push(parseFloat((maxValue.toFixed(decimalString.length)+1)));            		
+                    ticks.push(parseFloat(maxValue.toFixed(decimalString.length) + 1));
                 } else {
                     ticks.push(parseFloat(maxValue.toFixed(0)));
                 }
@@ -1250,52 +1278,52 @@ window.grouped_bar_chart_namespace = (function () {
                 ticks.push(maxValue);
             }
             if (minValue < 0 && minValue.toString().indexOf('e') < 0) {
-                if(ticks[0].toString().split('.')[1]) {
-                    ticks.push((minValue.toFixed(ticks[0].toString().split('.')[1].length - 1)));
+                if (ticks[0].toString().split('.')[1]) {
+                    ticks.push(minValue.toFixed(ticks[0].toString().split('.')[1].length - 1));
                 } else {
-                    ticks.push((minValue.toFixed(1)));
+                    ticks.push(minValue.toFixed(1));
                 }
             } else if (minValue < 0) {
                 ticks.push(minValue);
             }
         }
         var configObject = {
-                container: document.querySelector('svg'),
-                tempContainerClasses: 'knime-axis',
-                maxWidth: svgWidth,
-                maxHeight: svgHeight * 0.1
+            container: document.querySelector('svg'),
+            tempContainerClasses: 'knime-axis',
+            maxWidth: svgWidth,
+            maxHeight: svgHeight * 0.1
         };
 
         var results = knimeService.measureAndTruncate(ticks, configObject);
 
-        // Return the format to show the result and the space needed to the left
-        // border.
+        // Return the format to show the result and the space needed to the left border.
         return results;
     }
 
     /**
-     * Find the max size of the biggest element on the x-Axis. Move the Graph so
-     * that this object is completely visible.
+     * Find the max size of the biggest element on the x-Axis. Move the Graph so that this object is completely visible.
+     * @param {array} number -
+     * @param {bool} staggerLabels - true if x axis labels are staggered (allows more space), false otherwise
+     * @returns {object}
      */
-    function checkMaxSizeXAxis(number, staggerLabels) {
-        var optOrientation = _value.options['orientation'];
-        //var svgHeight = parseInt(d3.select('svg').style('height'));
-        var svgWidth = parseInt(d3.select('svg').style('width'));
+    checkMaxSizeXAxis = function (number /* TODO document me */, staggerLabels) {
+        var maxWidth, barWidth, nValue, group, groupValue;
+        var optOrientation = _value.options.orientation;
+        // var svgHeight = parseInt(d3.select('svg').style('height'));
+        var svgWidth = parseInt(d3.select('svg').style('width'), 10);
         var amountOfBars = number[0].values.length;
         var amountOfDimensions = number.length;
 
-        var spaceBetweenBars = _representation.isHistogram ? 0 : 40; 
-        var maxWidth;
-        if(optOrientation) {
-            maxWidth = 0.5 * svgWidth;
+        var spaceBetweenBars = _representation.isHistogram ? 0 : 40;
+        if (optOrientation) {
+            maxWidth = svgWidth / 2;
         } else {
-            var barWidth;
-            if((d3.select(".nv-groups").node()) !== null) {
-                barWidth = d3.select(".nv-groups").select("rect")[0][0].width.baseVal.value * amountOfDimensions;
+            if (d3.select('.nv-groups').node() === null) {
+                barWidth = svgWidth / amountOfBars - spaceBetweenBars;
             } else {
-                barWidth = (svgWidth / amountOfBars) - spaceBetweenBars
+                barWidth = d3.select('.nv-groups').select('rect')[0][0].width.baseVal.value * amountOfDimensions;
             }
-            if(staggerLabels) {
+            if (staggerLabels) {
                 maxWidth = barWidth * 2;
             } else {
                 maxWidth = barWidth;
@@ -1303,14 +1331,16 @@ window.grouped_bar_chart_namespace = (function () {
         }
 
         var configObject = {
-                container: document.querySelector('svg'),
-                tempContainerClasses: 'knime-axis',
-                maxWidth: _representation.isHistogram ? undefined : maxWidth,
-                        /*maxHeight: svgHeight / amountOfBars,*/
-                        minimalChars: 1
+            container: document.querySelector('svg'),
+            tempContainerClasses: 'knime-axis',
+            /* maxHeight: svgHeight / amountOfBars, */
+            minimalChars: 1
         };
+        if (!_representation.isHistogram) {
+            configObject.maxWidth = maxWidth;
+        }
         var xValues = [];
-        for (var nValue in number[0].values) {
+        for (nValue in number[0].values) {
             xValues.push(number[0].values[nValue].x);
         }
 
@@ -1318,46 +1348,47 @@ window.grouped_bar_chart_namespace = (function () {
 
         var xExtremValues = [];
         xExtremValues.push(number[0].values[0].x);
-        xExtremValues.push(number[0].values[number[0].values.length-1].x);
+        xExtremValues.push(number[0].values[number[0].values.length - 1].x);
 
-        if(staggerLabels) {
-            if(!optOrientation) {
-                configObject.maxWidth = (svgWidth / amountOfBars) - spaceBetweenBars;
-            } 
+        if (staggerLabels) {
+            if (!optOrientation) {
+                configObject.maxWidth = svgWidth / amountOfBars - spaceBetweenBars;
+            }
         }
         var extremResults = knimeService.measureAndTruncate(xExtremValues, configObject);
 
         // Update the cloned data array to contain the wrapped labels
-        for (var group in number) {
-            for (var groupValue in number[group].values) {
-                if(groupValue == 0) {
+        for (group in number) {
+            for (groupValue in number[group].values) {
+                if (groupValue === 0) {
                     wrapedPlotData[group].values[groupValue].x = extremResults.values[0].truncated;
-                } else if(groupValue == number[group].values.length-1) {
+                } else if (groupValue === number[group].values.length - 1) {
                     wrapedPlotData[group].values[groupValue].x = extremResults.values[1].truncated;
                 } else {
-                    wrapedPlotData[group].values[groupValue].x = results.values[parseInt(groupValue)].truncated;
+                    wrapedPlotData[group].values[groupValue].x = results.values[parseInt(groupValue, 10)].truncated;
                 }
             }
         }
         return results;
-    }
+    };
 
-    function updateAxisLabels(updateChart) {
+    // eslint-disable-next-line complexity
+    updateAxisLabels = function (updateChart) {
 
         if (chart) {
-            var optOrientation = _value.options['orientation'];
-            var optStaggerLabels = _value.options['staggerLabels'];
-            var stacked = _value.options['chartType'];
+            var optOrientation = _value.options.orientation;
+            var optStaggerLabels = _value.options.staggerLabels;
+            var stacked = _value.options.chartType;
             var optShowMaximum = _value.options.showMaximum;
             var curCatAxisLabel, curFreqAxisLabel;
             var curCatAxisLabelElement = d3.select('.nv-x.nv-axis .nv-axis-label');
             var curFreqAxisLabelElement = d3.select('.nv-y.nv-axis .nv-axis-label');
-            var freqLabel = _value.options['freqLabel'];
-            var catLabel = _value.options['catLabel'];
-            var svgHeight = parseInt(d3.select('svg').style('height'));
-            var svgWidth = parseInt(d3.select('svg').style('width'));
+            var freqLabel = _value.options.freqLabel;
+            var catLabel = _value.options.catLabel;
+            var svgHeight = parseInt(d3.select('svg').style('height'), 10);
+            var svgWidth = parseInt(d3.select('svg').style('width'), 10);
 
-            if (typeof optShowMaximum == 'undefined') {
+            if (typeof optShowMaximum === 'undefined') {
                 optShowMaximum = _representation.options.showMaximum;
             }
 
@@ -1371,45 +1402,46 @@ window.grouped_bar_chart_namespace = (function () {
                 curFreqAxisLabel = curCatAxisLabelElement.text();
             }
 
-            var chartNeedsUpdating = curCatAxisLabel != _value.options.catLabel
-            || curFreqAxisLabel != _value.options.freqLabel;
-            if (!chartNeedsUpdating)
+            var chartNeedsUpdating = curCatAxisLabel !== _value.options.catLabel ||
+                curFreqAxisLabel !== _value.options.freqLabel;
+            if (!chartNeedsUpdating) {
                 return;
+            }
 
             var configObject = {
-                    container: document.querySelector('svg'),
-                    tempContainerClasses: 'knime-axis',
-                    maxWidth: svgWidth * 0.5,
-                    maxHeight: svgHeight * 0.5,
-                    minimalChars: 1
+                container: document.querySelector('svg'),
+                tempContainerClasses: 'knime-axis',
+                maxWidth: svgWidth / 2,
+                maxHeight: svgHeight / 2,
+                minimalChars: 1
             };
-            optOrientation ? configObject.tempContainerAttributes = { transform: 'rotate(-90)' }
-            : configObject.tempContainerAttributes = '';
+            configObject.tempContainerAttributes = optOrientation ? { transform: 'rotate(-90)' } : '';
             var catLabelSize = knimeService.measureAndTruncate(catLabel ? [catLabel] : [''], configObject);
-            optOrientation ? configObject.tempContainerAttributes.transform = ''
-                : configObject.tempContainerAttributes = { transform: 'rotate(-90)' };
+            configObject.tempContainerAttributes.transform = optOrientation ? '' : { transform: 'rotate(-90)' };
             var freqLabelSize = knimeService.measureAndTruncate(freqLabel ? [freqLabel] : [''], configObject);
 
             var maxSizeYAxis = checkMaxSizeYAxis(wrapedPlotData, optShowMaximum);
             var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData, optStaggerLabels);
-            var svgSize = optOrientation ? parseInt(d3.select('svg').style('width')) : parseInt(d3.select('svg').style(
-            'height'));
+            var svgSize = optOrientation ? parseInt(d3.select('svg').style('width'), 10)
+                : parseInt(d3.select('svg').style('height'), 10);
 
             freqLabel = freqLabelSize.values[0].truncated;
             catLabel = catLabelSize.values[0].truncated;
 
             // space between two labels
             var distanceBetweenLabels = 150;
-            var tickAmount;
+            var tickAmount = 0;
             if (optOrientation) {
-                tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) / (maxSizeYAxis.max.maxWidth + distanceBetweenLabels));
+                tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) /
+                    (maxSizeYAxis.max.maxWidth + distanceBetweenLabels), 10);
                 if (optShowMaximum) {
-                    // extend the border of the svg to be able to see the complete maximum label 
+                    // extend the border of the svg to be able to see the complete maximum label
                     // factor 0.6 is chosen to give the label a little space to the border
                     var rightMargin = 0.6 * maxSizeYAxis.max.maxWidth;
                 }
             } else {
-                tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) / (maxSizeYAxis.max.maxHeight + distanceBetweenLabels));
+                tickAmount = parseInt((svgSize - maxSizeYAxis.max.maxHeight) /
+                    (maxSizeYAxis.max.maxHeight + distanceBetweenLabels), 10);
             }
 
             // nvd3 sets the cat label 55 pixel away from the axis. As with changing font size this
@@ -1425,16 +1457,16 @@ window.grouped_bar_chart_namespace = (function () {
 
             var paddingAmount = 15;
             
-            var xLabelDistance;
-            var yLabelDistance;
-            //TODO: these calculations need to be documented!
+            var xLabelDistance = 0;
+            var yLabelDistance = 0;
+            // TODO: these calculations need to be documented!
             if (optOrientation) {
                 xLabelDistance = maxSizeXAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace + paddingAmount;
                 yLabelDistance = -spacingFreqLabel + maxSizeYAxis.max.maxHeight;
             } else {
                 if (optStaggerLabels) {
-                    xLabelDistance = (maxSizeXAxis.max.maxHeight * 2) - spacingCatLabel + (additionalEmptySpace * 2) 
-                        + paddingAmount;
+                    xLabelDistance = maxSizeXAxis.max.maxHeight * 2 - spacingCatLabel + additionalEmptySpace * 2 +
+                        paddingAmount;
                 } else {
                     xLabelDistance = -spacingFreqLabel + maxSizeXAxis.max.maxHeight * 1.5;
                 }
@@ -1453,34 +1485,36 @@ window.grouped_bar_chart_namespace = (function () {
                 .tickFormat(d3.format('~.g'));
 
             var extremValues = [];
-            if(stacked == "Grouped") {
+            if (stacked === 'Grouped') {
                 extremValues = getRoundedMaxValue(false);
             } else {
                 extremValues = getRoundedMaxValue(true);
             }
-            chart.yDomain([extremValues[0],extremValues[1]]);
+            chart.yDomain([extremValues[0], extremValues[1]]);
 
-            var bottomMargin = optOrientation ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + additionalEmptySpace
-                    : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + additionalEmptySpace;
-            var leftMargin = optOrientation ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + additionalEmptySpace + paddingAmount
-                    : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
+            var bottomMargin = optOrientation
+                ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + additionalEmptySpace
+                : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + additionalEmptySpace;
+            var leftMargin = optOrientation
+                ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + additionalEmptySpace + paddingAmount
+                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
 
             if (!_value.options.catLabel) {
                 bottomMargin = optOrientation ? bottomMargin
-                        : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
-                leftMargin = optOrientation ? leftMargin : maxSizeYAxis.max.maxWidth
-                        + freqLabelSize.max.maxWidth + additionalEmptySpace;
+                    : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
+                leftMargin = optOrientation ? leftMargin
+                    : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
             }
             if (!_value.options.freqLabel) {
                 bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
                 leftMargin = optOrientation ? leftMargin + paddingAmount
-                        : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
+                    : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
             }
             if (!optOrientation) {
                 chart.staggerLabels(optStaggerLabels);
                 if (optStaggerLabels) {
-                    bottomMargin += _value.options.catLabel ? 0.25 *maxSizeXAxis.max.maxHeight + paddingAmount
-                            : 0.5 * maxSizeXAxis.max.maxHeight + paddingAmount;
+                    bottomMargin += _value.options.catLabel ? 0.25 * maxSizeXAxis.max.maxHeight + paddingAmount
+                        : maxSizeXAxis.max.maxHeight / 2 + paddingAmount;
                 }
             }
             chart.margin({
@@ -1493,19 +1527,19 @@ window.grouped_bar_chart_namespace = (function () {
                 chart.update();
             }
         }
-    }
+    };
 
-    function updateChartType() {
-        if (this.value != _value.options.chartType) {
+    updateChartType = function () {
+        if (this.value !== _value.options.chartType) {
             _value.options.chartType = this.value;
-            var stacked = this.value == 'Stacked';
+            var stacked = this.value === 'Stacked';
             fixStackedData(stacked);
             chart.stacked(stacked);
             drawChart(true);
         }
-    }
+    };
 
-    function drawControls() {
+    drawControls = function () {
         if (!knimeService) {
             return;
         }
@@ -1513,10 +1547,10 @@ window.grouped_bar_chart_namespace = (function () {
         if (_representation.options.displayFullscreenButton) {
             knimeService.allowFullscreen();
         }
-
-        if (!_representation.options.enableViewControls)
+        if (!_representation.options.enableViewControls) {
             return;
-
+        }
+        
         var titleEdit = _representation.options.enableTitleEdit;
         var subtitleEdit = _representation.options.enableSubtitleEdit;
         var axisEdit = _representation.options.enableAxisEdit;
@@ -1531,22 +1565,22 @@ window.grouped_bar_chart_namespace = (function () {
         if (titleEdit || subtitleEdit) {
             if (titleEdit) {
                 var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title,
-                        function () {
-                    if (_value.options.title != this.value) {
-                        _value.options.title = this.value;
-                        updateTitles(true);
-                    }
-                }, true);
+                    function () {
+                        if (_value.options.title !== this.value) {
+                            _value.options.title = this.value;
+                            updateTitles(true);
+                        }
+                    }, true);
                 knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
             }
             if (subtitleEdit) {
                 var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle,
-                        function () {
-                    if (_value.options.subtitle != this.value) {
-                        _value.options.subtitle = this.value;
-                        updateTitles(true);
-                    }
-                }, true);
+                    function () {
+                        if (_value.options.subtitle !== this.value) {
+                            _value.options.subtitle = this.value;
+                            updateTitles(true);
+                        }
+                    }, true);
                 knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
             }
             if (axisEdit || orientationEdit || staggerLabels) {
@@ -1573,21 +1607,21 @@ window.grouped_bar_chart_namespace = (function () {
         }
 
         if (switchMissValCat && isMissValCat && _representation.options.reportOnMissingValues) {
-            var switchMissValCatCbx = knimeService.createMenuCheckbox('switchMissValCatCbx',
-                    _value.options.includeMissValCat, function () {
-                if (_value.options.includeMissValCat != this.checked) {
-                    _value.options.includeMissValCat = this.checked;
-                    var stacked = _value.options.chartType == 'Stacked';
-                    if (stacked) {
-                        fixStackedData(false);
+            var switchMissValCatCbx =
+                knimeService.createMenuCheckbox('switchMissValCatCbx', _value.options.includeMissValCat, function () {
+                    if (_value.options.includeMissValCat !== this.checked) {
+                        _value.options.includeMissValCat = this.checked;
+                        var stacked = _value.options.chartType === 'Stacked';
+                        if (stacked) {
+                            fixStackedData(false);
+                        }
+                        processMissingValues(true);
+                        if (stacked) {
+                            fixStackedData(true);
+                        }
+                        chart.update();
                     }
-                    processMissingValues(true);
-                    if (stacked) {
-                        fixStackedData(true);
-                    }
-                    chart.update();
-                }
-            });
+                });
             knimeService.addMenuItem('Include \'Missing values\' category: ', 'question', switchMissValCatCbx);
 
             if (orientationEdit || staggerLabels || chartTypeEdit) {
@@ -1597,13 +1631,13 @@ window.grouped_bar_chart_namespace = (function () {
 
         if (chartTypeEdit) {
             var groupedRadio = knimeService.createMenuRadioButton('groupedRadio', 'chartType', 'Grouped',
-                    updateChartType);
-            groupedRadio.checked = (_value.options.chartType == groupedRadio.value);
+                updateChartType);
+            groupedRadio.checked = _value.options.chartType === groupedRadio.value;
             knimeService.addMenuItem('Grouped:', 'align-left fa-rotate-270', groupedRadio);
 
             var stackedRadio = knimeService.createMenuRadioButton('stackedRadio', 'chartType', 'Stacked',
-                    updateChartType);
-            stackedRadio.checked = (_value.options.chartType == stackedRadio.value);
+                updateChartType);
+            stackedRadio.checked = _value.options.chartType === stackedRadio.value;
             knimeService.addMenuItem('Stacked:', 'tasks fa-rotate-270', stackedRadio);
 
             if (orientationEdit || staggerLabels) {
@@ -1613,19 +1647,19 @@ window.grouped_bar_chart_namespace = (function () {
 
         if (orientationEdit) {
             var orientationCbx = knimeService.createMenuCheckbox('orientationCbx', _value.options.orientation,
-                    function () {
-                if (_value.options.orientation != this.checked) {
-                    _value.options.orientation = this.checked;
-                    d3.select('#staggerCbx').property('disabled', this.checked);
-                    drawChart(true);
-                }
-            });
+                function () {
+                    if (_value.options.orientation !== this.checked) {
+                        _value.options.orientation = this.checked;
+                        d3.select('#staggerCbx').property('disabled', this.checked);
+                        drawChart(true);
+                    }
+                });
             knimeService.addMenuItem('Plot horizontal bar chart:', 'align-left', orientationCbx);
         }
 
         if (staggerLabels) {
             var staggerCbx = knimeService.createMenuCheckbox('staggerCbx', _value.options.staggerLabels, function () {
-                if (_value.options.staggerLabels != this.checked) {
+                if (_value.options.staggerLabels !== this.checked) {
                     _value.options.staggerLabels = this.checked;
                     drawChart(true);
                 }
@@ -1636,50 +1670,52 @@ window.grouped_bar_chart_namespace = (function () {
 
         if (showMaximum) {
             var displayMaximumCbx = knimeService.createMenuCheckbox('displayMaximumCbx', _value.options.showMaximum,
-                    function () {
-                if (_value.options.showMaximum != this.checked) {
-                    _value.options.showMaximum = this.checked;
-                    drawChart(true);
-                }
-            });
+                function () {
+                    if (_value.options.showMaximum !== this.checked) {
+                        _value.options.showMaximum = this.checked;
+                        drawChart(true);
+                    }
+                });
             knimeService.addMenuItem('Display maximum value:', 'arrows-v', displayMaximumCbx);
         }
 
         if (enableSelection) {
             knimeService.addMenuDivider();
-            var subscribeToSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
-            var subscribeToSelectionMenu = knimeService.createMenuCheckbox('subscribeToSelection', 
-                    _value.options.subscribeToSelection, function () {
-                if (_value.options.subscribeToSelection != this.checked) {
-                    _value.options.subscribeToSelection = this.checked;
-                    subscribeToSelection(_value.options.subscribeToSelection);
-                }
-            });
+            var subscribeToSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right',
+                'faded right sm', 'left bold');
+            var subscribeToSelectionMenu = knimeService.createMenuCheckbox('subscribeToSelection',
+                _value.options.subscribeToSelection, function () {
+                    if (_value.options.subscribeToSelection !== this.checked) {
+                        _value.options.subscribeToSelection = this.checked;
+                        subscribeToSelection(_value.options.subscribeToSelection);
+                    }
+                });
             knimeService.addMenuItem('Subscribe to selection:', subscribeToSelectionIcon, subscribeToSelectionMenu);
 
-            var publishSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
-            var publishSelectionMenu = knimeService.createMenuCheckbox('publishSelection', _value.options.publishSelection,
-                    function () {
-                if (_value.options.publishSelection != this.checked) {
-                    _value.options.publishSelection = this.checked;
-                    publishSelection(this.checked);
-                }
-            });
+            var publishSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm',
+                'right bold');
+            var publishSelectionMenu = knimeService.createMenuCheckbox('publishSelection',
+                _value.options.publishSelection, function () {
+                    if (_value.options.publishSelection !== this.checked) {
+                        _value.options.publishSelection = this.checked;
+                        publishSelection(this.checked);
+                    }
+                });
             knimeService.addMenuItem('Publish selection:', publishSelectionIcon, publishSelectionMenu);
         }
 
         if (displayClearButton &&  _representation.options.enableSelection) {
-            knimeService.addButton("clearSelectionButton", "minus-square-o", "Clear selection", function(){
-                d3.selectAll(".row").classed({"selected": false, "knime-selected": false, "unselected": false });
-                removeHilightBar("",true);
-                _value.options['selection'] = [];
+            knimeService.addButton('clearSelectionButton', 'minus-square-o', 'Clear selection', function () {
+                d3.selectAll('.row').classed({ selected: false, 'knime-selected': false, unselected: false });
+                removeHilightBar('', true);
+                _value.options.selection = [];
                 publishSelection(true);
             });
-            d3.select("#clearSelectionButton").classed("inactive", true);
+            d3.select('#clearSelectionButton').classed('inactive', true);
         }
-    }
+    };
 
-    function setCssClasses() {
+    setCssClasses = function () {
         // axis
         var axis = d3.selectAll('.nv-axis')
         .classed('knime-axis', true);
@@ -1716,26 +1752,19 @@ window.grouped_bar_chart_namespace = (function () {
         axisToolTip.style('pointer-events', 'all');
         labelToolTip.style('pointer-events', 'all');
         updateLabels();
-        if(_representation.options['enableSelection']) {
+        if (_representation.options.enableSelection) {
             registerClickHandler();
         }
-    }
+    };
 
-    function setTooltipCssClasses() {
+    setTooltipCssClasses = function () {
         // tooltip
-        var tooltip = d3.selectAll('.nvtooltip')
-        .classed('knime-tooltip', true);
-        tooltip.selectAll('.x-value')
-        .classed('knime-tooltip-caption', true)
-        .classed('knime-x', true);
-        tooltip.selectAll('.legend-color-guide')
-        .classed('knime-tooltip-color', true);
-        tooltip.selectAll('.key')
-        .classed('knime-tooltip-key', true);
-        tooltip.selectAll('.value')
-        .classed('knime-tooltip-value', true);
-
-    }
+        var tooltip = d3.selectAll('.nvtooltip').classed('knime-tooltip', true);
+        tooltip.selectAll('.x-value').classed('knime-tooltip-caption', true).classed('knime-x', true);
+        tooltip.selectAll('.legend-color-guide').classed('knime-tooltip-color', true);
+        tooltip.selectAll('.key').classed('knime-tooltip-key', true);
+        tooltip.selectAll('.value').classed('knime-tooltip-value', true);
+    };
 
     barchart.validate = function () {
         return true;
