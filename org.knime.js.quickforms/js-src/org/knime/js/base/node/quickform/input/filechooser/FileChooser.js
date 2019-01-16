@@ -41,146 +41,148 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Mar 24, 2016 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-org_knime_js_base_node_quickform_input_filechooser = function() {
-	var fileChooser = {
-			version: "1.0.0"
-	};
-	fileChooser.name = "File chooser";
-	var m_representation = null;
-	var m_value = null;
-	var m_viewValid = false;
-	var m_errorMessage = null;
+/* eslint-env jquery */
+/* global checkMissingData */
+window.org_knime_js_base_node_quickform_input_filechooser = (function () {
+    var fileChooser = {
+        version: '1.0.0'
+    };
+    fileChooser.name = 'File chooser';
+    var _representation = null;
+    var _value = null;
+    var _viewValid = false;
+    var _errorMessage = null;
+    
+    var getTypeFromSelectedItem = function (node, path) {
+        var childNodes;
+        if (node) {
+            childNodes = node.children;
+        } else {
+            childNodes = _representation.tree;
+        }
+        if (node && node.id === path) {
+            return node.type;
+        }
+        for (var i = 0; i < childNodes.length; i++) {
+            if (path.startsWith(childNodes[i].id)) {
+                return getTypeFromSelectedItem(childNodes[i], path);
+            }
+        }
+        return 'UNKNOWN';
+    };
 
-	fileChooser.init = function(representation, value) {
-		if (checkMissingData(representation)) {
-			return;
-		}
-		m_representation = representation;
-		m_value = representation.currentValue;
-		// erase default selection when running on server
-		if (representation.runningOnServer) {
-			m_value.items = [];
-		}
-		
-		//define startsWith function on strings
-		if (!String.prototype.startsWith) {
-		    String.prototype.startsWith = function(searchString, position){
-		      position = position || 0;
-		      return this.substr(position, searchString.length) === searchString;
-		  };
-		}
-		
-		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
-		$('body').append(qfdiv);
-		
-		qfdiv.attr("title", representation.description);
-		qfdiv.attr("aria-label", representation.label);
-		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
-		
-		if (!representation.tree || representation.tree.length < 1) {
-			var errorText = 'No items found for selection. ';
-			errorText += representation.runningOnServer ? 
-					'Check your settings.' : 
-					'View selection only possible on server.';
-			representation.tree = [{
-				'id': 'emptyTree',
-				'text': errorText,
-				'icon': null,
-				'state': {
-					'opened' : false,
-					'disabled' : true,
-					'selected' : false
-				},
-				'children': []
-			}]
-		}
-		
-		qfdiv.append('<div id="treeContainer" class="knime-qf-tree" aria-label="' + representation.label + '">');
-		$('#treeContainer').jstree({
-				'core' : {
-					'data' : representation.tree,
-					'multiple' : representation.multipleSelection
-				}
-		});
-		
-		$('#treeContainer').on("changed.jstree", function (e, data) {
-			var selectedItems = [];
-			for (var i = 0; i < data.selected.length; i++) {
-				var path = data.selected[i];
-				var type = getTypeFromSelectedItem(null, path);
-				if (m_representation.prefix) {
-					path = m_representation.prefix + path;
-				}
-				var item = {"path": encodeURI(path), "type": type};
-				selectedItems.push(item);
-			}
-			m_value.items = selectedItems;
-		});
-		
-		qfdiv.append($('<br>'));
-		m_errorMessage = $('<span class="knime-qf-error">');
-		m_errorMessage.css('display', 'none');
-		m_errorMessage.attr("role", "alert");
-		qfdiv.append(m_errorMessage);
-		
-		resizeParent();
-		m_viewValid = true;
-	}
-	
-	getTypeFromSelectedItem = function(node, path) {
-		var childNodes;
-		if (!node) {
-			childNodes = m_representation.tree;
-		} else {
-			childNodes = node.children;
-		}
-		if (node && node.id === path) {
-			return node.type;
-		}
-		for (var i = 0; i < childNodes.length; i++) {
-			if (path.startsWith(childNodes[i].id)) {
-				return getTypeFromSelectedItem(childNodes[i], path);
-			}
-		}
-		return "UNKNOWN";
-	}
-	
-	fileChooser.validate = function() {
-		if (!m_viewValid) {
-			return false;
-		}
-		if (m_value.items && m_value.items.length > 0 && m_value.items[0].path) {
-			return true;
-		} else {
-			fileChooser.setValidationErrorMessage("Select at least one item to proceed.");
-			return false;
-		}
-	}
-	
-	fileChooser.setValidationErrorMessage = function(message) {
-		if (!m_viewValid) {
-			return;
-		}
-		if (message != null) {
-			m_errorMessage.text(message);
-			m_errorMessage.css('display', 'inline');
-		} else {
-			m_errorMessage.text('');
-			m_errorMessage.css('display', 'none');
-		}
-		resizeParent();
-	}
-	
-	fileChooser.value = function() {
-		if (!m_viewValid) {
-			return null;
-		}
-		return m_value;
-	}
-	
-	return fileChooser;
-}();
+    fileChooser.init = function (representation, value) {
+        if (checkMissingData(representation)) {
+            return;
+        }
+        _representation = representation;
+        _value = representation.currentValue;
+        // erase default selection when running on server
+        if (representation.runningOnServer) {
+            _value.items = [];
+        }
+
+        // define startsWith function on strings
+        if (!String.prototype.startsWith) {
+            String.prototype.startsWith = function (searchString, position) {
+                position = position || 0;
+                return this.substr(position, searchString.length) === searchString;
+            };
+        }
+
+        var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
+        $('body').append(qfdiv);
+
+        qfdiv.attr('title', representation.description);
+        qfdiv.attr('aria-label', representation.label);
+        qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
+
+        if (!representation.tree || representation.tree.length < 1) {
+            var errorText = 'No items found for selection. ';
+            errorText += representation.runningOnServer ? 'Check your settings.'
+                : 'View selection only possible on server.';
+            representation.tree = [{
+                id: 'emptyTree',
+                text: errorText,
+                icon: null,
+                state: {
+                    opened: false,
+                    disabled: true,
+                    selected: false
+                },
+                children: []
+            }];
+        }
+
+        qfdiv.append('<div id="treeContainer" class="knime-qf-tree" aria-label="' + representation.label + '">');
+        $('#treeContainer').jstree({
+            core: {
+                data: representation.tree,
+                multiple: representation.multipleSelection
+            }
+        });
+
+        $('#treeContainer').on('changed.jstree', function (e, data) {
+            var selectedItems = [];
+            for (var i = 0; i < data.selected.length; i++) {
+                var path = data.selected[i];
+                var type = getTypeFromSelectedItem(null, path);
+                if (_representation.prefix) {
+                    path = _representation.prefix + path;
+                }
+                var item = {
+                    path: encodeURI(path),
+                    type: type
+                };
+                selectedItems.push(item);
+            }
+            _value.items = selectedItems;
+        });
+
+        qfdiv.append($('<br>'));
+        _errorMessage = $('<span class="knime-qf-error">');
+        _errorMessage.css('display', 'none');
+        _errorMessage.attr('role', 'alert');
+        qfdiv.append(_errorMessage);
+
+        _viewValid = true;
+    };
+
+    fileChooser.validate = function () {
+        if (!_viewValid) {
+            return false;
+        }
+        if (_value.items && _value.items.length > 0 && _value.items[0].path) {
+            return true;
+        } else {
+            fileChooser.setValidationErrorMessage('Select at least one item to proceed.');
+            return false;
+        }
+    };
+
+    fileChooser.setValidationErrorMessage = function (message) {
+        if (!_viewValid) {
+            return;
+        }
+        if (message === null) {
+            _errorMessage.text('');
+            _errorMessage.css('display', 'none');
+        } else {
+            _errorMessage.text(message);
+            _errorMessage.css('display', 'inline');
+        }
+    };
+
+    fileChooser.value = function () {
+        if (!_viewValid) {
+            return null;
+        }
+        return _value;
+    };
+
+    return fileChooser;
+})();
