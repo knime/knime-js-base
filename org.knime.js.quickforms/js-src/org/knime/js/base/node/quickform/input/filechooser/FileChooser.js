@@ -122,7 +122,8 @@ window.org_knime_js_base_node_quickform_input_filechooser = (function () {
         $('#treeContainer').jstree({
             core: {
                 data: representation.tree,
-                multiple: representation.multipleSelection
+                multiple: representation.multipleSelection,
+                worker: false
             }
         });
 
