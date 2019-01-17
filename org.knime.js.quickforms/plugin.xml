@@ -826,7 +826,7 @@
             init-method-name="init"
             javascriptComponentID="org_knime_js_base_node_quickform_filter_slider"
             name="Range Slider Filter"
-            namespace="org_knime_js_base_node_quickform_filter_slider"
+            namespace="knimeQuickformFilterSlider"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

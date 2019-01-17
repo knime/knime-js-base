@@ -1,3 +1,4 @@
+/* global noUiSlider:false, wNumb:false */
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -41,287 +42,304 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Sep 28, 2016 (Christian Albrecht, KNIME.com GmbH, Konstanz, Germany): created
  */
-org_knime_js_base_node_quickform_filter_slider = function() {
-	var sliderFilter = {
-			version: "1.0.0"
-	};
-	sliderFilter.name = "Slider Filter";
-//	var viewValid = false;
-	var _representation, _value,
-	 errorMessage,
-	 slider,
-	 
-	 setNumberFormatOptions, setStartValuesToRange, setFilterOnValue, addClassToElements, checkIfOverflowNeeded;
-	 
+window.knimeQuickformFilterSlider = (function () {
+    var sliderFilter = {
+        version: '1.0.0'
+    };
+    sliderFilter.name = 'Slider Filter';
+    var _representation, _value, errorMessage, slider,
 
-	sliderFilter.init = function(representation, value) {
-		_representation = representation;
-		_value = value;
-		var settings = representation.sliderSettings;
-		
-		var body = document.getElementsByTagName('body')[0];
-		var sliderContainer = document.createElement('div');
-		sliderContainer.setAttribute('class', 'slidercontainer knime-slider');
-		debugger;
-		
-		// The framework cannot handle more then 7 decimals. So we have to make sure, that either both values are at max
-		// 7 decimals long or that they would be the same otherwise.
-		var tempMin, tempMax, precision;
-        if(settings.pips.format.decimals) {
+        setNumberFormatOptions, setStartValuesToRange, setFilterOnValue, addClassToElements, updateSettings;
+
+    sliderFilter.init = function (representation, value) {
+        _representation = representation;
+        _value = value;
+        var settings = representation.sliderSettings;
+
+        var body = document.getElementsByTagName('body')[0];
+        var sliderContainer = document.createElement('div');
+        sliderContainer.setAttribute('class', 'slidercontainer knime-slider');
+
+        settings = updateSettings(settings);
+
+        body.appendChild(sliderContainer);
+        slider = document.createElement('div');
+
+        sliderContainer.appendChild(slider);
+        setNumberFormatOptions(settings);
+        setStartValuesToRange(settings);
+        noUiSlider.create(slider, settings);
+        addClassToElements('noUi-base', 'knime-slider-base');
+        addClassToElements('noUi-handle', 'knime-slider-handle');
+        addClassToElements('noUi-connect', 'knime-slider-connect');
+        if (settings.orientation === 'vertical') {
+            // TODO: make configurable
+            slider.style.height = '500px';
+            var pad = document.getElementsByClassName('noUi-handle')[0].offsetHeight / 2 + 'px';
+            sliderContainer.style.paddingTop = sliderContainer.style.paddingBottom = pad;
+        }
+        var maxTipWidth = 0;
+        var maxTipHeight = 0;
+        
+        var tipStyle,
+            tipBorderHor,
+            tipBorderVer,
+            padSide;
+
+        
+        if (settings.tooltips && settings.tooltips.length > 0) {
+            var tips = document.getElementsByClassName('noUi-tooltip');
+
+            addClassToElements('noUi-tooltip', 'knime-tooltip');
+            addClassToElements('noUi-tooltip', 'knime-tooltip-value');
+            if (tips.length === 1) {
+                slider.noUiSlider.set([settings.range.min, settings.range.min]);
+            }
+            for (var i = 0; i < tips.length; i++) {
+                tipStyle = getComputedStyle(tips[i]);
+                tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
+                tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
+                maxTipWidth = Math.max(maxTipWidth, tips[i].offsetWidth + tipBorderHor);
+                maxTipHeight = Math.max(maxTipHeight, tips[i].offsetHeight + tipBorderVer);
+            }
+            if (tips.length === 1) {
+                slider.noUiSlider.set([settings.range.max, settings.range.max]);
+                tipStyle = getComputedStyle(tips[0]);
+                tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
+                tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
+                maxTipWidth = Math.max(maxTipWidth, tips[0].offsetWidth + tipBorderHor);
+                maxTipHeight = Math.max(maxTipHeight, tips[0].offsetHeight + tipBorderVer);
+            }
+            if (settings.orientation === 'vertical') {
+                // account for 120% right
+                var accountRight = 1.2;
+                sliderContainer.style.paddingLeft = accountRight * maxTipWidth + 'px';
+            } else {
+                // TODO: calculate based on tooltip height?
+                sliderContainer.style.paddingTop = '38px';
+                padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxTipWidth / 2) +
+                    'px';
+                sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
+            }
+        }
+        var maxLabelWidth = 0;
+        if (settings.pips && settings.pips.mode) {
+            var testElem = [document.getElementsByClassName('noUi-value')[0]];
+            testElem.push(Array.prototype.slice.call(document.getElementsByClassName('noUi-value'), -1)[0]);
+            maxLabelWidth = Math.max(testElem[0].offsetWidth, testElem[1].offsetWidth);
+            if (settings.orientation === 'vertical') {
+                // TODO: right-padding?
+            } else {
+                sliderContainer.style.paddingBottom = '40px';
+                // select first element
+                padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxLabelWidth / 2) +
+                    'px';
+                sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
+            }
+            addClassToElements('noUi-pips', 'knime-tick');
+            addClassToElements('noUi-value', 'knime-tick-label');
+            addClassToElements('noUi-marker', 'knime-tick-line');
+        }
+
+        if (value.filter && value.filter.columns) {
+            var filter = value.filter.columns[0];
+            var startValue = [filter.minimum, filter.maximum];
+            if (settings.fix[0]) {
+                slider.noUiSlider.set(startValue[1]);
+            } else if (settings.fix[2]) {
+                slider.noUiSlider.set(startValue[0]);
+            } else {
+                slider.noUiSlider.set(startValue);
+            }
+        }
+
+        if (representation.disabled) {
+            // domain column is not present, slider would have no effect
+            slider.setAttribute('disabled', true);
+        } else if (knimeService && knimeService.isInteractivityAvailable()) {
+            if (_value.filter && _value.filter.columns) {
+                knimeService.addToFilter(representation.tableId, _value.filter);
+            }
+            slider.noUiSlider.on('set', function () {
+                if (setFilterOnValue()) {
+                    knimeService.addToFilter(representation.tableId, _value.filter);
+                }
+            });
+        }
+
+        if (typeof representation.label === 'string' && representation.label !== '') {
+            var label = document.createElement('div');
+            label.setAttribute('class', 'label knime-label');
+            if (settings.orientation === 'vertical') {
+                label.setAttribute('class', label.getAttribute('class') + ' vertical');
+                label.style.width = '500px';
+                var sliderStyle = getComputedStyle(sliderContainer);
+                var sliderPadding = parseFloat(sliderStyle.paddingLeft);
+                var connectWidth = getComputedStyle(document.getElementsByClassName('noUi-target')[0]).width;
+                var pipsWidth = 0;
+                if (settings.pips && settings.pips.mode) {
+                    var pipsStyle = getComputedStyle(document.getElementsByClassName('noUi-pips')[0]);
+                    pipsWidth = parseFloat(pipsStyle.paddingLeft) + parseFloat(pipsStyle.paddingRight);
+                }
+                var sliderWidth = sliderPadding + parseFloat(connectWidth) + pipsWidth + maxLabelWidth;
+                label.style.marginLeft = sliderWidth + 'px';
+                label.style.paddingLeft = sliderStyle.paddingTop;
+                label.style.paddingRight = sliderStyle.paddingBottom;
+            }
+            label.appendChild(document.createTextNode(representation.label));
+            body.appendChild(label);
+        }
+        body.append(document.createElement('br'));
+        errorMessage = document.createElement('span');
+        errorMessage.setAttribute('class', 'knime-qf-error');
+        errorMessage.style.display = 'none';
+        body.append(errorMessage);
+    };
+    
+    updateSettings = function (settings) {
+        // The framework cannot handle more then 7 decimals. So we have to make sure, that either both values are at max
+        // 7 decimals long or that they would be the same otherwise.
+        var tempMin, tempMax, precision;
+        if (settings.pips.format.decimals) {
             precision = settings.pips.format.decimals;
         } else {
             precision = 7;
         }
         tempMin = parseFloat(settings.range.min[0].toFixed(precision));
         tempMax = parseFloat(settings.range.max[0].toFixed(precision));
-        if(tempMin < tempMax) {
+        if (tempMin < tempMax) {
             settings.range.min[0] = tempMin;
             settings.range.max[0] = tempMax;
         }
-		
-		if(settings.fix[0]) {
-			settings.connect = [true,false];
-			if(settings.tooltips){
-				settings.tooltips = [settings.tooltips[0]];
-			}
-			settings.start = [settings.start[0]];
-		} else if(settings.fix[2]) {
-			settings.connect = [false,true];
-			if(settings.tooltips){
-				settings.tooltips = [settings.tooltips[1]];
-			}
 
-			settings.start = [settings.start[1]];
-		} else {
-			settings.connect = [false,true,false];
-		}
-
-		body.appendChild(sliderContainer);
-		slider = document.createElement('div');
-		
-		sliderContainer.appendChild(slider);
-		setNumberFormatOptions(settings);
-		setStartValuesToRange(settings);
-		noUiSlider.create(slider, settings);
-		addClassToElements('noUi-base', 'knime-slider-base');
-		addClassToElements('noUi-handle', 'knime-slider-handle');
-		addClassToElements('noUi-connect', 'knime-slider-connect');
-		if (settings.orientation == 'vertical') {
-			//TODO: make configurable
-			slider.style.height = '500px';
-			var pad = document.getElementsByClassName('noUi-handle')[0].offsetHeight / 2 + 'px';
-			sliderContainer.style.paddingTop = sliderContainer.style.paddingBottom = pad;
-		}
-		var maxTipWidth = 0;
-		var maxTipHeight = 0;
-		if (settings.tooltips && settings.tooltips.length > 0) {
-			var tips = document.getElementsByClassName('noUi-tooltip');
-			addClassToElements('noUi-tooltip', 'knime-tooltip');
-			addClassToElements('noUi-tooltip', 'knime-tooltip-value');
-			if (tips.length == 1) {
-				slider.noUiSlider.set([settings.range.min, settings.range.min]);
-			}
-			for (var i = 0; i < tips.length; i++) {
-				var tipStyle = getComputedStyle(tips[i]);
-				var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
-				var tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
-				maxTipWidth = Math.max(maxTipWidth, tips[i].offsetWidth + tipBorderHor);
-				maxTipHeight = Math.max(maxTipHeight, tips[i].offsetHeight + tipBorderVer);
-			}
-			if (tips.length == 1) {
-				slider.noUiSlider.set([settings.range.max, settings.range.max]);
-				var tipStyle = getComputedStyle(tips[0]);
-				var tipBorderHor = parseFloat(tipStyle.borderLeftWidth) + parseFloat(tipStyle.borderRightWidth);
-				var tipBorderVer = parseFloat(tipStyle.borderTopWidth) + parseFloat(tipStyle.borderBottomWidth);
-				maxTipWidth = Math.max(maxTipWidth, tips[0].offsetWidth + tipBorderHor);
-				maxTipHeight = Math.max(maxTipHeight, tips[0].offsetHeight + tipBorderVer);
-			}
-			if (settings.orientation == 'vertical') {
-				//account for 120% right
-				sliderContainer.style.paddingLeft = (1.2 * maxTipWidth) + 'px';
-			} else {
-				//TODO: calculate based on tooltip height?
-				sliderContainer.style.paddingTop = '38px';
-				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxTipWidth/2) + 'px';
-				sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
-			}
-		}
-		var maxLabelWidth = 0;
-		if (settings.pips && settings.pips.mode) {
-			var testElem = [document.getElementsByClassName('noUi-value')[0]];
-			testElem.push(Array.prototype.slice.call(document.getElementsByClassName('noUi-value'), -1)[0]);
-			maxLabelWidth = Math.max(testElem[0].offsetWidth, testElem[1].offsetWidth);
-			if (settings.orientation == 'vertical') {
-				//TODO: right-padding?
-			} else {
-				sliderContainer.style.paddingBottom = "40px";
-				//select first element
-				var padSide = Math.max(parseFloat(getComputedStyle(sliderContainer).paddingLeft), maxLabelWidth / 2) + 'px';
-				sliderContainer.style.paddingLeft = sliderContainer.style.paddingRight = padSide;
-			}
-			addClassToElements('noUi-pips', 'knime-tick');
-			addClassToElements('noUi-value', 'knime-tick-label');
-			addClassToElements('noUi-marker', 'knime-tick-line');		
-		}
-		
-		if (value.filter && value.filter.columns) {
-			var filter = value.filter.columns[0];
-			var startValue = [filter.minimum, filter.maximum];
-			if(settings.fix[0]) {
-				slider.noUiSlider.set(startValue[1]);
-			} else if(settings.fix[2]) {
-				slider.noUiSlider.set(startValue[0]);
-			} else {
-				slider.noUiSlider.set(startValue);
-			}
-		}
-		
-		if (representation.disabled) {
-			// domain column is not present, slider would have no effect
-			slider.setAttribute('disabled', true);
-		} else {
-			if (knimeService && knimeService.isInteractivityAvailable()) {
-				if (_value.filter && _value.filter.columns) {
-					knimeService.addToFilter(representation.tableId, _value.filter);
-				}
-				slider.noUiSlider.on('set', function() {
-					if (setFilterOnValue()) {
-						knimeService.addToFilter(representation.tableId, _value.filter);
-					}
-				});
-			}
-		}
-		
-		if (typeof representation.label == 'string' && '' != representation.label) {
-			var label = document.createElement('div');
-			label.setAttribute('class', 'label knime-label');
-			if (settings.orientation == 'vertical') {
-				label.setAttribute('class', label.getAttribute('class') + ' vertical');
-				label.style.width = '500px';
-				var sliderStyle = getComputedStyle(sliderContainer);
-				var sliderPadding = parseFloat(sliderStyle.paddingLeft);
-				var connectWidth = getComputedStyle(document.getElementsByClassName('noUi-target')[0]).width;
-				var pipsWidth = 0;
-				if (settings.pips && settings.pips.mode) {
-					var pipsStyle = getComputedStyle(document.getElementsByClassName('noUi-pips')[0]);
-					pipsWidth = parseFloat(pipsStyle.paddingLeft) + parseFloat(pipsStyle.paddingRight);
-				}
-				var sliderWidth = sliderPadding + parseFloat(connectWidth) + pipsWidth + maxLabelWidth;
-				label.style.marginLeft = sliderWidth + 'px';
-				label.style.paddingLeft = sliderStyle.paddingTop;
-				label.style.paddingRight = sliderStyle.paddingBottom;
-			}
-			label.appendChild(document.createTextNode(representation.label));
-			body.appendChild(label);
-		}
-		body.append(document.createElement('br'));
-		errorMessage = document.createElement('span');
-		errorMessage.setAttribute('class', 'knime-qf-error');
-		errorMessage.style.display = 'none';
-		body.append(errorMessage);
-	};
-	
-	setNumberFormatOptions = function(settings) {
-		if (settings.tooltips) {
-			for (var i = 0; i < settings.tooltips.length; i++) {
-				if (typeof settings.tooltips[i] == 'object') {
-					settings.tooltips[i] = wNumb(settings.tooltips[i]);
-				}
-			}
-		}
-		if (settings.pips && settings.pips.format) {
-
-			settings.pips.format = wNumb(settings.pips.format);
-		}
-		settings.format = {
-			'to': Number, 'from': Number
-		};
-	}
-	
-	setStartValuesToRange = function(settings) {
-		if (settings.tooltips && settings.tooltips.length > 0) {
-			if (settings.fix[1]){
-				if (settings.tooltips[0]) {
-					settings.start[0] = settings.range.min;
-				}
-				if (settings.tooltips.length > 1 && settings.tooltips[1]) {
-					settings.start[1] = settings.range.max;
-				}
-			} else if (settings.fix[0]){
-			    if (settings.tooltips[0]) {
-			        settings.start[0] = settings.range.max;
-			    }
-			} else if (settings.fix[2]){
-			    if (settings.tooltips[0]) {
-			        settings.start[0] = settings.range.min;
-			    }
+        if (settings.fix[0]) {
+            settings.connect = [true, false];
+            if (settings.tooltips) {
+                settings.tooltips = [settings.tooltips[0]];
             }
-		}
-	}
-	
-	var setFilterOnValue = function() {
-		var changed = true;
-		var settings = _representation.sliderSettings;
-		if (!_value.filter) {
-			_value.filter = {"id": _representation.filterId, "columns": []}
-			_value.filter.columns.push({"minimum": null, "maximum": null});
-		}
-		var sliderValues = slider.noUiSlider.get();
-		if (_value.filter.columns[0].minimum == sliderValues[0] && _value.filter.columns[0].maximum == sliderValues[1]) {
-			changed = false;
-		}
-		if(settings.fix[0]) {
-			_value.filter.columns[0].maximum = sliderValues;
-		} else if(settings.fix[2]) {
-			_value.filter.columns[0].minimum = sliderValues;
-		} else {
-			_value.filter.columns[0].minimum = sliderValues[0];
-			_value.filter.columns[0].maximum = sliderValues[1];
-		}
-		return changed;
-	}
-	
-	sliderFilter.validate = function() {
-		var sliderValues = slider.noUiSlider.get();
-		var min = sliderValues[0];
-		var max = sliderValues[1];
-		var range = _representation.sliderSettings.range;
-		var rangeMin = range.min[0];
-		var rangeMax = range.max[0];
-		if (min < rangeMin || max < rangeMin) {
-			sliderFilter.setValidationErrorMessage("One value is smaller than the allowed minimum of " + rangeMin);
-			return false;
-		}
-		if (min > rangeMax || max > rangeMax) {
-			sliderFilter.setValidationErrorMessage("One value is larger than the allowed maximum of " + rangeMax);
-			return false;
-		}
-		return true;
-	};
-	
-	sliderFilter.setValidationErrorMessage = function(message) {
-		/* show message in alert */
-		if (message) {
-			alert(message);
-		}
-	};
+            settings.start = [settings.start[0]];
+        } else if (settings.fix[2]) {
+            settings.connect = [false, true];
+            if (settings.tooltips) {
+                settings.tooltips = [settings.tooltips[1]];
+            }
 
-	sliderFilter.value = function() {
-		setFilterOnValue();
-		return _value;
-	};
-	
-	addClassToElements = function (elSelector, className) {
-		var el = document.getElementsByClassName(elSelector);
-		for (var i = 0; i < el.length; i++) {
-			el[i].classList.add(className);
-		}
-	}
-	
-	return sliderFilter;
-	
-}();
+            settings.start = [settings.start[1]];
+        } else {
+            settings.connect = [false, true, false];
+        }
+        return settings;
+    };
+
+    setNumberFormatOptions = function (settings) {
+        if (settings.tooltips) {
+            for (var i = 0; i < settings.tooltips.length; i++) {
+                if (typeof settings.tooltips[i] === 'object') {
+                    settings.tooltips[i] = wNumb(settings.tooltips[i]);
+                }
+            }
+        }
+        if (settings.pips && settings.pips.format) {
+
+            settings.pips.format = wNumb(settings.pips.format);
+        }
+        settings.format = {
+            to: Number,
+            from: Number
+        };
+    };
+
+    setStartValuesToRange = function (settings) {
+        if (settings.tooltips && settings.tooltips.length > 0) {
+            if (settings.fix[1]) {
+                if (settings.tooltips[0]) {
+                    settings.start[0] = settings.range.min;
+                }
+                if (settings.tooltips.length > 1 && settings.tooltips[1]) {
+                    settings.start[1] = settings.range.max;
+                }
+            } else if (settings.fix[0]) {
+                if (settings.tooltips[0]) {
+                    settings.start[0] = settings.range.max;
+                }
+            } else if (settings.fix[2]) {
+                if (settings.tooltips[0]) {
+                    settings.start[0] = settings.range.min;
+                }
+            }
+        }
+    };
+
+    setFilterOnValue = function () {
+        var changed = true;
+        var settings = _representation.sliderSettings;
+        if (!_value.filter) {
+            _value.filter = {
+                id: _representation.filterId,
+                columns: []
+            };
+            _value.filter.columns.push({
+                minimum: null,
+                maximum: null
+            });
+        }
+        var sliderValues = slider.noUiSlider.get();
+        if (_value.filter.columns[0].minimum === sliderValues[0] &&
+            _value.filter.columns[0].maximum === sliderValues[1]) {
+            changed = false;
+        }
+        if (settings.fix[0]) {
+            _value.filter.columns[0].maximum = sliderValues;
+        } else if (settings.fix[2]) {
+            _value.filter.columns[0].minimum = sliderValues;
+        } else {
+            _value.filter.columns[0].minimum = sliderValues[0];
+            _value.filter.columns[0].maximum = sliderValues[1];
+        }
+        return changed;
+    };
+
+    sliderFilter.validate = function () {
+        var sliderValues = slider.noUiSlider.get();
+        var min = sliderValues[0];
+        var max = sliderValues[1];
+        var range = _representation.sliderSettings.range;
+        var rangeMin = range.min[0];
+        var rangeMax = range.max[0];
+        if (min < rangeMin || max < rangeMin) {
+            sliderFilter.setValidationErrorMessage('One value is smaller than the allowed minimum of ' + rangeMin);
+            return false;
+        }
+        if (min > rangeMax || max > rangeMax) {
+            sliderFilter.setValidationErrorMessage('One value is larger than the allowed maximum of ' + rangeMax);
+            return false;
+        }
+        return true;
+    };
+
+    sliderFilter.setValidationErrorMessage = function (message) {
+        /* show message in alert */
+        if (message) {
+            alert(message);
+        }
+    };
+
+    sliderFilter.value = function () {
+        setFilterOnValue();
+        return _value;
+    };
+
+    addClassToElements = function (elSelector, className) {
+        var el = document.getElementsByClassName(elSelector);
+        for (var i = 0; i < el.length; i++) {
+            el[i].classList.add(className);
+        }
+    };
+
+    return sliderFilter;
+
+})();
