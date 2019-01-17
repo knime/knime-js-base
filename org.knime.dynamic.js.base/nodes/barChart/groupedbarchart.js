@@ -116,8 +116,8 @@ window.knimeGroupedBarChart = (function () {
         d3.select('body').style('width', '100%').style('height', '100%');
         
         // Process options
-        var optWidth = _representation.options.width;
-        var optHeight = _representation.options.height;
+        var optWidth = _representation.options.svg.width;
+        var optHeight = _representation.options.svg.height;
 
         var optTitle = _value.options.title;
         var optSubtitle = _value.options.subtitle;

@@ -1,17 +1,1 @@
-{
-  "extends": "eslint:recommended",
-  "env": {
-    "browser": true,
-    "es6": false
-  },
-  "parserOptions": {
-    "ecmaVersion": 5,
-    "sourceType": "script"
-  },
-  "globals": {
-    "knimeService": false
-  },
-  "rules": {
-  },
-  "root": true
-}
+../config/eslint.json
