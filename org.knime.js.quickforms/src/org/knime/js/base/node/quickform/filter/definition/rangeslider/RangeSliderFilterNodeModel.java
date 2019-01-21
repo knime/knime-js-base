@@ -198,7 +198,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
                     if (maxFailed) {
                         builder.append("maximum ");
                     }
-                    builder.append("domain values set. Using previously configured ranage values.");
+                    builder.append("domain values set. Using previously configured range values.");
                     setWarningMessage(builder.toString());
                 }
             }
