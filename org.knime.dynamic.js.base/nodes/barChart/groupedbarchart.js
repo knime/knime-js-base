@@ -252,7 +252,7 @@ window.knimeGroupedBarChart = (function () {
                 fixStackedData(true); // add dummy nulls
             }
             chart.stacked(stacked);
-
+            
             chart
                 .color(colorRange)
                 .duration(0)
@@ -634,16 +634,12 @@ window.knimeGroupedBarChart = (function () {
 
         // Get the frequency columns
         var valCols = [];
-        var isDuplicate = false;
         freqCols = [];
 
         for (var k = 0; k < optFreqCol.length; k++) {
             var valCol = knimeTable.getColumn(optFreqCol[k]);
-            // TODO: Add an isDuplicate test here...
-            if (isDuplicate !== true) {
-                valCols.push(valCol);
-                freqCols.push(optFreqCol[k]);
-            }
+            valCols.push(valCol);
+            freqCols.push(optFreqCol[k]);
         }
 
         plotData = [];
@@ -675,11 +671,6 @@ window.knimeGroupedBarChart = (function () {
 
                 for (var i = 0; i < numDataPoints; i++) {
                     if (typeof categories !== 'undefined') {
-                        if (isDuplicate === true) {
-                            alert('Duplicate categories found in column.');
-                            return;
-                        }
-
                         var cat = categories[i];
                         var val = valCols[j][i];
 
@@ -759,11 +750,7 @@ window.knimeGroupedBarChart = (function () {
                 }
             }
         } else {
-            if (hasNull === false) {
-                alert('No numeric columns detected.');
-            } else {
-                alert('Numeric columns detected, but contains missing values.');
-            }
+            knimeService.setWarningMessage('No numeric values detected');
             return;
         }
 
@@ -882,25 +869,19 @@ window.knimeGroupedBarChart = (function () {
         for (var i = 0; i < missValCatValues.length; i++) {
             var item = missValCatValues[i];
             if (excludeCols.indexOf(item.col) !== -1 && !(!_value.options.includeMissValCat && switched)) {
-                // Fact that the freq col is in missValCatValues means it has a
-                // non-missing value in Missing values category.
-                // If this col was excluded, that means it has only missing
-                // values in all other categories AND we "don't include
-                // MissValCat".
-                // In case it's the first time the plot is building, we don't
-                // need to do anything - call continue.
-                // But if a user switched the option "includeMissValCat" from
-                // 'on' to 'off', we need to remove the value of MissValCat from
-                // the plot further below.
+                /*
+                 * Fact that the freq col is in missValCatValues means it has a non-missing value in Missing values
+                 * category. If this col was excluded, that means it has only missing values in all other categories AND
+                 * we "don't include MissValCat". In case it's the first time the plot is building, we don't need to do
+                 * anything - call continue. But if a user switched the option "includeMissValCat" from 'on' to 'off',
+                 * we need to remove the value of MissValCat from the plot further below.
+                 */
                 continue;
             }
-            // find if the plot has already the data (key->values) for the
-            // current freq col == key
-            // data need to be undefined, otherwise missing values will be added to previous data
-            data = undefined;
-            for (var j = 0; j < plotData.length; j++) { // many thanks to IE -
-                // we cannot use find()
-                // or findIndex() here
+            // find if the plot has already the data (key->values) for the current freq col == key
+            // data object needs to be reset, otherwise missing values will be added to previous data
+            data = null;
+            for (var j = 0; j < plotData.length; j++) {
                 if (plotData[j].key === item.col) {
                     data = plotData[j];
                     dataInd = j;
@@ -908,13 +889,12 @@ window.knimeGroupedBarChart = (function () {
                 }
             }
             if (_value.options.includeMissValCat && _representation.options.reportOnMissingValues) {
-                // if we include Missing values category to the view, we need to
-                // add its values
+                /* if we include Missing values category to the view, we need to add its values */
                 var val = {
                     x: MISSING_VALUES_LABEL,
                     y: item.value
                 };
-                if (typeof data === 'undefined') {
+                if (typeof data === 'undefined' || data === null) {
                     plotData.push({
                         key: item.col,
                         values: [val]
@@ -926,7 +906,7 @@ window.knimeGroupedBarChart = (function () {
                 // if we don't include Missing values category to the view AND
                 // this option was switched in the view, we need to remove its
                 // value
-                if (typeof data !== 'undefined') {
+                if (typeof data !== 'undefined' && data !== null) {
                     data.values.pop();
                     if (data.values.length === 0) {
                         plotData.splice(dataInd, 1);
