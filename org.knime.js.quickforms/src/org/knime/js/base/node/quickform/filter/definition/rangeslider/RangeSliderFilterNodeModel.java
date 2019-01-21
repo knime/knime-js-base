@@ -229,10 +229,13 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             throw new InvalidSettingsException("No domain column set");
         }
         RangeFilterValue value = getViewValue();
-        FilterModelRange model;
+        double minimum;
+        double maximum;
         if (value != null && value.getFilter() != null) {
             try {
-                model = (FilterModelRange)value.getFilter().createFilterModel();
+                FilterModelRange filterModel = (FilterModelRange)value.getFilter().createFilterModel();
+                minimum = filterModel.getMinimum().orElse(Double.NEGATIVE_INFINITY);
+                maximum = filterModel.getMaximum().orElse(Double.POSITIVE_INFINITY);
             } catch (OperationNotSupportedException e) {
                 throw new InvalidSettingsException(e);
             }
@@ -246,8 +249,17 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
                 throw new InvalidSettingsException(
                     "The filter settings for minimum and maximum are not in a correct format.");
             }
-            model = FilterModel.newRangeModel(filterValues[0], filterValues[1], true, true);
+            minimum = filterValues[0];
+            maximum = filterValues[1];
         }
+        boolean[] fixSlider = m_config.getSliderSettings().getFix();
+        if(fixSlider[0]) {
+            minimum = Double.NEGATIVE_INFINITY;
+        }
+        if(fixSlider[2]) {
+            maximum = Double.POSITIVE_INFINITY;
+        }
+        FilterModelRange model = FilterModel.newRangeModel(minimum, maximum, true, true);
         RangeSliderFilterRepresentation rep = getViewRepresentation();
         if (rep != null) {
             rep.setConfig(m_config);
