@@ -267,6 +267,9 @@
                relativePath="org/knime/js/base/node/viz/pagedTable/knime-paged-table.js"
                type="JAVASCRIPT">
          </importResource>
+         <webDependency 
+         		webResourceBundleID="knimeLazyLoadingService_1.0">
+         </webDependency>
          <webDependency
                webResourceBundleID="KnimeTable_1.0.0">
          </webDependency>
