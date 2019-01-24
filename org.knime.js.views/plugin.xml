@@ -436,7 +436,7 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.viz.pagedTable"
             name="Paged Table"
-            namespace="knime_paged_table"
+            namespace="knimePagedTable"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>

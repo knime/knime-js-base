@@ -1,3 +1,4 @@
-knime_paged_table = function() {
-	return new KnimeBaseTableViewer();
-}();
+/* global KnimeBaseTableViewer:false */
+window.knimePagedTable = (function () {
+    return new KnimeBaseTableViewer();
+})();
