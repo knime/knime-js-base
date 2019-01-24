@@ -1,7 +1,7 @@
 /* global d3:false, kt:false, nv:false */
 window.knimeGroupedBarChart = (function () {
-    
-    var barchart = {};
+
+    var barChart = {};
     var MIN_HEIGHT = 100;
     var MIN_WIDTH = 100;
     var layoutContainer,
@@ -11,7 +11,7 @@ window.knimeGroupedBarChart = (function () {
         svg,
         knimeTable,
         plotData,
-        wrapedPlotData,
+        wrappedPlotData,
         colorRange,
         categories,
         freqCols,
@@ -19,58 +19,58 @@ window.knimeGroupedBarChart = (function () {
         _keyNameMap,
         _incomingTable,
 
-    /**
-     * 2d-array where for each category (indexing follows categories array) we
-     * store an array of those frequency columns, which have a missing value in
-     * the current category. This allows to exclude specific bars or even the
-     * whole category. Storing by category helps to group warnings also by
-     * category. Required for missing values handling.
-     */
+        /**
+         * 2d-array where for each category (indexing follows categories array) we
+         * store an array of those frequency columns, which have a missing value in
+         * the current category. This allows to exclude specific bars or even the
+         * whole category. Storing by category helps to group warnings also by
+         * category. Required for missing values handling.
+         */
         missValInCat,
 
-    /**
-     * Array where for each frequency column, which has in all other categories
-     * only missing values, we store whether it has a value in the Missing
-     * values category. This allows to decide, if we should keep this freq
-     * column (if it has a value in MissValCat and the option "include
-     * MissValCat" is on) or exclude it. Each item has the fields: col - name of
-     * freq column hasValueOnMissValCat - whether the column has a non-missing
-     * value in the Missing values category (true/false) Required for missing
-     * values handling.
-     */
+        /**
+         * Array where for each frequency column, which has in all other categories
+         * only missing values, we store whether it has a value in the Missing
+         * values category. This allows to decide, if we should keep this freq
+         * column (if it has a value in MissValCat and the option "include
+         * MissValCat" is on) or exclude it. Each item has the fields: col - name of
+         * freq column hasValueOnMissValCat - whether the column has a non-missing
+         * value in the Missing values category (true/false) Required for missing
+         * values handling.
+         */
         freqColValueOnMissValCat,
 
-    /**
-     * Array where for each frequency column, which has non-missing value in the
-     * Missing values category, we store this value. We need to store it
-     * separately to quickly add/remove them to the plot data, when the option
-     * "include MissValCat" is getting switched. Each item has the fields: col -
-     * name of freq column value - non-missing value, this freq column has in
-     * the Missing values category Required for missing values handling.
-     */
+        /**
+         * Array where for each frequency column, which has non-missing value in the
+         * Missing values category, we store this value. We need to store it
+         * separately to quickly add/remove them to the plot data, when the option
+         * "include MissValCat" is getting switched. Each item has the fields: col -
+         * name of freq column value - non-missing value, this freq column has in
+         * the Missing values category Required for missing values handling.
+         */
         missValCatValues,
 
-    /**
-     * Boolean flag - is the Missing values category present in the dataset.
-     * Required for missing values handling.
-     */
+        /**
+         * Boolean flag - is the Missing values category present in the dataset.
+         * Required for missing values handling.
+         */
         isMissValCat,
 
-    /**
-     * Map where keys - frequency column names, values - array of those
-     * categories for which the bar, specified by the corresponding freq column
-     * and the category, was excluded from the view. There excluded bars
-     * actually specify those dummy null values, we have to add to the stacked
-     * chart to fix it. Choosing freq cols as keys helps adding dummy nulls
-     * since the plot dataset has to be key->values. Required for missing values
-     * handling.
-     */
+        /**
+         * Map where keys - frequency column names, values - array of those
+         * categories for which the bar, specified by the corresponding freq column
+         * and the category, was excluded from the view. There excluded bars
+         * actually specify those dummy null values, we have to add to the stacked
+         * chart to fix it. Choosing freq cols as keys helps adding dummy nulls
+         * since the plot dataset has to be key->values. Required for missing values
+         * handling.
+         */
         excludeFreqColCatMap,
         showWarnings,
-    
-    /**
-     * Function declarations
-     */
+
+        /**
+         * Function declarations
+         */
         drawChart, drawControls, fixStackedData, createHilightBar, removeHilightBar, getClusterToRowMapping,
         subscribeToSelection, publishSelection, processData, getRoundedMaxValue, getSelectedRowIDs,
         handleHighlightClick, sortByClusterName, setCssClasses, setTooltipCssClasses, updateTitles, updateAxisLabels,
@@ -84,7 +84,7 @@ window.knimeGroupedBarChart = (function () {
     var CATEGORY_MISSING_VALUES_ONLY = 'categoryMissingValuesOnly';
     var NO_DATA_AVAILABLE = 'noDataAvailable';
 
-    barchart.init = function (representation, value) {
+    barChart.init = function (representation, value) {
         _value = value;
         _representation = representation;
         _incomingTable = _representation.inObjects[0].table;
@@ -115,7 +115,7 @@ window.knimeGroupedBarChart = (function () {
 
         d3.select('html').style('width', '100%').style('height', '100%');
         d3.select('body').style('width', '100%').style('height', '100%');
-        
+
         // Process options
         var optWidth = _representation.options.svg.width;
         var optHeight = _representation.options.svg.height;
@@ -252,7 +252,7 @@ window.knimeGroupedBarChart = (function () {
                 fixStackedData(true); // add dummy nulls
             }
             chart.stacked(stacked);
-            
+
             chart
                 .color(colorRange)
                 .duration(0)
@@ -337,7 +337,7 @@ window.knimeGroupedBarChart = (function () {
         var length = _value.options.selection ? _value.options.selection.length : 0;
         for (var i = 0; i < length; i++) {
             createHilightBar(_keyNameMap.getNameFromKey(_value.options.selection[i][0]),
-                    _value.options.selection[i][1]);
+                _value.options.selection[i][1]);
         }
     };
 
@@ -563,7 +563,7 @@ window.knimeGroupedBarChart = (function () {
             }
         } else if (data.changeSet) {
             if (data.changeSet.removed) {
-                data.changeSet.removed.foreach(function (rowId) {
+                data.changeSet.removed.forEach(function (rowId) {
                     var clusterName = rowId;
                     var index = getSelectedRowIDs().indexOf(clusterName);
                     if (index > -1) {
@@ -573,7 +573,7 @@ window.knimeGroupedBarChart = (function () {
                 });
             }
             if (data.changeSet.partialRemoved) {
-                data.changeSet.partialRemoved.foreach(function (rowId) {
+                data.changeSet.partialRemoved.forEach(function (rowId) {
                     var clusterName = rowId;
                     var index = getSelectedRowIDs().indexOf(clusterName);
                     if (index > -1) {
@@ -583,7 +583,7 @@ window.knimeGroupedBarChart = (function () {
                 });
             }
             if (data.changeSet.added) {
-                data.changeSet.added.foreach(function (rowId) {
+                data.changeSet.added.forEach(function (rowId) {
                     var index = getSelectedRowIDs().indexOf(rowId);
                     if (index === -1) {
                         _value.options.selection.push([rowId, 'knime-selected']);
@@ -592,7 +592,7 @@ window.knimeGroupedBarChart = (function () {
                 });
             }
             if (data.changeSet.partialAdded) {
-                data.changeSet.partialAdded.foreach(function (rowId) {
+                data.changeSet.partialAdded.forEach(function (rowId) {
                     var index = getSelectedRowIDs().indexOf(rowId);
                     if (index === -1) {
                         _value.options.selection.push([rowId, 'knime-partially-selected']);
@@ -861,10 +861,10 @@ window.knimeGroupedBarChart = (function () {
         if (!showWarnings) {
             return;
         }
-        
+
         handleWarnings(excludeCols, excludeCats, excludeBars);
     };
-    
+
     handleMissingValues = function (excludeCols, switched, data, dataInd) {
         for (var i = 0; i < missValCatValues.length; i++) {
             var item = missValCatValues[i];
@@ -915,7 +915,7 @@ window.knimeGroupedBarChart = (function () {
             }
         }
     };
-    
+
     handleWarnings = function (excludeCols, excludeCats, excludeBars) {
         if (plotData.length === 0) {
             // No data available warnings
@@ -934,24 +934,24 @@ window.knimeGroupedBarChart = (function () {
             // All other warnings
             if (excludeCols.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                   'Following frequency columns are not present or contain only missing values and were ' +
-                        'excluded from the view:\n    ' + excludeCols.join(', '), FREQ_COLUMN_MISSING_VALUES_ONLY);
+                    'Following frequency columns are not present or contain only missing values and were ' +
+                    'excluded from the view:\n    ' + excludeCols.join(', '), FREQ_COLUMN_MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(FREQ_COLUMN_MISSING_VALUES_ONLY);
             }
-    
+
             if (excludeCats.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                        'Following categories contain only missing values and were excluded from the view:\n    ' +
-                            excludeCats.join(', '), CATEGORY_MISSING_VALUES_ONLY);
+                    'Following categories contain only missing values and were excluded from the view:\n    ' +
+                    excludeCats.join(', '), CATEGORY_MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(CATEGORY_MISSING_VALUES_ONLY);
             }
-    
+
             if (excludeBars.length > 0 && _representation.options.reportOnMissingValues) {
                 knimeService.setWarningMessage(
-                        'Following bars contain only missing values in frequency column and were excluded from the ' +
-                        'view:\n    ' + excludeBars.join('\n    '), MISSING_VALUES_ONLY);
+                    'Following bars contain only missing values in frequency column and were excluded from the ' +
+                    'view:\n    ' + excludeBars.join('\n    '), MISSING_VALUES_ONLY);
             } else {
                 knimeService.clearWarningMessage(MISSING_VALUES_ONLY);
             }
@@ -1037,11 +1037,11 @@ window.knimeGroupedBarChart = (function () {
             if (_value.options.title) {
                 if (curTitle.empty()) {
                     svg.append('text')
-                    .attr('x', 20)
-                    .attr('y', 30)
-                    .attr('id', 'title')
-                    .attr('class', 'knime-title')
-                    .text(_value.options.title);
+                        .attr('x', 20)
+                        .attr('y', 30)
+                        .attr('id', 'title')
+                        .attr('class', 'knime-title')
+                        .text(_value.options.title);
                 } else {
                     curTitle.text(_value.options.title);
                 }
@@ -1052,11 +1052,11 @@ window.knimeGroupedBarChart = (function () {
             if (_value.options.subtitle) {
                 if (curSubtitle.empty()) {
                     svg.append('text')
-                    .attr('x', 20)
-                    .attr('y', _value.options.title ? 46 : 20)
-                    .attr('id', 'subtitle')
-                    .attr('class', 'knime-subtitle')
-                    .text(_value.options.subtitle);
+                        .attr('x', 20)
+                        .attr('y', _value.options.title ? 46 : 20)
+                        .attr('id', 'subtitle')
+                        .attr('class', 'knime-subtitle')
+                        .text(_value.options.subtitle);
                 } else {
                     curSubtitle.text(_value.options.subtitle).attr('y', _value.options.title ? 46 : 20);
                 }
@@ -1083,10 +1083,10 @@ window.knimeGroupedBarChart = (function () {
                 if (_representation.options.svg.fullscreen && _representation.runningInView) {
                     var height = isTitle ? '100%' : 'calc(100% - ' + knimeService.headerHeight() + 'px)';
                     layoutContainer.style('height', height)
-                    // two rows below force to invalidate the container which
-                    // solves a weird problem with vertical scroll bar in IE
-                    .style('display', 'none')
-                    .style('display', 'block');
+                        // two rows below force to invalidate the container which
+                        // solves a weird problem with vertical scroll bar in IE
+                        .style('display', 'none')
+                        .style('display', 'block');
                     d3.select('#svgContainer').style('height', height);
                 }
                 chart.update();
@@ -1108,9 +1108,9 @@ window.knimeGroupedBarChart = (function () {
         var optOrientation = _value.options.orientation;
         var texts = svg.select('.knime-x').selectAll('text');
         texts.each(function (d, i) {
-            if (typeof wrapedPlotData[0].values[i] !== 'undefined') {
+            if (typeof wrappedPlotData[0].values[i] !== 'undefined') {
                 var me = d3.select(this);
-                me.text(wrapedPlotData[0].values[i].x);
+                me.text(wrappedPlotData[0].values[i].x);
                 me.append('title').classed('knime-tooltip', true);
             }
         });
@@ -1154,9 +1154,9 @@ window.knimeGroupedBarChart = (function () {
 
         // Create titles for the Axis-Tooltips
         svg.select('.knime-y text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
-                _value.options.freqLabel);
+            _value.options.freqLabel);
         svg.select('.knime-x text.knime-axis-label').append('title').classed('knime-tooltip', true).text(
-                _value.options.catLabel);
+            _value.options.catLabel);
     };
 
     getRoundedMaxValue = function (isStacked) {
@@ -1211,7 +1211,7 @@ window.knimeGroupedBarChart = (function () {
         var roundedMinValue = Math.floor(parseFloat(minValue) * Math.pow(10, precision)) / Math.pow(10, precision);
         return [roundedMinValue, roundedMaxValue];
     };
-    
+
     getStackedMaxValue = function (considerNegativeList, maxValue, minValue) {
         var sumListPositive = [];
         var sumListNegative = [];
@@ -1360,11 +1360,11 @@ window.knimeGroupedBarChart = (function () {
         for (group in dataValues) {
             for (groupValue in dataValues[group].values) {
                 if (groupValue === 0) {
-                    wrapedPlotData[group].values[groupValue].x = extremResults.values[0].truncated;
+                    wrappedPlotData[group].values[groupValue].x = extremResults.values[0].truncated;
                 } else if (groupValue === dataValues[group].values.length - 1) {
-                    wrapedPlotData[group].values[groupValue].x = extremResults.values[1].truncated;
+                    wrappedPlotData[group].values[groupValue].x = extremResults.values[1].truncated;
                 } else {
-                    wrapedPlotData[group].values[groupValue].x = results.values[parseInt(groupValue, 10)].truncated;
+                    wrappedPlotData[group].values[groupValue].x = results.values[parseInt(groupValue, 10)].truncated;
                 }
             }
         }
@@ -1391,7 +1391,7 @@ window.knimeGroupedBarChart = (function () {
                 optShowMaximum = _representation.options.showMaximum;
             }
 
-            wrapedPlotData = JSON.parse(JSON.stringify(plotData));
+            wrappedPlotData = JSON.parse(JSON.stringify(plotData));
 
             if (!curCatAxisLabelElement.empty()) {
                 curCatAxisLabel = curCatAxisLabelElement.text();
@@ -1420,7 +1420,7 @@ window.knimeGroupedBarChart = (function () {
             var freqLabelSize = knimeService.measureAndTruncate(freqLabel ? [freqLabel] : [''], configObject);
 
             var maxSizeYAxis = checkMaxSizeYAxis(optShowMaximum);
-            var maxSizeXAxis = checkMaxSizeXAxis(wrapedPlotData, optStaggerLabels);
+            var maxSizeXAxis = checkMaxSizeXAxis(wrappedPlotData, optStaggerLabels);
             var svgSize = optOrientation ? parseInt(d3.select('svg').style('width'), 10)
                 : parseInt(d3.select('svg').style('height'), 10);
 
@@ -1431,7 +1431,7 @@ window.knimeGroupedBarChart = (function () {
             var distanceBetweenLabels = 150;
             var tickAmount = 0;
             var rightMargin = 0;
-            
+
             if (optOrientation) {
                 tickAmount = parseInt((svgSize - maxSizeXAxis.max.maxWidth) /
                     (maxSizeYAxis.max.maxWidth + distanceBetweenLabels), 10);
@@ -1455,13 +1455,13 @@ window.knimeGroupedBarChart = (function () {
 
             // add some empty space, so that two labels are not to close together
             var additionalEmptySpace = 15;
-            
+
             // add some empty space when labels are staggered. Normal empty space is too much.
             var staggerLabelsAdditionalSpace = 5;
 
             // space to the y-axis assured by nvd3
             var paddingAmount = 15;
-            
+
             var xLabelDistance = 0;
             var yLabelDistance = 0;
             if (optOrientation) {
@@ -1481,7 +1481,7 @@ window.knimeGroupedBarChart = (function () {
                 }
                 yLabelDistance = maxSizeYAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace;
             }
-            
+
             chart.xAxis.axisLabel(catLabel)
                 .axisLabelDistance(xLabelDistance)
                 .tickPadding(paddingAmount)
@@ -1562,7 +1562,7 @@ window.knimeGroupedBarChart = (function () {
         if (!_representation.options.enableViewControls) {
             return;
         }
-        
+
         var titleEdit = _representation.options.enableTitleEdit;
         var subtitleEdit = _representation.options.enableSubtitleEdit;
         var axisEdit = _representation.options.enableAxisEdit;
@@ -1728,33 +1728,33 @@ window.knimeGroupedBarChart = (function () {
     setCssClasses = function () {
         // axis
         var axis = d3.selectAll('.nv-axis')
-        .classed('knime-axis', true);
+            .classed('knime-axis', true);
         d3.selectAll('.nv-x')
-        .classed('knime-x', true);
+            .classed('knime-x', true);
         d3.selectAll('.nv-y')
-        .classed('knime-y', true);
+            .classed('knime-y', true);
         d3.selectAll('.nv-axislabel')
-        .classed('knime-axis-label', true);
+            .classed('knime-axis-label', true);
         axis.selectAll('path.domain')
-        .classed('knime-axis-line', true);
+            .classed('knime-axis-line', true);
         var axisMaxMin = d3.selectAll('.nv-axisMaxMin')
-        .classed('knime-axis-max-min', true);
+            .classed('knime-axis-max-min', true);
         axisMaxMin.selectAll('text')
-        .classed('knime-tick-label', true);
+            .classed('knime-tick-label', true);
         var tick = axis.selectAll('.knime-axis .tick')
-        .classed('knime-tick', true);
+            .classed('knime-tick', true);
         tick.selectAll('text')
-        .classed('knime-tick-label', true);
+            .classed('knime-tick-label', true);
         tick.selectAll('line')
-        .classed('knime-tick-line', true);
+            .classed('knime-tick-line', true);
 
         // legend
         d3.selectAll('.nv-legendWrap')
-        .classed('knime-legend', true);
+            .classed('knime-legend', true);
         d3.selectAll('.nv-legend-symbol')
-        .classed('knime-legend-symbol', true);
+            .classed('knime-legend-symbol', true);
         d3.selectAll('.nv-legend-text')
-        .classed('knime-legend-label', true);
+            .classed('knime-legend-label', true);
 
         // Tooltip for axis labels allows to receive all mouse events
         var axisToolTip = svg.selectAll('.knime-tick-label');
@@ -1776,15 +1776,15 @@ window.knimeGroupedBarChart = (function () {
         tooltip.selectAll('.value').classed('knime-tooltip-value', true);
     };
 
-    barchart.validate = function () {
+    barChart.validate = function () {
         return true;
     };
 
-    barchart.getComponentValue = function () {
+    barChart.getComponentValue = function () {
         return _value;
     };
 
-    barchart.getSVG = function () {
+    barChart.getSVG = function () {
         var svgElement = d3.select('svg')[0][0];
         knimeService.inlineSvgStyles(svgElement);
 
@@ -1792,5 +1792,5 @@ window.knimeGroupedBarChart = (function () {
         return (new XMLSerializer()).serializeToString(svgElement);
     };
 
-    return barchart;
+    return barChart;
 })();
