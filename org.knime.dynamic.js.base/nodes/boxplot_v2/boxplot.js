@@ -285,9 +285,10 @@ window.boxplot_namespace = (function () {
         var duration = (_representation.runningInView && !resizing) ? 500 : 0;
 
         // Create a selection for each box with data that we created at the beginning
+
         var boxG = plotG.selectAll('g.box')
             .data(d3.entries(_data).map(function (d) {
-                d.value.valid = d.value.upperQuantile >= d.value.lowerQuantile;
+                d.value.valid = d.value.upperQuartile >= d.value.lowerQuartile;
                 return d;
             }), function (d) {
                 return (_representation.options.multi) ? d.key : '__dummy__';
