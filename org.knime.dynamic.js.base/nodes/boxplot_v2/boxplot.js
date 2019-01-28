@@ -1,13 +1,15 @@
-window.boxplot_namespace = (function () {
+/* global d3:false */
+window.knimeBoxplot = (function () {
     var boxplot = {};
     var _data = {};
-    var layoutContainer;
-    var MIN_HEIGHT = 100, MIN_WIDTH = 100;
-    var maxY = 0, minY = 0;
+    var MIN_HEIGHT = 100;
+    var MIN_WIDTH = 100;
+    var maxY = 0;
+    var minY = 0;
     var Y_TICK_COUNT = 5;
     var Y_LABEL_MAX_WIDTH = 200;
-    var _representation, _value;
-    var drawControls, drawChart, updateTitle, updateSubtitle, processMissingValues, resize;
+    var _representation, _value, layoutContainer,
+        drawControls, drawChart, updateTitle, updateSubtitle, processMissingValues, resize;
 
     var MISSING_VALUES_ONLY = 'missingValuesOnly';
     var IGNORED_MISSING_VALUES = 'ignoredMissingValues';
@@ -20,7 +22,7 @@ window.boxplot_namespace = (function () {
         _representation = representation;
 
         // No numeric columns available?
-        if (_representation.options.columns.length == 0) {
+        if (_representation.options.columns.length === 0) {
             alert('No numeric columns selected');
             return;
         }
@@ -106,12 +108,14 @@ window.boxplot_namespace = (function () {
 
         if (_representation.options.enableTitleEdit || _representation.options.enableSubtitleEdit) {
             if (_representation.options.enableTitleEdit) {
-                var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title, updateTitle, true);
+                var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title,
+                    updateTitle, true);
                 knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
             }
 
             if (_representation.options.enableSubtitleEdit) {
-                var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle, updateSubtitle, true);
+                var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.options.subtitle,
+                    updateSubtitle, true);
                 knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
             }
 
@@ -121,19 +125,20 @@ window.boxplot_namespace = (function () {
         }
 
         if (!_representation.options.multi && _representation.options.enableColumnSelection) {
-            var colSelect = knimeService.createMenuSelect('columnSelect', _value.options.numCol, _representation.options.columns, function () {
-                _value.options.numCol = this.value;
-                drawChart();
-            });
+            var colSelect = knimeService.createMenuSelect('columnSelect', _value.options.numCol,
+                _representation.options.columns, function () {
+                    _value.options.numCol = this.value;
+                    drawChart();
+                });
             knimeService.addMenuItem('Selected column:', 'long-arrow-up', colSelect);
         }
     };
 
     updateTitle = function () {
-        var hadTitle = (_value.options.title.length > 0);
+        var hadTitle = _value.options.title.length > 0;
         _value.options.title = document.getElementById('chartTitleText').value;
-        var hasTitle = (_value.options.title.length > 0);
-        if (hasTitle != hadTitle) {
+        var hasTitle = _value.options.title.length > 0;
+        if (hasTitle !== hadTitle) {
             // if the title appeared or disappeared, we need to resize the chart
             drawChart(true);
         }
@@ -141,10 +146,10 @@ window.boxplot_namespace = (function () {
     };
 
     updateSubtitle = function () {
-        var hadTitle = (_value.options.subtitle.length > 0);
+        var hadTitle = _value.options.subtitle.length > 0;
         _value.options.subtitle = document.getElementById('chartSubtitleText').value;
-        var hasTitle = (_value.options.subtitle.length > 0);
-        if (hasTitle != hadTitle) {
+        var hasTitle = _value.options.subtitle.length > 0;
+        if (hasTitle !== hadTitle) {
             // if the subtitle appeared or disappeared, we need to resize the chart
             drawChart(true);
         }
@@ -161,7 +166,7 @@ window.boxplot_namespace = (function () {
             _data = {};
             var numCol = _value.options.numCol;
             _data[numCol] = _representation.inObjects[0].stats[numCol];
-            if (_data[numCol] === undefined) {
+            if (typeof _data[numCol] === 'undefined') {
                 delete _data[numCol];
             }
         }
@@ -178,14 +183,12 @@ window.boxplot_namespace = (function () {
         var cw = Math.max(MIN_WIDTH, _representation.options.svg.width);
         var ch = Math.max(MIN_HEIGHT, _representation.options.svg.height);
 
-        var chartWidth, chartHeight;
+        var chartWidth = cw + 'px';
+        var chartHeight = ch + 'px';
         // If we are fullscreen, we set the chart width to 100%
         if (_representation.options.svg.fullscreen && _representation.runningInView) {
             chartWidth = '100%';
             chartHeight = '100%';
-        } else {
-            chartWidth = cw + 'px';
-            chartHeight = ch + 'px';
         }
 
         // The margins for the plot area
@@ -282,7 +285,7 @@ window.boxplot_namespace = (function () {
             .classed('knime-tick-label', true);
 
         // Animate only when running in view and not resizing
-        var duration = (_representation.runningInView && !resizing) ? 500 : 0;
+        var duration = _representation.runningInView && !resizing ? 500 : 0;
 
         // Create a selection for each box with data that we created at the beginning
 
@@ -291,7 +294,7 @@ window.boxplot_namespace = (function () {
                 d.value.valid = d.value.upperQuartile >= d.value.lowerQuartile;
                 return d;
             }), function (d) {
-                return (_representation.options.multi) ? d.key : '__dummy__';
+                return _representation.options.multi ? d.key : '__dummy__';
             });
 
         // Remove boxes that are not in the data anymore
@@ -540,38 +543,50 @@ window.boxplot_namespace = (function () {
         var dataCols = _representation.options.columns;
 
         // temporary workaround for being able to select a data column which was not included in the node settings
-        if (dataCols.indexOf(_value.options.numCol) == -1) {
-            knimeService.setWarningMessage('No chart was generated since the selected column was not included in the node configuration dialog.\nPlease choose another column or add the selected column to the list of included columns.', NO_DATA_COLUMN);
+        if (dataCols.indexOf(_value.options.numCol) === -1) {
+            knimeService.setWarningMessage('No chart was generated since the selected column was not included in the ' +
+                'node configuration dialog.\nPlease choose another column or add the selected column to the list of ' +
+                'included columns.', NO_DATA_COLUMN);
             return;
         }
 
         if (_representation.options.multi) {
             // plot multiple boxes
-            if (excludedDataCols.length == dataCols.length) {
-                knimeService.setWarningMessage('No chart was generated since all data columns have only missing values or special doubles.\nRe-run the workflow with different data.', NO_DATA_AVAILABLE);
+            if (excludedDataCols.length === dataCols.length) {
+                knimeService.setWarningMessage('No chart was generated since all data columns have only missing ' +
+                    'values or special doubles.\nRe-run the workflow with different data.', NO_DATA_AVAILABLE);
             } else {
                 if (!_representation.options.reportOnMissingValues) {
                     return;
                 }
                 if (excludedDataCols.length > 0) {
-                    knimeService.setWarningMessage('Following data columns contain only missing values or special doubles and were excluded from the view:\n    ' + excludedDataCols.join('\n    '), MISSING_VALUES_ONLY);
+                    knimeService.setWarningMessage('Following data columns contain only missing values or special ' +
+                        'doubles and were excluded from the view:\n    ' + excludedDataCols.join('\n    '),
+                        MISSING_VALUES_ONLY);
                 }
                 if (Object.keys(numMissValPerCol).length > 0) {
                     var str = '';
                     for (var key in numMissValPerCol) {
                         if (numMissValPerCol.hasOwnProperty(key)) {
-                            str += '    ' + key + ' - ' + numMissValPerCol[key] + ' missing value(s) or special double(s)\n';
+                            str += '    ' + key + ' - ' + numMissValPerCol[key] +
+                            ' missing value(s) or special double(s)\n';
                         }
                     }
-                    knimeService.setWarningMessage('Missing values or special doubles ignored during statistics calculations per data column:\n' + str, IGNORED_MISSING_VALUES);
+                    knimeService.setWarningMessage('Missing values or special doubles ignored during statistics ' +
+                        'calculations per data column:\n' + str, IGNORED_MISSING_VALUES);
                 }
             }
         } else {
             // plot a box for only one data column
-            if (excludedDataCols.indexOf(_value.options.numCol) != -1) {
-                knimeService.setWarningMessage('No chart was generated since the selected data column has only missing values or special doubles.\nChoose another data column or re-run the workflow with different data.', NO_DATA_AVAILABLE);
-            } else if (numMissValPerCol[_value.options.numCol] !== undefined && _representation.options.reportOnMissingValues) {
-                knimeService.setWarningMessage('Missing values or special doubles ignored during statistics calculations:\n' + numMissValPerCol[_value.options.numCol] + ' missing value(s) or special double(s).', IGNORED_MISSING_VALUES);
+            if (excludedDataCols.indexOf(_value.options.numCol) !== -1) {
+                knimeService.setWarningMessage('No chart was generated since the selected data column has only ' +
+                    'missing values or special doubles.\nChoose another data column or re-run the workflow with ' +
+                    'different data.', NO_DATA_AVAILABLE);
+            } else if (typeof numMissValPerCol[_value.options.numCol] !== 'undefined' &&
+                _representation.options.reportOnMissingValues) {
+                knimeService.setWarningMessage('Missing values or special doubles ignored during statistics ' +
+                    'calculations:\n' + numMissValPerCol[_value.options.numCol] + ' missing value(s) or special ' +
+                    'double(s).', IGNORED_MISSING_VALUES);
             }
         }
     };
