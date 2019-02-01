@@ -165,6 +165,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             response.setTable(tableBuilder.build(exec));
         } catch (Exception e) {
             response.setError(e.getMessage());
+            throw e;
         }
         return response;
     }
