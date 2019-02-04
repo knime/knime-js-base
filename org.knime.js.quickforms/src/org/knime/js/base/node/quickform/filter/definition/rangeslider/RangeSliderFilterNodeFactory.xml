@@ -27,10 +27,10 @@
 				Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider. 
 			</option>
 			<option name="Range Minimum">
-				Select the minimum value for the slider range. If <i>Custom</i> is checked a custom value can be entered, otherwise the minimum from the selected range column is used.
+				Select the minimum value that can be selected with the slider. If <i>Custom</i> is checked a custom value can be entered, otherwise the minimum from the selected range column is used.
 			</option>
 			<option name="Range Maximum">
-				Select the maximum value for the slider range. If <i>Custom</i> is checked a custom value can be entered, otherwise the maximum from the selected range column is used.
+				Select the maximum value that can be selected with the slider. If <i>Custom</i> is checked a custom value can be entered, otherwise the maximum from the selected range column is used.
 			</option>
 			<option name="Default Minimum Value">
 				Set the value for the minimum slider handle. If <i>Use Domain Extent</i> is checked the value from the range minimum will be used.
@@ -46,9 +46,9 @@
 			<option name="Step Size">
 				Define the step size to be used for stepping.
 			</option>
-			<option name="Set Handle Position">
-				Select on which side of the bar there should be a handle (minimum, maximum, both). When only one side 
-				is chosen, the other side cannot be changed and is therefore not limited to a minimum/maximum value.
+			<option name="Use slider to define:">
+				If the slider is used to define just a minimum/maximum, the other end of the range will be open when the filter is applied to later datasets.
+				For example, if the slider is only defining the minimum value for the filter, the upper value will be infinity.
 			</option>
 			<option name="Orientation">
 				Select the orientation of the slider.
