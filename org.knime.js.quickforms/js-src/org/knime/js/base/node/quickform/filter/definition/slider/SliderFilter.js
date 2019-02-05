@@ -209,8 +209,8 @@ window.knimeQuickformFilterSlider = (function () {
         } else {
             precision = 7;
         }
-        tempMin = parseFloat(settings.range.min[0].toFixed(precision));
-        tempMax = parseFloat(settings.range.max[0].toFixed(precision));
+        tempMin = parseFloat(sliderFilter.toFixed(settings.range.min[0], precision));
+        tempMax = parseFloat(sliderFilter.toFixed(settings.range.max[0], precision));
         if (tempMin < tempMax) {
             settings.range.min[0] = tempMin;
             settings.range.max[0] = tempMax;
@@ -301,6 +301,13 @@ window.knimeQuickformFilterSlider = (function () {
             _value.filter.columns[0].maximum = sliderValues[1];
         }
         return changed;
+    };
+
+    // function to fix decimals to some precision without rounding
+    sliderFilter.toFixed = function (num, fixed) {
+        debugger;
+        var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+        return num.toString().match(re)[0];
     };
 
     sliderFilter.validate = function () {
