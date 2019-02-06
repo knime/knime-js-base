@@ -1364,7 +1364,8 @@ window.knimeGroupedBarChart = (function () {
                 } else if (groupValue === dataValues[group].values.length - 1) {
                     wrappedPlotData[group].values[groupValue].x = extremResults.values[1].truncated;
                 } else {
-                    wrappedPlotData[group].values[groupValue].x = results.values[parseInt(groupValue, 10)].truncated;
+                    var val = results.values[parseInt(groupValue, 10)];
+                    wrappedPlotData[group].values[groupValue].x = typeof val === 'undefined' ? null : val.truncated;
                 }
             }
         }

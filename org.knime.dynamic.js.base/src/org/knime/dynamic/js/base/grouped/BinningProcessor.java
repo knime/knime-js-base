@@ -156,7 +156,10 @@ public class BinningProcessor extends GroupedProcessor {
             try {
                 List<String> containedBins = new ArrayList<String>((int)groupedTable.size());
                 groupedTable.forEach(row -> {
-                    containedBins.add(((StringValue)row.getCell(binIndex)).getStringValue());
+                    DataCell binCell = row.getCell(binIndex);
+                    if (!binCell.isMissing()) {
+                        containedBins.add(((StringValue)binCell).getStringValue());
+                    }
                     cont.addRowToTable(row);
                 });
                 final AtomicInteger emptyBinCounter = new AtomicInteger(0);
