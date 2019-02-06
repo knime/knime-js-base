@@ -50,6 +50,8 @@ package org.knime.js.base.node.viz.pagedTable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.knime.core.data.DataRow;
+import org.knime.core.data.cache.DataRowCache;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -70,7 +72,10 @@ import org.knime.js.core.settings.table.TableSettings;
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation,
-        PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse>{
+        PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
+
+
+    private DataRowCache m_cache;
 
     /**
      * @param viewName The name of the interactive view
@@ -111,8 +116,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         BufferedDataTable out = (BufferedDataTable)inObjects[0];
         synchronized (getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
+            m_table = (BufferedDataTable)inObjects[0];
+            if (m_cache == null) {
+                m_cache = new DataRowCache();
+            }
+            m_cache.setDataTable(m_table);
             if (viewRepresentation.getSettings().getTable() == null) {
-                m_table = (BufferedDataTable)inObjects[0];
                 JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
                 viewRepresentation.getSettings().setTable(jsonTable);
                 copyConfigToRepresentation();
@@ -147,6 +156,15 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
      * {@inheritDoc}
      */
     @Override
+    protected void performReset() {
+        m_cache = null;
+        super.performReset();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PagedTableViewRequest createEmptyViewRequest() {
         return new PagedTableViewRequest();
     }
@@ -158,7 +176,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     public PagedTableViewResponse handleRequest(final PagedTableViewRequest request, final ExecutionMonitor exec)
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         PagedTableViewResponse response = new PagedTableViewResponse(request);
+        DataRow[] rows = new DataRow[request.getLength()];
+        for (int i = 0; i < request.getLength(); i++) {
+            rows[i] = m_cache.getRow((int)request.getStart() + i);
+        }
         Builder tableBuilder = getJsonDataTableBuilder(m_table);
+        tableBuilder.setDataRows(rows, m_table.getDataTableSpec());
         tableBuilder.setFirstRow(request.getStart() + 1);
         tableBuilder.setMaxRows(request.getLength());
         try {
