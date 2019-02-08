@@ -196,11 +196,15 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         PagedTableViewResponse response = new PagedTableViewResponse(request);
         try {
-            DataRow[] rows = new DataRow[request.getLength()];
+            DataRow[] rows = new DataRow[Math.min(request.getLength(),(int)(m_table.size() - request.getStart()))];
             ExecutionMonitor cacheProgress = exec.createSubProgress(0.9);
             exec.setMessage("Caching rows...");
             for (int i = 0; i < request.getLength(); i++) {
-                rows[i] = m_cache.getRow((int)request.getStart() + i, cacheProgress);
+                int index = (int)request.getStart() + i;
+                if (index >= m_table.size()) {
+                    break;
+                }
+                rows[i] = m_cache.getRow(index, cacheProgress);
             }
             Builder tableBuilder = getJsonDataTableBuilder(m_table);
             tableBuilder.setDataRows(rows);
