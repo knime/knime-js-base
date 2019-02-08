@@ -114,6 +114,21 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
      * {@inheritDoc}
      */
     @Override
+    public PagedTableViewRepresentation getViewRepresentation() {
+        PagedTableViewRepresentation rep = super.getViewRepresentation();
+        if (m_cache == null) {
+            m_cache = new DataRowCache();
+        }
+        if (m_cache.getDataTable() == null && m_table != null) {
+            m_cache.setDataTable(m_table, null);
+        }
+        return rep;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         BufferedDataTable out = (BufferedDataTable)inObjects[0];
         synchronized (getLock()) {
@@ -195,7 +210,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             response.setTable(tableBuilder.build(exec.createSubProgress(0.1)));
         } catch (Exception e) {
             response.setError(e.getMessage());
-            throw e;
+            throw new ViewRequestHandlingException(e);
         }
         return response;
     }
