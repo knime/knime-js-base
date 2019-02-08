@@ -58,6 +58,7 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.interactive.ViewRequestHandlingException;
 import org.knime.core.node.port.PortObject;
@@ -74,6 +75,7 @@ import org.knime.js.core.settings.table.TableSettings;
 public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation,
         PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
 
+    private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
 
     private DataRowCache m_cache;
 
@@ -120,7 +122,9 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             if (m_cache == null) {
                 m_cache = new DataRowCache();
             }
-            m_cache.setDataTable(m_table);
+            long start = System.currentTimeMillis();
+            m_cache.setDataTable(m_table, exec.createSubExecutionContext(0.1));
+            LOGGER.debug("TABLE CACHE - set data table took " + (System.currentTimeMillis() - start));
             if (viewRepresentation.getSettings().getTable() == null) {
                 JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
                 viewRepresentation.getSettings().setTable(jsonTable);
@@ -136,7 +140,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                     }
                 }
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
-                out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.5));
+                out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.4));
             }
             viewRepresentation.getSettings().setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
         }
@@ -176,16 +180,19 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     public PagedTableViewResponse handleRequest(final PagedTableViewRequest request, final ExecutionMonitor exec)
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         PagedTableViewResponse response = new PagedTableViewResponse(request);
-        DataRow[] rows = new DataRow[request.getLength()];
-        for (int i = 0; i < request.getLength(); i++) {
-            rows[i] = m_cache.getRow((int)request.getStart() + i);
-        }
-        Builder tableBuilder = getJsonDataTableBuilder(m_table);
-        tableBuilder.setDataRows(rows, m_table.getDataTableSpec());
-        tableBuilder.setFirstRow(request.getStart() + 1);
-        tableBuilder.setMaxRows(request.getLength());
         try {
-            response.setTable(tableBuilder.build(exec));
+            DataRow[] rows = new DataRow[request.getLength()];
+            ExecutionMonitor cacheProgress = exec.createSubProgress(0.9);
+            exec.setMessage("Caching rows...");
+            for (int i = 0; i < request.getLength(); i++) {
+                rows[i] = m_cache.getRow((int)request.getStart() + i, cacheProgress);
+            }
+            Builder tableBuilder = getJsonDataTableBuilder(m_table);
+            tableBuilder.setDataRows(rows);
+            tableBuilder.setFirstRow(request.getStart() + 1);
+            tableBuilder.setMaxRows(request.getLength());
+            exec.setMessage("Serializing response..");
+            response.setTable(tableBuilder.build(exec.createSubProgress(0.1)));
         } catch (Exception e) {
             response.setError(e.getMessage());
             throw e;
