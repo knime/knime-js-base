@@ -120,7 +120,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             m_cache = new DataRowCache();
         }
         if (m_cache.getDataTable() == null && m_table != null) {
-            m_cache.setDataTable(m_table, null);
+            String[] includedColumns = rep.getSettings().getTable().getSpec().getColNames();
+            m_cache.setDataTable(m_table, null, includedColumns);
         }
         return rep;
     }
@@ -134,17 +135,16 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         synchronized (getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
             m_table = (BufferedDataTable)inObjects[0];
-            if (m_cache == null) {
-                m_cache = new DataRowCache();
-            }
-            long start = System.currentTimeMillis();
-            m_cache.setDataTable(m_table, exec.createSubExecutionContext(0.1));
-            LOGGER.debug("TABLE CACHE - set data table took " + (System.currentTimeMillis() - start));
             if (viewRepresentation.getSettings().getTable() == null) {
                 JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
                 viewRepresentation.getSettings().setTable(jsonTable);
                 copyConfigToRepresentation();
             }
+            if (m_cache == null) {
+                m_cache = new DataRowCache();
+            }
+            String[] includedColumns = viewRepresentation.getSettings().getTable().getSpec().getColNames();
+            m_cache.setDataTable(m_table, exec.createSubExecutionContext(0.1), includedColumns);
 
             if (m_config.getSettings().getRepresentationSettings().getEnableSelection()) {
                 PagedTableViewValue viewValue = getViewValue();
