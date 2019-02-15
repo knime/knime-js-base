@@ -212,7 +212,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             tableBuilder.setMaxRows(request.getLength());
             exec.setMessage("Serializing response..");
             response.setTable(tableBuilder.build(exec.createSubProgress(0.1)));
+        } catch (CanceledExecutionException e) {
+            // request was cancelled, no need for special treatment
+            throw e;
         } catch (Exception e) {
+            // wrap all other exceptions for proper error handling
+            LOGGER.error("Table request could not be processed: " + e.getMessage(), e);
             response.setError(e.getMessage());
             throw new ViewRequestHandlingException(e);
         }
