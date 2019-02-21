@@ -47,6 +47,7 @@
  */
 package org.knime.js.base.node.viz.pagedTable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -221,7 +222,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         try {
             ExecutionMonitor cacheProgress = exec.createSubProgress(0.95);
             exec.setMessage("Caching rows...");
-            List<DataRow> rows = m_cache.getRows(request.getStart(), request.getLength(), cacheProgress);
+            List<DataRow> rows;
+            try {
+                rows = m_cache.getRows(request.getStart(), request.getLength(), cacheProgress);
+            } catch (IndexOutOfBoundsException e) {
+                rows = new ArrayList<DataRow>(0);
+            }
             Builder tableBuilder = getJsonDataTableBuilder(m_table);
             tableBuilder.setDataRows(rows.stream().toArray(DataRow[]::new));
             tableBuilder.setFirstRow(request.getStart() + 1);
