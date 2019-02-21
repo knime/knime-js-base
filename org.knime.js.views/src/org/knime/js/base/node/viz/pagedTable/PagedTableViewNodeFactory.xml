@@ -23,7 +23,8 @@
         	</option>
         	<option name="Use lazy loading">
         		Enables or disables lazy loading of the data. Lazy loading might be necessary when dealing
-        		with larger tables, but might make the view act less responsive.
+        		with larger tables, but might make the view act less responsive. Note that enabling lazy loading might
+        		render some interactivity options unavailable.
         	</option>
 	        <option name="Title" optional="true">
 	        	An optional title to be displayed above the table. Leave blank if no title is desired.
