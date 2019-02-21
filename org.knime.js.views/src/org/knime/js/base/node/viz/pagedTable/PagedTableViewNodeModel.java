@@ -51,7 +51,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.knime.core.data.DataRow;
-import org.knime.core.data.cache.DataRowCache;
+import org.knime.core.data.DirectAccessTable;
+import org.knime.core.data.cache.WindowCacheTable;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -66,6 +67,7 @@ import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.Builder;
 import org.knime.js.core.JSONViewRequestHandler;
 import org.knime.js.core.node.table.AbstractTableNodeModel;
+import org.knime.js.core.settings.table.TableRepresentationSettings;
 import org.knime.js.core.settings.table.TableSettings;
 
 /**
@@ -76,8 +78,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
-
-    private DataRowCache m_cache;
+    private DirectAccessTable m_cache;
 
     /**
      * @param viewName The name of the interactive view
@@ -116,12 +117,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     @Override
     public PagedTableViewRepresentation getViewRepresentation() {
         PagedTableViewRepresentation rep = super.getViewRepresentation();
-        if (m_cache == null) {
-            m_cache = new DataRowCache();
-        }
-        if (m_cache.getDataTable() == null && m_table != null) {
-            String[] includedColumns = rep.getSettings().getTable().getSpec().getColNames();
-            m_cache.setDataTable(m_table, null, includedColumns);
+        if (m_cache == null && rep.getSettings().getEnableLazyLoading()) {
+            initializeCache(rep);
         }
         return rep;
     }
@@ -134,19 +131,25 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         BufferedDataTable out = (BufferedDataTable)inObjects[0];
         synchronized (getLock()) {
             PagedTableViewRepresentation viewRepresentation = getViewRepresentation();
+            TableRepresentationSettings settings = m_config.getSettings().getRepresentationSettings();
             m_table = (BufferedDataTable)inObjects[0];
+            double tableCreationFraction = 0.5;
+            if (settings.getEnableLazyLoading() && settings.getEnableSelection()) {
+                tableCreationFraction = 0.05;
+            } else if (!settings.getEnableLazyLoading() && !settings.getEnableSelection()) {
+                tableCreationFraction = 1.0;
+            }
             if (viewRepresentation.getSettings().getTable() == null) {
-                JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table, exec.createSubExecutionContext(0.5));
+                JSONDataTable jsonTable = createJSONTableFromBufferedDataTable(m_table,
+                    exec.createSubExecutionContext(tableCreationFraction));
                 viewRepresentation.getSettings().setTable(jsonTable);
                 copyConfigToRepresentation();
             }
-            if (m_cache == null) {
-                m_cache = new DataRowCache();
+            if (m_cache == null && settings.getEnableLazyLoading()) {
+                initializeCache(viewRepresentation);
             }
-            String[] includedColumns = viewRepresentation.getSettings().getTable().getSpec().getColNames();
-            m_cache.setDataTable(m_table, exec.createSubExecutionContext(0.1), includedColumns);
 
-            if (m_config.getSettings().getRepresentationSettings().getEnableSelection()) {
+            if (settings.getEnableSelection() && !settings.getEnableLazyLoading()) {
                 PagedTableViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
                 if (viewValue != null) {
@@ -155,12 +158,32 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                     }
                 }
                 ColumnRearranger rearranger = createColumnAppender(m_table.getDataTableSpec(), selectionList);
-                out = exec.createColumnRearrangeTable(m_table, rearranger, exec.createSubExecutionContext(0.4));
+                out = exec.createColumnRearrangeTable(m_table, rearranger,
+                    exec.createSubExecutionContext(1 - tableCreationFraction));
             }
-            viewRepresentation.getSettings().setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
+            viewRepresentation.getSettings()
+                .setSubscriptionFilterIds(getSubscriptionFilterIds(m_table.getDataTableSpec()));
         }
         exec.setProgress(1);
         return new PortObject[]{out};
+    }
+
+    private void initializeCache(final PagedTableViewRepresentation rep) {
+        if (rep == null || rep.getSettings() == null) {
+            return;
+        }
+        TableRepresentationSettings settings = rep.getSettings();
+        String[] includedColumns = null;
+        if (rep.getSettings().getTable() != null) {
+            includedColumns = settings.getTable().getSpec().getColNames();
+        }
+        m_cache = new WindowCacheTable(m_table, includedColumns);
+        int maxPageSize = settings.getInitialPageSize();
+        if (settings.getEnablePageSizeChange()) {
+            maxPageSize = Arrays.stream(settings.getAllowedPageSizes()).max().getAsInt();
+        }
+        ((WindowCacheTable)m_cache)
+            .setCacheSize(Math.max(5 * maxPageSize, WindowCacheTable.DEFAULT_CACHE_SIZE));
     }
 
     /**
@@ -196,22 +219,15 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         PagedTableViewResponse response = new PagedTableViewResponse(request);
         try {
-            DataRow[] rows = new DataRow[Math.min(request.getLength(),(int)(m_table.size() - request.getStart()))];
-            ExecutionMonitor cacheProgress = exec.createSubProgress(0.9);
+            ExecutionMonitor cacheProgress = exec.createSubProgress(0.95);
             exec.setMessage("Caching rows...");
-            for (int i = 0; i < request.getLength(); i++) {
-                int index = (int)request.getStart() + i;
-                if (index >= m_table.size()) {
-                    break;
-                }
-                rows[i] = m_cache.getRow(index, cacheProgress);
-            }
+            List<DataRow> rows = m_cache.getRows(request.getStart(), request.getLength(), cacheProgress);
             Builder tableBuilder = getJsonDataTableBuilder(m_table);
-            tableBuilder.setDataRows(rows);
+            tableBuilder.setDataRows(rows.stream().toArray(DataRow[]::new));
             tableBuilder.setFirstRow(request.getStart() + 1);
             tableBuilder.setMaxRows(request.getLength());
-            exec.setMessage("Serializing response..");
-            response.setTable(tableBuilder.build(exec.createSubProgress(0.1)));
+            exec.setMessage("Serializing response...");
+            response.setTable(tableBuilder.build(exec.createSubProgress(0.05)));
         } catch (CanceledExecutionException e) {
             // request was cancelled, no need for special treatment
             throw e;
