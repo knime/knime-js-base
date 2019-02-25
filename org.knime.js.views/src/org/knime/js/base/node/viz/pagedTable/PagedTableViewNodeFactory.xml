@@ -21,7 +21,7 @@
         	<option name="Maximum number of rows to display">
     	        Use this numerical value to restrict the number of rows used for this visualization.
         	</option>
-        	<option name="Use lazy loading">
+        	<option name="Enable lazy loading">
         		Enables or disables lazy loading of the data. Lazy loading might be necessary when dealing
         		with larger tables, but might make the view act less responsive. Note that enabling lazy loading might
         		render some interactivity options unavailable.

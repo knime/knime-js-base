@@ -72,6 +72,7 @@ import org.knime.js.core.settings.table.TableRepresentationSettings;
 import org.knime.js.core.settings.table.TableSettings;
 
 /**
+ * Node model implementation for the Table View (JavaScript) node
  *
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
@@ -183,6 +184,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         if (settings.getEnablePageSizeChange()) {
             maxPageSize = Arrays.stream(settings.getAllowedPageSizes()).max().getAsInt();
         }
+        // we either take the default cache size (500), or if larger, 5 times the largest page size
+        // that is available for selection in the view
         ((WindowCacheTable)m_cache)
             .setCacheSize(Math.max(5 * maxPageSize, WindowCacheTable.DEFAULT_CACHE_SIZE));
     }
