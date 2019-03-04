@@ -88,17 +88,23 @@ public final class CredentialsInputQuickFormNodeModel extends
             throw new InvalidSettingsException(error.getError());
         }
         String credentialsIdentifier = getConfig().getFlowVariableName();
-        String username = value.getUsername();
-        String password = value.getPassword();
-        UserNameAndPasswordPair pair =
-                readFromCredentialsProviderIfBlank(getCredentialsProvider(), credentialsIdentifier, username, password);
-        pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
+        if (getConfig().isUseServerLoginCredentials()
+            && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
+            getLogger().debugWithFormat("Pushing credentials flow variable using system credentials");
+        } else {
+            String username = value.getUsername();
+            String password = value.getPassword();
+            UserNameAndPasswordPair pair = readFromCredentialsProviderIfBlank(
+                getCredentialsProvider(), credentialsIdentifier, username, password);
+            pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
+        }
     }
 
-    /** If the password is blank, read out a credentials from the credentials provider. Workaround for bug AP-5974:
+    /**
+     * If the password is blank, read out a credentials from the credentials provider. Workaround for bug AP-5974:
      * Credentials QF node to inherit password from workflow credentials, if present
      */
-    private UserNameAndPasswordPair readFromCredentialsProviderIfBlank(final CredentialsProvider provider,
+    private static UserNameAndPasswordPair readFromCredentialsProviderIfBlank(final CredentialsProvider provider,
         final String credentialsIdentifier, final String defaultUser, final String defaultPassword) {
         if (StringUtils.isEmpty(defaultPassword)) {
             if (provider != null) {
@@ -158,13 +164,18 @@ public final class CredentialsInputQuickFormNodeModel extends
             // no configuration, nothing to fix
             return;
         }
+        if (getConfig().isUseServerLoginCredentials()
+                && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
+            return; // exit here -- flow variable is pushed
+        }
         String password = value.getPassword();
         UserNameAndPasswordPair pair = new UserNameAndPasswordPair(username, password);
         if (!value.isSavePassword() && !isExecuted && !isInactive) {
             pair = readFromCredentialsProviderIfBlank(credProvider, credentialsIdentifier, username, password);
             if (StringUtils.isEmpty(pair.getPassword())) {
                 Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
-                List<Credentials> loadCredentials = loadHelper.loadCredentials(Collections.singletonList(tempCredentials));
+                List<Credentials> loadCredentials =
+                        loadHelper.loadCredentialsPrefilled(Collections.singletonList(tempCredentials));
                 tempCredentials = loadCredentials.iterator().next();
 
                 // set the new password
