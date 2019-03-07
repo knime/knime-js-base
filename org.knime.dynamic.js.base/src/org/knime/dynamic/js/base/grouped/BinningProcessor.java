@@ -134,6 +134,16 @@ public class BinningProcessor extends GroupedProcessor {
         String binnedColName = binnedNames.get(0);
         List<String> orderedBinNames = op.getConfiguration().getDiscretize(binnedColName).getBins().stream()
             .map(e -> e.getBinValue()).collect(Collectors.toList());
+        boolean hasNaN = op.getConfiguration().getDiscretize(binnedColName).getBins().stream().anyMatch(bin -> {
+            return bin.getIntervals().stream().anyMatch(interval -> {
+                double left = interval.getLeftMargin();
+                double right = interval.getRightMargin();
+                return Double.isNaN(left) || Double.isNaN(right) || Double.isInfinite(left) || Double.isInfinite(right);
+            });
+        });
+        if (hasNaN) {
+            throw new IllegalArgumentException("Binning created NaN or infinity interval. Result invalid.");
+        }
         AutoBinnerApply applier = new AutoBinnerApply();
         final ExecutionContext binExec = exec.createSubExecutionContext(0.4);
         BufferedDataTable outData = applier.execute(op, table, binExec);
