@@ -51,8 +51,8 @@ package org.knime.js.base.node.css.editor.guarded;
 import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedDocument;
-import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSection;
+import org.knime.rsyntaxtextarea.guarded.GuardedDocument;
+import org.knime.rsyntaxtextarea.guarded.GuardedSection;
 
 /**
  *  A document with guarded, non editable sections

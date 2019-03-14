@@ -80,11 +80,11 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.util.ViewUtils;
-import org.knime.core.node.util.rsyntaxtextarea.guarded.GuardedSection;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.js.base.node.css.editor.guarded.CssSnippetDocument;
 import org.knime.js.base.node.ui.CSSSnippetTextArea;
+import org.knime.rsyntaxtextarea.guarded.GuardedSection;
 
 /**
  *
