@@ -47,15 +47,23 @@
  */
 package org.knime.js.base.node.viz.pagedTable;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DirectAccessTable.UnknownRowCountException;
+import org.knime.core.data.DoubleValue;
 import org.knime.core.data.cache.WindowCacheTable;
 import org.knime.core.data.cache.WindowCacheTableTransformationExecutor.WindowCacheTableTansformationExecutorBuilder;
 import org.knime.core.data.container.ColumnRearranger;
@@ -70,6 +78,7 @@ import org.knime.core.data.transform.DataTableFilterInformation;
 import org.knime.core.data.transform.DataTableNominalFilterInformation;
 import org.knime.core.data.transform.DataTableRangeFilterInformation;
 import org.knime.core.data.transform.DataTableSearchFilterInformation;
+import org.knime.core.data.transform.DataTableSearchFilterInformation.DataTableSearchFilterFormatter;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -442,19 +451,55 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     private void addSearch(final Search search, final String colName,
         final WindowCacheTableTansformationExecutorBuilder transformationBuilder) throws CanceledExecutionException {
         int[] colIndices = null;
+        final DataTableSpec spec = m_table.getDataTableSpec();
         PagedTableViewRepresentation rep = getViewRepresentation();
-        if (rep != null && rep.getSettings().getTable() != null) {
-            String[] colNames = rep.getSettings().getTable().getSpec().getColNames();
-            if (colName != null) {
-                colNames = new String[] {colName};
+        Map<Integer, DataTableSearchFilterFormatter> formatters = new HashMap<Integer, DataTableSearchFilterFormatter>();
+        if (rep != null) {
+            if (rep.getSettings().getTable() != null) {
+                String[] colNames = rep.getSettings().getTable().getSpec().getColNames();
+                if (colName != null) {
+                    colNames = new String[] {colName};
+                }
+                colIndices = new int[colNames.length];
+                for (int col = 0; col < colNames.length; col++) {
+                    colIndices[col] = spec.findColumnIndex(colNames[col]);
+                }
             }
-            colIndices = new int[colNames.length];
-            for (int col = 0; col < colNames.length; col++) {
-                colIndices[col] = m_table.getDataTableSpec().findColumnIndex(colNames[col]);
+            if (rep.getSettings().getEnableGlobalNumberFormat() && colIndices != null) {
+                for (int col : colIndices) {
+                    if (spec.getColumnSpec(col).getType().isCompatible(DoubleValue.class)) {
+                        formatters.put(col,
+                            new LimitDecimalSearchFormatter(rep.getSettings().getGlobalNumberFormatDecimals()));
+                    }
+                }
             }
         }
-        DataTableSearchFilterInformation filter =
-            new DataTableSearchFilterInformation(search.getValue(), search.isRegex(), !search.isRegex(), colIndices);
+        DataTableSearchFilterInformation filter = new DataTableSearchFilterInformation(search.getValue(),
+            search.isRegex(), !search.isRegex(), formatters, m_table.getDataTableSpec(), colIndices);
         transformationBuilder.filter(filter);
+    }
+
+    private static final class LimitDecimalSearchFormatter implements DataTableSearchFilterFormatter {
+
+        private final DecimalFormat m_pattern;
+
+        /**
+         *
+         */
+        public LimitDecimalSearchFormatter(final int decimals) {
+            m_pattern = (DecimalFormat)NumberFormat.getInstance(Locale.US);
+            m_pattern.setMinimumFractionDigits(decimals);
+            m_pattern.setMaximumFractionDigits(decimals);
+            m_pattern.setRoundingMode(RoundingMode.HALF_UP);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String format(final DataCell cell) {
+            return m_pattern.format(((DoubleValue)cell).getDoubleValue());
+        }
+
     }
 }
