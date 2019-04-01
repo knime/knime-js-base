@@ -72,11 +72,11 @@ org_knime_js_base_node_quickform_input_string = function() {
 			// Text input (single-line)
 			input = $('<input class="knime-qf-input knime-string knime-single-line">');
 			input.attr("type", "text");
+			input.addClass("standard-sizing");
 			if (representation.regex) {
 				input.attr("pattern", representation.regex);
 			}
 		}
-		input.addClass("standard-sizing");
 		input.attr("aria-label", representation.label);
 		var stringValue = representation.currentValue.string;
 		input.val(stringValue);
