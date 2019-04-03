@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.m2e.Maven2LaunchConfigurationType">
+<booleanAttribute key="M2_DEBUG_OUTPUT" value="false"/>
+<stringAttribute key="M2_GOALS" value="clean install"/>
+<booleanAttribute key="M2_NON_RECURSIVE" value="false"/>
+<booleanAttribute key="M2_OFFLINE" value="false"/>
+<stringAttribute key="M2_PROFILES" value=""/>
+<listAttribute key="M2_PROPERTIES"/>
+<stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
+<booleanAttribute key="M2_SKIP_TESTS" value="false"/>
+<intAttribute key="M2_THREADS" value="1"/>
+<booleanAttribute key="M2_UPDATE_SNAPSHOTS" value="false"/>
+<stringAttribute key="M2_USER_SETTINGS" value=""/>
+<booleanAttribute key="M2_WORKSPACE_RESOLUTION" value="false"/>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="KNIME_SHARED_P2" value="file:///home/gabriel/git/knime-shared/org.knime.update.shared/target"/>
+<mapEntry key="KNIME_TP_P2" value="https://jenkins.knime.org/download/trunk/org.knime.update.targetPlatform/"/>
+<mapEntry key="KNIME_BASE_P2" value="https://jenkins.knime.org/download/trunk/org.knime.update.targetPlatform/"/>
+<mapEntry key="KNIME_SVG_P2" value="file:///home/gabriel/git/knime-svg/org.knime.update.ext.svg/target/repository"/>
+<mapEntry key="KNIME_EXPRESSIONS_P2" value="https://jenkins.knime.org/download/trunk/org.knime.update.targetPlatform/"/>
+<mapEntry key="KNIME_CORE_P2" value="https://jenkins.knime.org/download/trunk/org.knime.update.targetPlatform/"/>
+<mapEntry key="KNIME_P2" value="https://jenkins.knime.org/download/trunk/org.knime.update.targetPlatform/"/>
+<mapEntry key="KNIME_JS_CORE_P2" value="file:///home/gabriel/git-experiments/knime-js-core/org.knime.update.js.core/target/repository"/>
+<mapEntry key="KNIME_WORKBENCH_P2" value="file:///home/gabriel/git/knime-workbench/org.knime.update.workbench/target/repository"/>
+<mapEntry key="KNIME_TEXTPROCESSING_P2" value="file:///home/gabriel/git/knime-textprocessing/org.knime.update.ext.textprocessing/target/repository"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${project_loc:knime-js-base}"/>
+</launchConfiguration>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.knime.features.js.views_3.8.0.qualifier.jar" id="org.knime.features.js.views" version="3.8.0.qualifier"/>
+   <feature url="features/org.knime.features.js.quickforms_3.8.0.qualifier.jar" id="org.knime.features.js.quickforms" version="3.8.0.qualifier"/>
+   <feature url="features/org.knime.features.quickform.legacy_3.8.0.qualifier.jar" id="org.knime.features.quickform.legacy" version="3.8.0.qualifier"/>
+</site>
