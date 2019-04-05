@@ -48,18 +48,12 @@
  */
 package org.knime.js.views;
 
-import static java.util.Arrays.asList;
-
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.knime.base.node.stats.dataexplorer.DataExplorerNodeRepresentation;
-import org.knime.base.node.stats.dataexplorer.JSHistogram;
-import org.knime.base.node.stats.dataexplorer.JSHistogram.NominalBin;
-import org.knime.base.node.stats.dataexplorer.JSHistogram.NumericBin;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewRepresentation;
 import org.knime.js.base.node.viz.decisiontree.classification.JSDecisionTree;
@@ -122,27 +116,6 @@ public class DeSerializationTest {
         JSDecisionTreeMetaData metaData = new JSDecisionTreeMetaData(new String[]{"class1", "class2"});
         JSDecisionTree tree = new JSDecisionTree(root, metaData);
         rep.setTree(tree);
-
-        testDeSerializeWebViewContent(rep);
-
-        //TODO compare and test more properties
-    }
-
-    /**
-     * Tests de-/serialization of {@link DataExplorerNodeRepresentation}.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void testDeSerializationDataExplorerNodeRepresentation() throws Exception {
-
-        DataExplorerNodeRepresentation rep = new DataExplorerNodeRepresentation();
-        JSHistogram<NumericBin> numHist =
-            new JSHistogram<NumericBin>("test", 5, asList(new NumericBin(10, .1, .9)), 100);
-        JSHistogram<NominalBin> nomHist =
-            new JSHistogram<NominalBin>("test", 5, asList(new NominalBin(10, "bin")), 100);
-        rep.setJsNumericHistograms(asList(numHist));
-        rep.setJsNominalHistograms(asList(nomHist));
 
         testDeSerializeWebViewContent(rep);
 
