@@ -51,14 +51,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable.UnknownRowCountException;
 import org.knime.core.data.cache.WindowCacheTable;
 import org.knime.core.data.cache.WindowCacheTableTransformationExecutor.WindowCacheTableTansformationExecutorBuilder;
 import org.knime.core.data.container.ColumnRearranger;
+import org.knime.core.data.property.filter.FilterModel;
+import org.knime.core.data.property.filter.FilterModelNominal;
+import org.knime.core.data.property.filter.FilterModelRange;
 import org.knime.core.data.sort.TableSortInformation;
 import org.knime.core.data.sort.TableSortInformation.ColumnSortInformation;
 import org.knime.core.data.sort.TableSortInformation.MissingValueSortStrategy;
 import org.knime.core.data.sort.TableSortInformation.SortDirection;
+import org.knime.core.data.transform.DataTableFilterInformation;
+import org.knime.core.data.transform.DataTableNominalFilterInformation;
+import org.knime.core.data.transform.DataTableRangeFilterInformation;
+import org.knime.core.data.transform.DataTableSearchFilterInformation;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -69,10 +79,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.interactive.ViewRequestHandlingException;
 import org.knime.core.node.port.PortObject;
 import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Order;
+import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Search;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.Builder;
 import org.knime.js.core.JSONViewRequestHandler;
 import org.knime.js.core.node.table.AbstractTableNodeModel;
+import org.knime.js.core.selections.json.JSONTableSelection;
+import org.knime.js.core.selections.json.RangeSelection;
+import org.knime.js.core.selections.json.SelectionElement;
 import org.knime.js.core.settings.table.TableRepresentationSettings;
 import org.knime.js.core.settings.table.TableSettings;
 
@@ -86,7 +100,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
     private WindowCacheTable m_cache;
-    private WindowCacheTable m_sortedCache;
+    private WindowCacheTable m_transformedCache;
     private PagedTableViewRequest m_lastRequest;
 
     /**
@@ -183,7 +197,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         }
         TableRepresentationSettings settings = rep.getSettings();
         String[] includedColumns = null;
-        if (rep.getSettings().getTable() != null) {
+        if (settings.getTable() != null) {
             includedColumns = settings.getTable().getSpec().getColNames();
         }
         m_cache = new WindowCacheTable(m_table, includedColumns);
@@ -193,9 +207,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         }
         // we either take the default cache size (500), or if larger, 5 times the largest page size
         // that is available for selection in the view
-        m_cache
-            .setCacheSize(Math.max(5 * maxPageSize, WindowCacheTable.DEFAULT_CACHE_SIZE));
-        m_sortedCache = m_cache;
+        m_cache.setCacheSize(Math.max(5 * maxPageSize, WindowCacheTable.DEFAULT_CACHE_SIZE));
+        m_transformedCache = m_cache;
     }
 
     /**
@@ -212,7 +225,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     @Override
     protected void performReset() {
         m_cache = null;
-        m_sortedCache = null;
+        m_transformedCache = null;
         m_lastRequest = null;
         super.performReset();
     }
@@ -231,9 +244,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     @Override
     public PagedTableViewResponse handleRequest(final PagedTableViewRequest request, final ExecutionMonitor exec)
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
+        exec.checkCanceled();
+        LOGGER.warn("Request received");
         PagedTableViewResponse response = new PagedTableViewResponse(request);
         try {
             synchronized (getLock()) {
+                exec.checkCanceled();
                 double remainingProgress = 0.95;
                 final Order[] order = request.getOrder();
                 if (order != null && order.length > 0) {
@@ -242,29 +258,80 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                         double sortProgress = request.getStart() < 1000 ? 0.9 : 0.5;
                         ExecutionMonitor sortMonitor = exec.createSubProgress(sortProgress);
                         remainingProgress -= sortProgress;
-                        m_sortedCache = sort(order, sortMonitor);
+                        exec.setMessage("Sorting...");
+                        m_transformedCache = sort(order, sortMonitor);
+                        m_lastRequest = null;
                     }
                 } else if (m_lastRequest != null && !Arrays.deepEquals(m_lastRequest.getOrder(), order)) {
-                    m_sortedCache = m_cache;
+                    m_transformedCache = m_cache;
+                    m_lastRequest = null;
+                }
+                WindowCacheTableTansformationExecutorBuilder transformationBuilder = null;
+
+                Search search = request.getSearch();
+                if (search != null) {
+                    if (m_lastRequest == null || (m_lastRequest != null && !m_lastRequest.getSearch().equals(search))) {
+                        if (StringUtils.isNoneEmpty(search.getValue())) {
+                            transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
+                            addSearch(search, transformationBuilder);
+                        }
+                    }
+                }
+                JSONTableSelection filter = request.getFilter();
+                if (filter != null) {
+                    if (m_lastRequest == null || (m_lastRequest != null && !m_lastRequest.getFilter().equals(filter))) {
+                        if (transformationBuilder == null) {
+                            transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
+                        }
+                        SelectionElement[] elements = filter.getElements();
+                        if (elements != null) {
+                            for (SelectionElement element : elements) {
+                                // the following call makes sure the model is well formed and contains only 1 filter
+                                FilterModel model = element.createFilterModel();
+                                String colName = ((RangeSelection)element).getColumns()[0].getColumnName();
+                                DataTableSpec spec = m_table.getDataTableSpec();
+                                DataTableFilterInformation filterInfo = null;
+                                if (model instanceof FilterModelNominal) {
+                                    filterInfo = new DataTableNominalFilterInformation(spec, colName, (FilterModelNominal)model);
+                                } else if (model instanceof FilterModelRange) {
+                                    filterInfo = new DataTableRangeFilterInformation(spec, colName, (FilterModelRange)model);
+                                }
+                                if (filterInfo != null) {
+                                    transformationBuilder.filter(filterInfo);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (transformationBuilder != null) {
+                    m_transformedCache =
+                        (WindowCacheTable)transformationBuilder.build().execute(m_transformedCache, null);
                 }
                 m_lastRequest = request;
                 ExecutionMonitor cacheProgress = exec.createSubProgress(remainingProgress);
                 exec.setMessage("Caching rows...");
                 List<DataRow> rows;
                 try {
-                    rows = m_sortedCache.getRows(request.getStart(), request.getLength(), cacheProgress);
+                    rows = m_transformedCache.getRows(request.getStart(), request.getLength(), cacheProgress);
                 } catch (IndexOutOfBoundsException e) {
                     rows = new ArrayList<DataRow>(0);
                 }
+                exec.checkCanceled();
                 Builder tableBuilder = getJsonDataTableBuilder(m_table);
                 tableBuilder.setDataRows(rows.stream().toArray(DataRow[]::new));
                 tableBuilder.setFirstRow(request.getStart() + 1);
                 tableBuilder.setMaxRows(request.getLength());
+                try {
+                    tableBuilder.setPartialTableRows(m_cache.getRowCount(), m_transformedCache.getRowCount());
+                } catch (UnknownRowCountException e) {
+                    tableBuilder.setPartialTableRows(m_cache.getRowCount(), -1);
+                }
                 exec.setMessage("Serializing response...");
                 response.setTable(tableBuilder.build(exec.createSubProgress(0.05)));
             }
         } catch (CanceledExecutionException e) {
             // request was cancelled, no need for special treatment
+            LOGGER.warn("Request cancelled");
             throw e;
         } catch (Exception e) {
             // wrap all other exceptions for proper error handling
@@ -284,8 +351,25 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             String colName = m_table.getDataTableSpec().getColumnSpec(o.getColumn()) == null ? null : o.getColumn();
             sort.addColumn(new ColumnSortInformation(colName, dir, colName == null));
         }
-        WindowCacheTableTansformationExecutorBuilder builder = WindowCacheTableTansformationExecutorBuilder.of(m_cache);
+        WindowCacheTableTansformationExecutorBuilder builder =
+            WindowCacheTableTansformationExecutorBuilder.newBuilder();
         builder.sort(sort);
-        return (WindowCacheTable)builder.build().execute(exec);
+        return (WindowCacheTable)builder.build().execute(m_cache, exec);
+    }
+
+    private void addSearch(final Search search,
+        final WindowCacheTableTansformationExecutorBuilder transformationBuilder) throws CanceledExecutionException {
+        int[] colIndices = null;
+        PagedTableViewRepresentation rep = getViewRepresentation();
+        if (rep != null && rep.getSettings().getTable() != null) {
+            String[] colNames = rep.getSettings().getTable().getSpec().getColNames();
+            colIndices = new int[colNames.length];
+            for (int col = 0; col < colNames.length; col++) {
+                colIndices[col] = m_table.getDataTableSpec().findColumnIndex(colNames[col]);
+            }
+        }
+        DataTableSearchFilterInformation filter =
+            new DataTableSearchFilterInformation(search.getValue(), search.isRegex(), !search.isRegex(), colIndices);
+        transformationBuilder.filter(filter);
     }
 }

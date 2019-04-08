@@ -51,6 +51,7 @@ package org.knime.js.base.node.viz.pagedTable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.js.core.JSONViewRequest;
+import org.knime.js.core.selections.json.JSONTableSelection;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -68,7 +69,8 @@ public class PagedTableViewRequest extends JSONViewRequest {
     private Search m_search;
     private Order[] m_order;
     private Column[] m_columns;
-    //TODO: probably need to add selection here for 'show selected only' filtering and current filter rule
+    private JSONTableSelection m_filter;
+    //TODO: add selection here for 'show selected only'
 
     /**
      * @return the start
@@ -141,6 +143,20 @@ public class PagedTableViewRequest extends JSONViewRequest {
     }
 
     /**
+     * @return the filter
+     */
+    public JSONTableSelection getFilter() {
+        return m_filter;
+    }
+
+    /**
+     * @param filter the filter to set
+     */
+    public void setFilter(final JSONTableSelection filter) {
+        m_filter = filter;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -161,6 +177,7 @@ public class PagedTableViewRequest extends JSONViewRequest {
                 .append(m_search, other.m_search)
                 .append(m_order, other.m_order)
                 .append(m_columns, other.m_columns)
+                .append(m_filter, other.m_filter)
                 .isEquals();
     }
 
@@ -175,10 +192,11 @@ public class PagedTableViewRequest extends JSONViewRequest {
                 .append(m_search)
                 .append(m_order)
                 .append(m_columns)
+                .append(m_filter)
                 .toHashCode();
     }
 
-    private static class Search {
+    static class Search {
         private String m_value;
         private boolean m_regex;
 
@@ -308,7 +326,7 @@ public class PagedTableViewRequest extends JSONViewRequest {
         }
     }
 
-    private static class Column {
+    static class Column {
         private String m_data;
         private String m_name;
         private boolean m_searchable;
