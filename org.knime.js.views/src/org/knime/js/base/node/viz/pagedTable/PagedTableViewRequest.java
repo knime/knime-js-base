@@ -243,7 +243,7 @@ public class PagedTableViewRequest extends JSONViewRequest {
         }
     }
 
-    private static class Order {
+    static class Order {
         private String m_column;
         private String m_dir;
 

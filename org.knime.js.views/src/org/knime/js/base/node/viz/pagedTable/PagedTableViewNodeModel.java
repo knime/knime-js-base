@@ -52,9 +52,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.knime.core.data.DataRow;
-import org.knime.core.data.DirectAccessTable;
 import org.knime.core.data.cache.WindowCacheTable;
+import org.knime.core.data.cache.WindowCacheTableTransformationExecutor.WindowCacheTableTansformationExecutorBuilder;
 import org.knime.core.data.container.ColumnRearranger;
+import org.knime.core.data.sort.TableSortInformation;
+import org.knime.core.data.sort.TableSortInformation.ColumnSortInformation;
+import org.knime.core.data.sort.TableSortInformation.MissingValueSortStrategy;
+import org.knime.core.data.sort.TableSortInformation.SortDirection;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -64,6 +68,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.interactive.ViewRequestHandlingException;
 import org.knime.core.node.port.PortObject;
+import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Order;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONDataTable.Builder;
 import org.knime.js.core.JSONViewRequestHandler;
@@ -80,7 +85,9 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
-    private DirectAccessTable m_cache;
+    private WindowCacheTable m_cache;
+    private WindowCacheTable m_sortedCache;
+    private PagedTableViewRequest m_lastRequest;
 
     /**
      * @param viewName The name of the interactive view
@@ -186,8 +193,9 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         }
         // we either take the default cache size (500), or if larger, 5 times the largest page size
         // that is available for selection in the view
-        ((WindowCacheTable)m_cache)
+        m_cache
             .setCacheSize(Math.max(5 * maxPageSize, WindowCacheTable.DEFAULT_CACHE_SIZE));
+        m_sortedCache = m_cache;
     }
 
     /**
@@ -204,6 +212,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     @Override
     protected void performReset() {
         m_cache = null;
+        m_sortedCache = null;
+        m_lastRequest = null;
         super.performReset();
     }
 
@@ -223,20 +233,36 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         PagedTableViewResponse response = new PagedTableViewResponse(request);
         try {
-            ExecutionMonitor cacheProgress = exec.createSubProgress(0.95);
-            exec.setMessage("Caching rows...");
-            List<DataRow> rows;
-            try {
-                rows = m_cache.getRows(request.getStart(), request.getLength(), cacheProgress);
-            } catch (IndexOutOfBoundsException e) {
-                rows = new ArrayList<DataRow>(0);
+            synchronized (getLock()) {
+                double remainingProgress = 0.95;
+                final Order[] order = request.getOrder();
+                if (order != null && order.length > 0) {
+                    if (m_lastRequest == null
+                        || (m_lastRequest != null && !Arrays.deepEquals(m_lastRequest.getOrder(), order))) {
+                        double sortProgress = request.getStart() < 1000 ? 0.9 : 0.5;
+                        ExecutionMonitor sortMonitor = exec.createSubProgress(sortProgress);
+                        remainingProgress -= sortProgress;
+                        m_sortedCache = sort(order, sortMonitor);
+                    }
+                } else if (m_lastRequest != null && !Arrays.deepEquals(m_lastRequest.getOrder(), order)) {
+                    m_sortedCache = m_cache;
+                }
+                m_lastRequest = request;
+                ExecutionMonitor cacheProgress = exec.createSubProgress(remainingProgress);
+                exec.setMessage("Caching rows...");
+                List<DataRow> rows;
+                try {
+                    rows = m_sortedCache.getRows(request.getStart(), request.getLength(), cacheProgress);
+                } catch (IndexOutOfBoundsException e) {
+                    rows = new ArrayList<DataRow>(0);
+                }
+                Builder tableBuilder = getJsonDataTableBuilder(m_table);
+                tableBuilder.setDataRows(rows.stream().toArray(DataRow[]::new));
+                tableBuilder.setFirstRow(request.getStart() + 1);
+                tableBuilder.setMaxRows(request.getLength());
+                exec.setMessage("Serializing response...");
+                response.setTable(tableBuilder.build(exec.createSubProgress(0.05)));
             }
-            Builder tableBuilder = getJsonDataTableBuilder(m_table);
-            tableBuilder.setDataRows(rows.stream().toArray(DataRow[]::new));
-            tableBuilder.setFirstRow(request.getStart() + 1);
-            tableBuilder.setMaxRows(request.getLength());
-            exec.setMessage("Serializing response...");
-            response.setTable(tableBuilder.build(exec.createSubProgress(0.05)));
         } catch (CanceledExecutionException e) {
             // request was cancelled, no need for special treatment
             throw e;
@@ -247,5 +273,19 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             throw new ViewRequestHandlingException(e);
         }
         return response;
+    }
+
+    private WindowCacheTable sort(final Order[] order, final ExecutionMonitor exec) throws CanceledExecutionException {
+        TableSortInformation sort = new TableSortInformation();
+        sort.setMissingValueStrategy(MissingValueSortStrategy.LAST);
+        for (Order o: order) {
+            SortDirection dir =
+                o.getDir().equalsIgnoreCase("asc") ? SortDirection.ASCENDING : SortDirection.DESCENDING;
+            String colName = m_table.getDataTableSpec().getColumnSpec(o.getColumn()) == null ? null : o.getColumn();
+            sort.addColumn(new ColumnSortInformation(colName, dir, colName == null));
+        }
+        WindowCacheTableTansformationExecutorBuilder builder = WindowCacheTableTansformationExecutorBuilder.of(m_cache);
+        builder.sort(sort);
+        return (WindowCacheTable)builder.build().execute(exec);
     }
 }
