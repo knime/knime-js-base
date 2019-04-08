@@ -50,6 +50,7 @@ package org.knime.js.base.node.viz.pagedTable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.DataRow;
@@ -78,6 +79,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.interactive.ViewRequestHandlingException;
 import org.knime.core.node.port.PortObject;
+import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Column;
 import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Order;
 import org.knime.js.base.node.viz.pagedTable.PagedTableViewRequest.Search;
 import org.knime.js.core.JSONDataTable;
@@ -95,12 +97,17 @@ import org.knime.js.core.settings.table.TableSettings;
  *
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
-public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation,
-        PagedTableViewValue> implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
+public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableViewRepresentation, PagedTableViewValue>
+    implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
+
+    private static int SMALL_TABLE = 1000;
+
     private WindowCacheTable m_cache;
+
     private WindowCacheTable m_transformedCache;
+
     private PagedTableViewRequest m_lastRequest;
 
     /**
@@ -252,9 +259,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                 double remainingProgress = 0.95;
                 final Order[] order = request.getOrder();
                 if (order != null && order.length > 0) {
-                    if (m_lastRequest == null
-                        || (m_lastRequest != null && !Arrays.deepEquals(m_lastRequest.getOrder(), order))) {
-                        double sortProgress = request.getStart() < 1000 ? 0.9 : 0.5;
+                    if (sortingChanged(request, m_lastRequest)) {
+                        double sortProgress = request.getStart() < SMALL_TABLE ? 0.9 : 0.5;
                         ExecutionMonitor sortMonitor = exec.createSubProgress(sortProgress);
                         remainingProgress -= sortProgress;
                         exec.setMessage("Sorting...");
@@ -265,23 +271,32 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                     m_transformedCache = m_cache;
                     m_lastRequest = null;
                 }
-                WindowCacheTableTansformationExecutorBuilder transformationBuilder = null;
 
-                Search search = request.getSearch();
-                if (search != null) {
-                    if (m_lastRequest == null || (m_lastRequest != null && !m_lastRequest.getSearch().equals(search))) {
-                        transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
-                        if (StringUtils.isNoneEmpty(search.getValue())) {
-                            addSearch(search, transformationBuilder);
+                if (needsNewFilter(request, m_lastRequest)) {
+                    // evaluated all potential filter rules, if any changed a new transformation builder is needed
+                    WindowCacheTableTansformationExecutorBuilder transformationBuilder =
+                        WindowCacheTableTansformationExecutorBuilder.newBuilder();
+
+                    // global search filter
+                    Search search = request.getSearch();
+                    if (search != null && StringUtils.isNotEmpty(search.getValue())) {
+                        addSearch(search, null, transformationBuilder);
+                    }
+
+                    // search filter on individual columns
+                    Column[] columns = request.getColumns();
+                    if (columns != null) {
+                        for (Column column : columns) {
+                            if (column != null && column.getSearch() != null
+                                && StringUtils.isNotEmpty(column.getSearch().getValue())) {
+                                addSearch(column.getSearch(), column.getName(), transformationBuilder);
+                            }
                         }
                     }
-                }
-                JSONTableSelection filter = request.getFilter();
-                if (filter != null) {
-                    if (m_lastRequest == null || (m_lastRequest != null && !m_lastRequest.getFilter().equals(filter))) {
-                        if (transformationBuilder == null) {
-                            transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
-                        }
+
+                    // filter rules from interactive events
+                    JSONTableSelection filter = request.getFilter();
+                    if (filter != null) {
                         SelectionElement[] elements = filter.getElements();
                         if (elements != null) {
                             for (SelectionElement element : elements) {
@@ -291,9 +306,11 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                                 DataTableSpec spec = m_table.getDataTableSpec();
                                 DataTableFilterInformation filterInfo = null;
                                 if (model instanceof FilterModelNominal) {
-                                    filterInfo = new DataTableNominalFilterInformation(spec, colName, (FilterModelNominal)model);
+                                    filterInfo =
+                                        new DataTableNominalFilterInformation(spec, colName, (FilterModelNominal)model);
                                 } else if (model instanceof FilterModelRange) {
-                                    filterInfo = new DataTableRangeFilterInformation(spec, colName, (FilterModelRange)model);
+                                    filterInfo =
+                                        new DataTableRangeFilterInformation(spec, colName, (FilterModelRange)model);
                                 }
                                 if (filterInfo != null) {
                                     transformationBuilder.filter(filterInfo);
@@ -301,11 +318,20 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                             }
                         }
                     }
-                }
-                if (transformationBuilder != null) {
+
+                    // execute filters
                     m_transformedCache =
-                        (WindowCacheTable)transformationBuilder.build().execute(m_transformedCache, null);
+                            (WindowCacheTable)transformationBuilder.build().execute(m_transformedCache, null);
+                    try {
+                        // try to get a row count for small tables immediately
+                        if (m_cache.getRowCount() < SMALL_TABLE) {
+                            m_transformedCache.getRows(m_cache.getRowCount() - 1, 1, null);
+                        }
+                    } catch (UnknownRowCountException | IndexOutOfBoundsException e) { /* ignore */ }
+                    // TODO: count rows for larger filtered tables
+
                 }
+
                 m_lastRequest = request;
                 ExecutionMonitor cacheProgress = exec.createSubProgress(remainingProgress);
                 exec.setMessage("Caching rows...");
@@ -340,12 +366,59 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         return response;
     }
 
+    private static boolean needsNewFilter(final PagedTableViewRequest newRequest,
+        final PagedTableViewRequest previousRequest) {
+        if (previousRequest == null) {
+            return true;
+        }
+        return searchChanged(newRequest, previousRequest) || filterChanged(newRequest, previousRequest)
+            || columnSearchChanged(newRequest, previousRequest);
+    }
+
+    private static boolean sortingChanged(final PagedTableViewRequest newRequest,
+        final PagedTableViewRequest previousRequest) {
+        if (previousRequest == null) {
+            return true;
+        }
+        return !Arrays.deepEquals(previousRequest.getOrder(), newRequest.getOrder());
+    }
+
+    private static boolean searchChanged(final PagedTableViewRequest newRequest,
+        final PagedTableViewRequest previousRequest) {
+        if (previousRequest == null) {
+            return true;
+        }
+        return !Objects.equals(previousRequest.getSearch(), newRequest.getSearch());
+    }
+
+    private static boolean filterChanged(final PagedTableViewRequest newRequest,
+        final PagedTableViewRequest previousRequest) {
+        if (previousRequest == null) {
+            return true;
+        }
+        return !Objects.equals(previousRequest.getFilter(), newRequest.getFilter());
+    }
+
+    private static boolean columnSearchChanged(final PagedTableViewRequest newRequest,
+        final PagedTableViewRequest previousRequest) {
+        if (previousRequest == null || previousRequest.getColumns() == null) {
+            return true;
+        }
+        for (int i = 0; i < previousRequest.getColumns().length; i++) {
+            Column prevCol = previousRequest.getColumns()[i];
+            Column newCol = newRequest.getColumns()[i];
+            if (!Objects.equals(prevCol.getSearch(), newCol.getSearch())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private WindowCacheTable sort(final Order[] order, final ExecutionMonitor exec) throws CanceledExecutionException {
         TableSortInformation sort = new TableSortInformation();
         sort.setMissingValueStrategy(MissingValueSortStrategy.LAST);
-        for (Order o: order) {
-            SortDirection dir =
-                o.getDir().equalsIgnoreCase("asc") ? SortDirection.ASCENDING : SortDirection.DESCENDING;
+        for (Order o : order) {
+            SortDirection dir = o.getDir().equalsIgnoreCase("asc") ? SortDirection.ASCENDING : SortDirection.DESCENDING;
             String colName = m_table.getDataTableSpec().getColumnSpec(o.getColumn()) == null ? null : o.getColumn();
             sort.addColumn(new ColumnSortInformation(colName, dir, colName == null));
         }
@@ -355,12 +428,15 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         return (WindowCacheTable)builder.build().execute(m_cache, exec);
     }
 
-    private void addSearch(final Search search,
+    private void addSearch(final Search search, final String colName,
         final WindowCacheTableTansformationExecutorBuilder transformationBuilder) throws CanceledExecutionException {
         int[] colIndices = null;
         PagedTableViewRepresentation rep = getViewRepresentation();
         if (rep != null && rep.getSettings().getTable() != null) {
             String[] colNames = rep.getSettings().getTable().getSpec().getColNames();
+            if (colName != null) {
+                colNames = new String[] {colName};
+            }
             colIndices = new int[colNames.length];
             for (int col = 0; col < colNames.length; col++) {
                 colIndices[col] = m_table.getDataTableSpec().findColumnIndex(colNames[col]);
