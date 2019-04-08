@@ -245,7 +245,6 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     public PagedTableViewResponse handleRequest(final PagedTableViewRequest request, final ExecutionMonitor exec)
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         exec.checkCanceled();
-        LOGGER.warn("Request received");
         PagedTableViewResponse response = new PagedTableViewResponse(request);
         try {
             synchronized (getLock()) {
@@ -271,8 +270,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                 Search search = request.getSearch();
                 if (search != null) {
                     if (m_lastRequest == null || (m_lastRequest != null && !m_lastRequest.getSearch().equals(search))) {
+                        transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
                         if (StringUtils.isNoneEmpty(search.getValue())) {
-                            transformationBuilder = WindowCacheTableTansformationExecutorBuilder.newBuilder();
                             addSearch(search, transformationBuilder);
                         }
                     }
@@ -331,7 +330,6 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             }
         } catch (CanceledExecutionException e) {
             // request was cancelled, no need for special treatment
-            LOGGER.warn("Request cancelled");
             throw e;
         } catch (Exception e) {
             // wrap all other exceptions for proper error handling
