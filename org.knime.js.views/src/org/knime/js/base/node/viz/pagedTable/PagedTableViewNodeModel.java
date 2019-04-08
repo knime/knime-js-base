@@ -203,11 +203,22 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             return;
         }
         TableRepresentationSettings settings = rep.getSettings();
-        String[] includedColumns = null;
+        List<String> includedColumns = new ArrayList<String>();
         if (settings.getTable() != null) {
-            includedColumns = settings.getTable().getSpec().getColNames();
+            includedColumns.addAll(Arrays.asList(settings.getTable().getSpec().getColNames()));
         }
-        m_cache = new WindowCacheTable(m_table, includedColumns);
+        if (m_table != null && m_table.getSpec() != null) {
+            m_table.getSpec().forEach(colSpec -> {
+                // retain columns with color, size, shape of filter handlers set
+                if (colSpec.getColorHandler() != null || colSpec.getSizeHandler() != null
+                    || colSpec.getShapeHandler() != null || colSpec.getFilterHandler().isPresent()) {
+                    if (!includedColumns.contains(colSpec.getName())) {
+                        includedColumns.add(colSpec.getName());
+                    }
+                }
+            });
+        }
+        m_cache = new WindowCacheTable(m_table, includedColumns.stream().toArray(String[]::new));
         int maxPageSize = settings.getInitialPageSize();
         if (settings.getEnablePageSizeChange()) {
             maxPageSize = Arrays.stream(settings.getAllowedPageSizes()).max().getAsInt();
