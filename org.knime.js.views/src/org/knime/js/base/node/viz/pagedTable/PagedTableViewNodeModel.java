@@ -53,10 +53,13 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.DataCell;
@@ -64,6 +67,8 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DirectAccessTable.UnknownRowCountException;
 import org.knime.core.data.DoubleValue;
+import org.knime.core.data.RowIterator;
+import org.knime.core.data.RowIteratorBuilder;
 import org.knime.core.data.cache.WindowCacheTable;
 import org.knime.core.data.cache.WindowCacheTableTransformationExecutor.WindowCacheTableTansformationExecutorBuilder;
 import org.knime.core.data.container.ColumnRearranger;
@@ -110,14 +115,12 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
     implements JSONViewRequestHandler<PagedTableViewRequest, PagedTableViewResponse> {
 
     private static NodeLogger LOGGER = NodeLogger.getLogger(PagedTableViewNodeModel.class);
-
     private static int SMALL_TABLE = 1000;
 
     private WindowCacheTable m_cache;
-
     private WindowCacheTable m_transformedCache;
-
     private PagedTableViewRequest m_lastRequest;
+    private ExecutionMonitor m_rowCountingMonitor;
 
     /**
      * @param viewName The name of the interactive view
@@ -273,6 +276,19 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         throws ViewRequestHandlingException, InterruptedException, CanceledExecutionException {
         exec.checkCanceled();
         PagedTableViewResponse response = new PagedTableViewResponse(request);
+
+        if (request.isCountRows()) {
+            m_rowCountingMonitor = exec;
+            long rowCount = countRowsOnTransformedCache(exec);
+            synchronized(getLock()) {
+                if (m_transformedCache != null) {
+                    m_transformedCache.setRowCount(rowCount, true);
+                }
+            }
+            response.setRowCount(rowCount);
+            return response;
+        }
+
         try {
             synchronized (getLock()) {
                 exec.checkCanceled();
@@ -293,9 +309,15 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                 }
 
                 if (needsNewFilter(request, m_lastRequest)) {
+                    if (m_rowCountingMonitor != null) {
+                        m_rowCountingMonitor.getProgressMonitor().setExecuteCanceled();
+                        m_rowCountingMonitor = null;
+                    }
+
                     // evaluated all potential filter rules, if any changed a new transformation builder is needed
                     WindowCacheTableTansformationExecutorBuilder transformationBuilder =
                         WindowCacheTableTansformationExecutorBuilder.newBuilder();
+
 
                     // global search filter
                     Search search = request.getSearch();
@@ -342,13 +364,14 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                     // execute filters
                     m_transformedCache =
                             (WindowCacheTable)transformationBuilder.build().execute(m_transformedCache, null);
-                    try {
-                        // try to get a row count for small tables immediately
-                        if (m_cache.getRowCount() < SMALL_TABLE) {
+                    // try to get a row count for small tables immediately
+                    if (m_cache.getRowCount() < SMALL_TABLE) {
+                        try {
                             m_transformedCache.getRows(m_cache.getRowCount() - 1, 1, null);
-                        }
-                    } catch (UnknownRowCountException | IndexOutOfBoundsException e) { /* ignore */ }
-                    // TODO: count rows for larger filtered tables
+                        } catch (UnknownRowCountException | IndexOutOfBoundsException e) { /* ignore */ }
+                    } /* else {
+                        countRowsOnTransformedCache(null);
+                    } */
 
                 }
 
@@ -384,6 +407,43 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
             throw new ViewRequestHandlingException(e);
         }
         return response;
+    }
+
+    private long countRowsOnTransformedCache(final ExecutionMonitor exec) throws CanceledExecutionException {
+        if (m_transformedCache != null) {
+            List<DataTableFilterInformation> filters = null;
+            RowIterator iterator = null;
+            synchronized(getLock()) {
+                filters = m_transformedCache.getFilters();
+                Set<Integer> colIndices = new HashSet<Integer>();
+                for (DataTableFilterInformation filter : filters) {
+                    colIndices.addAll(Arrays.stream(filter.getColumnIndices()).boxed().collect(Collectors.toList()));
+                }
+                RowIteratorBuilder<? extends RowIterator> builder = m_transformedCache.getDataTable().iteratorBuilder();
+                // use only columns needed for the filters to work for counting, not all visible needed
+                builder.filterColumns(colIndices.stream().mapToInt(Integer::intValue).toArray());
+                iterator = builder.build();
+            }
+            long rowCount = 0;
+            while (iterator.hasNext()) {
+                DataRow currentRow = iterator.next();
+                boolean includedInFilter = true;
+                for (DataTableFilterInformation filter : filters) {
+                    if (!filter.isRowIncluded(currentRow)) {
+                        includedInFilter = false;
+                        break;
+                    }
+                }
+                if (includedInFilter) {
+                    rowCount++;
+                }
+                if (exec != null) {
+                    exec.checkCanceled();
+                }
+            }
+            return rowCount;
+        }
+        return -1;
     }
 
     private static boolean needsNewFilter(final PagedTableViewRequest newRequest,
@@ -473,6 +533,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                     }
                 }
             }
+            // date/time formatting not possible (yet) since moment.js and Java formatting patterns differ
         }
         DataTableSearchFilterInformation filter = new DataTableSearchFilterInformation(search.getValue(),
             search.isRegex(), !search.isRegex(), formatters, m_table.getDataTableSpec(), colIndices);

@@ -65,6 +65,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewRequest> {
 
     private JSONDataTable m_table;
+    private long m_rowCount;
     private String m_error;
 
     /**
@@ -79,6 +80,20 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
      */
     public void setTable(final JSONDataTable table) {
         m_table = table;
+    }
+
+    /**
+     * @return the rowCount
+     */
+    public long getRowCount() {
+        return m_rowCount;
+    }
+
+    /**
+     * @param rowCount the rowCount to set
+     */
+    public void setRowCount(final long rowCount) {
+        m_rowCount = rowCount;
     }
 
     /**
@@ -120,6 +135,7 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
         PagedTableViewResponse other = (PagedTableViewResponse)obj;
         return new EqualsBuilder()
                 .append(m_table, other.m_table)
+                .append(m_rowCount, other.m_rowCount)
                 .append(m_error, other.m_error)
                 .isEquals();
     }
@@ -131,6 +147,7 @@ public class PagedTableViewResponse extends JSONViewResponse<PagedTableViewReque
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(m_table)
+                .append(m_rowCount)
                 .append(m_error)
                 .toHashCode();
     }

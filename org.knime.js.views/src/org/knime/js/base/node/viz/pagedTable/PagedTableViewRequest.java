@@ -70,7 +70,8 @@ public class PagedTableViewRequest extends JSONViewRequest {
     private Order[] m_order;
     private Column[] m_columns;
     private JSONTableSelection m_filter;
-    //TODO: add selection here for 'show selected only'
+    private JSONTableSelection m_selection;
+    private boolean m_countRows;
 
     /**
      * @return the start
@@ -157,6 +158,34 @@ public class PagedTableViewRequest extends JSONViewRequest {
     }
 
     /**
+     * @return the selection
+     */
+    public JSONTableSelection getSelection() {
+        return m_selection;
+    }
+
+    /**
+     * @param selection the selection to set
+     */
+    public void setSelection(final JSONTableSelection selection) {
+        m_selection = selection;
+    }
+
+    /**
+     * @return the countRows
+     */
+    public boolean isCountRows() {
+        return m_countRows;
+    }
+
+    /**
+     * @param countRows the countRows to set
+     */
+    public void setCountRows(final boolean countRows) {
+        m_countRows = countRows;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -178,6 +207,8 @@ public class PagedTableViewRequest extends JSONViewRequest {
                 .append(m_order, other.m_order)
                 .append(m_columns, other.m_columns)
                 .append(m_filter, other.m_filter)
+                .append(m_selection, other.m_selection)
+                .append(m_countRows, other.m_countRows)
                 .isEquals();
     }
 
@@ -193,6 +224,8 @@ public class PagedTableViewRequest extends JSONViewRequest {
                 .append(m_order)
                 .append(m_columns)
                 .append(m_filter)
+                .append(m_selection)
+                .append(m_countRows)
                 .toHashCode();
     }
 
