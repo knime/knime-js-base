@@ -204,11 +204,7 @@ window.knimeQuickformFilterSlider = (function () {
         // The framework cannot handle more then 7 decimals. So we have to make sure, that either both values are at max
         // 7 decimals long or that they would be the same otherwise.
         var tempMin, tempMax, precision;
-        if (settings.pips.format.decimals) {
-            precision = settings.pips.format.decimals;
-        } else {
-            precision = 7;
-        }
+        precision = 7;
         tempMin = parseFloat(sliderFilter.toFixed(settings.range.min[0], precision));
         tempMax = parseFloat(sliderFilter.toFixed(settings.range.max[0], precision));
         if (tempMin < tempMax) {
@@ -305,7 +301,6 @@ window.knimeQuickformFilterSlider = (function () {
 
     // function to fix decimals to some precision without rounding
     sliderFilter.toFixed = function (num, fixed) {
-        debugger;
         var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
         return num.toString().match(re)[0];
     };
