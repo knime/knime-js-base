@@ -82,6 +82,7 @@ import org.knime.core.data.sort.TableSortInformation.SortDirection;
 import org.knime.core.data.transform.DataTableFilterInformation;
 import org.knime.core.data.transform.DataTableNominalFilterInformation;
 import org.knime.core.data.transform.DataTableRangeFilterInformation;
+import org.knime.core.data.transform.DataTableRowKeyFilterInformation;
 import org.knime.core.data.transform.DataTableSearchFilterInformation;
 import org.knime.core.data.transform.DataTableSearchFilterInformation.DataTableSearchFilterFormatter;
 import org.knime.core.node.BufferedDataTable;
@@ -191,7 +192,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                 initializeCache(viewRepresentation);
             }
 
-            if (settings.getEnableSelection() && !settings.getEnableLazyLoading()) {
+            if (settings.getEnableSelection()/* && !settings.getEnableLazyLoading()*/) {
                 PagedTableViewValue viewValue = getViewValue();
                 List<String> selectionList = null;
                 if (viewValue != null) {
@@ -361,6 +362,13 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                         }
                     }
 
+                    // 'show selected rows only' filter
+                    String[] selection = request.getSelection();
+                    if (selection != null) {
+                        DataTableRowKeyFilterInformation filterInfo = new DataTableRowKeyFilterInformation(selection);
+                        transformationBuilder.filter(filterInfo);
+                    }
+
                     // execute filters
                     m_transformedCache =
                             (WindowCacheTable)transformationBuilder.build().execute(m_transformedCache, null);
@@ -369,9 +377,9 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
                         try {
                             m_transformedCache.getRows(m_cache.getRowCount() - 1, 1, null);
                         } catch (UnknownRowCountException | IndexOutOfBoundsException e) { /* ignore */ }
-                    } /* else {
-                        countRowsOnTransformedCache(null);
-                    } */
+                    } else if (selection != null && selection.length == 0) {
+                        m_transformedCache.setRowCount(0, true);
+                    }
 
                 }
 
@@ -476,7 +484,11 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         if (previousRequest == null) {
             return true;
         }
-        return !Objects.equals(previousRequest.getFilter(), newRequest.getFilter());
+        boolean regularFilters = Objects.equals(previousRequest.getFilter(), newRequest.getFilter());
+        if (!regularFilters) {
+            return true;
+        }
+        return !Objects.equals(previousRequest.getSelection(), newRequest.getSelection());
     }
 
     private static boolean columnSearchChanged(final PagedTableViewRequest newRequest,
@@ -513,7 +525,8 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
         int[] colIndices = null;
         final DataTableSpec spec = m_table.getDataTableSpec();
         PagedTableViewRepresentation rep = getViewRepresentation();
-        Map<Integer, DataTableSearchFilterFormatter> formatters = new HashMap<Integer, DataTableSearchFilterFormatter>();
+        Map<Integer, DataTableSearchFilterFormatter> formatters =
+            new HashMap<Integer, DataTableSearchFilterFormatter>();
         if (rep != null) {
             if (rep.getSettings().getTable() != null) {
                 String[] colNames = rep.getSettings().getTable().getSpec().getColNames();
@@ -544,10 +557,7 @@ public class PagedTableViewNodeModel extends AbstractTableNodeModel<PagedTableVi
 
         private final DecimalFormat m_pattern;
 
-        /**
-         *
-         */
-        public LimitDecimalSearchFormatter(final int decimals) {
+        private LimitDecimalSearchFormatter(final int decimals) {
             m_pattern = (DecimalFormat)NumberFormat.getInstance(Locale.US);
             m_pattern.setMinimumFractionDigits(decimals);
             m_pattern.setMaximumFractionDigits(decimals);

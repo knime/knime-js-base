@@ -70,7 +70,7 @@ public class PagedTableViewRequest extends JSONViewRequest {
     private Order[] m_order;
     private Column[] m_columns;
     private JSONTableSelection m_filter;
-    private JSONTableSelection m_selection;
+    private String[] m_selection;
     private boolean m_countRows;
 
     /**
@@ -160,14 +160,14 @@ public class PagedTableViewRequest extends JSONViewRequest {
     /**
      * @return the selection
      */
-    public JSONTableSelection getSelection() {
+    public String[] getSelection() {
         return m_selection;
     }
 
     /**
      * @param selection the selection to set
      */
-    public void setSelection(final JSONTableSelection selection) {
+    public void setSelection(final String[] selection) {
         m_selection = selection;
     }
 
