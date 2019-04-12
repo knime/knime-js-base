@@ -7,32 +7,21 @@
 
 	<parent>
 		<groupId>org.knime.maven</groupId>
-		<artifactId>parent-pom</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>ap.parent</artifactId>
+		<version>1.0.0</version>
 	</parent>
 
 	<groupId>org.knime</groupId>
 	<artifactId>knime-js-base</artifactId>
-	<version>3.8.0-SNAPSHOT</version>
+	<version>${revision}${changelist}</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<!--
-			Use Jenkins's project parameterization capabilities to set a string 
-			parameter named KNIME_TP_P2 to the desired P2 update site value. 
-			For building locally you can set KNIME_TP_P2 in the respective 
-			run configuration 'Environment' tab with a file:// or http:// URL value pointing 
-			to the desired P2 update site.
-		-->
-		<knime.core.p2>${env.KNIME_CORE_P2}</knime.core.p2>
-		<knime.svg.p2>${env.KNIME_SVG_P2}</knime.svg.p2>
-		<knime.js.core.p2>${env.KNIME_JS_CORE_P2}</knime.js.core.p2>
-		<knime.expressions.p2>${env.KNIME_EXPRESSIONS_P2}</knime.expressions.p2>
-		<knime.shared.p2>${env.KNIME_SHARED_P2}</knime.shared.p2>
-		<knime.workbench.p2>${env.KNIME_WORKBENCH_P2}</knime.workbench.p2>
-		<knime.textprocessing.p2>${env.KNIME_TEXTPROCESSING_P2}</knime.textprocessing.p2>
-		<knime.tp.p2>${env.KNIME_TP_P2}</knime.tp.p2>
-	</properties>
+        <revision>4.1.0</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <feature-branch-extension.branchListProperty>git.branch</feature-branch-extension.branchListProperty>
+        <feature-branch-extension.appendArtifactoryProperties>false</feature-branch-extension.appendArtifactoryProperties>
+    </properties>
 
 	<modules>
         <module>org.knime.dynamic.js</module>
@@ -43,7 +32,7 @@
         <module>org.knime.features.js.views</module>
         <module>org.knime.features.quickform.legacy</module>
         <module>org.knime.js.quickforms</module>
-<!--         <module>org.knime.js.testing</module> -->
+        <module>org.knime.js.testing</module>
         <module>org.knime.js.views</module>
         <module>org.knime.quickform.nodes.legacy</module>
         <module>org.knime.update.js.base</module>
@@ -71,6 +60,11 @@
 			<url>${knime.svg.p2}</url>
 		</repository>
 		<repository>
+			<id>knime.base.p2</id>
+			<layout>p2</layout>
+			<url>${knime.base.p2}</url>
+		</repository>
+		<repository>
 			<id>knime.js.core.p2</id>
 			<layout>p2</layout>
 			<url>${knime.js.core.p2}</url>
@@ -91,4 +85,26 @@
 			<url>${knime.textprocessing.p2}</url>
 		</repository>
 	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<plugin id="org.openqa.selenium" />
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
