@@ -59,11 +59,12 @@ import org.knime.rsyntaxtextarea.guarded.GuardedSection;
 import org.knime.rsyntaxtextarea.guarded.GuardedSectionsFoldParser;
 
 /**
- *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
  */
 @SuppressWarnings("serial")
 public class CSSSnippetTextArea extends RSyntaxTextArea {
+
+    final KnimeCssLanguageSupport m_cssLanguageSupport;
 
     /**
      *
@@ -80,8 +81,7 @@ public class CSSSnippetTextArea extends RSyntaxTextArea {
         setSyntaxEditingStyle(SYNTAX_STYLE_CSS);
         setAntiAliasingEnabled(true);
 
-        KnimeCssLanguageSupport cssLangSup = new KnimeCssLanguageSupport();
-        cssLangSup.install(this);
+        m_cssLanguageSupport = new KnimeCssLanguageSupport();
     }
 
     /**
@@ -94,6 +94,13 @@ public class CSSSnippetTextArea extends RSyntaxTextArea {
         } else {
             return super.getForegroundForToken(t);
         }
+    }
+
+    /**
+     * This should be called prior to the consumer dialog being displayed.
+     */
+    public void installAutoCompletion() {
+        m_cssLanguageSupport.install(this);
     }
 
     /**

@@ -284,6 +284,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_maxRowsSpinner.setValue(config.getMaxRows());
         m_jsTextArea.setText(config.getJsCode());
         m_cssTextArea.setText(config.getCssCode());
+
+        m_cssTextArea.installAutoCompletion();
     }
 
     private BiMap<String, String> getAvailableLibraries() {

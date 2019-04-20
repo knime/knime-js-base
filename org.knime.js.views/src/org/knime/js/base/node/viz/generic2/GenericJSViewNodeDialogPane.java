@@ -120,7 +120,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private final JSSnippetTextArea m_jsTextArea;
     private final JSSnippetTextArea m_jsSVGTextArea;
     private final CSSSnippetTextArea m_cssTextArea;
-    private final JSpinner m_WaitTimeSpinner;
+    private final JSpinner m_waitTimeSpinner;
 
     private Border m_noBorder = BorderFactory.createEmptyBorder();
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
@@ -134,7 +134,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         //m_viewName = new JTextField(20);
         m_generateViewCheckBox = new JCheckBox("Generate image at outport");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
-        m_WaitTimeSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 500));
+        m_waitTimeSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 500));
         m_flowVarList = new JList(new DefaultListModel());
         m_flowVarList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_flowVarList.setCellRenderer(new FlowVariableListCellRenderer());
@@ -267,10 +267,10 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         topPanel.add(m_generateViewCheckBox);
         topPanel.add(Box.createHorizontalGlue());
         topPanel.add(new JLabel("Additional wait time after initialization in ms: "));
-        m_WaitTimeSpinner.setMaximumSize(new Dimension(100, 20));
-        m_WaitTimeSpinner.setMinimumSize(new Dimension(100, 20));
-        m_WaitTimeSpinner.setPreferredSize(new Dimension(100, 20));
-        topPanel.add(m_WaitTimeSpinner);
+        m_waitTimeSpinner.setMaximumSize(new Dimension(100, 20));
+        m_waitTimeSpinner.setMinimumSize(new Dimension(100, 20));
+        m_waitTimeSpinner.setPreferredSize(new Dimension(100, 20));
+        topPanel.add(m_waitTimeSpinner);
         topPanel.add(Box.createHorizontalStrut(10));
         panel.add(topPanel, BorderLayout.NORTH);
 
@@ -324,7 +324,9 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         m_jsTextArea.setText(config.getJsCode());
         m_jsSVGTextArea.setText(config.getJsSVGCode());
         m_cssTextArea.setText(config.getCssCode());
-        m_WaitTimeSpinner.setValue(config.getWaitTime());
+        m_waitTimeSpinner.setValue(config.getWaitTime());
+
+        m_cssTextArea.installAutoCompletion();
     }
 
     private BiMap<String, String> getAvailableLibraries() {
@@ -388,7 +390,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         config.setJsSVGCode(m_jsSVGTextArea.getText());
         config.setCssCode(m_cssTextArea.getText());
         config.setDependencies(dependencies.toArray(new String[0]));
-        config.setWaitTime((Integer)m_WaitTimeSpinner.getValue());
+        config.setWaitTime((Integer)m_waitTimeSpinner.getValue());
         config.saveSettings(settings);
     }
 

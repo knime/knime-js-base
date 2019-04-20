@@ -53,11 +53,9 @@ import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
- *
  *  @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class KnimeCssLanguageSupport extends CssLanguageSupport{
-
     private KnimeCssCompletionProvider m_provider;
 
     /**
@@ -73,8 +71,11 @@ public class KnimeCssLanguageSupport extends CssLanguageSupport{
      */
     @Override
     public void install(final RSyntaxTextArea textArea) {
-        KnimeCssCompletionProvider knimeCssCompletionProvider = getKnimeCssProvider();
-        AutoCompletion ac = createAutoCompletion(knimeCssCompletionProvider);
+        final KnimeCssCompletionProvider knimeCssCompletionProvider = getKnimeCssProvider();
+
+        uninstallImpl(textArea);
+
+        final AutoCompletion ac = createAutoCompletion(knimeCssCompletionProvider);
         ac.install(textArea);
         ac.setShowDescWindow(true);
         ac.setAutoActivationEnabled(false);
@@ -90,8 +91,4 @@ public class KnimeCssLanguageSupport extends CssLanguageSupport{
         }
         return m_provider;
     }
-
-
-
-
 }

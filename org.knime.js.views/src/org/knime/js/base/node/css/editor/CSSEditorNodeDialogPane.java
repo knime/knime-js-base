@@ -368,6 +368,8 @@ final class CSSEditorNodeDialogPane extends NodeDialogPane {
             m_flowVariableDropdown.setEnabled(false);
             m_cssTextArea.setText(m_config.getCssCode());
         }
+
+        m_cssTextArea.installAutoCompletion();
     }
 
     @SuppressWarnings("rawtypes")
