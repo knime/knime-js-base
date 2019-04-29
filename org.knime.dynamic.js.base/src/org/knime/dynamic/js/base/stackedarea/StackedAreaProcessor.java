@@ -48,6 +48,7 @@ public class StackedAreaProcessor extends DynamicStatefulJSProcessor {
         JSONDataTable table = JSONDataTable.newBuilder()
         		.setDataTable(dt)
         		.setFirstRow(1)
+                       .keepFilterColumns(true)
         		.setMaxRows(config.getMaxRows())
         		.setIncludeColumns(includeColumns)
         		.excludeRowsWithMissingValues(true)
