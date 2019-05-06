@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,74 +40,40 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 12, 2014 (winter): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
 
 /**
- * Configuration of a flow variable quick form node.
+ * The representation for the boolean input quick form node.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @param <VAL> The value used for the default value
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Deprecated
-public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> extends QuickFormConfig<VAL> {
-
-    private static final String CFG_FLOW_VARIABLE_NAME = "flowvariablename";
-
-    private static final String DEFAULT_FLOW_VARIABLE_NAME = "new variable";
-
-    private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
+public class BooleanDialogNodeRepresentation extends
+        AbstractDialogNodeRepresentation<BooleanDialogNodeValue, BooleanDialogNodeConfig> {
 
     /**
-     * @return the flowVariableName
+     * @param currentValue The value currently used by the node
+     * @param config The config of the node
      */
-    public String getFlowVariableName() {
-        return m_flowVariableName;
-    }
-
-    /**
-     * @param flowVariableName the flowVariableName to set
-     */
-    public void setFlowVariableName(final String flowVariableName) {
-        this.m_flowVariableName = flowVariableName;
+    public BooleanDialogNodeRepresentation(final BooleanDialogNodeValue currentValue,
+        final BooleanDialogNodeConfig config) {
+        super(currentValue, config);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        settings.addString(CFG_FLOW_VARIABLE_NAME, m_flowVariableName);
+    public DialogNodePanel<BooleanDialogNodeValue> createDialogPanel() {
+        BooleanConfigurationPanel panel = new BooleanConfigurationPanel(this);
+        fillDialogPanel(panel);
+        return panel;
     }
 
     /**
@@ -118,9 +83,6 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
-        sb.append(", ");
-        sb.append("flowVariableName=");
-        sb.append(m_flowVariableName);
         return sb.toString();
     }
 
@@ -129,15 +91,14 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_flowVariableName)
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
                 .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -149,9 +110,8 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
         if (obj.getClass() != getClass()) {
             return false;
         }
-        QuickFormFlowVariableConfig<VAL> other = (QuickFormFlowVariableConfig<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_flowVariableName, other.m_flowVariableName)
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
                 .isEquals();
     }
 

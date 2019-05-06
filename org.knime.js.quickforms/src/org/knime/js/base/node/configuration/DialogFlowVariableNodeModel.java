@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,49 +41,45 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   3 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration;
 
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.web.WebViewContent;
 
 /**
- * Model of a quick form node with a flow variable output.
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
- * @param <REP> The representation implementation of the quick form node.
- * @param <VAL> The value implementation of the quick form node.
- * @param <CONF> The configuration implementation of the quick form node.
- *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <REP>
+ * @param <VAL>
+ * @param <CONF>
  */
-@Deprecated
-public abstract class QuickFormFlowVariableNodeModel
-        <REP extends QuickFormRepresentationImpl<VAL, CONF>,
-        VAL extends DialogNodeValue & WebViewContent,
-        CONF extends QuickFormFlowVariableConfig<VAL>>
-        extends QuickFormNodeModel<REP, VAL, CONF> {
+public abstract class DialogFlowVariableNodeModel<REP extends DialogNodeRepresentation<VAL>,
+    VAL extends DialogNodeValue, CONF extends DialogNodeConfig<VAL>>
+    extends DialogNodeModel<REP, VAL, CONF> {
 
-    /** Creates a new node model with no inports and one flow variable outport.
-     * @param viewName the view name */
-    protected QuickFormFlowVariableNodeModel(final String viewName) {
-        this(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+    /** Creates a new node model with no inports and one flow variable outport. */
+    protected DialogFlowVariableNodeModel() {
+        this(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE});
     }
 
     /** Creates a new node model with specified inports and outports.
      * @param inPortTypes
      * @param outPortTypes
-     * @param viewName the view name
      **/
-    protected QuickFormFlowVariableNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes, final String viewName) {
-        super(inPortTypes, outPortTypes, viewName);
+    protected DialogFlowVariableNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes) {
+        super(inPortTypes, outPortTypes);
     }
 
     /** {@inheritDoc} */
@@ -100,12 +97,10 @@ public abstract class QuickFormFlowVariableNodeModel
     }
 
     /**
-     * Subclasses will publish their flow variables here. Called from configure
-     * and execute.
+     * Subclasses will publish their flow variables here. Called from configure and execute.
      *
      * @throws InvalidSettingsException If settings are invalid.
      */
-    protected abstract void createAndPushFlowVariable()
-            throws InvalidSettingsException;
+    protected abstract void createAndPushFlowVariable() throws InvalidSettingsException;
 
 }

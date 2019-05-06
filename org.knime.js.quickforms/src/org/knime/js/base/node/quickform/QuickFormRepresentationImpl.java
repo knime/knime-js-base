@@ -69,6 +69,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @param <VAL> The value class handled by this representation
  * @param <CONF> The config class containing the values for this presentation
  */
+@Deprecated
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class QuickFormRepresentationImpl

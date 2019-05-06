@@ -44,115 +44,103 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2014 (winter): created
+ *   2 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import java.io.File;
+import java.io.IOException;
+
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.dialog.DialogNode;
+import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.port.PortType;
 
 /**
- * Configuration of a flow variable quick form node.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @param <VAL> The value used for the default value
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <REP>
+ * @param <VAL>
  */
-@Deprecated
-public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> extends QuickFormConfig<VAL> {
-
-    private static final String CFG_FLOW_VARIABLE_NAME = "flowvariablename";
-
-    private static final String DEFAULT_FLOW_VARIABLE_NAME = "new variable";
-
-    private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
+public abstract class ConfigurationNodeModel<REP extends DialogNodeRepresentation<VAL>, VAL extends DialogNodeValue>
+    extends NodeModel implements DialogNode<REP, VAL> {
 
     /**
-     * @return the flowVariableName
+     * @param nrInDataPorts
+     * @param nrOutDataPorts
      */
-    public String getFlowVariableName() {
-        return m_flowVariableName;
+    public ConfigurationNodeModel(final int nrInDataPorts, final int nrOutDataPorts) {
+        super(nrInDataPorts, nrOutDataPorts);
     }
 
     /**
-     * @param flowVariableName the flowVariableName to set
+     * @param inPortTypes
+     * @param outPortTypes
      */
-    public void setFlowVariableName(final String flowVariableName) {
-        this.m_flowVariableName = flowVariableName;
+    public ConfigurationNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes) {
+        super(inPortTypes, outPortTypes);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME);
+    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
+    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        settings.addString(CFG_FLOW_VARIABLE_NAME, m_flowVariableName);
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("flowVariableName=");
-        sb.append(m_flowVariableName);
-        return sb.toString();
+    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_flowVariableName)
-                .toHashCode();
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // TODO Auto-generated method stub
+
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        QuickFormFlowVariableConfig<VAL> other = (QuickFormFlowVariableConfig<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_flowVariableName, other.m_flowVariableName)
-                .isEquals();
+    protected void reset() {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -84,8 +84,8 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Bernd Wiswedel, KNIME AG, Zurich, Switzerland
  */
-public abstract class QuickFormNodeDialog
-        extends NodeDialogPane implements ValueControlledDialogPane {
+@Deprecated
+public abstract class QuickFormNodeDialog extends NodeDialogPane implements ValueControlledDialogPane {
 
     /** Default width (#columns) of text field elements. */
     public static final int DEF_TEXTFIELD_WIDTH = DialogUtil.DEF_TEXTFIELD_WIDTH;

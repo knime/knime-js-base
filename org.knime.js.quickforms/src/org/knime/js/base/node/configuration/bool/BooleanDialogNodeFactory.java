@@ -42,70 +42,57 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration.bool;
 
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.web.WebViewContent;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
 
 /**
- * Model of a quick form node with a flow variable output.
+ * The factory for the boolean configuration node.
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
- * @param <REP> The representation implementation of the quick form node.
- * @param <VAL> The value implementation of the quick form node.
- * @param <CONF> The configuration implementation of the quick form node.
- *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Deprecated
-public abstract class QuickFormFlowVariableNodeModel
-        <REP extends QuickFormRepresentationImpl<VAL, CONF>,
-        VAL extends DialogNodeValue & WebViewContent,
-        CONF extends QuickFormFlowVariableConfig<VAL>>
-        extends QuickFormNodeModel<REP, VAL, CONF> {
+public class BooleanDialogNodeFactory extends NodeFactory<BooleanDialogNodeModel> {
 
-    /** Creates a new node model with no inports and one flow variable outport.
-     * @param viewName the view name */
-    protected QuickFormFlowVariableNodeModel(final String viewName) {
-        this(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
-    }
-
-    /** Creates a new node model with specified inports and outports.
-     * @param inPortTypes
-     * @param outPortTypes
-     * @param viewName the view name
-     **/
-    protected QuickFormFlowVariableNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes, final String viewName) {
-        super(inPortTypes, outPortTypes, viewName);
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        createAndPushFlowVariable();
-        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        createAndPushFlowVariable();
-        return new PortObject[]{FlowVariablePortObject.INSTANCE};
+    public BooleanDialogNodeModel createNodeModel() {
+        return new BooleanDialogNodeModel();
     }
 
     /**
-     * Subclasses will publish their flow variables here. Called from configure
-     * and execute.
-     *
-     * @throws InvalidSettingsException If settings are invalid.
+     * {@inheritDoc}
      */
-    protected abstract void createAndPushFlowVariable()
-            throws InvalidSettingsException;
+    @Override
+    protected int getNrNodeViews() {
+        return 0;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<BooleanDialogNodeModel> createNodeView(final int viewIndex,
+            final BooleanDialogNodeModel nodeModel) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean hasDialog() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected NodeDialogPane createNodeDialogPane() {
+        return new BooleanInputQuickFormNodeDialog();
+    }
 }

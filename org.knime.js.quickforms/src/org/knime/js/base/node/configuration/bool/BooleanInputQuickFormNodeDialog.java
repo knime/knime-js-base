@@ -42,70 +42,76 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration.bool;
 
-import org.knime.core.node.ExecutionContext;
+import java.awt.GridBagConstraints;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.port.PortObject;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.web.WebViewContent;
+import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 
 /**
- * Model of a quick form node with a flow variable output.
+ * The dialog for the boolean input quick form node.
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
- * @param <REP> The representation implementation of the quick form node.
- * @param <VAL> The value implementation of the quick form node.
- * @param <CONF> The configuration implementation of the quick form node.
- *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Deprecated
-public abstract class QuickFormFlowVariableNodeModel
-        <REP extends QuickFormRepresentationImpl<VAL, CONF>,
-        VAL extends DialogNodeValue & WebViewContent,
-        CONF extends QuickFormFlowVariableConfig<VAL>>
-        extends QuickFormNodeModel<REP, VAL, CONF> {
+public class BooleanInputQuickFormNodeDialog extends QuickFormNodeDialog {
 
-    /** Creates a new node model with no inports and one flow variable outport.
-     * @param viewName the view name */
-    protected QuickFormFlowVariableNodeModel(final String viewName) {
-        this(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
-    }
+    private final BooleanDialogNodeConfig m_config;
 
-    /** Creates a new node model with specified inports and outports.
-     * @param inPortTypes
-     * @param outPortTypes
-     * @param viewName the view name
-     **/
-    protected QuickFormFlowVariableNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes, final String viewName) {
-        super(inPortTypes, outPortTypes, viewName);
-    }
+    private final JCheckBox m_defaultField;
 
-    /** {@inheritDoc} */
-    @Override
-    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        createAndPushFlowVariable();
-        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        createAndPushFlowVariable();
-        return new PortObject[]{FlowVariablePortObject.INSTANCE};
+    /** Constructors, inits fields calls layout routines. */
+    BooleanInputQuickFormNodeDialog() {
+        m_config = new BooleanDialogNodeConfig();
+        m_defaultField = new JCheckBox();
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+        createAndAddTab();
     }
 
     /**
-     * Subclasses will publish their flow variables here. Called from configure
-     * and execute.
-     *
-     * @throws InvalidSettingsException If settings are invalid.
+     * {@inheritDoc}
      */
-    protected abstract void createAndPushFlowVariable()
-            throws InvalidSettingsException;
+    @Override
+    protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+            throws NotConfigurableException {
+        m_config.loadSettingsInDialog(settings);
+        super.loadSettingsFrom(m_config);
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        m_config.getDefaultValue().setBoolean(m_defaultField.isSelected());
+        super.saveSettingsTo(m_config);
+        m_config.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
+        BooleanDialogNodeValue value = new BooleanDialogNodeValue();
+        value.loadFromNodeSettings(settings);
+        return "" + value.getBoolean();
+    }
 
 }

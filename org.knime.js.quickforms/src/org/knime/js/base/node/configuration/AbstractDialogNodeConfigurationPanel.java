@@ -45,7 +45,7 @@
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration;
 
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -67,27 +67,23 @@ import org.knime.core.node.util.ViewUtils;
 /**
  * The panel of a node that is displayed in the sub node's dialog.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @param <VAL> The type of value that is handled by this dialog
  */
 @SuppressWarnings("serial")
-@Deprecated
-public abstract class QuickFormDialogPanel<VAL extends DialogNodeValue> extends DialogNodePanel<VAL> {
+public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNodeValue> extends DialogNodePanel<VAL> {
 
     private JLabel m_label = new JLabel();
-
     private JCheckBox m_checkBox = new JCheckBox("Change");
-
     private final JPanel m_contentPanel;
-
     private VAL m_defaultValue;
 
     /**
-     * Creates a {@link QuickFormDialogPanel}.
+     * Creates a {@link AbstractDialogNodeConfigurationPanel}.
      *
      * @param defaultValue The default value
      */
-    public QuickFormDialogPanel(final VAL defaultValue) {
+    public AbstractDialogNodeConfigurationPanel(final VAL defaultValue) {
         m_defaultValue = defaultValue;
         m_checkBox.addItemListener(new ItemListener() {
             @Override

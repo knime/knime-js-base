@@ -44,30 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2014 (winter): created
+ *   2 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.base;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.workflow.SubNodeContainer;
 
 /**
- * Configuration of a flow variable quick form node.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @param <VAL> The value used for the default value
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Deprecated
-public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> extends QuickFormConfig<VAL> {
+public class FlowVariableConfig {
 
-    private static final String CFG_FLOW_VARIABLE_NAME = "flowvariablename";
-
-    private static final String DEFAULT_FLOW_VARIABLE_NAME = "new variable";
-
+    private static final String CFG_FLOW_VARIABLE_NAME = "flowVariableName";
+    private final String DEFAULT_FLOW_VARIABLE_NAME = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
     private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
 
     /**
@@ -85,29 +80,24 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to load from
+     * @throws InvalidSettingsException If the settings are not valid
      */
-    @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
         m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to load from
      */
-    @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
         m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to save to
      */
-    @Override
     public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
         settings.addString(CFG_FLOW_VARIABLE_NAME, m_flowVariableName);
     }
 
@@ -117,8 +107,6 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
         sb.append("flowVariableName=");
         sb.append(m_flowVariableName);
         return sb.toString();
@@ -129,7 +117,7 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
+        return new HashCodeBuilder()
                 .append(m_flowVariableName)
                 .toHashCode();
     }
@@ -137,7 +125,6 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -149,8 +136,8 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
         if (obj.getClass() != getClass()) {
             return false;
         }
-        QuickFormFlowVariableConfig<VAL> other = (QuickFormFlowVariableConfig<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
+        FlowVariableConfig other = (FlowVariableConfig)obj;
+        return new EqualsBuilder()
                 .append(m_flowVariableName, other.m_flowVariableName)
                 .isEquals();
     }

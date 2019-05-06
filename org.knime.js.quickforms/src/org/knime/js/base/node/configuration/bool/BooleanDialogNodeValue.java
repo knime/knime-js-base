@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,12 +40,18 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2014 (winter): created
+ *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration.bool;
+
+import javax.json.JsonException;
+import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -56,59 +61,52 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 
 /**
- * Configuration of a flow variable quick form node.
+ * The value for the boolean input quick form node.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @param <VAL> The value used for the default value
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Deprecated
-public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> extends QuickFormConfig<VAL> {
+public class BooleanDialogNodeValue implements DialogNodeValue {
 
-    private static final String CFG_FLOW_VARIABLE_NAME = "flowvariablename";
-
-    private static final String DEFAULT_FLOW_VARIABLE_NAME = "new variable";
-
-    private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
+    private static final String CFG_BOOLEAN = "boolean";
+    private static final boolean DEFAULT_BOOLEAN = false;
+    private boolean m_boolean = DEFAULT_BOOLEAN;
 
     /**
-     * @return the flowVariableName
+     * {@inheritDoc}
      */
-    public String getFlowVariableName() {
-        return m_flowVariableName;
-    }
-
-    /**
-     * @param flowVariableName the flowVariableName to set
-     */
-    public void setFlowVariableName(final String flowVariableName) {
-        this.m_flowVariableName = flowVariableName;
+    @Override
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addBoolean(CFG_BOOLEAN, m_boolean);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME);
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_boolean = settings.getBoolean(CFG_BOOLEAN);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
+    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
+        m_boolean = settings.getBoolean(CFG_BOOLEAN, DEFAULT_BOOLEAN);
     }
 
     /**
-     * {@inheritDoc}
+     * @return the string
      */
-    @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        settings.addString(CFG_FLOW_VARIABLE_NAME, m_flowVariableName);
+    public boolean getBoolean() {
+        return m_boolean;
+    }
+
+    /**
+     * @param bool the boolean to set
+     */
+    public void setBoolean(final boolean bool) {
+        m_boolean = bool;
     }
 
     /**
@@ -117,10 +115,8 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("flowVariableName=");
-        sb.append(m_flowVariableName);
+        sb.append("boolean=");
+        sb.append(m_boolean);
         return sb.toString();
     }
 
@@ -129,15 +125,14 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_flowVariableName)
+        return new HashCodeBuilder()
+                .append(m_boolean)
                 .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -149,10 +144,52 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
         if (obj.getClass() != getClass()) {
             return false;
         }
-        QuickFormFlowVariableConfig<VAL> other = (QuickFormFlowVariableConfig<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_flowVariableName, other.m_flowVariableName)
+        BooleanDialogNodeValue other = (BooleanDialogNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_boolean, other.m_boolean)
                 .isEquals();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
+        setBoolean("true".equalsIgnoreCase(fromCmdLine));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromJson(final JsonValue json) throws JsonException {
+        if (json.getValueType() == ValueType.TRUE) {
+            m_boolean = true;
+        } else if (json.getValueType() == ValueType.FALSE) {
+            m_boolean = false;
+        } else if (json instanceof JsonString) {
+            loadFromString(((JsonString) json).getString());
+        } else if (json instanceof JsonObject) {
+            try {
+                JsonValue val = ((JsonObject) json).get(CFG_BOOLEAN);
+                if (JsonValue.NULL.equals(val)) {
+                    m_boolean = false;
+                } else {
+                    m_boolean = ((JsonObject) json).getBoolean(CFG_BOOLEAN);
+                }
+            } catch (Exception e) {
+                throw new JsonException("Expected boolean value for key '" + CFG_BOOLEAN + "'.", e);
+            }
+        } else {
+            throw new JsonException("Expected a JSON object, but got " + json.getValueType());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonValue toJson() {
+        return m_boolean ? JsonValue.TRUE : JsonValue.FALSE;
+    }
 }

@@ -110,6 +110,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.bool.BooleanDialogNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

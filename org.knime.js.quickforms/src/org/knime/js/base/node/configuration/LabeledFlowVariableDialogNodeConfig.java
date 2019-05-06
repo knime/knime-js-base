@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2014 (winter): created
+ *   3 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform;
+package org.knime.js.base.node.configuration;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -54,52 +54,24 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.FlowVariableConfig;
 
 /**
- * Configuration of a flow variable quick form node.
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @param <VAL> The value used for the default value
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL>
  */
-@Deprecated
-public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> extends QuickFormConfig<VAL> {
+public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNodeValue>
+    extends LabeledDialogNodeConfig<VAL> {
 
-    private static final String CFG_FLOW_VARIABLE_NAME = "flowvariablename";
+    private FlowVariableConfig m_variable = new FlowVariableConfig();
 
-    private static final String DEFAULT_FLOW_VARIABLE_NAME = "new variable";
-
-    private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
-
-    /**
-     * @return the flowVariableName
-     */
     public String getFlowVariableName() {
-        return m_flowVariableName;
+        return m_variable.getFlowVariableName();
     }
 
-    /**
-     * @param flowVariableName the flowVariableName to set
-     */
     public void setFlowVariableName(final String flowVariableName) {
-        this.m_flowVariableName = flowVariableName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
+        m_variable.setFlowVariableName(flowVariableName);
     }
 
     /**
@@ -108,7 +80,25 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        settings.addString(CFG_FLOW_VARIABLE_NAME, m_flowVariableName);
+        m_variable.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_variable.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_variable.loadSettingsInDialog(settings);
     }
 
     /**
@@ -119,8 +109,7 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append("flowVariableName=");
-        sb.append(m_flowVariableName);
+        sb.append(m_variable.toString());
         return sb.toString();
     }
 
@@ -129,8 +118,9 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_flowVariableName)
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_variable)
                 .toHashCode();
     }
 
@@ -149,9 +139,10 @@ public abstract class QuickFormFlowVariableConfig <VAL extends DialogNodeValue> 
         if (obj.getClass() != getClass()) {
             return false;
         }
-        QuickFormFlowVariableConfig<VAL> other = (QuickFormFlowVariableConfig<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_flowVariableName, other.m_flowVariableName)
+        LabeledFlowVariableDialogNodeConfig<VAL> other = (LabeledFlowVariableDialogNodeConfig<VAL>)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(other))
+                .append(m_variable, other.m_variable)
                 .isEquals();
     }
 

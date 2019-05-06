@@ -82,6 +82,7 @@ import org.knime.js.core.JavaScriptViewCreator;
  * @param <CONF> The configuration implementation of the quick form node.
  *
  */
+@Deprecated
 public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl<VAL, CONF>,
         VAL extends DialogNodeValue & WebViewContent, CONF extends QuickFormConfig<VAL>>
     extends NodeModel implements DialogNode<REP, VAL>, WizardNode<REP, VAL>, InputNode, CSSModifiable {
