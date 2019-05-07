@@ -420,8 +420,14 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             }
         }
 
+        int colorExceptionCount = 0;
         for (int col = 0; col < tableSpec.getNumColumns(); col++) {
-            String colColor = getColorForColumn(tableSpec.getColNames()[col], jsonColorTable);
+            String colColor = null;
+            try {
+                colColor = getColorForColumn(tableSpec.getColNames()[col], jsonColorTable);
+            } catch (NullPointerException e) {
+                colorExceptionCount++;
+            }
             if (colColor != null) {
                 dataset.setColumnColor(colColor, col);
             }
@@ -432,6 +438,12 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             if (tableSpec.getColTypes()[col].equals(JSTypes.DATE_TIME)) {
                 dataset.setDateTimeFormat(tableSpec.getKnimeTypes()[col], col);
             }
+        }
+        if (colorExceptionCount > 0) {
+            setWarningMessage("There was a problem processing the colors "
+                    + "from the table provided. " + String.valueOf(colorExceptionCount) +
+                    " data values may have column colors that are missing and the displayed "
+                    + "colors may differ from those intended.");
         }
 
         LinePlotViewValue viewValue = getViewValue();
@@ -486,9 +498,12 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
     private String getColorForColumn(final String colKey, final JSONDataTable colorTable) {
         if (colKey != null && colorTable != null) {
             for (int row = 0; row < colorTable.getRows().length; row++) {
-                if (colKey.equals(colorTable.getRows()[row].getData()[0].toString())) {
-                    return colorTable.getSpec().getRowColorValues()[row];
-                }
+                    if (colKey.equals(colorTable.getRows()[row].getData()[0].toString())) {
+                        String currentColor = colorTable.getSpec().getRowColorValues()[row];
+                        if (currentColor != null) {
+                            return currentColor;
+                        }
+                    }
             }
         }
         return null;
