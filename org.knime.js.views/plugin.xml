@@ -369,7 +369,7 @@
             init-method-name="init"
             javascriptComponentID="knime_generic_view"
             name="Generic JavaScript View v1"
-            namespace="knime_generic_view"
+            namespace="knimeGenericView"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
@@ -378,7 +378,7 @@
             init-method-name="init"
             javascriptComponentID="knime_generic_view_v3"
             name="Generic JavaScript View v3"
-            namespace="knime_generic_view"
+            namespace="knimeGenericView"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
