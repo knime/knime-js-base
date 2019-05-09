@@ -441,9 +441,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         }
         if (colorExceptionCount > 0) {
             setWarningMessage("There was a problem processing the colors "
-                    + "from the table provided. " + String.valueOf(colorExceptionCount) +
-                    " data values may have column colors that are missing and the displayed "
-                    + "colors may differ from those intended.");
+                    + "from the table provided. The displayed colors may differ from those intended."
+                    + " Total warnings: " + String.valueOf(colorExceptionCount));
         }
 
         LinePlotViewValue viewValue = getViewValue();
