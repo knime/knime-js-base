@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,73 +41,77 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   3 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
-
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+package org.knime.js.base.node.configuration;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.quickform.QuickFormRepresentation;
 
 /**
- * The value for the boolean input quick form node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeValue implements DialogNodeValue {
+public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeValue,
+    CONF extends LabeledDialogNodeConfig<VAL>> implements QuickFormRepresentation<VAL> {
 
-    private static final String CFG_BOOLEAN = "boolean";
-    private static final boolean DEFAULT_BOOLEAN = false;
-    private boolean m_boolean = DEFAULT_BOOLEAN;
+    private final String m_label;
+    private final String m_description;
+    private final VAL m_defaultValue;
+    private final VAL m_currentValue;
 
     /**
-     * {@inheritDoc}
+     * @param currentValue The value currently used by the node
+     * @param config The config of the node
+     */
+    public AbstractDialogNodeRepresentation(final VAL currentValue, final CONF config) {
+        m_label = config.getLabel();
+        m_description = config.getDescription();
+        m_defaultValue = config.getDefaultValue();
+        m_currentValue = currentValue;
+    }
+
+    /**
+     * @return the label
      */
     @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_BOOLEAN, m_boolean);
+    public String getLabel() {
+        return m_label;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the description
      */
     @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN);
+    public String getDescription() {
+        return m_description;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the defaultValue
      */
-    @Override
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN, DEFAULT_BOOLEAN);
+    public VAL getDefaultValue() {
+        return m_defaultValue;
     }
 
     /**
-     * @return the string
+     * @return the currentValue
      */
-    public boolean getBoolean() {
-        return m_boolean;
+    public VAL getCurrentValue() {
+        return m_currentValue;
     }
 
     /**
-     * @param bool the boolean to set
+     * @param panel The panel to fill with the information contained in this representation
      */
-    public void setBoolean(final boolean bool) {
-        m_boolean = bool;
+    protected void fillDialogPanel(final AbstractDialogNodeConfigurationPanel<VAL> panel) {
+        panel.setLabel(m_label);
+        panel.setDescription(m_description);
     }
 
     /**
@@ -115,8 +120,11 @@ public class BooleanDialogNodeValue implements DialogNodeValue {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("boolean=");
-        sb.append(m_boolean);
+        sb.append("label=");
+        sb.append(m_label);
+        sb.append(", ");
+        sb.append("description=");
+        sb.append(m_description);
         return sb.toString();
     }
 
@@ -126,13 +134,15 @@ public class BooleanDialogNodeValue implements DialogNodeValue {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_boolean)
+                .append(m_label)
+                .append(m_description)
                 .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -144,52 +154,11 @@ public class BooleanDialogNodeValue implements DialogNodeValue {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        BooleanDialogNodeValue other = (BooleanDialogNodeValue)obj;
+        AbstractDialogNodeRepresentation<VAL, CONF> other = (AbstractDialogNodeRepresentation<VAL, CONF>) obj;
         return new EqualsBuilder()
-                .append(m_boolean, other.m_boolean)
+                .append(m_label, other.m_label)
+                .append(m_description, other.m_description)
                 .isEquals();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setBoolean("true".equalsIgnoreCase(fromCmdLine));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json.getValueType() == ValueType.TRUE) {
-            m_boolean = true;
-        } else if (json.getValueType() == ValueType.FALSE) {
-            m_boolean = false;
-        } else if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_BOOLEAN);
-                if (JsonValue.NULL.equals(val)) {
-                    m_boolean = false;
-                } else {
-                    m_boolean = ((JsonObject) json).getBoolean(CFG_BOOLEAN);
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected boolean value for key '" + CFG_BOOLEAN + "'.", e);
-            }
-        } else {
-            throw new JsonException("Expected a JSON object, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JsonValue toJson() {
-        return m_boolean ? JsonValue.TRUE : JsonValue.FALSE;
-    }
 }

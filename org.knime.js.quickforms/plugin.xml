@@ -111,7 +111,12 @@
             factory-class="org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration"
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.bool.BooleanDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.bool.BooleanDialogNodeFactory">
       </node>
@@ -139,8 +144,41 @@
             icon="icons/missing.gif"
             level-id="output"
             name="Output"
-            path="/flowcontrol/quickforms">
-      </category>
+            path="/flowcontrol/quickforms"/>
+      <category
+            icon="icons/missing.gif"
+            level-id="input"
+            name="Input"
+            path="/flowcontrol/configuration"/>
+      <category
+            after="input"
+            icon="icons/missing.gif"
+            level-id="selection"
+            name="Selection"
+            path="/flowcontrol/configuration"/>
+      <category
+            after="selection"
+            icon="icons/missing.gif"
+            level-id="filter"
+            name="Filter"
+            path="/flowcontrol/configuration"/>
+       <category
+            icon="icons/missing.gif"
+            level-id="input"
+            name="Input"
+            path="/flowcontrol/widget"/>
+      <category
+            after="input"
+            icon="icons/missing.gif"
+            level-id="selection"
+            name="Selection"
+            path="/flowcontrol/widget"/>
+      <category
+            after="selection"
+            icon="icons/missing.gif"
+            level-id="filter"
+            name="Filter"
+            path="/flowcontrol/widget"/>
    </extension>
    <extension
          point="org.knime.js.core.webResources">

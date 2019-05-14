@@ -47,6 +47,7 @@ package org.knime.js.base.node.configuration.bool;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
 
 /**
@@ -54,14 +55,14 @@ import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeRepresentation extends
-        AbstractDialogNodeRepresentation<BooleanDialogNodeValue, BooleanDialogNodeConfig> {
+public class BooleanDialogNodeRepresentation
+    extends AbstractDialogNodeRepresentation<BooleanNodeValue, BooleanDialogNodeConfig> {
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
-    public BooleanDialogNodeRepresentation(final BooleanDialogNodeValue currentValue,
+    public BooleanDialogNodeRepresentation(final BooleanNodeValue currentValue,
         final BooleanDialogNodeConfig config) {
         super(currentValue, config);
     }
@@ -70,7 +71,7 @@ public class BooleanDialogNodeRepresentation extends
      * {@inheritDoc}
      */
     @Override
-    public DialogNodePanel<BooleanDialogNodeValue> createDialogPanel() {
+    public DialogNodePanel<BooleanNodeValue> createDialogPanel() {
         BooleanConfigurationPanel panel = new BooleanConfigurationPanel(this);
         fillDialogPanel(panel);
         return panel;

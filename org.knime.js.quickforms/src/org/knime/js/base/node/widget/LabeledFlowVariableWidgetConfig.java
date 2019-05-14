@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,52 +41,107 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   9 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
+package org.knime.js.base.node.widget;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.FlowVariableConfig;
+import org.knime.js.core.JSONViewContent;
 
 /**
- * The model for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeModel
-    extends DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanNodeValue, BooleanDialogNodeConfig> {
+public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewContent> extends LabeledWidgetConfig<VAL> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    private FlowVariableConfig m_variable = new FlowVariableConfig();
+
+    public String getFlowVariableName() {
+        return m_variable.getFlowVariableName();
+    }
+
+    public void setFlowVariableName(final String flowVariableName) {
+        m_variable.setFlowVariableName(flowVariableName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanDialogNodeRepresentation getRepresentation() {
-        return new BooleanDialogNodeRepresentation(getRelevantValue(), getConfig());
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_variable.saveSettings(settings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_variable.loadSettings(settings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanNodeValue createEmptyDialogValue() {
-        return new BooleanNodeValue();
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_variable.loadSettingsInDialog(settings);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_variable.toString());
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_variable)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        LabeledFlowVariableWidgetConfig<VAL> other = (LabeledFlowVariableWidgetConfig<VAL>)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(other))
+                .append(m_variable, other.m_variable)
+                .isEquals();
+    }
+
 }

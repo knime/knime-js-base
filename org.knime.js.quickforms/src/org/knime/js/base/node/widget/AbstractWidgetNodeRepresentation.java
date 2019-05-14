@@ -44,14 +44,21 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 May 2019 (albrecht): created
+ *   10 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.widget;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
@@ -59,21 +66,45 @@ import org.knime.core.quickform.QuickFormRepresentation;
  * @param <VAL>
  * @param <CONF>
  */
-public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeValue,
-    CONF extends LabeledDialogNodeConfig<VAL>> implements QuickFormRepresentation<VAL> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public abstract class AbstractWidgetNodeRepresentation<VAL extends JSONViewContent,
+    CONF extends LabeledWidgetConfig<VAL>> extends JSONViewContent {
 
     private final String m_label;
     private final String m_description;
+    private final boolean m_required;
     private final VAL m_defaultValue;
     private final VAL m_currentValue;
+
+    /**
+     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the quickform's default value
+     * @param currentValue the quickform's current value
+     */
+    @JsonCreator
+    protected AbstractWidgetNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue) {
+        m_label = label;
+        m_description = description;
+        m_required = required;
+        m_defaultValue = defaultValue;
+        m_currentValue = currentValue;
+    }
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
-    public AbstractDialogNodeRepresentation(final VAL currentValue, final CONF config) {
+    public AbstractWidgetNodeRepresentation(final VAL currentValue, final CONF config) {
         m_label = config.getLabel();
         m_description = config.getDescription();
+        m_required = config.isRequired();
         m_defaultValue = config.getDefaultValue();
         m_currentValue = currentValue;
     }
@@ -81,7 +112,6 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
     /**
      * @return the label
      */
-    @Override
     public String getLabel() {
         return m_label;
     }
@@ -89,9 +119,15 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
     /**
      * @return the description
      */
-    @Override
     public String getDescription() {
         return m_description;
+    }
+
+    /**
+     * @return the required
+     */
+    public boolean isRequired() {
+        return m_required;
     }
 
     /**
@@ -109,14 +145,6 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
     }
 
     /**
-     * @param panel The panel to fill with the information contained in this representation
-     */
-    protected void fillDialogPanel(final AbstractDialogNodeConfigurationPanel<VAL> panel) {
-        panel.setLabel(m_label);
-        panel.setDescription(m_description);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -127,6 +155,9 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
         sb.append(", ");
         sb.append("description=");
         sb.append(m_description);
+        sb.append(", ");
+        sb.append("required=");
+        sb.append(m_required);
         return sb.toString();
     }
 
@@ -138,6 +169,9 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
         return new HashCodeBuilder()
                 .append(m_label)
                 .append(m_description)
+                .append(m_required)
+                .append(m_defaultValue)
+                .append(m_currentValue)
                 .toHashCode();
     }
 
@@ -156,10 +190,30 @@ public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeVal
         if (obj.getClass() != getClass()) {
             return false;
         }
-        AbstractDialogNodeRepresentation<VAL, CONF> other = (AbstractDialogNodeRepresentation<VAL, CONF>) obj;
+        AbstractWidgetNodeRepresentation<VAL, CONF> other = (AbstractWidgetNodeRepresentation<VAL, CONF>) obj;
         return new EqualsBuilder()
                 .append(m_label, other.m_label)
                 .append(m_description, other.m_description)
+                .append(m_required, other.m_required)
+                .append(m_defaultValue, other.m_defaultValue)
+                .append(m_currentValue, other.m_currentValue)
                 .isEquals();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // not needed
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        // not needed
+    }
+
 }

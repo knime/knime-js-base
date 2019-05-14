@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,52 +41,70 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   10 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
+package org.knime.js.base.node.widget;
 
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.js.core.JSONViewContent;
 
 /**
- * The model for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <REP>
+ * @param <VAL>
+ * @param <CONF>
  */
-public class BooleanDialogNodeModel
-    extends DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanNodeValue, BooleanDialogNodeConfig> {
+public abstract class WidgetFlowVariableNodeModel<REP extends JSONViewContent, VAL extends JSONViewContent,
+    CONF extends WidgetConfig<VAL>> extends WidgetNodeModel<REP, VAL, CONF> {
 
     /**
-     * {@inheritDoc}
+     * @param viewName
      */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    protected WidgetFlowVariableNodeModel(final String viewName) {
+        this(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
     }
 
     /**
-     * {@inheritDoc}
-     */
+     * Creates a new node model with specified inports and outports.
+     *
+     * @param inPortTypes
+     * @param outPortTypes
+     * @param viewName the view name
+     **/
+    protected WidgetFlowVariableNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes,
+        final String viewName) {
+        super(inPortTypes, outPortTypes, viewName);
+    }
+
+    /** {@inheritDoc} */
     @Override
-    protected BooleanDialogNodeRepresentation getRepresentation() {
-        return new BooleanDialogNodeRepresentation(getRelevantValue(), getConfig());
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        createAndPushFlowVariable();
+        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        createAndPushFlowVariable();
+        return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
 
     /**
-     * {@inheritDoc}
+     * Subclasses will publish their flow variables here. Called from configure and execute.
+     *
+     * @throws InvalidSettingsException If settings are invalid.
      */
-    @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
-    }
+    protected abstract void createAndPushFlowVariable() throws InvalidSettingsException;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanNodeValue createEmptyDialogValue() {
-        return new BooleanNodeValue();
-    }
 }

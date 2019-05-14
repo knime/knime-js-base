@@ -50,6 +50,7 @@ package org.knime.js.base.node.configuration.bool;
 import javax.swing.JCheckBox;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 import org.knime.js.base.node.quickform.QuickFormDialogPanel;
 
@@ -59,7 +60,7 @@ import org.knime.js.base.node.quickform.QuickFormDialogPanel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("serial")
-public class BooleanConfigurationPanel extends AbstractDialogNodeConfigurationPanel<BooleanDialogNodeValue> {
+public class BooleanConfigurationPanel extends AbstractDialogNodeConfigurationPanel<BooleanNodeValue> {
 
     private JCheckBox m_component = new JCheckBox();
 
@@ -76,8 +77,8 @@ public class BooleanConfigurationPanel extends AbstractDialogNodeConfigurationPa
      * {@inheritDoc}
      */
     @Override
-    protected BooleanDialogNodeValue createNodeValue() throws InvalidSettingsException {
-        BooleanDialogNodeValue value = new BooleanDialogNodeValue();
+    protected BooleanNodeValue createNodeValue() throws InvalidSettingsException {
+        BooleanNodeValue value = new BooleanNodeValue();
         value.setBoolean(m_component.isSelected());
         return value;
     }
@@ -86,7 +87,7 @@ public class BooleanConfigurationPanel extends AbstractDialogNodeConfigurationPa
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final BooleanDialogNodeValue value) {
+    public void loadNodeValue(final BooleanNodeValue value) {
         super.loadNodeValue(value);
         if (value != null) {
             m_component.setSelected(value.getBoolean());

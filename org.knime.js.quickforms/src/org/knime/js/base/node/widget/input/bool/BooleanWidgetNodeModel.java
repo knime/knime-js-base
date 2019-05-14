@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,21 +41,46 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   10 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
+package org.knime.js.base.node.widget.input.bool;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.base.bool.BooleanNodeValue;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
- * The model for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeModel
-    extends DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanNodeValue, BooleanDialogNodeConfig> {
+public class BooleanWidgetNodeModel
+    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanNodeValue, BooleanWidgetConfig> {
+
+    /**
+     * @param viewName
+     */
+    protected BooleanWidgetNodeModel(final String viewName) {
+        super(viewName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BooleanNodeValue createEmptyViewValue() {
+        return new BooleanNodeValue();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getJavascriptObjectID() {
+        return "org.knime.js.base.node.widget.input.bool";
+    }
 
     /**
      * {@inheritDoc}
@@ -69,23 +95,24 @@ public class BooleanDialogNodeModel
      * {@inheritDoc}
      */
     @Override
-    protected BooleanDialogNodeRepresentation getRepresentation() {
-        return new BooleanDialogNodeRepresentation(getRelevantValue(), getConfig());
+    public BooleanWidgetConfig createEmptyConfig() {
+        return new BooleanWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
+    protected BooleanWidgetRepresentation getRepresentation() {
+        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanNodeValue createEmptyDialogValue() {
-        return new BooleanNodeValue();
+    protected void useCurrentValueAsDefault() {
+        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
     }
+
 }

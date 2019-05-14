@@ -50,6 +50,7 @@ package org.knime.js.base.node.configuration.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
@@ -57,14 +58,14 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanDialogNodeValue> {
+public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanDialogNodeValue createEmptyValue() {
-        return new BooleanDialogNodeValue();
+    protected BooleanNodeValue createEmptyValue() {
+        return new BooleanNodeValue();
     }
 
     /**

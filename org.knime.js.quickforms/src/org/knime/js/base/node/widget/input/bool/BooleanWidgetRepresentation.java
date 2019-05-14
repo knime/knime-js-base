@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,52 +41,83 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   10 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
+package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.InvalidSettingsException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.bool.BooleanNodeValue;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The model for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeModel
-    extends DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanNodeValue, BooleanDialogNodeConfig> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class BooleanWidgetRepresentation
+    extends AbstractWidgetNodeRepresentation<BooleanNodeValue, BooleanWidgetConfig> {
+
+    @JsonCreator
+    private BooleanWidgetRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final BooleanNodeValue defaultValue,
+        @JsonProperty("currentValue") final BooleanNodeValue currentValue) {
+        super(label, description, required, defaultValue, currentValue);
+    }
 
     /**
-     * {@inheritDoc}
+     * @param currentValue
+     * @param config
      */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    public BooleanWidgetRepresentation(final BooleanNodeValue currentValue, final BooleanWidgetConfig config) {
+        super(currentValue, config);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanDialogNodeRepresentation getRepresentation() {
-        return new BooleanDialogNodeRepresentation(getRelevantValue(), getConfig());
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanNodeValue createEmptyDialogValue() {
-        return new BooleanNodeValue();
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .isEquals();
     }
+
 }

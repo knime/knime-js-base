@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,52 +41,59 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   9 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.bool;
+package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.InvalidSettingsException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.bool.BooleanNodeValue;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * The model for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeModel
-    extends DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanNodeValue, BooleanDialogNodeConfig> {
+public class BooleanWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanDialogNodeRepresentation getRepresentation() {
-        return new BooleanDialogNodeRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanNodeValue createEmptyDialogValue() {
+    protected BooleanNodeValue createEmptyValue() {
         return new BooleanNodeValue();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .isEquals();
+    }
+
 }
