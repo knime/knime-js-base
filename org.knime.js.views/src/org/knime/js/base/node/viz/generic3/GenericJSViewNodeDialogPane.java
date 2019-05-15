@@ -404,8 +404,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
     private BiMap<String, String> getAvailableLibraries() {
         BiMap<String, String> availableLibraries = HashBiMap.create();
-        availableLibraries.put("jsFreeChart_0.5", "JSFreeChart - Version 0.5.0");
         availableLibraries.put("D3_4.2.6", "D3 - Version 4.2.6");
+        availableLibraries.put("plotly.js-1.47.4", "Plotly.js - Version 1.47.4");
         availableLibraries.put("jQuery_3.1.1", "jQuery - Version 3.1.1");
         availableLibraries.put("jQueryUi_1.12.1", "jQuery UI - Version 1.12.1");
         return availableLibraries;
