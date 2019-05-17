@@ -50,30 +50,16 @@ package org.knime.js.base.node.viz.generic3;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -81,23 +67,21 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.knime.base.util.flowvariable.FlowVariableResolver;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.util.ViewUtils;
-import org.knime.core.node.util.dialog.FieldsTableModel;
 import org.knime.core.node.util.dialog.FieldsTableModel.Column;
 import org.knime.core.node.util.dialog.OutFieldsTable;
 import org.knime.core.node.util.dialog.OutFieldsTableModel;
-import org.knime.core.node.workflow.FlowVariable;
-import org.knime.js.base.node.ui.CSSSnippetTextArea;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
+import org.knime.js.base.template.DefaultTemplateController;
+import org.knime.js.base.template.TemplatesPanel;
 import org.knime.js.core.JSONWebNode;
 import org.osgi.framework.FrameworkUtil;
 
@@ -117,19 +101,14 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private static final String ATTR_RES_BUNDLE_DEBUG = "debug";
     private static final String ATTR_RES_BUNDLE_DESCRIPTION = "description";
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(GenericJSViewNodeDialogPane.class);
+
     private BiMap<String, String> m_availableLibraries;
     private final GenericJSViewConfig m_config;
+    private final Class<?> m_templateMetaCategory;
+    private DefaultTemplateController m_templatesController;
 
-    //private final JTextField m_viewName;
-    private final JCheckBox m_generateViewCheckBox;
-    private final JSpinner m_maxRowsSpinner;
-    private final JList m_flowVarList;
-    private final JTable m_dependenciesTable;
-    private final JSSnippetTextArea m_jsTextArea;
-    private final JSSnippetTextArea m_jsSVGTextArea;
-    private final CSSSnippetTextArea m_cssTextArea;
-    private final JSpinner m_waitTimeSpinner;
-    private final OutFieldsTable m_outFieldsTable;
+    private final GenericJSNodePanel m_panel;
 
     private Border m_noBorder = BorderFactory.createEmptyBorder();
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
@@ -139,88 +118,18 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
      * Initializes new dialog pane.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    GenericJSViewNodeDialogPane() {
+    GenericJSViewNodeDialogPane(final Class<?> templateMetaCategory) {
         m_config = new GenericJSViewConfig();
+        m_templateMetaCategory = templateMetaCategory;
 
-        //m_viewName = new JTextField(20);
-        m_generateViewCheckBox = new JCheckBox("Generate image at outport");
-        m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
-        m_waitTimeSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 500));
-        m_flowVarList = new JList(new DefaultListModel());
-        m_flowVarList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        m_flowVarList.setCellRenderer(new FlowVariableListCellRenderer());
-        m_flowVarList.addMouseListener(new MouseAdapter() {
-            /** {@inheritDoc} */
-            @Override
-            public final void mouseClicked(final MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    FlowVariable o = (FlowVariable)m_flowVarList.getSelectedValue();
-                    if (o != null) {
-                        m_jsTextArea.replaceSelection(FlowVariableResolver.getPlaceHolderForVariable(o));
-                        m_flowVarList.clearSelection();
-                        m_jsTextArea.requestFocus();
-                    }
-                }
-            }
-        });
-        m_jsTextArea = new JSSnippetTextArea();
-        m_jsSVGTextArea = new JSSnippetTextArea();
-        m_cssTextArea = new CSSSnippetTextArea();
-        @SuppressWarnings("serial")
-        TableModel tableModel = new DefaultTableModel(0, 2) {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public Class<?> getColumnClass(final int column) {
-                switch (column) {
-                    case 0:
-                        return Boolean.class;
-                    case 1:
-                        return String.class;
-                    default:
-                        return Boolean.class;
-                }
-            }
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public boolean isCellEditable(final int row, final int column) {
-                if (column == 0) {
-                    return true;
-                }
-                return false;
-            }
-        };
-        m_dependenciesTable = new JTable(tableModel);
-        m_dependenciesTable.getColumnModel().getColumn(0).setMaxWidth(30);
-        //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        m_dependenciesTable.setTableHeader(null);
-        m_outFieldsTable = createOutVariableTable();
-        m_outFieldsTable.getTable().addMouseListener(new MouseAdapter() {
-            /** {@inheritDoc} */
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    JTable table = m_outFieldsTable.getTable();
-                    FieldsTableModel model = (FieldsTableModel)table.getModel();
-                    int col = table.getSelectedColumn();
-                    if (col == model.getIndex(Column.TARGET_FIELD)) {
-                        int row = table.getSelectedRow();
-                        String fieldName = (String)model.getValueAt(row, col);
-                        m_jsTextArea.replaceSelection(fieldName);
-                        table.clearSelection();
-                        m_jsTextArea.requestFocus();
-                    }
-                }
-            }
-        });
-        addTab("JavaScript View", initViewLayout());
+        m_panel = new GenericJSNodePanel(templateMetaCategory, m_config, getAvailableLibraries(), false);
+
+        addTab("JavaScript View", m_panel);
         addTab("Image Generation", initImageGenerationLayout());
+        addTab("Templates", initTemplatesPanel());
     }
 
-    private JPanel initViewLayout() {
+    /*private JPanel initViewLayout() {
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setBorder(m_paddingBorder);
         JPanel topPanel = new JPanel();
@@ -302,9 +211,9 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         wrapperPanel.add(outFieldsPane, BorderLayout.CENTER);
 
         return wrapperPanel;
-    }
+    }*/
 
-    private OutFieldsTable createOutVariableTable() {
+    private static OutFieldsTable createOutVariableTable() {
         OutFieldsTable table = new OutFieldsTable(true, true);
         OutFieldsTableModel model = (OutFieldsTableModel)table.getTable().getModel();
         table.getTable().getColumnModel().getColumn(model.getIndex(
@@ -322,25 +231,38 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBorder(m_lineBorder);
         topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(m_generateViewCheckBox);
+        topPanel.add(m_panel.getGenerateViewCheckBox());
         topPanel.add(Box.createHorizontalGlue());
         topPanel.add(new JLabel("Additional wait time after initialization in ms: "));
-        m_waitTimeSpinner.setMaximumSize(new Dimension(100, 20));
-        m_waitTimeSpinner.setMinimumSize(new Dimension(100, 20));
-        m_waitTimeSpinner.setPreferredSize(new Dimension(100, 20));
-        topPanel.add(m_waitTimeSpinner);
+        JSpinner waitTimeSpinner = m_panel.getWaitTimeSpinner();
+        waitTimeSpinner.setMaximumSize(new Dimension(100, 20));
+        waitTimeSpinner.setMinimumSize(new Dimension(100, 20));
+        waitTimeSpinner.setPreferredSize(new Dimension(100, 20));
+        topPanel.add(waitTimeSpinner);
         topPanel.add(Box.createHorizontalStrut(10));
         panel.add(topPanel, BorderLayout.NORTH);
 
         JPanel bottomPanel = new JPanel(new BorderLayout(2, 2));
         bottomPanel.setBorder(m_paddingBorder);
         bottomPanel.add(new JLabel("JavaScript to retrieve generated SVG as string"), BorderLayout.NORTH);
-        m_jsSVGTextArea.setRows(10);
-        JScrollPane svgScroller = new RTextScrollPane(m_jsSVGTextArea);
+        JSSnippetTextArea svgTextArea = m_panel.getJsSVGTextArea();
+        svgTextArea.setRows(10);
+        JScrollPane svgScroller = new RTextScrollPane(svgTextArea);
         bottomPanel.add(svgScroller, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.CENTER);
 
         return panel;
+    }
+
+    /** Create the templates tab. */
+    private JPanel initTemplatesPanel() {
+        final GenericJSNodePanel preview =
+            new GenericJSNodePanel(m_templateMetaCategory, m_config, getAvailableLibraries(), true);
+
+        m_templatesController = new DefaultTemplateController(m_panel, preview);
+        final TemplatesPanel templatesPanel =
+            new TemplatesPanel(Collections.<Class<?>> singleton(m_templateMetaCategory), m_templatesController);
+        return templatesPanel;
     }
 
     /**
@@ -348,7 +270,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
      */
 
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+            throws NotConfigurableException {
         PortObjectSpec[] s = new PortObjectSpec[specs.length];
         for (int i = 0; i < specs.length; i++) {
             s[i] = specs[i] == null ? new DataTableSpec() : specs[i];
@@ -363,46 +286,19 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
     @SuppressWarnings("unchecked")
     protected void loadSettingsFromInternal(final NodeSettingsRO settings, final PortObjectSpec[] specs)  {
-        @SuppressWarnings("rawtypes")
-        DefaultListModel listModel = (DefaultListModel)m_flowVarList.getModel();
-        listModel.removeAllElements();
-        for (FlowVariable e : getAvailableFlowVariables().values()) {
-            listModel.addElement(e);
-        }
-        DefaultTableModel tableModel = (DefaultTableModel)m_dependenciesTable.getModel();
-        tableModel.setRowCount(0);
-        m_availableLibraries = getAvailableLibraries();
-        List<String> libNameList = new ArrayList<String>(m_availableLibraries.values());
-        Collections.sort(libNameList);
-        for (String lib : libNameList) {
-            tableModel.addRow(new Object[]{false, lib});
-        }
         m_config.loadSettingsForDialog(settings);
-        String[] activeLibs = m_config.getDependencies();
-        for (String lib: activeLibs) {
-            String displayLib = m_availableLibraries.get(lib);
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                if (tableModel.getValueAt(i, 1).equals(displayLib)) {
-                    tableModel.setValueAt(true, i, 0);
-                    break;
-                }
-            }
+        DataTableSpec spec = specs.length > 0 ? (DataTableSpec)specs[0] : null;
+        try {
+            m_panel.loadSettingsFrom(settings, spec, getAvailableFlowVariables());
+        } catch (NotConfigurableException e) {
+            LOGGER.error("Unable to load settings: ", e);
         }
-        //m_viewName.setText(m_config.getViewName());
-        m_generateViewCheckBox.setSelected(m_config.getGenerateView());
-        m_maxRowsSpinner.setValue(m_config.getMaxRows());
-        m_jsTextArea.setText(m_config.getJsCode());
-        m_jsSVGTextArea.setText(m_config.getJsSVGCode());
-        m_cssTextArea.setText(m_config.getCssCode());
-        m_waitTimeSpinner.setValue(m_config.getWaitTime());
 
-        m_cssTextArea.installAutoCompletion();
-
-        DataTableSpec spec = specs[0] == null ? new DataTableSpec() : (DataTableSpec)specs[0];
-        m_outFieldsTable.updateData(m_config.getFieldCollection(), spec, getAvailableFlowVariables());
+        m_templatesController.setDataTableSpec(spec);
+        m_templatesController.setFlowVariables(getAvailableFlowVariables());
     }
 
-    private BiMap<String, String> getAvailableLibraries() {
+    private static BiMap<String, String> getAvailableLibraries() {
         BiMap<String, String> availableLibraries = HashBiMap.create();
         availableLibraries.put("D3_4.2.6", "D3 - Version 4.2.6");
         availableLibraries.put("plotly.js-1.47.4", "Plotly.js - Version 1.47.4");
@@ -411,7 +307,8 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         return availableLibraries;
     }
 
-    private BiMap<String, String> getAllAvailableLibraries() {
+    @SuppressWarnings("unused")
+    private static BiMap<String, String> getAllAvailableLibraries() {
         BiMap<String, String> availableLibraries = HashBiMap.create();
         String libBundleName = FrameworkUtil.getBundle(JSONWebNode.class).getSymbolicName();
 
@@ -448,38 +345,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        List<String> dependencies = new ArrayList<String>();
-        for (int row = 0; row < m_dependenciesTable.getRowCount(); row++) {
-            if ((boolean)m_dependenciesTable.getValueAt(row, 0)) {
-                String libDisplay = (String)m_dependenciesTable.getValueAt(row, 1);
-                dependencies.add(m_availableLibraries.inverse().get(libDisplay));
-            }
-        }
-        //m_config.setViewName(m_viewName.getText());
-        m_config.setGenerateView(m_generateViewCheckBox.isSelected());
-        m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
-        m_config.setJsCode(m_jsTextArea.getText());
-        m_config.setJsSVGCode(m_jsSVGTextArea.getText());
-        m_config.setCssCode(m_cssTextArea.getText());
-        m_config.setDependencies(dependencies.toArray(new String[0]));
-        m_config.setWaitTime((Integer)m_waitTimeSpinner.getValue());
-        FieldsTableModel outFieldsModel = (FieldsTableModel)m_outFieldsTable.getTable().getModel();
-        if (!outFieldsModel.validateValues()) {
-            throw new IllegalArgumentException("The variable fields table has errors.");
-        }
-        m_config.setOutVarList(m_outFieldsTable.getOutVarFields());
-        m_config.saveSettings(settings);
+        m_panel.saveSettingsTo(settings);
     }
-
-    /*public static class JSLibrary {
-
-        private String id;
-        private String display;
-
-        public JSLibrary(id, display) {
-            // TODO Auto-generated constructor stub
-        }
-
-    }*/
-
 }

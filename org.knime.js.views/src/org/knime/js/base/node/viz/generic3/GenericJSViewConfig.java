@@ -60,12 +60,13 @@ import org.knime.core.node.util.dialog.field.FieldList.InColumnList;
 import org.knime.core.node.util.dialog.field.FieldList.InFlowVariableList;
 import org.knime.core.node.util.dialog.field.FieldList.OutColumnList;
 import org.knime.core.node.util.dialog.field.FieldList.OutFlowVariableList;
+import org.knime.js.base.template.JSTemplate;
 
 /**
  *
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
  */
-final class GenericJSViewConfig {
+public final class GenericJSViewConfig {
 
     /** Default row maximum. */
     static final int DEFAULT_MAX_ROWS = 2500;
@@ -354,5 +355,16 @@ final class GenericJSViewConfig {
 
         //added with 3.6
         m_customCSS = settings.getString(CUSTOM_CSS, "");
+    }
+
+    /**
+     * Create a template from the current settings
+     *
+     * @param metaCategory the meta category of the template
+     * @return the template with a new uuid.
+     */
+    public JSTemplate createTemplate(@SuppressWarnings("rawtypes") final Class metaCategory) {
+        final JSTemplate template = new JSTemplate(metaCategory, this);
+        return template;
     }
 }

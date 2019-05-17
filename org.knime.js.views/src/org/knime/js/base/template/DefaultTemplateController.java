@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,63 +41,86 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   30.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   16 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.viz.generic3;
+package org.knime.js.base.template;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import java.awt.Component;
+import java.util.Map;
+
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.workflow.FlowVariable;
 
 /**
+ * The default implementation of TemplateController. It provides methods to get a preview and to replace the setting of
+ * a JS view by the settings of a template.
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <T>
  */
-public final class GenericJSViewNodeFactory extends NodeFactory<GenericJSViewNodeModel> implements
-    WizardNodeFactoryExtension<GenericJSViewNodeModel, GenericJSViewRepresentation, GenericJSViewValue> {
+public class DefaultTemplateController<T extends Component & TemplateReceiver> implements TemplateController {
+
+    private final T m_model;
+    private final T m_preview;
+
+    private DataTableSpec m_spec;
+    private Map<String, FlowVariable> m_flowVariables;
 
     /**
-     * {@inheritDoc}
+     * Create a new instance.
+     *
+     * @param model the dialog that serves as a model in the MVC principle
+     * @param preview the dialog used for preview of the template
      */
-    @Override
-    public GenericJSViewNodeModel createNodeModel() {
-        return new GenericJSViewNodeModel(getInteractiveViewName());
+    public DefaultTemplateController(final T model, final T preview) {
+        super();
+        m_model = model;
+        m_preview = preview;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public Component getPreview() {
+        return m_preview;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<GenericJSViewNodeModel> createNodeView(final int viewIndex, final GenericJSViewNodeModel nodeModel) {
-        return null;
+    public void setPreviewSettings(final JSTemplate template) {
+        m_preview.applyTemplate(template, m_spec, m_flowVariables);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
+    public void setSettings(final JSTemplate template) {
+        m_model.applyTemplate(template, m_spec, m_flowVariables);
     }
 
     /**
-     * {@inheritDoc}
+     * Set the spec used for for the preview and applying a template to the model.
+     *
+     * @param spec the spec of the input
      */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new GenericJSViewNodeDialogPane(this.getClass());
+    public void setDataTableSpec(final DataTableSpec spec) {
+        m_spec = spec;
+    }
+
+    /**
+     * Set the flow variables used for for the preview and applying a template to the model.
+     *
+     * @param flowVariables the flow variables
+     */
+    public void setFlowVariables(final Map<String, FlowVariable> flowVariables) {
+        m_flowVariables = flowVariables;
     }
 
 }

@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,63 +41,75 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   30.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   16 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.viz.generic3;
+package org.knime.js.base.template;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.util.FileUtil;
+import org.osgi.framework.Bundle;
 
 /**
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public final class GenericJSViewNodeFactory extends NodeFactory<GenericJSViewNodeModel> implements
-    WizardNodeFactoryExtension<GenericJSViewNodeModel, GenericJSViewRepresentation, GenericJSViewValue> {
+public class PluginFileTemplateRepositoryProvider implements TemplateRepositoryProvider {
+
+    private static NodeLogger LOGGER = NodeLogger.getLogger(PluginFileTemplateRepositoryProvider.class);
+    private static FileTemplateRepository REPO;
+
+    private final Object m_lock = new Object[0];
+
+    private File m_file;
 
     /**
-     * {@inheritDoc}
+     * Create a instance for the bundle "org.knime.js.views" and the relative path "/jsTemplates".
      */
-    @Override
-    public GenericJSViewNodeModel createNodeModel() {
-        return new GenericJSViewNodeModel(getInteractiveViewName());
+    public PluginFileTemplateRepositoryProvider() {
+        this("org.knime.js.views", "jsTemplates");
+    }
+
+    /**
+     * @param symbolicName the name of the bundle like "org.nime.js.views"
+     * @param relativePath the path to the repositories base folder, i.e. "/jsTemplates"
+     */
+    public PluginFileTemplateRepositoryProvider(final String symbolicName, final String relativePath) {
+        try {
+            final Bundle bundle = Platform.getBundle(symbolicName);
+            final URL url = FileLocator.find(bundle, new Path(relativePath), null);
+            m_file = FileUtil.getFileFromURL(FileLocator.toFileURL(url));
+        } catch (final Exception e) {
+            LOGGER.error(
+                "Cannot locate JS view templates in path " + symbolicName + " of the bundle " + relativePath + ".", e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<GenericJSViewNodeModel> createNodeView(final int viewIndex, final GenericJSViewNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new GenericJSViewNodeDialogPane(this.getClass());
+    public TemplateRepository getRepository() {
+        synchronized (m_lock) {
+            if (null == REPO) {
+                try {
+                    REPO = FileTemplateRepository.createProtected(m_file);
+                } catch (final IOException e) {
+                    LOGGER.error("Cannot create the template provider with " + "base file " + m_file.getAbsolutePath(),
+                        e);
+                }
+            }
+        }
+        return REPO;
     }
 
 }

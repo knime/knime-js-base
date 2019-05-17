@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,63 +41,24 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   30.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   15 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.viz.generic3;
-
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+package org.knime.js.base.template;
 
 /**
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public final class GenericJSViewNodeFactory extends NodeFactory<GenericJSViewNodeModel> implements
-    WizardNodeFactoryExtension<GenericJSViewNodeModel, GenericJSViewRepresentation, GenericJSViewValue> {
+public interface TemplateRepositoryProvider {
 
     /**
-     * {@inheritDoc}
+     * Get the repository.
+     *
+     * @return the repository
      */
-    @Override
-    public GenericJSViewNodeModel createNodeModel() {
-        return new GenericJSViewNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<GenericJSViewNodeModel> createNodeView(final int viewIndex, final GenericJSViewNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new GenericJSViewNodeDialogPane(this.getClass());
-    }
+    public TemplateRepository getRepository();
 
 }

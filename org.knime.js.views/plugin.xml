@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="templaterepository" name="JavaScript template repository" schema="schema/templaterepository.exsd"/>
    <extension point="org.knime.workbench.repository.nodes">
       <node
             category-path="/view/js-views"
@@ -460,5 +461,16 @@
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
+   </extension>
+   <extension
+         point="org.knime.js.views.templaterepository">
+      <template-repository
+            id="org.knime.js.base.template.DefaultFileTemplateRepositoryProvider"
+            provider-class="org.knime.js.base.template.DefaultFileTemplateRepositoryProvider">
+      </template-repository>
+      <template-repository
+            id="org.knime.js.base.template.PluginFileTemplateRepositoryProvider"
+            provider-class="org.knime.js.base.template.PluginFileTemplateRepositoryProvider">
+      </template-repository>
    </extension>
 </plugin>

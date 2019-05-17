@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,63 +41,60 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   30.04.2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   16 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.viz.generic3;
+package org.knime.js.base.template;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import java.io.File;
+import java.io.IOException;
+
+import org.knime.core.node.KNIMEConstants;
+import org.knime.core.node.NodeLogger;
 
 /**
  *
- * @author Christian Albrecht, KNIME AG, Zurich, Switzerland, University of Konstanz
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public final class GenericJSViewNodeFactory extends NodeFactory<GenericJSViewNodeModel> implements
-    WizardNodeFactoryExtension<GenericJSViewNodeModel, GenericJSViewRepresentation, GenericJSViewValue> {
+public class DefaultFileTemplateRepositoryProvider implements TemplateRepositoryProvider {
+
+    private static NodeLogger logger = NodeLogger.getLogger(DefaultFileTemplateRepositoryProvider.class);
+    private static FileTemplateRepository defaultRepo;
+
+    private final Object m_lock = new Object[0];
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public GenericJSViewNodeModel createNodeModel() {
-        return new GenericJSViewNodeModel(getInteractiveViewName());
+    public TemplateRepository getRepository() {
+        synchronized (m_lock) {
+            if (null == defaultRepo) {
+                final File file = getDefaultLocation();
+                try {
+                    defaultRepo = FileTemplateRepository.create(file);
+                } catch (final IOException e) {
+                    logger.error("Cannot create the default template provider for the JavaScript views", e);
+                }
+            }
+        }
+        return defaultRepo;
     }
 
     /**
-     * {@inheritDoc}
+     * Get the default location for snippet templates.
+     *
+     * @return the default directory for snippet templates.
      */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
+    private static File getDefaultLocation() {
+        final File dir = new File(new File(KNIMEConstants.getKNIMEHomeDir()), "jsViewsTemplates");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<GenericJSViewNodeModel> createNodeView(final int viewIndex, final GenericJSViewNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new GenericJSViewNodeDialogPane(this.getClass());
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
     }
 
 }

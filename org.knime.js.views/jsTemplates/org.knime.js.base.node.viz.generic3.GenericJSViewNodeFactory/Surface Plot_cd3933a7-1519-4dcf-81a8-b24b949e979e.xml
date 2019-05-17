@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="Surface Plot_cd3933a7-1519-4dcf-81a8-b24b949e979e.xml">
+<entry key="meta category" type="xstring" value="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"/>
+<entry key="category" type="xstring" value="Plotly"/>
+<entry key="name" type="xstring" value="Surface Plot"/>
+<entry key="description" type="xstring" value=""/>
+<entry key="version" type="xstring" value="version 1.x"/>
+<entry key="id" type="xstring" value="cd3933a7-1519-4dcf-81a8-b24b949e979e"/>
+<config key="settings">
+<entry key="hideInWizard" type="xboolean" value="false"/>
+<entry key="generateView" type="xboolean" value="false"/>
+<entry key="maxRows" type="xint" value="1000000"/>
+<entry key="jsCode" type="xstring" value="%%00010//import Plotly library%%00010const Plotly = arguments[0];%%00010%%00010//Access the Knime Data Table provided by the node%%00010const dataTableRows = knimeDataTable.getRows();%%00010%%00010//Create the plotly HTML element %%00010let div = document.createElement('DIV');%%00010div.setAttribute('id', 'knime-surface-3D');%%00010document.body.append(div);%%00010%%00010//Data preparation%%00010//FORMAT: the first point in each collection should%%00010//        be ordered low-&gt;high, or high-&gt;low%%00010//        ex: [[x,...], [x+1,...], [x+2,...]...]%%00010var dataSet = dataTableRows.map(row =&gt; row.data);%%00010%%00010//Plotly data object%%00010const surfaceData = [{%%00010  z: dataSet,%%00010  type: 'surface',%%00010  contours: {%%00010    z: {%%00010      show: true,%%00010      usecolormap: true,%%00010      colorscale: 'Jet',%%00010      project: { z: true }%%00010    }%%00010  }%%00010}];%%00010%%00010//Plotly layout object%%00010const surfaceLayout = {%%00010  title: 'Knime Surface Plot Template',%%00010  scene: { %%00010    camera: { %%00010      eye: { %%00010        x: 1.5, %%00010        y: 1.5, %%00010        z: .5 %%00010      } %%00010    } %%00010  }%%00010};%%00010%%00010//Plotly config object%%00010const surfaceConfig = {%%00010%%00010};%%00010%%00010//Draw the plot%%00010Plotly.newPlot('knime-surface-3D', surfaceData, surfaceLayout, surfaceConfig);"/>
+<entry key="jsSVGCode" type="xstring" value=""/>
+<entry key="cssCode" type="xstring" value="body {%%00010    font-family: sans-serif;%%00010}%%00010h1 {%%00010    font-size: 1.5em;%%00010    font-weight: bold;%%00010}%%00010.success {%%00010    color: #006633;%%00010    font-weight: bold;%%00010}%%00010%%00010.failure {%%00010    color: #990000;%%00010    font-weight: bold;%%00010}%%00010#knime-surface-3D {%%00010%%00009width: 100%;%%00010%%00009height: 100vh;%%00010}"/>
+<config key="dependencies">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="plotly.js-1.47.4"/>
+</config>
+<entry key="waitTime" type="xint" value="0"/>
+<config key="outputVariables">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<entry key="customCSS" type="xstring" isnull="true" value=""/>
+</config>
+</config>
