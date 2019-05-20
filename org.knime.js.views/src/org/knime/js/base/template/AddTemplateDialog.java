@@ -76,6 +76,7 @@ import javax.swing.WindowConstants;
 import org.knime.js.base.node.viz.generic3.GenericJSViewConfig;
 
 /**
+ * The dialog which is displayed when adding a new template
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

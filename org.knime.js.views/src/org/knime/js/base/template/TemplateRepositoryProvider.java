@@ -49,6 +49,7 @@
 package org.knime.js.base.template;
 
 /**
+ * Interface for creation and access of JS template repositories
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

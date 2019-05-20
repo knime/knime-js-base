@@ -55,12 +55,13 @@ import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
 
 /**
+ * Template provider for the default template repository
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DefaultFileTemplateRepositoryProvider implements TemplateRepositoryProvider {
 
-    private static NodeLogger logger = NodeLogger.getLogger(DefaultFileTemplateRepositoryProvider.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultFileTemplateRepositoryProvider.class);
     private static FileTemplateRepository defaultRepo;
 
     private final Object m_lock = new Object[0];
@@ -76,7 +77,7 @@ public class DefaultFileTemplateRepositoryProvider implements TemplateRepository
                 try {
                     defaultRepo = FileTemplateRepository.create(file);
                 } catch (final IOException e) {
-                    logger.error("Cannot create the default template provider for the JavaScript views", e);
+                    LOGGER.error("Cannot create the default template provider for the JavaScript views", e);
                 }
             }
         }

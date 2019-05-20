@@ -56,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 /**
+ * Repository for JS templates
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -66,10 +67,10 @@ public abstract class TemplateRepository {
     private ChangeEvent m_changeEvent;
 
     /**
-     * Get the {@link RSnippetTemplate}s in the given meta category.
+     * Get the {@link JSTemplate}s in the given meta category.
      *
      * @param metaCategories only templates from these meta categories will be returned.
-     * @return the {@link RSnippetTemplate}s in the given meta category
+     * @return the {@link JSTemplate}s in the given meta category
      */
     public abstract Collection<JSTemplate> getTemplates(final Collection<Class<?>> metaCategories);
 

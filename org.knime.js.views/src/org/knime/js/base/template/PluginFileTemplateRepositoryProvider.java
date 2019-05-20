@@ -60,6 +60,7 @@ import org.knime.core.util.FileUtil;
 import org.osgi.framework.Bundle;
 
 /**
+ * Template repository provider which serves the templates available in the plugin
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

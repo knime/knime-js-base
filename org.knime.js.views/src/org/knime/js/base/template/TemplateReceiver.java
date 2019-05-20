@@ -54,6 +54,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.workflow.FlowVariable;
 
 /**
+ * Interface for components which can apply a template
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

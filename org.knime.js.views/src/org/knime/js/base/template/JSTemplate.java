@@ -58,6 +58,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.viz.generic3.GenericJSViewConfig;
 
 /**
+ * Config object of a JavaScript view template
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

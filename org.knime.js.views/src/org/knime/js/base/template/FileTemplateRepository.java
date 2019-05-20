@@ -64,6 +64,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 
 /**
+ * A {@link TemplateRepository} which stores templates in files onto disk
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -130,8 +131,8 @@ public class FileTemplateRepository extends TemplateRepository {
      */
     private static void addIfTemplate(final Collection<JSTemplate> templates, final File file) {
         if (file.getName().endsWith(".xml")) {
-            try {
-                final NodeSettingsRO settings = NodeSettings.loadFromXML(new FileInputStream(file));
+            try (final FileInputStream fis = new FileInputStream(file)) {
+                final NodeSettingsRO settings = NodeSettings.loadFromXML(fis);
                 templates.add(JSTemplate.create(settings));
             } catch (final Exception e) {
                 logger.error("The following file seems to be no template. " + file.getAbsolutePath(), e);
@@ -233,14 +234,18 @@ public class FileTemplateRepository extends TemplateRepository {
             if (isNew) {
                 final NodeSettings settings = new NodeSettings(file.getName());
                 template.saveSettings(settings);
-                settings.saveToXML(new FileOutputStream(file));
+                try (final FileOutputStream fos = new FileOutputStream(file)) {
+                    settings.saveToXML(fos);
+                }
                 // reload settings
-                final NodeSettingsRO settingsro = NodeSettings.loadFromXML(new FileInputStream(file));
-                // set the reloaded settings so that all references to existing
-                // objects are broken. This makes sure, that the template is not
-                // changed from outside.
-                template.loadSettings(settingsro);
-                appendTemplates(Collections.singletonList(template));
+                try (final FileInputStream fis = new FileInputStream(file)) {
+                    final NodeSettingsRO settingsro = NodeSettings.loadFromXML(fis);
+                    // set the reloaded settings so that all references to existing
+                    // objects are broken. This makes sure, that the template is not
+                    // changed from outside.
+                    template.loadSettings(settingsro);
+                    appendTemplates(Collections.singletonList(template));
+                }
             } else {
                 throw new IOException("A file with this name does " + "already exist: " + file.getAbsolutePath());
             }

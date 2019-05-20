@@ -51,6 +51,7 @@ package org.knime.js.base.template;
 import java.awt.Component;
 
 /**
+ * Interface for generating a preview for a template and updating the settings of the Generic JavaScript view
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
