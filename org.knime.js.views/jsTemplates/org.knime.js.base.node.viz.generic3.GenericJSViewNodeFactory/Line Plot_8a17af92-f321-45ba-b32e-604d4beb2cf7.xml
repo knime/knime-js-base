@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="Line Plot_8a17af92-f321-45ba-b32e-604d4beb2cf7.xml">
+<entry key="meta category" type="xstring" value="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"/>
+<entry key="category" type="xstring" value="Plotly"/>
+<entry key="name" type="xstring" value="Line Plot"/>
+<entry key="description" type="xstring" value=""/>
+<entry key="version" type="xstring" value="version 1.x"/>
+<entry key="id" type="xstring" value="8a17af92-f321-45ba-b32e-604d4beb2cf7"/>
+<config key="settings">
+<entry key="hideInWizard" type="xboolean" value="false"/>
+<entry key="generateView" type="xboolean" value="false"/>
+<entry key="maxRows" type="xint" value="25000"/>
+<entry key="jsCode" type="xstring" value="// Define global variable for Plotly%%00010const Plotly = arguments[0];%%00010%%00010// Generate a div which will later be filled with the plotly graph%%00010const d3 = Plotly.d3;%%00010var graphDiv = d3.select('body').append('div')%%00010    .attr('id', 'knimePlotlyGraph');%%00010%%00010var timeData = [];%%00010var valueData = [];%%00010%%00010// Container for error message to handle missing data%%00010var error;%%00010%%00010// Loop over table to find numeric columns which shoule then be plotted%%00010/*for (let i = 0; i &lt; knimeDataTable.getNumColumns(); i++) {%%00010    if (knimeDataTable.getColumnTypes()[i] == 'number') {%%00010        valueData.push(knimeDataTable.getColumn(i));%%00010    }%%00010}*/%%00010%%00010timeData.push(knimeDataTable.getColumn(0));%%00010%%00010// Define which columns should be plotted%%00010valueData.push(knimeDataTable.getColumn(1));%%00010valueData.push(knimeDataTable.getColumn(2));%%00010%%00010// Show an error message, if no value data could be found%%00010if (valueData.length === 0) {%%00010    error = &quot;&lt;div&gt;No value data found!&lt;/div&gt;&quot;;%%00010}%%00010%%00010let data = [];%%00010// Loop over the defined numerical columns and create a line for each of them%%00010for(let i = 0; i &lt; valueData.length; i++) {%%00010    // Define a random color in which the line is then displayed%%00010    var r, g, b;%%00010    r = Math.floor(Math.random() * Math.floor(255));%%00010    g = Math.floor(Math.random() * Math.floor(255));%%00010    b = Math.floor(Math.random() * Math.floor(255));%%00010    // Actual creation of the line. Multiple options can be defined here, which can be found at https://plot.ly/javascript/line-charts/%%00010    lineData = {%%00010        type: 'scatter',%%00010        x: timeData[0],%%00010        y: valueData[i],%%00010        mode: 'lines+markers',%%00010        name: knimeDataTable.getColumnNames()[i+1],%%00010        line: {%%00010            color: 'rgb(' + r + ',' + g + ',' + b + ')',%%00010            width: 3%%00010        },%%00010    };%%00010    data.push(lineData);%%00010}%%00010%%00010// Options to style your plot. More detailed examples can be found here: https://plot.ly/javascript/figure-labels/%%00010var layout = {%%00010%%00010};%%00010%%00010// Check if error is found, display an error message%%00010if (error) {%%00010    document.body.innerHTML = error;%%00010} else {%%00010    // Create actual chart with the options defined above%%00010    Plotly.newPlot('knimePlotlyGraph', data, layout, { responsive: true });%%00010%%00010    // Handle selection events and send them out to other views%%00010    document.getElementById('knimePlotlyGraph').on('plotly_selected', function (eventData) {%%00010        if (!eventData) {%%00010            return;%%00010        }%%00010        let selection = [];%%00010        eventData.points.forEach(function (pt) {%%00010        %%00009pt.data.selectedpoints.forEach(function (points) {%%00010            selection.push(&quot;Row&quot; + points);%%00010        %%00009})%%00010        });%%00010        knimeService.setSelectedRows(knimeDataTable.getTableId(), selection);%%00010    });%%00010    // Handle deselection of points and publish the event%%00010    document.getElementById('knimePlotlyGraph').on('plotly_deselect', function () {%%00010        knimeService.setSelectedRows(knimeDataTable.getTableId(), []);%%00010    });%%00010}"/>
+<entry key="jsSVGCode" type="xstring" value=""/>
+<entry key="cssCode" type="xstring" value="#knimePlotlyGraph {%%00010%%00009width: 100%;%%00010%%00009height: 100vh;%%00010}"/>
+<config key="dependencies">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="plotly.js-1.47.4"/>
+</config>
+<entry key="waitTime" type="xint" value="0"/>
+<config key="outputVariables">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<entry key="customCSS" type="xstring" isnull="true" value=""/>
+</config>
+</config>
