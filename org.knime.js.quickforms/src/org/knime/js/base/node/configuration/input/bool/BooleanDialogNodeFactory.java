@@ -49,7 +49,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * The factory for the boolean configuration node.
+ * Factory for the boolean configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

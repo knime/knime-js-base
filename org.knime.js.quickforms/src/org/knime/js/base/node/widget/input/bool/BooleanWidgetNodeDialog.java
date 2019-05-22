@@ -61,6 +61,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
+ * Node dialog for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

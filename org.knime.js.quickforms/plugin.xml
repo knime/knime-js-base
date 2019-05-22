@@ -120,6 +120,36 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.bool.BooleanWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.string.StringDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.string.StringWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.integer.IntegerDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.integer.IntegerWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.dbl.DoubleWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -693,6 +723,60 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="String Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.string.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/string/stringWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/string/stringWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/string/stringWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Integer Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.integer.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/integer/integerWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/integer/integerWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/integer/integerWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Double Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.double.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/double/doubleWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/double/doubleWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/double/doubleWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -908,6 +992,30 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.bool"
             name="Boolean Widget"
             namespace="knimeBooleanWidget">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.string.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.string"
+            name="String Widget"
+            namespace="knimeStringWidget">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.integer.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.integer"
+            name="Integer Widget"
+            namespace="knimeIntegerWidget">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.double.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.double"
+            name="Double Widget"
+            namespace="knimeDoubleWidget">
       </javascriptComponent>
    </extension>
 

@@ -4,10 +4,21 @@
     xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
     <name>Boolean Widget</name>
 
-	<shortDescription>Outputs an integer flow variable with a given value (boolean).</shortDescription>
+	<shortDescription>
+	   Creates a boolean widget for use in components views. Outputs an integer flow variable with a given value 
+	   (boolean).
+	</shortDescription>
 	<fullDescription>
 		<intro>
-			<p>Outputs an integer flow variable with a given number value (boolean).</p>
+            <p>
+			  Creates a boolean widget for use in components views. Outputs an integer flow variable with a given value 
+              (boolean).
+			</p>
+			<p>
+              The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a 
+              flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes 
+              and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
 		</intro>
 		<option name="Label">A descriptive label that will be shown in the dialog.</option>
 		<option name="Description">Some lines of description that will be shown in the view, 

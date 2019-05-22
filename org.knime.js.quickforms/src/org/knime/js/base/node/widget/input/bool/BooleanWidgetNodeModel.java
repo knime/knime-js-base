@@ -52,6 +52,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
+ * The node model for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

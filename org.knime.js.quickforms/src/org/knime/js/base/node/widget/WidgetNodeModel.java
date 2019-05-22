@@ -78,6 +78,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     CONF extends WidgetConfig<VAL>> extends AbstractWizardNodeModel<REP, VAL> implements CSSModifiable {
 
     private CONF m_config = createEmptyConfig();
+    private boolean m_valueSet = false;
 
     /**
      * @param inPortTypes
@@ -161,7 +162,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     protected void performReset() {
-        /* empty default implementation */
+        m_valueSet = false;
     }
 
     /**
@@ -198,6 +199,28 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setViewValue(final VAL value) {
+        synchronized (getLock()) {
+            super.setViewValue(value);
+            m_valueSet = value != null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadViewValue(final VAL viewValue, final boolean useAsDefault) {
+        synchronized (getLock()) {
+            super.loadViewValue(viewValue, useAsDefault);
+            m_valueSet = viewValue != null;
+        }
+    }
+
+    /**
      * @return The value with the highest priority which is valid.
      */
     protected VAL getRelevantValue() {
@@ -216,7 +239,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     protected ValueOverwriteMode getOverwriteMode() {
         synchronized (getLock()) {
-            if (getViewValue() != null) {
+            if (m_valueSet) {
                 return ValueOverwriteMode.WIZARD;
             } else {
                 return ValueOverwriteMode.NONE;

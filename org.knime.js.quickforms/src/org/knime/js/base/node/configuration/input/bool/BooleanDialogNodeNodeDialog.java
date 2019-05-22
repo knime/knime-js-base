@@ -57,7 +57,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
- * The dialog for the boolean input quick form node.
+ * The dialog for the boolean configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -66,7 +66,9 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     private final BooleanDialogNodeConfig m_config;
     private final JCheckBox m_defaultField;
 
-    /** Constructors, inits fields calls layout routines. */
+    /**
+     * Constructor, inits fields calls layout routines
+     */
     BooleanDialogNodeNodeDialog() {
         m_config = new BooleanDialogNodeConfig();
         m_defaultField = new JCheckBox();

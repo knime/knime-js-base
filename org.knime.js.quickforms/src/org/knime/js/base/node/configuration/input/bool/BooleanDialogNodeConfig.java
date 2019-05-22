@@ -53,7 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the boolean input configuration node.
+ * The config for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

@@ -53,7 +53,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 
 /**
- * The sub node dialog panel for the boolean input quick form node.
+ * The component dialog panel for the boolean configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

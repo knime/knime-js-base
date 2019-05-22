@@ -54,10 +54,12 @@ import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
+ * The representation for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -86,6 +88,7 @@ public class BooleanWidgetRepresentation
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
@@ -96,6 +99,7 @@ public class BooleanWidgetRepresentation
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .toHashCode();
@@ -105,6 +109,7 @@ public class BooleanWidgetRepresentation
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;

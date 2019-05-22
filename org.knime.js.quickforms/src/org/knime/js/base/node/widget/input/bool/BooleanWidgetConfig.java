@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
+ * The config for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
