@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,77 +40,77 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   10 May 2019 (albrecht): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.configuration.input.bool;
+
+import java.awt.GridBagConstraints;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
+ * The dialog for the boolean input quick form node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<BooleanDialogNodeValue> {
 
-    /**
-     * @param viewName
-     */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
+    private final BooleanDialogNodeConfig m_config;
+    private final JCheckBox m_defaultField;
+
+    /** Constructors, inits fields calls layout routines. */
+    BooleanDialogNodeNodeDialog() {
+        m_config = new BooleanDialogNodeConfig();
+        m_defaultField = new JCheckBox();
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+        createAndAddTab();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
+    protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+            throws NotConfigurableException {
+        m_config.loadSettingsInDialog(settings);
+        super.loadSettingsFrom(m_config);
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        m_config.getDefaultValue().setBoolean(m_defaultField.isSelected());
+        super.saveSettingsTo(m_config);
+        m_config.saveSettings(settings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
+    protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
+        BooleanDialogNodeValue value = new BooleanDialogNodeValue();
+        value.loadFromNodeSettings(settings);
+        return "" + value.getBoolean();
     }
 
 }

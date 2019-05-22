@@ -113,12 +113,12 @@
       <node
             category-path="/flowcontrol/configuration/input"
             deprecated="false"
-            factory-class="org.knime.js.base.node.configuration.bool.BooleanDialogNodeFactory">
+            factory-class="org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowcontrol/widgets/input"
             deprecated="false"
-            factory-class="org.knime.js.base.node.configuration.bool.BooleanDialogNodeFactory">
+            factory-class="org.knime.js.base.node.widget.input.bool.BooleanWidgetNodeFactory">
       </node>
    </extension>
    <extension
@@ -166,19 +166,19 @@
             icon="icons/missing.gif"
             level-id="input"
             name="Input"
-            path="/flowcontrol/widget"/>
+            path="/flowcontrol/widgets"/>
       <category
             after="input"
             icon="icons/missing.gif"
             level-id="selection"
             name="Selection"
-            path="/flowcontrol/widget"/>
+            path="/flowcontrol/widgets"/>
       <category
             after="selection"
             icon="icons/missing.gif"
             level-id="filter"
             name="Filter"
-            path="/flowcontrol/widget"/>
+            path="/flowcontrol/widgets"/>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
@@ -675,6 +675,24 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Boolean Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.bool.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/bool/booleanWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/bool/booleanWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/bool/booleanWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -882,6 +900,14 @@
             namespace="org_knime_js_base_node_quickform_filter_definition_value"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.bool.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.bool"
+            name="Boolean Widget"
+            namespace="knimeBooleanWidget">
       </javascriptComponent>
    </extension>
 

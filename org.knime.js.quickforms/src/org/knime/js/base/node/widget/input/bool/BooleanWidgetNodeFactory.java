@@ -52,14 +52,13 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel>
-    implements WizardNodeFactoryExtension<BooleanWidgetNodeModel, BooleanWidgetRepresentation, BooleanNodeValue> {
+    implements WizardNodeFactoryExtension<BooleanWidgetNodeModel, BooleanWidgetRepresentation, BooleanWidgetValue> {
 
     /**
      * {@inheritDoc}
@@ -81,7 +80,8 @@ public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public NodeView<BooleanWidgetNodeModel> createNodeView(final int viewIndex, final BooleanWidgetNodeModel nodeModel) {
+    public NodeView<BooleanWidgetNodeModel> createNodeView(final int viewIndex,
+        final BooleanWidgetNodeModel nodeModel) {
         return null;
     }
 
@@ -90,7 +90,7 @@ public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel
      */
     @Override
     protected boolean hasDialog() {
-        return false;
+        return true;
     }
 
     /**
@@ -98,7 +98,7 @@ public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return null;
+        return new BooleanWidgetNodeDialog();
     }
 
 }

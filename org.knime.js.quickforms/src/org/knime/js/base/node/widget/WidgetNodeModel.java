@@ -48,12 +48,21 @@
  */
 package org.knime.js.base.node.widget;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.js.base.node.base.ValueControlledNodeUtil;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 import org.knime.js.core.JSONViewContent;
 import org.knime.js.core.node.AbstractWizardNodeModel;
@@ -67,15 +76,6 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
  */
 public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends JSONViewContent,
     CONF extends WidgetConfig<VAL>> extends AbstractWizardNodeModel<REP, VAL> implements CSSModifiable {
-
-    /**
-     * Config key for the overwrite mode. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
-     */
-    public static final String CFG_OVERWRITE_MODE = "overwriteMode";
-    /**
-     * Config key for the value. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
-     */
-    public static final String CFG_CURRENT_VALUE = "currentValue";
 
     private CONF m_config = createEmptyConfig();
 
@@ -229,9 +229,47 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
-        content.addString(CFG_OVERWRITE_MODE, getOverwriteMode().name());
-        NodeSettingsWO settings = content.addNodeSettings(CFG_CURRENT_VALUE);
+        content.addString(ValueControlledNodeUtil.CFG_OVERWRITE_MODE, getOverwriteMode().name());
+        NodeSettingsWO settings = content.addNodeSettings(ValueControlledNodeUtil.CFG_CURRENT_VALUE);
         getRelevantValue().saveToNodeSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec) throws IOException,
+        CanceledExecutionException {
+        // only load value, representation is always created from config
+        File valFile = new File(nodeInternDir, "widgetValue.xml");
+        try (final FileInputStream fis = new FileInputStream(valFile)) {
+            NodeSettingsRO valSettings = NodeSettings.loadFromXML(fis);
+            VAL value = createEmptyViewValue();
+            try {
+                value.loadFromNodeSettings(valSettings);
+            } catch (InvalidSettingsException e) {
+                value = null;
+            }
+            setViewValue(value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec) throws IOException,
+        CanceledExecutionException {
+        // only save value, representation is not needing to be saved
+        NodeSettings valSettings = new NodeSettings("widgetValue");
+        VAL value = getViewValue();
+        if (value != null) {
+            value.saveToNodeSettings(valSettings);
+        }
+        File valFile = new File(nodeInternDir, "widgetValue.xml");
+        try (final FileOutputStream fos = new FileOutputStream(valFile)) {
+            valSettings.saveToXML(fos);
+        }
     }
 
 }

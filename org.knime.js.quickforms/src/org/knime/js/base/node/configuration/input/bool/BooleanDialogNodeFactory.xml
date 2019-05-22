@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_boolean.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Boolean Configuration</name>
+
+	<shortDescription>
+	   Provides a boolean configuration option to an encapsulating component's dialog. 
+	   Outputs an integer flow variable with the set value (boolean).
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Outputs an integer flow variable with a given number value (boolean).</p>
+		</intro>
+		<option name="Label">
+		  A descriptive label that will be shown in the dialog
+		</option>
+		<option name="Description">
+		  Some lines of description that will be shown for instance in the node description of the component exposing a
+		  dialog.
+		</option>
+		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution). 
+		  This will also be the name of the exported flow variable.</option>
+        <option name="Default Value">
+          The value that is selected by default.
+        </option>
+	</fullDescription>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+		  Variable output (integer) with the given variable defined.
+		</outPort>
+	</ports>
+</knimeNode>

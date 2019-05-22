@@ -44,121 +44,77 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 May 2019 (albrecht): created
+ *   21 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.widget.input.bool;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.quickform.QuickFormRepresentation;
+import java.awt.GridBagConstraints;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public abstract class AbstractDialogNodeRepresentation<VAL extends DialogNodeValue,
-    CONF extends LabeledDialogNodeConfig<VAL>> implements QuickFormRepresentation<VAL> {
+public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<BooleanWidgetValue> {
 
-    private final String m_label;
-    private final String m_description;
-    private final VAL m_defaultValue;
-    private final VAL m_currentValue;
+    private final BooleanWidgetConfig m_config;
+    private final JCheckBox m_defaultField;
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * Constructor, inits fields calls layout routines
      */
-    public AbstractDialogNodeRepresentation(final VAL currentValue, final CONF config) {
-        m_label = config.getLabel();
-        m_description = config.getDescription();
-        m_defaultValue = config.getDefaultValue();
-        m_currentValue = currentValue;
-    }
-
-    /**
-     * @return the label
-     */
-    @Override
-    public String getLabel() {
-        return m_label;
-    }
-
-    /**
-     * @return the description
-     */
-    @Override
-    public String getDescription() {
-        return m_description;
-    }
-
-    /**
-     * @return the defaultValue
-     */
-    public VAL getDefaultValue() {
-        return m_defaultValue;
-    }
-
-    /**
-     * @return the currentValue
-     */
-    public VAL getCurrentValue() {
-        return m_currentValue;
-    }
-
-    /**
-     * @param panel The panel to fill with the information contained in this representation
-     */
-    protected void fillDialogPanel(final AbstractDialogNodeConfigurationPanel<VAL> panel) {
-        panel.setLabel(m_label);
-        panel.setDescription(m_description);
+    public BooleanWidgetNodeDialog() {
+        m_config = new BooleanWidgetConfig();
+        m_defaultField = new JCheckBox();
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+        createAndAddTab();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("label=");
-        sb.append(m_label);
-        sb.append(", ");
-        sb.append("description=");
-        sb.append(m_description);
-        return sb.toString();
+    protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
+        BooleanWidgetValue value = new BooleanWidgetValue();
+        value.loadFromNodeSettings(settings);
+        return "" + value.getBoolean();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_label)
-                .append(m_description)
-                .toHashCode();
+    protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        AbstractDialogNodeRepresentation<VAL, CONF> other = (AbstractDialogNodeRepresentation<VAL, CONF>) obj;
-        return new EqualsBuilder()
-                .append(m_label, other.m_label)
-                .append(m_description, other.m_description)
-                .isEquals();
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+        m_config.loadSettingsInDialog(settings);
+        super.loadSettingsFrom(m_config);
+        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        m_config.getDefaultValue().setBoolean(m_defaultField.isSelected());
+        super.saveSettingsTo(m_config);
+        m_config.saveSettings(settings);
     }
 
 }

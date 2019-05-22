@@ -44,103 +44,84 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   2 May 2019 (albrecht): created
+ *   21 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.widget;
 
-import java.io.File;
-import java.io.IOException;
+import java.awt.GridBagConstraints;
 
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionMonitor;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNode;
-import org.knime.core.node.dialog.DialogNodeRepresentation;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.port.PortType;
+import org.knime.js.base.node.base.LabeledValueControlledNodeDialog;
+import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.settings.DialogUtil;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <REP>
  * @param <VAL>
  */
-public abstract class ConfigurationNodeModel<REP extends DialogNodeRepresentation<VAL>, VAL extends DialogNodeValue>
-    extends NodeModel implements DialogNode<REP, VAL> {
+public abstract class FlowVariableWidgetNodeDialog<VAL extends JSONViewContent>
+    extends LabeledValueControlledNodeDialog {
+
+    private final JTextField m_variableNameField;
 
     /**
-     * @param nrInDataPorts
-     * @param nrOutDataPorts
+     * Inits fields, sub-classes should call the {@link #createAndAddTab()}
+     * method when they are done initializing their fields.
      */
-    public ConfigurationNodeModel(final int nrInDataPorts, final int nrOutDataPorts) {
-        super(nrInDataPorts, nrOutDataPorts);
-    }
-
-    /**
-     * @param inPortTypes
-     * @param outPortTypes
-     */
-    public ConfigurationNodeModel(final PortType[] inPortTypes, final PortType[] outPortTypes) {
-        super(inPortTypes, outPortTypes);
+    public FlowVariableWidgetNodeDialog() {
+        super();
+        m_variableNameField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-        throws IOException, CanceledExecutionException {
-        // TODO Auto-generated method stub
+    protected JPanel createContentPanel(final GridBagConstraints gbc) {
+        JPanel panel = super.createContentPanel(gbc);
 
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        addPairToPanel("Variable Name: ", m_variableNameField, panel, gbc);
+
+        return panel;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The flow variable name
      */
-    @Override
-    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-        throws IOException, CanceledExecutionException {
-        // TODO Auto-generated method stub
-
+    protected String getFlowVariableName() {
+        return m_variableNameField.getText();
     }
 
     /**
-     * {@inheritDoc}
+     * @param flowVariableName The flow variable name
      */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-        // TODO Auto-generated method stub
-
+    protected void setFlowVariableName(final String flowVariableName) {
+        m_variableNameField.setText(flowVariableName);
     }
 
     /**
-     * {@inheritDoc}
+     * @param config The {@link LabeledFlowVariableWidgetConfig} to load from
      */
-    @Override
-    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
+    protected void loadSettingsFrom(final LabeledFlowVariableWidgetConfig<VAL> config) {
+        setLabel(config.getLabel());
+        setDescription(config.getDescription());
+        setFlowVariableName(config.getFlowVariableName());
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void reset() {
-        // TODO Auto-generated method stub
-
-    }
+    * @param config The {@link LabeledFlowVariableWidgetConfig} to save to
+    * @throws InvalidSettingsException if the parameter name is invalid
+    */
+   protected void saveSettingsTo(final LabeledFlowVariableWidgetConfig<VAL> config) throws InvalidSettingsException {
+       config.setLabel(getLabel());
+       config.setDescription(getDescription());
+       config.setFlowVariableName(getFlowVariableName());
+   }
 
 }

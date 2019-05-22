@@ -50,7 +50,6 @@ package org.knime.js.base.node.widget.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -65,13 +64,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class BooleanWidgetRepresentation
-    extends AbstractWidgetNodeRepresentation<BooleanNodeValue, BooleanWidgetConfig> {
+    extends AbstractWidgetNodeRepresentation<BooleanWidgetValue, BooleanWidgetConfig> {
 
     @JsonCreator
     private BooleanWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final BooleanNodeValue defaultValue,
-        @JsonProperty("currentValue") final BooleanNodeValue currentValue) {
+        @JsonProperty("defaultValue") final BooleanWidgetValue defaultValue,
+        @JsonProperty("currentValue") final BooleanWidgetValue currentValue) {
         super(label, description, required, defaultValue, currentValue);
     }
 
@@ -79,7 +78,7 @@ public class BooleanWidgetRepresentation
      * @param currentValue
      * @param config
      */
-    public BooleanWidgetRepresentation(final BooleanNodeValue currentValue, final BooleanWidgetConfig config) {
+    public BooleanWidgetRepresentation(final BooleanWidgetValue currentValue, final BooleanWidgetConfig config) {
         super(currentValue, config);
     }
 

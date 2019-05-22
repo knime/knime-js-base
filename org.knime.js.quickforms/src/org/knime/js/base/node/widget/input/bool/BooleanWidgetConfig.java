@@ -50,21 +50,20 @@ package org.knime.js.base.node.widget.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanNodeValue> {
+public class BooleanWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanWidgetValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanNodeValue createEmptyValue() {
-        return new BooleanNodeValue();
+    protected BooleanWidgetValue createEmptyValue() {
+        return new BooleanWidgetValue();
     }
 
     /**

@@ -44,74 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   Jun 12, 2014 (winter): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.configuration.input.bool;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
+ * The config for the boolean input configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanDialogNodeValue> {
 
     /**
-     * @param viewName
+     * {@inheritDoc}
      */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
+    @Override
+    protected BooleanDialogNodeValue createEmptyValue() {
+        return new BooleanDialogNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .isEquals();
     }
 
 }

@@ -44,74 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   21 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.base;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public class ValueControlledNodeUtil {
 
     /**
-     * @param viewName
+     * Config key for the overwrite mode. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
      */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
-    }
+    public static final String CFG_OVERWRITE_MODE = "overwriteMode";
 
     /**
-     * {@inheritDoc}
+     * Config key for the value. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
      */
-    @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
-    }
+    public static final String CFG_CURRENT_VALUE = "currentValue";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
+    private ValueControlledNodeUtil() {
+        // no instantiate
     }
 
 }

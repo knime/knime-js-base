@@ -1,6 +1,7 @@
+/* eslint-env jquery */
+/* global checkMissingData:false, callUpdate:false */
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,77 +42,54 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   May 20, 2019 (Christian Albrecht, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+window.knimeBooleanWidget = (function () {
+    
+    var booleanWidget = {
+        version: '2.0.0'
+    };
+    booleanWidget.name = 'KNIME Boolean Widget';
+    var input;
+    var viewValid = false;
 
-/**
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+    booleanWidget.init = function (representation) {
+        if (checkMissingData(representation)) {
+            return;
+        }
+        var body = $('body');
+        var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
+        qfdiv.attr('title', representation.description);
+        qfdiv.attr('aria-label', representation.label);
+        body.append(qfdiv);
+        var label = $('<label class="label knime-qf-title" style="display: block; padding-left: 15px; ' +
+            'text-indent: -15px; margin-left: 5px;">');
+        qfdiv.append(label);
+        input = $('<input class="knime-qf-input knime-boolean" style="padding: 0; margin:0; margin-right: 5px; ' +
+            'vertical-align: middle;">');
+        input.attr('aria-label', representation.label);
+        input.attr('type', 'checkbox');
+        label.append(input);
+        label.append(representation.label);
+        var checked = representation.currentValue.boolean;
+        input.prop('checked', checked);
+        input.blur(callUpdate);
+        viewValid = true;
+    };
 
-    /**
-     * @param viewName
-     */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
-    }
-
-}
+    booleanWidget.value = function () {
+        if (!viewValid) {
+            return null;
+        }
+        var viewValue = {};
+        viewValue.boolean = input.prop('checked');
+        return viewValue;
+    };
+	
+    return booleanWidget;
+	
+})();

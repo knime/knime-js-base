@@ -44,74 +44,86 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   21 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.configuration;
+
+import java.awt.GridBagConstraints;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.LabeledValueControlledNodeDialog;
+import org.knime.js.core.settings.DialogUtil;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the concrete {@link DialogNodeValue} implementation
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public abstract class FlowVariableDialogNodeNodeDialog<VAL extends DialogNodeValue>
+    extends LabeledValueControlledNodeDialog {
+
+    private final JTextField m_parameterNameField;
 
     /**
-     * @param viewName
+     * Inits fields, sub-classes should call the {@link #createAndAddTab()}
+     * method when they are done initializing their fields.
      */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
+    public FlowVariableDialogNodeNodeDialog() {
+        super();
+        m_parameterNameField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
+    protected JPanel createContentPanel(final GridBagConstraints gbc) {
+        JPanel panel = super.createContentPanel(gbc);
+
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        addPairToPanel("Parameter/Variable Name: ", m_parameterNameField, panel, gbc);
+
+        return panel;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the parameterName
      */
-    @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
+    public String getParameterName() {
+        return m_parameterNameField.getText();
     }
 
     /**
-     * {@inheritDoc}
+     * @param parameterName the new parameter name
      */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    public void setParameterName(final String parameterName) {
+        m_parameterNameField.setText(parameterName);
     }
 
     /**
-     * {@inheritDoc}
+     * @param config The {@link LabeledFlowVariableDialogNodeConfig} to load from
      */
-    @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
+    protected void loadSettingsFrom(final LabeledFlowVariableDialogNodeConfig<VAL> config) {
+        setLabel(config.getLabel());
+        setDescription(config.getDescription());
+        setParameterName(config.getParameterName());
     }
 
     /**
-     * {@inheritDoc}
+     * @param config The {@link LabeledFlowVariableDialogNodeConfig} to save to
+     * @throws InvalidSettingsException if the parameter name is invalid
      */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
+    protected void saveSettingsTo(final LabeledFlowVariableDialogNodeConfig<VAL> config) throws InvalidSettingsException {
+        config.setLabel(getLabel());
+        config.setDescription(getDescription());
+        String parameterName = getParameterName();
+        config.setParameterName(parameterName);
+        config.setFlowVariableName(parameterName);
     }
 
 }

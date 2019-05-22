@@ -45,20 +45,13 @@
  * History
  *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-package org.knime.js.base.node.base.bool;
-
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+package org.knime.js.base.node.widget.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -66,13 +59,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The value for the boolean configuration and widget nodes
+ * The value for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class BooleanNodeValue extends JSONViewContent implements DialogNodeValue {
+public class BooleanWidgetValue extends JSONViewContent {
 
     private static final String CFG_BOOLEAN = "boolean";
     private static final boolean DEFAULT_BOOLEAN = false;
@@ -94,15 +87,6 @@ public class BooleanNodeValue extends JSONViewContent implements DialogNodeValue
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_boolean = settings.getBoolean(CFG_BOOLEAN);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN, DEFAULT_BOOLEAN);
     }
 
     /**
@@ -157,55 +141,9 @@ public class BooleanNodeValue extends JSONViewContent implements DialogNodeValue
         if (obj.getClass() != getClass()) {
             return false;
         }
-        BooleanNodeValue other = (BooleanNodeValue)obj;
+        BooleanWidgetValue other = (BooleanWidgetValue)obj;
         return new EqualsBuilder()
                 .append(m_boolean, other.m_boolean)
                 .isEquals();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setBoolean("true".equalsIgnoreCase(fromCmdLine));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json.getValueType() == ValueType.TRUE) {
-            m_boolean = true;
-        } else if (json.getValueType() == ValueType.FALSE) {
-            m_boolean = false;
-        } else if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_BOOLEAN);
-                if (JsonValue.NULL.equals(val)) {
-                    m_boolean = false;
-                } else {
-                    m_boolean = ((JsonObject) json).getBoolean(CFG_BOOLEAN);
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected boolean value for key '" + CFG_BOOLEAN + "'.", e);
-            }
-        } else {
-            throw new JsonException("Expected a JSON object, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        return m_boolean ? JsonValue.TRUE : JsonValue.FALSE;
     }
 }

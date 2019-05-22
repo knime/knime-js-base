@@ -61,6 +61,7 @@ import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.port.PortType;
+import org.knime.js.base.node.base.ValueControlledNodeUtil;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 
 /**
@@ -70,15 +71,6 @@ import org.knime.js.base.node.quickform.ValueOverwriteMode;
 public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     VAL extends DialogNodeValue, CONF extends DialogNodeConfig<VAL>>
     extends NodeModel implements DialogNode<REP, VAL> {
-
-    /**
-     * Config key for the overwrite mode. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
-     */
-    public static final String CFG_OVERWRITE_MODE = "overwriteMode";
-    /**
-     * Config key for the value. Used in {@link #saveCurrentValue(NodeSettingsWO)}.
-     */
-    public static final String CFG_CURRENT_VALUE = "currentValue";
 
     private final Object m_lock = new Object();
     private CONF m_config = createEmptyConfig();
@@ -241,8 +233,8 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      */
     @Override
     public void saveCurrentValue(final NodeSettingsWO content) {
-        content.addString(CFG_OVERWRITE_MODE, getOverwriteMode().name());
-        NodeSettingsWO settings = content.addNodeSettings(CFG_CURRENT_VALUE);
+        content.addString(ValueControlledNodeUtil.CFG_OVERWRITE_MODE, getOverwriteMode().name());
+        NodeSettingsWO settings = content.addNodeSettings(ValueControlledNodeUtil.CFG_CURRENT_VALUE);
         getRelevantValue().saveToNodeSettings(settings);
     }
 

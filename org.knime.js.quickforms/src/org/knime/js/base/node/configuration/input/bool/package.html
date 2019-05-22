@@ -1,6 +1,5 @@
-/*
- * ------------------------------------------------------------------------
- *
+<!--
+====================================================================
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,77 +40,8 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   10 May 2019 (albrecht): created
- */
-package org.knime.js.base.node.widget.input.bool;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
-
-/**
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
-
-    /**
-     * @param viewName
-     */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
-    }
-
-}
+====================================================================
+-->
+<body>
+	Boolean Configuration Node
+</body>

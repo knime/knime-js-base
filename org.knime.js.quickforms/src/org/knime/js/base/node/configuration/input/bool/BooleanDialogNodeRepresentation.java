@@ -1,6 +1,5 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,77 +40,79 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   10 May 2019 (albrecht): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.configuration.input.bool;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
 
 /**
+ * The representation for the boolean input quick form node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public class BooleanDialogNodeRepresentation
+    extends AbstractDialogNodeRepresentation<BooleanDialogNodeValue, BooleanDialogNodeConfig> {
 
     /**
-     * @param viewName
+     * @param currentValue The value currently used by the node
+     * @param config The config of the node
      */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
+    public BooleanDialogNodeRepresentation(final BooleanDialogNodeValue currentValue,
+        final BooleanDialogNodeConfig config) {
+        super(currentValue, config);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
+    public DialogNodePanel<BooleanDialogNodeValue> createDialogPanel() {
+        BooleanConfigurationPanel panel = new BooleanConfigurationPanel(this);
+        fillDialogPanel(panel);
+        return panel;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .isEquals();
     }
 
 }
