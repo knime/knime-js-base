@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_date.png" type="Visualizer" xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Date&amp;Time Widget</name>
+
+	<shortDescription>
+       Creates a calendar input widget for use in components views. Outputs a string flow variable with a given value.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				Creates a calendar input widget for use in components views. Outputs a string flow variable with a given
+				value.
+			</p>
+			<p>
+				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
+				flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes
+				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+			</p>
+		</intro>
+		<option name="Label">A descriptive label that will be shown in the dialog.</option>
+		<option name="Description">Some lines of description that will be shown in the view,
+			for instance by means of a tooltip.
+		</option>
+		<option name="Variable Name">Variable identifier.</option>
+		<option name="&quot;Now&quot; Button in Wizard">If a button with the label <i>Now</i> to insert 
+            the current time shall be shown in the wizard.</option>
+        <option name="Granularity in Wizard">In which granularity the time should be displayed in the wizard.</option>
+        <option name="Type">Which date&amp;time type should be selectable.</option>
+        <option name="Earliest">The earliest allowed date&amp;time. The execution time can be used.</option>
+        <option name="Latest">The latest allowed date&amp;time. The execution time can be used.</option>
+        <option name="Default Value">
+            The value that is selected by default. The execution time can be used.
+        </option>
+	</fullDescription>
+	<interactiveView name="Date Widget">
+		Displays a calendar input field.
+	</interactiveView>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output (string) with the given variable defined.
+		</outPort>
+	</ports>
+</knimeNode>

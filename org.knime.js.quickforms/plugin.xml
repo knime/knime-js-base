@@ -150,6 +150,16 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.dbl.DoubleWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.date.DateDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.date.DateWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -777,6 +787,31 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Date/Time Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.date.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/date"
+               relativePathTarget="org/knime/js/base/node/widget/input/date">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/date/dateWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/date/dateWidget.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_2_17">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -991,7 +1026,9 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.widget.input.bool"
             name="Boolean Widget"
-            namespace="knimeBooleanWidget">
+            namespace="knimeBooleanWidget"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
@@ -999,7 +1036,9 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.widget.input.string"
             name="String Widget"
-            namespace="knimeStringWidget">
+            namespace="knimeStringWidget"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
@@ -1007,7 +1046,9 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.widget.input.integer"
             name="Integer Widget"
-            namespace="knimeIntegerWidget">
+            namespace="knimeIntegerWidget"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
@@ -1015,7 +1056,19 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.widget.input.double"
             name="Double Widget"
-            namespace="knimeDoubleWidget">
+            namespace="knimeDoubleWidget"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.date.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.date"
+            name="Date/Time Widget"
+            namespace="knimeDateWidget"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
       </javascriptComponent>
    </extension>
 

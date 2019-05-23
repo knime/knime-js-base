@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,9 +41,12 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   23 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform.input.date2;
+package org.knime.js.base.node.widget.input.date;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -51,33 +55,41 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.base.date.GranularityTime;
-import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
+import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
 import org.knime.time.util.DateTimeType;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the date input quick form node.
+ * The representation for the date widget node
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @author Simon Schmid, KNIME.com, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class DateInput2QuickFormRepresentation
-    extends QuickFormRepresentationImpl<DateInput2QuickFormValue, DateTimeInputQuickFormConfig> {
+public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<DateWidgetValue, DateWidgetConfig> {
+
+    private final boolean m_showNowButton;
+    private final GranularityTime m_granularity;
+    private final boolean m_useMin;
+    private final boolean m_useMax;
+    private final boolean m_useMinExecTime;
+    private final boolean m_useMaxExecTime;
+    private final boolean m_useDefaultExecTime;
+    private final ZonedDateTime m_min;
+    private final ZonedDateTime m_max;
+    private final DateTimeType m_type;
+    private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
 
     @JsonCreator
-    private DateInput2QuickFormRepresentation(@JsonProperty("label") final String label,
+    private DateWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final DateInput2QuickFormValue defaultValue,
-        @JsonProperty("currentValue") final DateInput2QuickFormValue currentValue,
+        @JsonProperty("defaultValue") final DateWidgetValue defaultValue,
+        @JsonProperty("currentValue") final DateWidgetValue currentValue,
         @JsonProperty("shownowbutton") final boolean showNowButton,
         @JsonProperty("granularity") final String granularity, @JsonProperty("usemin") final boolean useMin,
         @JsonProperty("usemax") final boolean useMax, @JsonProperty("useminexectime") final boolean useMinExecTime,
@@ -99,62 +111,28 @@ public class DateInput2QuickFormRepresentation
     }
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * @param currentValue the value currently used by the node
+     * @param config the config of the node
      */
-    public DateInput2QuickFormRepresentation(final DateInput2QuickFormValue currentValue,
-        final DateTimeInputQuickFormConfig config) {
+    public DateWidgetRepresentation(final DateWidgetValue currentValue, final DateWidgetConfig config) {
         super(currentValue, config);
-        m_showNowButton = config.getShowNowButton();
+        m_showNowButton = config.isShowNowButton();
         m_granularity = config.getGranularity();
-        m_useMin = config.getUseMin();
-        m_useMax = config.getUseMax();
-        m_useMinExecTime = config.getUseMinExecTime();
-        m_useMaxExecTime = config.getUseMaxExecTime();
-        m_useDefaultExecTime = config.getUseDefaultExecTime();
+        m_useMin = config.isUseMin();
+        m_useMax = config.isUseMax();
+        m_useMinExecTime = config.isUseMinExecTime();
+        m_useMaxExecTime = config.isUseMaxExecTime();
+        m_useDefaultExecTime = config.isUseDefaultExecTime();
         m_min = config.getMin();
         m_max = config.getMax();
         m_type = config.getType();
-    }
-
-    private final boolean m_showNowButton;
-
-    private final GranularityTime m_granularity;
-
-    private final boolean m_useMin;
-
-    private final boolean m_useMax;
-
-    private final boolean m_useMinExecTime;
-
-    private final boolean m_useMaxExecTime;
-
-    private final boolean m_useDefaultExecTime;
-
-    private final ZonedDateTime m_min;
-
-    private final ZonedDateTime m_max;
-
-    private final DateTimeType m_type;
-
-    private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public DialogNodePanel<DateInput2QuickFormValue> createDialogPanel() {
-        DateInput2QuickFormDialogPanel panel = new DateInput2QuickFormDialogPanel(this);
-        fillDialogPanel(panel);
-        return panel;
     }
 
     /**
      * @return the showNowButton
      */
     @JsonProperty("shownowbutton")
-    public boolean getShowNowButton() {
+    public boolean isShowNowButton() {
         return m_showNowButton;
     }
 
@@ -188,7 +166,7 @@ public class DateInput2QuickFormRepresentation
      * @return the useMin
      */
     @JsonProperty("usemin")
-    public boolean getUseMin() {
+    public boolean isUseMin() {
         return m_useMin;
     }
 
@@ -196,7 +174,7 @@ public class DateInput2QuickFormRepresentation
      * @return the useMax
      */
     @JsonProperty("usemax")
-    public boolean getUseMax() {
+    public boolean isUseMax() {
         return m_useMax;
     }
 
@@ -204,7 +182,7 @@ public class DateInput2QuickFormRepresentation
      * @return the useMinExecTime
      */
     @JsonProperty("useminexectime")
-    public boolean getUseMinExecTime() {
+    public boolean isUseMinExecTime() {
         return m_useMinExecTime;
     }
 
@@ -212,7 +190,7 @@ public class DateInput2QuickFormRepresentation
      * @return the useMaxExecTime
      */
     @JsonProperty("usemaxexectime")
-    public boolean getUseMaxExecTime() {
+    public boolean isUseMaxExecTime() {
         return m_useMaxExecTime;
     }
 
@@ -220,16 +198,8 @@ public class DateInput2QuickFormRepresentation
      * @return the useMaxExecTime
      */
     @JsonProperty("usedefaultexectime")
-    public boolean getUseDefaultExecTime() {
+    public boolean isUseDefaultExecTime() {
         return m_useDefaultExecTime;
-    }
-
-    /**
-     * @return the min
-     */
-    @JsonIgnore
-    public ZonedDateTime getMin() {
-        return m_min;
     }
 
     /**
@@ -243,25 +213,9 @@ public class DateInput2QuickFormRepresentation
     /**
      * @return the max
      */
-    @JsonIgnore
-    public ZonedDateTime getMax() {
-        return m_max;
-    }
-
-    /**
-     * @return the max
-     */
     @JsonProperty("max")
     public String getMaxAsString() {
         return m_max.toString();
-    }
-
-    /**
-     * @return the type
-     */
-    @JsonIgnore
-    public DateTimeType getType() {
-        return m_type;
     }
 
     /**
@@ -351,9 +305,19 @@ public class DateInput2QuickFormRepresentation
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_granularity)
-            .append(m_useMin).append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime)
-            .append(m_useDefaultExecTime).append(m_min).append(m_max).append(m_type).toHashCode();
+        return new HashCodeBuilder()
+            .appendSuper(super.hashCode())
+            .append(m_showNowButton)
+            .append(m_granularity)
+            .append(m_useMin)
+            .append(m_useMax)
+            .append(m_useMinExecTime)
+            .append(m_useMaxExecTime)
+            .append(m_useDefaultExecTime)
+            .append(m_min)
+            .append(m_max)
+            .append(m_type)
+            .toHashCode();
     }
 
     /**
@@ -370,12 +334,20 @@ public class DateInput2QuickFormRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateInput2QuickFormRepresentation other = (DateInput2QuickFormRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_showNowButton, other.m_showNowButton)
-            .append(m_granularity, other.m_granularity).append(m_useMin, other.m_useMin)
-            .append(m_useMax, other.m_useMax).append(m_useMinExecTime, other.m_useMinExecTime)
-            .append(m_useMaxExecTime, other.m_useMaxExecTime).append(m_useDefaultExecTime, other.m_useDefaultExecTime)
-            .append(m_min, other.m_min).append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
+        DateWidgetRepresentation other = (DateWidgetRepresentation)obj;
+        return new EqualsBuilder()
+            .appendSuper(super.equals(obj))
+            .append(m_showNowButton, other.m_showNowButton)
+            .append(m_granularity, other.m_granularity)
+            .append(m_useMin, other.m_useMin)
+            .append(m_useMax, other.m_useMax)
+            .append(m_useMinExecTime, other.m_useMinExecTime)
+            .append(m_useMaxExecTime, other.m_useMaxExecTime)
+            .append(m_useDefaultExecTime, other.m_useDefaultExecTime)
+            .append(m_min, other.m_min)
+            .append(m_max, other.m_max)
+            .append(m_type, other.m_type)
+            .isEquals();
     }
 
 }

@@ -44,76 +44,106 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   23 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.dbl;
+package org.knime.js.base.node.widget.input.date;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.date.DateNodeConfig;
+import org.knime.js.core.JSONViewContent;
+import org.knime.time.util.DateTimeUtils;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The dialog representation of the double configuration node
+ * The value for the date widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<DoubleDialogNodeValue, DoubleDialogNodeConfig> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class DateWidgetValue extends JSONViewContent {
 
-    private final boolean m_useMin;
-    private final boolean m_useMax;
-    private final double m_min;
-    private final double m_max;
+    private static final String CFG_DATE = "date&time";
+    private ZonedDateTime m_date = DateNodeConfig.DEFAULT_ZDT;
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * @return the date
      */
-    public DoubleDialogNodeRepresentation(final DoubleDialogNodeValue currentValue, final DoubleDialogNodeConfig config) {
-        super(currentValue, config);
-        m_useMin = config.isUseMin();
-        m_useMax = config.isUseMax();
-        m_min = config.getMin();
-        m_max = config.getMax();
+    @JsonIgnore
+    public ZonedDateTime getDate() {
+        return m_date;
     }
 
     /**
-     * @return the useMin
+     * @return the string
      */
-    public boolean isUseMin() {
-        return m_useMin;
+    @JsonProperty("datestring")
+    public String getDateAsString() {
+        return m_date.toString();
     }
 
     /**
-     * @return the useMax
+     * @param date the date to set
      */
-    public boolean isUseMax() {
-        return m_useMax;
+    @JsonIgnore
+    public void setDate(final ZonedDateTime date) {
+        m_date = date;
     }
 
     /**
-     * @return the min
+     * @param zdtString the zoned date time to set
      */
-    public double getMin() {
-        return m_min;
+    @JsonProperty("datestring")
+    public void setDateTimeComponent(final String zdtString) {
+        Optional<ZonedDateTime> opt = DateTimeUtils.asZonedDateTime(zdtString);
+        m_date = opt.isPresent() ? opt.get()
+            : ZonedDateTime.of(DateTimeUtils.asLocalDateTime(zdtString).get(), ZoneId.systemDefault());
     }
 
     /**
-     * @return the max
+     * @param zone the zone to set
      */
-    public double getMax() {
-        return m_max;
+    @JsonProperty("zonestring")
+    public void setTimeZoneComponent(final String zone) {
+        m_date = ZonedDateTime.of(m_date.toLocalDateTime(), ZoneId.of(zone));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public DialogNodePanel<DoubleDialogNodeValue> createDialogPanel() {
-        DoubleConfigurationPanel panel = new DoubleConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        String dateString = m_date != null ? m_date.toString() : null;
+        settings.addString(CFG_DATE, dateString);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        String value = settings.getString(CFG_DATE);
+        if (value == null) {
+            m_date = null;
+        } else {
+            try {
+                setDate(ZonedDateTime.parse(value));
+            } catch (Exception e) {
+                throw new InvalidSettingsException("Can't parse date: " + value, e);
+            }
+        }
     }
 
     /**
@@ -122,19 +152,10 @@ public class DoubleDialogNodeRepresentation
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("useMin=");
-        sb.append(m_useMin);
-        sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
-        sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
-        sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
+        sb.append("date=");
+        sb.append("{");
+        sb.append(m_date);
+        sb.append("}");
         return sb.toString();
     }
 
@@ -144,11 +165,7 @@ public class DoubleDialogNodeRepresentation
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_useMin)
-            .append(m_useMax)
-            .append(m_min)
-            .append(m_max)
+            .append(m_date)
             .toHashCode();
     }
 
@@ -166,13 +183,10 @@ public class DoubleDialogNodeRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleDialogNodeRepresentation other = (DoubleDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
-                .isEquals();
+        DateWidgetValue other = (DateWidgetValue)obj;
+        return new EqualsBuilder()
+            .append(m_date, other.m_date)
+            .isEquals();
     }
 
 }

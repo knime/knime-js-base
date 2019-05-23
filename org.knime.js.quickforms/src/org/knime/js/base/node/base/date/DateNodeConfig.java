@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 13, 2014 (winter): created
+ *   23 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform.input.date2;
+package org.knime.js.base.node.base.date;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -59,83 +59,65 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.date.GranularityTime;
-import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 import org.knime.time.util.DateTimeType;
 import org.knime.time.util.DateTimeUtils;
 
 /**
- * The config for the date input quick form node.
+ * Base config file for the date configuration and widget nodes
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
- * @author Simon Schmid, KNIME.com, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<DateInput2QuickFormValue> {
+public class DateNodeConfig {
+
+    /**
+     * The default date for all date settings
+     */
+    public static final ZonedDateTime DEFAULT_ZDT = ZonedDateTime.now().withNano(0);
 
     private static final String CFG_SHOW_NOW_BUTTON = "show_now";
-
     private static final boolean DEFAULT_SHOW_NOW_BUTTON = true;
-
     private boolean m_showNowButton = DEFAULT_SHOW_NOW_BUTTON;
 
     private static final String CFG_USE_MIN = "use_min";
-
     private static final boolean DEFAULT_USE_MIN = false;
-
     private boolean m_useMin = DEFAULT_USE_MIN;
 
     private static final String CFG_USE_MAX = "use_max";
-
     private static final boolean DEFAULT_USE_MAX = false;
-
     private boolean m_useMax = DEFAULT_USE_MAX;
 
     private static final String CFG_USE_MIN_EXEC_TIME = "use_min_exec_time";
-
     private static final boolean DEFAULT_USE_MIN_EXEC_TIME = false;
-
     private boolean m_useMinExecTime = DEFAULT_USE_MIN_EXEC_TIME;
 
     private static final String CFG_USE_MAX_EXEC_TIME = "use_max_exec_time";
-
     private static final boolean DEFAULT_USE_MAX_EXEC_TIME = false;
-
     private boolean m_useMaxExecTime = DEFAULT_USE_MAX_EXEC_TIME;
 
     private static final String CFG_USE_DEFAULT_EXEC_TIME = "use_default_exec_time";
-
     private static final boolean DEFAULT_USE_DEFAULT_EXEC_TIME = false;
-
     private boolean m_useDefaultExecTime = DEFAULT_USE_DEFAULT_EXEC_TIME;
 
     private static final String CFG_MIN = "min";
-
-    private static final ZonedDateTime DEFAULT_MIN = DateInput2QuickFormValue.DEFAULT_ZDT;
-
+    private static final ZonedDateTime DEFAULT_MIN = DEFAULT_ZDT;
     private ZonedDateTime m_min = DEFAULT_MIN;
 
     private static final String CFG_MAX = "max";
-
-    private static final ZonedDateTime DEFAULT_MAX = DateInput2QuickFormValue.DEFAULT_ZDT;
-
+    private static final ZonedDateTime DEFAULT_MAX = DEFAULT_ZDT;
     private ZonedDateTime m_max = DEFAULT_MAX;
 
     private static final String CFG_TYPE = "date_time_type";
-
     private static final DateTimeType DEFAULT_TYPE = DateTimeType.LOCAL_DATE_TIME;
-
     private DateTimeType m_type = DEFAULT_TYPE;
 
     private static final String CFG_GRANULARITY = "granularity";
-
     private static final GranularityTime DEFAULT_GRANULARITY = GranularityTime.SHOW_MINUTES;
-
     private GranularityTime m_granularity = DEFAULT_GRANULARITY;
 
     /**
      * @return the showNow
      */
-    public boolean getShowNowButton() {
+    public boolean isShowNowButton() {
         return m_showNowButton;
     }
 
@@ -163,153 +145,113 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
     /**
      * @return the useMin
      */
-    boolean getUseMin() {
+    public boolean isUseMin() {
         return m_useMin;
     }
 
     /**
      * @param useMin the useMin to set
      */
-    void setUseMin(final boolean useMin) {
+    public void setUseMin(final boolean useMin) {
         m_useMin = useMin;
     }
 
     /**
      * @return the useMax
      */
-    boolean getUseMax() {
+    public boolean isUseMax() {
         return m_useMax;
     }
 
     /**
      * @param useMax the useMax to set
      */
-    void setUseMax(final boolean useMax) {
+    public void setUseMax(final boolean useMax) {
         m_useMax = useMax;
     }
 
     /**
      * @return the useMinExecTime
      */
-    boolean getUseMinExecTime() {
+    public boolean isUseMinExecTime() {
         return m_useMinExecTime;
     }
 
     /**
      * @param useMinExecTime the useMinExecTime to set
      */
-    void setUseMinExecTime(final boolean useMinExecTime) {
+    public void setUseMinExecTime(final boolean useMinExecTime) {
         m_useMinExecTime = useMinExecTime;
     }
 
     /**
      * @return the useMaxExecTime
      */
-    boolean getUseMaxExecTime() {
+    public boolean isUseMaxExecTime() {
         return m_useMaxExecTime;
     }
 
     /**
      * @param useMaxExecTime the useMaxExecTime to set
      */
-    void setUseMaxExecTime(final boolean useMaxExecTime) {
+    public void setUseMaxExecTime(final boolean useMaxExecTime) {
         m_useMaxExecTime = useMaxExecTime;
     }
 
     /**
      * @return the useDefaultExecTime
      */
-    boolean getUseDefaultExecTime() {
+    public boolean isUseDefaultExecTime() {
         return m_useDefaultExecTime;
     }
 
     /**
      * @param useDefaultExecTime the useDefaultExecTime to set
      */
-    void setUseDefaultExecTime(final boolean useDefaultExecTime) {
+    public void setUseDefaultExecTime(final boolean useDefaultExecTime) {
         m_useDefaultExecTime = useDefaultExecTime;
     }
 
     /**
      * @return the min
      */
-    ZonedDateTime getMin() {
+    public ZonedDateTime getMin() {
         return m_min;
     }
 
     /**
      * @param min the min to set
      */
-    void setMin(final ZonedDateTime min) {
+    public void setMin(final ZonedDateTime min) {
         m_min = min;
     }
 
     /**
      * @return the max
      */
-    ZonedDateTime getMax() {
+    public ZonedDateTime getMax() {
         return m_max;
     }
 
     /**
      * @param max the max to set
      */
-    void setMax(final ZonedDateTime max) {
+    public void setMax(final ZonedDateTime max) {
         m_max = max;
     }
 
     /**
      * @return the type
      */
-    DateTimeType getType() {
+    public DateTimeType getType() {
         return m_type;
     }
 
     /**
      * @param withTime the withTime to set
      */
-    void setType(final DateTimeType withTime) {
+    public void setType(final DateTimeType withTime) {
         m_type = withTime;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        settings.addBoolean(CFG_SHOW_NOW_BUTTON, m_showNowButton);
-        settings.addString(CFG_GRANULARITY, m_granularity.name());
-        settings.addBoolean(CFG_USE_MIN, m_useMin);
-        settings.addBoolean(CFG_USE_MAX, m_useMax);
-        settings.addBoolean(CFG_USE_MIN_EXEC_TIME, m_useMinExecTime);
-        settings.addBoolean(CFG_USE_MAX_EXEC_TIME, m_useMaxExecTime);
-        settings.addBoolean(CFG_USE_DEFAULT_EXEC_TIME, getUseDefaultExecTime());
-        settings.addString(CFG_MIN, m_min.toString());
-        settings.addString(CFG_MAX, m_max.toString());
-        settings.addString(CFG_TYPE, m_type.name());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON);
-        m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY));
-        m_useMin = settings.getBoolean(CFG_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX);
-        m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME);
-        m_useMaxExecTime = settings.getBoolean(CFG_USE_MAX_EXEC_TIME);
-        setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME));
-        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE));
-        try {
-            m_min = parseZonedDateTime(settings.getString(CFG_MIN));
-            m_max = parseZonedDateTime(settings.getString(CFG_MAX));
-        } catch (DateTimeParseException e) {
-            throw e;
-        }
     }
 
     private ZonedDateTime parseZonedDateTime(final String string) throws InvalidSettingsException {
@@ -340,11 +282,52 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
     }
 
     /**
-     * {@inheritDoc}
+     * Saves the current settings
+     *
+     * @param settings the settings to save to
      */
-    @Override
+    public void saveSettings(final NodeSettingsWO settings) {
+        settings.addBoolean(CFG_SHOW_NOW_BUTTON, m_showNowButton);
+        settings.addString(CFG_GRANULARITY, m_granularity.name());
+        settings.addBoolean(CFG_USE_MIN, m_useMin);
+        settings.addBoolean(CFG_USE_MAX, m_useMax);
+        settings.addBoolean(CFG_USE_MIN_EXEC_TIME, m_useMinExecTime);
+        settings.addBoolean(CFG_USE_MAX_EXEC_TIME, m_useMaxExecTime);
+        settings.addBoolean(CFG_USE_DEFAULT_EXEC_TIME, isUseDefaultExecTime());
+        settings.addString(CFG_MIN, m_min.toString());
+        settings.addString(CFG_MAX, m_max.toString());
+        settings.addString(CFG_TYPE, m_type.name());
+    }
+
+    /**
+     * Loads the config from saved settings
+     *
+     * @param settings the settings to load from
+     * @throws InvalidSettingsException
+     */
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON);
+        m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY));
+        m_useMin = settings.getBoolean(CFG_USE_MIN);
+        m_useMax = settings.getBoolean(CFG_USE_MAX);
+        m_useMinExecTime = settings.getBoolean(CFG_USE_MIN_EXEC_TIME);
+        m_useMaxExecTime = settings.getBoolean(CFG_USE_MAX_EXEC_TIME);
+        setUseDefaultExecTime(settings.getBoolean(CFG_USE_DEFAULT_EXEC_TIME));
+        m_type = DateTimeType.valueOf(settings.getString(CFG_TYPE));
+        try {
+            m_min = parseZonedDateTime(settings.getString(CFG_MIN));
+            m_max = parseZonedDateTime(settings.getString(CFG_MAX));
+        } catch (DateTimeParseException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Loads the config from saved settings for dialog display
+     *
+     * @param settings the settings to load from
+     */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
         m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON, DEFAULT_SHOW_NOW_BUTTON);
         m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY, DEFAULT_GRANULARITY.name()));
         m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
@@ -366,18 +349,8 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
      * {@inheritDoc}
      */
     @Override
-    protected DateInput2QuickFormValue createEmptyValue() {
-        return new DateInput2QuickFormValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
         sb.append("showNowButton=");
         sb.append(m_showNowButton);
         sb.append(", ");
@@ -397,7 +370,7 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
         sb.append(m_useMaxExecTime);
         sb.append(", ");
         sb.append("useDefaultExecTime=");
-        sb.append(getUseDefaultExecTime());
+        sb.append(isUseDefaultExecTime());
         sb.append(", ");
         sb.append("min=");
         sb.append("{");
@@ -419,9 +392,18 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_showNowButton).append(m_granularity)
-            .append(m_useMin).append(m_useMax).append(m_useMinExecTime).append(m_useMaxExecTime)
-            .append(getUseDefaultExecTime()).append(m_min).append(m_max).append(m_type).toHashCode();
+        return new HashCodeBuilder()
+            .append(m_showNowButton)
+            .append(m_granularity)
+            .append(m_useMin)
+            .append(m_useMax)
+            .append(m_useMinExecTime)
+            .append(m_useMaxExecTime)
+            .append(isUseDefaultExecTime())
+            .append(m_min)
+            .append(m_max)
+            .append(m_type)
+            .toHashCode();
     }
 
     /**
@@ -438,13 +420,19 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateTimeInputQuickFormConfig other = (DateTimeInputQuickFormConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_showNowButton, other.m_showNowButton)
-            .append(m_granularity, other.m_granularity).append(m_useMin, other.m_useMin)
-            .append(m_useMax, other.m_useMax).append(m_useMinExecTime, other.m_useMinExecTime)
+        DateNodeConfig other = (DateNodeConfig)obj;
+        return new EqualsBuilder()
+            .append(m_showNowButton, other.m_showNowButton)
+            .append(m_granularity, other.m_granularity)
+            .append(m_useMin, other.m_useMin)
+            .append(m_useMax, other.m_useMax)
+            .append(m_useMinExecTime, other.m_useMinExecTime)
             .append(m_useMaxExecTime, other.m_useMaxExecTime)
-            .append(getUseDefaultExecTime(), other.getUseDefaultExecTime()).append(m_min, other.m_min)
-            .append(m_max, other.m_max).append(m_type, other.m_type).isEquals();
+            .append(isUseDefaultExecTime(), other.isUseDefaultExecTime())
+            .append(m_min, other.m_min)
+            .append(m_max, other.m_max)
+            .append(m_type, other.m_type)
+            .isEquals();
     }
 
 }

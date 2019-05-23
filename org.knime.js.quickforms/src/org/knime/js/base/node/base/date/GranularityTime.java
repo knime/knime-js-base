@@ -46,14 +46,14 @@
  * History
  *   May 31, 2017 (simon): created
  */
-package org.knime.js.base.node.quickform.input.date2;
+package org.knime.js.base.node.base.date;
 
 /**
  * An enumeration that contains different granularity of time to show in the view.
  *
  * @author Simon Schmid, KNIME.com, Konstanz, Germany
  */
-enum GranularityTime {
+public enum GranularityTime {
         /**
          * Show hours and minutes.
          */

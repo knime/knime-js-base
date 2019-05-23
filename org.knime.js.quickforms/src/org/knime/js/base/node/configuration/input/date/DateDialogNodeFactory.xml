@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_date.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Date&amp;Time Configuration</name>
+
+	<shortDescription>
+	   Provides a date&amp;time configuration option to an encapsulating component's dialog. 
+	   Outputs a string flow variable with the set value.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Outputs a string flow variable with a set date&amp;time value from a component's dialog.</p>
+		</intro>
+		<option name="Label">
+		  A descriptive label that will be shown in the dialog
+		</option>
+		<option name="Description">
+		  Some lines of description that will be shown for instance in the node description of the component exposing a
+		  dialog.
+		</option>
+		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution). 
+		  This will also be the name of the exported flow variable.</option>
+        <option name="Granularity in Wizard">In which granularity the time should be displayed in the wizard.</option>
+        <option name="Type">Which date&amp;time type should be selectable.</option>
+        <option name="Earliest">The earliest allowed date&amp;time. The execution time can be used.</option>
+        <option name="Latest">The latest allowed date&amp;time. The execution time can be used.</option>
+        <option name="Default Value">
+            The value that is selected by default. The execution time can be used.
+        </option>
+	</fullDescription>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+		  Variable output (string) with the given variable defined.
+		</outPort>
+	</ports>
+</knimeNode>
