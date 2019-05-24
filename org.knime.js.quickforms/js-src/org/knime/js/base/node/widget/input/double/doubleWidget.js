@@ -71,13 +71,13 @@ window.knimeDoubleWidget = (function () {
         qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
         qfdiv.append(input);
         input.spinner({
-            step: 0.01
+            step: 0.1
         });
         $('.ui-spinner').addClass('knime-spinner knime-double');
-        if (viewRepresentation.usemin) {
+        if (viewRepresentation.useMin) {
             input.spinner('option', 'min', viewRepresentation.min);
         }
-        if (viewRepresentation.usemax) {
+        if (viewRepresentation.useMax) {
             input.spinner('option', 'max', viewRepresentation.max);
         }
         input.width(100);

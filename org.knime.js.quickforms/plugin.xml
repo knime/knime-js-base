@@ -1027,7 +1027,7 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.bool"
             name="Boolean Widget"
             namespace="knimeBooleanWidget"
-            setValidationError-method-name="setValidationError"
+            setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
@@ -1037,7 +1037,7 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.string"
             name="String Widget"
             namespace="knimeStringWidget"
-            setValidationError-method-name="setValidationError"
+            setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
@@ -1047,7 +1047,7 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.integer"
             name="Integer Widget"
             namespace="knimeIntegerWidget"
-            setValidationError-method-name="setValidationError"
+            setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
@@ -1057,7 +1057,7 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.double"
             name="Double Widget"
             namespace="knimeDoubleWidget"
-            setValidationError-method-name="setValidationError"
+            setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent
@@ -1067,7 +1067,7 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.date"
             name="Date/Time Widget"
             namespace="knimeDateWidget"
-            setValidationError-method-name="setValidationError"
+            setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
    </extension>

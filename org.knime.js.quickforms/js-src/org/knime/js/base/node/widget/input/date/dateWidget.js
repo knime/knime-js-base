@@ -135,21 +135,17 @@ window.knimeDateWidget = (function () {
         var parsedDate = parseZDT(dateValue);
         zone = parsedDate[1];
         date = viewRepresentation.usedefaultexectime ? moment.tz(new Date(), zone) : moment.tz(parsedDate[0], zone);
-        var minDate = null;
-        var minZone = null;
         if (viewRepresentation.usemin) {
             var parsedMin = parseZDT(viewRepresentation.min);
+            var minZone = parsedMin[1];
             minDate = viewRepresentation.useminexectime ? moment.tz(new Date(), minZone) : moment.tz(parsedMin[0],
                 minZone);
-            minZone = parsedMin[1];
         }
-        var maxDate = null;
-        var maxZone = null;
         if (viewRepresentation.usemax) {
             var parsedMax = parseZDT(viewRepresentation.max);
+            var maxZone = parsedMax[1];
             maxDate = viewRepresentation.usemaxexectime ? moment.tz(new Date(), maxZone) : moment.tz(parsedMax[0],
                 maxZone);
-            maxZone = parsedMax[1];
         }
         var type = representation.type;
         granularity = representation.granularity;

@@ -72,10 +72,10 @@ window.knimeIntegerWidget = (function () {
         qfdiv.append(input);
         input.spinner();
         $('.ui-spinner').addClass('knime-spinner knime-integer');
-        if (viewRepresentation.usemin) {
+        if (viewRepresentation.useMin) {
             input.spinner('option', 'min', viewRepresentation.min);
         }
-        if (viewRepresentation.usemax) {
+        if (viewRepresentation.useMax) {
             input.spinner('option', 'max', viewRepresentation.max);
         }
         input.width(100);
