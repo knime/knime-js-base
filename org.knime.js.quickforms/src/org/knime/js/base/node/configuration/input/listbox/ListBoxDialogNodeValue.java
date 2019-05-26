@@ -44,130 +44,116 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   24 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.base.integer;
+package org.knime.js.base.node.configuration.input.listbox;
+
+import javax.json.Json;
+import javax.json.JsonException;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.dialog.DialogNodeValue;
 
 /**
- * Base config file for the integer configuration and widget nodes
+ * The value for the list box configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerNodeConfig {
+public class ListBoxDialogNodeValue implements DialogNodeValue {
 
-    private static final String CFG_USE_MIN = "useMin";
-    private static final boolean DEFAULT_USE_MIN = false;
-    private boolean m_useMin = DEFAULT_USE_MIN;
-
-    private static final String CFG_USE_MAX = "useMax";
-    private static final boolean DEFAULT_USE_MAX = false;
-    private boolean m_useMax = DEFAULT_USE_MAX;
-
-    private static final String CFG_MIN = "min";
-    private static final int DEFAULT_MIN = 0;
-    private int m_min = DEFAULT_MIN;
-
-    private static final String CFG_MAX = "max";
-    private static final int DEFAULT_MAX = 100;
-    private int m_max = DEFAULT_MAX;
+    private static final String CFG_STRING = "string";
+    private static final String DEFAULT_STRING = "";
+    private String m_string = DEFAULT_STRING;
 
     /**
-     * @return the useMin
+     * @return the string
      */
-    public boolean isUseMin() {
-        return m_useMin;
+    public String getString() {
+        return m_string;
     }
 
     /**
-     * @param useMin the useMin to set
+     * @param string the string to set
      */
-    public void setUseMin(final boolean useMin) {
-        m_useMin = useMin;
+    public void setString(final String string) {
+        m_string = string;
     }
 
     /**
-     * @return the useMax
+     * {@inheritDoc}
      */
-    public boolean isUseMax() {
-        return m_useMax;
+    @Override
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_STRING, getString());
     }
 
     /**
-     * @param useMax the useMax to set
+     * {@inheritDoc}
      */
-    public void setUseMax(final boolean useMax) {
-        m_useMax = useMax;
+    @Override
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setString(settings.getString(CFG_STRING));
     }
 
     /**
-     * @return the min
+     * {@inheritDoc}
      */
-    public int getMin() {
-        return m_min;
+    @Override
+    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
+        setString(settings.getString(CFG_STRING, DEFAULT_STRING));
     }
 
     /**
-     * @param min the min to set
+     * {@inheritDoc}
      */
-    public void setMin(final int min) {
-        m_min = min;
+    @Override
+    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
+        setString(fromCmdLine);
     }
 
     /**
-     * @return the max
+     * {@inheritDoc}
      */
-    public int getMax() {
-        return m_max;
+    @Override
+    public void loadFromJson(final JsonValue json) throws JsonException {
+        if (json instanceof JsonString) {
+            loadFromString(((JsonString) json).getString());
+        } else if (json instanceof JsonObject) {
+            try {
+                JsonValue val = ((JsonObject) json).get(CFG_STRING);
+                if (JsonValue.NULL.equals(val)) {
+                    m_string = null;
+                } else {
+                    m_string = ((JsonObject) json).getString(CFG_STRING);
+                }
+            } catch (Exception e) {
+                throw new JsonException("Expected string value for key '" + CFG_STRING + "'.", e);
+            }
+        } else {
+            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+        }
     }
 
     /**
-     * @param max the max to set
+     * {@inheritDoc}
      */
-    public void setMax(final int max) {
-        m_max = max;
-    }
-
-    /**
-     * Saves the current settings
-     *
-     * @param settings the settings to save to
-     */
-    public void saveSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_USE_MIN, m_useMin);
-        settings.addBoolean(CFG_USE_MAX, m_useMax);
-        settings.addInt(CFG_MIN, m_min);
-        settings.addInt(CFG_MAX, m_max);
-    }
-
-    /**
-     * Loads the config from saved settings
-     *
-     * @param settings the settings to load from
-     * @throws InvalidSettingsException
-     */
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_useMin = settings.getBoolean(CFG_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX);
-        m_min = settings.getInt(CFG_MIN);
-        m_max = settings.getInt(CFG_MAX);
-    }
-
-    /**
-     * Loads the config from saved settings for dialog display
-     *
-     * @param settings the settings to load from
-     */
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX, DEFAULT_USE_MAX);
-        m_min = settings.getInt(CFG_MIN, DEFAULT_MIN);
-        m_max = settings.getInt(CFG_MAX, DEFAULT_MAX);
+    @Override
+    public JsonValue toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (m_string == null) {
+            builder.addNull(CFG_STRING);
+        } else {
+            builder.add(CFG_STRING, m_string);
+        }
+        return builder.build();
     }
 
     /**
@@ -176,17 +162,8 @@ public class IntegerNodeConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("useMin=");
-        sb.append(m_useMin);
-        sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
-        sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
-        sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
+        sb.append("string=");
+        sb.append(m_string);
         return sb.toString();
     }
 
@@ -195,11 +172,8 @@ public class IntegerNodeConfig {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_useMin)
-                .append(m_useMax)
-                .append(m_min)
-                .append(m_max)
+        return new HashCodeBuilder()
+                .append(m_string)
                 .toHashCode();
     }
 
@@ -217,12 +191,9 @@ public class IntegerNodeConfig {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        IntegerNodeConfig other = (IntegerNodeConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
+        ListBoxDialogNodeValue other = (ListBoxDialogNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_string, other.m_string)
                 .isEquals();
     }
 

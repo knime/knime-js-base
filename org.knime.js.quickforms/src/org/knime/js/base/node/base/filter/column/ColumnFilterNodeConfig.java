@@ -44,93 +44,98 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.base.dbl;
+package org.knime.js.base.node.base.filter.column;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 
 /**
- * Base config file for the double configuration and widget nodes
+ * Base config file for the column filter configuration and widget nodes
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleNodeConfig {
+public class ColumnFilterNodeConfig {
 
-    private static final String CFG_USE_MIN = "useMin";
-    private static final boolean DEFAULT_USE_MIN = false;
-    private boolean m_useMin = DEFAULT_USE_MIN;
+    public static final String CFG_COLUMN_FILTER = "columnFilter";
 
-    private static final String CFG_USE_MAX = "useMax";
-    private static final boolean DEFAULT_USE_MAX = false;
-    private boolean m_useMax = DEFAULT_USE_MAX;
+    private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
+    private static final String[] DEFAULT_POSSIBLE_COLUMNS = new String[0];
+    private String[] m_possibleColumns = DEFAULT_POSSIBLE_COLUMNS;
 
-    private static final String CFG_MIN = "min";
-    private static final double DEFAULT_MIN = 0.0;
-    private double m_min = DEFAULT_MIN;
+    private static final String CFG_TYPE = "type";
+    private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
+    private String m_type = DEFAULT_TYPE;
 
-    private static final String CFG_MAX = "max";
-    private static final double DEFAULT_MAX = 1.0;
-    private double m_max = DEFAULT_MAX;
+    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+
+    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
+    private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
-     * @return the useMin
+     * @return the possibleColumns
      */
-    public boolean isUseMin() {
-        return m_useMin;
+    public String[] getPossibleColumns() {
+        return m_possibleColumns;
     }
 
     /**
-     * @param useMin the useMin to set
+     * @param possibleColumns the possibleColumns to set
      */
-    public void setUseMin(final boolean useMin) {
-        m_useMin = useMin;
+    public void setPossibleColumns(final String[] possibleColumns) {
+        m_possibleColumns = possibleColumns;
     }
 
     /**
-     * @return the useMax
+     * @return the type
      */
-    public boolean isUseMax() {
-        return m_useMax;
+    public String getType() {
+        return m_type;
     }
 
     /**
-     * @param useMax the useMax to set
+     * @param type the type to set
      */
-    public void setUseMax(final boolean useMax) {
-        m_useMax = useMax;
+    public void setType(final String type) {
+        m_type = type;
     }
 
     /**
-     * @return the min
+     * @return the limitNumberVisOptions
      */
-    public double getMin() {
-        return m_min;
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
     }
 
     /**
-     * @param min the min to set
+     * @param limitNumberVisOptions the limitNumberVisOptions to set
      */
-    public void setMin(final double min) {
-        m_min = min;
+    public void setLimitNumberVisOptions(final boolean limitNumberVisOptions) {
+        m_limitNumberVisOptions = limitNumberVisOptions;
     }
 
     /**
-     * @return the max
+     * @return the numberVisOptions
      */
-    public double getMax() {
-        return m_max;
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
     }
 
     /**
-     * @param max the max to set
+     * @param numberVisOptions the numberVisOptions to set
      */
-    public void setMax(final double max) {
-        m_max = max;
+    public void setNumberVisOptions(final Integer numberVisOptions) {
+        m_numberVisOptions = numberVisOptions;
     }
 
     /**
@@ -139,10 +144,10 @@ public class DoubleNodeConfig {
      * @param settings the settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_USE_MIN, m_useMin);
-        settings.addBoolean(CFG_USE_MAX, m_useMax);
-        settings.addDouble(CFG_MIN, m_min);
-        settings.addDouble(CFG_MAX, m_max);
+        settings.addStringArray(CFG_POSSIBLE_COLUMNS, m_possibleColumns);
+        settings.addString(CFG_TYPE, m_type);
+        settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
+        settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -152,10 +157,10 @@ public class DoubleNodeConfig {
      * @throws InvalidSettingsException
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_useMin = settings.getBoolean(CFG_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX);
-        m_min = settings.getDouble(CFG_MIN);
-        m_max = settings.getDouble(CFG_MAX);
+        m_possibleColumns = settings.getStringArray(CFG_POSSIBLE_COLUMNS);
+        m_type = settings.getString(CFG_TYPE);
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -164,10 +169,10 @@ public class DoubleNodeConfig {
      * @param settings the settings to load from
      */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX, DEFAULT_USE_MAX);
-        m_min = settings.getDouble(CFG_MIN, DEFAULT_MIN);
-        m_max = settings.getDouble(CFG_MAX, DEFAULT_MAX);
+        m_possibleColumns = settings.getStringArray(CFG_POSSIBLE_COLUMNS, DEFAULT_POSSIBLE_COLUMNS);
+        m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
     }
 
     /**
@@ -176,17 +181,19 @@ public class DoubleNodeConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("useMin=");
-        sb.append(m_useMin);
+        sb.append(super.toString());
         sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
+        sb.append("possibleColumns=");
+        sb.append(Arrays.toString(m_possibleColumns));
         sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
+        sb.append("type=");
+        sb.append(m_type);
         sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
+        sb.append("m_limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("m_numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -196,10 +203,10 @@ public class DoubleNodeConfig {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_useMin)
-                .append(m_useMax)
-                .append(m_min)
-                .append(m_max)
+                .append(m_possibleColumns)
+                .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -217,12 +224,12 @@ public class DoubleNodeConfig {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleNodeConfig other = (DoubleNodeConfig)obj;
+        ColumnFilterNodeConfig other = (ColumnFilterNodeConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
+                .append(m_possibleColumns, other.m_possibleColumns)
+                .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

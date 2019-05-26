@@ -84,7 +84,7 @@ public class RangeSliderFilterNodeDialog extends NodeDialogPane {
     private final JTextField m_labelTextfield;
 
     /** Constructors, inits fields calls layout routines. */
-    RangeSliderFilterNodeDialog() {
+    public RangeSliderFilterNodeDialog() {
         m_config = new RangeSliderFilterConfig();
         m_sliderUI = new SliderNodeDialogUI(2, false, true);
         m_mergeWithExistingFiltersTable = new JCheckBox("Merge With Existing Filter Definitions (Table)");

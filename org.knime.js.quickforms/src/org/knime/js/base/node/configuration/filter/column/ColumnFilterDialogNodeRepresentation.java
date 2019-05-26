@@ -44,130 +44,93 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.base.dbl;
+package org.knime.js.base.node.configuration.filter.column;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
 
 /**
- * Base config file for the double configuration and widget nodes
+ * The dialog representation of the column filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleNodeConfig {
+public class ColumnFilterDialogNodeRepresentation
+    extends AbstractDialogNodeRepresentation<ColumnFilterDialogNodeValue, ColumnFilterDialogNodeConfig> {
 
-    private static final String CFG_USE_MIN = "useMin";
-    private static final boolean DEFAULT_USE_MIN = false;
-    private boolean m_useMin = DEFAULT_USE_MIN;
+    private final String[] m_possibleColumns;
+    private final String m_type;
+    private final boolean m_limitNumberVisOptions;
+    private final Integer m_numberVisOptions;
 
-    private static final String CFG_USE_MAX = "useMax";
-    private static final boolean DEFAULT_USE_MAX = false;
-    private boolean m_useMax = DEFAULT_USE_MAX;
-
-    private static final String CFG_MIN = "min";
-    private static final double DEFAULT_MIN = 0.0;
-    private double m_min = DEFAULT_MIN;
-
-    private static final String CFG_MAX = "max";
-    private static final double DEFAULT_MAX = 1.0;
-    private double m_max = DEFAULT_MAX;
+    private final DataTableSpec m_spec;
 
     /**
-     * @return the useMin
+     * @param currentValue The value currently used by the node
+     * @param dConfig The config of the node
+     * @param spec The current table spec
      */
-    public boolean isUseMin() {
-        return m_useMin;
+    public ColumnFilterDialogNodeRepresentation(final ColumnFilterDialogNodeValue currentValue,
+        final ColumnFilterDialogNodeConfig dConfig, final DataTableSpec spec) {
+        super(currentValue, dConfig);
+        ColumnFilterNodeConfig config = dConfig.getColumnFilterConfig();
+        m_possibleColumns = config.getPossibleColumns();
+        m_type = config.getType();
+        m_limitNumberVisOptions = config.getLimitNumberVisOptions();
+        m_numberVisOptions = config.getNumberVisOptions();
+        m_spec = spec;
     }
 
     /**
-     * @param useMin the useMin to set
+     * {@inheritDoc}
      */
-    public void setUseMin(final boolean useMin) {
-        m_useMin = useMin;
+    @Override
+    public DialogNodePanel<ColumnFilterDialogNodeValue> createDialogPanel() {
+        ColumnFilterConfigurationPanel panel = new ColumnFilterConfigurationPanel(this);
+        fillDialogPanel(panel);
+        return panel;
     }
 
     /**
-     * @return the useMax
+     * @return Last known table spec
      */
-    public boolean isUseMax() {
-        return m_useMax;
+    public DataTableSpec getSpec() {
+        return m_spec;
     }
 
     /**
-     * @param useMax the useMax to set
+     * @return the possibleColumns
      */
-    public void setUseMax(final boolean useMax) {
-        m_useMax = useMax;
+    public String[] getPossibleColumns() {
+        return m_possibleColumns;
     }
 
     /**
-     * @return the min
+     * @return the type
      */
-    public double getMin() {
-        return m_min;
+    public String getType() {
+        return m_type;
     }
 
     /**
-     * @param min the min to set
+     * @return the limitNumberVisOptions
      */
-    public void setMin(final double min) {
-        m_min = min;
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
     }
 
     /**
-     * @return the max
+     * @return the numberVisOptions
      */
-    public double getMax() {
-        return m_max;
-    }
-
-    /**
-     * @param max the max to set
-     */
-    public void setMax(final double max) {
-        m_max = max;
-    }
-
-    /**
-     * Saves the current settings
-     *
-     * @param settings the settings to save to
-     */
-    public void saveSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_USE_MIN, m_useMin);
-        settings.addBoolean(CFG_USE_MAX, m_useMax);
-        settings.addDouble(CFG_MIN, m_min);
-        settings.addDouble(CFG_MAX, m_max);
-    }
-
-    /**
-     * Loads the config from saved settings
-     *
-     * @param settings the settings to load from
-     * @throws InvalidSettingsException
-     */
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_useMin = settings.getBoolean(CFG_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX);
-        m_min = settings.getDouble(CFG_MIN);
-        m_max = settings.getDouble(CFG_MAX);
-    }
-
-    /**
-     * Loads the config from saved settings for dialog display
-     *
-     * @param settings the settings to load from
-     */
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_useMin = settings.getBoolean(CFG_USE_MIN, DEFAULT_USE_MIN);
-        m_useMax = settings.getBoolean(CFG_USE_MAX, DEFAULT_USE_MAX);
-        m_min = settings.getDouble(CFG_MIN, DEFAULT_MIN);
-        m_max = settings.getDouble(CFG_MAX, DEFAULT_MAX);
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
     }
 
     /**
@@ -176,17 +139,19 @@ public class DoubleNodeConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("useMin=");
-        sb.append(m_useMin);
+        sb.append(super.toString());
         sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
+        sb.append("possibleColumns=");
+        sb.append(Arrays.toString(m_possibleColumns));
         sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
+        sb.append("type=");
+        sb.append(m_type);
         sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
+        sb.append("limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -196,10 +161,10 @@ public class DoubleNodeConfig {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_useMin)
-                .append(m_useMax)
-                .append(m_min)
-                .append(m_max)
+                .append(m_possibleColumns)
+                .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -217,12 +182,12 @@ public class DoubleNodeConfig {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleNodeConfig other = (DoubleNodeConfig)obj;
+        ColumnFilterDialogNodeRepresentation other = (ColumnFilterDialogNodeRepresentation)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
+                .append(m_possibleColumns, other.m_possibleColumns)
+                .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

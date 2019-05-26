@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./range_slider.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Range Slider Filter Definition</name>
+	<shortDescription>Defines a filter definition to the input table and provides an interactive slider view.</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>A slider which can be used to trigger interactive filter events in a layout of views (e.g. the WebPortal). The node appends a filter definition to the table spec.</p>
+			<p>Only view nodes downstream of this node can receive interactive filter events.</p>
+			<p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
+		</intro>
+		<tab name="Options">
+        	<option name="Merge With Existing Filter Definitions (Table)">
+        		Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.
+        	</option>
+        	<option name="Merge With Existing Filter Definitions (Model Port)">
+        		Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.
+        	</option>
+        	<option name="Show Label">
+        		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define an arbitrary label.
+        	</option>
+			<option name="Range Column">
+				Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider. 
+			</option>
+			<option name="Range Minimum">
+				Select the minimum value that can be selected with the slider. If <i>Custom</i> is checked a custom value can be entered, otherwise the minimum from the selected range column is used.
+			</option>
+			<option name="Range Maximum">
+				Select the maximum value that can be selected with the slider. If <i>Custom</i> is checked a custom value can be entered, otherwise the maximum from the selected range column is used.
+			</option>
+			<option name="Default Minimum Value">
+				Set the value for the minimum slider handle. If <i>Use Domain Extent</i> is checked the value from the range minimum will be used.
+			</option>
+			<option name="Default Maximum Value">
+				Set the value for the maximum slider handle. If <i>Use Domain Extent</i> is checked the value from the range maximum will be used.
+			</option>
+		</tab>
+		<tab name="Slider">
+			<option name="Use Stepping">
+				Check this option to enable stepping on the slider. If disabled the slider values are continuous.
+			</option>
+			<option name="Step Size">
+				Define the step size to be used for stepping.
+			</option>
+			<option name="Use slider to define:">
+				If the slider is used to define just a minimum/maximum, the other end of the range will be open when the filter is applied to later datasets.
+				For example, if the slider is only defining the minimum value for the filter, the upper value will be infinity.
+			</option>
+			<option name="Orientation">
+				Select the orientation of the slider.
+			</option>
+			<option name="Direction">
+				Select the direction of the slider.
+			</option>
+			<option name="Tooltips">
+				Check the appropriate options to show the current value as a tooltip on the slider handle. 
+				Additionally a number formatting can be applied by selecting <i>Use Formatter for Tooltips</i> and then adjusting the settings by clicking <i>Format Options</i>. 
+				The options are the same as for the tick label format options further down.
+			</option>
+		</tab>
+		<tab name="Label">
+			<option name="Enable Labels and Ticks">
+				Check this option to enable ticks and labels shown under or beside the slider.
+			</option>
+			<option name="Ticks Mode">The mode after which the ticks and labels are
+				displayed. Possible values are:
+				<ul>
+					<li><b>Range</b>: Draw labels at the specified range points. For linear sliders this is only minimum and maximum.</li>
+					<li><b>Steps</b>: Draws labels at specified steps (See <i>Step Size</i> option). Major ticks and labels are generated at the minimum and maximum and smaller labels at each step size.</li>
+					<li><b>Positions</b>: Draw labels and major ticks at set positions (percentages). Use the <i>Values</i> field to specify the positions as a comma separated list of values between 0 and 100.</li>
+					<li><b>Count</b>: Draws the number of labels specified. Use the <i>Values</i> field to provide the count as an integer number.</li>
+					<li><b>Values</b>: Draw labels and major ticks at positions of the actual values.  Use the <i>Values</i> field to specify the values as a comma separated list of numbers.</li>
+				</ul>
+			</option>
+			<option name="Density">A measure to pre-scale the number of ticks. Higher number means less ticks.</option>
+			<option name="Values">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Set the appropriate values either as number or comma separated list of numbers.</option>
+			<option name="Stepped">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Check to override calculated or given label positions, to match the values to the provided slider steps.</option>
+			<option name="Lable Format Options">Set formatting options for all labels drawn.</option>
+			<option name="Decimal Digits">The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.</option>
+			<option name="Decimal Separator">
+				The decimal separator character. Defaults to <i>.</i>
+			</option>
+			<option name="Thousands Separator">The thousands separator character. Leave blank
+				for displaying no separator character.</option>
+			<option name="Custom Prefix">A custom prefix string. A common use case for
+				this is a currency symbol.</option>
+			<option name="Custom Postfix">A custom string rendered after the number.
+			</option>
+			<option name="Negative Sign">
+				The string used to denote a negative number. Defaults to
+				<i>-</i>
+			</option>
+			<option name="Negative Before String">A custom string rendered before any custom
+				prefix, when number is negative.</option>
+		</tab>
+	</fullDescription>
+	<interactiveView name="Range Slider Filter">
+    	Select a range for interactive filtering.
+    </interactiveView>
+	<ports>
+		<inPort index="0" name="Input Table">Input table which contains at least one double column with domain values set, which can be used to control the minimum and maximum values of the slider.</inPort>
+		<outPort index="0" name="Table with Filter Definition">Input table with filter definition appended to one column.</outPort>
+		<outPort index="1" name="Filter Definition">Filter definition applied to the input column.</outPort>
+	</ports>
+</knimeNode>

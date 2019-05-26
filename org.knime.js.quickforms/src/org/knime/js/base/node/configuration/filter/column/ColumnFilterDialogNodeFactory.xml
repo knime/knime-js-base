@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_column_filter.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Column Filter Configuration</name>
+
+	<shortDescription>
+	   Provides a column filter configuration option to an encapsulating component's dialog. 
+	   Takes a data table and returns a filtered data table with only the selected columns.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Provides a column filter configuration option to an encapsulating component's dialog. 
+       Takes a data table and returns a filtered data table with only the selected columns.</p>
+		</intro>
+		<option name="Label">
+		  A descriptive label that will be shown in the dialog
+		</option>
+		<option name="Description">
+		  Some lines of description that will be shown for instance in the node description of the component exposing a
+		  dialog.
+		</option>
+		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution). 
+		  This will also be the name of the exported flow variable.</option>
+		<option name="Default Values">
+          The columns that are selected by default.
+        </option>
+        <option name="Limit number of visible options">
+          By default the filter component adjusts its height to display all possible choices without a scroll bar. If 
+          the setting is enabled, you will be able to limit the number of visible options in case you have too many of
+          them.
+        </option>
+        <option name="Number of visible options">
+            A number of options visible in the filter component without a vertical scroll bar. Changing this value will
+            also affect the component's height. Notice that the height cannot be less than the overall height of the 
+            control buttons in the middle.
+        </option>
+	</fullDescription>
+	<ports>
+		<inPort index="0" name="Table Input">
+		  Table containing the columns to be filtered.
+        </inPort>
+        <outPort index="0" name="Filtered Table">
+          Filtered table containing only the selected columns.
+        </outPort>
+	</ports>
+</knimeNode>

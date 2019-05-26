@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./value_filter.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Value Filter Definition</name>
+	<shortDescription>
+		Defines a filter definition to the input table and provides an interactive value filter on nominal columns.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>A value filter which can be used to trigger interactive filter events in a layout of views (e.g. the 
+				WebPortal). The node appends a filter definition to the table spec.</p>
+			<p>Only view nodes downstream of this node can receive interactive filter events.</p>
+			<p>Note that the filter uses the possible values set on a nominal column's domain as configuration. To 
+			ensure the values are reflected and sorted correctly the <i>Domain Calculator</i> and/or 
+			<i>Edit Nominal Domain</i> nodes can be used beforehand.</p>
+		</intro>
+		<tab name="Options">
+        	<option name="Show Label">
+        		Displays the column name as a label below or besides the slider. Use the <i>Custom</i> option to define 
+        		an arbitrary label.
+        	</option>
+			<option name="Filter Column">
+				Select the column to apply the filter definition to. The domain of possible values of the column is used
+				to configure the filter. 
+			</option>
+			<option name="Default Values">
+				Select the default values to be used for filtering from the possible values of the chosen filter 
+				column. If <i>Single Values</i> is selected only the first value in the includes list will be present on
+				the filter.
+			</option>
+		</tab>
+		<tab name="Filter">
+			<option name="Merge With Existing Filter Definitions (Table)">
+        		Check this setting to keep any pre-existing filter definitions on the output table. If not set only 
+        		this node's filter definition is present on the output table.
+        	</option>
+        	<option name="Merge With Existing Filter Definitions (Model Port)">
+        		Check this setting to keep any pre-existing filter definitions on the model output port. If not set 
+        		only this node's filter definition is present on the output model.
+        	</option>
+        	<option name="Multiple / Single Values">
+        		Choose multiple to be able to select multiple nominal values for filtering and single if only one value
+        		should be part of the filter at any given time. Depending on the selection here the type field will 
+        		offer different options for the display of the filter in the view.
+        	</option>
+        	<option name="Type">
+        		Select the display type of the filter. Depending on the selection of multiple / single values, different
+        		options are offered.
+        	</option>
+        	<option name="Limit number of visible options">
+          		By default the List and Twinlist components adjust their height to display all possible choices without
+          		a scroll bar. If this option is enabled, you will be able to limit the number of visible options in
+          		case there is too many. The setting is available only for the List or Twinlist selection type.</option>
+        	<option name="Number of visible options">
+            	A number of options visible in the List or Twinlist component without a vertical scroll bar. 
+            	Changing this value will also affect the component's height. Notice that for Twinlist the height cannot
+            	be less than the overall height of the control buttons in the middle. The setting is available only for
+            	List or Twinlist selection type.
+        	</option>
+		</tab>
+	</fullDescription>
+	<interactiveView name="Value Filter">
+    	Select nominal values for interactive filtering.
+    </interactiveView>
+	<ports>
+		<inPort index="0" name="Input Table">
+			Input table which contains at least one nominal column with domain including possible values set, which 
+			is used to control the filter view.
+		</inPort>
+		<outPort index="0" name="Table with Filter Definition">
+			Input table with filter definition appended to the selected column.
+		</outPort>
+		<outPort index="1" name="Filter Definition">
+			Filter definition applied to the selected column.
+		</outPort>
+	</ports>
+</knimeNode>
