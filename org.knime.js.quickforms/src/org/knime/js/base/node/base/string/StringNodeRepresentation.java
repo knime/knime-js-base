@@ -80,7 +80,8 @@ public class StringNodeRepresentation<VAL extends StringNodeValue> extends Label
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,
-        @JsonProperty("regex") final String regex, @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("regex") final String regex,
+        @JsonProperty("errormessage") final String errorMessage,
         @JsonProperty("editorType") final String editorType,
         @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
         @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
@@ -162,10 +163,13 @@ public class StringNodeRepresentation<VAL extends StringNodeValue> extends Label
         sb.append(", ");
         sb.append("errorMessage=");
         sb.append(m_errorMessage);
+        sb.append(", ");
         sb.append("editorType=");
         sb.append(m_editorType);
+        sb.append(", ");
         sb.append("multilineEditorWidth=");
         sb.append(m_multilineEditorWidth);
+        sb.append(", ");
         sb.append("multilineEditorHeight=");
         sb.append(m_multilineEditorHeight);
         return sb.toString();

@@ -55,66 +55,33 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.integer.IntegerNodeValue;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The value for the integer configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_INTEGER = "integer";
-    private static final int DEFAULT_INTEGER = 0;
-    private int m_integer = DEFAULT_INTEGER;
-
-    /**
-     * @return the string
-     */
-    public int getInteger() {
-        return m_integer;
-    }
-
-    /**
-     * @param integer the string to set
-     */
-    public void setInteger(final int integer) {
-        m_integer = integer;
-    }
+public class IntegerDialogNodeValue extends IntegerNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addInt(CFG_INTEGER, m_integer);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_integer = settings.getInt(CFG_INTEGER);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_integer = settings.getInt(CFG_INTEGER, DEFAULT_INTEGER);
+        setInteger(settings.getInt(CFG_INTEGER, DEFAULT_INTEGER));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
         Integer number = null;
         try {
@@ -129,14 +96,15 @@ public class IntegerDialogNodeValue implements DialogNodeValue {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonNumber) {
-            m_integer = ((JsonNumber)json).intValue();
+            setInteger(((JsonNumber)json).intValue());
         } else if (json instanceof JsonString) {
             loadFromString(((JsonString) json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                m_integer = ((JsonObject) json).getInt(CFG_INTEGER);
+                setInteger(((JsonObject) json).getInt(CFG_INTEGER));
             } catch (Exception e) {
                 throw new JsonException("Expected int value for key '" + CFG_INTEGER + "'."  , e);
             }
@@ -149,49 +117,8 @@ public class IntegerDialogNodeValue implements DialogNodeValue {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public JsonValue toJson() {
-        return Json.createObjectBuilder().add(CFG_INTEGER, m_integer).build().get(CFG_INTEGER);
+        return Json.createObjectBuilder().add(CFG_INTEGER, getInteger()).build().get(CFG_INTEGER);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("integer=");
-        sb.append(m_integer);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_integer)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        IntegerDialogNodeValue other = (IntegerDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_integer, other.m_integer)
-                .isEquals();
-    }
-
 }

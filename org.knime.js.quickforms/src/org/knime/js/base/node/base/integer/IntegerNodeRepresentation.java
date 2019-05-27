@@ -44,61 +44,97 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.integer;
+package org.knime.js.base.node.base.integer;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The value for the integer widget node
+ * The base representation for the integer configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class IntegerWidgetValue extends JSONViewContent {
+public class IntegerNodeRepresentation<VAL extends IntegerNodeValue> extends LabeledNodeRepresentation<VAL> {
 
-    private static final String CFG_INTEGER = "integer";
-    private static final int DEFAULT_INTEGER = 0;
-    private int m_integer = DEFAULT_INTEGER;
+    private final boolean m_useMin;
+    private final boolean m_useMax;
+    private final int m_min;
+    private final int m_max;
 
-    /**
-     * @return the string
-     */
-    public int getInteger() {
-        return m_integer;
+    @JsonCreator
+    private IntegerNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("min") final int min,
+        @JsonProperty("max") final int max) {
+        super(label, description, required, defaultValue, currentValue);
+        m_useMin = useMin;
+        m_useMax = useMax;
+        m_min = min;
+        m_max = max;
     }
 
     /**
-     * @param integer the string to set
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param integerConfig The config of the node
+     * @param labelConfig The label config of the node
      */
-    public void setInteger(final int integer) {
-        m_integer = integer;
+    public IntegerNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final IntegerNodeConfig integerConfig, final LabeledConfig labelConfig) {
+        super(currentValue, defaultValue, labelConfig);
+        m_useMin = integerConfig.isUseMin();
+        m_useMax = integerConfig.isUseMax();
+        m_min = integerConfig.getMin();
+        m_max = integerConfig.getMax();
     }
 
     /**
-     * {@inheritDoc}
+     * @return the useMin
      */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addInt(CFG_INTEGER, m_integer);
+    @JsonProperty("useMin")
+    public boolean isUseMin() {
+        return m_useMin;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the useMax
      */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_integer = settings.getInt(CFG_INTEGER);
+    @JsonProperty("useMax")
+    public boolean isUseMax() {
+        return m_useMax;
+    }
+
+    /**
+     * @return the min
+     */
+    @JsonProperty("min")
+    public int getMin() {
+        return m_min;
+    }
+
+    /**
+     * @return the max
+     */
+    @JsonProperty("max")
+    public int getMax() {
+        return m_max;
     }
 
     /**
@@ -107,8 +143,19 @@ public class IntegerWidgetValue extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("integer=");
-        sb.append(m_integer);
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append("useMin=");
+        sb.append(m_useMin);
+        sb.append(", ");
+        sb.append("useMax=");
+        sb.append(m_useMax);
+        sb.append(", ");
+        sb.append("min=");
+        sb.append(m_min);
+        sb.append(", ");
+        sb.append("max=");
+        sb.append(m_max);
         return sb.toString();
     }
 
@@ -118,8 +165,12 @@ public class IntegerWidgetValue extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_integer)
-                .toHashCode();
+            .appendSuper(super.hashCode())
+            .append(m_useMin)
+            .append(m_useMax)
+            .append(m_min)
+            .append(m_max)
+            .toHashCode();
     }
 
     /**
@@ -136,10 +187,15 @@ public class IntegerWidgetValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        IntegerWidgetValue other = (IntegerWidgetValue)obj;
+        @SuppressWarnings("unchecked")
+        IntegerNodeRepresentation<VAL> other = (IntegerNodeRepresentation<VAL>)obj;
         return new EqualsBuilder()
-                .append(m_integer, other.m_integer)
-                .isEquals();
+            .appendSuper(super.equals(obj))
+            .append(m_useMin, other.m_useMin)
+            .append(m_useMax, other.m_useMax)
+            .append(m_min, other.m_min)
+            .append(m_max, other.m_max)
+            .isEquals();
     }
 
 }

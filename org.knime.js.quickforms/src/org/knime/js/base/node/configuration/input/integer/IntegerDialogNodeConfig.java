@@ -73,59 +73,10 @@ public class IntegerDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
     }
 
     /**
-     * @return the useMin
+     * @return the config
      */
-    public boolean isUseMin() {
-        return m_config.isUseMin();
-    }
-
-    /**
-     * @param useMin the useMin to set
-     */
-    public void setUseMin(final boolean useMin) {
-        m_config.setUseMin(useMin);
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_config.isUseMax();
-    }
-
-    /**
-     * @param useMax the useMax to set
-     */
-    public void setUseMax(final boolean useMax) {
-        m_config.setUseMax(useMax);
-    }
-
-    /**
-     * @return the min
-     */
-    public int getMin() {
-        return m_config.getMin();
-    }
-
-    /**
-     * @param min the min to set
-     */
-    public void setMin(final int min) {
-        m_config.setMin(min);
-    }
-
-    /**
-     * @return the max
-     */
-    public int getMax() {
-        return m_config.getMax();
-    }
-
-    /**
-     * @param max the max to set
-     */
-    public void setMax(final int max) {
-        m_config.setMax(max);
+    public IntegerNodeConfig getIntegerConfig() {
+        return m_config;
     }
 
     /**

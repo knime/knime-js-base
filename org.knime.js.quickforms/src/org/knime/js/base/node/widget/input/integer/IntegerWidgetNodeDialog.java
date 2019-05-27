@@ -66,6 +66,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.integer.IntegerNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
@@ -73,7 +75,7 @@ import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerWidgetNodeDialog extends FlowVariableWidgetNodeDialog<IntegerWidgetValue> {
+public class IntegerWidgetNodeDialog extends FlowVariableWidgetNodeDialog<IntegerNodeValue> {
 
     private final JCheckBox m_useMin;
     private final JCheckBox m_useMax;
@@ -140,7 +142,7 @@ public class IntegerWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Intege
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        IntegerWidgetValue value = new IntegerWidgetValue();
+        IntegerNodeValue value = new IntegerNodeValue();
         value.loadFromNodeSettings(settings);
         return "" + value.getInteger();
     }
@@ -186,10 +188,11 @@ public class IntegerWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Intege
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         m_defaultSpinner.setValue(m_config.getDefaultValue().getInteger());
-        m_useMin.setSelected(m_config.isUseMin());
-        m_useMax.setSelected(m_config.isUseMax());
-        m_min.setValue(m_config.getMin());
-        m_max.setValue(m_config.getMax());
+        IntegerNodeConfig integerConfig = m_config.getIntegerConfig();
+        m_useMin.setSelected(integerConfig.isUseMin());
+        m_useMax.setSelected(integerConfig.isUseMax());
+        m_min.setValue(integerConfig.getMin());
+        m_max.setValue(integerConfig.getMax());
         m_min.setEnabled(m_useMin.isSelected());
         m_max.setEnabled(m_useMax.isSelected());
     }
@@ -201,10 +204,11 @@ public class IntegerWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Intege
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setInteger((Integer)m_defaultSpinner.getValue());
-        m_config.setUseMin(m_useMin.isSelected());
-        m_config.setUseMax(m_useMax.isSelected());
-        m_config.setMin((Integer)m_min.getValue());
-        m_config.setMax((Integer)m_max.getValue());
+        IntegerNodeConfig integerConfig = m_config.getIntegerConfig();
+        integerConfig.setUseMin(m_useMin.isSelected());
+        integerConfig.setUseMax(m_useMax.isSelected());
+        integerConfig.setMin((Integer)m_min.getValue());
+        integerConfig.setMax((Integer)m_max.getValue());
         m_config.saveSettings(settings);
     }
 

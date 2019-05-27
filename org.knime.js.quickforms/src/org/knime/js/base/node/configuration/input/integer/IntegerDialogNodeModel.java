@@ -49,6 +49,7 @@
 package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.node.base.integer.IntegerNodeConfig;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**
@@ -99,13 +100,14 @@ public class IntegerDialogNodeModel extends
     @Override
     public void validateDialogValue(final IntegerDialogNodeValue value) throws InvalidSettingsException {
         int integer = value.getInteger();
-        if (getConfig().isUseMin() && integer < getConfig().getMin()) {
+        IntegerNodeConfig config = getConfig().getIntegerConfig();
+        if (config.isUseMin() && integer < config.getMin()) {
             throw new InvalidSettingsException("The set integer " + integer
-                + " is smaller than the allowed minimum of " + getConfig().getMin());
+                + " is smaller than the allowed minimum of " + config.getMin());
         }
-        if (getConfig().isUseMax() && integer > getConfig().getMax()) {
+        if (config.isUseMax() && integer > config.getMax()) {
             throw new InvalidSettingsException("The set integer " + integer
-                + " is bigger than the allowed maximum of " + getConfig().getMax());
+                + " is bigger than the allowed maximum of " + config.getMax());
         }
         super.validateDialogValue(value);
     }

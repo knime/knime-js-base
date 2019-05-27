@@ -70,7 +70,7 @@ public class IntegerConfigurationPanel extends AbstractDialogNodeConfigurationPa
      * @param representation the dialog node settings
      */
     public IntegerConfigurationPanel(final IntegerDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         int min = Integer.MIN_VALUE;
         int max = Integer.MAX_VALUE;
         if (representation.isUseMin()) {

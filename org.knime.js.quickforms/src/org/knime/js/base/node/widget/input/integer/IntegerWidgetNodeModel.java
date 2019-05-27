@@ -50,6 +50,9 @@ package org.knime.js.base.node.widget.input.integer;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.integer.IntegerNodeRepresentation;
+import org.knime.js.base.node.base.integer.IntegerNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
@@ -57,8 +60,8 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<IntegerWidgetRepresentation, IntegerWidgetValue, IntegerWidgetConfig> {
+public class IntegerWidgetNodeModel extends
+    WidgetFlowVariableNodeModel<IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue, IntegerWidgetConfig> {
 
     /**
      * @param viewName the interactive view name
@@ -71,8 +74,8 @@ public class IntegerWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public IntegerWidgetValue createEmptyViewValue() {
-        return new IntegerWidgetValue();
+    public IntegerNodeValue createEmptyViewValue() {
+        return new IntegerNodeValue();
     }
 
     /**
@@ -108,8 +111,10 @@ public class IntegerWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    protected IntegerWidgetRepresentation getRepresentation() {
-        return new IntegerWidgetRepresentation(getRelevantValue(), getConfig());
+    protected IntegerNodeRepresentation<IntegerNodeValue> getRepresentation() {
+        IntegerWidgetConfig config = getConfig();
+        return new IntegerNodeRepresentation<IntegerNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getIntegerConfig(), config.getLabelConfig());
     }
 
     /**
@@ -124,15 +129,16 @@ public class IntegerWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final IntegerWidgetValue value) {
+    public ValidationError validateViewValue(final IntegerNodeValue value) {
+        IntegerNodeConfig config = getConfig().getIntegerConfig();
         int integer = value.getInteger();
-        if (getConfig().isUseMin() && integer < getConfig().getMin()) {
+        if (config.isUseMin() && integer < config.getMin()) {
             return new ValidationError("The set integer " + integer
-                + " is smaller than the allowed minimum of " + getConfig().getMin());
+                + " is smaller than the allowed minimum of " + config.getMin());
         }
-        if (getConfig().isUseMax() && integer > getConfig().getMax()) {
+        if (config.isUseMax() && integer > config.getMax()) {
             return new ValidationError("The set integer " + integer
-                + " is bigger than the allowed maximum of " + getConfig().getMax());
+                + " is bigger than the allowed maximum of " + config.getMax());
         }
         return super.validateViewValue(value);
     }

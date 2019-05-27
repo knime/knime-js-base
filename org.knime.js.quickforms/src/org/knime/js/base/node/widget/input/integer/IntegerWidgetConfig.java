@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.integer.IntegerNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
@@ -61,7 +62,7 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerWidgetConfig extends LabeledFlowVariableWidgetConfig<IntegerWidgetValue> {
+public class IntegerWidgetConfig extends LabeledFlowVariableWidgetConfig<IntegerNodeValue> {
 
     private final IntegerNodeConfig m_config;
 
@@ -73,67 +74,18 @@ public class IntegerWidgetConfig extends LabeledFlowVariableWidgetConfig<Integer
     }
 
     /**
-     * @return the useMin
+     * @return the config
      */
-    public boolean isUseMin() {
-        return m_config.isUseMin();
-    }
-
-    /**
-     * @param useMin the useMin to set
-     */
-    public void setUseMin(final boolean useMin) {
-        m_config.setUseMin(useMin);
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_config.isUseMax();
-    }
-
-    /**
-     * @param useMax the useMax to set
-     */
-    public void setUseMax(final boolean useMax) {
-        m_config.setUseMax(useMax);
-    }
-
-    /**
-     * @return the min
-     */
-    public int getMin() {
-        return m_config.getMin();
-    }
-
-    /**
-     * @param min the min to set
-     */
-    public void setMin(final int min) {
-        m_config.setMin(min);
-    }
-
-    /**
-     * @return the max
-     */
-    public int getMax() {
-        return m_config.getMax();
-    }
-
-    /**
-     * @param max the max to set
-     */
-    public void setMax(final int max) {
-        m_config.setMax(max);
+    public IntegerNodeConfig getIntegerConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected IntegerWidgetValue createEmptyValue() {
-        return new IntegerWidgetValue();
+    protected IntegerNodeValue createEmptyValue() {
+        return new IntegerNodeValue();
     }
 
     /**
