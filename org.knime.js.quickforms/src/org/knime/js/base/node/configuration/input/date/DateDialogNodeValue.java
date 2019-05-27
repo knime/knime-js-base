@@ -53,7 +53,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -62,13 +61,10 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.base.node.base.date.DateNodeConfig;
+import org.knime.js.base.node.base.date.DateNodeValue;
 import org.knime.time.util.DateTimeUtils;
 
 /**
@@ -76,73 +72,7 @@ import org.knime.time.util.DateTimeUtils;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_DATE = "date&time";
-    private ZonedDateTime m_date = DateNodeConfig.DEFAULT_ZDT;
-
-    /**
-     * @return the date
-     */
-    public ZonedDateTime getDate() {
-        return m_date;
-    }
-
-    /**
-     * @return the string
-     */
-    public String getDateAsString() {
-        return m_date.toString();
-    }
-
-    /**
-     * @param date the date to set
-     */
-    public void setDate(final ZonedDateTime date) {
-        m_date = date;
-    }
-
-    /**
-     * @param zdtString the zoned date time to set
-     */
-    public void setDateTimeComponent(final String zdtString) {
-        Optional<ZonedDateTime> opt = DateTimeUtils.asZonedDateTime(zdtString);
-        m_date = opt.isPresent() ? opt.get()
-            : ZonedDateTime.of(DateTimeUtils.asLocalDateTime(zdtString).get(), ZoneId.systemDefault());
-    }
-
-    /**
-     * @param zone the zone to set
-     */
-    public void setTimeZoneComponent(final String zone) {
-        m_date = ZonedDateTime.of(m_date.toLocalDateTime(), ZoneId.of(zone));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        String dateString = m_date != null ? m_date.toString() : null;
-        settings.addString(CFG_DATE, dateString);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        String value = settings.getString(CFG_DATE);
-        if (value == null) {
-            m_date = null;
-        } else {
-            try {
-                setDate(ZonedDateTime.parse(value));
-            } catch (Exception e) {
-                throw new InvalidSettingsException("Can't parse date: " + value, e);
-            }
-        }
-    }
+public class DateDialogNodeValue extends DateNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
@@ -151,27 +81,28 @@ public class DateDialogNodeValue implements DialogNodeValue {
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         String value = settings.getString(CFG_DATE, DateNodeConfig.DEFAULT_ZDT.toString());
         if (value == null) {
-            m_date = null;
+            setDate(null);
         } else {
             try {
                 setDate(ZonedDateTime.parse(value));
             } catch (Exception e) {
-                m_date = DateNodeConfig.DEFAULT_ZDT;
+                setDate(DateNodeConfig.DEFAULT_ZDT);
             }
         }
     }
 
     private void updateDateByStringInput(final String string) throws IllegalArgumentException {
+        ZonedDateTime date = getDate();
         if (DateTimeUtils.asZonedDateTime(string).isPresent()) {
-            m_date = ZonedDateTime.parse(string);
+            setDate(ZonedDateTime.parse(string));
         } else if (DateTimeUtils.asLocalDateTime(string).isPresent()) {
-            m_date = ZonedDateTime.of(LocalDateTime.parse(string), m_date.getZone());
+            setDate(ZonedDateTime.of(LocalDateTime.parse(string), date.getZone()));
         } else if (DateTimeUtils.asLocalDate(string).isPresent()) {
-            m_date = ZonedDateTime.of(LocalDate.parse(string), m_date.toLocalTime(), m_date.getZone());
+            setDate(ZonedDateTime.of(LocalDate.parse(string), date.toLocalTime(), date.getZone()));
         } else if (DateTimeUtils.asLocalTime(string).isPresent()) {
-            m_date = ZonedDateTime.of(m_date.toLocalDate(), LocalTime.parse(string), m_date.getZone());
+            setDate(ZonedDateTime.of(date.toLocalDate(), LocalTime.parse(string), date.getZone()));
         } else if (DateTimeUtils.asTimezone(string).isPresent()) {
-            m_date = ZonedDateTime.of(m_date.toLocalDateTime(), ZoneId.of(string));
+            setDate(ZonedDateTime.of(date.toLocalDateTime(), ZoneId.of(string)));
         } else {
             throw new IllegalArgumentException(string + " cannot be parsed as any date&time type or time zone!");
         }
@@ -227,55 +158,11 @@ public class DateDialogNodeValue implements DialogNodeValue {
     @Override
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (m_date == null) {
+        if (getDate() == null) {
             builder.addNull(CFG_DATE);
         } else {
-            builder.add(CFG_DATE, m_date.toString());
+            builder.add(CFG_DATE, getDate().toString());
         }
         return builder.build().get(CFG_DATE);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("date=");
-        sb.append("{");
-        sb.append(m_date);
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .append(m_date)
-            .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        DateDialogNodeValue other = (DateDialogNodeValue)obj;
-        return new EqualsBuilder()
-            .append(m_date, other.m_date)
-            .isEquals();
-    }
-
 }

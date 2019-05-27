@@ -57,6 +57,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.date.DateNodeConfig;
 import org.knime.js.base.node.base.date.DateNodeUtil;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
@@ -68,7 +69,7 @@ import org.knime.time.util.DateTimeType;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DateDialogNodeModel
-    extends DialogFlowVariableNodeModel<DateDialogNodeRepresentation, DateDialogNodeValue, DateDialogNodeConfig> {
+    extends DialogFlowVariableNodeModel<DateDialogNodeRepresentation, DateDialogNodeValue, DateInputDialogNodeConfig> {
 
     /**
      * {@inheritDoc}
@@ -77,19 +78,19 @@ public class DateDialogNodeModel
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         final ZonedDateTime value;
         final ZonedDateTime now = ZonedDateTime.now();
+        DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
-        final Optional<String> validationResult =
-            DateNodeUtil.validateMinMaxByConfig(getConfig().getDateNodeConfig(), value, now);
+        final Optional<String> validationResult = DateNodeUtil.validateMinMaxByConfig(dateConfig, value, now);
         if (validationResult.isPresent()) {
-            if (getConfig().isUseDefaultExecTime()) {
+            if (dateConfig.isUseDefaultExecTime()) {
                 setWarningMessage("The current time is either before the earliest or latest allowed time!");
-            } else if (getConfig().isUseMinExecTime()) {
+            } else if (dateConfig.isUseMinExecTime()) {
                 setWarningMessage("The selected time is before the current time!");
-            } else if (getConfig().isUseMaxExecTime()) {
+            } else if (dateConfig.isUseMaxExecTime()) {
                 setWarningMessage("The selected time is after the current time!");
             } else {
                 throw new InvalidSettingsException(validationResult.get());
@@ -105,13 +106,13 @@ public class DateDialogNodeModel
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         final ZonedDateTime value;
         final ZonedDateTime now = ZonedDateTime.now();
+        DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
-        final Optional<String> validationResult =
-            DateNodeUtil.validateMinMaxByConfig(getConfig().getDateNodeConfig(), value, now);
+        final Optional<String> validationResult = DateNodeUtil.validateMinMaxByConfig(dateConfig, value, now);
         if (validationResult.isPresent()) {
             throw new InvalidSettingsException(validationResult.get());
         }
@@ -132,12 +133,13 @@ public class DateDialogNodeModel
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         final ZonedDateTime value;
+        DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
-        final DateTimeType type = getConfig().getType();
+        final DateTimeType type = dateConfig.getType();
         final DateTimeFormatter formatter;
         final Temporal temporal;
         if (type == DateTimeType.LOCAL_DATE) {
@@ -160,8 +162,8 @@ public class DateDialogNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DateDialogNodeConfig createEmptyConfig() {
-        return new DateDialogNodeConfig();
+    public DateInputDialogNodeConfig createEmptyConfig() {
+        return new DateInputDialogNodeConfig();
     }
 
     /**
@@ -178,7 +180,7 @@ public class DateDialogNodeModel
     @Override
     public void validateDialogValue(final DateDialogNodeValue value) throws InvalidSettingsException {
         final Optional<String> validationResult =
-            DateNodeUtil.validateMinMaxByConfig(getConfig().getDateNodeConfig(), value.getDate(), ZonedDateTime.now());
+            DateNodeUtil.validateMinMaxByConfig(getConfig().getDateConfig(), value.getDate(), ZonedDateTime.now());
         if (validationResult.isPresent()) {
             throw new InvalidSettingsException(validationResult.get());
         }

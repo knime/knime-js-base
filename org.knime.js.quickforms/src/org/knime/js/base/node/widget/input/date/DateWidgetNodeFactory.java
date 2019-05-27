@@ -52,6 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.date.DateNodeRepresentation;
+import org.knime.js.base.node.base.date.DateNodeValue;
 
 /**
  * Factory for the date widget node
@@ -59,7 +61,7 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DateWidgetNodeFactory extends NodeFactory<DateWidgetNodeModel>
-    implements WizardNodeFactoryExtension<DateWidgetNodeModel, DateWidgetRepresentation, DateWidgetValue> {
+    implements WizardNodeFactoryExtension<DateWidgetNodeModel, DateNodeRepresentation<DateNodeValue>, DateNodeValue> {
 
     /**
      * {@inheritDoc}

@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   23 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.date;
+package org.knime.js.base.node.base.date;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -57,7 +57,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.date.DateNodeConfig;
 import org.knime.js.core.JSONViewContent;
 import org.knime.time.util.DateTimeUtils;
 
@@ -67,15 +66,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The value for the date widget node
+ * The base value for the date configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class DateWidgetValue extends JSONViewContent {
+public class DateNodeValue extends JSONViewContent {
 
-    private static final String CFG_DATE = "date&time";
+    /**
+     * Config setting for the double value
+     */
+    protected static final String CFG_DATE = "date&time";
     private ZonedDateTime m_date = DateNodeConfig.DEFAULT_ZDT;
 
     /**
@@ -124,6 +126,7 @@ public class DateWidgetValue extends JSONViewContent {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         String dateString = m_date != null ? m_date.toString() : null;
         settings.addString(CFG_DATE, dateString);
@@ -133,6 +136,7 @@ public class DateWidgetValue extends JSONViewContent {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         String value = settings.getString(CFG_DATE);
         if (value == null) {
@@ -150,6 +154,7 @@ public class DateWidgetValue extends JSONViewContent {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("date=");
@@ -173,6 +178,7 @@ public class DateWidgetValue extends JSONViewContent {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -183,7 +189,7 @@ public class DateWidgetValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateWidgetValue other = (DateWidgetValue)obj;
+        DateNodeValue other = (DateNodeValue)obj;
         return new EqualsBuilder()
             .append(m_date, other.m_date)
             .isEquals();

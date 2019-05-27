@@ -71,7 +71,7 @@ public class DateConfigurationPanel extends AbstractDialogNodeConfigurationPanel
      * @param representation the dialog node settings
      */
     public DateConfigurationPanel(final DateDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         final DateTimeType type = representation.getType();
         final DisplayOption displayOption;
         if (type == DateTimeType.LOCAL_DATE) {

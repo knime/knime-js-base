@@ -58,7 +58,10 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.base.node.base.date.DateNodeConfig;
+import org.knime.js.base.node.base.date.DateNodeRepresentation;
 import org.knime.js.base.node.base.date.DateNodeUtil;
+import org.knime.js.base.node.base.date.DateNodeValue;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 import org.knime.time.util.DateTimeType;
@@ -69,7 +72,7 @@ import org.knime.time.util.DateTimeType;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DateWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<DateWidgetRepresentation, DateWidgetValue, DateWidgetConfig> {
+    extends WidgetFlowVariableNodeModel<DateNodeRepresentation<DateNodeValue>, DateNodeValue, DateInputWidgetConfig> {
 
     /**
      * @param viewName the interactive view name
@@ -85,19 +88,19 @@ public class DateWidgetNodeModel
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         final ZonedDateTime value;
         final ZonedDateTime now = ZonedDateTime.now();
+        DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
-        final Optional<String> validationResult =
-            DateNodeUtil.validateMinMaxByConfig(getConfig().getDateNodeConfig(), value, now);
+        final Optional<String> validationResult = DateNodeUtil.validateMinMaxByConfig(dateConfig, value, now);
         if (validationResult.isPresent()) {
-            if (getConfig().isUseDefaultExecTime()) {
+            if (dateConfig.isUseDefaultExecTime()) {
                 setWarningMessage("The current time is either before the earliest or latest allowed time!");
-            } else if (getConfig().isUseMinExecTime()) {
+            } else if (dateConfig.isUseMinExecTime()) {
                 setWarningMessage("The selected time is before the current time!");
-            } else if (getConfig().isUseMaxExecTime()) {
+            } else if (dateConfig.isUseMaxExecTime()) {
                 setWarningMessage("The selected time is after the current time!");
             } else {
                 throw new InvalidSettingsException(validationResult.get());
@@ -114,7 +117,7 @@ public class DateWidgetNodeModel
         final ZonedDateTime value;
         final ZonedDateTime now = ZonedDateTime.now();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+            value = getConfig().getDateNodeConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
@@ -130,8 +133,8 @@ public class DateWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DateWidgetValue createEmptyViewValue() {
-        return new DateWidgetValue();
+    public DateNodeValue createEmptyViewValue() {
+        return new DateNodeValue();
     }
 
     /**
@@ -148,12 +151,13 @@ public class DateWidgetNodeModel
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         final ZonedDateTime value;
+        DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
-        final DateTimeType type = getConfig().getType();
+        final DateTimeType type = dateConfig.getType();
         final DateTimeFormatter formatter;
         final Temporal temporal;
         if (type == DateTimeType.LOCAL_DATE) {
@@ -176,16 +180,18 @@ public class DateWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DateWidgetConfig createEmptyConfig() {
-        return new DateWidgetConfig();
+    public DateInputWidgetConfig createEmptyConfig() {
+        return new DateInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected DateWidgetRepresentation getRepresentation() {
-        return new DateWidgetRepresentation(getRelevantValue(), getConfig());
+    protected DateNodeRepresentation<DateNodeValue> getRepresentation() {
+        DateInputWidgetConfig config = getConfig();
+        return new DateNodeRepresentation<DateNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getDateNodeConfig(), config.getLabelConfig());
     }
 
     /**
@@ -200,7 +206,7 @@ public class DateWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final DateWidgetValue value) {
+    public ValidationError validateViewValue(final DateNodeValue value) {
         final Optional<String> validationResult =
             DateNodeUtil.validateMinMaxByConfig(getConfig().getDateNodeConfig(), value.getDate(), ZonedDateTime.now());
             if (validationResult.isPresent()) {

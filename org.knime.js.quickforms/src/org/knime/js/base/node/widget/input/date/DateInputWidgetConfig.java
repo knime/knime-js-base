@@ -48,31 +48,28 @@
  */
 package org.knime.js.base.node.widget.input.date;
 
-import java.time.ZonedDateTime;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.date.DateNodeConfig;
-import org.knime.js.base.node.base.date.GranularityTime;
+import org.knime.js.base.node.base.date.DateNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
-import org.knime.time.util.DateTimeType;
 
 /**
  * The config for the date widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateWidgetConfig extends LabeledFlowVariableWidgetConfig<DateWidgetValue> {
+public class DateInputWidgetConfig extends LabeledFlowVariableWidgetConfig<DateNodeValue> {
 
     private final DateNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public DateWidgetConfig() {
+    public DateInputWidgetConfig() {
         m_config = new DateNodeConfig();
     }
 
@@ -84,151 +81,11 @@ public class DateWidgetConfig extends LabeledFlowVariableWidgetConfig<DateWidget
     }
 
     /**
-     * @return the showNow
-     */
-    public boolean isShowNowButton() {
-        return m_config.isShowNowButton();
-    }
-
-    /**
-     * @param showNow the showNow to set
-     */
-    public void setShowNowButton(final boolean showNow) {
-        m_config.setShowNowButton(showNow);
-    }
-
-    /**
-     * @return the granularity
-     */
-    public GranularityTime getGranularity() {
-        return m_config.getGranularity();
-    }
-
-    /**
-     * @param granularity the granularity to set
-     */
-    public void setGranularity(final GranularityTime granularity) {
-        m_config.setGranularity(granularity);
-    }
-
-    /**
-     * @return the useMin
-     */
-    public boolean isUseMin() {
-        return m_config.isUseMin();
-    }
-
-    /**
-     * @param useMin the useMin to set
-     */
-    public void setUseMin(final boolean useMin) {
-        m_config.setUseMin(useMin);
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_config.isUseMax();
-    }
-
-    /**
-     * @param useMax the useMax to set
-     */
-    public void setUseMax(final boolean useMax) {
-        m_config.setUseMax(useMax);
-    }
-
-    /**
-     * @return the useMinExecTime
-     */
-    public boolean isUseMinExecTime() {
-        return m_config.isUseMinExecTime();
-    }
-
-    /**
-     * @param useMinExecTime the useMinExecTime to set
-     */
-    public void setUseMinExecTime(final boolean useMinExecTime) {
-        m_config.setUseMinExecTime(useMinExecTime);
-    }
-
-    /**
-     * @return the useMaxExecTime
-     */
-    public boolean isUseMaxExecTime() {
-        return m_config.isUseMaxExecTime();
-    }
-
-    /**
-     * @param useMaxExecTime the useMaxExecTime to set
-     */
-    public void setUseMaxExecTime(final boolean useMaxExecTime) {
-        m_config.setUseMaxExecTime(useMaxExecTime);
-    }
-
-    /**
-     * @return the useDefaultExecTime
-     */
-    public boolean isUseDefaultExecTime() {
-        return m_config.isUseDefaultExecTime();
-    }
-
-    /**
-     * @param useDefaultExecTime the useDefaultExecTime to set
-     */
-    public void setUseDefaultExecTime(final boolean useDefaultExecTime) {
-        m_config.setUseDefaultExecTime(useDefaultExecTime);
-    }
-
-    /**
-     * @return the min
-     */
-    public ZonedDateTime getMin() {
-        return m_config.getMin();
-    }
-
-    /**
-     * @param min the min to set
-     */
-    public void setMin(final ZonedDateTime min) {
-        m_config.setMin(min);
-    }
-
-    /**
-     * @return the max
-     */
-    public ZonedDateTime getMax() {
-        return m_config.getMax();
-    }
-
-    /**
-     * @param max the max to set
-     */
-    public void setMax(final ZonedDateTime max) {
-        m_config.setMax(max);
-    }
-
-    /**
-     * @return the type
-     */
-    public DateTimeType getType() {
-        return m_config.getType();
-    }
-
-    /**
-     * @param withTime the withTime to set
-     */
-    public void setType(final DateTimeType withTime) {
-        m_config.setType(withTime);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    protected DateWidgetValue createEmptyValue() {
-        return new DateWidgetValue();
+    protected DateNodeValue createEmptyValue() {
+        return new DateNodeValue();
     }
 
     /**
@@ -295,7 +152,7 @@ public class DateWidgetConfig extends LabeledFlowVariableWidgetConfig<DateWidget
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateWidgetConfig other = (DateWidgetConfig)obj;
+        DateInputWidgetConfig other = (DateInputWidgetConfig)obj;
         return new EqualsBuilder()
             .appendSuper(super.equals(obj))
             .append(m_config, other.m_config)

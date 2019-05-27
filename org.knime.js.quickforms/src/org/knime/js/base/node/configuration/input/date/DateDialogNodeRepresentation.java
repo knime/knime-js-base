@@ -48,137 +48,25 @@
  */
 package org.knime.js.base.node.configuration.input.date;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.base.date.GranularityTime;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
-import org.knime.time.util.DateTimeType;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.date.DateNodeRepresentation;
 
 /**
  * The dialog representation of the date configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<DateDialogNodeValue, DateDialogNodeConfig> {
-
-    private final boolean m_showNowButton;
-    private final GranularityTime m_granularity;
-    private final boolean m_useMin;
-    private final boolean m_useMax;
-    private final boolean m_useMinExecTime;
-    private final boolean m_useMaxExecTime;
-    private final boolean m_useDefaultExecTime;
-    private final ZonedDateTime m_min;
-    private final ZonedDateTime m_max;
-    private final DateTimeType m_type;
-    private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
+public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDialogNodeValue>
+    implements QuickFormRepresentation<DateDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
-    public DateDialogNodeRepresentation(final DateDialogNodeValue currentValue, final DateDialogNodeConfig config) {
-        super(currentValue, config);
-        m_showNowButton = config.isShowNowButton();
-        m_granularity = config.getGranularity();
-        m_useMin = config.isUseMin();
-        m_useMax = config.isUseMax();
-        m_useMinExecTime = config.isUseMinExecTime();
-        m_useMaxExecTime = config.isUseMaxExecTime();
-        m_useDefaultExecTime = config.isUseDefaultExecTime();
-        m_min = config.getMin();
-        m_max = config.getMax();
-        m_type = config.getType();
-    }
-
-    /**
-     * @return the showNowButton
-     */
-    public boolean isShowNowButton() {
-        return m_showNowButton;
-    }
-
-    /**
-     * @return the showNowButton
-     */
-    public String getGranularity() {
-        if (m_granularity == GranularityTime.SHOW_MINUTES) {
-            return "show_minutes";
-        } else if (m_granularity == GranularityTime.SHOW_SECONDS) {
-            return "show_seconds";
-        } else {
-            return "show_millis";
-        }
-    }
-
-    /**
-     * @return the useMin
-     */
-    public boolean isUseMin() {
-        return m_useMin;
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_useMax;
-    }
-
-    /**
-     * @return the useMinExecTime
-     */
-    public boolean isUseMinExecTime() {
-        return m_useMinExecTime;
-    }
-
-    /**
-     * @return the useMaxExecTime
-     */
-    public boolean isUseMaxExecTime() {
-        return m_useMaxExecTime;
-    }
-
-    /**
-     * @return the useMaxExecTime
-     */
-    public boolean isUseDefaultExecTime() {
-        return m_useDefaultExecTime;
-    }
-
-    /**
-     * @return the min
-     */
-    public ZonedDateTime getMin() {
-        return m_min;
-    }
-
-    /**
-     * @return the max
-     */
-    public ZonedDateTime getMax() {
-        return m_max;
-    }
-
-    /**
-     * @return the type
-     */
-    public DateTimeType getType() {
-        return m_type;
-    }
-
-    /**
-     * @return the zones
-     */
-    public Set<String> getZones() {
-        return m_zones;
+    public DateDialogNodeRepresentation(final DateDialogNodeValue currentValue,
+        final DateInputDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getDateConfig(), config.getLabelConfig());
     }
 
     /**
@@ -186,103 +74,6 @@ public class DateDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<DateDialogNodeValue> createDialogPanel() {
-        DateConfigurationPanel panel = new DateConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new DateConfigurationPanel(this);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("showNowButton=");
-        sb.append(m_showNowButton);
-        sb.append(", ");
-        sb.append("granularity=");
-        sb.append(m_granularity);
-        sb.append(", ");
-        sb.append("useMin=");
-        sb.append(m_useMin);
-        sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
-        sb.append(", ");
-        sb.append("useMinExecTime=");
-        sb.append(m_useMinExecTime);
-        sb.append(", ");
-        sb.append("useMaxExecTime=");
-        sb.append(m_useMaxExecTime);
-        sb.append(", ");
-        sb.append("useDefaultExecTime=");
-        sb.append(m_useDefaultExecTime);
-        sb.append(", ");
-        sb.append("min=");
-        sb.append("{");
-        sb.append(m_min);
-        sb.append("}");
-        sb.append(", ");
-        sb.append("max=");
-        sb.append("{");
-        sb.append(m_max);
-        sb.append("}");
-        sb.append(", ");
-        sb.append("withTime=");
-        sb.append(m_type);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_showNowButton)
-            .append(m_granularity)
-            .append(m_useMin)
-            .append(m_useMax)
-            .append(m_useMinExecTime)
-            .append(m_useMaxExecTime)
-            .append(m_useDefaultExecTime)
-            .append(m_min)
-            .append(m_max)
-            .append(m_type)
-            .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        DateDialogNodeRepresentation other = (DateDialogNodeRepresentation)obj;
-        return new EqualsBuilder()
-            .appendSuper(super.equals(obj))
-            .append(m_showNowButton, other.m_showNowButton)
-            .append(m_granularity, other.m_granularity)
-            .append(m_useMin, other.m_useMin)
-            .append(m_useMax, other.m_useMax)
-            .append(m_useMinExecTime, other.m_useMinExecTime)
-            .append(m_useMaxExecTime, other.m_useMaxExecTime)
-            .append(m_useDefaultExecTime, other.m_useDefaultExecTime)
-            .append(m_min, other.m_min)
-            .append(m_max, other.m_max)
-            .append(m_type, other.m_type)
-            .isEquals();
-    }
-
 }

@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   23 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.date;
+package org.knime.js.base.node.base.date;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -55,23 +55,25 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.base.date.GranularityTime;
-import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 import org.knime.time.util.DateTimeType;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the date widget node
+ * The base representation for the double configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<DateWidgetValue, DateWidgetConfig> {
+public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final boolean m_showNowButton;
     private final GranularityTime m_granularity;
@@ -86,16 +88,20 @@ public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<D
     private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
 
     @JsonCreator
-    private DateWidgetRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final DateWidgetValue defaultValue,
-        @JsonProperty("currentValue") final DateWidgetValue currentValue,
+    private DateNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("shownowbutton") final boolean showNowButton,
-        @JsonProperty("granularity") final String granularity, @JsonProperty("usemin") final boolean useMin,
-        @JsonProperty("usemax") final boolean useMax, @JsonProperty("useminexectime") final boolean useMinExecTime,
+        @JsonProperty("granularity") final String granularity,
+        @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("useminexectime") final boolean useMinExecTime,
         @JsonProperty("usemaxexectime") final boolean useMaxExecTime,
         @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime,
-        @JsonProperty("min") final String min, @JsonProperty("max") final String max,
+        @JsonProperty("min") final String min,
+        @JsonProperty("max") final String max,
         @JsonProperty("type") final String type) {
         super(label, description, required, defaultValue, currentValue);
         m_showNowButton = showNowButton;
@@ -111,21 +117,24 @@ public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<D
     }
 
     /**
-     * @param currentValue the value currently used by the node
-     * @param config the config of the node
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param dateConfig The config of the node
+     * @param labelConfig The label config of the node
      */
-    public DateWidgetRepresentation(final DateWidgetValue currentValue, final DateWidgetConfig config) {
-        super(currentValue, config);
-        m_showNowButton = config.isShowNowButton();
-        m_granularity = config.getGranularity();
-        m_useMin = config.isUseMin();
-        m_useMax = config.isUseMax();
-        m_useMinExecTime = config.isUseMinExecTime();
-        m_useMaxExecTime = config.isUseMaxExecTime();
-        m_useDefaultExecTime = config.isUseDefaultExecTime();
-        m_min = config.getMin();
-        m_max = config.getMax();
-        m_type = config.getType();
+    public DateNodeRepresentation(final VAL currentValue, final VAL defaultValue, final DateNodeConfig dateConfig,
+        final LabeledConfig labelConfig) {
+        super(currentValue, defaultValue, labelConfig);
+        m_showNowButton = dateConfig.isShowNowButton();
+        m_granularity = dateConfig.getGranularity();
+        m_useMin = dateConfig.isUseMin();
+        m_useMax = dateConfig.isUseMax();
+        m_useMinExecTime = dateConfig.isUseMinExecTime();
+        m_useMaxExecTime = dateConfig.isUseMaxExecTime();
+        m_useDefaultExecTime = dateConfig.isUseDefaultExecTime();
+        m_min = dateConfig.getMin();
+        m_max = dateConfig.getMax();
+        m_type = dateConfig.getType();
     }
 
     /**
@@ -205,6 +214,14 @@ public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<D
     /**
      * @return the min
      */
+    @JsonIgnore
+    public ZonedDateTime getMin() {
+        return m_min;
+    }
+
+    /**
+     * @return the min
+     */
     @JsonProperty("min")
     public String getMinAsString() {
         return m_min.toString();
@@ -213,9 +230,25 @@ public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<D
     /**
      * @return the max
      */
+    @JsonIgnore
+    public ZonedDateTime getMax() {
+        return m_max;
+    }
+
+    /**
+     * @return the max
+     */
     @JsonProperty("max")
     public String getMaxAsString() {
         return m_max.toString();
+    }
+
+    /**
+     * @return the type
+     */
+    @JsonIgnore
+    public DateTimeType getType() {
+        return m_type;
     }
 
     /**
@@ -334,7 +367,8 @@ public class DateWidgetRepresentation extends AbstractWidgetNodeRepresentation<D
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DateWidgetRepresentation other = (DateWidgetRepresentation)obj;
+        @SuppressWarnings("unchecked")
+        DateNodeRepresentation<VAL> other = (DateNodeRepresentation<VAL>)obj;
         return new EqualsBuilder()
             .appendSuper(super.equals(obj))
             .append(m_showNowButton, other.m_showNowButton)

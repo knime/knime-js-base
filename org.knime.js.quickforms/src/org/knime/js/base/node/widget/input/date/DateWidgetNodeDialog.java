@@ -67,7 +67,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.date.DateNodeConfig;
 import org.knime.js.base.node.base.date.DateNodeUtil;
+import org.knime.js.base.node.base.date.DateNodeValue;
 import org.knime.js.base.node.base.date.GranularityTime;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
@@ -81,7 +83,7 @@ import org.knime.time.util.SettingsModelDateTime;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateWidgetValue> {
+public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateNodeValue> {
 
     private final JCheckBox m_showNowButton;
     private final JCheckBox m_useMin;
@@ -95,7 +97,7 @@ public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateWidge
     private final JComboBox<DateTimeType> m_type;
     private final JComboBox<GranularityTime> m_granularity;
 
-    private final DateWidgetConfig m_config;
+    private final DateInputWidgetConfig m_config;
 
     private DateTimeFormatter m_formatter = DateNodeUtil.LOCAL_DATE_TIME_FORMATTER;
 
@@ -105,7 +107,7 @@ public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateWidge
      * Constructor, inits fields calls layout routines
      */
     public DateWidgetNodeDialog() {
-        m_config = new DateWidgetConfig();
+        m_config = new DateInputWidgetConfig();
         m_type = new JComboBox<DateTimeType>(DateTimeType.values());
         m_type.addActionListener(e -> updateDateTimeComponents());
 
@@ -311,19 +313,20 @@ public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateWidge
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         ((SettingsModelDateTime)m_defaultField.getModel()).setZonedDateTime(m_config.getDefaultValue().getDate());
-        m_showNowButton.setSelected(m_config.isShowNowButton());
-        m_granularity.setSelectedItem(m_config.getGranularity());
-        m_useMin.setSelected(m_config.isUseMin());
-        m_useMax.setSelected(m_config.isUseMax());
-        m_useMinExecTime.setSelected(m_config.isUseMinExecTime());
-        m_useMaxExecTime.setSelected(m_config.isUseMaxExecTime());
-        m_useDefaultExecTime.setSelected(m_config.isUseDefaultExecTime());
-        ((SettingsModelDateTime)m_min.getModel()).setZonedDateTime(m_config.getMin());
-        ((SettingsModelDateTime)m_max.getModel()).setZonedDateTime(m_config.getMax());
+        DateNodeConfig dateConfig = m_config.getDateNodeConfig();
+        m_showNowButton.setSelected(dateConfig.isShowNowButton());
+        m_granularity.setSelectedItem(dateConfig.getGranularity());
+        m_useMin.setSelected(dateConfig.isUseMin());
+        m_useMax.setSelected(dateConfig.isUseMax());
+        m_useMinExecTime.setSelected(dateConfig.isUseMinExecTime());
+        m_useMaxExecTime.setSelected(dateConfig.isUseMaxExecTime());
+        m_useDefaultExecTime.setSelected(dateConfig.isUseDefaultExecTime());
+        ((SettingsModelDateTime)m_min.getModel()).setZonedDateTime(dateConfig.getMin());
+        ((SettingsModelDateTime)m_max.getModel()).setZonedDateTime(dateConfig.getMax());
         m_defaultField.getModel().setEnabled(!m_useDefaultExecTime.isSelected());
         m_min.getModel().setEnabled(m_useMin.isSelected() && !m_useMinExecTime.isSelected());
         m_max.getModel().setEnabled(m_useMax.isSelected() && !m_useMaxExecTime.isSelected());
-        m_type.setSelectedItem(m_config.getType());
+        m_type.setSelectedItem(dateConfig.getType());
         updateDateTimeComponents();
     }
 
@@ -364,16 +367,17 @@ public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateWidge
         }
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setDate(((SettingsModelDateTime)m_defaultField.getModel()).getZonedDateTime());
-        m_config.setShowNowButton(m_showNowButton.isSelected());
-        m_config.setGranularity((GranularityTime)m_granularity.getSelectedItem());
-        m_config.setUseMin(m_useMin.isSelected());
-        m_config.setUseMax(m_useMax.isSelected());
-        m_config.setUseMinExecTime(m_useMinExecTime.isSelected());
-        m_config.setUseMaxExecTime(m_useMaxExecTime.isSelected());
-        m_config.setUseDefaultExecTime(m_useDefaultExecTime.isSelected());
-        m_config.setMin(((SettingsModelDateTime)m_min.getModel()).getZonedDateTime());
-        m_config.setMax(((SettingsModelDateTime)m_max.getModel()).getZonedDateTime());
-        m_config.setType((DateTimeType)m_type.getSelectedItem());
+        DateNodeConfig dateConfig = m_config.getDateNodeConfig();
+        dateConfig.setShowNowButton(m_showNowButton.isSelected());
+        dateConfig.setGranularity((GranularityTime)m_granularity.getSelectedItem());
+        dateConfig.setUseMin(m_useMin.isSelected());
+        dateConfig.setUseMax(m_useMax.isSelected());
+        dateConfig.setUseMinExecTime(m_useMinExecTime.isSelected());
+        dateConfig.setUseMaxExecTime(m_useMaxExecTime.isSelected());
+        dateConfig.setUseDefaultExecTime(m_useDefaultExecTime.isSelected());
+        dateConfig.setMin(((SettingsModelDateTime)m_min.getModel()).getZonedDateTime());
+        dateConfig.setMax(((SettingsModelDateTime)m_max.getModel()).getZonedDateTime());
+        dateConfig.setType((DateTimeType)m_type.getSelectedItem());
         m_config.saveSettings(settings);
     }
 
