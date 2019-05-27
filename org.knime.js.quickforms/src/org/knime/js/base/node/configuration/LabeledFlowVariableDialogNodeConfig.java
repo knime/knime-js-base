@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.js.base.node.base.FlowVariableConfig;
 
 /**
@@ -64,7 +65,15 @@ import org.knime.js.base.node.base.FlowVariableConfig;
 public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNodeValue>
     extends LabeledDialogNodeConfig<VAL> {
 
-    private FlowVariableConfig m_variable = new FlowVariableConfig();
+    private final FlowVariableConfig m_variable;
+
+    /**
+     * Create new config instance
+     */
+    public LabeledFlowVariableDialogNodeConfig() {
+        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
+        m_variable = new FlowVariableConfig(defaultName);
+    }
 
     public String getFlowVariableName() {
         return m_variable.getFlowVariableName();

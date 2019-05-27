@@ -58,6 +58,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
@@ -65,16 +66,16 @@ import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<BooleanWidgetValue> {
+public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<BooleanNodeValue> {
 
-    private final BooleanWidgetConfig m_config;
+    private final BooleanInputWidgetConfig m_config;
     private final JCheckBox m_defaultField;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public BooleanWidgetNodeDialog() {
-        m_config = new BooleanWidgetConfig();
+        m_config = new BooleanInputWidgetConfig();
         m_defaultField = new JCheckBox();
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
         createAndAddTab();
@@ -85,7 +86,7 @@ public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Boolea
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        BooleanWidgetValue value = new BooleanWidgetValue();
+        BooleanNodeValue value = new BooleanNodeValue();
         value.loadFromNodeSettings(settings);
         return "" + value.getBoolean();
     }
@@ -102,7 +103,8 @@ public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Boolea
      * {@inheritDoc}
      */
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         super.loadSettingsFrom(m_config);
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());

@@ -44,26 +44,25 @@
  */
 package org.knime.js.base.node.configuration.input.bool;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
 
 /**
  * The representation for the boolean input quick form node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<BooleanDialogNodeValue, BooleanDialogNodeConfig> {
+public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<BooleanDialogNodeValue>
+    implements QuickFormRepresentation<BooleanDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
     public BooleanDialogNodeRepresentation(final BooleanDialogNodeValue currentValue,
-        final BooleanDialogNodeConfig config) {
-        super(currentValue, config);
+        final BooleanInputDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getLabelConfig());
     }
 
     /**
@@ -71,48 +70,6 @@ public class BooleanDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<BooleanDialogNodeValue> createDialogPanel() {
-        BooleanConfigurationPanel panel = new BooleanConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new BooleanConfigurationPanel(this);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .isEquals();
-    }
-
 }

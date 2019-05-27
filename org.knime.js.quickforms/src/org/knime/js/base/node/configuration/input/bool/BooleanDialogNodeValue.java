@@ -53,12 +53,9 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -67,92 +64,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_BOOLEAN = "boolean";
-    private static final boolean DEFAULT_BOOLEAN = false;
-    private boolean m_boolean = DEFAULT_BOOLEAN;
+public class BooleanDialogNodeValue extends BooleanNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_BOOLEAN, m_boolean);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN, DEFAULT_BOOLEAN);
-    }
-
-    /**
-     * @return the string
-     */
-    public boolean getBoolean() {
-        return m_boolean;
-    }
-
-    /**
-     * @param bool the boolean to set
-     */
-    public void setBoolean(final boolean bool) {
-        m_boolean = bool;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("boolean=");
-        sb.append(m_boolean);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_boolean)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        BooleanDialogNodeValue other = (BooleanDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_boolean, other.m_boolean)
-                .isEquals();
+        setBoolean(settings.getBoolean(CFG_BOOLEAN, DEFAULT_BOOLEAN));
     }
 
     /**
@@ -171,18 +91,18 @@ public class BooleanDialogNodeValue implements DialogNodeValue {
     @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json.getValueType() == ValueType.TRUE) {
-            m_boolean = true;
+            setBoolean(true);
         } else if (json.getValueType() == ValueType.FALSE) {
-            m_boolean = false;
+            setBoolean(false);
         } else if (json instanceof JsonString) {
             loadFromString(((JsonString) json).getString());
         } else if (json instanceof JsonObject) {
             try {
                 JsonValue val = ((JsonObject) json).get(CFG_BOOLEAN);
                 if (JsonValue.NULL.equals(val)) {
-                    m_boolean = false;
+                    setBoolean(false);
                 } else {
-                    m_boolean = ((JsonObject) json).getBoolean(CFG_BOOLEAN);
+                    setBoolean(((JsonObject) json).getBoolean(CFG_BOOLEAN));
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected boolean value for key '" + CFG_BOOLEAN + "'.", e);
@@ -198,6 +118,6 @@ public class BooleanDialogNodeValue implements DialogNodeValue {
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        return m_boolean ? JsonValue.TRUE : JsonValue.FALSE;
+        return getBoolean() ? JsonValue.TRUE : JsonValue.FALSE;
     }
 }

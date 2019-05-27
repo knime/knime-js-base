@@ -84,13 +84,13 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     private final JSpinner m_multilineEditorWidthSpinner;
     private final JSpinner m_multilineEditorHeightSpinner;
 
-    private StringDialogNodeConfig m_config;
+    private StringInputDialogNodeConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public StringDialogNodeNodeDialog() {
-        m_config = new StringDialogNodeConfig();
+        m_config = new StringInputDialogNodeConfig();
         m_regexField = new RegexPanel();
         m_defaultField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_singleLineEditorButton = new JRadioButton(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);

@@ -52,14 +52,16 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 
 /**
  * Factory for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel>
-    implements WizardNodeFactoryExtension<BooleanWidgetNodeModel, BooleanWidgetRepresentation, BooleanWidgetValue> {
+public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel> implements
+    WizardNodeFactoryExtension<BooleanWidgetNodeModel, BooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue> {
 
     /**
      * {@inheritDoc}

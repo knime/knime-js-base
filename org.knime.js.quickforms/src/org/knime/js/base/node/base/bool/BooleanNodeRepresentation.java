@@ -44,64 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.string;
+package org.knime.js.base.node.base.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The value for the string widget node
+ * The base representation for the boolean configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class StringWidgetValue extends JSONViewContent {
+public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends LabeledNodeRepresentation<VAL> {
 
-    private static final String CFG_STRING = "string";
-    private static final String DEFAULT_STRING = "";
-    private String m_string = DEFAULT_STRING;
-
-    /**
-     * @return the string
-     */
-    public String getString() {
-        return m_string;
+    @JsonCreator
+    private BooleanNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue) {
+        super(label, description, required, defaultValue, currentValue);
     }
 
     /**
-     * @param string the string to set
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
      */
-    public void setString(final String string) {
-        m_string = string;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_STRING, getString());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setString(settings.getString(CFG_STRING));
+    public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config) {
+        super(currentValue, defaultValue, config);
     }
 
     /**
@@ -111,8 +93,7 @@ public class StringWidgetValue extends JSONViewContent {
     @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("string=");
-        sb.append(m_string);
+        sb.append(super.toString());
         return sb.toString();
     }
 
@@ -123,7 +104,7 @@ public class StringWidgetValue extends JSONViewContent {
     @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_string)
+                .appendSuper(super.hashCode())
                 .toHashCode();
     }
 
@@ -142,9 +123,8 @@ public class StringWidgetValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        StringWidgetValue other = (StringWidgetValue)obj;
         return new EqualsBuilder()
-                .append(m_string, other.m_string)
+                .appendSuper(super.equals(obj))
                 .isEquals();
     }
 

@@ -81,6 +81,10 @@ public abstract class LabeledDialogNodeConfig<VAL extends DialogNodeValue> exten
         m_labels.setDescription(description);
     }
 
+    public LabeledConfig getLabelConfig() {
+        return m_labels;
+    }
+
     /**
      * {@inheritDoc}
      */

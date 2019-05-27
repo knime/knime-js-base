@@ -44,120 +44,135 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.string;
+package org.knime.js.base.node.widget.filter.column;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.data.DataTableSpec;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * The representation for the string widget node
+ * The representation for the column filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class StringWidgetRepresentation extends AbstractWidgetNodeRepresentation<StringWidgetValue, StringWidgetConfig> {
+public class ColumnFilterWidgetRepresentation
+    extends AbstractWidgetNodeRepresentation<ColumnFilterWidgetValue, ColumnFilterWidgetConfig> {
 
-    private final String m_regex;
-    private final String m_errorMessage;
-    private final String m_editorType;
-    private final int m_multilineEditorWidth;
-    private final int m_multilineEditorHeight;
+    private final String[] m_possibleColumns;
+    private final String m_type;
+    private final boolean m_limitNumberVisOptions;
+    private final Integer m_numberVisOptions;
+
+    private final DataTableSpec m_spec;
 
     @JsonCreator
-    private StringWidgetRepresentation(@JsonProperty("label") final String label,
+    private ColumnFilterWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final StringWidgetValue defaultValue,
-        @JsonProperty("currentValue") final StringWidgetValue currentValue,
-        @JsonProperty("regex") final String regex, @JsonProperty("errormessage") final String errorMessage,
-        @JsonProperty("editorType") final String editorType,
-        @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
-        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
+        @JsonProperty("defaultValue") final ColumnFilterWidgetValue defaultValue,
+        @JsonProperty("currentValue") final ColumnFilterWidgetValue currentValue,
+        @JsonProperty("possibleColumns") final String[] possibleColumns, @JsonProperty("type") final String type,
+        @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue);
-        m_regex = regex;
-        m_errorMessage = errorMessage;
-        m_editorType = editorType;
-        m_multilineEditorWidth = multilineEditorWidth;
-        m_multilineEditorHeight = multilineEditorHeight;
+        m_possibleColumns = possibleColumns;
+        m_type = type;
+        m_spec = spec;
+        m_limitNumberVisOptions = limitNumberVisOptions;
+        m_numberVisOptions = numberVisOptions;
     }
 
     /**
      * @param currentValue the value currently used by the node
-     * @param config the config of the node
+     * @param wConfig the config of the node
+     * @param spec the current data table spec
      */
-    public StringWidgetRepresentation(final StringWidgetValue currentValue, final StringWidgetConfig config) {
-        super(currentValue, config);
-        m_regex = config.getRegex();
-        m_errorMessage = config.getErrorMessage();
-        m_editorType = config.getEditorType();
-        m_multilineEditorWidth = config.getMultilineEditorWidth();
-        m_multilineEditorHeight = config.getMultilineEditorHeight();
+    public ColumnFilterWidgetRepresentation(final ColumnFilterWidgetValue currentValue,
+        final ColumnFilterWidgetConfig wConfig, final DataTableSpec spec) {
+        super(currentValue, wConfig);
+        ColumnFilterNodeConfig config = wConfig.getColumnFilterConfig();
+        m_possibleColumns = config.getPossibleColumns();
+        m_type = config.getType();
+        m_limitNumberVisOptions = config.getLimitNumberVisOptions();
+        m_numberVisOptions = config.getNumberVisOptions();
+        m_spec = spec;
     }
 
     /**
-     * @return the regex
+     * @return Last known table spec
      */
-    public String getRegex() {
-        return m_regex;
+    @JsonProperty("spec")
+    @JsonSerialize(using = DataTableSpecSerializer.class)
+    public DataTableSpec getSpec() {
+        return m_spec;
     }
 
     /**
-     * @return the errorMessage
+     * @return the possibleColumns
      */
-    public String getErrorMessage() {
-        return m_errorMessage;
+    @JsonProperty("possibleColumns")
+    public String[] getPossibleColumns() {
+        return m_possibleColumns;
     }
 
     /**
-     * @return the editorType
+     * @return the type
      */
-    public String getEditorType() {
-        return m_editorType;
+    @JsonProperty("type")
+    public String getType() {
+        return m_type;
     }
 
     /**
-     * @return the multilineEditorWidth
+     * @return the limitNumberVisOptions
      */
-    public int getMultilineEditorWidth() {
-        return m_multilineEditorWidth;
+    @JsonProperty("limitNumberVisOptions")
+    public boolean getLimitNumberVisOptions() {
+        return m_limitNumberVisOptions;
     }
 
     /**
-     * @return the multilineEditorHeight
+     * @return the numberVisOptions
      */
-    public int getMultilineEditorHeight() {
-        return m_multilineEditorHeight;
+    @JsonProperty("numberVisOptions")
+    public Integer getNumberVisOptions() {
+        return m_numberVisOptions;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append("regex=");
-        sb.append(m_regex);
+        sb.append("possibleColumns=");
+        sb.append(Arrays.toString(m_possibleColumns));
         sb.append(", ");
-        sb.append("errorMessage=");
-        sb.append(m_errorMessage);
-        sb.append("editorType=");
-        sb.append(m_editorType);
-        sb.append("multilineEditorWidth=");
-        sb.append(m_multilineEditorWidth);
-        sb.append("multilineEditorHeight=");
-        sb.append(m_multilineEditorHeight);
+        sb.append("type=");
+        sb.append(m_type);
+        sb.append(", ");
+        sb.append("limitNumberVisOptions=");
+        sb.append(m_limitNumberVisOptions);
+        sb.append(", ");
+        sb.append("numberVisOptions=");
+        sb.append(m_numberVisOptions);
         return sb.toString();
     }
 
@@ -165,14 +180,12 @@ public class StringWidgetRepresentation extends AbstractWidgetNodeRepresentation
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_regex)
-                .append(m_errorMessage)
-                .append(m_editorType)
-                .append(m_multilineEditorWidth)
-                .append(m_multilineEditorHeight)
+                .append(m_possibleColumns)
+                .append(m_type)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
                 .toHashCode();
     }
 
@@ -180,7 +193,6 @@ public class StringWidgetRepresentation extends AbstractWidgetNodeRepresentation
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -191,13 +203,12 @@ public class StringWidgetRepresentation extends AbstractWidgetNodeRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        StringWidgetRepresentation other = (StringWidgetRepresentation)obj;
+        ColumnFilterWidgetRepresentation other = (ColumnFilterWidgetRepresentation)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_regex, other.m_regex)
-                .append(m_errorMessage, other.m_errorMessage)
-                .append(m_editorType, other.m_editorType)
-                .append(m_multilineEditorWidth, other.m_multilineEditorWidth)
-                .append(m_multilineEditorHeight, other.m_multilineEditorHeight)
+                .append(m_possibleColumns, other.m_possibleColumns)
+                .append(m_type, other.m_type)
+                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+                .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
 

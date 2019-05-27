@@ -81,6 +81,10 @@ public abstract class LabeledWidgetConfig<VAL extends JSONViewContent> extends W
         m_labels.setDescription(description);
     }
 
+    public LabeledConfig getLabelConfig() {
+        return m_labels;
+    }
+
     /**
      * {@inheritDoc}
      */

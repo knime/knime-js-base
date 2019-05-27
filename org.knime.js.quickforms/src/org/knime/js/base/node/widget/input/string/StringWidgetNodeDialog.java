@@ -66,6 +66,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.base.string.RegexPanel;
 import org.knime.js.base.node.base.string.StringNodeConfig;
+import org.knime.js.base.node.base.string.StringNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 
@@ -74,7 +75,7 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringWidgetValue> {
+public class StringWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringNodeValue> {
 
     private final RegexPanel m_regexField;
     private final JTextField m_defaultField;
@@ -84,13 +85,13 @@ public class StringWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringW
     private final JSpinner m_multilineEditorWidthSpinner;
     private final JSpinner m_multilineEditorHeightSpinner;
 
-    private StringWidgetConfig m_config;
+    private StringInputWidgetConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public StringWidgetNodeDialog() {
-        m_config = new StringWidgetConfig();
+        m_config = new StringInputWidgetConfig();
         m_regexField = new RegexPanel();
         m_defaultField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_singleLineEditorButton = new JRadioButton(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
@@ -131,7 +132,7 @@ public class StringWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringW
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        StringWidgetValue value = new StringWidgetValue();
+        StringNodeValue value = new StringNodeValue();
         value.loadFromNodeSettings(settings);
         return value.getString();
     }

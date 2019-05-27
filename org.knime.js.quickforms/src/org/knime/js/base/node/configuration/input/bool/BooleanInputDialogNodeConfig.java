@@ -44,27 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 May 2019 (albrecht): created
+ *   Jun 12, 2014 (winter): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.configuration.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the boolean widget node
+ * The config for the boolean configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanWidgetValue> {
+public class BooleanInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanDialogNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanWidgetValue createEmptyValue() {
-        return new BooleanWidgetValue();
+    protected BooleanDialogNodeValue createEmptyValue() {
+        return new BooleanDialogNodeValue();
     }
 
     /**

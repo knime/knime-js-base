@@ -53,7 +53,7 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class BooleanDialogNodeModel extends
-    DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanDialogNodeValue, BooleanDialogNodeConfig> {
+    DialogFlowVariableNodeModel<BooleanDialogNodeRepresentation, BooleanDialogNodeValue, BooleanInputDialogNodeConfig> {
 
     /**
      * {@inheritDoc}
@@ -76,8 +76,8 @@ public class BooleanDialogNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public BooleanDialogNodeConfig createEmptyConfig() {
-        return new BooleanDialogNodeConfig();
+    public BooleanInputDialogNodeConfig createEmptyConfig() {
+        return new BooleanInputDialogNodeConfig();
     }
 
     /**

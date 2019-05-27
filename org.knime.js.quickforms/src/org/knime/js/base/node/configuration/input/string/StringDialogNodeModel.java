@@ -58,7 +58,7 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class StringDialogNodeModel
-    extends DialogFlowVariableNodeModel<StringDialogNodeRepresentation, StringDialogNodeValue, StringDialogNodeConfig> {
+    extends DialogFlowVariableNodeModel<StringDialogNodeRepresentation, StringDialogNodeValue, StringInputDialogNodeConfig> {
 
     /**
      * {@inheritDoc}
@@ -85,8 +85,8 @@ public class StringDialogNodeModel
      * {@inheritDoc}
      */
     @Override
-    public StringDialogNodeConfig createEmptyConfig() {
-        return new StringDialogNodeConfig();
+    public StringInputDialogNodeConfig createEmptyConfig() {
+        return new StringInputDialogNodeConfig();
     }
 
     /**

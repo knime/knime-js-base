@@ -66,10 +66,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
 
-    private static final String CFG_REQUIRED = "required";
-    private static final boolean DEFAULT_REQUIRED = true;
-    private boolean m_required = DEFAULT_REQUIRED;
-
     private static final String CFG_CUSTOM_CSS = "customCSS";
     private static final String DEFAULT_CUSTOM_CSS = "";
     private String m_customCSS = DEFAULT_CUSTOM_CSS;
@@ -89,20 +85,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
      */
     public void setHideInWizard(final boolean hideInWizard) {
         m_hideInWizard = hideInWizard;
-    }
-
-    /**
-     * @return the required
-     */
-    public boolean isRequired() {
-        return m_required;
-    }
-
-    /**
-     * @param required the required to set
-     */
-    public void setRequired(final boolean required) {
-        m_required = required;
     }
 
     /**
@@ -140,7 +122,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         NodeSettingsWO defaultValueSettings = settings.addNodeSettings(CFG_DEFAULT_VALUE);
         m_defaultValue.saveToNodeSettings(defaultValueSettings);
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
-        settings.addBoolean(CFG_REQUIRED, m_required);
         settings.addString(CFG_CUSTOM_CSS, m_customCSS);
     }
 
@@ -153,7 +134,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         m_defaultValue = createEmptyValue();
         m_defaultValue.loadFromNodeSettings(defaultValueSettings);
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
-        m_required = settings.getBoolean(CFG_REQUIRED);
         m_customCSS = settings.getString(CFG_CUSTOM_CSS);
     }
 
@@ -170,7 +150,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
             // Stay with defaults
         }
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
-        m_required = settings.getBoolean(CFG_REQUIRED, DEFAULT_REQUIRED);
         m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
     }
 
@@ -186,9 +165,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         sb.append("defaultValue=");
         sb.append("{");
         sb.append(m_defaultValue);
-        sb.append("}, ");
-        sb.append("required=");
-        sb.append(m_required);
+        sb.append("}");
         return sb.toString();
     }
 
@@ -199,7 +176,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(m_hideInWizard)
-                .append(m_required)
                 .append(m_customCSS)
                 .append(m_defaultValue)
                 .toHashCode();
@@ -223,7 +199,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         WidgetConfig<VAL> other = (WidgetConfig<VAL>)obj;
         return new EqualsBuilder()
                 .append(m_hideInWizard, other.m_hideInWizard)
-                .append(m_required, other.m_required)
                 .append(m_customCSS, other.m_customCSS)
                 .append(m_defaultValue, other.m_defaultValue)
                 .isEquals();

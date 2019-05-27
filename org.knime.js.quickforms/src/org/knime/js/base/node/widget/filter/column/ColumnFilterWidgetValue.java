@@ -44,44 +44,88 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.widget.filter.column;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the boolean widget node
+ * The value for the column filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class BooleanWidgetRepresentation
-    extends AbstractWidgetNodeRepresentation<BooleanWidgetValue, BooleanWidgetConfig> {
+public class ColumnFilterWidgetValue extends JSONViewContent {
 
-    @JsonCreator
-    private BooleanWidgetRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final BooleanWidgetValue defaultValue,
-        @JsonProperty("currentValue") final BooleanWidgetValue currentValue) {
-        super(label, description, required, defaultValue, currentValue);
+    private static final String CFG_COLUMNS = "columns";
+    private static final String[] DEFAULT_COLUMNS = new String[0];
+    private String[] m_columns = DEFAULT_COLUMNS;
+
+    private NodeSettings m_settings = null;
+
+    /**
+     * @return the columns
+     */
+    @JsonProperty("columns")
+    public String[] getColumns() {
+        return m_columns;
     }
 
     /**
-     * @param currentValue
-     * @param config
+     * @param columns the columns to set
      */
-    public BooleanWidgetRepresentation(final BooleanWidgetValue currentValue, final BooleanWidgetConfig config) {
-        super(currentValue, config);
+    @JsonProperty("columns")
+    public void setColumns(final String[] columns) {
+        m_columns = columns;
+    }
+
+    /**
+     * @return the settings
+     */
+    @JsonIgnore
+    public NodeSettings getSettings() {
+        return m_settings;
+    }
+
+    /**
+     * @param settings the settings to set
+     */
+    @JsonIgnore
+    public void setSettings(final NodeSettings settings) {
+        m_settings = settings;
+    }
+
+    /**
+     * Updates the selection based on the settings and the given spec.
+     *
+     * @param spec The current table spec
+     */
+    @JsonIgnore
+    public void updateFromSpec(final DataTableSpec spec) {
+        if (m_settings != null) {
+            DataColumnSpecFilterConfiguration config =
+                new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+            config.loadConfigurationInDialog(m_settings, spec);
+            setColumns(config.applyTo(spec).getIncludes());
+        }
     }
 
     /**
@@ -89,9 +133,40 @@ public class BooleanWidgetRepresentation
      */
     @Override
     @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addStringArray(CFG_COLUMNS, getColumns());
+        if (m_settings != null) {
+            settings.addNodeSettings(m_settings);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setColumns(settings.getStringArray(CFG_COLUMNS));
+        try {
+            m_settings = (NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        } catch (InvalidSettingsException e) {
+            m_settings = null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append("columns=");
+        sb.append(Arrays.toString(m_columns));
+        sb.append(", ");
+        sb.append("settings=");
+        sb.append("{");
+        sb.append(m_settings);
+        sb.append("}");
         return sb.toString();
     }
 
@@ -99,9 +174,10 @@ public class BooleanWidgetRepresentation
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
+        return new HashCodeBuilder()
+                .append(m_columns)
+                .append(m_settings)
                 .toHashCode();
     }
 
@@ -109,7 +185,6 @@ public class BooleanWidgetRepresentation
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -120,7 +195,10 @@ public class BooleanWidgetRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        return new EqualsBuilder().appendSuper(super.equals(obj))
+        ColumnFilterWidgetValue other = (ColumnFilterWidgetValue)obj;
+        return new EqualsBuilder()
+                .append(m_columns, other.m_columns)
+                .append(m_settings, other.m_settings)
                 .isEquals();
     }
 

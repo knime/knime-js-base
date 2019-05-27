@@ -63,7 +63,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL> 
+ * @param <VAL>
  */
 public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
 

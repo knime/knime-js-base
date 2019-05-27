@@ -44,63 +44,111 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.string;
+package org.knime.js.base.node.base.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.string.StringNodeRepresentation;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Factory for the string widget node
+ * The base value for the boolean configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetNodeFactory extends NodeFactory<StringWidgetNodeModel> implements
-    WizardNodeFactoryExtension<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class BooleanNodeValue extends JSONViewContent {
+
+    protected static final String CFG_BOOLEAN = "boolean";
+    protected static final boolean DEFAULT_BOOLEAN = false;
+    private boolean m_boolean = DEFAULT_BOOLEAN;
 
     /**
-     * {@inheritDoc}
+     * @return the string
      */
-    @Override
-    public StringWidgetNodeModel createNodeModel() {
-        return new StringWidgetNodeModel(getInteractiveViewName());
+    @JsonProperty("boolean")
+    public boolean getBoolean() {
+        return m_boolean;
+    }
+
+    /**
+     * @param bool the boolean to set
+     */
+    @JsonProperty("boolean")
+    public void setBoolean(final boolean bool) {
+        m_boolean = bool;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addBoolean(CFG_BOOLEAN, m_boolean);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<StringWidgetNodeModel> createNodeView(final int viewIndex, final StringWidgetNodeModel nodeModel) {
-        return null;
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_boolean = settings.getBoolean(CFG_BOOLEAN);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
+    @JsonIgnore
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("boolean=");
+        sb.append(m_boolean);
+        return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringWidgetNodeDialog();
+    @JsonIgnore
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_boolean)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        BooleanNodeValue other = (BooleanNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_boolean, other.m_boolean)
+                .isEquals();
     }
 
 }

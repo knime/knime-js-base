@@ -44,110 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.widget.filter.column;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.string.StringNodeConfig;
-import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * The config for the string configuration node.
+ * The config for the column filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<StringDialogNodeValue> {
+public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<ColumnFilterWidgetValue> {
 
-    private final StringNodeConfig m_stringConfig;
+    private final ColumnFilterNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public StringDialogNodeConfig() {
-        m_stringConfig = new StringNodeConfig();
+    public ColumnFilterWidgetConfig() {
+        m_config = new ColumnFilterNodeConfig();
     }
 
     /**
-     * @return the regex
+     * @return the config
      */
-    String getRegex() {
-        return m_stringConfig.getRegex();
-    }
-
-    /**
-     * @param regex The regex to set
-     */
-    void setRegex(final String regex) {
-        m_stringConfig.setRegex(regex);
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    String getErrorMessage() {
-        return m_stringConfig.getErrorMessage();
-    }
-
-    /**
-     * @param errorMessage the errorMessage to set
-     */
-    void setErrorMessage(final String errorMessage) {
-        m_stringConfig.setErrorMessage(errorMessage);
-    }
-
-    /**
-     * @return the editorType
-     */
-    public String getEditorType() {
-        return m_stringConfig.getEditorType();
-    }
-
-    /**
-     * @param editorType the editorType to set
-     */
-    public void setEditorType(final String editorType) {
-        m_stringConfig.setEditorType(editorType);
-    }
-
-    /**
-     * @return the multilineEditorWidth
-     */
-    public int getMultilineEditorWidth() {
-        return m_stringConfig.getMultilineEditorWidth();
-    }
-
-    /**
-     * @param multilineEditorWidth the multilineEditorWidth to set
-     */
-    public void setMultilineEditorWidth(final int multilineEditorWidth) {
-        m_stringConfig.setMultilineEditorWidth(multilineEditorWidth);
-    }
-
-    /**
-     * @return the multilineEditorHeight
-     */
-    public int getMultilineEditorHeight() {
-        return m_stringConfig.getMultilineEditorHeight();
-    }
-
-    /**
-     * @param multilineEditorHeight the multilineEditorHeight to set
-     */
-    public void setMultilineEditorHeight(final int multilineEditorHeight) {
-        m_stringConfig.setMultilineEditorHeight(multilineEditorHeight);
+    public ColumnFilterNodeConfig getColumnFilterConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected StringDialogNodeValue createEmptyValue() {
-        return new StringDialogNodeValue();
+    protected ColumnFilterWidgetValue createEmptyValue() {
+        return new ColumnFilterWidgetValue();
     }
 
     /**
@@ -156,7 +93,7 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        m_stringConfig.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
     /**
@@ -165,7 +102,7 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-        m_stringConfig.loadSettings(settings);
+        m_config.loadSettings(settings);
     }
 
     /**
@@ -174,7 +111,7 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        m_stringConfig.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
     }
 
     /**
@@ -185,7 +122,7 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append(m_stringConfig.toString());
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -194,8 +131,9 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_stringConfig)
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 
@@ -213,9 +151,10 @@ public class StringDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
         if (obj.getClass() != getClass()) {
             return false;
         }
-        StringDialogNodeConfig other = (StringDialogNodeConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_stringConfig, other.m_stringConfig)
+        ColumnFilterWidgetConfig other = (ColumnFilterWidgetConfig)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 

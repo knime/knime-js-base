@@ -71,7 +71,7 @@ public class StringConfigurationPanel extends AbstractDialogNodeConfigurationPan
      * @param representation The dialog node settings
      */
     public StringConfigurationPanel(final StringDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         if (representation.getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
             m_component = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         } else {

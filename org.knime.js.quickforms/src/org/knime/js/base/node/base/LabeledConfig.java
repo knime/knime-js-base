@@ -68,6 +68,10 @@ public class LabeledConfig {
     private static final String DEFAULT_DESCRIPTION = "Enter Description";
     private String m_description = DEFAULT_DESCRIPTION;
 
+    private static final String CFG_REQUIRED = "required";
+    private static final boolean DEFAULT_REQUIRED = true;
+    private boolean m_required = DEFAULT_REQUIRED;
+
     /**
      * @return the label
      */
@@ -97,11 +101,26 @@ public class LabeledConfig {
     }
 
     /**
+     * @return the required
+     */
+    public boolean isRequired() {
+        return m_required;
+    }
+
+    /**
+     * @param required the required to set
+     */
+    public void setRequired(final boolean required) {
+        m_required = required;
+    }
+
+    /**
      * @param settings The settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_LABEL, m_label);
         settings.addString(CFG_DESCRIPTION, m_description);
+        settings.addBoolean(CFG_REQUIRED, m_required);
     }
 
     /**
@@ -111,6 +130,7 @@ public class LabeledConfig {
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_label = settings.getString(CFG_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION);
+        m_required = settings.getBoolean(CFG_REQUIRED);
     }
 
     /**
@@ -119,6 +139,7 @@ public class LabeledConfig {
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
+        m_required = settings.getBoolean(CFG_REQUIRED, DEFAULT_REQUIRED);
     }
 
     /**
@@ -132,6 +153,9 @@ public class LabeledConfig {
         sb.append(", ");
         sb.append("description=");
         sb.append(m_description);
+        sb.append(", ");
+        sb.append("required=");
+        sb.append(m_required);
         return sb.toString();
     }
 
@@ -143,6 +167,7 @@ public class LabeledConfig {
         return new HashCodeBuilder()
                 .append(m_label)
                 .append(m_description)
+                .append(m_required)
                 .toHashCode();
     }
 
@@ -164,6 +189,7 @@ public class LabeledConfig {
         return new EqualsBuilder()
                 .append(m_label, other.m_label)
                 .append(m_description, other.m_description)
+                .append(m_required, other.m_required)
                 .isEquals();
     }
 

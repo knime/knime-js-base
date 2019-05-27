@@ -53,7 +53,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.workflow.SubNodeContainer;
 
 /**
  *
@@ -62,8 +61,18 @@ import org.knime.core.node.workflow.SubNodeContainer;
 public class FlowVariableConfig {
 
     private static final String CFG_FLOW_VARIABLE_NAME = "flowVariableName";
-    private final String DEFAULT_FLOW_VARIABLE_NAME = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-    private String m_flowVariableName = DEFAULT_FLOW_VARIABLE_NAME;
+    private final String m_defaultFlowVariableName;
+    private String m_flowVariableName;
+
+    /**
+     * Creates a new config instance
+     *
+     * @param defaultFlowVariableName the default name to assign to the flow variable
+     */
+    public FlowVariableConfig(final String defaultFlowVariableName) {
+        m_defaultFlowVariableName = defaultFlowVariableName;
+        m_flowVariableName = m_defaultFlowVariableName;
+    }
 
     /**
      * @return the flowVariableName
@@ -91,7 +100,7 @@ public class FlowVariableConfig {
      * @param settings The settings to load from
      */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, DEFAULT_FLOW_VARIABLE_NAME);
+        m_flowVariableName = settings.getString(CFG_FLOW_VARIABLE_NAME, m_defaultFlowVariableName);
     }
 
     /**

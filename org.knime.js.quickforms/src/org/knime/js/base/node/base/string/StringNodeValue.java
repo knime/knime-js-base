@@ -44,36 +44,96 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2014 (winter): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.bool;
+package org.knime.js.base.node.base.string;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The config for the boolean configuration node.
+ * The base value for the string configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanDialogNodeValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class StringNodeValue extends JSONViewContent {
 
     /**
-     * {@inheritDoc}
+     * Config setting for the string value
      */
-    @Override
-    protected BooleanDialogNodeValue createEmptyValue() {
-        return new BooleanDialogNodeValue();
+    protected static final String CFG_STRING = "string";
+
+    /**
+     * Default string value
+     */
+    protected static final String DEFAULT_STRING = "";
+    private String m_string = DEFAULT_STRING;
+
+    /**
+     * @return the string
+     */
+    @JsonProperty("string")
+    public String getString() {
+        return m_string;
+    }
+
+    /**
+     * @param string the string to set
+     */
+    @JsonProperty("string")
+    public void setString(final String string) {
+        m_string = string;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_STRING, getString());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setString(settings.getString(CFG_STRING));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("string=");
+        sb.append(m_string);
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
+                .append(m_string)
                 .toHashCode();
     }
 
@@ -81,6 +141,7 @@ public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -91,8 +152,9 @@ public class BooleanDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
         if (obj.getClass() != getClass()) {
             return false;
         }
+        StringNodeValue other = (StringNodeValue)obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
+                .append(m_string, other.m_string)
                 .isEquals();
     }
 

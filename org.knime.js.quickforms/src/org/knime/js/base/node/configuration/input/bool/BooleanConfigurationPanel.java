@@ -66,7 +66,7 @@ public class BooleanConfigurationPanel extends AbstractDialogNodeConfigurationPa
      * @param representation The dialog representation
      */
     public BooleanConfigurationPanel(final BooleanDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         m_component.setSelected(representation.getDefaultValue().getBoolean());
         setComponent(m_component);
     }

@@ -51,6 +51,8 @@ package org.knime.js.base.node.widget.input.string;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.base.string.StringNodeConfig;
+import org.knime.js.base.node.base.string.StringNodeRepresentation;
+import org.knime.js.base.node.base.string.StringNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
@@ -59,7 +61,7 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class StringWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<StringWidgetRepresentation, StringWidgetValue, StringWidgetConfig> {
+    extends WidgetFlowVariableNodeModel<StringNodeRepresentation<StringNodeValue>, StringNodeValue, StringInputWidgetConfig> {
 
     /**
      * @param viewName
@@ -72,8 +74,8 @@ public class StringWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public StringWidgetValue createEmptyViewValue() {
-        return new StringWidgetValue();
+    public StringNodeValue createEmptyViewValue() {
+        return new StringNodeValue();
     }
 
     /**
@@ -104,16 +106,18 @@ public class StringWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public StringWidgetConfig createEmptyConfig() {
-        return new StringWidgetConfig();
+    public StringInputWidgetConfig createEmptyConfig() {
+        return new StringInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected StringWidgetRepresentation getRepresentation() {
-        return new StringWidgetRepresentation(getRelevantValue(), getConfig());
+    protected StringNodeRepresentation<StringNodeValue> getRepresentation() {
+        StringInputWidgetConfig config = getConfig();
+        return new StringNodeRepresentation<StringNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getStringConfig(), config.getLabelConfig());
     }
 
     /**
@@ -128,7 +132,7 @@ public class StringWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final StringWidgetValue value) {
+    public ValidationError validateViewValue(final StringNodeValue value) {
         if (getConfig().getEditorType().equals(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
             // Regex is possible only for single-line editor
             String string = value.getString();

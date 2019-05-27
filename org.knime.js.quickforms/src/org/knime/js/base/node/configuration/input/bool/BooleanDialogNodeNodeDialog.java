@@ -63,14 +63,14 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  */
 public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<BooleanDialogNodeValue> {
 
-    private final BooleanDialogNodeConfig m_config;
+    private final BooleanInputDialogNodeConfig m_config;
     private final JCheckBox m_defaultField;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     BooleanDialogNodeNodeDialog() {
-        m_config = new BooleanDialogNodeConfig();
+        m_config = new BooleanInputDialogNodeConfig();
         m_defaultField = new JCheckBox();
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
         createAndAddTab();

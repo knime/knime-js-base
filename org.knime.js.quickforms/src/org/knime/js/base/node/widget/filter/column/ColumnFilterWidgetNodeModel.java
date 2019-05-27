@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,110 +41,84 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   14.10.2013 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.widget.filter.column;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortType;
+import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
- * The value for the boolean widget node
+ * The node model for the column filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class BooleanWidgetValue extends JSONViewContent {
-
-    private static final String CFG_BOOLEAN = "boolean";
-    private static final boolean DEFAULT_BOOLEAN = false;
-    private boolean m_boolean = DEFAULT_BOOLEAN;
+public class ColumnFilterWidgetNodeModel
+    extends WidgetNodeModel<ColumnFilterWidgetRepresentation, ColumnFilterWidgetValue, ColumnFilterWidgetConfig> {
 
     /**
-     * {@inheritDoc}
+     * Creates a new list box widget node model
+     *
+     * @param viewName the interactive view name
      */
-    @Override
-    @JsonIgnore
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_BOOLEAN, m_boolean);
+    protected ColumnFilterWidgetNodeModel(final String viewName) {
+        super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{BufferedDataTable.TYPE}, viewName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_boolean = settings.getBoolean(CFG_BOOLEAN);
-    }
-
-    /**
-     * @return the string
-     */
-    public boolean getBoolean() {
-        return m_boolean;
-    }
-
-    /**
-     * @param bool the boolean to set
-     */
-    public void setBoolean(final boolean bool) {
-        m_boolean = bool;
+    public ColumnFilterWidgetValue createEmptyViewValue() {
+        return new ColumnFilterWidgetValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("boolean=");
-        sb.append(m_boolean);
-        return sb.toString();
+    public String getJavascriptObjectID() {
+        return "org.knime.js.base.node.widget.filter.column";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_boolean)
-                .toHashCode();
+    public ColumnFilterWidgetConfig createEmptyConfig() {
+        return new ColumnFilterWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        BooleanWidgetValue other = (BooleanWidgetValue)obj;
-        return new EqualsBuilder()
-                .append(m_boolean, other.m_boolean)
-                .isEquals();
+    protected ColumnFilterWidgetRepresentation getRepresentation() {
+        return new ColumnFilterWidgetRepresentation(getRelevantValue(), getConfig(), spec);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void useCurrentValueAsDefault() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

@@ -81,9 +81,11 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
     /**
      * Creates a {@link AbstractDialogNodeConfigurationPanel}.
      *
+     * @param label the label to be displayed
+     * @param description the description to be displayed as tooltip
      * @param defaultValue The default value
      */
-    public AbstractDialogNodeConfigurationPanel(final VAL defaultValue) {
+    public AbstractDialogNodeConfigurationPanel(final String label, final String description, final VAL defaultValue) {
         m_defaultValue = defaultValue;
         m_checkBox.addItemListener(new ItemListener() {
             @Override
@@ -102,6 +104,8 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        m_label.setText(label);
+        m_label.setToolTipText(description);
         add(m_label, gbc);
 
         gbc.gridx += 1;

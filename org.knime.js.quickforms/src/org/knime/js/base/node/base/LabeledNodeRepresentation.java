@@ -44,69 +44,124 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget;
+package org.knime.js.base.node.base;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.js.base.node.base.FlowVariableConfig;
 import org.knime.js.core.JSONViewContent;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
+ * Representation for labeled configuration and widget nodes
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL>
+ * @param <VAL> the value implementation for the configuration or widget node
  */
-public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewContent> extends LabeledWidgetConfig<VAL> {
+public abstract class LabeledNodeRepresentation<VAL extends JSONViewContent> extends JSONViewContent {
 
-    private final FlowVariableConfig m_variable;
+    private final String m_label;
+    private final String m_description;
+    private final boolean m_required;
+    private final VAL m_defaultValue;
+    private final VAL m_currentValue;
 
     /**
-     * Create a new config instance
+     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the quickform's default value
+     * @param currentValue the quickform's current value
      */
-    protected LabeledFlowVariableWidgetConfig() {
-        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-        m_variable = new FlowVariableConfig(defaultName);
+    @JsonCreator
+    protected LabeledNodeRepresentation(
+        @JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue) {
+        m_label = label;
+        m_description = description;
+        m_required = required;
+        m_defaultValue = defaultValue;
+        m_currentValue = currentValue;
     }
 
-    public String getFlowVariableName() {
-        return m_variable.getFlowVariableName();
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
+     */
+    public LabeledNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config) {
+        m_label = config.getLabel();
+        m_description = config.getDescription();
+        m_required = config.isRequired();
+        m_currentValue = currentValue;
+        m_defaultValue = defaultValue;
     }
 
-    public void setFlowVariableName(final String flowVariableName) {
-        m_variable.setFlowVariableName(flowVariableName);
+    /**
+     * @return the label
+     */
+    @JsonProperty("label")
+    public String getLabel() {
+        return m_label;
+    }
+
+    /**
+     * @return the description
+     */
+    @JsonProperty("description")
+    public String getDescription() {
+        return m_description;
+    }
+
+    /**
+     * @return the required
+     */
+    @JsonProperty("required")
+    public boolean isRequired() {
+        return m_required;
+    }
+
+    /**
+     * @return the defaultValue
+     */
+    @JsonProperty("defaultValue")
+    public VAL getDefaultValue() {
+        return m_defaultValue;
+    }
+
+    /**
+     * @return the currentValue
+     */
+    @JsonProperty("currentValue")
+    public VAL getCurrentValue() {
+        return m_currentValue;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        m_variable.saveSettings(settings);
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // not needed
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_variable.loadSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_variable.loadSettingsInDialog(settings);
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        // not needed
     }
 
     /**
@@ -115,9 +170,14 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append("label=");
+        sb.append(m_label);
         sb.append(", ");
-        sb.append(m_variable.toString());
+        sb.append("description=");
+        sb.append(m_description);
+        sb.append(", ");
+        sb.append("required=");
+        sb.append(m_required);
         return sb.toString();
     }
 
@@ -127,8 +187,11 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_variable)
+                .append(m_label)
+                .append(m_description)
+                .append(m_required)
+                .append(m_defaultValue)
+                .append(m_currentValue)
                 .toHashCode();
     }
 
@@ -147,10 +210,13 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
         if (obj.getClass() != getClass()) {
             return false;
         }
-        LabeledFlowVariableWidgetConfig<VAL> other = (LabeledFlowVariableWidgetConfig<VAL>)obj;
+        LabeledNodeRepresentation<VAL> other = (LabeledNodeRepresentation<VAL>) obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_variable, other.m_variable)
+                .append(m_label, other.m_label)
+                .append(m_description, other.m_description)
+                .append(m_required, other.m_required)
+                .append(m_defaultValue, other.m_defaultValue)
+                .append(m_currentValue, other.m_currentValue)
                 .isEquals();
     }
 

@@ -48,72 +48,25 @@
  */
 package org.knime.js.base.node.configuration.input.string;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.string.StringNodeRepresentation;
 
 /**
  * The dialog representation of the string configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<StringDialogNodeValue, StringDialogNodeConfig> {
-
-    private final String m_regex;
-    private final String m_errorMessage;
-    private final String m_editorType;
-    private final int m_multilineEditorWidth;
-    private final int m_multilineEditorHeight;
+public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue>
+    implements QuickFormRepresentation<StringDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
     public StringDialogNodeRepresentation(final StringDialogNodeValue currentValue,
-        final StringDialogNodeConfig config) {
-        super(currentValue, config);
-        m_regex = config.getRegex();
-        m_errorMessage = config.getErrorMessage();
-        m_editorType = config.getEditorType();
-        m_multilineEditorWidth = config.getMultilineEditorWidth();
-        m_multilineEditorHeight = config.getMultilineEditorHeight();
-    }
-
-    /**
-     * @return the regex
-     */
-    public String getRegex() {
-        return m_regex;
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return m_errorMessage;
-    }
-
-    /**
-     * @return the editorType
-     */
-    public String getEditorType() {
-        return m_editorType;
-    }
-
-    /**
-     * @return the multilineEditorWidth
-     */
-    public int getMultilineEditorWidth() {
-        return m_multilineEditorWidth;
-    }
-
-    /**
-     * @return the multilineEditorHeight
-     */
-    public int getMultilineEditorHeight() {
-        return m_multilineEditorHeight;
+        final StringInputDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getStringConfig(), config.getLabelConfig());
     }
 
     /**
@@ -121,69 +74,6 @@ public class StringDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<StringDialogNodeValue> createDialogPanel() {
-        StringConfigurationPanel panel = new StringConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new StringConfigurationPanel(this);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("regex=");
-        sb.append(m_regex);
-        sb.append(", ");
-        sb.append("errorMessage=");
-        sb.append(m_errorMessage);
-        sb.append("editorType=");
-        sb.append(m_editorType);
-        sb.append("multilineEditorWidth=");
-        sb.append(m_multilineEditorWidth);
-        sb.append("multilineEditorHeight=");
-        sb.append(m_multilineEditorHeight);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_regex)
-                .append(m_errorMessage)
-                .append(m_editorType)
-                .append(m_multilineEditorWidth)
-                .append(m_multilineEditorHeight)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        StringDialogNodeRepresentation other = (StringDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_regex, other.m_regex)
-                .append(m_errorMessage, other.m_errorMessage)
-                .append(m_editorType, other.m_editorType)
-                .append(m_multilineEditorWidth, other.m_multilineEditorWidth)
-                .append(m_multilineEditorHeight, other.m_multilineEditorHeight)
-                .isEquals();
-    }
-
 }

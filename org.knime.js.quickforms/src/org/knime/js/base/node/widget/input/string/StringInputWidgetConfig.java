@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.string.StringNodeConfig;
+import org.knime.js.base.node.base.string.StringNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
@@ -61,15 +62,22 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetConfig extends LabeledFlowVariableWidgetConfig<StringWidgetValue> {
+public class StringInputWidgetConfig extends LabeledFlowVariableWidgetConfig<StringNodeValue> {
 
     private final StringNodeConfig m_stringConfig;
 
     /**
      * Instantiate a new config object
      */
-    public StringWidgetConfig() {
+    public StringInputWidgetConfig() {
         m_stringConfig = new StringNodeConfig();
+    }
+
+    /**
+     * @return the stringConfig
+     */
+    public StringNodeConfig getStringConfig() {
+        return m_stringConfig;
     }
 
     /**
@@ -146,8 +154,8 @@ public class StringWidgetConfig extends LabeledFlowVariableWidgetConfig<StringWi
      * {@inheritDoc}
      */
     @Override
-    protected StringWidgetValue createEmptyValue() {
-        return new StringWidgetValue();
+    protected StringNodeValue createEmptyValue() {
+        return new StringNodeValue();
     }
 
     /**
@@ -213,7 +221,7 @@ public class StringWidgetConfig extends LabeledFlowVariableWidgetConfig<StringWi
         if (obj.getClass() != getClass()) {
             return false;
         }
-        StringWidgetConfig other = (StringWidgetConfig)obj;
+        StringInputWidgetConfig other = (StringInputWidgetConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_stringConfig, other.m_stringConfig)
                 .isEquals();

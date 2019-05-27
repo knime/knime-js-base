@@ -49,6 +49,8 @@
 package org.knime.js.base.node.widget.input.bool;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
@@ -56,8 +58,8 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<BooleanWidgetRepresentation, BooleanWidgetValue, BooleanWidgetConfig> {
+public class BooleanWidgetNodeModel extends
+    WidgetFlowVariableNodeModel<BooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue, BooleanInputWidgetConfig> {
 
     /**
      * @param viewName
@@ -70,8 +72,8 @@ public class BooleanWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetValue createEmptyViewValue() {
-        return new BooleanWidgetValue();
+    public BooleanNodeValue createEmptyViewValue() {
+        return new BooleanNodeValue();
     }
 
     /**
@@ -95,16 +97,17 @@ public class BooleanWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public BooleanWidgetConfig createEmptyConfig() {
-        return new BooleanWidgetConfig();
+    public BooleanInputWidgetConfig createEmptyConfig() {
+        return new BooleanInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BooleanWidgetRepresentation getRepresentation() {
-        return new BooleanWidgetRepresentation(getRelevantValue(), getConfig());
+    protected BooleanNodeRepresentation<BooleanNodeValue> getRepresentation() {
+        return new BooleanNodeRepresentation<BooleanNodeValue>(getRelevantValue(), getConfig().getDefaultValue(),
+            getConfig().getLabelConfig());
     }
 
     /**

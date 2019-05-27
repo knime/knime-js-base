@@ -44,42 +44,117 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 May 2019 (albrecht): created
+ *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget;
+package org.knime.js.base.node.configuration.input.string;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.js.base.node.base.FlowVariableConfig;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.node.base.string.StringNodeConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
+ * The config for the string configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL>
  */
-public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewContent> extends LabeledWidgetConfig<VAL> {
+public class StringInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<StringDialogNodeValue> {
 
-    private final FlowVariableConfig m_variable;
+    private final StringNodeConfig m_stringConfig;
 
     /**
-     * Create a new config instance
+     * Instantiate a new config object
      */
-    protected LabeledFlowVariableWidgetConfig() {
-        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-        m_variable = new FlowVariableConfig(defaultName);
+    public StringInputDialogNodeConfig() {
+        m_stringConfig = new StringNodeConfig();
     }
 
-    public String getFlowVariableName() {
-        return m_variable.getFlowVariableName();
+    /**
+     * @return the stringConfig
+     */
+    public StringNodeConfig getStringConfig() {
+        return m_stringConfig;
     }
 
-    public void setFlowVariableName(final String flowVariableName) {
-        m_variable.setFlowVariableName(flowVariableName);
+    /**
+     * @return the regex
+     */
+    String getRegex() {
+        return m_stringConfig.getRegex();
+    }
+
+    /**
+     * @param regex The regex to set
+     */
+    void setRegex(final String regex) {
+        m_stringConfig.setRegex(regex);
+    }
+
+    /**
+     * @return the errorMessage
+     */
+    String getErrorMessage() {
+        return m_stringConfig.getErrorMessage();
+    }
+
+    /**
+     * @param errorMessage the errorMessage to set
+     */
+    void setErrorMessage(final String errorMessage) {
+        m_stringConfig.setErrorMessage(errorMessage);
+    }
+
+    /**
+     * @return the editorType
+     */
+    public String getEditorType() {
+        return m_stringConfig.getEditorType();
+    }
+
+    /**
+     * @param editorType the editorType to set
+     */
+    public void setEditorType(final String editorType) {
+        m_stringConfig.setEditorType(editorType);
+    }
+
+    /**
+     * @return the multilineEditorWidth
+     */
+    public int getMultilineEditorWidth() {
+        return m_stringConfig.getMultilineEditorWidth();
+    }
+
+    /**
+     * @param multilineEditorWidth the multilineEditorWidth to set
+     */
+    public void setMultilineEditorWidth(final int multilineEditorWidth) {
+        m_stringConfig.setMultilineEditorWidth(multilineEditorWidth);
+    }
+
+    /**
+     * @return the multilineEditorHeight
+     */
+    public int getMultilineEditorHeight() {
+        return m_stringConfig.getMultilineEditorHeight();
+    }
+
+    /**
+     * @param multilineEditorHeight the multilineEditorHeight to set
+     */
+    public void setMultilineEditorHeight(final int multilineEditorHeight) {
+        m_stringConfig.setMultilineEditorHeight(multilineEditorHeight);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected StringDialogNodeValue createEmptyValue() {
+        return new StringDialogNodeValue();
     }
 
     /**
@@ -88,7 +163,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        m_variable.saveSettings(settings);
+        m_stringConfig.saveSettings(settings);
     }
 
     /**
@@ -97,7 +172,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-        m_variable.loadSettings(settings);
+        m_stringConfig.loadSettings(settings);
     }
 
     /**
@@ -106,7 +181,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        m_variable.loadSettingsInDialog(settings);
+        m_stringConfig.loadSettingsInDialog(settings);
     }
 
     /**
@@ -117,7 +192,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append(m_variable.toString());
+        sb.append(m_stringConfig.toString());
         return sb.toString();
     }
 
@@ -126,16 +201,14 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_variable)
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_stringConfig)
                 .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -147,10 +220,9 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
         if (obj.getClass() != getClass()) {
             return false;
         }
-        LabeledFlowVariableWidgetConfig<VAL> other = (LabeledFlowVariableWidgetConfig<VAL>)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_variable, other.m_variable)
+        StringInputDialogNodeConfig other = (StringInputDialogNodeConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .append(m_stringConfig, other.m_stringConfig)
                 .isEquals();
     }
 

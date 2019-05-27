@@ -68,7 +68,7 @@ import org.knime.js.base.node.base.listbox.ListBoxNodeUtil;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
- * The node model for the double widget node
+ * The node model for the list box widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -76,7 +76,6 @@ public class ListBoxWidgetNodeModel
     extends WidgetNodeModel<ListBoxWidgetRepresentation, ListBoxWidgetValue, ListBoxWidgetConfig> {
 
     /**
-     *
      * Creates a new list box widget node model
      *
      * @param viewName the interactive view name

@@ -44,63 +44,57 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   9 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.string;
+package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.string.StringNodeRepresentation;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.node.base.bool.BooleanNodeValue;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * Factory for the string widget node
+ * The config for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetNodeFactory extends NodeFactory<StringWidgetNodeModel> implements
-    WizardNodeFactoryExtension<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
+public class BooleanInputWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public StringWidgetNodeModel createNodeModel() {
-        return new StringWidgetNodeModel(getInteractiveViewName());
+    protected BooleanNodeValue createEmptyValue() {
+        return new BooleanNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<StringWidgetNodeModel> createNodeView(final int viewIndex, final StringWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringWidgetNodeDialog();
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .isEquals();
     }
 
 }
