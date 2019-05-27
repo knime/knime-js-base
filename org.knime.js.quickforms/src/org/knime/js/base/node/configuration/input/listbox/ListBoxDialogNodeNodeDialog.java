@@ -86,13 +86,13 @@ public class ListBoxDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     private final JTextArea m_defaultArea;
     private final JSpinner m_numberVisOptionSpinner;
 
-    private final ListBoxDialogNodeConfig m_config;
+    private final ListBoxInputDialogNodeConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public ListBoxDialogNodeNodeDialog() {
-        m_config = new ListBoxDialogNodeConfig();
+        m_config = new ListBoxInputDialogNodeConfig();
         m_separatorField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_separateEachCharacterBox = new JCheckBox();
         m_omitEmptyField = new JCheckBox();

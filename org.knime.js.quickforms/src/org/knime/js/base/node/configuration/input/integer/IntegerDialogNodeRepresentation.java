@@ -64,7 +64,8 @@ public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<I
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
-    public IntegerDialogNodeRepresentation(final IntegerDialogNodeValue currentValue, final IntegerInputDialogNodeConfig config) {
+    public IntegerDialogNodeRepresentation(final IntegerDialogNodeValue currentValue,
+        final IntegerInputDialogNodeConfig config) {
         super(currentValue, config.getDefaultValue(), config.getIntegerConfig(), config.getLabelConfig());
     }
 

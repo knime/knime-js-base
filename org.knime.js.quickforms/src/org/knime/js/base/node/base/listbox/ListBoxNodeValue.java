@@ -44,85 +44,85 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.listbox;
+package org.knime.js.base.node.base.listbox;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The config for the list box configuration node
+ * The base value for the list box configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<ListBoxDialogNodeValue> {
-
-    private final ListBoxNodeConfig m_config;
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class ListBoxNodeValue extends JSONViewContent {
 
     /**
-     * Instantiate a new config object
+     * Config setting for the string value
      */
-    public ListBoxDialogNodeConfig() {
-        m_config = new ListBoxNodeConfig();
+    protected static final String CFG_STRING = "string";
+
+    /**
+     * Default string value
+     */
+    protected static final String DEFAULT_STRING = "";
+    private String m_string = DEFAULT_STRING;
+
+    /**
+     * @return the string
+     */
+    @JsonProperty("string")
+    public String getString() {
+        return m_string;
     }
 
     /**
-     * @return the list box config
+     * @param string the string to set
      */
-    public ListBoxNodeConfig getListBoxConfig() {
-        return m_config;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ListBoxDialogNodeValue createEmptyValue() {
-        return new ListBoxDialogNodeValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        m_config.saveSettings(settings);
+    @JsonProperty("string")
+    public void setString(final String string) {
+        m_string = string;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_config.loadSettings(settings);
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_STRING, getString());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_config.loadSettingsInDialog(settings);
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setString(settings.getString(CFG_STRING));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append(m_config.toString());
+        sb.append("string=");
+        sb.append(m_string);
         return sb.toString();
     }
 
@@ -130,10 +130,10 @@ public class ListBoxDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_config)
+                .append(m_string)
                 .toHashCode();
     }
 
@@ -141,6 +141,7 @@ public class ListBoxDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -151,10 +152,9 @@ public class ListBoxDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ListBoxDialogNodeConfig other = (ListBoxDialogNodeConfig)obj;
+        ListBoxNodeValue other = (ListBoxNodeValue)obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(m_config, other.m_config)
+                .append(m_string, other.m_string)
                 .isEquals();
     }
 

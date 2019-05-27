@@ -64,7 +64,9 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
+import org.knime.js.base.node.base.listbox.ListBoxNodeRepresentation;
 import org.knime.js.base.node.base.listbox.ListBoxNodeUtil;
+import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
@@ -73,7 +75,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ListBoxWidgetNodeModel
-    extends WidgetNodeModel<ListBoxWidgetRepresentation, ListBoxWidgetValue, ListBoxWidgetConfig> {
+    extends WidgetNodeModel<ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue, ListBoxInputWidgetConfig> {
 
     /**
      * Creates a new list box widget node model
@@ -136,8 +138,8 @@ public class ListBoxWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ListBoxWidgetValue createEmptyViewValue() {
-        return new ListBoxWidgetValue();
+    public ListBoxNodeValue createEmptyViewValue() {
+        return new ListBoxNodeValue();
     }
 
     /**
@@ -152,23 +154,25 @@ public class ListBoxWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ListBoxWidgetConfig createEmptyConfig() {
-        return new ListBoxWidgetConfig();
+    public ListBoxInputWidgetConfig createEmptyConfig() {
+        return new ListBoxInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected ListBoxWidgetRepresentation getRepresentation() {
-        return new ListBoxWidgetRepresentation(getRelevantValue(), getConfig());
+    protected ListBoxNodeRepresentation<ListBoxNodeValue> getRepresentation() {
+        ListBoxInputWidgetConfig config = getConfig();
+        return new ListBoxNodeRepresentation<ListBoxNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getListBoxConfig(), config.getLabelConfig());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final ListBoxWidgetValue value) {
+    public ValidationError validateViewValue(final ListBoxNodeValue value) {
         ArrayList<String> values;
         try {
             values = ListBoxNodeUtil.getSeparatedValues(getConfig().getListBoxConfig(), value.getString());
@@ -178,7 +182,7 @@ public class ListBoxWidgetNodeModel
         return validateDialogValue(value, values);
     }
 
-    private ValidationError validateDialogValue(final ListBoxWidgetValue value, final ArrayList<String> values) {
+    private ValidationError validateDialogValue(final ListBoxNodeValue value, final ArrayList<String> values) {
         ListBoxNodeConfig config = getConfig().getListBoxConfig();
         String regex = config.getRegex();
         if (regex != null && !regex.isEmpty()) {

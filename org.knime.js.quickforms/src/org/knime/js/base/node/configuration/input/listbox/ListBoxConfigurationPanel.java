@@ -69,7 +69,7 @@ public class ListBoxConfigurationPanel extends AbstractDialogNodeConfigurationPa
      * @param representation the dialog node settings
      */
     public ListBoxConfigurationPanel(final ListBoxDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         m_component.setText(representation.getDefaultValue().getString());
         setComponent(new JScrollPane(m_component));
     }

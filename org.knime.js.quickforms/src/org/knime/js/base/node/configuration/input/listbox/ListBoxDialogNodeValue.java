@@ -55,53 +55,16 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
 
 /**
  * The value for the list box configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_STRING = "string";
-    private static final String DEFAULT_STRING = "";
-    private String m_string = DEFAULT_STRING;
-
-    /**
-     * @return the string
-     */
-    public String getString() {
-        return m_string;
-    }
-
-    /**
-     * @param string the string to set
-     */
-    public void setString(final String string) {
-        m_string = string;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_STRING, getString());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setString(settings.getString(CFG_STRING));
-    }
+public class ListBoxDialogNodeValue extends ListBoxNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
@@ -130,9 +93,9 @@ public class ListBoxDialogNodeValue implements DialogNodeValue {
             try {
                 JsonValue val = ((JsonObject) json).get(CFG_STRING);
                 if (JsonValue.NULL.equals(val)) {
-                    m_string = null;
+                    setString(null);
                 } else {
-                    m_string = ((JsonObject) json).getString(CFG_STRING);
+                    setString(((JsonObject) json).getString(CFG_STRING));
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected string value for key '" + CFG_STRING + "'.", e);
@@ -148,53 +111,12 @@ public class ListBoxDialogNodeValue implements DialogNodeValue {
     @Override
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (m_string == null) {
+        if (getString() == null) {
             builder.addNull(CFG_STRING);
         } else {
-            builder.add(CFG_STRING, m_string);
+            builder.add(CFG_STRING, getString());
         }
         return builder.build();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("string=");
-        sb.append(m_string);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_string)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        ListBoxDialogNodeValue other = (ListBoxDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_string, other.m_string)
-                .isEquals();
     }
 
 }

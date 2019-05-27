@@ -51,94 +51,25 @@ package org.knime.js.base.node.configuration.input.listbox;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.core.quickform.QuickFormRepresentation;
 import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.js.base.node.base.listbox.ListBoxNodeRepresentation;
 
 /**
  * The dialog representation of the list box configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<ListBoxDialogNodeValue, ListBoxDialogNodeConfig> {
-
-    private final String m_regex;
-    private final String m_errorMessage;
-    private final String m_separator;
-    private final boolean m_separateEachCharacter;
-    private final boolean m_omitEmpty;
-    private final String m_separatorRegex;
-    private final Integer m_numberVisOptions;
+public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<ListBoxDialogNodeValue>
+    implements QuickFormRepresentation<ListBoxDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node
-     * @param dConfig The config of the node
+     * @param config The config of the node
      */
     public ListBoxDialogNodeRepresentation(final ListBoxDialogNodeValue currentValue,
-        final ListBoxDialogNodeConfig dConfig) {
-        super(currentValue, dConfig);
-        ListBoxNodeConfig config = dConfig.getListBoxConfig();
-        m_regex = config.getRegex();
-        m_errorMessage = config.getErrorMessage();
-        if (config.getSeparator() == null) {
-            m_separator = ListBoxNodeConfig.DEFAULT_SEPARATOR;
-        } else {
-            m_separator = config.getSeparator();
-        }
-        m_separateEachCharacter = config.getSeparateEachCharacter();
-        m_separatorRegex = config.getSeparatorRegex();
-        m_omitEmpty = config.getOmitEmpty();
-        m_numberVisOptions = config.getNumberVisOptions();
-    }
-
-    /**
-     * @return the regex
-     */
-    public String getRegex() {
-        return m_regex;
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return m_errorMessage;
-    }
-
-    /**
-     * @return the separator
-     */
-    public String getSeparator() {
-        return m_separator;
-    }
-
-    /**
-     * @return separateEachCharacter
-     */
-    public boolean getSeparateEachCharacter() {
-        return m_separateEachCharacter;
-    }
-
-    /**
-     * @return separatorRegex
-     */
-    public String getSeparatorRegex() {
-        return m_separatorRegex;
-    }
-
-
-    /**
-     * @return the omitEmpty
-     */
-    public boolean getOmitEmpty() {
-        return m_omitEmpty;
-    }
-
-    /**
-     * @return the numberVisOptions
-     */
-    public Integer getNumberVisOptions() {
-        return m_numberVisOptions;
+        final ListBoxInputDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getListBoxConfig(), config.getLabelConfig());
     }
 
     /**
@@ -146,82 +77,7 @@ public class ListBoxDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<ListBoxDialogNodeValue> createDialogPanel() {
-        ListBoxConfigurationPanel panel = new ListBoxConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("regex=");
-        sb.append(m_regex);
-        sb.append(", ");
-        sb.append("errorMessage=");
-        sb.append(m_errorMessage);
-        sb.append(", ");
-        sb.append("separator=");
-        sb.append(m_separator);
-        sb.append(", ");
-        sb.append("separateEachCharacter=");
-        sb.append(m_separateEachCharacter);
-        sb.append(", ");
-        sb.append("separatorRegex=");
-        sb.append(m_separatorRegex);
-        sb.append(", ");
-        sb.append("omitEmpty=");
-        sb.append(m_omitEmpty);
-        sb.append(", ");
-        sb.append("numberVisOptions=");
-        sb.append(m_numberVisOptions);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_regex)
-                .append(m_errorMessage)
-                .append(m_separator)
-                .append(m_separateEachCharacter)
-                .append(m_separatorRegex)
-                .append(m_omitEmpty)
-                .append(m_numberVisOptions)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        ListBoxDialogNodeRepresentation other = (ListBoxDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_regex, other.m_regex)
-                .append(m_errorMessage, other.m_errorMessage)
-                .append(m_separator, other.m_separator)
-                .append(m_separateEachCharacter, other.m_separateEachCharacter)
-                .append(m_separatorRegex, m_separatorRegex)
-                .append(m_omitEmpty, other.m_omitEmpty)
-                .append(m_numberVisOptions, other.m_numberVisOptions)
-                .isEquals();
+        return new ListBoxConfigurationPanel(this);
     }
 
 }

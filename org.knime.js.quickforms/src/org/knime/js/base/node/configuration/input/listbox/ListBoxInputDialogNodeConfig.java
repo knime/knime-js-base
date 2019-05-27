@@ -46,7 +46,7 @@
  * History
  *   24 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.listbox;
+package org.knime.js.base.node.configuration.input.listbox;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -54,21 +54,21 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the list box widget node
+ * The config for the list box configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetConfig extends LabeledFlowVariableWidgetConfig<ListBoxWidgetValue> {
+public class ListBoxInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<ListBoxDialogNodeValue> {
 
     private final ListBoxNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public ListBoxWidgetConfig() {
+    public ListBoxInputDialogNodeConfig() {
         m_config = new ListBoxNodeConfig();
     }
 
@@ -83,8 +83,8 @@ public class ListBoxWidgetConfig extends LabeledFlowVariableWidgetConfig<ListBox
      * {@inheritDoc}
      */
     @Override
-    protected ListBoxWidgetValue createEmptyValue() {
-        return new ListBoxWidgetValue();
+    protected ListBoxDialogNodeValue createEmptyValue() {
+        return new ListBoxDialogNodeValue();
     }
 
     /**
@@ -151,7 +151,7 @@ public class ListBoxWidgetConfig extends LabeledFlowVariableWidgetConfig<ListBox
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ListBoxWidgetConfig other = (ListBoxWidgetConfig)obj;
+        ListBoxInputDialogNodeConfig other = (ListBoxInputDialogNodeConfig)obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(m_config, other.m_config)

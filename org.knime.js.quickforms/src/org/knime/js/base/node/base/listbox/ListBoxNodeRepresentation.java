@@ -44,14 +44,14 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.listbox;
+package org.knime.js.base.node.base.listbox;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -59,14 +59,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the list box widget node
+ * The base representation for the list box configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ListBoxWidgetRepresentation
-    extends AbstractWidgetNodeRepresentation<ListBoxWidgetValue, ListBoxWidgetConfig> {
+public class ListBoxNodeRepresentation<VAL extends ListBoxNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final String m_regex;
     private final String m_errorMessage;
@@ -77,13 +77,17 @@ public class ListBoxWidgetRepresentation
     private final Integer m_numberVisOptions;
 
     @JsonCreator
-    private ListBoxWidgetRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final ListBoxWidgetValue defaultValue,
-        @JsonProperty("currentValue") final ListBoxWidgetValue currentValue, @JsonProperty("regex") final String regex,
-        @JsonProperty("errormessage") final String errorMessage, @JsonProperty("separator") final String separator,
+    private ListBoxNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("regex") final String regex,
+        @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("separator") final String separator,
         @JsonProperty("separateeachcharacter") final boolean separateEachCharacter,
-        @JsonProperty("omitempty") final boolean omitEmpty, @JsonProperty("separatorregex") final String separatorRegex,
+        @JsonProperty("omitempty") final boolean omitEmpty,
+        @JsonProperty("separatorregex") final String separatorRegex,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue);
         m_regex = regex;
@@ -97,22 +101,24 @@ public class ListBoxWidgetRepresentation
 
     /**
      * @param currentValue The value currently used by the node
-     * @param dConfig The config of the node
+     * @param defaultValue The default value of the node
+     * @param listBoxConfig The config of the node
+     * @param labelConfig The label config of the node
      */
-    public ListBoxWidgetRepresentation(final ListBoxWidgetValue currentValue, final ListBoxWidgetConfig dConfig) {
-        super(currentValue, dConfig);
-        ListBoxNodeConfig config = dConfig.getListBoxConfig();
-        m_regex = config.getRegex();
-        m_errorMessage = config.getErrorMessage();
-        if (config.getSeparator() == null) {
+    public ListBoxNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final ListBoxNodeConfig listBoxConfig, final LabeledConfig labelConfig) {
+        super(currentValue, defaultValue, labelConfig);
+        m_regex = listBoxConfig.getRegex();
+        m_errorMessage = listBoxConfig.getErrorMessage();
+        if (listBoxConfig.getSeparator() == null) {
             m_separator = ListBoxNodeConfig.DEFAULT_SEPARATOR;
         } else {
-            m_separator = config.getSeparator();
+            m_separator = listBoxConfig.getSeparator();
         }
-        m_separateEachCharacter = config.getSeparateEachCharacter();
-        m_separatorRegex = config.getSeparatorRegex();
-        m_omitEmpty = config.getOmitEmpty();
-        m_numberVisOptions = config.getNumberVisOptions();
+        m_separateEachCharacter = listBoxConfig.getSeparateEachCharacter();
+        m_separatorRegex = listBoxConfig.getSeparatorRegex();
+        m_omitEmpty = listBoxConfig.getOmitEmpty();
+        m_numberVisOptions = listBoxConfig.getNumberVisOptions();
     }
 
     /**
@@ -233,7 +239,8 @@ public class ListBoxWidgetRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ListBoxWidgetRepresentation other = (ListBoxWidgetRepresentation)obj;
+        @SuppressWarnings("unchecked")
+        ListBoxNodeRepresentation<VAL> other = (ListBoxNodeRepresentation<VAL>)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)

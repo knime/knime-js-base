@@ -53,58 +53,66 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
+import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * The value for the list box widget node
+ * The config for the list box widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ListBoxWidgetValue extends JSONViewContent {
+public class ListBoxInputWidgetConfig extends LabeledFlowVariableWidgetConfig<ListBoxNodeValue> {
 
-    private static final String CFG_STRING = "string";
-    private static final String DEFAULT_STRING = "";
-    private String m_string = DEFAULT_STRING;
+    private final ListBoxNodeConfig m_config;
 
     /**
-     * @return the string
+     * Instantiate a new config object
      */
-    @JsonProperty("string")
-    public String getString() {
-        return m_string;
+    public ListBoxInputWidgetConfig() {
+        m_config = new ListBoxNodeConfig();
     }
 
     /**
-     * @param string the string to set
+     * @return the list box config
      */
-    @JsonProperty("string")
-    public void setString(final String string) {
-        m_string = string;
+    public ListBoxNodeConfig getListBoxConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_STRING, getString());
+    protected ListBoxNodeValue createEmptyValue() {
+        return new ListBoxNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setString(settings.getString(CFG_STRING));
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
     }
 
     /**
@@ -113,8 +121,9 @@ public class ListBoxWidgetValue extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("string=");
-        sb.append(m_string);
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -124,7 +133,8 @@ public class ListBoxWidgetValue extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_string)
+                .appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 
@@ -142,9 +152,10 @@ public class ListBoxWidgetValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ListBoxWidgetValue other = (ListBoxWidgetValue)obj;
+        ListBoxInputWidgetConfig other = (ListBoxInputWidgetConfig)obj;
         return new EqualsBuilder()
-                .append(m_string, other.m_string)
+                .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 

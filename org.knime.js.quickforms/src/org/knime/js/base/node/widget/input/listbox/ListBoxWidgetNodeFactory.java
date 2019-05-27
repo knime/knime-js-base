@@ -52,14 +52,16 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.listbox.ListBoxNodeRepresentation;
+import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
 
 /**
  * Factory for the list box widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetNodeFactory extends NodeFactory<ListBoxWidgetNodeModel>
-    implements WizardNodeFactoryExtension<ListBoxWidgetNodeModel, ListBoxWidgetRepresentation, ListBoxWidgetValue> {
+public class ListBoxWidgetNodeFactory extends NodeFactory<ListBoxWidgetNodeModel> implements
+    WizardNodeFactoryExtension<ListBoxWidgetNodeModel, ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue> {
 
     /**
      * {@inheritDoc}
@@ -81,7 +83,8 @@ public class ListBoxWidgetNodeFactory extends NodeFactory<ListBoxWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ListBoxWidgetNodeModel> createNodeView(final int viewIndex, final ListBoxWidgetNodeModel nodeModel) {
+    public NodeView<ListBoxWidgetNodeModel> createNodeView(final int viewIndex,
+        final ListBoxWidgetNodeModel nodeModel) {
         return null;
     }
 

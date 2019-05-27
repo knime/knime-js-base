@@ -66,6 +66,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
+import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
 import org.knime.js.base.node.quickform.input.string.RegexPanel;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
@@ -75,7 +76,7 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ListBoxWidgetValue> {
+public class ListBoxWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ListBoxNodeValue> {
 
     private static final int TEXT_AREA_HEIGHT = 5;
 
@@ -86,13 +87,13 @@ public class ListBoxWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ListBo
     private final JTextArea m_defaultArea;
     private final JSpinner m_numberVisOptionSpinner;
 
-    private final ListBoxWidgetConfig m_config;
+    private final ListBoxInputWidgetConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public ListBoxWidgetNodeDialog() {
-        m_config = new ListBoxWidgetConfig();
+        m_config = new ListBoxInputWidgetConfig();
         m_separatorField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_separateEachCharacterBox = new JCheckBox();
         m_omitEmptyField = new JCheckBox();
@@ -107,7 +108,7 @@ public class ListBoxWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ListBo
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        ListBoxWidgetValue value = new ListBoxWidgetValue();
+        ListBoxNodeValue value = new ListBoxNodeValue();
         value.loadFromNodeSettings(settings);
         return value.getString();
     }

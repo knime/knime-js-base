@@ -72,7 +72,7 @@ import org.knime.js.base.node.configuration.DialogNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ListBoxDialogNodeModel extends
-    DialogNodeModel<ListBoxDialogNodeRepresentation, ListBoxDialogNodeValue, ListBoxDialogNodeConfig> {
+    DialogNodeModel<ListBoxDialogNodeRepresentation, ListBoxDialogNodeValue, ListBoxInputDialogNodeConfig> {
 
     /**
      * Creates a new list box configuration node model
@@ -141,8 +141,8 @@ public class ListBoxDialogNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public ListBoxDialogNodeConfig createEmptyConfig() {
-        return new ListBoxDialogNodeConfig();
+    public ListBoxInputDialogNodeConfig createEmptyConfig() {
+        return new ListBoxInputDialogNodeConfig();
     }
 
     /**
