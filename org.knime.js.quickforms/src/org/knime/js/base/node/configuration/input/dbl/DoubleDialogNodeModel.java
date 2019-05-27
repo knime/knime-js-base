@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeConfig;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**

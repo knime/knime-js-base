@@ -50,9 +50,9 @@ package org.knime.js.base.node.widget.input.string;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.string.StringNodeConfig;
-import org.knime.js.base.node.base.string.StringNodeRepresentation;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.knime.js.base.node.base.input.string.StringNodeConfig;
+import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
+import org.knime.js.base.node.base.input.string.StringNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**

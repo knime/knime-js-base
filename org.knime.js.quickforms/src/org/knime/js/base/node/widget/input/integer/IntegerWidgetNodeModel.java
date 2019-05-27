@@ -50,9 +50,9 @@ package org.knime.js.base.node.widget.input.integer;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.integer.IntegerNodeConfig;
-import org.knime.js.base.node.base.integer.IntegerNodeRepresentation;
-import org.knime.js.base.node.base.integer.IntegerNodeValue;
+import org.knime.js.base.node.base.input.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
+import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**

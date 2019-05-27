@@ -48,11 +48,7 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
@@ -62,6 +58,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.configuration.DialogNodeModel;
 
 /**
@@ -92,7 +89,8 @@ public class ColumnFilterDialogNodeModel extends
         updateValuesFromSpec((DataTableSpec) inSpecs[0]);
         updateColumns((DataTableSpec) inSpecs[0]);
         createAndPushFlowVariable();
-        return new DataTableSpec[]{createSpec((DataTableSpec) inSpecs[0])};
+        return new DataTableSpec[]{
+            ColumnFilterNodeUtil.createSpec((DataTableSpec)inSpecs[0], getRelevantValue().getColumns())};
     }
 
     /**
@@ -104,7 +102,8 @@ public class ColumnFilterDialogNodeModel extends
         DataTableSpec inSpec = (DataTableSpec) inObjects[0].getSpec();
         updateColumns(inSpec);
         createAndPushFlowVariable();
-        DataTableSpec outSpec = createSpec((DataTableSpec) inObjects[0].getSpec());
+        DataTableSpec outSpec =
+            ColumnFilterNodeUtil.createSpec((DataTableSpec)inObjects[0].getSpec(), getRelevantValue().getColumns());
         ColumnRearranger rearranger = new ColumnRearranger(inSpec);
         rearranger.keepOnly(outSpec.getColumnNames());
         BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0],
@@ -142,24 +141,6 @@ public class ColumnFilterDialogNodeModel extends
     @Override
     protected ColumnFilterDialogNodeRepresentation getRepresentation() {
         return new ColumnFilterDialogNodeRepresentation(getRelevantValue(), getConfig(), getSpec());
-    }
-
-    private DataTableSpec createSpec(final DataTableSpec inSpec) throws InvalidSettingsException {
-        final String[] values = getRelevantValue().getColumns();
-        final List<DataColumnSpec> cspecs = new ArrayList<DataColumnSpec>();
-        List<String> unknownCols = new ArrayList<String>();
-        for (int i = 0; i < values.length; i++) {
-            String column = values[i];
-            if (column != null && inSpec.containsName(column)) {
-                cspecs.add(inSpec.getColumnSpec(column));
-            } else {
-                unknownCols.add(column);
-            }
-        }
-        if (!unknownCols.isEmpty()) {
-            throw new InvalidSettingsException("Unknown columns " + unknownCols + " selected.");
-        }
-        return new DataTableSpec(cspecs.toArray(new DataColumnSpec[cspecs.size()]));
     }
 
     private void updateValuesFromSpec(final DataTableSpec spec) {

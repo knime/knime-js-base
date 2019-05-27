@@ -53,8 +53,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
-import org.knime.js.base.node.base.dbl.DoubleNodeValue;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**

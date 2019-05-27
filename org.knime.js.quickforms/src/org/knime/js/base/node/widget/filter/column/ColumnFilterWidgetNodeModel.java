@@ -48,10 +48,19 @@
  */
 package org.knime.js.base.node.widget.filter.column;
 
+import org.apache.commons.lang.StringUtils;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
@@ -59,8 +68,11 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeModel
-    extends WidgetNodeModel<ColumnFilterWidgetRepresentation, ColumnFilterWidgetValue, ColumnFilterWidgetConfig> {
+public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
+        ColumnFilterNodeValue, ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
+
+    private DataTableSpec m_spec = new DataTableSpec();
+    private BufferedDataTable m_inTable = null;
 
     /**
      * Creates a new list box widget node model
@@ -75,8 +87,47 @@ public class ColumnFilterWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ColumnFilterWidgetValue createEmptyViewValue() {
-        return new ColumnFilterWidgetValue();
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        m_spec = (DataTableSpec) inSpecs[0];
+        updateValuesFromSpec((DataTableSpec) inSpecs[0]);
+        updateColumns((DataTableSpec) inSpecs[0]);
+        createAndPushFlowVariable();
+        return new DataTableSpec[]{
+            ColumnFilterNodeUtil.createSpec((DataTableSpec)inSpecs[0], getRelevantValue().getColumns())};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        m_inTable = (BufferedDataTable) inObjects[0];
+        DataTableSpec inSpec = (DataTableSpec) inObjects[0].getSpec();
+        updateColumns(inSpec);
+        createAndPushFlowVariable();
+        DataTableSpec outSpec =
+            ColumnFilterNodeUtil.createSpec((DataTableSpec)inObjects[0].getSpec(), getRelevantValue().getColumns());
+        ColumnRearranger rearranger = new ColumnRearranger(inSpec);
+        rearranger.keepOnly(outSpec.getColumnNames());
+        BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0],
+                rearranger, exec);
+        return new BufferedDataTable[]{outTable};
+    }
+
+    /**
+     * Pushes the current value as flow variable.
+     */
+    private void createAndPushFlowVariable() {
+        final String[] values = getRelevantValue().getColumns();
+        pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ColumnFilterNodeValue createEmptyViewValue() {
+        return new ColumnFilterNodeValue();
     }
 
     /**
@@ -99,17 +150,42 @@ public class ColumnFilterWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    protected ColumnFilterWidgetRepresentation getRepresentation() {
-        return new ColumnFilterWidgetRepresentation(getRelevantValue(), getConfig(), spec);
+    protected ColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
+        ColumnFilterWidgetConfig config = getConfig();
+        return new ColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getColumnFilterConfig(), config.getLabelConfig());
+    }
+
+    private void updateValuesFromSpec(final DataTableSpec spec) {
+        getConfig().getDefaultValue().updateFromSpec(spec);
+        if (getViewValue() != null) {
+            getViewValue().updateFromSpec(spec);
+        }
+    }
+
+    /**
+     * Update the possible columns in the config
+     *
+     * @param spec The input spec
+     */
+    private void updateColumns(final DataTableSpec spec) {
+        getConfig().getColumnFilterConfig().setPossibleColumns(spec.getColumnNames());
+    }
+
+    /**
+     * @return The spec of the input table
+     */
+    private DataTableSpec getSpec() {
+        return m_inTable != null ? m_inTable.getDataTableSpec() : m_spec;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    protected void performReset() {
+        m_inTable = null;
+        super.performReset();
     }
 
     /**
@@ -117,8 +193,30 @@ public class ColumnFilterWidgetNodeModel
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
+        getConfig().getDefaultValue().setColumns(getViewValue().getColumns());
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedDataTable[] getInternalTables() {
+        return m_inTable != null ? new BufferedDataTable[]{m_inTable} : new BufferedDataTable[0];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setInternalTables(final BufferedDataTable[] tables) {
+        if (tables.length > 0) {
+            m_inTable = tables[0];
+            DataTableSpec spec = getSpec();
+            if (spec != null) {
+                updateColumns(spec);
+                updateValuesFromSpec(spec);
+            }
+        }
     }
 
 }

@@ -59,7 +59,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.date.GranularityTime;
+import org.knime.js.base.node.base.input.date.GranularityTime;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableConfig;
 import org.knime.time.util.DateTimeType;
 import org.knime.time.util.DateTimeUtils;

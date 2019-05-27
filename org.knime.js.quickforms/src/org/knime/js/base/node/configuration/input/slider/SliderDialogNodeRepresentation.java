@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.slider;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.slider.SliderNodeRepresentation;
+import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 
 /**
  * The representation for the slider input quick form node.

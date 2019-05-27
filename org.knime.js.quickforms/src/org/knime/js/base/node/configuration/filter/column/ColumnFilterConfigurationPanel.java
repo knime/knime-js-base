@@ -70,7 +70,7 @@ public class ColumnFilterConfigurationPanel extends AbstractDialogNodeConfigurat
      * @param representation the dialog node settings
      */
     public ColumnFilterConfigurationPanel(final ColumnFilterDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         m_representation = representation;
         m_columns = new DataColumnSpecFilterPanel();
         resetToDefault();

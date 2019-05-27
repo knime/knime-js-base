@@ -57,7 +57,7 @@ import javax.json.JsonValue;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
 
 /**
  * The value for the list box configuration node

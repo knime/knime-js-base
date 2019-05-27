@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 
 /**
  * The dialog representation of the double configuration node

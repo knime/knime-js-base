@@ -57,7 +57,7 @@ import javax.json.JsonValue;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.dbl.DoubleNodeValue;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 
 /**
  * The value for the double configuration node

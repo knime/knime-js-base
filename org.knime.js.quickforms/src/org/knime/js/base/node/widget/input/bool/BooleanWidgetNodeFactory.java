@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
+import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
+import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 
 /**
  * Factory for the boolean widget node

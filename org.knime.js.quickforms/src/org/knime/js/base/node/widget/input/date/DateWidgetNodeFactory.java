@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.date.DateNodeRepresentation;
-import org.knime.js.base.node.base.date.DateNodeValue;
+import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
+import org.knime.js.base.node.base.input.date.DateNodeValue;
 
 /**
  * Factory for the date widget node

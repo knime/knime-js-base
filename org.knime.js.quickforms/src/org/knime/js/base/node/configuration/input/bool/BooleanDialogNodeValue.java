@@ -55,7 +55,7 @@ import javax.json.JsonValue.ValueType;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
+import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

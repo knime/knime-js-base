@@ -64,9 +64,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.js.base.node.base.string.RegexPanel;
-import org.knime.js.base.node.base.string.StringNodeConfig;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.knime.js.base.node.base.input.string.RegexPanel;
+import org.knime.js.base.node.base.input.string.StringNodeConfig;
+import org.knime.js.base.node.base.input.string.StringNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 

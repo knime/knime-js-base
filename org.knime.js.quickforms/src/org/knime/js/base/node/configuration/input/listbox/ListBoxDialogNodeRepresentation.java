@@ -52,8 +52,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.base.listbox.ListBoxNodeRepresentation;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
 
 /**
  * The dialog representation of the list box configuration node

@@ -46,7 +46,7 @@ package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
+import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 
 /**
  * The representation for the boolean input quick form node.

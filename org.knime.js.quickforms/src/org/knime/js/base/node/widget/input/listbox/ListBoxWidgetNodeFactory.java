@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.listbox.ListBoxNodeRepresentation;
-import org.knime.js.base.node.base.listbox.ListBoxNodeValue;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
 
 /**
  * Factory for the list box widget node

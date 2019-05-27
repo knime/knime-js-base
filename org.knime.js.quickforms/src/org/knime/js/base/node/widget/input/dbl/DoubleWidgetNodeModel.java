@@ -50,9 +50,9 @@ package org.knime.js.base.node.widget.input.dbl;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
-import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
-import org.knime.js.base.node.base.dbl.DoubleNodeValue;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**

@@ -48,43 +48,50 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
-import java.util.Arrays;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * The dialog representation of the column filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<ColumnFilterDialogNodeValue, ColumnFilterDialogNodeConfig> {
-
-    private final String[] m_possibleColumns;
-    private final String m_type;
-    private final boolean m_limitNumberVisOptions;
-    private final Integer m_numberVisOptions;
+public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepresentation<ColumnFilterDialogNodeValue>
+    implements QuickFormRepresentation<ColumnFilterDialogNodeValue> {
 
     private final DataTableSpec m_spec;
 
+    @JsonCreator
+    private ColumnFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final ColumnFilterDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final ColumnFilterDialogNodeValue currentValue,
+        @JsonProperty("possibleColumns") final String[] possibleColumns,
+        @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+        @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec) {
+        super(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions,
+            numberVisOptions);
+        m_spec = spec;
+    }
+
     /**
      * @param currentValue The value currently used by the node
-     * @param dConfig The config of the node
+     * @param config The config of the node
      * @param spec The current table spec
      */
     public ColumnFilterDialogNodeRepresentation(final ColumnFilterDialogNodeValue currentValue,
-        final ColumnFilterDialogNodeConfig dConfig, final DataTableSpec spec) {
-        super(currentValue, dConfig);
-        ColumnFilterNodeConfig config = dConfig.getColumnFilterConfig();
-        m_possibleColumns = config.getPossibleColumns();
-        m_type = config.getType();
-        m_limitNumberVisOptions = config.getLimitNumberVisOptions();
-        m_numberVisOptions = config.getNumberVisOptions();
+        final ColumnFilterDialogNodeConfig config, final DataTableSpec spec) {
+        super(currentValue, config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig());
         m_spec = spec;
     }
 
@@ -93,102 +100,15 @@ public class ColumnFilterDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<ColumnFilterDialogNodeValue> createDialogPanel() {
-        ColumnFilterConfigurationPanel panel = new ColumnFilterConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new ColumnFilterConfigurationPanel(this);
     }
 
     /**
      * @return Last known table spec
      */
+    @JsonProperty("spec")
+    @JsonSerialize(using = DataTableSpecSerializer.class)
     public DataTableSpec getSpec() {
         return m_spec;
     }
-
-    /**
-     * @return the possibleColumns
-     */
-    public String[] getPossibleColumns() {
-        return m_possibleColumns;
-    }
-
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return m_type;
-    }
-
-    /**
-     * @return the limitNumberVisOptions
-     */
-    public boolean getLimitNumberVisOptions() {
-        return m_limitNumberVisOptions;
-    }
-
-    /**
-     * @return the numberVisOptions
-     */
-    public Integer getNumberVisOptions() {
-        return m_numberVisOptions;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("possibleColumns=");
-        sb.append(Arrays.toString(m_possibleColumns));
-        sb.append(", ");
-        sb.append("type=");
-        sb.append(m_type);
-        sb.append(", ");
-        sb.append("limitNumberVisOptions=");
-        sb.append(m_limitNumberVisOptions);
-        sb.append(", ");
-        sb.append("numberVisOptions=");
-        sb.append(m_numberVisOptions);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_possibleColumns)
-                .append(m_type)
-                .append(m_limitNumberVisOptions)
-                .append(m_numberVisOptions)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        ColumnFilterDialogNodeRepresentation other = (ColumnFilterDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_possibleColumns, other.m_possibleColumns)
-                .append(m_type, other.m_type)
-                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
-                .append(m_numberVisOptions, other.m_numberVisOptions)
-                .isEquals();
-    }
-
 }

@@ -66,8 +66,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.js.base.node.base.integer.IntegerNodeConfig;
-import org.knime.js.base.node.base.integer.IntegerNodeValue;
+import org.knime.js.base.node.base.input.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**

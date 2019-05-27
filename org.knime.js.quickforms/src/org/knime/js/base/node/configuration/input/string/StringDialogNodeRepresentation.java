@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.string.StringNodeRepresentation;
+import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 
 /**
  * The dialog representation of the string configuration node

@@ -48,8 +48,6 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
-import java.util.Arrays;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -58,94 +56,42 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * The value for the column filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_COLUMNS = "columns";
-    private static final String[] DEFAULT_COLUMNS = new String[0];
-    private String[] m_columns = DEFAULT_COLUMNS;
-
-    private NodeSettings m_settings = null;
-
-    /**
-     * @return the columns
-     */
-    public String[] getColumns() {
-        return m_columns;
-    }
-
-    /**
-     * @param columns the columns to set
-     */
-    public void setColumns(final String[] columns) {
-        m_columns = columns;
-    }
+public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements DialogNodeValue {
 
     /**
      * @return the settings
      */
+    @Override
+    @JsonProperty("settings")
+    @JsonDeserialize(using = NodeSettingsDeserializer.class)
     public NodeSettings getSettings() {
-        return m_settings;
+        return super.getSettings();
     }
 
     /**
      * @param settings the settings to set
      */
+    @Override
+    @JsonProperty("settings")
+    @JsonSerialize(using = NodeSettingsSerializer.class)
     public void setSettings(final NodeSettings settings) {
-        m_settings = settings;
-    }
-
-    /**
-     * Updates the selection based on the settings and the given spec.
-     *
-     * @param spec The current table spec
-     */
-    public void updateFromSpec(final DataTableSpec spec) {
-        if (m_settings != null) {
-            DataColumnSpecFilterConfiguration config =
-                new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
-            config.loadConfigurationInDialog(m_settings, spec);
-            setColumns(config.applyTo(spec).getIncludes());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addStringArray(CFG_COLUMNS, getColumns());
-        if (m_settings != null) {
-            settings.addNodeSettings(m_settings);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setColumns(settings.getStringArray(CFG_COLUMNS));
-        try {
-            m_settings = (NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
-        } catch (InvalidSettingsException e) {
-            m_settings = null;
-        }
+        super.setSettings(settings);
     }
 
     /**
@@ -155,9 +101,9 @@ public class ColumnFilterDialogNodeValue implements DialogNodeValue {
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setColumns(settings.getStringArray(CFG_COLUMNS, DEFAULT_COLUMNS));
         try {
-            m_settings = (NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+            setSettings((NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER));
         } catch (InvalidSettingsException e) {
-            m_settings = null;
+            setSettings(null);
         }
     }
 
@@ -176,20 +122,20 @@ public class ColumnFilterDialogNodeValue implements DialogNodeValue {
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonArray) {
             JsonArray array = (JsonArray) json;
-            m_columns = new String[array.size()];
+            setColumns(new String[array.size()]);
             for (int i = 0; i < array.size(); i++) {
-                m_columns [i] = array.getString(i);
+                getColumns()[i] = array.getString(i);
             }
         } else if (json instanceof JsonObject) {
             try {
                 JsonValue val = ((JsonObject) json).get(CFG_COLUMNS);
                 if (JsonValue.NULL.equals(val)) {
-                    m_columns = null;
+                    setColumns(null);
                 } else {
                     JsonArray array = ((JsonObject) json).getJsonArray(CFG_COLUMNS);
-                    m_columns = new String[array.size()];
+                    setColumns(new String[array.size()]);
                     for (int i = 0; i < array.size(); i++) {
-                        m_columns [i] = array.getString(i);
+                        getColumns()[i] = array.getString(i);
                     }
                 }
             } catch (Exception e) {
@@ -206,64 +152,15 @@ public class ColumnFilterDialogNodeValue implements DialogNodeValue {
     @Override
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (m_columns == null) {
+        if (getColumns() == null) {
             builder.addNull(CFG_COLUMNS);
         } else {
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-            for (String col : m_columns) {
+            for (String col : getColumns()) {
                 arrayBuilder.add(col);
             }
             builder.add(CFG_COLUMNS, arrayBuilder);
         }
         return builder.build();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("columns=");
-        sb.append(Arrays.toString(m_columns));
-        sb.append(", ");
-        sb.append("settings=");
-        sb.append("{");
-        sb.append(m_settings);
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_columns)
-                .append(m_settings)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        ColumnFilterDialogNodeValue other = (ColumnFilterDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_columns, other.m_columns)
-                .append(m_settings, other.m_settings)
-                .isEquals();
-    }
-
 }

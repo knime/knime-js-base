@@ -190,6 +190,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/widgets/filter"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -860,6 +865,27 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Column Filter Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.filter.column.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/filter/column/columnFilterWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/filter/column/columnFilterWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/filter/column/columnFilterWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="MultipleSelections">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1125,6 +1151,16 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.listbox"
             name="List Box Widget"
             namespace="knimeListBoxWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.filter.column.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.filter.column"
+            name="Column Filter Widget"
+            namespace="knimeColumnFilterWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

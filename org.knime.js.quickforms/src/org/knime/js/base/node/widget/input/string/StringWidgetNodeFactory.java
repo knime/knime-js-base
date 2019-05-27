@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.string.StringNodeRepresentation;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
+import org.knime.js.base.node.base.input.string.StringNodeValue;
 
 /**
  * Factory for the string widget node

@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
@@ -61,7 +62,7 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<ColumnFilterWidgetValue> {
+public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<ColumnFilterNodeValue> {
 
     private final ColumnFilterNodeConfig m_config;
 
@@ -83,8 +84,8 @@ public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<Co
      * {@inheritDoc}
      */
     @Override
-    protected ColumnFilterWidgetValue createEmptyValue() {
-        return new ColumnFilterWidgetValue();
+    protected ColumnFilterNodeValue createEmptyValue() {
+        return new ColumnFilterNodeValue();
     }
 
     /**

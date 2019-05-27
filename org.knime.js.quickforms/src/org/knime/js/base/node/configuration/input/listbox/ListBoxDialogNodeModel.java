@@ -62,8 +62,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.js.base.node.base.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.base.listbox.ListBoxNodeUtil;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
+import org.knime.js.base.node.base.input.listbox.ListBoxNodeUtil;
 import org.knime.js.base.node.configuration.DialogNodeModel;
 
 /**

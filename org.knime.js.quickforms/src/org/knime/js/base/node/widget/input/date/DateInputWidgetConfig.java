@@ -53,8 +53,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.date.DateNodeConfig;
-import org.knime.js.base.node.base.date.DateNodeValue;
+import org.knime.js.base.node.base.input.date.DateNodeConfig;
+import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**

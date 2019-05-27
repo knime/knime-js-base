@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.integer.IntegerNodeRepresentation;
-import org.knime.js.base.node.base.integer.IntegerNodeValue;
+import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
+import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
 
 /**
  * Factory for the integer widget node

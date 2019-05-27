@@ -63,8 +63,8 @@ import javax.json.JsonValue;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.date.DateNodeConfig;
-import org.knime.js.base.node.base.date.DateNodeValue;
+import org.knime.js.base.node.base.input.date.DateNodeConfig;
+import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.time.util.DateTimeUtils;
 
 /**

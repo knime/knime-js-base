@@ -58,7 +58,7 @@ import javax.json.JsonValue;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.string.StringNodeValue;
+import org.knime.js.base.node.base.input.string.StringNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

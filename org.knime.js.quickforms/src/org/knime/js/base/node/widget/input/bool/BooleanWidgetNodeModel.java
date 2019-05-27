@@ -49,8 +49,8 @@
 package org.knime.js.base.node.widget.input.bool;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.bool.BooleanNodeRepresentation;
-import org.knime.js.base.node.base.bool.BooleanNodeValue;
+import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
+import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**

@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.string.StringNodeConfig;
+import org.knime.js.base.node.base.input.string.StringNodeConfig;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**

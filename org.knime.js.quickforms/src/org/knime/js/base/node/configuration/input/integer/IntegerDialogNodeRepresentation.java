@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.integer.IntegerNodeRepresentation;
+import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
 
 /**
  * The dialog representation of the integer configuration node

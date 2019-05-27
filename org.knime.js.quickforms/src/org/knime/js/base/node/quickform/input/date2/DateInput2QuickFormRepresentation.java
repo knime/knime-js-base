@@ -52,7 +52,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.base.date.GranularityTime;
+import org.knime.js.base.node.base.input.date.GranularityTime;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 import org.knime.time.util.DateTimeType;
 

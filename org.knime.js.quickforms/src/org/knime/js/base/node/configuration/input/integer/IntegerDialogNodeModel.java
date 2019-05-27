@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.input.integer.IntegerNodeConfig;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**

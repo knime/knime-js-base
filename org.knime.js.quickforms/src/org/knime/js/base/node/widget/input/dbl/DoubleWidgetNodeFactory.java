@@ -52,8 +52,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
-import org.knime.js.base.node.base.dbl.DoubleNodeValue;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 
 /**
  * Factory for the double widget node

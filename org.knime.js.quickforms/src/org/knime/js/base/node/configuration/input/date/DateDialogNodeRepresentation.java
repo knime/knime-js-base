@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.date;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.date.DateNodeRepresentation;
+import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
 
 /**
  * The dialog representation of the date configuration node
