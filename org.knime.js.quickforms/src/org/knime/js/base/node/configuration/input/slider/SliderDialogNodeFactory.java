@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 25, 2019 (daniel): created
+ *   May 25, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
@@ -53,7 +53,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * Factory for the integer configuration node
+ * Factory for the slider configuration node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */

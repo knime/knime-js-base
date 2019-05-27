@@ -44,136 +44,104 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 24, 2019 (daniel): created
+ *   May 27, 2019 (daniel): created
  */
 package org.knime.js.base.node.base.slider;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Base config file for the slider configuration and widget nodes
+ * The base representation for the slider configuration and widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
-public class SliderNodeConfig {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends LabeledNodeRepresentation<VAL> {
 
-    private static String CFG_USE_CUSTOM_MIN = "useCustomMin";
-    private static boolean DEFAULT_USE_CUSTOM_MIN = false;
-    private boolean m_useCustomMin = DEFAULT_USE_CUSTOM_MIN;
+    private final boolean m_useCustomMin;
+    private final boolean m_useCustomMax;
+    private final double m_customMin;
+    private final double m_customMax;
 
-    private static String CFG_USE_CUSTOM_MAX = "useCustomMax";
-    private static boolean DEFAULT_USE_CUSTOM_MAX = false;
-    private boolean m_useCustomMax = DEFAULT_USE_CUSTOM_MAX;
-
-    private static final String CFG_MIN = "customMin";
-    private static final double DEFAULT_MIN = 0;
-    private double m_customMin = DEFAULT_MIN;
-
-    private static final String CFG_MAX = "customMax";
-    private static final double DEFAULT_MAX = 100;
-    private double m_customMax = DEFAULT_MAX;
-
-    /**
-     * @return the customMin value of the slider
-     */
-    public double getCustomMin() {
-        return m_customMin;
-    }
-
-    /**
-     * @param customMin the customMin value to set
-     */
-    public void setCustomMin(final double customMin) {
+    @JsonCreator
+    private SliderNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("useCustomMin") final Boolean useCustomMin,
+        @JsonProperty("useCustomMax") final Boolean useCustomMax,
+        @JsonProperty("customMin") final double customMin,
+        @JsonProperty("customMax") final double customMax) {
+        super(label, description, required, defaultValue, currentValue);
+        m_useCustomMin = useCustomMin;
+        m_useCustomMax = useCustomMax;
         m_customMin = customMin;
-    }
-
-    /**
-     * @return the customMax value of the slider
-     */
-    public double getCustomMax() {
-        return m_customMax;
-    }
-
-    /**
-     * @param customMax the max value to set
-     */
-    public void setCustomMax(final double customMax) {
         m_customMax = customMax;
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
+     * @param labelConfig The label config of the node
+     */
+    public SliderNodeRepresentation(final VAL currentValue, final VAL defaultValue,final SliderNodeConfig config,
+        final LabeledConfig labelConfig) {
+        super(currentValue, defaultValue, labelConfig);
+        m_useCustomMin = config.isUseCustomMin();
+        m_useCustomMax = config.isUseCustomMax();
+        m_customMin = config.getCustomMin();
+        m_customMax = config.getCustomMax();
+    }
+
+    /**
+     * @return the useCustomMin
+     */
+    @JsonProperty("useCustomMin")
+    public Boolean isUseCustomMin() {
+        return m_useCustomMin;
+    }
+
+    /**
+     * @return the useCustomMax
+     */
+    @JsonProperty("useCustomMax")
+    public Boolean isUseCustomMax() {
+        return m_useCustomMax;
     }
 
     /**
      * @return the customMin
      */
-    public boolean isUseCustomMin() {
-        return m_useCustomMin;
-    }
-
-    /**
-     * @param customMin the customMin to set
-     */
-    public void setUseCustomMin(final boolean customMin) {
-        m_useCustomMin = customMin;
+    @JsonProperty("customMin")
+    public double getCustomMin() {
+        return m_customMin;
     }
 
     /**
      * @return the customMax
      */
-    public boolean isUseCustomMax() {
-        return m_useCustomMax;
-    }
-
-    /**
-     * @param customMax the customMax to set
-     */
-    public void setUseCustomMax(final boolean customMax) {
-        m_useCustomMax = customMax;
-    }
-
-    /**
-     * Saves the current settings
-     *
-     * @param settings the settings to save to
-     */
-    public void saveSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_USE_CUSTOM_MIN, m_useCustomMin);
-        settings.addBoolean(CFG_USE_CUSTOM_MAX, m_useCustomMax);
-        settings.addDouble(CFG_MIN, m_customMin);
-        settings.addDouble(CFG_MAX, m_customMax);
-    }
-
-    /**
-     * Loads the config from saved settings
-     *
-     * @param settings the settings to load from
-     * @throws InvalidSettingsException
-     */
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN);
-        m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX);
-        m_customMin = settings.getDouble(CFG_MIN);
-        m_customMax = settings.getDouble(CFG_MAX);
-    }
-
-    /**
-     * Loads the config from saved settings for dialog display
-     *
-     * @param settings the settings to load from
-     */
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN, DEFAULT_USE_CUSTOM_MIN);
-        m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX, DEFAULT_USE_CUSTOM_MAX);
-        m_customMin = settings.getDouble(CFG_MIN, DEFAULT_MIN);
-        m_customMax = settings.getDouble(CFG_MAX, DEFAULT_MAX);
+    @JsonProperty("customMax")
+    public double getCustomMax() {
+        return m_customMax;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
@@ -196,8 +164,10 @@ public class SliderNodeConfig {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
                 .append(m_useCustomMin)
                 .append(m_useCustomMax)
                 .append(m_customMin)
@@ -209,6 +179,7 @@ public class SliderNodeConfig {
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -219,14 +190,14 @@ public class SliderNodeConfig {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        SliderNodeConfig other = (SliderNodeConfig)obj;
+        @SuppressWarnings("unchecked")
+        SliderNodeRepresentation<VAL> other = (SliderNodeRepresentation<VAL>)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
+                .appendSuper(super.equals(obj))
                 .append(m_useCustomMin, other.m_useCustomMin)
                 .append(m_useCustomMax, other.m_useCustomMax)
                 .append(m_customMin, other.m_customMin)
                 .append(m_customMax, other.m_customMax)
                 .isEquals();
     }
-
-
 }

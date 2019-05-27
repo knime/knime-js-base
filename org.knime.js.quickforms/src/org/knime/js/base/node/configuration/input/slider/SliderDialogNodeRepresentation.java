@@ -44,120 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 24, 2019 (daniel): created
+ *   May 24, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
-import org.knime.js.core.settings.slider.SliderSettings;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.slider.SliderNodeRepresentation;
 
 /**
  * The representation for the slider input quick form node.
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<SliderDialogNodeValue, SliderDialogNodeConfig> {
-
-    private final boolean m_useCustomMin;
-    private final boolean m_useCustomMax;
-    private final SliderSettings m_sliderSettings;
+public class SliderDialogNodeRepresentation extends SliderNodeRepresentation<SliderDialogNodeValue>
+    implements QuickFormRepresentation<SliderDialogNodeValue> {
 
     /**
      * @param currentValue
      * @param config
      */
     public SliderDialogNodeRepresentation(final SliderDialogNodeValue currentValue, final SliderDialogNodeConfig config) {
-        super(currentValue, config);
-        m_useCustomMin = config.isUseCustomMin();
-        m_useCustomMax = config.isUseCustomMax();
-        m_sliderSettings = config.getSliderSettings();
+        super(currentValue, config.getDefaultValue(),config.getSliderConfig(), config.getLabelConfig());
     }
 
-    /**
-     * @return the useCustomMin
-     */
-    public boolean isUseCustomMin() {
-        return m_useCustomMin;
-    }
-
-    /**
-     * @return the useCustomMax
-     */
-    public boolean isUseCustomMax() {
-        return m_useCustomMax;
-    }
-
-    /**
-     * @return the sliderSettings
-     */
-    public SliderSettings getSliderSettings() {
-        return m_sliderSettings;
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public DialogNodePanel<SliderDialogNodeValue> createDialogPanel() {
-        SliderConfigurationPanel panel = new SliderConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new SliderConfigurationPanel(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("sliderSettings=");
-        sb.append(m_sliderSettings);
-        sb.append("useCustomMin=");
-        sb.append(m_useCustomMin);
-        sb.append(", ");
-        sb.append("useCustomMax=");
-        sb.append(m_useCustomMax);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_sliderSettings)
-                .append(m_useCustomMin)
-                .append(m_useCustomMax)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        SliderDialogNodeRepresentation other = (SliderDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_sliderSettings, other.m_sliderSettings)
-                .append(m_useCustomMin, other.m_useCustomMin)
-                .append(m_useCustomMax, other.m_useCustomMax)
-                .isEquals();
-    }
 
 }

@@ -44,12 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 24, 2019 (daniel): created
+ *   May 24, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.GroupLayout;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
@@ -63,33 +68,49 @@ import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel
 public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPanel<SliderDialogNodeValue> {
 
     private final JSlider m_component;
-
+    private final JTextArea m_component_text;
+    private final JPanel m_panel;
+    private final GroupLayout layout;
     /**
      * @param representation the dialog node settings
      */
     public SliderConfigurationPanel(final SliderDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
+        m_panel = new JPanel();
+        layout = new GroupLayout(m_panel);
         double min = 0;
         double max = 100;
         if(representation.isUseCustomMin()) {
-            min = representation.getSliderSettings().getRangeMinValue();
+            min = representation.getCustomMin();
         }
         if(representation.isUseCustomMax()) {
-            max = representation.getSliderSettings().getRangeMaxValue();
+            max = representation.getCustomMax();
         }
+        m_component_text = new JTextArea();
+        m_component_text.setText(representation.getDefaultValue().getDouble().toString());
         m_component = new JSlider();
+        m_component.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                m_component_text.setText(((Integer)m_component.getValue()).toString());
+            }
+        });
         BoundedRangeModel sliderModel = m_component.getModel();
-        //new SpinnerNumberModel(0, min, max, 1)
         sliderModel.setMaximum((int)max);
         sliderModel.setMinimum((int)min);
         m_component.setPaintTicks(true);
-        m_component.setMajorTickSpacing(5);
 
         m_component.setPaintLabels(true);
-        m_component.setLabelTable(m_component.createStandardLabels(5));
-        //m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
-        m_component.setValue((int)representation.getDefaultValue().getDouble());
-        setComponent(m_component);
+        // m_component.setLabelTable(m_component.createStandardLabels(2));
+        // m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
+        m_component.setValue(representation.getDefaultValue().getDouble().intValue());
+        layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+               .addComponent(m_component)
+               .addComponent(m_component_text)
+         );
+        setComponent(m_panel);
     }
 
     /**
@@ -97,7 +118,7 @@ public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPan
      */
     @Override
     protected void resetToDefault() {
-        m_component.setValue((int)getDefaultValue().getDouble());
+        m_component.setValue(getDefaultValue().getDouble().intValue());
     }
 
     /**
@@ -106,7 +127,7 @@ public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPan
     @Override
     protected SliderDialogNodeValue createNodeValue() throws InvalidSettingsException {
         SliderDialogNodeValue value = new SliderDialogNodeValue();
-        value.setDouble(m_component.getValue());
+        value.setDouble((double)m_component.getValue());
         return value;
     }
 
@@ -117,7 +138,7 @@ public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPan
     public void loadNodeValue(final SliderDialogNodeValue value) {
         super.loadNodeValue(value);
         if (value != null) {
-            m_component.setValue((int)value.getDouble());
+            m_component.setValue(value.getDouble().intValue());
         }
     }
 

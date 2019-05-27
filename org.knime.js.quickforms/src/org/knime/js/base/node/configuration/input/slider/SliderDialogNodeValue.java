@@ -44,126 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 23, 2019 (daniel): created
+ *   May 23, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
+
 
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.slider.SliderNodeValue;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The config for the slider configuration node.
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class SliderDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_DOUBLE = "double";
-    private static final double DEFAULT_DOUBLE = 50;
-    private double m_double = DEFAULT_DOUBLE;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addDouble(CFG_DOUBLE, m_double);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_double = settings.getDouble(CFG_DOUBLE);
-    }
+public class SliderDialogNodeValue extends SliderNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_double = settings.getDouble(CFG_DOUBLE, DEFAULT_DOUBLE);
-    }
-
-    /**
-     * @return the string
-     */
-    @JsonProperty("double")
-    public double getDouble() {
-        return m_double;
-    }
-
-    /**
-     * @param dbl the string to set
-     */
-    @JsonProperty("double")
-    public void setDouble(final double dbl) {
-        m_double = dbl;
+        setDouble(settings.getDouble(CFG_DOUBLE, DEFAULT_DOUBLE));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("double=");
-        sb.append(m_double);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_double)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        SliderDialogNodeValue other = (SliderDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_double, other.m_double)
-                .isEquals();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    @JsonIgnore
     public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
         Double number = null;
         try {
@@ -198,11 +117,14 @@ public class SliderDialogNodeValue implements DialogNodeValue {
      * {@inheritDoc}
      */
     @Override
-    public JsonObject toJson() {
-        JsonObject value = Json.createObjectBuilder()
-                .add(CFG_DOUBLE, m_double)
-                .build();
-        return value;
+    public JsonValue toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (getDouble() == null) {
+            builder.addNull(CFG_DOUBLE);
+        } else {
+            builder.add(CFG_DOUBLE, getDouble());
+        }
+        return builder.build().get(CFG_DOUBLE);
     }
 
 }

@@ -44,141 +44,85 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 24, 2019 (Daniel Bogenrieder): created
+ *   May 27, 2019 (daniel): created
  */
-package org.knime.js.base.node.configuration.input.slider;
+package org.knime.js.base.node.base.slider;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.slider.SliderNodeConfig;
-import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The config for the slider configuration node.
+ * The base value for the slider configuration and widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<SliderDialogNodeValue> {
-
-    private final SliderNodeConfig m_sliderConfig;
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class SliderNodeValue extends JSONViewContent {
 
     /**
-     * Instantiate a new config object
+     * Config setting for the string value
      */
-    public SliderDialogNodeConfig() {
-        m_sliderConfig = new SliderNodeConfig();
+    protected static final String CFG_DOUBLE = "double";
+
+    /**
+     * Default slider value
+     */
+    protected static final double DEFAULT_DOUBLE = 50;
+    protected double m_double = DEFAULT_DOUBLE;
+
+    /**
+     * @return the string
+     */
+    @JsonProperty("double")
+    public Double getDouble() {
+        return m_double;
     }
 
     /**
-     * @return the stringConfig
+     * @param doubleValue the doubleValue to set
      */
-    public SliderNodeConfig getSliderConfig() {
-        return m_sliderConfig;
-    }
-
-    /**
-     * @return the useCustomMin
-     */
-    public boolean isUseCustomMin() {
-        return m_sliderConfig.isUseCustomMin();
-    }
-
-    /**
-     * @param useCustomMin the useCustomMin to set
-     */
-    public void setUseCustomMin(final boolean useCustomMin) {
-        m_sliderConfig.setUseCustomMin(useCustomMin);
-    }
-
-    /**
-     * @return the useCustomMax
-     */
-    public boolean isUseCustomMax() {
-        return m_sliderConfig.isUseCustomMax();
-    }
-
-    /**
-     * @param useCustomMax the useCustomMax to set
-     */
-    public void setUseCustomMax(final boolean useCustomMax) {
-        m_sliderConfig.setUseCustomMax(useCustomMax);
-    }
-
-    /**
-     * @return the customMin
-     */
-    public double getCustomMin() {
-        return m_sliderConfig.getCustomMin();
-    }
-
-    /**
-     * @param customMin the useCustomMin to set
-     */
-    public void setCustomMin(final double customMin) {
-        m_sliderConfig.setCustomMin(customMin);
-    }
-
-    /**
-     * @return the useCustomMax
-     */
-    public double getCustomMax() {
-        return m_sliderConfig.getCustomMax();
-    }
-
-    /**
-     * @param customMax the useCustomMax to set
-     */
-    public void setCustomMax(final double customMax) {
-        m_sliderConfig.setCustomMax(customMax);
+    @JsonProperty("double")
+    public void setDouble(final Double doubleValue) {
+        m_double = doubleValue;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected SliderDialogNodeValue createEmptyValue() {
-        return new SliderDialogNodeValue();
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addDouble(CFG_DOUBLE, m_double);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        m_sliderConfig.saveSettings(settings);
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_double = settings.getDouble(CFG_DOUBLE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_sliderConfig.loadSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_sliderConfig.loadSettingsInDialog(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append(m_sliderConfig.toString());
+        sb.append("double=");
+        sb.append(m_double);
         return sb.toString();
     }
 
@@ -186,9 +130,10 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_sliderConfig)
+        return new HashCodeBuilder()
+                .append(m_double)
                 .toHashCode();
     }
 
@@ -196,6 +141,7 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -206,9 +152,9 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
         if (obj.getClass() != getClass()) {
             return false;
         }
-        SliderDialogNodeConfig other = (SliderDialogNodeConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_sliderConfig, other.m_sliderConfig)
+        SliderNodeValue other = (SliderNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_double, other.m_double)
                 .isEquals();
     }
 

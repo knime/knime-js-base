@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 25, 2019 (daniel): created
+ *   May 25, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
@@ -99,13 +99,13 @@ public class SliderDialogNodeModel
     @Override
     public void validateDialogValue(final SliderDialogNodeValue value) throws InvalidSettingsException {
         double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getSliderSettings().getRangeMinValue()) {
+        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
             throw new InvalidSettingsException("The set integer " + dialogValue
-                + " is smaller than the allowed minimum of " + getConfig().getSliderSettings().getRangeMinValue());
+                + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
         }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getSliderSettings().getRangeMaxValue()) {
+        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
             throw new InvalidSettingsException("The set integer " + dialogValue
-                + " is bigger than the allowed maximum of " + getConfig().getSliderSettings().getRangeMaxValue());
+                + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
         }
         super.validateDialogValue(value);
     }

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 25, 2019 (daniel): created
+ *   May 25, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
@@ -68,7 +68,6 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 import org.knime.js.base.node.quickform.input.slider.SliderInputQuickFormValue;
-import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
  * The dialog for the slider configuration node
@@ -192,16 +191,8 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         loadSettingsFrom(m_config);
         m_useCustomMin.setSelected(m_config.isUseCustomMin());
         m_useCustomMax.setSelected(m_config.isUseCustomMax());
-        SliderSettings sSettings = m_config.getSliderSettings();
-        if (sSettings != null) {
-            Double min = sSettings.getRangeMinValue();
-            min = min == null ? 0 : min;
-            Double max = sSettings.getRangeMaxValue();
-            max = max == null ? 100 : max;
-            m_min.setValue(min);
-            m_max.setValue(max);
-
-        }
+        m_min.setValue(m_config.getCustomMin());
+        m_max.setValue(m_config.getCustomMax());
         double defaultValue = m_config.getDefaultValue().getDouble();
         m_defaultSpinner.setValue(defaultValue);
         m_min.setEnabled(m_useCustomMin.isSelected());
@@ -230,15 +221,10 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_config.setUseCustomMin(m_useCustomMin.isSelected());
         m_config.setUseCustomMax(m_useCustomMax.isSelected());
 
-        SliderSettings sSettings = new SliderSettings();
-        sSettings.setRangeMinValue((Double.parseDouble(m_min.getValue().toString())));
-        sSettings.setRangeMaxValue((Double.parseDouble(m_max.getValue().toString())));
         double defaultValue = (Double.parseDouble(m_defaultSpinner.getValue().toString()));
         m_config.getDefaultValue().setDouble(defaultValue);
-        sSettings.setStart(new double[]{defaultValue});
-
-        sSettings.validateSettings();
-        m_config.setSliderSettings(sSettings);
+        m_config.setCustomMin(Double.parseDouble(m_min.getValue().toString()));
+        m_config.setCustomMax(Double.parseDouble(m_max.getValue().toString()));
         m_config.saveSettings(settings);
     }
 
