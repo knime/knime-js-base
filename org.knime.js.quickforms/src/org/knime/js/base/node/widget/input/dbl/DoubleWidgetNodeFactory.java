@@ -52,14 +52,16 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.base.dbl.DoubleNodeValue;
 
 /**
  * Factory for the double widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleWidgetNodeFactory extends NodeFactory<DoubleWidgetNodeModel>
-    implements WizardNodeFactoryExtension<DoubleWidgetNodeModel, DoubleWidgetRepresentation, DoubleWidgetValue> {
+public class DoubleWidgetNodeFactory extends NodeFactory<DoubleWidgetNodeModel> implements
+    WizardNodeFactoryExtension<DoubleWidgetNodeModel, DoubleNodeRepresentation<DoubleNodeValue>, DoubleNodeValue> {
 
     /**
      * {@inheritDoc}

@@ -58,7 +58,7 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerDialogNodeModel extends
-    DialogFlowVariableNodeModel<IntegerDialogNodeRepresentation, IntegerDialogNodeValue, IntegerDialogNodeConfig> {
+    DialogFlowVariableNodeModel<IntegerDialogNodeRepresentation, IntegerDialogNodeValue, IntegerInputDialogNodeConfig> {
 
     /**
      * {@inheritDoc}
@@ -82,8 +82,8 @@ public class IntegerDialogNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public IntegerDialogNodeConfig createEmptyConfig() {
-        return new IntegerDialogNodeConfig();
+    public IntegerInputDialogNodeConfig createEmptyConfig() {
+        return new IntegerInputDialogNodeConfig();
     }
 
     /**

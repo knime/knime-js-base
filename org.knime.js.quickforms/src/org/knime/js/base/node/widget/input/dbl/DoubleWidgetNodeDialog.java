@@ -66,6 +66,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.dbl.DoubleNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
@@ -73,7 +75,7 @@ import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleWidgetValue> {
+public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleNodeValue> {
 
     private final JCheckBox m_useMin;
     private final JCheckBox m_useMax;
@@ -81,13 +83,13 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleW
     private final JSpinner m_max;
     private final JSpinner m_defaultSpinner;
 
-    private final DoubleWidgetConfig m_config;
+    private final DoubleInputWidgetConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public DoubleWidgetNodeDialog() {
-        m_config = new DoubleWidgetConfig();
+        m_config = new DoubleInputWidgetConfig();
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
         m_min = new JSpinner(getSpinnerModel());
@@ -140,7 +142,7 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleW
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        DoubleWidgetValue value = new DoubleWidgetValue();
+        DoubleNodeValue value = new DoubleNodeValue();
         value.loadFromNodeSettings(settings);
         return "" + value.getDouble();
     }
@@ -187,10 +189,11 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleW
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         m_defaultSpinner.setValue(m_config.getDefaultValue().getDouble());
-        m_useMin.setSelected(m_config.isUseMin());
-        m_useMax.setSelected(m_config.isUseMax());
-        m_min.setValue(m_config.getMin());
-        m_max.setValue(m_config.getMax());
+        DoubleNodeConfig doubleConfig = m_config.getDoubleConfig();
+        m_useMin.setSelected(doubleConfig.isUseMin());
+        m_useMax.setSelected(doubleConfig.isUseMax());
+        m_min.setValue(doubleConfig.getMin());
+        m_max.setValue(doubleConfig.getMax());
         m_min.setEnabled(m_useMin.isSelected());
         m_max.setEnabled(m_useMax.isSelected());
     }
@@ -202,10 +205,11 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleW
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setDouble((Double)m_defaultSpinner.getValue());
-        m_config.setUseMin(m_useMin.isSelected());
-        m_config.setUseMax(m_useMax.isSelected());
-        m_config.setMin((Double)m_min.getValue());
-        m_config.setMax((Double)m_max.getValue());
+        DoubleNodeConfig doubleConfig = m_config.getDoubleConfig();
+        doubleConfig.setUseMin(m_useMin.isSelected());
+        doubleConfig.setUseMax(m_useMax.isSelected());
+        doubleConfig.setMin((Double)m_min.getValue());
+        doubleConfig.setMax((Double)m_max.getValue());
         m_config.saveSettings(settings);
     }
 

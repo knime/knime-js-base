@@ -49,6 +49,7 @@
 package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**
@@ -57,7 +58,7 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleDialogNodeModel
-    extends DialogFlowVariableNodeModel<DoubleDialogNodeRepresentation, DoubleDialogNodeValue, DoubleDialogNodeConfig> {
+    extends DialogFlowVariableNodeModel<DoubleDialogNodeRepresentation, DoubleDialogNodeValue, DoubleInputDialogNodeConfig> {
 
     /**
      * {@inheritDoc}
@@ -81,8 +82,8 @@ public class DoubleDialogNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DoubleDialogNodeConfig createEmptyConfig() {
-        return new DoubleDialogNodeConfig();
+    public DoubleInputDialogNodeConfig createEmptyConfig() {
+        return new DoubleInputDialogNodeConfig();
     }
 
     /**
@@ -98,14 +99,15 @@ public class DoubleDialogNodeModel
      */
     @Override
     public void validateDialogValue(final DoubleDialogNodeValue value) throws InvalidSettingsException {
+        DoubleNodeConfig config = getConfig().getDoubleConfig();
         double dbl = value.getDouble();
-        if (getConfig().isUseMin() && dbl < getConfig().getMin()) {
+        if (config.isUseMin() && dbl < config.getMin()) {
             throw new InvalidSettingsException("The set double " + dbl
-                + " is smaller than the allowed minimum of " + getConfig().getMin());
+                + " is smaller than the allowed minimum of " + config.getMin());
         }
-        if (getConfig().isUseMax() && dbl > getConfig().getMax()) {
+        if (config.isUseMax() && dbl > config.getMax()) {
             throw new InvalidSettingsException("The set double " + dbl
-                + " is bigger than the allowed maximum of " + getConfig().getMax());
+                + " is bigger than the allowed maximum of " + config.getMax());
         }
         super.validateDialogValue(value);
     }

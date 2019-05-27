@@ -55,60 +55,23 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.js.base.node.base.dbl.DoubleNodeValue;
 
 /**
  * The value for the double configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleDialogNodeValue implements DialogNodeValue {
-
-    private static final String CFG_DOUBLE = "double";
-    private static final double DEFAULT_DOUBLE = 0.0;
-    private double m_double = DEFAULT_DOUBLE;
-
-    /**
-     * @return the string
-     */
-    public double getDouble() {
-        return m_double;
-    }
-
-    /**
-     * @param dbl the string to set
-     */
-    public void setDouble(final double dbl) {
-        m_double = dbl;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addDouble(CFG_DOUBLE, m_double);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_double = settings.getDouble(CFG_DOUBLE);
-    }
+public class DoubleDialogNodeValue extends DoubleNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_double = settings.getDouble(CFG_DOUBLE, DEFAULT_DOUBLE);
+        setDouble(settings.getDouble(CFG_DOUBLE, DEFAULT_DOUBLE));
     }
 
     /**
@@ -131,12 +94,12 @@ public class DoubleDialogNodeValue implements DialogNodeValue {
     @Override
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonNumber) {
-            m_double = ((JsonNumber)json).doubleValue();
+            setDouble(((JsonNumber)json).doubleValue());
         } else if (json instanceof JsonString) {
             loadFromString(((JsonString)json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                m_double = ((JsonObject) json).getJsonNumber(CFG_DOUBLE).doubleValue();
+                setDouble(((JsonObject) json).getJsonNumber(CFG_DOUBLE).doubleValue());
             } catch (Exception e) {
                 throw new JsonException("Expected double value for key '" + CFG_DOUBLE + "'."  , e);
             }
@@ -150,48 +113,6 @@ public class DoubleDialogNodeValue implements DialogNodeValue {
      */
     @Override
     public JsonValue toJson() {
-        return Json.createObjectBuilder().add(CFG_DOUBLE, m_double).build().get(CFG_DOUBLE);
+        return Json.createObjectBuilder().add(CFG_DOUBLE, getDouble()).build().get(CFG_DOUBLE);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("double=");
-        sb.append(m_double);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_double)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        DoubleDialogNodeValue other = (DoubleDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_double, other.m_double)
-                .isEquals();
-    }
-
 }

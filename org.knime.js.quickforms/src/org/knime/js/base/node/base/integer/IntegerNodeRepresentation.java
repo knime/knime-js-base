@@ -108,7 +108,7 @@ public class IntegerNodeRepresentation<VAL extends IntegerNodeValue> extends Lab
     /**
      * @return the useMin
      */
-    @JsonProperty("useMin")
+    @JsonProperty("usemin")
     public boolean isUseMin() {
         return m_useMin;
     }
@@ -116,7 +116,7 @@ public class IntegerNodeRepresentation<VAL extends IntegerNodeValue> extends Lab
     /**
      * @return the useMax
      */
-    @JsonProperty("useMax")
+    @JsonProperty("usemax")
     public boolean isUseMax() {
         return m_useMax;
     }

@@ -82,13 +82,13 @@ public class IntegerDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     private final JSpinner m_max;
     private final JSpinner m_defaultSpinner;
 
-    private final IntegerDialogNodeConfig m_config;
+    private final IntegerInputDialogNodeConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public IntegerDialogNodeNodeDialog() {
-        m_config = new IntegerDialogNodeConfig();
+        m_config = new IntegerInputDialogNodeConfig();
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
         m_min = new JSpinner(getSpinnerModel());

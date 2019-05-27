@@ -70,7 +70,7 @@ public class DoubleConfigurationPanel extends AbstractDialogNodeConfigurationPan
      * @param representation the dialog node settings
      */
     public DoubleConfigurationPanel(final DoubleDialogNodeRepresentation representation) {
-        super(representation.getDefaultValue());
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         double min = Double.NEGATIVE_INFINITY;
         double max = Double.POSITIVE_INFINITY;
         if (representation.isUseMin()) {

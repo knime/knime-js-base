@@ -61,7 +61,7 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerWidgetNodeModel extends
-    WidgetFlowVariableNodeModel<IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue, IntegerWidgetConfig> {
+    WidgetFlowVariableNodeModel<IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue, IntegerInputWidgetConfig> {
 
     /**
      * @param viewName the interactive view name
@@ -103,8 +103,8 @@ public class IntegerWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public IntegerWidgetConfig createEmptyConfig() {
-        return new IntegerWidgetConfig();
+    public IntegerInputWidgetConfig createEmptyConfig() {
+        return new IntegerInputWidgetConfig();
     }
 
     /**
@@ -112,7 +112,7 @@ public class IntegerWidgetNodeModel extends
      */
     @Override
     protected IntegerNodeRepresentation<IntegerNodeValue> getRepresentation() {
-        IntegerWidgetConfig config = getConfig();
+        IntegerInputWidgetConfig config = getConfig();
         return new IntegerNodeRepresentation<IntegerNodeValue>(getRelevantValue(), config.getDefaultValue(),
             config.getIntegerConfig(), config.getLabelConfig());
     }

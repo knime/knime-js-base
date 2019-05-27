@@ -62,14 +62,14 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerWidgetConfig extends LabeledFlowVariableWidgetConfig<IntegerNodeValue> {
+public class IntegerInputWidgetConfig extends LabeledFlowVariableWidgetConfig<IntegerNodeValue> {
 
     private final IntegerNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public IntegerWidgetConfig() {
+    public IntegerInputWidgetConfig() {
         m_config = new IntegerNodeConfig();
     }
 
@@ -152,7 +152,7 @@ public class IntegerWidgetConfig extends LabeledFlowVariableWidgetConfig<Integer
         if (obj.getClass() != getClass()) {
             return false;
         }
-        IntegerWidgetConfig other = (IntegerWidgetConfig)obj;
+        IntegerInputWidgetConfig other = (IntegerInputWidgetConfig)obj;
         return new EqualsBuilder()
             .appendSuper(super.equals(obj))
             .append(m_config, other.m_config)

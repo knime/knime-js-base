@@ -44,86 +44,71 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.dbl;
+package org.knime.js.base.node.base.dbl;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.widget.AbstractWidgetNodeRepresentation;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The representation for the double widget node
+ * The base value for the double configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class DoubleWidgetRepresentation
-    extends AbstractWidgetNodeRepresentation<DoubleWidgetValue, DoubleWidgetConfig> {
+public class DoubleNodeValue extends JSONViewContent {
 
-    private final boolean m_useMin;
-    private final boolean m_useMax;
-    private final double m_min;
-    private final double m_max;
+    /**
+     * Config setting for the double value
+     */
+    protected static final String CFG_DOUBLE = "double";
 
-    @JsonCreator
-    private DoubleWidgetRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final DoubleWidgetValue defaultValue,
-        @JsonProperty("currentValue") final DoubleWidgetValue currentValue,
-        @JsonProperty("usemin") final boolean useMin, @JsonProperty("usemax") final boolean useMax,
-        @JsonProperty("min") final double min, @JsonProperty("max") final double max) {
-        super(label, description, required, defaultValue, currentValue);
-        m_useMin = useMin;
-        m_useMax = useMax;
-        m_min = min;
-        m_max = max;
+    /**
+     * Default double value
+     */
+    protected static final double DEFAULT_DOUBLE = 0.0;
+    private double m_double = DEFAULT_DOUBLE;
+
+    /**
+     * @return the double
+     */
+    @JsonProperty("double")
+    public double getDouble() {
+        return m_double;
     }
 
     /**
-     * @param currentValue the value currently used by the node
-     * @param config the config of the node
+     * @param dbl the double to set
      */
-    public DoubleWidgetRepresentation(final DoubleWidgetValue currentValue, final DoubleWidgetConfig config) {
-        super(currentValue, config);
-        m_useMin = config.isUseMin();
-        m_useMax = config.isUseMax();
-        m_min = config.getMin();
-        m_max = config.getMax();
+    @JsonProperty("double")
+    public void setDouble(final double dbl) {
+        m_double = dbl;
     }
 
     /**
-     * @return the useMin
+     * {@inheritDoc}
      */
-    public boolean isUseMin() {
-        return m_useMin;
+    @Override
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addDouble(CFG_DOUBLE, m_double);
     }
 
     /**
-     * @return the useMax
+     * {@inheritDoc}
      */
-    public boolean isUseMax() {
-        return m_useMax;
-    }
-
-    /**
-     * @return the min
-     */
-    public double getMin() {
-        return m_min;
-    }
-
-    /**
-     * @return the max
-     */
-    public double getMax() {
-        return m_max;
+    @Override
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_double = settings.getDouble(CFG_DOUBLE);
     }
 
     /**
@@ -132,19 +117,8 @@ public class DoubleWidgetRepresentation
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("useMin=");
-        sb.append(m_useMin);
-        sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
-        sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
-        sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
+        sb.append("double=");
+        sb.append(m_double);
         return sb.toString();
     }
 
@@ -154,12 +128,8 @@ public class DoubleWidgetRepresentation
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_useMin)
-            .append(m_useMax)
-            .append(m_min)
-            .append(m_max)
-            .toHashCode();
+                .append(m_double)
+                .toHashCode();
     }
 
     /**
@@ -176,14 +146,10 @@ public class DoubleWidgetRepresentation
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleWidgetRepresentation other = (DoubleWidgetRepresentation)obj;
+        DoubleNodeValue other = (DoubleNodeValue)obj;
         return new EqualsBuilder()
-            .appendSuper(super.equals(obj))
-            .append(m_useMin, other.m_useMin)
-            .append(m_useMax, other.m_useMax)
-            .append(m_min, other.m_min)
-            .append(m_max, other.m_max)
-            .isEquals();
+                .append(m_double, other.m_double)
+                .isEquals();
     }
 
 }

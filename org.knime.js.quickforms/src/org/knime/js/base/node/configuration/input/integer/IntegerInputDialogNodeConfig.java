@@ -46,94 +46,45 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.dbl;
+package org.knime.js.base.node.configuration.input.integer;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the double widget node
+ * The config for the integer configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleWidgetConfig extends LabeledFlowVariableWidgetConfig<DoubleWidgetValue> {
+public class IntegerInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<IntegerDialogNodeValue> {
 
-    private final DoubleNodeConfig m_config;
+    private final IntegerNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public DoubleWidgetConfig() {
-        m_config = new DoubleNodeConfig();
+    public IntegerInputDialogNodeConfig() {
+        m_config = new IntegerNodeConfig();
     }
 
     /**
-     * @return the useMin
+     * @return the config
      */
-    public boolean isUseMin() {
-        return m_config.isUseMin();
-    }
-
-    /**
-     * @param useMin the useMin to set
-     */
-    public void setUseMin(final boolean useMin) {
-        m_config.setUseMin(useMin);
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_config.isUseMax();
-    }
-
-    /**
-     * @param useMax the useMax to set
-     */
-    public void setUseMax(final boolean useMax) {
-        m_config.setUseMax(useMax);
-    }
-
-    /**
-     * @return the min
-     */
-    public double getMin() {
-        return m_config.getMin();
-    }
-
-    /**
-     * @param min the min to set
-     */
-    public void setMin(final double min) {
-        m_config.setMin(min);
-    }
-
-    /**
-     * @return the max
-     */
-    public double getMax() {
-        return m_config.getMax();
-    }
-
-    /**
-     * @param max the max to set
-     */
-    public void setMax(final double max) {
-        m_config.setMax(max);
+    public IntegerNodeConfig getIntegerConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected DoubleWidgetValue createEmptyValue() {
-        return new DoubleWidgetValue();
+    protected IntegerDialogNodeValue createEmptyValue() {
+        return new IntegerDialogNodeValue();
     }
 
     /**
@@ -180,10 +131,9 @@ public class DoubleWidgetConfig extends LabeledFlowVariableWidgetConfig<DoubleWi
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_config)
-            .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_config)
+                .toHashCode();
     }
 
     /**
@@ -200,11 +150,10 @@ public class DoubleWidgetConfig extends LabeledFlowVariableWidgetConfig<DoubleWi
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleWidgetConfig other = (DoubleWidgetConfig)obj;
-        return new EqualsBuilder()
-            .appendSuper(super.equals(obj))
-            .append(m_config, other.m_config)
-            .isEquals();
+        IntegerInputDialogNodeConfig other = (IntegerInputDialogNodeConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
+                .isEquals();
     }
 
 }

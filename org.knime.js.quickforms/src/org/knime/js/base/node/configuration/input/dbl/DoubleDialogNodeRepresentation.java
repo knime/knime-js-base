@@ -48,62 +48,25 @@
  */
 package org.knime.js.base.node.configuration.input.dbl;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeRepresentation;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
 
 /**
  * The dialog representation of the double configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleDialogNodeRepresentation
-    extends AbstractDialogNodeRepresentation<DoubleDialogNodeValue, DoubleDialogNodeConfig> {
-
-    private final boolean m_useMin;
-    private final boolean m_useMax;
-    private final double m_min;
-    private final double m_max;
+public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue>
+    implements QuickFormRepresentation<DoubleDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      */
-    public DoubleDialogNodeRepresentation(final DoubleDialogNodeValue currentValue, final DoubleDialogNodeConfig config) {
-        super(currentValue, config);
-        m_useMin = config.isUseMin();
-        m_useMax = config.isUseMax();
-        m_min = config.getMin();
-        m_max = config.getMax();
-    }
-
-    /**
-     * @return the useMin
-     */
-    public boolean isUseMin() {
-        return m_useMin;
-    }
-
-    /**
-     * @return the useMax
-     */
-    public boolean isUseMax() {
-        return m_useMax;
-    }
-
-    /**
-     * @return the min
-     */
-    public double getMin() {
-        return m_min;
-    }
-
-    /**
-     * @return the max
-     */
-    public double getMax() {
-        return m_max;
+    public DoubleDialogNodeRepresentation(final DoubleDialogNodeValue currentValue,
+        final DoubleInputDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getDoubleConfig(), config.getLabelConfig());
     }
 
     /**
@@ -111,68 +74,6 @@ public class DoubleDialogNodeRepresentation
      */
     @Override
     public DialogNodePanel<DoubleDialogNodeValue> createDialogPanel() {
-        DoubleConfigurationPanel panel = new DoubleConfigurationPanel(this);
-        fillDialogPanel(panel);
-        return panel;
+        return new DoubleConfigurationPanel(this);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("useMin=");
-        sb.append(m_useMin);
-        sb.append(", ");
-        sb.append("useMax=");
-        sb.append(m_useMax);
-        sb.append(", ");
-        sb.append("min=");
-        sb.append(m_min);
-        sb.append(", ");
-        sb.append("max=");
-        sb.append(m_max);
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_useMin)
-            .append(m_useMax)
-            .append(m_min)
-            .append(m_max)
-            .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        DoubleDialogNodeRepresentation other = (DoubleDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_useMin, other.m_useMin)
-                .append(m_useMax, other.m_useMax)
-                .append(m_min, other.m_min)
-                .append(m_max, other.m_max)
-                .isEquals();
-    }
-
 }

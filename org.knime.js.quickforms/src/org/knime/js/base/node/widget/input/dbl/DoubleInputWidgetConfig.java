@@ -53,52 +53,66 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.dbl.DoubleNodeValue;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * The value for the double widget node
+ * The config for the double widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class DoubleWidgetValue extends JSONViewContent {
+public class DoubleInputWidgetConfig extends LabeledFlowVariableWidgetConfig<DoubleNodeValue> {
 
-    private static final String CFG_DOUBLE = "double";
-    private static final double DEFAULT_DOUBLE = 0.0;
-    private double m_double = DEFAULT_DOUBLE;
+    private final DoubleNodeConfig m_config;
 
     /**
-     * @return the string
+     * Instantiate a new config object
      */
-    public double getDouble() {
-        return m_double;
+    public DoubleInputWidgetConfig() {
+        m_config = new DoubleNodeConfig();
     }
 
     /**
-     * @param dbl the string to set
+     * @return the config
      */
-    public void setDouble(final double dbl) {
-        m_double = dbl;
+    public DoubleNodeConfig getDoubleConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addDouble(CFG_DOUBLE, m_double);
+    protected DoubleNodeValue createEmptyValue() {
+        return new DoubleNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_double = settings.getDouble(CFG_DOUBLE);
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
     }
 
     /**
@@ -107,8 +121,9 @@ public class DoubleWidgetValue extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("double=");
-        sb.append(m_double);
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -118,8 +133,9 @@ public class DoubleWidgetValue extends JSONViewContent {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(m_double)
-                .toHashCode();
+            .appendSuper(super.hashCode())
+            .append(m_config)
+            .toHashCode();
     }
 
     /**
@@ -136,10 +152,11 @@ public class DoubleWidgetValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        DoubleWidgetValue other = (DoubleWidgetValue)obj;
+        DoubleInputWidgetConfig other = (DoubleInputWidgetConfig)obj;
         return new EqualsBuilder()
-                .append(m_double, other.m_double)
-                .isEquals();
+            .appendSuper(super.equals(obj))
+            .append(m_config, other.m_config)
+            .isEquals();
     }
 
 }

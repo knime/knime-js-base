@@ -46,36 +46,36 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.integer;
+package org.knime.js.base.node.configuration.input.dbl;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.integer.IntegerNodeConfig;
+import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the integer configuration node.
+ * The config for the double configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<IntegerDialogNodeValue> {
+public class DoubleInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<DoubleDialogNodeValue> {
 
-    private final IntegerNodeConfig m_config;
+    private final DoubleNodeConfig m_config;
 
     /**
      * Instantiate a new config object
      */
-    public IntegerDialogNodeConfig() {
-        m_config = new IntegerNodeConfig();
+    public DoubleInputDialogNodeConfig() {
+        m_config = new DoubleNodeConfig();
     }
 
     /**
      * @return the config
      */
-    public IntegerNodeConfig getIntegerConfig() {
+    public DoubleNodeConfig getDoubleConfig() {
         return m_config;
     }
 
@@ -83,8 +83,8 @@ public class IntegerDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
      * {@inheritDoc}
      */
     @Override
-    protected IntegerDialogNodeValue createEmptyValue() {
-        return new IntegerDialogNodeValue();
+    protected DoubleDialogNodeValue createEmptyValue() {
+        return new DoubleDialogNodeValue();
     }
 
     /**
@@ -131,7 +131,8 @@ public class IntegerDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
                 .append(m_config)
                 .toHashCode();
     }
@@ -150,8 +151,9 @@ public class IntegerDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig
         if (obj.getClass() != getClass()) {
             return false;
         }
-        IntegerDialogNodeConfig other = (IntegerDialogNodeConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
+        DoubleInputDialogNodeConfig other = (DoubleInputDialogNodeConfig)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
                 .append(m_config, other.m_config)
                 .isEquals();
     }

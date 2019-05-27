@@ -50,6 +50,9 @@ package org.knime.js.base.node.widget.input.dbl;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.web.ValidationError;
+import org.knime.js.base.node.base.dbl.DoubleNodeConfig;
+import org.knime.js.base.node.base.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.base.dbl.DoubleNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
@@ -58,7 +61,7 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<DoubleWidgetRepresentation, DoubleWidgetValue, DoubleWidgetConfig> {
+    extends WidgetFlowVariableNodeModel<DoubleNodeRepresentation<DoubleNodeValue>, DoubleNodeValue, DoubleInputWidgetConfig> {
 
     /**
      * @param viewName the interactive view name
@@ -71,8 +74,8 @@ public class DoubleWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DoubleWidgetValue createEmptyViewValue() {
-        return new DoubleWidgetValue();
+    public DoubleNodeValue createEmptyViewValue() {
+        return new DoubleNodeValue();
     }
 
     /**
@@ -100,16 +103,18 @@ public class DoubleWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public DoubleWidgetConfig createEmptyConfig() {
-        return new DoubleWidgetConfig();
+    public DoubleInputWidgetConfig createEmptyConfig() {
+        return new DoubleInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected DoubleWidgetRepresentation getRepresentation() {
-        return new DoubleWidgetRepresentation(getRelevantValue(), getConfig());
+    protected DoubleNodeRepresentation<DoubleNodeValue> getRepresentation() {
+        DoubleInputWidgetConfig config = getConfig();
+        return new DoubleNodeRepresentation<DoubleNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getDoubleConfig(), config.getLabelConfig());
     }
 
     /**
@@ -124,15 +129,16 @@ public class DoubleWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final DoubleWidgetValue value) {
+    public ValidationError validateViewValue(final DoubleNodeValue value) {
+        DoubleNodeConfig config = getConfig().getDoubleConfig();
         double dbl = value.getDouble();
-        if (getConfig().isUseMin() && dbl < getConfig().getMin()) {
+        if (config.isUseMin() && dbl < config.getMin()) {
             return new ValidationError("The set integer " + dbl
-                + " is smaller than the allowed minimum of " + getConfig().getMin());
+                + " is smaller than the allowed minimum of " + config.getMin());
         }
-        if (getConfig().isUseMax() && dbl > getConfig().getMax()) {
+        if (config.isUseMax() && dbl > config.getMax()) {
             return new ValidationError("The set integer " + dbl
-                + " is bigger than the allowed maximum of " + getConfig().getMax());
+                + " is bigger than the allowed maximum of " + config.getMax());
         }
         return super.validateViewValue(value);
     }
