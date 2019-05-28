@@ -37,7 +37,11 @@ window.knimeGenericView = (function () {
                     var styleDep = document.createElement('link');
                     styleDep.type = 'text/css';
                     styleDep.rel = 'stylesheet';
-                    styleDep.href = representation.cssDependencies[j];
+                    if (knimeService && knimeService.isRunningInWebportal()) {
+                        styleDep.href = './VAADIN/src-js/' + representation.cssDependencies[j];
+                    } else {
+                        styleDep.href = representation.cssDependencies[j];
+                    }
                     head.insertBefore(styleDep, linkBefore);
                 }
             }
