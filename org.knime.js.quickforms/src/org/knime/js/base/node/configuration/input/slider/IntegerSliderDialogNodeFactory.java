@@ -57,13 +57,13 @@ import org.knime.core.node.NodeView;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeFactory extends NodeFactory<SliderDialogNodeModel> {
+public class IntegerSliderDialogNodeFactory extends NodeFactory<IntegerSliderDialogNodeModel> {
     /**
      * {@inheritDoc}
      */
     @Override
-    public SliderDialogNodeModel createNodeModel() {
-        return new SliderDialogNodeModel();
+    public IntegerSliderDialogNodeModel createNodeModel() {
+        return new IntegerSliderDialogNodeModel();
     }
 
     /**
@@ -78,7 +78,7 @@ public class SliderDialogNodeFactory extends NodeFactory<SliderDialogNodeModel> 
      * {@inheritDoc}
      */
     @Override
-    public NodeView<SliderDialogNodeModel> createNodeView(final int viewIndex, final SliderDialogNodeModel nodeModel) {
+    public NodeView<IntegerSliderDialogNodeModel> createNodeView(final int viewIndex, final IntegerSliderDialogNodeModel nodeModel) {
         return null;
     }
 
@@ -95,6 +95,6 @@ public class SliderDialogNodeFactory extends NodeFactory<SliderDialogNodeModel> 
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new SliderDialogNodeNodeDialog();
+        return new IntegerSliderDialogNodeNodeDialog();
     }
 }

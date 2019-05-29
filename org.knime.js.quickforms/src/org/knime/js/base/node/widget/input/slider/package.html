@@ -1,6 +1,5 @@
-/*
- * ------------------------------------------------------------------------
- *
+<!--
+====================================================================
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,41 +40,8 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   May 24, 2019 (Daniel Bogenrieder): created
- */
-package org.knime.js.base.node.configuration.input.slider;
-
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
-import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
-
-/**
- * The representation for the slider input quick form node.
- *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- */
-public class SliderDialogNodeRepresentation extends SliderNodeRepresentation<SliderDialogNodeValue>
-    implements QuickFormRepresentation<SliderDialogNodeValue> {
-
-    /**
-     * @param currentValue
-     * @param config
-     */
-    public SliderDialogNodeRepresentation(final SliderDialogNodeValue currentValue, final SliderDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(),config.getSliderConfig(), config.getLabelConfig());
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogNodePanel<SliderDialogNodeValue> createDialogPanel() {
-        return new SliderConfigurationPanel(this);
-    }
-
-
-}
+====================================================================
+-->
+<body>
+	Slider Widget Node
+</body>

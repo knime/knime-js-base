@@ -44,70 +44,53 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 25, 2019 (Daniel Bogenrieder): created
+ *   May 28, 2019 (Daniel Bogenrieder): created
  */
-package org.knime.js.base.node.configuration.input.slider;
+package org.knime.js.base.node.widget.input.slider;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.input.slider.SliderNodeConfig;
+import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
+import org.knime.js.base.node.base.input.slider.SliderNodeValue;
+import org.knime.js.core.settings.slider.SliderSettings;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Node model for the slider configuration node
+ * The base representation for the slider configuration and widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ *
  */
-public class SliderDialogNodeModel
-    extends DialogFlowVariableNodeModel<SliderDialogNodeRepresentation, SliderDialogNodeValue, SliderDialogNodeConfig> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class SliderWidgetNodeRepresentation extends SliderNodeRepresentation<SliderNodeValue> {
+
+    private final SliderSettings m_sliderSettings;
 
     /**
-     * {@inheritDoc}
+     * @param currentValue
+     * @param defaultValue
+     * @param config
+     * @param labelConfig
      */
-    @Override
-    public SliderDialogNodeValue createEmptyDialogValue() {
-        return new SliderDialogNodeValue();
+    @JsonCreator
+    public SliderWidgetNodeRepresentation(final SliderNodeValue currentValue, final SliderNodeValue defaultValue,
+        final SliderNodeConfig config, final LabeledConfig labelConfig,
+        @JsonProperty("sliderSettings") final SliderSettings sliderSettings) {
+        super(currentValue, defaultValue, config, labelConfig);
+        m_sliderSettings = sliderSettings;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the sliderSettings
      */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        validateDialogValue(getRelevantValue());
-        double value = getRelevantValue().getDouble();
-        pushFlowVariableDouble(getConfig().getFlowVariableName(), value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SliderDialogNodeConfig createEmptyConfig() {
-        return new SliderDialogNodeConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected SliderDialogNodeRepresentation getRepresentation() {
-        return new SliderDialogNodeRepresentation(getRelevantValue(), getConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void validateDialogValue(final SliderDialogNodeValue value) throws InvalidSettingsException {
-        double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
-            throw new InvalidSettingsException("The set integer " + dialogValue
-                + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
-        }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
-            throw new InvalidSettingsException("The set integer " + dialogValue
-                + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
-        }
-        super.validateDialogValue(value);
+    @JsonProperty("sliderSettings")
+    public SliderSettings getSliderSettings() {
+        return m_sliderSettings;
     }
 
 }

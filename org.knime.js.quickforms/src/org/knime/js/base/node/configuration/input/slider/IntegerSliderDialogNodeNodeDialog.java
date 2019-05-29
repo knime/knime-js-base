@@ -61,10 +61,16 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DoubleValue;
+import org.knime.core.data.IntValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 import org.knime.js.base.node.quickform.input.slider.SliderInputQuickFormValue;
@@ -74,26 +80,36 @@ import org.knime.js.base.node.quickform.input.slider.SliderInputQuickFormValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<SliderDialogNodeValue> {
+public class IntegerSliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<IntegerSliderDialogNodeValue> {
 
+    private final DialogComponentColumnNameSelection m_domainColumnSelection;
     private final JCheckBox m_useCustomMin;
     private final JCheckBox m_useCustomMax;
     private final JSpinner m_min;
     private final JSpinner m_max;
     private final JSpinner m_defaultSpinner;
+    private DataTableSpec m_currentSpec;
 
-    private final SliderDialogNodeConfig m_config;
+    private final IntegerSliderDialogNodeConfig m_config;
 
     /**
      *
      */
-    public SliderDialogNodeNodeDialog() {
-        m_config = new SliderDialogNodeConfig();
+    @SuppressWarnings("unchecked")
+    public IntegerSliderDialogNodeNodeDialog() {
+        m_config = new IntegerSliderDialogNodeConfig();
+        m_domainColumnSelection = new DialogComponentColumnNameSelection(m_config.getDomainColumn(), "", 0, false, true, DoubleValue.class);
+        m_config.getDomainColumn().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                setDomainValues(true);
+            }
+        });
         m_useCustomMin = new JCheckBox();
         m_useCustomMax = new JCheckBox();
         m_min = new JSpinner(getSpinnerModel());
         m_max = new JSpinner(getSpinnerModel());
-        m_defaultSpinner = new JSpinner(new SpinnerNumberModel(50, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 1));
+        m_defaultSpinner = new JSpinner(new SpinnerNumberModel(50, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
         m_useCustomMin.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(final ItemEvent e) {
@@ -109,8 +125,8 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_min.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-                double min = (Double)m_min.getValue();
-                if (((Double)m_max.getValue()) < min) {
+                int min = (Integer)m_min.getValue();
+                if (((Integer)m_max.getValue()) < min) {
                     m_max.setValue(min);
                 }
             }
@@ -118,8 +134,8 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_max.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-                double max = (Double)m_max.getValue();
-                if (((Double)m_min.getValue()) > max) {
+                int max = (Integer)m_max.getValue();
+                if (((Integer)m_min.getValue()) > max) {
                     m_min.setValue(max);
                 }
             }
@@ -135,7 +151,7 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
      * @return a default spinner model
      */
     private static SpinnerNumberModel getSpinnerModel() {
-        return new SpinnerNumberModel(0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 1);
+        return new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
     }
 
     /**
@@ -166,6 +182,7 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         gbc2.gridx++;
         gbc2.insets = new Insets(0, 5, 0, 0);
         maxPanel.add(m_max, gbc2);
+        addPairToPanel("Range Column: ", m_domainColumnSelection.getComponentPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Minimum: ", minPanel, panelWithGBLayout, gbc);
         addPairToPanel("Maximum: ", maxPanel, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", m_defaultSpinner, panelWithGBLayout, gbc);
@@ -181,6 +198,43 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         }
     }
 
+    private void setDomainValues(final boolean forceDomain) {
+        String domainColumn = m_domainColumnSelection.getSelected();
+        m_useCustomMin.setEnabled(domainColumn != null);
+        m_useCustomMax.setEnabled(domainColumn != null);
+        if (domainColumn == null) {
+            m_useCustomMin.setSelected(true);
+            m_useCustomMax.setSelected(true);
+        } else if (forceDomain) {
+            m_useCustomMin.setSelected(false);
+            m_useCustomMax.setSelected(false);
+        }
+        m_min.setEnabled(m_useCustomMin.isSelected());
+        m_max.setEnabled(m_useCustomMax.isSelected());
+        if (domainColumn != null && !m_useCustomMin.isSelected()) {
+            DataColumnSpec colSpec = m_currentSpec.getColumnSpec(domainColumn);
+            if (colSpec != null) {
+                DataCell lowerBound = colSpec.getDomain().getLowerBound();
+                if (lowerBound != null && lowerBound.getType().isCompatible(IntValue.class)) {
+                    m_min.setValue(((IntValue)lowerBound).getIntValue());
+                }
+            }
+        }
+        if (domainColumn != null && !m_useCustomMax.isSelected()) {
+            DataColumnSpec colSpec = m_currentSpec.getColumnSpec(domainColumn);
+            if (colSpec != null) {
+                DataCell upperBound = colSpec.getDomain().getUpperBound();
+                if (upperBound != null && upperBound.getType().isCompatible(IntValue.class)) {
+                    m_max.setValue(((IntValue)upperBound).getIntValue());
+                }
+            }
+        }
+        if (domainColumn != null && forceDomain) {
+            int newDefault = ((Integer)m_max.getValue() - (Integer)m_min.getValue()) / 2 + (Integer)m_min.getValue();
+            m_defaultSpinner.setValue(newDefault);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -189,20 +243,25 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
+        if(specs.length > 0) {
+            m_currentSpec = (DataTableSpec)specs[0];
+        }
+        m_domainColumnSelection.loadSettingsFrom(settings, specs);
         m_useCustomMin.setSelected(m_config.isUseCustomMin());
         m_useCustomMax.setSelected(m_config.isUseCustomMax());
-        m_min.setValue(m_config.getCustomMin());
-        m_max.setValue(m_config.getCustomMax());
-        double defaultValue = m_config.getDefaultValue().getDouble();
+        m_min.setValue((int)m_config.getCustomMin());
+        m_max.setValue((int)m_config.getCustomMax());
+        int defaultValue = m_config.getDefaultValue().getDouble().intValue();
         m_defaultSpinner.setValue(defaultValue);
         m_min.setEnabled(m_useCustomMin.isSelected());
         m_max.setEnabled(m_useCustomMax.isSelected());
+        setDomainValues(false);
     }
 
     private void validateSettings() throws InvalidSettingsException{
-        double min = Double.parseDouble(m_min.getValue().toString());
-        double max = Double.parseDouble(m_max.getValue().toString());
-        double value = Double.parseDouble(m_defaultSpinner.getValue().toString());
+        int min = (Integer)m_min.getValue();
+        int max = (Integer)m_max.getValue();
+        int value = (Integer)m_defaultSpinner.getValue();
         if (max <= min) {
             throw new InvalidSettingsException("Maximum range has to be larger than minimum.");
         }
@@ -218,13 +277,14 @@ public class SliderDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         validateSettings();
         super.saveSettingsTo(m_config);
+        m_config.getDomainColumn().saveSettingsTo(settings);
         m_config.setUseCustomMin(m_useCustomMin.isSelected());
         m_config.setUseCustomMax(m_useCustomMax.isSelected());
 
-        double defaultValue = (Double.parseDouble(m_defaultSpinner.getValue().toString()));
-        m_config.getDefaultValue().setDouble(defaultValue);
-        m_config.setCustomMin(Double.parseDouble(m_min.getValue().toString()));
-        m_config.setCustomMax(Double.parseDouble(m_max.getValue().toString()));
+        int defaultValue = (Integer)m_defaultSpinner.getValue();
+        m_config.getDefaultValue().setDouble((double)defaultValue);
+        m_config.setCustomMin((Integer)m_min.getValue());
+        m_config.setCustomMax((Integer)m_max.getValue());
         m_config.saveSettings(settings);
     }
 

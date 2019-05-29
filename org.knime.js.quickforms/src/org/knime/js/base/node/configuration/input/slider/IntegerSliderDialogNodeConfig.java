@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.js.base.node.base.input.slider.SliderNodeConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
@@ -61,14 +62,14 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<SliderDialogNodeValue> {
+public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<IntegerSliderDialogNodeValue> {
 
     private final SliderNodeConfig m_sliderConfig;
 
     /**
      * Instantiate a new config object
      */
-    public SliderDialogNodeConfig() {
+    public IntegerSliderDialogNodeConfig() {
         m_sliderConfig = new SliderNodeConfig();
     }
 
@@ -77,6 +78,13 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
      */
     public SliderNodeConfig getSliderConfig() {
         return m_sliderConfig;
+    }
+
+    /**
+     * @return the domainColumn
+     */
+    public SettingsModelString getDomainColumn() {
+        return m_sliderConfig.getDomainColumn();
     }
 
     /**
@@ -139,8 +147,8 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
      * {@inheritDoc}
      */
     @Override
-    protected SliderDialogNodeValue createEmptyValue() {
-        return new SliderDialogNodeValue();
+    protected IntegerSliderDialogNodeValue createEmptyValue() {
+        return new IntegerSliderDialogNodeValue();
     }
 
     /**
@@ -206,7 +214,7 @@ public class SliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<
         if (obj.getClass() != getClass()) {
             return false;
         }
-        SliderDialogNodeConfig other = (SliderDialogNodeConfig)obj;
+        IntegerSliderDialogNodeConfig other = (IntegerSliderDialogNodeConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_sliderConfig, other.m_sliderConfig)
                 .isEquals();

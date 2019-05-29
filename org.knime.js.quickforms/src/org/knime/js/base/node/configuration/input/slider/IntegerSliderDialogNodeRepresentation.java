@@ -44,87 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 23, 2019 (Daniel Bogenrieder): created
+ *   May 24, 2019 (Daniel Bogenrieder): created
  */
 package org.knime.js.base.node.configuration.input.slider;
 
-
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.input.slider.SliderNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.node.dialog.DialogNodePanel;
+import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 
 /**
- * The config for the slider configuration node.
+ * The representation for the slider input quick form node.
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderDialogNodeValue extends SliderNodeValue implements DialogNodeValue {
+public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentation<IntegerSliderDialogNodeValue>
+    implements QuickFormRepresentation<IntegerSliderDialogNodeValue> {
+
+    /**
+     * @param currentValue
+     * @param config
+     */
+    public IntegerSliderDialogNodeRepresentation(final IntegerSliderDialogNodeValue currentValue, final IntegerSliderDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(),config.getSliderConfig(), config.getLabelConfig());
+    }
+
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setDouble(settings.getDouble(CFG_DOUBLE, DEFAULT_DOUBLE));
+    public DialogNodePanel<IntegerSliderDialogNodeValue> createDialogPanel() {
+        return new IntegerSliderConfigurationPanel(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        Double number = null;
-        try {
-            number = Double.parseDouble(fromCmdLine);
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Could not parse '" + fromCmdLine + "' as double type.");
-        }
-        setDouble(number);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonNumber) {
-            m_double = ((JsonNumber)json).doubleValue();
-        } else if (json instanceof JsonString) {
-            loadFromString(((JsonString)json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                m_double = ((JsonObject) json).getJsonNumber(CFG_DOUBLE).doubleValue();
-            } catch (Exception e) {
-                throw new JsonException("Expected double value for key '" + CFG_DOUBLE + "'."  , e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON number, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getDouble() == null) {
-            builder.addNull(CFG_DOUBLE);
-        } else {
-            builder.add(CFG_DOUBLE, getDouble());
-        }
-        return builder.build().get(CFG_DOUBLE);
-    }
 
 }

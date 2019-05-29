@@ -48,16 +48,25 @@
  */
 package org.knime.js.base.node.configuration.input.slider;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import javax.swing.BoundedRangeModel;
-import javax.swing.GroupLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
+import org.knime.js.core.settings.DialogUtil;
 
 /**
  * The component dialog panel for the slider configuration node
@@ -65,51 +74,76 @@ import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("serial")
-public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPanel<SliderDialogNodeValue> {
+public class IntegerSliderConfigurationPanel extends AbstractDialogNodeConfigurationPanel<IntegerSliderDialogNodeValue> {
 
     private final JSlider m_component;
-    private final JTextArea m_component_text;
+    private final JLabel m_component_text;
     private final JPanel m_panel;
-    private final GroupLayout layout;
+
     /**
      * @param representation the dialog node settings
      */
-    public SliderConfigurationPanel(final SliderDialogNodeRepresentation representation) {
+    public IntegerSliderConfigurationPanel(final IntegerSliderDialogNodeRepresentation representation) {
         super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
-        m_panel = new JPanel();
-        layout = new GroupLayout(m_panel);
+
+        // default min and max value
         double min = 0;
         double max = 100;
+
+        // Steps of the slider
+        int MAJOR_TICK_COUNT = 5;
+        int MINOR_TICK_DIVISIONS = 20;
+
         if(representation.isUseCustomMin()) {
             min = representation.getCustomMin();
         }
         if(representation.isUseCustomMax()) {
             max = representation.getCustomMax();
         }
-        m_component_text = new JTextArea();
+        // Text Label next to the slider to show current value
+        m_component_text = new JLabel();
         m_component_text.setText(representation.getDefaultValue().getDouble().toString());
         m_component = new JSlider();
         m_component.addChangeListener(new ChangeListener() {
-
             @Override
             public void stateChanged(final ChangeEvent e) {
                 m_component_text.setText(((Integer)m_component.getValue()).toString());
             }
         });
+        // Model of JSlider to adjust min and max
         BoundedRangeModel sliderModel = m_component.getModel();
         sliderModel.setMaximum((int)max);
         sliderModel.setMinimum((int)min);
-        m_component.setPaintTicks(true);
 
-        m_component.setPaintLabels(true);
-        // m_component.setLabelTable(m_component.createStandardLabels(2));
-        // m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
+
+        // Add first and last Value as labels to the slider
+        Dictionary<Integer, JComponent> myDictionary = new Hashtable<Integer, JComponent>();
+        Integer key = (int)min;
+        JLabel value = new JLabel(String.valueOf((int)min));
+        myDictionary.put(key, value);
+        Integer key1 = (int)max;
+        JLabel value1 = new JLabel(String.valueOf((int)max));
+        myDictionary.put(key1, value1);
+
         m_component.setValue(representation.getDefaultValue().getDouble().intValue());
-        layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-               .addComponent(m_component)
-               .addComponent(m_component_text)
-         );
+        m_component.setPaintTicks(true);
+        m_component.setPaintLabels(true);
+        m_component.setLabelTable(myDictionary);
+//        m_component.setMajorTickSpacing((int)max / (MAJOR_TICK_COUNT - 1));
+        m_component.setMinorTickSpacing((int)max / MINOR_TICK_DIVISIONS);
+
+        m_panel = new JPanel(new GridBagLayout());
+        final GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        m_panel.add(m_component, gbc);
+        gbc.gridx++;
+        gbc.insets = new Insets(5, 5, 30, 5);
+        m_panel.add(m_component_text, gbc);
+        m_component.setPreferredSize(new Dimension(
+            (new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize().width), getPreferredSize().height));
         setComponent(m_panel);
     }
 
@@ -125,8 +159,8 @@ public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPan
      * {@inheritDoc}
      */
     @Override
-    protected SliderDialogNodeValue createNodeValue() throws InvalidSettingsException {
-        SliderDialogNodeValue value = new SliderDialogNodeValue();
+    protected IntegerSliderDialogNodeValue createNodeValue() throws InvalidSettingsException {
+        IntegerSliderDialogNodeValue value = new IntegerSliderDialogNodeValue();
         value.setDouble((double)m_component.getValue());
         return value;
     }
@@ -135,7 +169,7 @@ public class SliderConfigurationPanel extends AbstractDialogNodeConfigurationPan
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final SliderDialogNodeValue value) {
+    public void loadNodeValue(final IntegerSliderDialogNodeValue value) {
         super.loadNodeValue(value);
         if (value != null) {
             m_component.setValue(value.getDouble().intValue());

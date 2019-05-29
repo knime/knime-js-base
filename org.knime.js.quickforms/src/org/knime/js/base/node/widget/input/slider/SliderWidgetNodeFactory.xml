@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_slider.png" type="Visualizer" xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Slider Widget</name>
+
+	<shortDescription>
+       Creates a slider input widget for use in components views. Outputs a string flow variable with a given value.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				Creates a slider input widget for use in components views. Outputs an string flow variable with a given
+				value.
+			</p>
+			<p>
+				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
+				flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes
+				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+			</p>
+		</intro>
+		<tab name="Control">
+		<option name="Label">A descriptive label that will be shown in the dialog.</option>
+		<option name="Description">Some lines of description that will be shown in the view,
+			for instance by means of a tooltip.
+		</option>
+		<option name="Variable Name">Variable identifier.</option>
+		<option name="Parameter Name">Parameter identifier for external
+			parameterization
+			(e.g. batch execution).
+		</option>
+		<option name="Range Column" optional="true">Double column containing
+			domain values to be used for minimum and maximum settings.
+		</option>
+		<option name="Minimum">Check, if a custom minimum value is supposed to
+			be
+			used. Mandatory if no range column is selected.
+		</option>
+		<option name="Maximum">Check, if a custom maximum value is supposed to
+			be
+			used. Mandatory if no range column is selected.
+		</option>
+		<option name="Default Value">The value that is output by default and preset on
+			the slider view. Needs to be in between the set minimum and maximum
+			values.
+		</option>
+		</tab>
+		<tab name="Slider">
+			<option name="Use Stepping">Check, if a step size is supposed to be used. The
+				slider is continuous otherwise.</option>
+			<option name="Step Size">A step size. If set the slider only outputs
+				values in set intervals.</option>
+			<option name="Connect">
+				Displays a colored bar on parts of the slider.
+				<i>Lower</i>
+				displays the bar on the lower end of the slider,
+				<i>Upper</i>
+				on the upper end.
+			</option>
+			<option name="Orientation">Choose if the slider is drawn horizontally or
+				vertically.</option>
+			<option name="Direction">Choose if the slider is drawn left to right or
+				right to left for horizontal orientation, top to bottom or bottom to
+				top for vertical orientation.</option>
+			<option name="Show Tooltip">Check, if the currently selected value on the
+				slider is supposed to be shown in a tooltip.</option>
+			<option name="Use Formatter For Tooltip">Enable or disable formatting options for the
+				tooltip.</option>
+			<option name="Decimal Digits">The number of decimal digits to be shown. Use 0
+				for no decimal digits. Maximum is 7 digits.</option>
+			<option name="Decimal Separator">
+				The decimal separator character. Defaults to
+				<i>.</i>
+			</option>
+			<option name="Thousands Separator">The thousands separator character. Leave blank
+				for displaying no separator character.</option>
+			<option name="Custom Prefix">A custom prefix string. A common use case for
+				this is a currency symbol.</option>
+			<option name="Custom Postfix">A custom string rendered after the number.
+			</option>
+			<option name="Negative Sign">
+				The string used to denote a negative number. Defaults to
+				<i>-</i>
+			</option>
+			<option name="Negative Before String">A custom string rendered before any custom
+				prefix, when number is negative.</option>
+		</tab>
+		<tab name="Labels">
+			<option name="Enable Labels/Ticks">Check, to enable the display of ticks and labels
+				for the slider.</option>
+			<option name="Ticks Mode">The mode after which the ticks and labels are
+				displayed. Possible values are:
+				<ul>
+					<li><b>Range</b>: Draw labels at the specified range points. For linear sliders this is only minimum and maximum.</li>
+					<li><b>Steps</b>: Draws labels at specified steps (See <i>Step Size</i> option). Major ticks and labels are generated at the minimum and maximum and smaller labels at each step size.</li>
+					<li><b>Positions</b>: Draw labels and major ticks at set positions (percentages). Use the <i>Values</i> field to specify the positions as a comma separated list of values between 0 and 100.</li>
+					<li><b>Count</b>: Draws the number of labels specified. Use the <i>Values</i> field to provide the count as an integer number.</li>
+					<li><b>Values</b>: Draw labels and major ticks at positions of the actual values.  Use the <i>Values</i> field to specify the values as a comma separated list of numbers.</li>
+				</ul>
+			</option>
+			<option name="Density">A measure to pre-scale the number of ticks. Higher number means less ticks.</option>
+			<option name="Values">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Set the appropriate values either as number or comma separated list of numbers.</option>
+			<option name="Stepped">For <i>Positions</i>, <i>Count</i>, and <i>Values</i> ticks mode. Check to override calculated or given label positions, to match the values to the provided slider steps.</option>
+			<option name="Lable Format Options">Set formatting options for all labels drawn.</option>
+			<option name="Decimal Digits">The number of decimal digits to be shown. Use 0
+				for no decimal digits. Maximum is 7 digits.</option>
+			<option name="Decimal Separator">
+				The decimal separator character. Defaults to
+				<i>.</i>
+			</option>
+			<option name="Thousands Separator">The thousands separator character. Leave blank
+				for displaying no separator character.</option>
+			<option name="Custom Prefix">A custom prefix string. A common use case for
+				this is a currency symbol.</option>
+			<option name="Custom Postfix">A custom string rendered after the number.
+			</option>
+			<option name="Negative Sign">
+				The string used to denote a negative number. Defaults to
+				<i>-</i>
+			</option>
+			<option name="Negative Before String">A custom string rendered before any custom
+				prefix, when number is negative.</option>
+		</tab>
+		
+		
+	</fullDescription>
+	<interactiveView name="Slider Widget">
+		Displays a slider input field which represents the string value.
+	</interactiveView>
+	<ports>
+		<inPort index="0" name="Table Input with applicable domain values"
+			optional="true">Input table which contains at least one double
+			column with	domain values set, which can be used to control the
+			minimum and	maximum values of the slider.
+		</inPort>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output (string) with the given variable defined.
+		</outPort>
+	</ports>
+</knimeNode>

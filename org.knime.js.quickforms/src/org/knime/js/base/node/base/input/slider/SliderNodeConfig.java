@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
  * Base config file for the slider configuration and widget nodes
@@ -60,6 +61,9 @@ import org.knime.core.node.NodeSettingsWO;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class SliderNodeConfig {
+
+    private static String CFG_DOMAIN_COLUMN = "domainColumn";
+    private SettingsModelString m_domainColumn = new SettingsModelString(CFG_DOMAIN_COLUMN, null);
 
     private static String CFG_USE_CUSTOM_MIN = "useCustomMin";
     private static boolean DEFAULT_USE_CUSTOM_MIN = false;
@@ -76,6 +80,20 @@ public class SliderNodeConfig {
     private static final String CFG_MAX = "customMax";
     private static final double DEFAULT_MAX = 100;
     private double m_customMax = DEFAULT_MAX;
+
+    /**
+     * @return the domainColumn
+     */
+    public SettingsModelString getDomainColumn() {
+        return m_domainColumn;
+    }
+
+    /**
+     * @param domainColumn the domainColumn to set
+     */
+    public void setDomainColumn(final SettingsModelString domainColumn) {
+        m_domainColumn = domainColumn;
+    }
 
     /**
      * @return the customMin value of the slider
@@ -139,6 +157,7 @@ public class SliderNodeConfig {
      * @param settings the settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
+        m_domainColumn.saveSettingsTo(settings);
         settings.addBoolean(CFG_USE_CUSTOM_MIN, m_useCustomMin);
         settings.addBoolean(CFG_USE_CUSTOM_MAX, m_useCustomMax);
         settings.addDouble(CFG_MIN, m_customMin);
@@ -156,6 +175,7 @@ public class SliderNodeConfig {
         m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX);
         m_customMin = settings.getDouble(CFG_MIN);
         m_customMax = settings.getDouble(CFG_MAX);
+        m_domainColumn.loadSettingsFrom(settings);
     }
 
     /**
@@ -189,6 +209,10 @@ public class SliderNodeConfig {
         sb.append(", ");
         sb.append("customMax=");
         sb.append(m_customMax);
+        if (m_domainColumn != null) {
+            sb.append(", domainColumn=");
+            sb.append(m_domainColumn);
+        }
         return sb.toString();
     }
 
@@ -198,6 +222,7 @@ public class SliderNodeConfig {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_domainColumn)
                 .append(m_useCustomMin)
                 .append(m_useCustomMax)
                 .append(m_customMin)
@@ -223,6 +248,7 @@ public class SliderNodeConfig {
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_useCustomMin, other.m_useCustomMin)
                 .append(m_useCustomMax, other.m_useCustomMax)
+                .append(m_domainColumn, other.m_domainColumn)
                 .append(m_customMin, other.m_customMin)
                 .append(m_customMax, other.m_customMax)
                 .isEquals();
