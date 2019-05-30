@@ -5,7 +5,7 @@
     <name>Integer Slider Configuration</name>
 
 	<shortDescription>
-	   Provides an slider configuration option to an encapsulating component's dialog. 
+	   Provides a slider configuration option to an encapsulating component's dialog. 
 	   Outputs a integer flow variable with the set value.
 	</shortDescription>
 	<fullDescription>

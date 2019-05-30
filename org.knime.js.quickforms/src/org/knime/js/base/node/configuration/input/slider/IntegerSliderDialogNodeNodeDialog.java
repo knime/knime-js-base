@@ -64,7 +64,6 @@ import javax.swing.event.ChangeListener;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -98,7 +97,7 @@ public class IntegerSliderDialogNodeNodeDialog extends FlowVariableDialogNodeNod
     @SuppressWarnings("unchecked")
     public IntegerSliderDialogNodeNodeDialog() {
         m_config = new IntegerSliderDialogNodeConfig();
-        m_domainColumnSelection = new DialogComponentColumnNameSelection(m_config.getDomainColumn(), "", 0, false, true, DoubleValue.class);
+        m_domainColumnSelection = new DialogComponentColumnNameSelection(m_config.getDomainColumn(), "", 0, false, true, IntValue.class);
         m_config.getDomainColumn().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {

@@ -200,6 +200,16 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.credentials.CredentialsDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.credentials.CredentialsWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -697,7 +707,7 @@
                relativePathTarget="org/knime/js/base/node/quickform/input/slider/">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/quickform/input/slider/SliderInput.js"
+               relativePath="org/knime/js/base/node/quickform/input/slider/sliderWidget.js"
                type="JAVASCRIPT">
          </importResource>
          <importResource
@@ -887,6 +897,24 @@
          <webDependency
                webResourceBundleID="MultipleSelections">
          </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Credentials Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.credentials.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/credentials/credentialsWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/credentials/credentialsWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/credentials/credentialsWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
          <webDependency
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
@@ -1166,6 +1194,26 @@
             javascriptComponentID="org.knime.js.base.node.widget.filter.column"
             name="Column Filter Widget"
             namespace="knimeColumnFilterWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.credentials.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.credentials"
+            name="Credentials Widget"
+            namespace="knimeCredentialsWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.slider.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.slider"
+            name="Slider Widget"
+            namespace="knimeSliderWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
