@@ -63,6 +63,7 @@ import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -98,6 +99,7 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setColumns(settings.getStringArray(CFG_COLUMNS, DEFAULT_COLUMNS));
         try {
@@ -119,6 +121,7 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonArray) {
             JsonArray array = (JsonArray) json;
@@ -150,6 +153,7 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (getColumns() == null) {

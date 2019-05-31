@@ -75,7 +75,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
     private BufferedDataTable m_inTable = null;
 
     /**
-     * Creates a new list box widget node model
+     * Creates a new column filter widget node model
      *
      * @param viewName the interactive view name
      */

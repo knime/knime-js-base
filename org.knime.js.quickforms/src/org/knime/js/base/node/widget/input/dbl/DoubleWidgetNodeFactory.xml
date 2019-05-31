@@ -20,10 +20,12 @@
 			</p>
 		</intro>
 		<option name="Label">A descriptive label that will be shown in the dialog.</option>
-		<option name="Description">Some lines of description that will be shown in the view,
-			for instance by means of a tooltip.
+		<option name="Description">
+		  Some lines of description that will be shown in the view, for instance by means of a tooltip.
 		</option>
-		<option name="Variable Name">Variable identifier.</option>
+		<option name="Variable Name">
+          Variable identifier.
+        </option>
 		<option name="Minimum">
           An optional minimum value.
         </option>
@@ -35,7 +37,7 @@
 		</option>
 	</fullDescription>
 	<interactiveView name="Double Widget">
-		Displays a number input field which represents the integer value.
+		Displays a number input field which represents the double value.
 	</interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">

@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.input.listbox;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
 
@@ -61,7 +61,7 @@ import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<ListBoxDialogNodeValue>
-    implements QuickFormRepresentation<ListBoxDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ListBoxDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

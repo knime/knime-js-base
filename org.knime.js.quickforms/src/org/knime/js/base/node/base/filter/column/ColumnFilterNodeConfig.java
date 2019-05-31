@@ -113,7 +113,7 @@ public class ColumnFilterNodeConfig {
     /**
      * @return the limitNumberVisOptions
      */
-    public boolean getLimitNumberVisOptions() {
+    public boolean isLimitNumberVisOptions() {
         return m_limitNumberVisOptions;
     }
 

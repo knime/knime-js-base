@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 
 /**
@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue>
-    implements QuickFormRepresentation<DoubleDialogNodeValue> {
+    implements SubNodeDescriptionProvider<DoubleDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

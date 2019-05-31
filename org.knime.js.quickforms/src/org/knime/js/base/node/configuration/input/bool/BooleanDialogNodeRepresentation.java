@@ -45,7 +45,7 @@
 package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 
 /**
@@ -54,7 +54,7 @@ import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<BooleanDialogNodeValue>
-    implements QuickFormRepresentation<BooleanDialogNodeValue> {
+    implements SubNodeDescriptionProvider<BooleanDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

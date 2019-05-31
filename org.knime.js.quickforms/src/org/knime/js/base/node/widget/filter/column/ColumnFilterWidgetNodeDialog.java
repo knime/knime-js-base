@@ -141,7 +141,7 @@ public class ColumnFilterWidgetNodeDialog extends FlowVariableWidgetNodeDialog<C
         m_defaultField.loadConfiguration(filterConfig, (DataTableSpec)specs[0]);
         ColumnFilterNodeConfig config = m_config.getColumnFilterConfig();
         m_type.setSelectedItem(config.getType());
-        m_limitNumberVisOptionsBox.setSelected(config.getLimitNumberVisOptions());
+        m_limitNumberVisOptionsBox.setSelected(config.isLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(config.getNumberVisOptions());
     }
 

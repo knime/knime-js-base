@@ -116,7 +116,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
         super(currentValue, defaultValue, labelConfig);
         m_possibleColumns = filterConfig.getPossibleColumns();
         m_type = filterConfig.getType();
-        m_limitNumberVisOptions = filterConfig.getLimitNumberVisOptions();
+        m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();
         m_numberVisOptions = filterConfig.getNumberVisOptions();
     }
 
@@ -140,7 +140,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
      * @return the limitNumberVisOptions
      */
     @JsonProperty("limitNumberVisOptions")
-    public boolean getLimitNumberVisOptions() {
+    public boolean isLimitNumberVisOptions() {
         return m_limitNumberVisOptions;
     }
 
@@ -158,8 +158,6 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
         sb.append("possibleColumns=");
         sb.append(Arrays.toString(m_possibleColumns));
         sb.append(", ");
@@ -179,7 +177,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
+        return new HashCodeBuilder()
                 .append(m_possibleColumns)
                 .append(m_type)
                 .append(m_limitNumberVisOptions)
@@ -203,7 +201,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
         }
         @SuppressWarnings("unchecked")
         ColumnFilterNodeRepresentation<VAL> other = (ColumnFilterNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
+        return new EqualsBuilder()
                 .append(m_possibleColumns, other.m_possibleColumns)
                 .append(m_type, other.m_type)
                 .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)

@@ -48,9 +48,11 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -64,7 +66,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepresentation<ColumnFilterDialogNodeValue>
-    implements QuickFormRepresentation<ColumnFilterDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ColumnFilterDialogNodeValue> {
 
     private final DataTableSpec m_spec;
 
@@ -110,5 +112,50 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
     @JsonSerialize(using = DataTableSpecSerializer.class)
     public DataTableSpec getSpec() {
         return m_spec;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append("spec=");
+        sb.append(m_spec.toString());
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_spec)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        ColumnFilterDialogNodeRepresentation other = (ColumnFilterDialogNodeRepresentation)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(m_spec, other.m_spec)
+                .isEquals();
     }
 }

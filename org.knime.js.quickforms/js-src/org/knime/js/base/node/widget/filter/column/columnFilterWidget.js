@@ -1,6 +1,6 @@
 /* eslint-env jquery */
 /* global checkMissingData:false, callUpdate:false, checkBoxesMultipleSelections:false, listMultipleSelections:false,
-twinlistMultipleSelections:false */
+   twinlistMultipleSelections:false */
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -90,6 +90,20 @@ window.knimeColumnFilterWidget = (function () {
             selector.addValueChangedListener(callUpdate);
         }
         viewValid = true;
+    };
+    
+    columnFilter.validate = function () {
+        if (!viewValid) {
+            return false;
+        }
+        return true;
+    };
+    
+    columnFilter.setValidationErrorMessage = function (message) {
+        if (!viewValid) {
+            return;
+        }
+        // TODO: display error
     };
 
     columnFilter.value = function () {

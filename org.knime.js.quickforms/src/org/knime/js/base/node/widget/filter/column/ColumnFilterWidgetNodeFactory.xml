@@ -40,7 +40,7 @@
         </option>
 	</fullDescription>
 	<interactiveView name="Column Filter Widget">
-		Displays a calendar input field.
+		Displays a column filter panel.
 	</interactiveView>
 	<ports>
         <inPort index="0" name="Table Input">

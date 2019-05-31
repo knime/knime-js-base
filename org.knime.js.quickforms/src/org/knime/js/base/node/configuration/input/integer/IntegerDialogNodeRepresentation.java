@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
 
 /**
@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<IntegerDialogNodeValue>
-    implements QuickFormRepresentation<IntegerDialogNodeValue> {
+    implements SubNodeDescriptionProvider<IntegerDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.credentials;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
 
 /**
@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentati
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresentation<CredentialsDialogNodeValue>
-    implements QuickFormRepresentation<CredentialsDialogNodeValue> {
+    implements SubNodeDescriptionProvider<CredentialsDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

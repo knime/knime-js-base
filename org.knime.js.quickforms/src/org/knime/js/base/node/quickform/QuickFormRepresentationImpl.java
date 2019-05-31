@@ -54,7 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -63,7 +63,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Implementation of {@link QuickFormRepresentation}.
+ * Implementation of {@link SubNodeDescriptionProvider}.
  *
  * @author Patrick Winter, KNIME AG, Zurich, Switzerland
  * @param <VAL> The value class handled by this representation
@@ -75,7 +75,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class QuickFormRepresentationImpl
         <VAL extends DialogNodeValue, CONF extends QuickFormConfig<VAL>>
         extends JSONViewContent
-        implements QuickFormRepresentation<VAL> {
+        implements SubNodeDescriptionProvider<VAL> {
 
     /**
      * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.

@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 
 /**
@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue>
-    implements QuickFormRepresentation<StringDialogNodeValue> {
+    implements SubNodeDescriptionProvider<StringDialogNodeValue> {
 
     /**
      * @param currentValue The value currently used by the node

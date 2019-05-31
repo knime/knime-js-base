@@ -49,7 +49,7 @@
 package org.knime.js.base.node.configuration.input.slider;
 
 import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.quickform.QuickFormRepresentation;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 
 /**
@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentation<IntegerSliderDialogNodeValue>
-    implements QuickFormRepresentation<IntegerSliderDialogNodeValue> {
+    implements SubNodeDescriptionProvider<IntegerSliderDialogNodeValue> {
 
     /**
      * @param currentValue

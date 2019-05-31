@@ -210,6 +210,36 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.credentials.CredentialsWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.selection.column.ColumnSelectionDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.selection.column.ColumnSelectionWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/filter"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/filter"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.filter.value.ValueFilterWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.selection.value.ValueSelectionDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.selection.value.ValueSelectionWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -919,6 +949,69 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Column Selection Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.selection.column.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/selection/column/columnSelectionWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/selection/column/columnSelectionWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/selection/column/columnSelectionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="SingleSelection">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Value Filter Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.filter.value.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/filter/value/valueFilterWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/filter/value/valueFilterWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/filter/value/valueFilterWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="MultipleSelections">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Value Selection Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.selection.value.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/selection/value/valueSelectionWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/selection/value/valueSelectionWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/selection/value/valueSelectionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="SingleSelection">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1214,6 +1307,36 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.slider"
             name="Slider Widget"
             namespace="knimeSliderWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.selection.column.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.selection.column"
+            name="Column Selection Widget"
+            namespace="knimeColumnSelectionWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.filter.value.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.filter.value"
+            name="Value Filter Widget"
+            namespace="knimeValueFilterWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.selection.value.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.selection.value"
+            name="Value Selection Widget"
+            namespace="knimeValueSelectionWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
