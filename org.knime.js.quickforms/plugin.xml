@@ -246,9 +246,19 @@
             factory-class="org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeFactory">
       </node>
       <node
+            category-path="/flowcontrol/widgets/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.selection.multiple.MultipleSelectionWidgetNodeFactory">
+      </node>
+      <node
             category-path="/flowcontrol/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/widgets/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.selection.single.SingleSelectionWidgetNodeFactory">
       </node>
    </extension>
    <extension
@@ -1022,6 +1032,48 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Multiple Selection Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.selection.multiple.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/selection/multiple/multipleSelectionWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/selection/multiple/multipleSelectionWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/selection/multiple/multipleSelectionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="MultipleSelections">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Single Selection Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.selection.single.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/selection/single/singleSelectionWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/selection/single/singleSelectionWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/selection/single/singleSelectionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="SingleSelection">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1347,6 +1399,26 @@
             javascriptComponentID="org.knime.js.base.node.widget.selection.value"
             name="Value Selection Widget"
             namespace="knimeValueSelectionWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.selection.multiple.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.selection.multiple"
+            name="Multiple Selection Widget"
+            namespace="knimeMultipleSelectionWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.selection.single.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.selection.single"
+            name="Single Selection Widget"
+            namespace="knimeSingleSelectionWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

@@ -21,7 +21,7 @@
 			</p>
 		</intro>
 		<option name="Label">
-          A descriptive label that will be shown in the dialog
+          A descriptive label that will be shown in the view.
         </option>
         <option name="Description">
           Some lines of description that will be shown in the view, for instance by means of a tooltip.
