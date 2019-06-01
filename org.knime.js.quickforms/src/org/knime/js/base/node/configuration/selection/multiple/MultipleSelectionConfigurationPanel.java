@@ -44,69 +44,65 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.selection.multiple;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponent;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
+import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 
 /**
- * The value for the column selection configuration node
+ * The component dialog panel for the multiple selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+@SuppressWarnings("serial")
+public class MultipleSelectionConfigurationPanel
+    extends AbstractDialogNodeConfigurationPanel<MultipleSelectionDialogNodeValue> {
+
+    private MultipleSelectionsComponent m_selectionComponent;
 
     /**
-     * {@inheritDoc}
+     * @param representation the dialog node settings
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public MultipleSelectionConfigurationPanel(final MultipleSelectionDialogNodeRepresentation representation) {
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
+        String[] choices = representation.getPossibleChoices();
+        m_selectionComponent =
+                MultipleSelectionsComponentFactory.createMultipleSelectionsComponent(representation.getType());
+        m_selectionComponent.setChoices(choices);
+        m_selectionComponent.setSelections(representation.getDefaultValue().getVariableValue());
+        setComponent(m_selectionComponent.getComponent());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    protected void resetToDefault() {
+        m_selectionComponent.setSelections(getDefaultValue().getVariableValue());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+    protected MultipleSelectionDialogNodeValue createNodeValue() throws InvalidSettingsException {
+        MultipleSelectionDialogNodeValue value = new MultipleSelectionDialogNodeValue();
+        value.setVariableValue(m_selectionComponent.getSelections());
+        return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadNodeValue(final MultipleSelectionDialogNodeValue value) {
+        super.loadNodeValue(value);
+        if (value != null) {
+            m_selectionComponent.setSelections(value.getVariableValue());
         }
     }
 
@@ -114,15 +110,9 @@ public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue imp
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
-        } else {
-            builder.add(CFG_COLUMN, getColumn());
-        }
-        return builder.build();
+    public void setEnabled(final boolean enabled) {
+        super.setEnabled(enabled);
+        m_selectionComponent.setEnabled(enabled);
     }
 
 }

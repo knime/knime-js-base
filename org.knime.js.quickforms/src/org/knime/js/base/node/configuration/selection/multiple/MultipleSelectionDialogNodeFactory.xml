@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_multiple_select.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Multiple Selection Configuration</name>
+
+	<shortDescription>
+	   Allows selecting multiple values from a list of strings in an encapsulating component's dialog. 
+	   The selected values are returned as a data table and a string flow variable.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Allows selecting multiple values from a list of strings in an encapsulating component's dialog. 
+       The selected values are returned as a data table and a string flow variable.</p>
+		</intro>
+		<option name="Label">
+		  A descriptive label that will be shown in the dialog
+		</option>
+		<option name="Description">
+		  Some lines of description that will be shown for instance in the node description of the component exposing a
+		  dialog.
+		</option>
+		<option name="Parameter Name">
+		  Parameter identifier for external parameterization (e.g. batch execution). 
+		  This will also be the name of the exported flow variable.
+		</option>
+		<option name="Selection Type">
+		  The type of the selection element. This can be either check boxes with a vertical or horizontal layout, a 
+		  List or a Twinlist.
+		</option>
+        <option name="Possible Choices">
+          The possible choices, each line is one possible value.
+        </option>
+        <option name="Default Values">
+          Values selected by default.
+        </option>
+        <option name="Limit number of visible options">
+          By default the List and Twinlist components adjust their height to display all possible choices without a
+          scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you
+          have too many of them. The setting is available only for List or Twinlist selection type.</option>
+        <option name="Number of visible options">
+            A number of options visible in the List or Twinlist component without a vertical scroll bar. 
+            Changing this value will also affect the component's height. Notice that for Twinlist the height cannot 
+            be less than the overall height of the control buttons in the middle. The setting is available only for 
+            List or Twinlist selection type.
+        </option>
+	</fullDescription>
+	<ports>
+        <outPort index="0" name="Selected Value Table">
+          Table output holding the selected choices in one column with the given parameter name as column name.
+        </outPort>
+	</ports>
+</knimeNode>

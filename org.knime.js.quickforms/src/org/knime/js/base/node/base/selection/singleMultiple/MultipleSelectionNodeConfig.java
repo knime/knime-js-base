@@ -44,85 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.base.selection.singleMultiple;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 
 /**
- * The value for the column selection configuration node
+ * Base config file for the multiple selection configuration and widget nodes
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+public class MultipleSelectionNodeConfig extends SingleMultipleSelectionNodeConfig {
+
+    private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
+    private String m_type = DEFAULT_TYPE;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public String getType() {
+        return m_type;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    public void setType(final String type) {
+        m_type = type;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
-        } else {
-            builder.add(CFG_COLUMN, getColumn());
-        }
-        return builder.build();
+    public String getDefaultType() {
+        return DEFAULT_TYPE;
     }
 
 }

@@ -66,7 +66,7 @@ public class ValueSelectionDialogNodeConfig extends LabeledFlowVariableDialogNod
     private final ValueSelectionNodeConfig m_config;
 
     /**
-     *
+     * Instantiate a new config object
      */
     public ValueSelectionDialogNodeConfig() {
         m_config = new ValueSelectionNodeConfig();

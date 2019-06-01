@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.selection.single;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -57,70 +57,65 @@ import javax.json.JsonValue;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 /**
- * The value for the column selection configuration node
+ * The value for the multiple selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+        setVariableValue(settings.getStringArray(CFG_VARIABLE_VALUE, DEFAULT_VARIABLE_VALUE));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+        setVariableValue(new String[] {fromCmdLine});
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
             loadFromString(((JsonString) json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
+                JsonValue val = ((JsonObject) json).get(CFG_VARIABLE_VALUE);
                 if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
+                    setVariableValue(null);
                 } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
+                    setVariableValue(new String[] {((JsonObject) json).getString(CFG_VARIABLE_VALUE)});
                 }
             } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
+                throw new JsonException("Expected string value for key '" + CFG_VARIABLE_VALUE + ".", e);
             }
         } else {
             throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
         }
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
+        if (getVariableValue() == null || getVariableValue().length < 1 || getVariableValue()[0] == null) {
+            builder.addNull(CFG_VARIABLE_VALUE);
         } else {
-            builder.add(CFG_COLUMN, getColumn());
+            builder.add(CFG_VARIABLE_VALUE, getVariableValue()[0]);
         }
         return builder.build();
     }

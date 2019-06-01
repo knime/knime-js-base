@@ -240,6 +240,16 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.value.ValueSelectionWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowcontrol/configuration/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

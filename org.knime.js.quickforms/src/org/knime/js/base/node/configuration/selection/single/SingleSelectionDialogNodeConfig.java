@@ -44,85 +44,119 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.selection.single;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleSelectionNodeConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The value for the column selection configuration node
+ * The config for the single selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+public class SingleSelectionDialogNodeConfig
+    extends LabeledFlowVariableDialogNodeConfig<SingleSelectionDialogNodeValue> {
+
+    private final SingleSelectionNodeConfig m_config;
 
     /**
-     * {@inheritDoc}
+     * Instantiate a new config object
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public SingleSelectionDialogNodeConfig() {
+        m_config = new SingleSelectionNodeConfig();
+    }
+
+    /**
+     * @return the config
+     */
+    public SingleSelectionNodeConfig getSelectionConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    protected SingleSelectionDialogNodeValue createEmptyValue() {
+        return new SingleSelectionDialogNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_config)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
-        } else {
-            builder.add(CFG_COLUMN, getColumn());
+        if (obj == this) {
+            return true;
         }
-        return builder.build();
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        SingleSelectionDialogNodeConfig other = (SingleSelectionDialogNodeConfig)obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
+                .isEquals();
     }
 
 }

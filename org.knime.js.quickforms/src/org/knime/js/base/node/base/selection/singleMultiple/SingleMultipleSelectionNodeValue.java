@@ -44,37 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.base.selection.singleMultiple;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
+import java.util.Arrays;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The value for the column selection configuration node
+ * The base value for the single and multiple selection configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class SingleMultipleSelectionNodeValue extends JSONViewContent {
 
     /**
-     * {@inheritDoc}
+     * Config setting for the variable value
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    protected static final String CFG_VARIABLE_VALUE = "variable_value";
+
+    /**
+     * Default variable value
+     */
+    protected static final String[] DEFAULT_VARIABLE_VALUE = new String[0];
+    private String[] m_variableValue = DEFAULT_VARIABLE_VALUE;
+
+    /**
+     * @return the variableValue
+     */
+    @JsonProperty("value")
+    public String[] getVariableValue() {
+        return m_variableValue;
+    }
+
+    /**
+     * @param variableValue the variableValue to set
+     */
+    @JsonProperty("value")
+    public void setVariableValue(final String[] variableValue) {
+        m_variableValue = variableValue;
     }
 
     /**
@@ -82,8 +103,8 @@ public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue imp
      */
     @Override
     @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addStringArray(CFG_VARIABLE_VALUE, m_variableValue);
     }
 
     /**
@@ -91,38 +112,52 @@ public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue imp
      */
     @Override
     @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setVariableValue(settings.getStringArray(CFG_VARIABLE_VALUE));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("variableValue=");
+        sb.append(Arrays.toString(m_variableValue));
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_variableValue)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
-        } else {
-            builder.add(CFG_COLUMN, getColumn());
+        if (obj == this) {
+            return true;
         }
-        return builder.build();
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        SingleMultipleSelectionNodeValue other = (SingleMultipleSelectionNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_variableValue, other.m_variableValue)
+                .isEquals();
     }
 
 }

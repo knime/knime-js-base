@@ -44,85 +44,81 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   1 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.selection.single;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.dialog.selection.single.SingleSelectionComponent;
+import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
+import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 
 /**
- * The value for the column selection configuration node
+ * The component dialog panel for the single selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements DialogNodeValue {
+@SuppressWarnings("serial")
+public class SingleSelectionConfigurationPanel
+    extends AbstractDialogNodeConfigurationPanel<SingleSelectionDialogNodeValue> {
+
+    private SingleSelectionComponent m_selectionComponent;
 
     /**
-     * {@inheritDoc}
+     * @param representation the dialog node settings
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public SingleSelectionConfigurationPanel(final SingleSelectionDialogNodeRepresentation representation) {
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
+        String[] choices = representation.getPossibleChoices();
+        m_selectionComponent =
+                SingleSelectionComponentFactory.createSingleSelectionComponent(representation.getType());
+        m_selectionComponent.setChoices(choices);
+        String[] defaultValue = representation.getDefaultValue().getVariableValue();
+        String value = "";
+        if (defaultValue != null && defaultValue.length >= 1 && defaultValue[0] != null) {
+            value = defaultValue[0];
+        }
+        m_selectionComponent.setSelection(value);
+        setComponent(m_selectionComponent.getComponent());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    protected void resetToDefault() {
+        String[] defaultValue = getDefaultValue().getVariableValue();
+        String value = "";
+        if (defaultValue != null && defaultValue.length >= 1 && defaultValue[0] != null) {
+            value = defaultValue[0];
+        }
+        m_selectionComponent.setSelection(value);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
+    protected SingleSelectionDialogNodeValue createNodeValue() throws InvalidSettingsException {
+        SingleSelectionDialogNodeValue value = new SingleSelectionDialogNodeValue();
+        value.setVariableValue(new String[] {m_selectionComponent.getSelection()});
+        return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadNodeValue(final SingleSelectionDialogNodeValue value) {
+        super.loadNodeValue(value);
+        if (value != null) {
+            String[] values = value.getVariableValue();
+            String selectionValue = "";
+            if (values != null && values.length >= 1 && values[0] != null) {
+                selectionValue = values[0];
             }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
+            m_selectionComponent.setSelection(selectionValue);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
-        } else {
-            builder.add(CFG_COLUMN, getColumn());
-        }
-        return builder.build();
     }
 
 }

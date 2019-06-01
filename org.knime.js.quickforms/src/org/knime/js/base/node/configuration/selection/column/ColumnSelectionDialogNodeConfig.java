@@ -57,7 +57,7 @@ import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
- * The config for the column filter configuration node
+ * The config for the column selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -67,7 +67,7 @@ public class ColumnSelectionDialogNodeConfig
     private final ColumnSelectionNodeConfig m_config;
 
     /**
-     *
+     * Instantiate a new config object
      */
     public ColumnSelectionDialogNodeConfig() {
         m_config = new ColumnSelectionNodeConfig();
