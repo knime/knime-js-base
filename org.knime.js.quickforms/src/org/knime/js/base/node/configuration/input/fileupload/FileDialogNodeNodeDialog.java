@@ -54,7 +54,6 @@ import java.awt.GridBagConstraints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -78,18 +77,18 @@ import org.knime.js.base.node.quickform.input.fileupload.FileUploadQuickFormNode
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<FileUploadDialogNodeValue> {
+public class FileDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<FileUploadDialogNodeValue> {
 
     private final FilesHistoryPanel m_fileHistoryPanel;
     private final JTextField m_validExtensionsField;
     private final JSpinner m_timeoutSpinner;
-    private final JCheckBox m_disableOutputBox;
+    // private final JCheckBox m_disableOutputBox;
 
-    private FileUploadInputDialogNodeConfig m_config;
+    private FileInputDialogNodeConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
-    FileUploadDialogNodeNodeDialog() {
-        m_config = new FileUploadInputDialogNodeConfig();
+    FileDialogNodeNodeDialog() {
+        m_config = new FileInputDialogNodeConfig();
         m_fileHistoryPanel =
                 new FilesHistoryPanel("file_upload_quick_form", LocationValidation.FileInput);
         m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
@@ -111,7 +110,7 @@ public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDi
             }
         });
         m_timeoutSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.0, Integer.MAX_VALUE, 1.0));
-        m_disableOutputBox = new JCheckBox();
+        // m_disableOutputBox = new JCheckBox();
         createAndAddTab();
     }
 
@@ -135,7 +134,7 @@ public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDi
         addPairToPanel("Default File:",
             m_fileHistoryPanel, panelWithGBLayout, gbc);
         addPairToPanel("Timeout (s): ", m_timeoutSpinner, panelWithGBLayout, gbc);
-        addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
+        // addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
     }
 
     /**
@@ -146,7 +145,6 @@ public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDi
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
-        FileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         String[] fileExtensions = m_config.getFileTypes();
         String text;
         if (fileExtensions == null || fileExtensions.length == 0) {
@@ -170,7 +168,7 @@ public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDi
         m_fileHistoryPanel.setSelectedFile(m_config.getDefaultValue().getPath());
         m_fileHistoryPanel.setSuffixes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         m_timeoutSpinner.setValue((double) m_config.getTimeout() / 1000);
-        m_disableOutputBox.setSelected(m_config.getDisableOutput());
+        // m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
     /**
@@ -182,7 +180,7 @@ public class FileUploadDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDi
         FileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         fileUploadConfig.setFileTypes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         fileUploadConfig.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
-        fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
+        // fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
         m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
         m_config.saveSettings(settings);
     }

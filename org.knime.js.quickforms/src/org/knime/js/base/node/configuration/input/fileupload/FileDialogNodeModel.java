@@ -89,8 +89,8 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadDialogNodeModel extends
-    DialogFlowVariableNodeModel<FileUploadDialogNodeRepresentation, FileUploadDialogNodeValue, FileUploadInputDialogNodeConfig> {
+public class FileDialogNodeModel extends
+    DialogFlowVariableNodeModel<FileDialogNodeRepresentation, FileUploadDialogNodeValue, FileInputDialogNodeConfig> {
 
     /** {@inheritDoc} */
     @Override
@@ -273,16 +273,16 @@ public class FileUploadDialogNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public FileUploadInputDialogNodeConfig createEmptyConfig() {
-       return new FileUploadInputDialogNodeConfig();
+    public FileInputDialogNodeConfig createEmptyConfig() {
+       return new FileInputDialogNodeConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected FileUploadDialogNodeRepresentation getRepresentation() {
-        return new FileUploadDialogNodeRepresentation(getRelevantValue(), getConfig());
+    protected FileDialogNodeRepresentation getRepresentation() {
+        return new FileDialogNodeRepresentation(getRelevantValue(), getConfig());
     }
 
 }

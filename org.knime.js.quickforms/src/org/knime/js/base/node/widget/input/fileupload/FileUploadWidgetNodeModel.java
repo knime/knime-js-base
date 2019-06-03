@@ -69,11 +69,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
@@ -89,13 +86,16 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class FileUploadWidgetNodeModel extends
-    WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue, FileUploadInputWidgetConfig> {
+    WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue,
+    FileUploadInputWidgetConfig> {
 
     /**
-     * @param viewName
+     * Creates a new file upload widget node model
+     *
+     * @param viewName the interactive view name
      */
     protected FileUploadWidgetNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+        super(viewName);
     }
 
     /**
@@ -266,7 +266,8 @@ public class FileUploadWidgetNodeModel extends
     @Override
     protected FileUploadNodeRepresentation<FileUploadNodeValue> getRepresentation() {
         FileUploadInputWidgetConfig config = getConfig();
-        return new FileUploadNodeRepresentation<FileUploadNodeValue>(getRelevantValue(), config.getDefaultValue(), config.getFileUploadConfig(), config.getLabelConfig());
+        return new FileUploadNodeRepresentation<FileUploadNodeValue>(getRelevantValue(), config.getDefaultValue(),
+                config.getFileUploadConfig(), config.getLabelConfig());
     }
 
     /**

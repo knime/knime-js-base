@@ -49,9 +49,9 @@
  */
 window.knimeCredentialsWidget = (function () {
     var credentialsInput = {
-        version: '1.0.0'
+        version: '2.0.0'
     };
-    credentialsInput.name = 'Credentials input';
+    credentialsInput.name = 'KNIME Credentials Widget';
     var viewValid = false;
     var userInput,
         passwordInput,

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_fileUpload.png" type="QuickForm" xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>File Configuration</name>
+
+	<shortDescription>
+	   Allows selecting a local file and exposing it using a flow variable.
+	   Variable output representing the file path as variable. In case an absolute file path is selected the node
+          will populate two variables: one representing the path and one representing the URL. If a URL is selected
+          as default file only the URL variable is defined.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Allows selecting a local file and exposing it using a flow variable.
+				Variable output representing the file path as variable. In case an absolute
+				file path is selected the node will populate two variables: one representing the path and one
+				representing the URL. If a URL is selected as default file only the URL variable is defined.
+			</p>
+		</intro>
+		<option name="Label">
+			A descriptive label that will be shown in the dialog.
+		</option>
+		<option name="Description">
+			Some lines of description that will be shown for instance in the node description of the component exposing
+			a dialog.
+		</option>
+		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution).
+			This will also be the name of the exported flow variable.
+		</option>
+		<option name="Valid File Extensions">
+			A list of file extensions that is used as filter in the
+			file browser (not only the one in the "Default File" option but also
+			in a remote file browser), e.g. ".csv,.csv.gz" will filter for
+			files ending with ".csv" or ".csv.gz". Leave empty to accept any file.
+		</option>
+		<option name="Default File">
+			The file that will be used during design time, i.e. when no file is provided by a component dialog.
+			<br />
+			It is possible to enter a URL here. This can be useful if a default file is to be addressed with
+			the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a remote 
+			server.
+		</option>
+		<option name="Timeout">
+			The time in seconds after which the connection times out. The timeout is used when testing the existence of 
+			default files. The default is set to 1 second and should be sufficient in most cases.
+		</option>
+	</fullDescription>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output representing the file path as variable. In case an absolute file path is selected the node
+			will populate two variables: one representing the path and one representing the URL. If a URL is selected
+			as default file only the URL variable is defined.
+		</outPort>
+	</ports>
+</knimeNode>

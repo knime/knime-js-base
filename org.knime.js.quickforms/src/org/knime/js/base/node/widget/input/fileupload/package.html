@@ -1,6 +1,5 @@
-/*
- * ------------------------------------------------------------------------
- *
+<!--
+====================================================================
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,52 +40,8 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 3, 2019 (Daniel Bogenrieder): created
- */
-package org.knime.js.base.node.configuration.input.fileupload;
-
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-/**
- * The dialog representation of the file upload configuration node
- *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- */
-public class FileUploadDialogNodeRepresentation extends FileUploadNodeRepresentation<FileUploadDialogNodeValue>
-    implements SubNodeDescriptionProvider<FileUploadDialogNodeValue> {
-
-    @JsonCreator
-    private FileUploadDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final FileUploadDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final FileUploadDialogNodeValue currentValue,
-        @JsonProperty("fileTypes") final String[] fileTypes, @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("disableOutput") final boolean disableOutput) {
-        super(label, description, required, defaultValue, currentValue, fileTypes, errorMessage, disableOutput);
-    }
-
-    /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
-     */
-    public FileUploadDialogNodeRepresentation(final FileUploadDialogNodeValue currentValue,
-        final FileUploadInputDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(), config.getFileUploadConfig(), config.getLabelConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogNodePanel<FileUploadDialogNodeValue> createDialogPanel() {
-        return new FileUploadConfigurationPanel(this);
-    }
-}
+====================================================================
+-->
+<body>
+	File Upload Widget Node
+</body>

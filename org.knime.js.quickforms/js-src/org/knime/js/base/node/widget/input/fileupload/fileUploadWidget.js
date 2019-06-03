@@ -1,5 +1,5 @@
 /* eslint-env jquery */
-/* global  */
+/* global checkMissingData:false, insertNativeComponent:false */
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -51,7 +51,7 @@ window.knimeFileUploadWidget = (function () {
     var fileUpload = {
         version: '2.0.0'
     };
-    fileUpload.name = 'File upload';
+    fileUpload.name = 'KNIME File Upload Widget';
     var viewRepresentation = null;
     var viewValue = null;
     var viewValid = false;
@@ -59,7 +59,6 @@ window.knimeFileUploadWidget = (function () {
     var viewErrorDiv = null;
 
     fileUpload.init = function (representation, value) {
-        debugger;
         if (checkMissingData(representation)) {
             return;
         }
@@ -91,7 +90,7 @@ window.knimeFileUploadWidget = (function () {
                             fileUpload.validate();
                         }
                     }, false);
-                } catch (exception) { /* do nothing */}
+                } catch (exception) { /* do nothing */ }
             }
             // add button styles
             var btn = viewComponent.getElementsByClassName('v-upload')[0];
@@ -100,10 +99,6 @@ window.knimeFileUploadWidget = (function () {
             }
         }
 
-//        // Automatically resize component, since events of native component are not noticed
-//        if (viewComponent) {
-//            setInterval(resizeParent, 500);
-//        }
         viewValid = true;
         viewRepresentation = representation;
         viewValue = value;
@@ -143,9 +138,6 @@ window.knimeFileUploadWidget = (function () {
             viewErrorDiv.textContent = message;
             viewErrorDiv.style.display = 'block';
         }
-//        if (!viewComponent) {
-//            resizeParent();
-//        }
     };
 
     fileUpload.value = function () {

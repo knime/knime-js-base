@@ -48,80 +48,55 @@
  */
 package org.knime.js.base.node.configuration.input.fileupload;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.util.FilesHistoryPanel;
-import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
 
 /**
- * The component dialog panel for the file upload configuration node
+ * Factory for the file upload configuration node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("serial")
-public class FileUploadConfigurationPanel extends AbstractDialogNodeConfigurationPanel<FileUploadDialogNodeValue> {
-
-    private final FilesHistoryPanel m_historyPanel;
+public class FileDialogNodeFactory extends NodeFactory<FileDialogNodeModel> {
 
     /**
-     * @param representation The dialog representation
-     *
+     * {@inheritDoc}
      */
-    public FileUploadConfigurationPanel(final FileUploadDialogNodeRepresentation representation) {
-        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
-        String[] extensions = representation.getFileTypes();
-        String historyID = "quickform_file_upload";
-        if (extensions != null && extensions.length > 0) {
-            String first = extensions[0];
-            historyID = historyID.concat("_" + first);
-        }
-        m_historyPanel = new FilesHistoryPanel(historyID, extensions);
-        setComponent(m_historyPanel);
-        m_historyPanel.setSelectedFile(getDefaultValue().getPath());
+    @Override
+    public FileDialogNodeModel createNodeModel() {
+        return new FileDialogNodeModel();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void resetToDefault() {
-        setPath(getDefaultValue().getPath());
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FileUploadDialogNodeValue createNodeValue() throws InvalidSettingsException {
-        FileUploadDialogNodeValue value = new FileUploadDialogNodeValue();
-        String sel = m_historyPanel.getSelectedFile();
-        value.setPath(sel);
-        m_historyPanel.addToHistory();
-        return value;
+    public NodeView<FileDialogNodeModel> createNodeView(final int viewIndex, final FileDialogNodeModel nodeModel) {
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final FileUploadDialogNodeValue value) {
-        super.loadNodeValue(value);
-        if (value != null) {
-            setPath(value.getPath());
-        }
+    protected boolean hasDialog() {
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setEnabled(final boolean enabled) {
-        super.setEnabled(enabled);
-        m_historyPanel.setEnabled(enabled);
-    }
-
-    private void setPath(final String path) {
-        m_historyPanel.updateHistory();
-        m_historyPanel.setSelectedFile(path);
+    protected NodeDialogPane createNodeDialogPane() {
+        return new FileDialogNodeNodeDialog();
     }
 
 }

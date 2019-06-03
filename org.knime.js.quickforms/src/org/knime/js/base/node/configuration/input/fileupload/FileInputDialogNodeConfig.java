@@ -61,9 +61,17 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<FileUploadDialogNodeValue> {
+public class FileInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<FileUploadDialogNodeValue> {
 
     private final FileUploadNodeConfig m_config;
+
+    /**
+     * Instantiate a new config object
+     */
+    public FileInputDialogNodeConfig() {
+        m_config = new FileUploadNodeConfig();
+        m_config.setDisableOutput(false);
+    }
 
     /**
      * @return the fileTypes
@@ -91,14 +99,7 @@ public class FileUploadInputDialogNodeConfig extends LabeledFlowVariableDialogNo
      * @return the disableOutput
      */
     public boolean getDisableOutput() {
-        return m_config.getDisableOutput();
-    }
-
-    /**
-     * Instantiate a new config object
-     */
-    public FileUploadInputDialogNodeConfig() {
-        m_config = new FileUploadNodeConfig();
+        return false;
     }
 
     /**
@@ -132,6 +133,7 @@ public class FileUploadInputDialogNodeConfig extends LabeledFlowVariableDialogNo
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+        m_config.setDisableOutput(false);
     }
 
     /**
@@ -141,6 +143,7 @@ public class FileUploadInputDialogNodeConfig extends LabeledFlowVariableDialogNo
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+        m_config.setDisableOutput(false);
     }
 
     /**
@@ -179,7 +182,7 @@ public class FileUploadInputDialogNodeConfig extends LabeledFlowVariableDialogNo
         if (obj.getClass() != getClass()) {
             return false;
         }
-        FileUploadInputDialogNodeConfig other = (FileUploadInputDialogNodeConfig)obj;
+        FileInputDialogNodeConfig other = (FileInputDialogNodeConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_config, other.m_config)
                 .isEquals();

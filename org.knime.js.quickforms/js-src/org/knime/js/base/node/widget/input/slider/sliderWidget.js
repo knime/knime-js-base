@@ -49,7 +49,7 @@
  */
 window.knimeSliderWidget = (function () {
     var sliderWidget = {
-        version: '1.0.0'
+        version: '2.0.0'
     };
     sliderWidget.name = 'KNIME Slider Widget';
     var viewRepresentation, errorMessage, slider;
@@ -61,7 +61,7 @@ window.knimeSliderWidget = (function () {
             for (var i = 0; i < settings.tooltips.length; i++) {
                 if (typeof settings.tooltips[i] === 'object') {
                     for (key in settings.tooltips[i]) {
-                        if (typeof settings.tooltips[i][key] === 'string') {
+                        if (typeof settings.tooltips[i][key] === 'string') { // eslint-disable-line max-depth
                             // replace all whitespace characters with no breaking space
                             settings.tooltips[i][key] = settings.tooltips[i][key].replace(/\s/g, '&nbsp;');
                         }

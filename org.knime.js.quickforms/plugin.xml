@@ -261,14 +261,19 @@
             factory-class="org.knime.js.base.node.widget.selection.single.SingleSelectionWidgetNodeFactory">
       </node>
       <node
+            category-path="/flowabstraction/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.filechooser.FileChooserWidgetNodeFactory">
+      </node>
+      <node
             category-path="/flowabstraction/configuration/input"
             deprecated="false"
-            factory-class="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory">
+            factory-class="org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeFactory">
       </node>
       <node
             category-path="/flowabstraction/widgets/input"
             deprecated="false"
-            factory-class="org.knime.js.base.node.widget.input.filechooser.FileChooserWidgetNodeFactory">
+            factory-class="org.knime.js.base.node.widget.input.fileupload.FileUploadWidgetNodeFactory">
       </node>
    </extension>
    <extension
@@ -1130,6 +1135,24 @@
                webResourceBundleID="jsTree_3.3.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="File Upload Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.fileupload.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/fileupload/fileUploadWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/fileupload/fileUploadWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/fileupload/fileUploadWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1485,6 +1508,16 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.filechooser"
             name="File Chooser Widget"
             namespace="knimeFileChooserWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.fileupload.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.fileupload"
+            name="File Upload Widget"
+            namespace="knimeFileUploadWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

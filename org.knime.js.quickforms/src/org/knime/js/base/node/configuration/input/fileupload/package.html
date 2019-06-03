@@ -1,6 +1,5 @@
-/*
- * ------------------------------------------------------------------------
- *
+<!--
+====================================================================
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -41,62 +40,8 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 3, 2019 (Daniel Bogenrieder): created
- */
-package org.knime.js.base.node.configuration.input.fileupload;
-
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-
-/**
- * Factory for the file upload configuration node
- *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- */
-public class FileUploadDialogNodeFactory extends NodeFactory<FileUploadDialogNodeModel> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FileUploadDialogNodeModel createNodeModel() {
-        return new FileUploadDialogNodeModel();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileUploadDialogNodeModel> createNodeView(final int viewIndex, final FileUploadDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileUploadDialogNodeNodeDialog();
-    }
-
-}
+====================================================================
+-->
+<body>
+	File Upload Configuration Node
+</body>
