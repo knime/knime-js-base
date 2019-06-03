@@ -44,49 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 May 2019 (albrecht): created
+ *   3 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget;
+package org.knime.js.base.node.widget.input.filechooser;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.js.base.node.base.FlowVariableConfig;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
+ * The config for the file chooser widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL>
  */
-public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewContent> extends LabeledWidgetConfig<VAL> {
+public class FileChooserInputWidgetConfig extends LabeledFlowVariableWidgetConfig<FileChooserNodeValue> {
 
-    private final FlowVariableConfig m_variable;
+    private final FileChooserNodeConfig m_config;
 
     /**
-     * Create a new config instance
+     *
      */
-    protected LabeledFlowVariableWidgetConfig() {
-        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-        m_variable = new FlowVariableConfig(defaultName);
-    }
-
-    public String getFlowVariableName() {
-        return m_variable.getFlowVariableName();
-    }
-
-    public void setFlowVariableName(final String flowVariableName) {
-        m_variable.setFlowVariableName(flowVariableName);
+    public FileChooserInputWidgetConfig() {
+        m_config = new FileChooserNodeConfig();
     }
 
     /**
-     * @return the variable
+     * @return the config
      */
-    public FlowVariableConfig getFlowVariableConfig() {
-        return m_variable;
+    public FileChooserNodeConfig getFileChooserConfig() {
+        return m_config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileChooserNodeValue createEmptyValue() {
+        return new FileChooserNodeValue();
     }
 
     /**
@@ -95,7 +94,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        m_variable.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
     /**
@@ -104,7 +103,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-        m_variable.loadSettings(settings);
+        m_config.loadSettings(settings);
     }
 
     /**
@@ -113,7 +112,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        m_variable.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
     }
 
     /**
@@ -124,7 +123,7 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append(m_variable.toString());
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -134,15 +133,14 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_variable)
-                .toHashCode();
+            .appendSuper(super.hashCode())
+            .append(m_config)
+            .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -154,11 +152,11 @@ public abstract class LabeledFlowVariableWidgetConfig<VAL extends JSONViewConten
         if (obj.getClass() != getClass()) {
             return false;
         }
-        LabeledFlowVariableWidgetConfig<VAL> other = (LabeledFlowVariableWidgetConfig<VAL>)obj;
+        FileChooserInputWidgetConfig other = (FileChooserInputWidgetConfig)obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_variable, other.m_variable)
-                .isEquals();
+            .appendSuper(super.equals(obj))
+            .append(m_config, other.m_config)
+            .isEquals();
     }
 
 }

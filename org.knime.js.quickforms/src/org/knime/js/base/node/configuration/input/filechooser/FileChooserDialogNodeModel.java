@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
+import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.createSpec;
+import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.getFirstFile;
 import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.getValidatedItems;
 
 import org.knime.core.data.DataRow;
@@ -64,7 +66,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.util.Pair;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig;
-import org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue.FileItem;
 import org.knime.js.base.node.base.input.filechooser.FileChooserValidator;
 import org.knime.js.base.node.configuration.DialogNodeModel;
@@ -91,8 +92,7 @@ public class FileChooserDialogNodeModel extends
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         createAndPushFlowVariable();
         FileChooserInputDialogNodeConfig config = getConfig();
-        return new PortObjectSpec[]{
-            FileChooserNodeUtil.createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig())};
+        return new PortObjectSpec[]{createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig())};
     }
 
     /**
@@ -102,7 +102,7 @@ public class FileChooserDialogNodeModel extends
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         createAndPushFlowVariable();
         FileChooserInputDialogNodeConfig config = getConfig();
-        DataTableSpec outSpec = FileChooserNodeUtil.createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig());
+        DataTableSpec outSpec = createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig());
         BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
         Pair<FileItem[], Boolean> pair = getValidatedItems(getRelevantValue());
         FileItem[] items = pair.getFirst();
@@ -125,7 +125,7 @@ public class FileChooserDialogNodeModel extends
 
     private void createAndPushFlowVariable() throws InvalidSettingsException {
         validateDialogValue(getRelevantValue());
-        FileItem item = FileChooserNodeUtil.getFirstFile(getRelevantValue());
+        FileItem item = getFirstFile(getRelevantValue());
         String varIdentifier = getConfig().getFlowVariableName();
         pushFlowVariableString(varIdentifier, item.getPath());
         if (getConfig().getFileChooserConfig().getOutputType()) {

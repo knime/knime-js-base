@@ -265,6 +265,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.filechooser.FileChooserWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -1104,6 +1109,27 @@
                webResourceBundleID="noUISlider_12_1_0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="File Chooser Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.filechooser.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="jsTree_3.3.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1449,6 +1475,16 @@
             javascriptComponentID="org.knime.js.base.node.widget.selection.single"
             name="Single Selection Widget"
             namespace="knimeSingleSelectionWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.filechooser.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.filechooser"
+            name="File Chooser Widget"
+            namespace="knimeFileChooserWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

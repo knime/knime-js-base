@@ -44,13 +44,15 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   26 May 2019 (albrecht): created
+ *   3 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.listbox;
+package org.knime.js.base.node.widget.input.filechooser;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.createSpec;
+import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.getFirstFile;
+import static org.knime.js.base.node.base.input.filechooser.FileChooserNodeUtil.getValidatedItems;
 
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
@@ -63,26 +65,28 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
-import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
-import org.knime.js.base.node.base.input.listbox.ListBoxNodeUtil;
-import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
+import org.knime.core.util.Pair;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeRepresentation;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue.FileItem;
+import org.knime.js.base.node.base.input.filechooser.FileChooserValidator;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
- * The node model for the list box widget node
+ * The node model for the file chooser widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetNodeModel
-    extends WidgetNodeModel<ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue, ListBoxInputWidgetConfig> {
+public class FileChooserWidgetNodeModel extends WidgetNodeModel<FileChooserNodeRepresentation<FileChooserNodeValue>,
+    FileChooserNodeValue, FileChooserInputWidgetConfig> {
 
     /**
-     * Creates a new list box widget node model
+     * Creates a new file chooser widget node model
      *
      * @param viewName the interactive view name
      */
-    public ListBoxWidgetNodeModel(final String viewName) {
+    public FileChooserWidgetNodeModel(final String viewName) {
         super(new PortType[0], new PortType[]{BufferedDataTable.TYPE}, viewName);
     }
 
@@ -91,10 +95,9 @@ public class ListBoxWidgetNodeModel
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        getValidatedValues();
-        final String variableName = getConfig().getFlowVariableName();
         createAndPushFlowVariable();
-        return new PortObjectSpec[]{ListBoxNodeUtil.createSpec(variableName)};
+        FileChooserInputWidgetConfig config = getConfig();
+        return new PortObjectSpec[]{createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig())};
     }
 
     /**
@@ -102,44 +105,48 @@ public class ListBoxWidgetNodeModel
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        final String variableName = getConfig().getFlowVariableName();
-        DataTableSpec outSpec = ListBoxNodeUtil.createSpec(variableName);
+        createAndPushFlowVariable();
+        FileChooserInputWidgetConfig config = getConfig();
+        DataTableSpec outSpec = createSpec(config.getFileChooserConfig(), config.getFlowVariableConfig());
         BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
-        List<String> values = getValidatedValues();
-        for (int i = 0; i < values.size(); i++) {
-            cont.addRowToTable(new DefaultRow(RowKey.createRowKey(Long.valueOf(i)), new StringCell(values.get(i))));
+        Pair<FileItem[], Boolean> pair = getValidatedItems(getRelevantValue());
+        FileItem[] items = pair.getFirst();
+        if (pair.getSecond()) {
+            setWarningMessage("Some values contained no path information and were omitted.");
+        }
+        for (int i = 0; i < items.length; i++) {
+            DataRow row;
+            if (config.getFileChooserConfig().getOutputType()) {
+                row = new DefaultRow(RowKey.createRowKey(Long.valueOf(i)), new StringCell(items[i].getPath()),
+                    new StringCell(items[i].getType()));
+            } else {
+                row = new DefaultRow(RowKey.createRowKey(Long.valueOf(i)), new StringCell(items[i].getPath()));
+            }
+            cont.addRowToTable(row);
         }
         cont.close();
-        createAndPushFlowVariable();
         return new PortObject[]{cont.getTable()};
     }
 
-    /**
-     * @return List of validated values
-     * @throws InvalidSettingsException If one of the values is invalid
-     */
-    private List<String> getValidatedValues() throws InvalidSettingsException {
-        final ArrayList<String> values =
-            ListBoxNodeUtil.getSeparatedValues(getConfig().getListBoxConfig(), getRelevantValue().getString());
-        validateDialogValue(getRelevantValue(), values);
-        return values;
-    }
-
     private void createAndPushFlowVariable() throws InvalidSettingsException {
-        if (getConfig().getListBoxConfig().getSeparator() == null) {
-            setWarningMessage("Auto guessing separator.");
+        ValidationError error = validateViewValue(getRelevantValue());
+        if (error != null) {
+            throw new InvalidSettingsException(error.getError());
         }
-        final String variableName = getConfig().getFlowVariableName();
-        final String value = getRelevantValue().getString();
-        pushFlowVariableString(variableName, value);
+        FileItem item = getFirstFile(getRelevantValue());
+        String varIdentifier = getConfig().getFlowVariableName();
+        pushFlowVariableString(varIdentifier, item.getPath());
+        if (getConfig().getFileChooserConfig().getOutputType()) {
+            pushFlowVariableString(varIdentifier + " (type)", item.getType());
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ListBoxNodeValue createEmptyViewValue() {
-        return new ListBoxNodeValue();
+    public FileChooserNodeValue createEmptyViewValue() {
+        return new FileChooserNodeValue();
     }
 
     /**
@@ -147,51 +154,38 @@ public class ListBoxWidgetNodeModel
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.listbox";
+        return "org.knime.js.base.node.widget.input.filechooser";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ListBoxInputWidgetConfig createEmptyConfig() {
-        return new ListBoxInputWidgetConfig();
+    public FileChooserInputWidgetConfig createEmptyConfig() {
+        return new FileChooserInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected ListBoxNodeRepresentation<ListBoxNodeValue> getRepresentation() {
-        ListBoxInputWidgetConfig config = getConfig();
-        return new ListBoxNodeRepresentation<ListBoxNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getListBoxConfig(), config.getLabelConfig());
+    protected FileChooserNodeRepresentation<FileChooserNodeValue> getRepresentation() {
+        FileChooserInputWidgetConfig config = getConfig();
+        return new FileChooserNodeRepresentation<FileChooserNodeValue>(getRelevantValue(), config.getDefaultValue(),
+            config.getFileChooserConfig(), config.getLabelConfig());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final ListBoxNodeValue value) {
-        ArrayList<String> values;
-        try {
-            values = ListBoxNodeUtil.getSeparatedValues(getConfig().getListBoxConfig(), value.getString());
-        } catch (InvalidSettingsException e) {
-            return new ValidationError(e.getMessage());
-        }
-        return validateDialogValue(value, values);
-    }
-
-    private ValidationError validateDialogValue(final ListBoxNodeValue value, final ArrayList<String> values) {
-        ListBoxNodeConfig config = getConfig().getListBoxConfig();
-        String regex = config.getRegex();
-        if (regex != null && !regex.isEmpty()) {
-            for (int i = 0; i < values.size(); i++) {
-                if (!values.get(i).matches(regex)) {
-                    return new ValidationError("Value " + (i + 1) + " is not valid:\n"
-                        + config.getErrorMessage().replaceAll("[?]", values.get(i)));
-                }
-            }
+    public ValidationError validateViewValue(final FileChooserNodeValue value) {
+        FileChooserNodeConfig c = getConfig().getFileChooserConfig();
+        FileChooserValidator validator = new FileChooserValidator(c.getSelectWorkflows(), c.getSelectDirectories(),
+            c.getSelectDataFiles(), c.getFileTypes());
+        String validationResult = validator.validateViewValue(value);
+        if (validationResult != null) {
+            return new ValidationError(validationResult);
         }
         return super.validateViewValue(value);
     }
@@ -201,7 +195,8 @@ public class ListBoxWidgetNodeModel
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setString(getViewValue().getString());
+        // TODO Auto-generated method stub
+
     }
 
 }

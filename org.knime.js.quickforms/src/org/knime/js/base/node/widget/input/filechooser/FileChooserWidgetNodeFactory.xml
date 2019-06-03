@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_file.png" type="Visualizer" xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>File Chooser Widget</name>
+
+	<shortDescription>
+       Allows choosing single or multiple files, workflows or directories from a remote mountpoint. 
+       Outputs a table with the selected files.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				Allows choosing single or multiple files, workflows or directories from a remote mountpoint. 
+                Outputs a table with the selected files.
+			</p>
+			<p>
+				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
+				flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes
+				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+			</p>
+		</intro>
+		<option name="Label">A descriptive label that will be shown in the view.</option>
+		<option name="Description">Some lines of description that will be shown in the view,
+			for instance by means of a tooltip.
+		</option>
+		<option name="Variable Name">Variable identifier.</option>
+		<option name="Selection Types">
+            Set the items that are going to be available for selection.
+        </option>
+        <option name="Output selected item type">
+            Enabling this option will append a second column to the output table containing the type of the selected 
+            items. Also a second flow variable containing the type of the first selected item is created. Possible 
+            values are DATA, WORKFLOW and DIRECTORY.
+        </option>
+        <option name="Valid File Extensions">
+          A list of file extensions that is used as filter in the 
+          file browser (not only the one in the "Default File" option but also
+          in a remote file browser), e.g. ".csv,.csv.gz" will filter for
+          files ending with ".csv" or ".csv.gz". Leave empty to accept any file.
+        </option>
+        <option name="Allow multiple selection">
+            Option to enable or disable the selection of multiple items. If unchecked only one item can be selected.
+        </option>
+        <option name="Use default mount id of target">
+            Setting this option will query the mount id of the server the node is running on for creating absolute paths
+            to the selected items. If unchecked a custom mount id can be provided.
+        </option>
+        <option name="Custom mount id">
+            A custom mount id to be included in the absolute paths to the selected items.
+        </option>
+        <option name="Root Path">
+            An optional root path to only make items contained within this given directory available for selection.
+        </option>
+        <option name="Default File">
+            The default file to be output during configure and design time. If the path to the default file is present 
+            remotely as well, the file will be preselected in the view.
+        </option>
+	</fullDescription>
+	<interactiveView name="File Chooser Widget">
+		View containing the file chooser component. View selection is only possible remotely.
+	</interactiveView>
+	<ports>
+		<outPort index="0" name="Selected Files">
+            Data table containing the selected files and types.
+        </outPort>
+	</ports>
+</knimeNode>
