@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./configuration_file.png" type="QuickForm" xmlns="http://knime.org/node/v3.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>File Chooser Configuration</name>
+
+	<shortDescription>
+	   Allows choosing single or multiple files, workflows or directories from a remote mountpoint. 
+	   Outputs a table with the selected files.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Allows choosing single or multiple files, workflows or directories from a remote mountpoint. 
+       Outputs a table with the selected files.</p>
+		</intro>
+		<option name="Label">
+		  A descriptive label that will be shown in the dialog.
+		</option>
+		<option name="Description">
+		  Some lines of description that will be shown for instance in the node description of the component exposing a
+		  dialog.
+		</option>
+		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution). 
+		  This will also be the name of the exported flow variable.</option>
+		<option name="Selection Types">
+            Set the items that are going to be available for selection.
+        </option>
+        <option name="Output selected item type">
+            Enabling this option will append a second column to the output table containing the type of the selected 
+            items. Also a second flow variable containing the type of the first selected item is created. Possible 
+            values are DATA, WORKFLOW and DIRECTORY.
+        </option>
+        <option name="Valid File Extensions">
+          A list of file extensions that is used as filter in the 
+          file browser (not only the one in the "Default File" option but also
+          in a remote file browser), e.g. ".csv,.csv.gz" will filter for
+          files ending with ".csv" or ".csv.gz". Leave empty to accept any file.
+        </option>
+        <option name="Allow multiple selection">
+            Option to enable or disable the selection of multiple items. If unchecked only one item can be selected.
+        </option>
+        <option name="Use default mount id of target">
+            Setting this option will query the mount id of the server the node is running on for creating absolute paths
+            to the selected items. If unchecked a custom mount id can be provided.
+        </option>
+        <option name="Custom mount id">
+            A custom mount id to be included in the absolute paths to the selected items.
+        </option>
+        <option name="Root Path">
+            An optional root path to only make items contained within this given directory available for selection.
+        </option>
+        <option name="Default File">
+            The default file to be output during configure and design time. If the path to the default file is present 
+            remotely as well, the file will be preselected in the view.
+        </option>
+	</fullDescription>
+	<ports>
+		<outPort index="0" name="Selected Files">
+            Data table containing the selected files and types.
+        </outPort>
+	</ports>
+</knimeNode>

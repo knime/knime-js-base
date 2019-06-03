@@ -46,7 +46,7 @@
  * History
  *   Apr 1, 2016 (albrecht): created
  */
-package org.knime.js.base.node.quickform.input.filechooser;
+package org.knime.js.base.node.base.input.filechooser;
 
 import org.knime.workbench.explorer.filesystem.AbstractExplorerFileStore;
 

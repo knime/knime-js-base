@@ -74,6 +74,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.util.ThreadUtils;
+import org.knime.js.base.node.base.input.filechooser.FileStoreContainer;
 import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormConfig.SelectionType;
 import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormValue.FileItem;
@@ -226,7 +227,11 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
              */
             @Override
             public void actionPerformed(final ActionEvent arg0) {
-                Display.getDefault().syncExec(ThreadUtils.runnableWithContext(new Runnable() {
+                Display display = Display.getCurrent();
+                if (display == null) {
+                    display = Display.getDefault();
+                }
+                display.asyncExec(ThreadUtils.runnableWithContext(new Runnable() {
                     @Override
                     public void run() {
                         // collect all non-local mount ids

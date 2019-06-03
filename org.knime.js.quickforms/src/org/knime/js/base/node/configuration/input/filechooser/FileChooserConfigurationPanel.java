@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,12 +41,12 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * History
- *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
+ *   3 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.quickform.input.filechooser;
+package org.knime.js.base.node.configuration.input.filechooser;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -56,45 +57,47 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.js.base.node.base.input.filechooser.FileChooserDialogUtil;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig.SelectionType;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue.FileItem;
+import org.knime.js.base.node.base.input.filechooser.FileChooserValidator;
 import org.knime.js.base.node.base.input.filechooser.FileStoreContainer;
-import org.knime.js.base.node.quickform.QuickFormDialogPanel;
-import org.knime.js.base.node.quickform.QuickFormNodeDialog;
-import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormConfig.SelectionType;
-import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormNodeDialog.FileChooserValidator;
-import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormValue.FileItem;
+import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
+import org.knime.js.core.settings.DialogUtil;
 import org.knime.workbench.explorer.filesystem.AbstractExplorerFileStore;
 
 /**
- * The sub node dialog panel for the file upload quick form node.
+ * The component dialog panel for the file chooser configuration node
  *
- * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("serial")
-public class FileChooserQuickFormDialogPanel extends QuickFormDialogPanel<FileChooserQuickFormValue> implements FileStoreContainer {
+public class FileChooserConfigurationPanel extends AbstractDialogNodeConfigurationPanel<FileChooserDialogNodeValue>
+    implements FileStoreContainer {
 
     private final FileChooserValidator m_validator;
     private final JTextField m_defaultPathField;
     private final JButton m_fileChooserButton;
     private AbstractExplorerFileStore m_fileStore;
-    private FileChooserQuickFormValue m_value;
+    private FileChooserDialogNodeValue m_value;
 
     /**
-     * @param representation The dialog representation
-     *
+     * @param representation the dialog node settings
      */
-    public FileChooserQuickFormDialogPanel(final FileChooserQuickFormRepresentation representation) {
-        super(representation.getDefaultValue());
+    public FileChooserConfigurationPanel(final FileChooserDialogNodeRepresentation representation) {
+        super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         m_validator = new FileChooserValidator(representation.getSelectWorkflows(),
             representation.getSelectDirectories(), representation.getSelectDataFiles(), representation.getFileTypes());
         JPanel panel = new JPanel(new GridBagLayout());
-        m_defaultPathField = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+        m_defaultPathField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         FileItem[] items = representation.getDefaultValue().getItems();
         if (items != null && items.length > 0) {
             m_defaultPathField.setText(items[0].getPath());
         }
         String title = "Select file";
         String description = "Please select the file to override the default";
-        m_fileChooserButton = FileChooserQuickFormNodeDialog.createBrowseButton(m_defaultPathField, m_validator, this, title, description, false);
+        m_fileChooserButton =
+            FileChooserDialogUtil.createBrowseButton(m_defaultPathField, m_validator, this, title, description, false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -109,17 +112,30 @@ public class FileChooserQuickFormDialogPanel extends QuickFormDialogPanel<FileCh
      * {@inheritDoc}
      */
     @Override
-    public FileChooserQuickFormValue createNodeValue() throws InvalidSettingsException {
-        FileChooserQuickFormValue value = new FileChooserQuickFormValue();
+    protected void resetToDefault() {
+        String path = "";
+        FileItem[] items = getDefaultValue().getItems();
+        if (items != null && items.length > 0) {
+            path = items[0].getPath();
+        }
+        setPath(path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileChooserDialogNodeValue createNodeValue() throws InvalidSettingsException {
+        FileChooserDialogNodeValue value = new FileChooserDialogNodeValue();
         String path = m_defaultPathField.getText();
-        FileChooserQuickFormValue oldValue = m_value == null ? getDefaultValue() : m_value;
+        FileChooserDialogNodeValue oldValue = m_value == null ? getDefaultValue() : m_value;
         FileItem[] items = oldValue.getItems();
         FileItem oldItem = new FileItem(null, SelectionType.UNKNOWN);
         if (items != null && items.length == 1) {
             oldItem = items[0];
         }
-        SelectionType type = FileChooserQuickFormNodeDialog.getTypeForFileStore(
-            m_fileStore, m_defaultPathField.getText(), oldItem);
+        SelectionType type =
+            FileChooserDialogUtil.getTypeForFileStore(m_fileStore, m_defaultPathField.getText(), oldItem);
         FileItem item = new FileItem(path, type);
         value.setItems(new FileItem[]{item});
         return value;
@@ -129,7 +145,7 @@ public class FileChooserQuickFormDialogPanel extends QuickFormDialogPanel<FileCh
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final FileChooserQuickFormValue value) {
+    public void loadNodeValue(final FileChooserDialogNodeValue value) {
         super.loadNodeValue(value);
         m_value = value;
         if (value != null && value.getItems() != null && value.getItems().length > 0) {
@@ -145,19 +161,6 @@ public class FileChooserQuickFormDialogPanel extends QuickFormDialogPanel<FileCh
         super.setEnabled(enabled);
         m_defaultPathField.setEnabled(enabled);
         m_fileChooserButton.setEnabled(enabled);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void resetToDefault() {
-        String path = "";
-        FileItem[] items = getDefaultValue().getItems();
-        if (items != null && items.length > 0) {
-            path = items[0].getPath();
-        }
-        setPath(path);
     }
 
     private void setPath(final String path) {

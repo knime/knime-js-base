@@ -260,6 +260,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.single.SingleSelectionWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowcontrol/configuration/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

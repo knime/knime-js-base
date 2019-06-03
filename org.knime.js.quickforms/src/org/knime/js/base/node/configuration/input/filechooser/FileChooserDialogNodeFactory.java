@@ -44,122 +44,59 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 May 2019 (albrecht): created
+ *   3 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.configuration.input.filechooser;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.js.base.node.base.FlowVariableConfig;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
 
 /**
+ * Factory for the file chooser configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL>
  */
-public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNodeValue>
-    extends LabeledDialogNodeConfig<VAL> {
-
-    private final FlowVariableConfig m_variable;
+public class FileChooserDialogNodeFactory extends NodeFactory<FileChooserDialogNodeModel> {
 
     /**
-     * Create new config instance
+     * {@inheritDoc}
      */
-    public LabeledFlowVariableDialogNodeConfig() {
-        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-        m_variable = new FlowVariableConfig(defaultName);
-    }
-
-    public String getFlowVariableName() {
-        return m_variable.getFlowVariableName();
-    }
-
-    public void setFlowVariableName(final String flowVariableName) {
-        m_variable.setFlowVariableName(flowVariableName);
-    }
-
-    /**
-     *
-     */
-    public FlowVariableConfig getFlowVariableConfig() {
-        return m_variable;
+    @Override
+    public FileChooserDialogNodeModel createNodeModel() {
+        return new FileChooserDialogNodeModel();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
-        m_variable.saveSettings(settings);
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
-        m_variable.loadSettings(settings);
+    public NodeView<FileChooserDialogNodeModel> createNodeView(final int viewIndex, final FileChooserDialogNodeModel nodeModel) {
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
-        m_variable.loadSettingsInDialog(settings);
+    protected boolean hasDialog() {
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append(m_variable.toString());
-        return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_variable)
-                .toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        LabeledFlowVariableDialogNodeConfig<VAL> other = (LabeledFlowVariableDialogNodeConfig<VAL>)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_variable, other.m_variable)
-                .isEquals();
+    protected NodeDialogPane createNodeDialogPane() {
+        return new FileChooserDialogNodeNodeDialog();
     }
 
 }

@@ -44,50 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 May 2019 (albrecht): created
+ *   3 Jun 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.configuration.input.filechooser;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.js.base.node.base.FlowVariableConfig;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig;
+import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
+ * The config for the file chooser configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL>
  */
-public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNodeValue>
-    extends LabeledDialogNodeConfig<VAL> {
+public class FileChooserInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<FileChooserDialogNodeValue> {
 
-    private final FlowVariableConfig m_variable;
+    private final FileChooserNodeConfig m_config;
 
     /**
-     * Create new config instance
+     * Instantiate a new config object
      */
-    public LabeledFlowVariableDialogNodeConfig() {
-        String defaultName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
-        m_variable = new FlowVariableConfig(defaultName);
-    }
-
-    public String getFlowVariableName() {
-        return m_variable.getFlowVariableName();
-    }
-
-    public void setFlowVariableName(final String flowVariableName) {
-        m_variable.setFlowVariableName(flowVariableName);
+    public FileChooserInputDialogNodeConfig() {
+        m_config = new FileChooserNodeConfig();
     }
 
     /**
-     *
+     * @return the config
      */
-    public FlowVariableConfig getFlowVariableConfig() {
-        return m_variable;
+    public FileChooserNodeConfig getFileChooserConfig() {
+        return m_config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileChooserDialogNodeValue createEmptyValue() {
+        return new FileChooserDialogNodeValue();
     }
 
     /**
@@ -96,7 +93,7 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
-        m_variable.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
     /**
@@ -105,7 +102,7 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-        m_variable.loadSettings(settings);
+        m_config.loadSettings(settings);
     }
 
     /**
@@ -114,7 +111,7 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        m_variable.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
     }
 
     /**
@@ -125,7 +122,7 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
-        sb.append(m_variable.toString());
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -134,16 +131,14 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_variable)
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -155,10 +150,9 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
         if (obj.getClass() != getClass()) {
             return false;
         }
-        LabeledFlowVariableDialogNodeConfig<VAL> other = (LabeledFlowVariableDialogNodeConfig<VAL>)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_variable, other.m_variable)
+        FileChooserInputDialogNodeConfig other = (FileChooserInputDialogNodeConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 
