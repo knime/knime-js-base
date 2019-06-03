@@ -51,10 +51,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -62,7 +59,6 @@ import javax.swing.JPanel;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.DialogNodeValue;
-import org.knime.core.node.util.ViewUtils;
 
 /**
  * The panel of a node that is displayed in the sub node's dialog.
@@ -74,7 +70,6 @@ import org.knime.core.node.util.ViewUtils;
 public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNodeValue> extends DialogNodePanel<VAL> {
 
     private JLabel m_label = new JLabel();
-    private JCheckBox m_checkBox = new JCheckBox("Change");
     private final JPanel m_contentPanel;
     private VAL m_defaultValue;
 
@@ -87,16 +82,6 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
      */
     public AbstractDialogNodeConfigurationPanel(final String label, final String description, final VAL defaultValue) {
         m_defaultValue = defaultValue;
-        m_checkBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                setEnabled(m_checkBox.isSelected());
-                if (!m_checkBox.isSelected()) {
-                    resetToDefault();
-                }
-            }
-        });
-        m_checkBox.setSelected(false);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
@@ -107,13 +92,7 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
         m_label.setText(label);
         m_label.setToolTipText(description);
         add(m_label, gbc);
-
-        gbc.gridx += 1;
-        gbc.anchor = GridBagConstraints.NORTHEAST;
-        add(ViewUtils.getInFlowLayout(FlowLayout.RIGHT, 0, 0, m_checkBox), gbc);
         gbc.gridy += 1;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
         m_contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         gbc.weightx = 1;
         add(m_contentPanel, gbc);
@@ -139,7 +118,6 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
     protected void setComponent(final JComponent component) {
         m_contentPanel.removeAll();
         m_contentPanel.add(component);
-        setEnabled(m_checkBox.isSelected());
     }
 
     /**
@@ -158,22 +136,14 @@ public abstract class AbstractDialogNodeConfigurationPanel<VAL extends DialogNod
      * {@inheritDoc}
      */
     @Override
-    public void loadNodeValue(final VAL value) {
-        if (value != null) {
-            m_checkBox.setSelected(true);
-        }
-    }
+    public void loadNodeValue(final VAL value) { /* nothing to do */ }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public VAL getNodeValue() throws InvalidSettingsException {
-        if (m_checkBox.isSelected()) {
-            return createNodeValue();
-        } else {
-            return null;
-        }
+        return createNodeValue();
     }
 
     /**
