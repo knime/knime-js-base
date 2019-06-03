@@ -44,107 +44,133 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 27, 2019 (Daniel Bogenrieder): created
+ *   Jun 3, 2019 (Daniel Bogenrieder): created
  */
-package org.knime.js.base.node.widget.input.slider;
+package org.knime.js.base.node.base.input.fileupload;
 
-import org.knime.core.node.BufferedDataTable;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
-import org.knime.js.base.node.base.input.slider.SliderNodeValue;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The node model for the slider widget node
+ * The base value for the file upload configuration and widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue, SliderInputWidgetConfig> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class FileUploadNodeValue extends JSONViewContent {
+
+    protected static final String CFG_PATH = "path";
+    protected static final String DEFAULT_PATH = "";
+    protected String m_path = DEFAULT_PATH;
+
+    protected static final String CFG_PATH_VALID = "pathValid";
+    protected static final boolean DEFAULT_PATH_VALID = true;
+    protected boolean m_pathValid = DEFAULT_PATH_VALID;
 
     /**
-     * @param viewName
+     * @return the path
      */
-    protected SliderWidgetNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+    @JsonProperty("path")
+    public String getPath() {
+        return m_path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    @JsonProperty("path")
+    public void setPath(final String path) {
+        m_path = path;
+    }
+
+    /**
+     * @return the pathValid
+     */
+    @JsonProperty("pathValid")
+    public boolean getPathValid() {
+        return m_pathValid;
+    }
+
+    /**
+     * @param pathValid the pathValid to set
+     */
+    @JsonProperty("pathValid")
+    public void setPathValid(final boolean pathValid) {
+        m_pathValid = pathValid;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public SliderNodeValue createEmptyViewValue() {
-        return new SliderNodeValue();
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_PATH, getPath());
+        settings.addBoolean(CFG_PATH_VALID, m_pathValid);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-       return "org.knime.js.base.node.widget.input.slider";
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        setPath(settings.getString(CFG_PATH));
+
+        //added with 3.2
+        setPathValid(settings.getBoolean(CFG_PATH_VALID, DEFAULT_PATH_VALID));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        ValidationError error = validateViewValue(getRelevantValue());
-        if (error != null) {
-            throw new InvalidSettingsException(error.getError());
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("path=");
+        sb.append(m_path);
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_path)
+                .append(m_pathValid)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
         }
-        Double sliderValue = getRelevantValue().getDouble();
-        if (sliderValue == null) {
-            sliderValue = 0.0d;
+        if (obj == this) {
+            return true;
         }
-        pushFlowVariableDouble(getConfig().getFlowVariableName(), sliderValue);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SliderInputWidgetConfig createEmptyConfig() {
-        return new SliderInputWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected SliderNodeRepresentation<SliderNodeValue> getRepresentation() {
-        SliderInputWidgetConfig config = getConfig();
-        return new SliderWidgetNodeRepresentation(getRelevantValue(), config.getDefaultValue(),
-            config.getSliderConfig(), config.getLabelConfig(), config.getSliderSettings());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setDouble(getViewValue().getDouble());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ValidationError validateViewValue(final SliderNodeValue value) {
-        double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
-            return new ValidationError("The set integer " + dialogValue
-                + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
+        if (obj.getClass() != getClass()) {
+            return false;
         }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
-            return new ValidationError("The set integer " + dialogValue
-                + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
-        }
-        return super.validateViewValue(value);
+        FileUploadNodeValue other = (FileUploadNodeValue)obj;
+        return new EqualsBuilder()
+                .append(m_path, other.m_path)
+                .append(m_pathValid, other.m_pathValid)
+                .isEquals();
     }
-
 }

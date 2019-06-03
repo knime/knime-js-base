@@ -44,107 +44,147 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 27, 2019 (Daniel Bogenrieder): created
+ *   Jun 3, 2019 (Daniel Bogenrieder): created
  */
-package org.knime.js.base.node.widget.input.slider;
+package org.knime.js.base.node.widget.input.fileupload;
 
-import org.knime.core.node.BufferedDataTable;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
-import org.knime.js.base.node.base.input.slider.SliderNodeValue;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeConfig;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
+import org.knime.js.base.node.configuration.input.fileupload.FileUploadDialogNodeValue;
+import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
- * The node model for the slider widget node
+ * The config for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue, SliderInputWidgetConfig> {
+public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig<FileUploadNodeValue> {
+
+    private final FileUploadNodeConfig m_config;
 
     /**
-     * @param viewName
+     * @return the fileTypes
      */
-    protected SliderWidgetNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+    public String[] getFileTypes() {
+        return m_config.getFileTypes();
+    }
+
+    /**
+     * @return the errorMessage
+     */
+    public String getErrorMessage() {
+        return m_config.getErrorMessage();
+    }
+
+    /**
+     * @return the timeout
+     */
+    public int getTimeout() {
+        return m_config.getTimeout();
+
+    }
+
+    /**
+     * @return the disableOutput
+     */
+    public boolean getDisableOutput() {
+        return m_config.getDisableOutput();
+    }
+
+    /**
+     * Instantiate a new config object
+     */
+    public FileUploadInputWidgetConfig() {
+        m_config = new FileUploadNodeConfig();
+    }
+
+    /**
+     * @return the config
+     */
+    public FileUploadNodeConfig getFileUploadConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public SliderNodeValue createEmptyViewValue() {
-        return new SliderNodeValue();
+    protected FileUploadDialogNodeValue createEmptyValue() {
+        return new FileUploadDialogNodeValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-       return "org.knime.js.base.node.widget.input.slider";
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        ValidationError error = validateViewValue(getRelevantValue());
-        if (error != null) {
-            throw new InvalidSettingsException(error.getError());
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_config)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
         }
-        Double sliderValue = getRelevantValue().getDouble();
-        if (sliderValue == null) {
-            sliderValue = 0.0d;
+        if (obj == this) {
+            return true;
         }
-        pushFlowVariableDouble(getConfig().getFlowVariableName(), sliderValue);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SliderInputWidgetConfig createEmptyConfig() {
-        return new SliderInputWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected SliderNodeRepresentation<SliderNodeValue> getRepresentation() {
-        SliderInputWidgetConfig config = getConfig();
-        return new SliderWidgetNodeRepresentation(getRelevantValue(), config.getDefaultValue(),
-            config.getSliderConfig(), config.getLabelConfig(), config.getSliderSettings());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setDouble(getViewValue().getDouble());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ValidationError validateViewValue(final SliderNodeValue value) {
-        double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
-            return new ValidationError("The set integer " + dialogValue
-                + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
+        if (obj.getClass() != getClass()) {
+            return false;
         }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
-            return new ValidationError("The set integer " + dialogValue
-                + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
-        }
-        return super.validateViewValue(value);
+        FileUploadInputWidgetConfig other = (FileUploadInputWidgetConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
+                .isEquals();
     }
 
 }
