@@ -191,12 +191,12 @@
             factory-class="org.knime.js.base.node.widget.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
       <node
-            category-path="/flowabstraction/configuration/filter"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeFactory">
       </node>
       <node
-            category-path="/flowabstraction/widgets/filter"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory">
       </node>
@@ -221,12 +221,12 @@
             factory-class="org.knime.js.base.node.widget.selection.column.ColumnSelectionWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowabstraction/configuration/filter"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeFactory">
       </node>
       <node
-            category-path="/flowabstraction/widgets/filter"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.value.ValueFilterWidgetNodeFactory">
       </node>

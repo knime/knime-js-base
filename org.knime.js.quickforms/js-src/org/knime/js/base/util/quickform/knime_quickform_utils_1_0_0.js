@@ -1,3 +1,4 @@
+/* eslint-env jquery */
 /*
  * ------------------------------------------------------------------------
  *
@@ -42,91 +43,93 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
 
-resizeParent = function(width, height) {
-	if (parent != undefined && parent.KnimePageLoader != undefined) {
-		parent.KnimePageLoader.autoResize(window.frameElement.id, width, height);
-	}
+window.resizeParent = function (width, height) {
+    if (parent != undefined && parent.KnimePageLoader != undefined) {
+        parent.KnimePageLoader.autoResize(window.frameElement.id, width, height);
+    }
 };
 
-callUpdate = function() {
-	if (parent != undefined && parent.KnimePageLoader != undefined) {
-		parent.KnimePageLoader.getPageValues();
-	}
+window.callUpdate = function () {
+    if (parent != undefined && parent.KnimePageLoader != undefined) {
+        parent.KnimePageLoader.getPageValues();
+    }
 };
 
-injectCSS = function(rule) {
-	var div = $("<div />", {html: '<style>' + rule + '</style>'}).appendTo("head");    
+window.injectCSS = function (rule) {
+    var div = $('<div />', {
+        html: '<style>' + rule + '</style>'
+    }).appendTo('head');
 };
 
-isValid = function(object) {
-	return object != undefined && object != null;
+window.isValid = function (object) {
+    return object != undefined && object != null;
 };
 
-checkMissingData = function(representation) {
-	if (isValid(representation)) {
-		return false;
-	} else {
-		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
-		body.append(qfdiv);
-		var error = $('<span class="knime-qf-error">Error: Data is missing, can not display view.</span>');
-		qfdiv.append(error);
-		resizeParent();
-		return true;
-	}
+window.checkMissingData = function (representation) {
+    if (window.isValid(representation)) {
+        return false;
+    } else {
+        var body = $('body');
+        var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
+        body.append(qfdiv);
+        var error = $('<span class="knime-qf-error">Error: Data is missing, can not display view.</span>');
+        qfdiv.append(error);
+        window.resizeParent();
+        return true;
+    }
+};
+
+window.createPlaceHolder = function (message) {
+    var element = null;
+    if (message) {
+        element = document.createElement('div');
+        element.setAttribute('class', 'knime-string knime-single-line');
+        element.appendChild(document.createTextNode(message));
+    }
+    return element;
 };
 
 // Method to create label and representation and move a native component
-insertNativeComponent = function(representation, messageNotFound, messageNotStandalone) {
-	var body = document.getElementsByTagName("body")[0];
-	var div = document.createElement("div");
-	//set correct class attributes to be used by JS and native component's css
-	div.setAttribute("class", "v-app knime quickformcontainer knime-qf-container");
-	body.appendChild(div);
-	var label = document.createElement("div");
-	label.setAttribute("class", "label knime-qf-title");
-	label.appendChild(document.createTextNode(representation.label));
-	div.appendChild(label);
-	div.setAttribute("title", representation.description);
-	div.setAttribute("aria-label", representation.label);
-	div.setAttribute("tabindex", 0);
-	var placeHolder = null;
-	// check if running on webportal
-	if (knimeService && knimeService.isRunningInWebportal()) {
-		//set correct class attributes on body element
-		var bodyClass = parent.document.getElementsByTagName("body")[0].getAttribute("class");
-		body.setAttribute("class", bodyClass);
-		// find corresponding native component 
-		var component = parent.document.getElementById("element_for_" + window.frameElement.id);
-		if (component) {
-			// reallocate native component
-			div.appendChild(component);
-			return component;
-		} else {
-			// component was not found, but expected, show error message
-			placeHolder = createPlaceHolder(messageNotFound);
-		}
-	} else {
-		// native components cannot be present in standalone mode, show message
-		placeHolder = createPlaceHolder(messageNotStandalone);
-	}
-	if (placeHolder) {
-		div.appendChild(placeHolder);
-		return false;
-	}
-};
-
-createPlaceHolder = function(message) {
-	var element = null;
-	if (message) {
-		element = document.createElement("div");
-		element.setAttribute('class', 'knime-string knime-single-line');
-		element.appendChild(document.createTextNode(message));
-	}
-	return element;
+window.insertNativeComponent = function (representation, messageNotFound, messageNotStandalone) {
+    var body = document.getElementsByTagName('body')[0];
+    var div = document.createElement('div');
+    // set correct class attributes to be used by JS and native component's css
+    div.setAttribute('class', 'v-app knime quickformcontainer knime-qf-container');
+    body.appendChild(div);
+    var label = document.createElement('div');
+    label.setAttribute('class', 'label knime-qf-title');
+    label.appendChild(document.createTextNode(representation.label));
+    div.appendChild(label);
+    div.setAttribute('title', representation.description);
+    div.setAttribute('aria-label', representation.label);
+    div.setAttribute('tabindex', 0);
+    var placeHolder = null;
+    // check if running on webportal
+    if (knimeService && knimeService.isRunningInWebportal()) {
+        // set correct class attributes on body element
+        var bodyClass = parent.document.getElementsByTagName('body')[0].getAttribute('class');
+        body.setAttribute('class', bodyClass);
+        // find corresponding native component
+        var component = parent.document.getElementById('element_for_' + window.frameElement.id);
+        if (component) {
+            // reallocate native component
+            div.appendChild(component);
+            return component;
+        } else {
+            // component was not found, but expected, show error message
+            placeHolder = window.createPlaceHolder(messageNotFound);
+        }
+    } else {
+        // native components cannot be present in standalone mode, show message
+        placeHolder = window.createPlaceHolder(messageNotStandalone);
+    }
+    if (placeHolder) {
+        div.appendChild(placeHolder);
+        return false;
+    }
 };

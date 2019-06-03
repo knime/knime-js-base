@@ -2,7 +2,7 @@
 <knimeNode icon="./widget_value_filter.png" type="Visualizer" xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Value Filter Widget</name>
+	<name>Nominal Row Filter Widget</name>
 
 	<shortDescription>
        Creates a value filter widget for use in components views. 

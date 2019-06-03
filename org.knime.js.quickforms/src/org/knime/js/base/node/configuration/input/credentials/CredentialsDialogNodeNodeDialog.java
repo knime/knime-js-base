@@ -87,7 +87,7 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         m_config = new CredentialsDialogNodeConfig();
         m_usernameField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_passwordField = new JPasswordField(DialogUtil.DEF_TEXTFIELD_WIDTH);
-        m_promptUsernameChecker = new JCheckBox("Prompt user name in wrapped metanode dialog/wizard");
+        m_promptUsernameChecker = new JCheckBox("Prompt user name in component dialog/wizard");
         m_savePasswordChecker = new JCheckBox("Save password in configuration (weakly encrypted)");
         m_useServerLoginChecker = new JCheckBox("Use KNIME Server Login (when run on server)");
         m_noDisplayChecker = new JCheckBox("Don't render input fields");
