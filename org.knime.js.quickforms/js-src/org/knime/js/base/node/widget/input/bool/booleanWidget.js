@@ -80,6 +80,17 @@ window.knimeBooleanWidget = (function () {
         input.blur(callUpdate);
         viewValid = true;
     };
+    
+    booleanWidget.validate = function () {
+        if (!viewValid) {
+            return false;
+        }
+        return true;
+    };
+    
+    booleanWidget.setValidationErrorMessage = function (message) {
+        /* nothing to do */
+    };
 
     booleanWidget.value = function () {
         if (!viewValid) {

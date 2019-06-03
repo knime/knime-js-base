@@ -113,7 +113,7 @@ window.knimeSingleSelectionWidget = (function () {
             return null;
         }
         var viewValue = {};
-        viewValue.value = selector.getSelection();
+        viewValue.value = [selector.getSelection()];
         return viewValue;
     };
 
