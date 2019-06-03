@@ -3,265 +3,265 @@
 <plugin>
    <extension point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.string.StringInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.bool.BooleanInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.integer.IntInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.dbl.DoubleInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             deprecated="true"
             factory-class="org.knime.js.base.node.quickform.input.date.DateInputQuickFormNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.quickform.input.date2.DateInput2QuickFormNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.listbox.ListBoxInputQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/selection"
+            category-path="/flowabstraction/quickforms/selection"
             factory-class="org.knime.js.base.node.quickform.selection.single.SingleSelectionQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/selection"
+            category-path="/flowabstraction/quickforms/selection"
             factory-class="org.knime.js.base.node.quickform.selection.multiple.MultipleSelectionQuickFormNodeFactory"
             >
       </node>
        <node
-            category-path="/flowcontrol/quickforms/selection"
+            category-path="/flowabstraction/quickforms/selection"
             factory-class="org.knime.js.base.node.quickform.selection.value.ValueSelectionQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/filter"
+            category-path="/flowabstraction/quickforms/filter"
             factory-class="org.knime.js.base.node.quickform.filter.value.ValueFilterQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/selection"
+            category-path="/flowabstraction/quickforms/selection"
             factory-class="org.knime.js.base.node.quickform.selection.column.ColumnSelectionQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/filter"
+            category-path="/flowabstraction/quickforms/filter"
             factory-class="org.knime.js.base.node.quickform.filter.column.ColumnFilterQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.fileupload.FileUploadQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/output"
+            category-path="/flowabstraction/quickforms/output"
             factory-class="org.knime.js.base.node.output.filedownload.FileDownloadNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/output"
+            category-path="/flowabstraction/quickforms/output"
             factory-class="org.knime.js.base.node.output.image.ImageOutputNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/output"
+            category-path="/flowabstraction/quickforms/output"
             factory-class="org.knime.js.base.node.output.text.TextOutputNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormNodeFactory"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/input"
+            category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.js.base.node.quickform.input.slider.SliderInputQuickFormNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/quickforms/filter"
+            category-path="/flowabstraction/quickforms/filter"
             factory-class="org.knime.js.base.node.quickform.filter.definition.rangeslider.RangeSliderFilterNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/quickforms/filter"
+            category-path="/flowabstraction/quickforms/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.bool.BooleanWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.string.StringDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.string.StringWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.integer.IntegerDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.integer.IntegerWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.dbl.DoubleWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.date.DateDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.date.DateWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.listbox.ListBoxDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.listbox.ListBoxWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.slider.IntegerSliderDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.slider.SliderWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/filter"
+            category-path="/flowabstraction/widgets/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.definition.rangeslider.RangeSliderFilterNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/filter"
+            category-path="/flowabstraction/widgets/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.definition.value.ValueFilterDefinitionNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/filter"
+            category-path="/flowabstraction/configuration/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/filter"
+            category-path="/flowabstraction/widgets/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.credentials.CredentialsDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/input"
+            category-path="/flowabstraction/widgets/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.credentials.CredentialsWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/selection"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.selection.column.ColumnSelectionDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/selection"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.column.ColumnSelectionWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/filter"
+            category-path="/flowabstraction/configuration/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/filter"
+            category-path="/flowabstraction/widgets/filter"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.filter.value.ValueFilterWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/selection"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.selection.value.ValueSelectionDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/selection"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.value.ValueSelectionWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/selection"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/selection"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.multiple.MultipleSelectionWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/selection"
+            category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/widgets/selection"
+            category-path="/flowabstraction/widgets/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.selection.single.SingleSelectionWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowcontrol/configuration/input"
+            category-path="/flowabstraction/configuration/input"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory">
       </node>
@@ -272,58 +272,58 @@
       		icon="icons/missing.gif"
             level-id="input"
             name="Input"
-            path="/flowcontrol/quickforms"/>
+            path="/flowabstraction/quickforms"/>
       <category
             after="input"
             icon="icons/missing.gif"
             level-id="selection"
             name="Selection"
-            path="/flowcontrol/quickforms"/>
+            path="/flowabstraction/quickforms"/>
       <category
             after="selection"
             icon="icons/missing.gif"
             level-id="filter"
             name="Filter"
-            path="/flowcontrol/quickforms"/>
+            path="/flowabstraction/quickforms"/>
       <category
             icon="icons/missing.gif"
             level-id="output"
             name="Output"
-            path="/flowcontrol/quickforms"/>
+            path="/flowabstraction/quickforms"/>
       <category
             icon="icons/missing.gif"
             level-id="input"
             name="Input"
-            path="/flowcontrol/configuration"/>
+            path="/flowabstraction/configuration"/>
       <category
             after="input"
             icon="icons/missing.gif"
             level-id="selection"
             name="Selection"
-            path="/flowcontrol/configuration"/>
+            path="/flowabstraction/configuration"/>
       <category
             after="selection"
             icon="icons/missing.gif"
             level-id="filter"
             name="Filter"
-            path="/flowcontrol/configuration"/>
+            path="/flowabstraction/configuration"/>
        <category
             icon="icons/missing.gif"
             level-id="input"
             name="Input"
-            path="/flowcontrol/widgets"/>
+            path="/flowabstraction/widgets"/>
       <category
             after="input"
             icon="icons/missing.gif"
             level-id="selection"
             name="Selection"
-            path="/flowcontrol/widgets"/>
+            path="/flowabstraction/widgets"/>
       <category
             after="selection"
             icon="icons/missing.gif"
             level-id="filter"
             name="Filter"
-            path="/flowcontrol/widgets"/>
+            path="/flowabstraction/widgets"/>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
