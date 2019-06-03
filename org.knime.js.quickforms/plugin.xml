@@ -1079,6 +1079,31 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Slider Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.slider.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/slider/"
+               relativePathTarget="org/knime/js/base/node/widget/input/slider/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/slider/sliderWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/slider/sliderWidget.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="noUISlider_12_1_0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
