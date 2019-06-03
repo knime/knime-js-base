@@ -78,7 +78,6 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     CONF extends WidgetConfig<VAL>> extends AbstractWizardNodeModel<REP, VAL> implements CSSModifiable {
 
     private CONF m_config = createEmptyConfig();
-    private boolean m_valueSet = false;
 
     /**
      * @param inPortTypes
@@ -162,7 +161,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     protected void performReset() {
-        m_valueSet = false;
+        m_config.setValueSet(false);
     }
 
     /**
@@ -205,7 +204,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     protected void setViewValue(final VAL value) {
         synchronized (getLock()) {
             super.setViewValue(value);
-            m_valueSet = value != null;
+            m_config.setValueSet(value != null);
         }
     }
 
@@ -216,7 +215,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     public void loadViewValue(final VAL viewValue, final boolean useAsDefault) {
         synchronized (getLock()) {
             super.loadViewValue(viewValue, useAsDefault);
-            m_valueSet = viewValue != null;
+            m_config.setValueSet(viewValue != null);
         }
     }
 
@@ -239,7 +238,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     protected ValueOverwriteMode getOverwriteMode() {
         synchronized (getLock()) {
-            if (m_valueSet) {
+            if (m_config.isValueSet()) {
                 return ValueOverwriteMode.WIZARD;
             } else {
                 return ValueOverwriteMode.NONE;
@@ -265,15 +264,20 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
         CanceledExecutionException {
         // only load value, representation is always created from config
         File valFile = new File(nodeInternDir, "widgetValue.xml");
-        try (final FileInputStream fis = new FileInputStream(valFile)) {
-            NodeSettingsRO valSettings = NodeSettings.loadFromXML(fis);
-            VAL value = createEmptyViewValue();
-            try {
-                value.loadFromNodeSettings(valSettings);
-            } catch (InvalidSettingsException e) {
-                value = null;
+        if (valFile.exists()) {
+            try (final FileInputStream fis = new FileInputStream(valFile)) {
+                NodeSettingsRO valSettings = NodeSettings.loadFromXML(fis);
+                VAL value = createEmptyViewValue();
+                try {
+                    value.loadFromNodeSettings(valSettings);
+                } catch (InvalidSettingsException e) {
+                    value = null;
+                }
+                setViewValue(value);
             }
-            setViewValue(value);
+        } else {
+            setViewValue(createEmptyViewValue());
+            m_config.setValueSet(false);
         }
     }
 
@@ -284,6 +288,9 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec) throws IOException,
         CanceledExecutionException {
         // only save value, representation is not needing to be saved
+        if (!m_config.isValueSet()) {
+            return;
+        }
         NodeSettings valSettings = new NodeSettings("widgetValue");
         VAL value = getViewValue();
         if (value != null) {
