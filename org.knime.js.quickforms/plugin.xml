@@ -794,7 +794,7 @@
                relativePathTarget="org/knime/js/base/node/quickform/input/slider/">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/quickform/input/slider/sliderWidget.js"
+               relativePath="org/knime/js/base/node/quickform/input/slider/SliderInput.js"
                type="JAVASCRIPT">
          </importResource>
          <importResource
