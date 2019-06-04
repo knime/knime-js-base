@@ -5,9 +5,9 @@
  		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd" 
  		jsNamespace="knimeAutocompleteInput" nodeID="autocompleteTextField" categoryPath="/flowabstraction/widgets/input"
- 		icon="../js.png" type="QuickForm">
+ 		icon="../js.png" type="Visualizer">
  		
- 	<name>Autocomplete Text Input</name>
+ 	<name>Autocomplete Text Widget</name>
     <shortDescription>This node provides a view with an autocomplete text input component.</shortDescription>
     <fullDescription>
 	    <intro>
