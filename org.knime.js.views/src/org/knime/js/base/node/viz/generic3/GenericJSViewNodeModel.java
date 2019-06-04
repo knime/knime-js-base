@@ -215,16 +215,19 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
 
     private void setPathsFromLibNames(final String[] libNames) {
         ArrayList<String> jsPaths = new ArrayList<String>();
+        ArrayList<String> jsExports = new ArrayList<String>();
         ArrayList<String> cssPaths = new ArrayList<String>();
         for (String lib : libNames) {
             IConfigurationElement confElement = getConfigurationFromWebResID(lib);
             if (confElement != null) {
+                String exports = confElement.getAttribute("exports");
                 for (IConfigurationElement resElement : confElement.getChildren(ID_IMPORT_RES)) {
                     String path = resElement.getAttribute(ATTR_PATH);
                     String type = resElement.getAttribute(ATTR_TYPE);
                     if (path != null && type != null) {
                         if (type.equalsIgnoreCase("javascript")) {
                             jsPaths.add(path);
+                            jsExports.add(exports);
                         } else if (type.equalsIgnoreCase("css")) {
                             cssPaths.add(path);
                         }
@@ -238,6 +241,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         }
         GenericJSViewRepresentation representation = getViewRepresentation();
         representation.setJsDependencies(jsPaths.toArray(new String[0]));
+        representation.setJsExports(jsExports.toArray(new String[0]));
         representation.setCssDependencies(cssPaths.toArray(new String[0]));
     }
 

@@ -70,12 +70,14 @@ public class GenericJSViewRepresentation extends JSONViewContent {
     private static final String JS_SVG_CODE = "jsSVGCode";
     private static final String CSS_CODE = "cssCode";
     private static final String JS_DEPENDENCIES = "jsDependencies";
+    private static final String JS_EXPORTS = "jsExports";
     private static final String CSS_DEPENDENCIES = "cssDependencies";
 
     private String m_jsCode;
     private String m_jsSVGCode;
     private String m_cssCode;
     private String[] m_jsDependencies;
+    private String[] m_jsExports;
     private String[] m_cssDependencies;
     private JSONDataTable m_table;
 
@@ -136,6 +138,20 @@ public class GenericJSViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the jsExports
+     */
+    public String[] getJsExports() {
+        return m_jsExports;
+    }
+
+    /**
+     * @param jsExports the jsExports to set
+     */
+    public void setJsExports(final String[] jsExports) {
+        m_jsExports = jsExports;
+    }
+
+    /**
      * @return the cssDependencies
      */
     public String[] getCssDependencies() {
@@ -172,6 +188,7 @@ public class GenericJSViewRepresentation extends JSONViewContent {
         settings.addString(JS_SVG_CODE, m_jsSVGCode);
         settings.addString(CSS_CODE, m_cssCode);
         settings.addStringArray(JS_DEPENDENCIES, m_jsDependencies);
+        settings.addStringArray(JS_EXPORTS, m_jsExports);
         settings.addStringArray(CSS_DEPENDENCIES, m_cssDependencies);
         if (m_table != null) {
             m_table.saveJSONToNodeSettings(settings);
@@ -189,6 +206,9 @@ public class GenericJSViewRepresentation extends JSONViewContent {
         m_jsDependencies = settings.getStringArray(JS_DEPENDENCIES, new String[0]);
         m_cssDependencies = settings.getStringArray(CSS_DEPENDENCIES, new String[0]);
         m_table = JSONDataTable.loadFromNodeSettings(settings);
+
+        // added in 4.0
+        m_jsExports = settings.getStringArray(JS_EXPORTS, new String[m_jsDependencies.length]);
     }
 
     /**
@@ -210,6 +230,7 @@ public class GenericJSViewRepresentation extends JSONViewContent {
                 .append(m_jsCode, other.m_jsCode)
                 .append(m_cssCode, other.m_cssCode)
                 .append(m_jsDependencies, other.m_jsDependencies)
+                .append(m_jsExports, other.m_jsExports)
                 .append(m_cssDependencies, other.m_cssDependencies)
                 .append(m_table, other.m_table)
                 .isEquals();
@@ -224,6 +245,7 @@ public class GenericJSViewRepresentation extends JSONViewContent {
                 .append(m_jsCode)
                 .append(m_cssCode)
                 .append(m_jsDependencies)
+                .append(m_jsExports)
                 .append(m_cssDependencies)
                 .append(m_table)
                 .toHashCode();

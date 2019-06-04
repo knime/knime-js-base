@@ -115,6 +115,10 @@ knimeService.inlineSvgStyles(svgElement);
 return (new XMLSerializer()).serializeToString(svgElement);</pre>
 			</option>
 		</tab>
+		<tab name="Templates">
+		  <option name="">You can define reusable templates with the "Create templates..." button. Templates are stored
+		  in the user's workspace by default and can be accessed via the "Templates" tab.</option>
+		</tab>
 	</fullDescription>
 	
 	<interactiveView name="Generic JavaScript View">

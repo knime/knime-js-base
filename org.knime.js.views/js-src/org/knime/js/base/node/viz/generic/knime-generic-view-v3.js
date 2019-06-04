@@ -69,6 +69,15 @@ window.knimeGenericView = (function () {
             }
 
             require(libs, function () {
+                // set global variable if defined by library
+                if (representation.jsExports) {
+                    for (var i = 0; i < representation.jsExports.length; i++) {
+                        var ex = representation.jsExports[i];
+                        if (!window[ex] && arguments[i]) {
+                            window[ex] = arguments[i];
+                        }
+                    }
+                }
                 try {
                     eval(representation.jsCode);
                     view.validate();
