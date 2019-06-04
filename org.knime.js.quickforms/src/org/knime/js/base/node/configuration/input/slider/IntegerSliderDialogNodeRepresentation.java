@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The representation for the slider input quick form node.
  *
@@ -59,6 +62,18 @@ import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
  */
 public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentation<IntegerSliderDialogNodeValue>
     implements SubNodeDescriptionProvider<IntegerSliderDialogNodeValue> {
+
+    @JsonCreator
+    private IntegerSliderDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final IntegerSliderDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final IntegerSliderDialogNodeValue currentValue,
+        @JsonProperty("useCustomMin") final Boolean useCustomMin,
+        @JsonProperty("useCustomMax") final Boolean useCustomMax,
+        @JsonProperty("customMin") final double customMin,
+        @JsonProperty("customMax") final double customMax) {
+        super(label, description, required, defaultValue, currentValue, useCustomMin, useCustomMax, customMin, customMax);
+    }
 
     /**
      * @param currentValue

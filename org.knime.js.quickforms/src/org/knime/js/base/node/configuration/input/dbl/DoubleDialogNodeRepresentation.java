@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The dialog representation of the double configuration node
  *
@@ -59,6 +62,19 @@ import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
  */
 public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue>
     implements SubNodeDescriptionProvider<DoubleDialogNodeValue> {
+
+    @JsonCreator
+    private DoubleDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final DoubleDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final DoubleDialogNodeValue currentValue,
+        @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("min") final double min,
+        @JsonProperty("max") final double max) {
+        super(label, description, required, defaultValue, currentValue, useMin, useMax, min, max);
+    }
 
     /**
      * @param currentValue The value currently used by the node

@@ -74,7 +74,7 @@ public class IntegerNodeRepresentation<VAL extends IntegerNodeValue> extends Lab
     private final int m_max;
 
     @JsonCreator
-    private IntegerNodeRepresentation(@JsonProperty("label") final String label,
+    protected IntegerNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
         @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,

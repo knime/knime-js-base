@@ -88,7 +88,7 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
     private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
 
     @JsonCreator
-    private DateNodeRepresentation(@JsonProperty("label") final String label,
+    protected DateNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
         @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,

@@ -75,7 +75,7 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
     private final double m_customMax;
 
     @JsonCreator
-    private SliderNodeRepresentation(@JsonProperty("label") final String label,
+    protected SliderNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,

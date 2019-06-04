@@ -75,7 +75,7 @@ public class DoubleNodeRepresentation<VAL extends DoubleNodeValue> extends Label
     private final double m_max;
 
     @JsonCreator
-    private DoubleNodeRepresentation(@JsonProperty("label") final String label,
+    protected DoubleNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
         @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,

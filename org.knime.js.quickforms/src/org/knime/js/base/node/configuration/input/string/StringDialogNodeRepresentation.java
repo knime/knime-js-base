@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The dialog representation of the string configuration node
  *
@@ -59,6 +62,20 @@ import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
  */
 public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue>
     implements SubNodeDescriptionProvider<StringDialogNodeValue> {
+
+    @JsonCreator
+    private StringDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final StringDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final StringDialogNodeValue currentValue,
+        @JsonProperty("regex") final String regex,
+        @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("editorType") final String editorType,
+        @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
+        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
+        super(label, description, required, defaultValue, currentValue, regex, errorMessage, editorType,
+            multilineEditorWidth, multilineEditorHeight);
+    }
 
     /**
      * @param currentValue The value currently used by the node

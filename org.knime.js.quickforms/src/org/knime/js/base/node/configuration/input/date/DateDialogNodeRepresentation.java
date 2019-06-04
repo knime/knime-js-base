@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The dialog representation of the date configuration node
  *
@@ -59,6 +62,26 @@ import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
  */
 public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDialogNodeValue>
     implements SubNodeDescriptionProvider<DateDialogNodeValue> {
+
+    @JsonCreator
+    private DateDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final DateDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final DateDialogNodeValue currentValue,
+        @JsonProperty("shownowbutton") final boolean showNowButton,
+        @JsonProperty("granularity") final String granularity,
+        @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("useminexectime") final boolean useMinExecTime,
+        @JsonProperty("usemaxexectime") final boolean useMaxExecTime,
+        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime,
+        @JsonProperty("min") final String min,
+        @JsonProperty("max") final String max,
+        @JsonProperty("type") final String type) {
+        super(label, description, required, defaultValue, currentValue, showNowButton, granularity, useMin, useMax,
+            useMinExecTime, useMaxExecTime, useDefaultExecTime, min, max, type);
+    }
 
     /**
      * @param currentValue The value currently used by the node

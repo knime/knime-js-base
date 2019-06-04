@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The dialog representation of the integer configuration node
  *
@@ -59,6 +62,19 @@ import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
  */
 public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<IntegerDialogNodeValue>
     implements SubNodeDescriptionProvider<IntegerDialogNodeValue> {
+
+    @JsonCreator
+    private IntegerDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final IntegerDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final IntegerDialogNodeValue currentValue,
+        @JsonProperty("usemin") final boolean useMin,
+        @JsonProperty("usemax") final boolean useMax,
+        @JsonProperty("min") final int min,
+        @JsonProperty("max") final int max) {
+        super(label, description, required, defaultValue, currentValue, useMin, useMax,  min, max);
+    }
 
     /**
      * @param currentValue The value currently used by the node

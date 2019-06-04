@@ -48,6 +48,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The representation for the boolean input quick form node.
  *
@@ -55,6 +58,14 @@ import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
  */
 public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<BooleanDialogNodeValue>
     implements SubNodeDescriptionProvider<BooleanDialogNodeValue> {
+
+    @JsonCreator
+    private BooleanDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final BooleanDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final BooleanDialogNodeValue currentValue) {
+        super(label, description, required, defaultValue, currentValue);
+    }
 
     /**
      * @param currentValue The value currently used by the node

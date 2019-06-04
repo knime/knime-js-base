@@ -76,7 +76,7 @@ public class StringNodeRepresentation<VAL extends StringNodeValue> extends Label
     private final int m_multilineEditorHeight;
 
     @JsonCreator
-    private StringNodeRepresentation(@JsonProperty("label") final String label,
+    protected StringNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,

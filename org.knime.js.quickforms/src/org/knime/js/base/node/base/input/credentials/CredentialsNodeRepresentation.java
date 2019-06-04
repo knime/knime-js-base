@@ -74,7 +74,7 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
     private final boolean m_noDisplay;
 
     @JsonCreator
-    private CredentialsNodeRepresentation(@JsonProperty("label") final String label,
+    protected CredentialsNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,

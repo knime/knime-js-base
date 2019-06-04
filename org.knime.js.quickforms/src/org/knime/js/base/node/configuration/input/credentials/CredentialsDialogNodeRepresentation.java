@@ -52,6 +52,9 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The dialog representation of the credentials configuration node
  *
@@ -59,6 +62,18 @@ import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentati
  */
 public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresentation<CredentialsDialogNodeValue>
     implements SubNodeDescriptionProvider<CredentialsDialogNodeValue> {
+
+    @JsonCreator
+    private CredentialsDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final CredentialsDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final CredentialsDialogNodeValue currentValue,
+        @JsonProperty("promptUsername") final boolean promptUsername,
+        @JsonProperty("useServerLoginCredentials") final boolean useServerLoginCredentials,
+        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("noDisplay") final boolean noDisplay) {
+        super(label, description, required, defaultValue, currentValue, promptUsername, useServerLoginCredentials,
+            errorMessage, noDisplay);
+    }
 
     /**
      * @param currentValue The value currently used by the node

@@ -48,12 +48,12 @@
  */
 package org.knime.js.base.node.configuration.input.listbox;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The dialog representation of the list box configuration node
@@ -62,6 +62,23 @@ import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
  */
 public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<ListBoxDialogNodeValue>
     implements SubNodeDescriptionProvider<ListBoxDialogNodeValue> {
+
+    @JsonCreator
+    private ListBoxDialogNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final ListBoxDialogNodeValue defaultValue,
+        @JsonProperty("currentValue") final ListBoxDialogNodeValue currentValue,
+        @JsonProperty("regex") final String regex,
+        @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("separator") final String separator,
+        @JsonProperty("separateeachcharacter") final boolean separateEachCharacter,
+        @JsonProperty("omitempty") final boolean omitEmpty,
+        @JsonProperty("separatorregex") final String separatorRegex,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        super(label, description, required, defaultValue, currentValue, regex, errorMessage, separator,
+            separateEachCharacter, omitEmpty, separatorRegex, numberVisOptions);
+    }
 
     /**
      * @param currentValue The value currently used by the node

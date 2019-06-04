@@ -77,7 +77,7 @@ public class ListBoxNodeRepresentation<VAL extends ListBoxNodeValue> extends Lab
     private final Integer m_numberVisOptions;
 
     @JsonCreator
-    private ListBoxNodeRepresentation(@JsonProperty("label") final String label,
+    protected ListBoxNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
         @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,

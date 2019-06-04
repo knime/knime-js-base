@@ -70,7 +70,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     @JsonCreator
-    private BooleanNodeRepresentation(@JsonProperty("label") final String label,
+    protected BooleanNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue) {
