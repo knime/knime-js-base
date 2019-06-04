@@ -132,11 +132,14 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
     private Border m_lineBorder = BorderFactory.createLineBorder(new Color(200, 200, 200), 1);
 
+    private boolean m_enabled;
+
     protected GenericJSNodePanel(final Class<?> templateMetaCategory, final GenericJSViewConfig config,
         final BiMap<String, String> availableLibraries, final boolean isPreview) {
         m_templateMetaCategory = templateMetaCategory;
         m_config = config;
         m_availableLibraries = availableLibraries;
+        m_enabled = true;
 
         m_generateViewCheckBox = new JCheckBox("Generate image at outport");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
@@ -213,6 +216,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         });
 
         final JPanel panel = createPanel(isPreview);
+        setEnabled(!isPreview);
     }
 
     /**
@@ -372,6 +376,32 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         } catch (final Exception e) {
             LOGGER.error("Cannot apply template.", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEnabled() {
+        return m_enabled;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setEnabled(final boolean enabled) {
+        if (m_enabled != enabled) {
+            m_maxRowsSpinner.setEnabled(enabled);
+            m_flowVarList.setEnabled(enabled);
+            m_dependenciesTable.setEnabled(enabled);
+            m_cssTextArea.setEnabled(enabled);
+            m_jsTextArea.setEnabled(enabled);
+            m_outFieldsTable.setEnabled(enabled);
+            m_generateViewCheckBox.setEnabled(enabled);
+            m_jsSVGTextArea.setEnabled(enabled);
+        }
+        m_enabled = enabled;
     }
 
     protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec spec,
