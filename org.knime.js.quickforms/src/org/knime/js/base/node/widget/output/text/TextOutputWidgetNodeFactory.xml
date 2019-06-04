@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="widget_variable_out.png" type="Visualizer" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+    <name>Text Output Widget</name>
+
+   <shortDescription>
+        Displays dynamic text.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+               Displays dynamic text.
+            </p>
+            <p>
+            The node supports custom CSS styling. 
+            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
+            in the node configuration dialog. 
+            You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+            </p>
+        </intro>
+        <option name="Label">
+          A descriptive label that will be shown.
+        </option>
+        <option name="Description">
+          Some lines of description that will be shown in the remote control 
+          form, for instance by means of a tooltip.
+        </option>
+        <option name="Text format">
+          The format of the text. Can be plain text, pre-formatted (monospace text, retaining line breaks) or
+          simple html. 
+        </option>
+        <option name="Text">
+          The text. Double click the flow variables on the right to insert a placeholder, which
+          will be replaced by the actual variable value upon execution. 
+        </option>
+    </fullDescription>
+    
+    <interactiveView name="Text Output">The dynamic text output.</interactiveView>
+
+    <ports>
+        <inPort index="0" name="Flow Variable Input">
+          Variables, which can be used in the text expression.
+        </inPort>
+    </ports>
+</knimeNode>

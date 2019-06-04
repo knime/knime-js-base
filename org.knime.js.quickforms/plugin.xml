@@ -275,6 +275,21 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.fileupload.FileUploadWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/output"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.output.filedownload.FileDownloadWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowabstraction/widgets/output"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.output.image.ImageOutputWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowabstraction/widgets/output"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.output.text.TextOutputWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -334,6 +349,13 @@
             level-id="filter"
             name="Filter"
             path="/flowabstraction/widgets"/>
+      <category
+            after="filter"
+            icon="icons/missing.gif"
+            level-id="output"
+            name="Output"
+            path="/flowabstraction/widgets">
+      </category>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
