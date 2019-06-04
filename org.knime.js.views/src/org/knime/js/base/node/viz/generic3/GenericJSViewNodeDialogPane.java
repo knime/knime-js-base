@@ -51,6 +51,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -79,8 +80,10 @@ import org.knime.core.node.util.ViewUtils;
 import org.knime.core.node.util.dialog.FieldsTableModel.Column;
 import org.knime.core.node.util.dialog.OutFieldsTable;
 import org.knime.core.node.util.dialog.OutFieldsTableModel;
+import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
 import org.knime.js.base.template.DefaultTemplateController;
+import org.knime.js.base.template.JSTemplate;
 import org.knime.js.base.template.TemplatesPanel;
 import org.knime.js.core.JSONWebNode;
 import org.osgi.framework.FrameworkUtil;
@@ -94,6 +97,7 @@ import com.google.common.collect.HashBiMap;
  */
 final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
+    private static final String SCRIPT_TAB = "JavaScript View";
     private static final String ID_WEB_RES = "org.knime.js.core.webResources";
     private static final String ATTR_RES_BUNDLE_ID = "webResourceBundleID";
     private static final String ATTR_RES_BUNDLE_NAME = "name";
@@ -110,21 +114,30 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
     private final GenericJSNodePanel m_panel;
 
-    private Border m_noBorder = BorderFactory.createEmptyBorder();
     private Border m_paddingBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
     private Border m_lineBorder = BorderFactory.createLineBorder(new Color(200, 200, 200), 1);
 
     /**
      * Initializes new dialog pane.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     GenericJSViewNodeDialogPane(final Class<?> templateMetaCategory) {
         m_config = new GenericJSViewConfig();
         m_templateMetaCategory = templateMetaCategory;
 
-        m_panel = new GenericJSNodePanel(templateMetaCategory, m_config, getAvailableLibraries(), false);
+        m_panel = new GenericJSNodePanel(templateMetaCategory, m_config, getAvailableLibraries(), false) {
+            private static final long serialVersionUID = 6002087063627485974L;
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void applyTemplate(final JSTemplate template, final DataTableSpec spec,
+                final Map<String, FlowVariable> flowVariables) {
+                super.applyTemplate(template, spec, flowVariables);
+                setSelected(SCRIPT_TAB);
+            }
+        };
 
-        addTab("JavaScript View", m_panel);
+        addTab(SCRIPT_TAB, m_panel);
         addTab("Image Generation", initImageGenerationLayout());
         addTab("Templates", initTemplatesPanel());
     }
