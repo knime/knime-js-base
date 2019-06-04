@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
     jsNamespace="network_namespace" nodeID="network_chart" categoryPath="/preview"
     icon="../js.png" type="Visualizer">
-    <name>Force-Directed Graph (JavaScript)</name>
+    <name>Force-Directed Graph</name>
     <shortDescription>A force-directed graph based on the d3.js library.</shortDescription>
     <fullDescription>
       <intro>

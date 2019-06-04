@@ -4,48 +4,48 @@
    <extension-point id="templaterepository" name="JavaScript template repository" schema="schema/templaterepository.exsd"/>
    <extension point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
             >
       </node>
       <node
             after="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view"
             factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"
-            category-path="/view/js-views"
+            category-path="/view/view-util"
             factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
       </node>
       <node
-            category-path="/view/js-views"
+            category-path="/view"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>

@@ -3,10 +3,10 @@
 	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-	jsNamespace="parallelcoords_namespace" nodeID="parallelcoordsJS" categoryPath="/view/js-views"
+	jsNamespace="parallelcoords_namespace" nodeID="parallelcoordsJS" categoryPath="/view"
     icon="./parallel_coordinates_plot.png" type="Visualizer">
 
-	<name>Parallel Coordinates Plot (JavaScript)</name>
+	<name>Parallel Coordinates Plot</name>
 	<shortDescription>The parallel coordinates plot uses d3.js, JavaScript based charting library. 
 	The view can be accessed either via the interactive view action on the executed node or in KNIME Server web portal page.</shortDescription>
 	<fullDescription>

@@ -6,7 +6,7 @@
 	jsNamespace="voronoiplot_namespace" nodeID="voronoiplotJS" categoryPath="/labs/interactiveView"
 	icon="../js.png" type="Visualizer">
 
-	<name>Voronoi Diagram (JavaScript)</name>
+	<name>Voronoi Diagram</name>
 	<shortDescription>This node provides a view with a Voronoi Diagram implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>

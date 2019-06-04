@@ -3,10 +3,10 @@
 	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-	jsNamespace="knimeStreamgraph" nodeID="streamgraph" categoryPath="/view/js-views"
+	jsNamespace="knimeStreamgraph" nodeID="streamgraph" categoryPath="/view"
 	icon="./stacked_area_chart.png" type="Visualizer">
 
-	<name>Stacked Area Chart (JavaScript)</name>
+	<name>Stacked Area Chart</name>
 	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>

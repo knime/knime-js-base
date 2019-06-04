@@ -4,8 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeHistogram" nodeID="dynamic_histogram"
-    categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer">
-	<name>Histogram (JavaScript)</name>
+    categoryPath="/view" icon="./interactiveHistogram.png" type="Visualizer">
+	<name>Histogram</name>
 	<shortDescription>A histogram based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>

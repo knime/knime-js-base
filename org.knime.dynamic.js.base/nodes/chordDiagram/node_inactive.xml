@@ -6,7 +6,7 @@
  		xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
  		jsNamespace="chord_namespace" nodeID="chord_diagram" categoryPath="/preview"
  		icon="../js.png" type="Visualizer">
-    <name>Chord Diagram (JavaScript)</name>
+    <name>Chord Diagram</name>
     <shortDescription>A chord diagram based on the d3.js library.</shortDescription>
     <fullDescription>
 	    <intro>

@@ -3,10 +3,10 @@
 	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-	jsNamespace="knimeConditionalBoxplot" nodeID="conditionalBoxplotJS" categoryPath="/view/js-views"
+	jsNamespace="knimeConditionalBoxplot" nodeID="conditionalBoxplotJS" categoryPath="/view"
     icon="./conditional_box_plot.png" type="Visualizer">
 
-	<name>Conditional Box Plot (JavaScript)</name>
+	<name>Conditional Box Plot</name>
 	<shortDescription>This node provides a view with a Conditional Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>
