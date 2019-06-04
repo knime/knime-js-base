@@ -57,8 +57,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.Set;
 
@@ -73,6 +73,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.js.base.node.viz.generic3.GenericJSViewConfig;
 
 /**
@@ -85,6 +86,7 @@ public final class AddTemplateDialog extends JDialog {
 
     private JSTemplate m_result;
     private JComboBox<String> m_category;
+    private final JButton m_ok;
     private JTextField m_name;
     private JTextArea m_description;
 
@@ -110,24 +112,23 @@ public final class AddTemplateDialog extends JDialog {
 
         // the OK and Cancel button
         final JPanel control = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        final JButton ok = new JButton("OK");
+        m_ok = new JButton("OK");
         // add action listener
-        ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                onOK();
-            }
-        });
+        m_ok.addActionListener(e -> onOK());
+        m_ok.setEnabled(false);
         final JButton cancel = new JButton("Cancel");
         // add action listener
-        cancel.addActionListener(new ActionListener() {
+        cancel.addActionListener(e -> onCancel());
+        control.add(m_ok);
+        control.add(cancel);
+
+        m_name.addKeyListener(new KeyAdapter() {
+
             @Override
-            public void actionPerformed(final ActionEvent event) {
-                onCancel();
+            public void keyReleased(final KeyEvent e) {
+                m_ok.setEnabled(StringUtils.isNotBlank(m_name.getText()));
             }
         });
-        control.add(ok);
-        control.add(cancel);
 
         // add dialog and control panel to the content pane
         final Container cont = getContentPane();
@@ -234,6 +235,8 @@ public final class AddTemplateDialog extends JDialog {
     private void shutDown() {
         setVisible(false);
     }
+
+
 
     /**
      * Opens a Dialog to receive user settings. If the user cancels the dialog <code>null</code> will be returned. If
