@@ -5,8 +5,12 @@
    <extension point="org.knime.workbench.repository.nodes">
       <node
             category-path="/view"
-            factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
-            >
+            factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
+      </node>
+      <node
+            after="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"
+            category-path="/view"
+            factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
@@ -37,10 +41,10 @@
       <node
             after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
             category-path="/view"
-            factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>
       <node
-            after="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory"
             category-path="/view/view-util"
             factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
       </node>
