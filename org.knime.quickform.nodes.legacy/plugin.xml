@@ -4,146 +4,119 @@
    <extension
          point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.string.StringInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.dummy.DummyInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.fileupload.FileUploadQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.variable.VariableOutputQuickFormOutNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.textarea.TextAreaOutputQuickFormOutNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.filedownload.FileDownloadQuickFormOutNodeFactory"
             deprecated="true"
             >
       </node>
       <node
             after="org.knime.quickform.nodes.out.filedownload.FileDownloadQuickFormOutNodeFactory"
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.out.image.ImageOutputQuickFormOutNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.date.DateStringInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.sketcher.SketcherInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.dbl.DoubleInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.integer.IntInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.bool.BooleanInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.stringselection.StringSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.listbox.ListBoxInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.column.ColumnFilterInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.column.ColumnSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.value.ValueFilterInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.value.ValueSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.multiselection.MultiSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.single.SingleSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <node
-            category-path="/flowcontrol/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.in.selection.multiple.MultipleSelectionInputQuickFormInNodeFactory"
             deprecated="true"
             >
       </node>
       <!-- <node
-            category-path="/flowcontrol/quickforms/quickform-old"
+            category-path="/flowabstraction/quickforms/quickform-old"
             factory-class="org.knime.quickform.nodes.interactive.InteractiveQuickFormInNodeFactory"
             >
       </node> -->     
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
-      <category
-            icon="icons/quickform_category.png"
-            level-id="quickform-old"
-            name="Quick Form (legacy)"
-            path="/flowcontrol/quickforms">
-      </category>
    </extension>
 
 </plugin>
