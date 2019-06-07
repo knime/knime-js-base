@@ -87,22 +87,22 @@ public class IntegerSliderConfigurationPanel extends AbstractDialogNodeConfigura
         super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
 
         // default min and max value
-        double min = 0;
-        double max = 100;
+        int min = 0;
+        int max = 100;
 
         // Steps of the slider
         int MAJOR_TICK_COUNT = 5;
         int MINOR_TICK_DIVISIONS = 20;
 
         if(representation.isUseCustomMin()) {
-            min = representation.getCustomMin();
+            min = (int)representation.getCustomMin();
         }
         if(representation.isUseCustomMax()) {
-            max = representation.getCustomMax();
+            max = (int)representation.getCustomMax();
         }
         // Text Label next to the slider to show current value
         m_component_text = new JLabel();
-        m_component_text.setText(representation.getDefaultValue().getDouble().toString());
+        m_component_text.setText(String.valueOf(representation.getDefaultValue().getDouble().intValue()));
         m_component = new JSlider();
         m_component.addChangeListener(new ChangeListener() {
             @Override
@@ -112,17 +112,17 @@ public class IntegerSliderConfigurationPanel extends AbstractDialogNodeConfigura
         });
         // Model of JSlider to adjust min and max
         BoundedRangeModel sliderModel = m_component.getModel();
-        sliderModel.setMaximum((int)max);
-        sliderModel.setMinimum((int)min);
+        sliderModel.setMaximum(max);
+        sliderModel.setMinimum(min);
 
 
         // Add first and last Value as labels to the slider
         Dictionary<Integer, JComponent> myDictionary = new Hashtable<Integer, JComponent>();
         Integer key = (int)min;
-        JLabel value = new JLabel(String.valueOf((int)min));
+        JLabel value = new JLabel(String.valueOf(min));
         myDictionary.put(key, value);
         Integer key1 = (int)max;
-        JLabel value1 = new JLabel(String.valueOf((int)max));
+        JLabel value1 = new JLabel(String.valueOf(max));
         myDictionary.put(key1, value1);
 
         m_component.setValue(representation.getDefaultValue().getDouble().intValue());
@@ -130,7 +130,7 @@ public class IntegerSliderConfigurationPanel extends AbstractDialogNodeConfigura
         m_component.setPaintLabels(true);
         m_component.setLabelTable(myDictionary);
 //        m_component.setMajorTickSpacing((int)max / (MAJOR_TICK_COUNT - 1));
-        m_component.setMinorTickSpacing((int)max / MINOR_TICK_DIVISIONS);
+        m_component.setMinorTickSpacing(max / MINOR_TICK_DIVISIONS);
 
         m_panel = new JPanel(new GridBagLayout());
         final GridBagConstraints gbc = new GridBagConstraints();
