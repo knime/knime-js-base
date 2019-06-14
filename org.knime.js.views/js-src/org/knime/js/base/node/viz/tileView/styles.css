@@ -1,0 +1,103 @@
+#knimePagedTableContainer.knime-tiles {
+    padding: 0 1px;
+}
+
+table#knimePagedTable,
+table#knimePagedTable tbody,
+table#knimePagedTable .knime-table-cell {
+    display: block;
+    border: none;
+    transform-origin: 0 0;
+    transition: transform .1s linear;
+}
+
+table#knimePagedTable .knime-table-cell {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table#knimePagedTable .knime-table-row {
+    display: inline-block;
+    margin: 5px;
+    border: 1.5px solid #7d7d7d;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    vertical-align: top;
+}
+
+table#knimePagedTable tbody.knime-selection-enabled .knime-table-row {
+    cursor: pointer;
+}
+
+table#knimePagedTable tbody.knime-selection-enabled .knime-table-row {
+    padding-bottom: 20px;
+}
+
+table#knimePagedTable .knime-table-row.knime-selected {
+    border-color: black;
+    box-shadow: 0 0 0 1px #7d7d7d inset, 0 0 0 1px #7d7d7d, 0 0 20px 2px #7d7d7d;
+    background: rgba(0, 50, 100, .05);
+}
+
+table#knimePagedTable .knime-table-cell.selection-cell {
+    position: absolute;
+    bottom: 0;
+}
+
+table#knimePagedTable .knime-table-cell.selection-cell input[type="checkbox"] {
+    cursor: pointer;
+}
+
+table#knimePagedTable .knime-table-cell.knime-tile-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+table#knimePagedTable .knime-table-cell.knime-tile-title.knime-row-id {
+    padding-top: 24px;
+}
+
+table#knimePagedTable img {
+    max-width: 100%;
+    max-height: 500px;
+}
+
+table#knimePagedTable .knimeTableRowColor {
+    position: absolute;
+    margin: 0 !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    width: auto !important;
+    z-index: -1;
+}
+
+table#knimePagedTable.align-left .knime-table-cell {
+    text-align: left;
+}
+table#knimePagedTable.align-center .knime-table-cell {
+    text-align: center;
+}
+table#knimePagedTable.align-right .knime-table-cell {
+    text-align: right;
+}
+
+#knimePagedTable_wrapper > .row:nth-child(2) {
+    box-shadow: 0 0 1px #7d7d7d;
+}
+
+#knimePagedTable_wrapper div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+	margin-bottom: 0;
+}
+
+.knime-tiles-rowtitle {
+    font-weight: bold;
+}
+
+/* Collapse header table of dataTable which is created when it is allowed to handle scrolling */
+.dataTables_scrollBody thead tr[role="row"]{
+   visibility: collapse !important;
+}

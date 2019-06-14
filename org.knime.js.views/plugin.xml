@@ -49,6 +49,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>
+      <node
+            category-path="/view/js-views"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
@@ -351,6 +356,37 @@
                webResourceBundleID="KnimeTable_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Tile View"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.viz.tileView.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/tileView/"
+               relativePathTarget="/org/knime/js/base/node/viz/tileView/">
+         </webResource>
+         <importResource
+               relativePath="/org/knime/js/base/node/viz/tileView/tileview.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="/org/knime/js/base/node/viz/tileView/styles.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="moment_timezone_locales_2_17">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="dataTables_1_10_11_bootstrap">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="knimeBaseTableViewer_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -461,6 +497,16 @@
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.tileView.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.tileView"
+            name="Tile View"
+            namespace="tiles_namespace"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
    </extension>
    <extension
          point="org.knime.js.views.templaterepository">
@@ -472,5 +518,11 @@
             id="org.knime.js.base.template.PluginFileTemplateRepositoryProvider"
             provider-class="org.knime.js.base.template.PluginFileTemplateRepositoryProvider">
       </template-repository>
+   </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="org.knime.js.base.node.viz.tileView.TileViewClassMapper">
+      </NodeFactoryClassMapper>
    </extension>
 </plugin>
