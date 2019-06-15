@@ -54,6 +54,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
       </node>
+      <node
+            category-path="/view/js-views"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
@@ -387,6 +392,34 @@
                webResourceBundleID="knimeBaseTableViewer_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Heatmap"
+            usesDefine="false"
+            version="1.0.0"
+            webResourceBundleID="org.knime.js.base.node.viz.heatmap.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/viz/heatmap/"
+               relativePathTarget="/org/knime/js/base/node/viz/heatmap/">
+         </webResource>
+         <importResource
+               relativePath="/org/knime/js/base/node/viz/heatmap/heatmap.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="/org/knime/js/base/node/viz/heatmap/styles.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="D3_4.13.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeTable_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="renderQueue_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -504,6 +537,16 @@
             javascriptComponentID="org.knime.js.base.node.viz.tileView"
             name="Tile View"
             namespace="tiles_namespace"
+            setValidationError-method-name="setValidationError"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.viz.heatmap.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.viz.heatmap"
+            name="Heatmap"
+            namespace="heatmapNamespace"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>

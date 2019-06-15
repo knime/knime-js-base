@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./heatmap.png" type="Visualizer"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+
+	<name>Heatmap (JavaScript)</name>
+	<shortDescription>A node which creates a heatmap view using Javascript.</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				This node displays the given input table as an interactive
+				heatmap.
+			</p>
+			<p>
+				The node supports custom CSS styling. You can simply put CSS rules
+				into a single string and set it as a flow variable 'customCSS' in
+				the node configuration dialog. You will find the list of available
+				classes and their description on our
+				<a href="https://knime.com/css-styling">documentation page</a>
+				.
+			</p>
+		</intro>
+		<tab name="Options">
+			<option name="Label column">
+				A column whose values will be used as the labels
+				for the heatmap's rows. By default, the row IDs are used as labels.
+			</option>
+			<option name="Image column">
+				A column of SVG images, which will appear when
+				hovering over a row label. This field can only be modified if one or
+				more SVG image columns are available. If not, a column cannot be
+				selected and no image will be displayed when hovering over a row
+				label.
+			</option>
+			<option name="Columns to display">
+				Select the columns to display in the heatmap.
+			</option>
+			<option name="Minimum value">
+				The minimum value for the color gradient to map to. If
+				<i>Custom</i>
+				is selected, a custom value may be entered. Columns without defined
+				minimum values will not be used when computing the minimum.
+			</option>
+			<option name="Maximum value">
+				The maximum value for the color gradient to map to. If
+				<i>Custom</i>
+				is selected, a custom value may be entered. Columns without defined
+				maximum values will not be used when computing the maximum.
+			</option>
+		</tab>
+		<tab name="View Configuration">
+			<option name="Image width in pixels">
+				The width, in pixels, of the output SVG image. If
+				"Resize view to fill window" is not selected, this is also the
+				static width of the view.
+			</option>
+			<option name="Image height in pixels">
+				The height, in pixels, of the output SVG image.
+				If "Resize view to fill window" is not selected, this is also the
+				static height of the view.
+			</option>
+			<option name="Create image at outport">
+				If checked, an SVG image will be produced as
+				output.
+			</option>
+			<option name="Show warnings in view">
+				If checked, warning messages will be displayed in
+				the view when they occur.
+			</option>
+			<option name="Resize to window">
+				Setting this option resizes the view to the
+				available area of the window. If disabled the view size is static
+				according to the set width and height.
+			</option>
+			<option name="Display full screen button">
+				Displays a button enabling full screen mode.
+			</option>
+			<option name="Chart title" optional="true">
+				The title of the graph
+				shown above the generated image. If left blank, no title will be
+				shown.
+			</option>
+			<option name="Chart subtitle" optional="true">
+				The subtitle of the
+				graph shown above the generated image. If left blank, no subtitle
+				will be shown.
+			</option>
+			<option name="Show tool tips">
+				If selected, tool tips containing additional
+				information will be displayed when hovering over a cell within the
+				heatmap view.
+			</option>
+			<option name="Use discrete gradient">
+				If checked, a discrete gradient will be used to
+				color the heatmap. If not, a continuous gradient is used.
+			</option>
+			<option name="Number of colors">
+				If using a discrete gradient, this is the number
+				of discrete points to used. A minimum of three colors is required,
+				and the number must be odd.
+			</option>
+			<option name="Select gradient colors">
+				The three base colors used to define the
+				gradient.
+			</option>
+			<option name="Select color for missing values">
+				Sets the color used to represent missing values
+				in the heatmap.
+			</option>
+			<option
+				name="Select a color for values greater than the range maximum">
+				Sets the color used to represent values above the specified
+				maximum.
+			</option>
+			<option
+				name="Select a color for values less than the range minimum">
+				Sets the color used to represent values below the specified
+				minimum.
+			</option>
+		</tab>
+		<tab name="Interactivity">
+			<option name="Enable view edit">
+				If checked all edit controls selected below will
+				be rendered in the view. Unchecking this option disables all edit
+				controls.
+			</option>
+			<option name="Enable title/subtitle edit controls">
+				Renders a text box to change the chart title and
+				subtitle in the view.
+			</option>
+			<option name="Enable color mode edit">
+				If checked, the color gradient can be toggled
+				between continuous and discrete from within the view.
+			</option>
+			<option name="Enable 'show tool tips' option">
+				If enabled, tool tips for the heatmap data cells
+				and row labels can be toggled on/off from within the view.
+			</option>
+			<option name="Enable selection">
+				When this option is checked, data points can be
+				selected in the heatmap by activating the corresponding button and
+				clicking on data cells. Extend the selection by holding down the
+				Shift-key while clicking on points. The selection appears in an
+				appended column of the data table.
+			</option>
+			<option name="Show reset selection button">
+				If checked, a reset selection button will be
+				displayed in the view.
+			</option>
+			<option name="Selection column name">
+				Name of the appended column containing boolean
+				values to indicate, whether a data cell was selected in the view or
+				not.
+			</option>
+			<option name="Publish selection events">
+				If checked, notifies other interactive views when
+				user changes the selection in the current view. See also "Subscribe
+				to selection events".
+			</option>
+			<option name="Subscribe to selection events">
+				If checked, the view reacts on notifications from
+				other interactive views that the selection has been changed. See
+				also "Publish selection events".
+			</option>
+			<option name="Enable 'show selected rows only' option">
+				If selected, a "show selected rows only" checkbox
+				will be displayed in the view's menu.
+			</option>
+			<option name="Show selected rows only">
+				If enabled, only the selected rows will be
+				displayed.
+			</option>
+			<option name="Subscribe to filter events">
+				If checked, the view reacts when applied filters
+				are changed.
+			</option>
+			<option name="Enable pagination">
+				Enable or disable the pagination feature
+				globally. When disabled the table is rendered whole on one page.
+				When enabled use the options below to further refine the pagination
+				settings.
+			</option>
+			<option name="Initial page size">
+				Set the page size to be used on initial layout. A
+				page size is defined as the number of rows the table displays on one
+				page. If the page size change control is enabled the page length can
+				be changed in the view.
+			</option>
+			<option name="Enable page size change control">
+				Enable or disable the control to change the page
+				size interactively in the view.
+			</option>
+			<option name="Selectable page sizes">
+				Define a comma-separated list of allowed page
+				sizes for the page size control.
+			</option>
+			<option name="Add &quot;All&quot; option to page sizes">
+				When checked, an additional 'All' option will be
+				available in the page size control.
+			</option>
+			<option name="Enable panning">
+				Enable panning on the plot. To start panning
+				click and drag the mouse. Note if panning and drag zooming is
+				enabled, panning can be achieved by holding the Ctrl key and
+				dragging the mouse.
+			</option>
+			<option name="Enable zooming">
+				Enable zooming on the plot using the mouse wheel.
+			</option>
+			<option name="Show zoom reset button">
+				Renders a button to resize the plot to it's
+				extends.
+			</option>
+		</tab>
+	</fullDescription>
+
+	<interactiveView name="Heatmap">
+		A heatmap representation of the
+		input data table.
+	</interactiveView>
+	<ports>
+		<inPort name="Input table" index="0">
+			Input data table to display as
+			a heatmap.
+		</inPort>
+		<outPort name="Image port" index="0">
+			An SVG image representation
+			of the view.
+		</outPort>
+		<outPort name="Output table" index="1">
+			The input data table, with
+			an appended selection column if selection is enabled.
+		</outPort>
+	</ports>
+</knimeNode>

@@ -1,0 +1,226 @@
+html,
+body {
+    height: 100%;
+    font-family: sans-serif;
+    text-align: center;
+    overflow: hidden;
+}
+
+p {
+    margin-top: 0;
+}
+
+.knime-layout-container {
+    position: relative;
+}
+
+.heatmap,
+foreignObject,
+.wrapper,
+.transformer,
+.highlighters,
+.knime-svg-container {
+    width: 100%;
+    height: 100%;
+}
+
+.knime-svg-container .gradient-y {
+    display: block;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 10px,
+        rgba(255, 255, 255, 1) 100%
+    );
+}
+
+.knime-svg-container .gradient-x {
+    display: block;
+    width: 100%;
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 10px,
+        rgba(255, 255, 255, 1) 100%
+    );
+}
+
+
+.highlighters {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+}
+
+.active text {
+    font-weight: bold;
+}
+
+.selection-enabled .transformer {
+    cursor: pointer;
+}
+
+.selection-enabled .axis-wrapper .knime-y > g {
+    cursor: pointer;
+}
+
+text.active {
+    fill: #003389;
+}
+
+.knime-tooltip {
+    position: absolute;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    color: #333;
+    background: #fff;
+    opacity: 0;
+    user-select: none; /* prevent mouse pointer icon change */
+    pointer-events: none; /* make sure mouseleave on the cell is always fired */
+    box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease-out;
+}
+
+.knime-tooltip.active {
+    opacity: 0.9;
+}
+
+.knime-tooltip-caption {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+}
+
+.knime-tooltip-value {
+    display: block;
+    font-size: 1.1rem;
+}
+
+form {
+    text-align: left;
+    margin: 50px;
+}
+
+.info-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    width: 100%;
+    margin: 0;
+    padding-top: 10px;
+    text-align: center;
+    background-color: #fff;
+}
+
+.info-wrapper > * {
+    margin: 0.5rem;
+}
+
+.pagination {
+    max-width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+}
+
+.pagination li {
+    display: block;
+    margin-left: 0.8rem;
+}
+
+.pagination li:first-child {
+    margin-left: 0;
+}
+
+.pagination li span,
+.pagination li a {
+    display: block;
+    padding: 0 0.2rem 0.4rem 0.2rem;
+    text-decoration: none;
+}
+
+.pagination li.disabled span {
+    opacity: 0.4;
+}
+
+.pagination .active a {
+    color: #000;
+}
+
+.knime-legend {
+    overflow: visible;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 2px 10px;
+}
+
+text.knime-legend-label,
+text.knime-tick-label {
+    font-size: 10px;
+}
+
+.missing-value {
+    color: red;
+}
+
+.row-highlighter,
+.cell-highlighter {
+    stroke: #fff;
+    fill: none;
+    pointer-events: none;
+    stroke-width: 2;
+}
+
+.row-highlighter {
+    stroke-dasharray: 5;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 66%;
+    left: 50%;
+    width: 20%;
+    transform: translateX(-50%);
+    background-color: rgba(51, 51, 51, 0.6);
+    padding: 6px;
+    color: #f3f3f3;
+    box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+}
+
+.progress-bar .progress {
+    display: block;
+    height: 12px;
+    background-color: #ffd800;
+}
+
+.partially-displayed-hint {
+    display: none;
+}
+
+.partially-displayed .partially-displayed-hint {
+    display: block;
+}
+
+.partially-displayed.panning-enabled .transformer{
+    cursor: move;
+}
