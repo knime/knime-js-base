@@ -79,7 +79,7 @@ public class IntegerConfigurationPanel extends AbstractDialogNodeConfigurationPa
         if (representation.isUseMax()) {
             max = representation.getMax();
         }
-        m_component = new JSpinner(new SpinnerNumberModel(0, min, max, 1));
+        m_component = new JSpinner(new SpinnerNumberModel(representation.getDefaultValue().getInteger(), min, max, 1));
         m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
         m_component.setValue(representation.getDefaultValue().getInteger());
         setComponent(m_component);

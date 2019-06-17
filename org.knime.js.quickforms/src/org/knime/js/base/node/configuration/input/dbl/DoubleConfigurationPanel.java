@@ -79,7 +79,7 @@ public class DoubleConfigurationPanel extends AbstractDialogNodeConfigurationPan
         if (representation.isUseMax()) {
             max = representation.getMax();
         }
-        m_component = new JSpinner(new SpinnerNumberModel(0.0, min, max, 0.1));
+        m_component = new JSpinner(new SpinnerNumberModel(representation.getDefaultValue().getDouble(), min, max, 0.1));
         m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
         m_component.setValue(representation.getDefaultValue().getDouble());
         setComponent(m_component);
