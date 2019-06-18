@@ -110,6 +110,7 @@ import com.google.common.collect.BiMap;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("serial")
 public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(GenericJSNodePanel.class);
@@ -134,6 +135,14 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
     private boolean m_enabled;
 
+    /**
+     * Creates a new panel
+     *
+     * @param templateMetaCategory the meta category to be used for js templates
+     * @param config the current config
+     * @param availableLibraries a pre-compiled map of available libraries that can be chosen as dependencies
+     * @param isPreview if the panel is supposed to act as a preview (e.g. in the templates tab)
+     */
     protected GenericJSNodePanel(final Class<?> templateMetaCategory, final GenericJSViewConfig config,
         final BiMap<String, String> availableLibraries, final boolean isPreview) {
         m_templateMetaCategory = templateMetaCategory;
@@ -164,7 +173,6 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         m_jsTextArea = new JSSnippetTextArea();
         m_jsSVGTextArea = new JSSnippetTextArea();
         m_cssTextArea = new CSSSnippetTextArea();
-        @SuppressWarnings("serial")
         TableModel tableModel = new DefaultTableModel(0, 2) {
             /**
              * {@inheritDoc}
@@ -215,7 +223,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
             }
         });
 
-        final JPanel panel = createPanel(isPreview);
+        createPanel(isPreview);
         setEnabled(!isPreview);
     }
 
@@ -404,6 +412,13 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         m_enabled = enabled;
     }
 
+    /**
+     * Loads settings into panel
+     * @param settings the settings to load
+     * @param spec the current {@link DataTableSpec}
+     * @param flowVariables a map of currently available {@link FlowVariable}s
+     * @throws NotConfigurableException if loading the settings fails
+     */
     protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec spec,
         final Map<String, FlowVariable> flowVariables)
         throws NotConfigurableException {
@@ -445,6 +460,11 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
     }
 
+    /**
+     * Saves the current settings
+     * @param settings the settings to save to
+     * @throws InvalidSettingsException if settings are invalid
+     */
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         List<String> dependencies = new ArrayList<String>();
         for (int row = 0; row < m_dependenciesTable.getRowCount(); row++) {

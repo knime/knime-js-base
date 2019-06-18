@@ -245,7 +245,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         representation.setCssDependencies(cssPaths.toArray(new String[0]));
     }
 
-    private IConfigurationElement getConfigurationFromWebResID(final String id) {
+    private static IConfigurationElement getConfigurationFromWebResID(final String id) {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IConfigurationElement[] configurationElements = registry.getConfigurationElementsFor(ID_WEB_RES);
         for (IConfigurationElement element : configurationElements) {

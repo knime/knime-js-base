@@ -120,7 +120,7 @@ public final class TemplateProvider extends TemplateRepository implements Change
                     }
                 }
             } catch (final CoreException ex) {
-                LOGGER.error("Error while reading rsnippet template " + "repositories.", ex);
+                LOGGER.error("Error while reading js template " + "repositories.", ex);
             }
         }
         m_templates = new HashMap<String, Map<String, Collection<JSTemplate>>>();

@@ -77,9 +77,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ViewUtils;
-import org.knime.core.node.util.dialog.FieldsTableModel.Column;
-import org.knime.core.node.util.dialog.OutFieldsTable;
-import org.knime.core.node.util.dialog.OutFieldsTableModel;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.js.base.node.ui.JSSnippetTextArea;
 import org.knime.js.base.template.DefaultTemplateController;
@@ -110,7 +107,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
     private BiMap<String, String> m_availableLibraries;
     private final GenericJSViewConfig m_config;
     private final Class<?> m_templateMetaCategory;
-    private DefaultTemplateController m_templatesController;
+    private DefaultTemplateController<GenericJSNodePanel> m_templatesController;
 
     private final GenericJSNodePanel m_panel;
 
@@ -139,101 +136,11 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
 
         addTab(SCRIPT_TAB, m_panel);
         addTab("Image Generation", initImageGenerationLayout());
-        addTab("Templates", initTemplatesPanel());
-    }
-
-    /*private JPanel initViewLayout() {
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.setBorder(m_paddingBorder);
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        topPanel.setBorder(m_lineBorder);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(new JLabel("Maximum number of rows: "));
-        m_maxRowsSpinner.setMaximumSize(new Dimension(100, 20));
-        m_maxRowsSpinner.setMinimumSize(new Dimension(100, 20));
-        m_maxRowsSpinner.setPreferredSize(new Dimension(100, 20));
-        topPanel.add(m_maxRowsSpinner);
-        topPanel.add(Box.createHorizontalStrut(10));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = gbc.gridy = 0;
-        wrapperPanel.add(topPanel, BorderLayout.NORTH);
-
-        JPanel p = new JPanel(new BorderLayout());
-
-        JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-        leftPane.setBorder(m_noBorder);
-        leftPane.setDividerLocation(120);
-        JPanel topLeftPanel = new JPanel(new BorderLayout(2, 2));
-        topLeftPanel.setBorder(m_paddingBorder);
-        topLeftPanel.add(new JLabel("Flow Variables"), BorderLayout.NORTH);
-        JScrollPane flowVarScroller = new JScrollPane(m_flowVarList);
-        topLeftPanel.add(flowVarScroller, BorderLayout.CENTER);
-        topLeftPanel.setPreferredSize(new Dimension(400, 130));
-        JPanel bottomLeftPanel = new JPanel(new BorderLayout(2, 2));
-        bottomLeftPanel.setBorder(m_paddingBorder);
-        bottomLeftPanel.add(new JLabel("CSS"), BorderLayout.NORTH);
-        JScrollPane cssScroller = new RTextScrollPane(m_cssTextArea);
-        bottomLeftPanel.add(cssScroller, BorderLayout.CENTER);
-        bottomLeftPanel.setPreferredSize(new Dimension(400, 400));
-        leftPane.setTopComponent(topLeftPanel);
-        leftPane.setBottomComponent(bottomLeftPanel);
-
-        JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-        rightPane.setBorder(m_noBorder);
-        rightPane.setDividerLocation(120);
-        JPanel topRightPanel = new JPanel(new BorderLayout(2, 2));
-        topRightPanel.setBorder(m_paddingBorder);
-        topRightPanel.add(new JLabel("Dependencies"), BorderLayout.NORTH);
-        JScrollPane dependenciesScroller = new JScrollPane(m_dependenciesTable);
-        topRightPanel.add(dependenciesScroller, BorderLayout.CENTER);
-        topRightPanel.setPreferredSize(new Dimension(400, 130));
-        JPanel bottomRightPanel = new JPanel(new BorderLayout(2, 2));
-        bottomRightPanel.setBorder(m_paddingBorder);
-        bottomRightPanel.add(new JLabel("JavaScript"), BorderLayout.NORTH);
-        JScrollPane jsScroller = new RTextScrollPane(m_jsTextArea);
-        bottomRightPanel.add(jsScroller, BorderLayout.CENTER);
-        bottomRightPanel.setPreferredSize(new Dimension(400, 400));
-        rightPane.setTopComponent(topRightPanel);
-        rightPane.setBottomComponent(bottomRightPanel);
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
-        splitPane.setBorder(m_noBorder);
-        splitPane.setDividerLocation(0.5);
-        splitPane.setLeftComponent(leftPane);
-        splitPane.setRightComponent(rightPane);
-
-        p.add(splitPane, BorderLayout.CENTER);
-
-        JSplitPane outFieldsPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-        outFieldsPane.setBorder(m_noBorder);
-        outFieldsPane.setTopComponent(p);
-        //m_outFieldsTable.getTable().setMaximumSize(new Dimension(m_outFieldsTable.getWidth(), 50));
-        m_outFieldsTable.setBorder(BorderFactory.createTitledBorder("Output Flow Variables"));
-        m_outFieldsTable.setPreferredSize(m_outFieldsTable.getMinimumSize());
-        outFieldsPane.setBottomComponent(m_outFieldsTable);
-        outFieldsPane.setDividerLocation(0.8);
-        outFieldsPane.setResizeWeight(0.7);
-
-
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridy++;
-        wrapperPanel.add(outFieldsPane, BorderLayout.CENTER);
-
-        return wrapperPanel;
-    }*/
-
-    private static OutFieldsTable createOutVariableTable() {
-        OutFieldsTable table = new OutFieldsTable(true, true);
-        OutFieldsTableModel model = (OutFieldsTableModel)table.getTable().getModel();
-        table.getTable().getColumnModel().getColumn(model.getIndex(
-            Column.REPLACE_EXISTING)).setPreferredWidth(10);
-        table.getTable().getColumnModel().getColumn(model.getIndex(
-            Column.DATA_TYPE)).setPreferredWidth(20);
-        return table;
+        try {
+            addTab("Templates", initTemplatesPanel());
+        } catch (Exception e) {
+            LOGGER.warn("Templates tab could not be created. Templates will be unavailable in the dialog.");
+        }
     }
 
     private JPanel initImageGenerationLayout() {
@@ -272,7 +179,7 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         final GenericJSNodePanel preview =
             new GenericJSNodePanel(m_templateMetaCategory, m_config, getAvailableLibraries(), true);
 
-        m_templatesController = new DefaultTemplateController(m_panel, preview);
+        m_templatesController = new DefaultTemplateController<GenericJSNodePanel>(m_panel, preview);
         final TemplatesPanel templatesPanel =
             new TemplatesPanel(Collections.<Class<?>> singleton(m_templateMetaCategory), m_templatesController);
         return templatesPanel;
@@ -297,7 +204,6 @@ final class GenericJSViewNodeDialogPane extends NodeDialogPane {
         });
     }
 
-    @SuppressWarnings("unchecked")
     protected void loadSettingsFromInternal(final NodeSettingsRO settings, final PortObjectSpec[] specs)  {
         m_config.loadSettingsForDialog(settings);
         DataTableSpec spec = specs.length > 0 ? (DataTableSpec)specs[0] : null;
