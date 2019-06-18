@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./table_editor.png" type="Visualizer" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-    <name>Table Editor (JavaScript)</name>
+    <name>Table Editor</name>
     <shortDescription>Displays data in a table view and a possibility to edit.</shortDescription>
     <fullDescription>
         <intro>

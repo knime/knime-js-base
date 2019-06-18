@@ -16,6 +16,11 @@
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
       </node>
       <node
+            category-path="/view/js-views"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory">
+      </node>
+      <node
             after="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory"
             category-path="/view/js-views"
             deprecated="false"
@@ -52,15 +57,6 @@
             factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>
       <node
-            category-path="/view/view-util"
-            factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
-      </node>
-      <node
-            category-path="/view"
-            deprecated="false"
-            factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
-      </node>
-      <node
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
@@ -71,9 +67,8 @@
             factory-class="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory">
       </node>
       <node
-            category-path="/view/js-views"
-            deprecated="false"
-            factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory">
+            category-path="/view/view-util"
+            factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
       </node>
    </extension>
    <extension
