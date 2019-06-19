@@ -249,11 +249,15 @@ window.table_editor = (function() {
 		this._selectCell(cell);
 	};
 
-	TableEditor.prototype._editableCellDoubleClickHandler = function(e) {
-		var td = e.currentTarget;
-		var cell = this._dataTable.cell(td);
-		this._createCellEditor(cell);
-	};
+	TableEditor.prototype._editableCellDoubleClickHandler = function (e) {
+        var td = e.currentTarget;
+        if (td.classList.contains('knime-editable')) {
+            var cell = this._dataTable.cell(td);
+            this._createCellEditor(cell);
+        } else {
+            // Nothing todo since the cell should not be editable
+        }
+    };
 
 	TableEditor.prototype._selectedCellFocusOutHandler = function(e) {
 		if (!this._selectedCell) {
