@@ -592,6 +592,7 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         validateSettings();
+        saveSettingsTo(m_config);
         m_config.getDomainColumn().saveSettingsTo(settings);
         m_config.setUseCustomMin(m_useMin.isSelected());
         m_config.setUseCustomMax(m_useMax.isSelected());
