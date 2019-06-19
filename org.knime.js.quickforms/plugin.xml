@@ -268,6 +268,11 @@
       <node
             category-path="/flowabstraction/configuration/input"
             deprecated="false"
+            factory-class="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory">
+      </node>
+      <node
+            category-path="/flowabstraction/configuration/input"
+            deprecated="false"
             factory-class="org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeFactory">
       </node>
       <node

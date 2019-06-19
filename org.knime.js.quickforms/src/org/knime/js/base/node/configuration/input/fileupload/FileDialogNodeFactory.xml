@@ -2,7 +2,7 @@
 <knimeNode icon="./configuration_fileUpload.png" type="QuickForm" xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>File Configuration</name>
+	<name>Local File Browser Configuration</name>
 
 	<shortDescription>
 	   Allows selecting a local file and exposing it using a flow variable.
