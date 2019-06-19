@@ -4,18 +4,18 @@
    <extension-point id="templaterepository" name="JavaScript template repository" schema="schema/templaterepository.exsd"/>
    <extension point="org.knime.workbench.repository.nodes">
       <node
-            after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart"
+            after="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
       </node>
       <node
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory">
@@ -57,11 +57,13 @@
             factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>
       <node
+            after="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
       </node>
       <node
+            after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory">
