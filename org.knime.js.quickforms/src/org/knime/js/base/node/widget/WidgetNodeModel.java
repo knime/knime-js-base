@@ -79,6 +79,9 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
 
     private CONF m_config = createEmptyConfig();
 
+    // don't use viewValue from super class to be able check if defaultValue was overwritten @see #getOverwriteMode()
+    private VAL m_viewValue;
+
     /**
      * @param inPortTypes
      * @param outPortTypes
@@ -161,7 +164,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     protected void performReset() {
-        m_config.setValueSet(false);
+        m_viewValue = null;
     }
 
     /**
@@ -198,13 +201,20 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     }
 
     /**
+     * @return the viewValue
+     */
+    @Override
+    public VAL getViewValue() {
+        return m_viewValue;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     protected void setViewValue(final VAL value) {
         synchronized (getLock()) {
-            super.setViewValue(value);
-            m_config.setValueSet(value != null);
+            m_viewValue = value;
         }
     }
 
@@ -214,8 +224,10 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     @Override
     public void loadViewValue(final VAL viewValue, final boolean useAsDefault) {
         synchronized (getLock()) {
-            super.loadViewValue(viewValue, useAsDefault);
-            m_config.setValueSet(viewValue != null);
+            m_viewValue = viewValue;
+            if (useAsDefault) {
+                useCurrentValueAsDefault();
+            }
         }
     }
 
@@ -238,7 +250,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     protected ValueOverwriteMode getOverwriteMode() {
         synchronized (getLock()) {
-            if (m_config.isValueSet()) {
+            if (m_viewValue != null) {
                 return ValueOverwriteMode.WIZARD;
             } else {
                 return ValueOverwriteMode.NONE;
@@ -275,9 +287,6 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
                 }
                 setViewValue(value);
             }
-        } else {
-            setViewValue(createEmptyViewValue());
-            m_config.setValueSet(false);
         }
     }
 
@@ -288,7 +297,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec) throws IOException,
         CanceledExecutionException {
         // only save value, representation is not needing to be saved
-        if (!m_config.isValueSet()) {
+        if (m_viewValue == null) {
             return;
         }
         NodeSettings valSettings = new NodeSettings("widgetValue");

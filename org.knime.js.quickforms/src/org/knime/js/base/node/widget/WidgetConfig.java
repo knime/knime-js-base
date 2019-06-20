@@ -73,10 +73,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     private static final String CFG_DEFAULT_VALUE = "defaultValue";
     private VAL m_defaultValue = createEmptyValue();
 
-    private static final String CFG_VALUE_SET = "valueSet";
-    private static final boolean DEFAULT_VALUE_SET = false;
-    private boolean m_valueSet = DEFAULT_VALUE_SET;
-
     /**
      * @return the hideInWizard
      */
@@ -113,20 +109,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     }
 
     /**
-     * @return the valueSet
-     */
-    public boolean isValueSet() {
-        return m_valueSet;
-    }
-
-    /**
-     * @param valueSet the valueSet to set
-     */
-    public void setValueSet(final boolean valueSet) {
-        m_valueSet = valueSet;
-    }
-
-    /**
      * Creates an instance of a value used for the default value of this config.
      *
      * @return Create a value instance
@@ -141,7 +123,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         m_defaultValue.saveToNodeSettings(defaultValueSettings);
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
         settings.addString(CFG_CUSTOM_CSS, m_customCSS);
-        settings.addBoolean(CFG_VALUE_SET, m_valueSet);
     }
 
     /**
@@ -154,7 +135,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         m_defaultValue.loadFromNodeSettings(defaultValueSettings);
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD);
         m_customCSS = settings.getString(CFG_CUSTOM_CSS);
-        m_valueSet = settings.getBoolean(CFG_VALUE_SET);
     }
 
     /**
@@ -171,7 +151,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         }
         m_hideInWizard = settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD);
         m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
-        m_valueSet = settings.getBoolean(CFG_VALUE_SET, DEFAULT_VALUE_SET);
     }
 
     /**
@@ -199,7 +178,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
                 .append(m_hideInWizard)
                 .append(m_customCSS)
                 .append(m_defaultValue)
-                .append(m_valueSet)
                 .toHashCode();
     }
 
@@ -223,7 +201,6 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
                 .append(m_hideInWizard, other.m_hideInWizard)
                 .append(m_customCSS, other.m_customCSS)
                 .append(m_defaultValue, other.m_defaultValue)
-                .append(m_valueSet, other.m_valueSet)
                 .isEquals();
     }
 
