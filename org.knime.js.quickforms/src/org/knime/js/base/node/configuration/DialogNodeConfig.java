@@ -120,7 +120,8 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
         CheckUtils.checkSettingNotNull(s, "Parameter name must not be null");
         Pattern pattern = DialogNode.PARAMETER_NAME_PATTERN;
         CheckUtils.checkSetting("".equals(s) || pattern.matcher(s).matches(),
-            "Parameter name \"%s\" is invalid - only character, digits and a dash character are allowed", s);
+            "Parameter name \"%s\" is invalid - only letters, digits and single dash "
+            + "characters are allowed and the name must start and end with a letter.", s);
         m_parameterName = s;
     }
 
