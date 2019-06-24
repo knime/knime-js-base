@@ -1071,6 +1071,18 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         } else {
             template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
         }
+        if (m_node != null && m_node.isSetLayoutResizeDefault()) {
+            org.knime.dynamicjsnode.v30.ResizeMethod.Enum resizeDefault = m_node.getLayoutResizeDefault();
+            if (resizeDefault.equals(org.knime.dynamicjsnode.v30.ResizeMethod.ASPECT_16_9)) {
+                template.setResizeMethod(ResizeMethod.ASPECT_RATIO_16by9);
+            } else if (resizeDefault.equals(org.knime.dynamicjsnode.v30.ResizeMethod.ASPECT_4_3)) {
+                template.setResizeMethod(ResizeMethod.ASPECT_RATIO_4by3);
+            } else if (resizeDefault.equals(org.knime.dynamicjsnode.v30.ResizeMethod.ASPECT_1_1)) {
+                template.setResizeMethod(ResizeMethod.ASPECT_RATIO_1by1);
+            } else if (resizeDefault.equals(org.knime.dynamicjsnode.v30.ResizeMethod.AUTO)) {
+                template.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
+            }
+        }
         return template;
     }
 }

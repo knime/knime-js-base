@@ -22,6 +22,7 @@
 				<xs:attribute name="categoryPath" type="xs:string" />
 				<xs:attribute name="afterID" type="xs:string" />
 				<xs:attribute name="jsNamespace" type="xs:string" />
+				<xs:attribute name="layoutResizeDefault" type="ResizeMethod" use="optional" default="Auto" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -72,5 +73,14 @@
 		<xs:attribute name="className" type="xs:string" use="required" />
 		<xs:attribute name="hidesLimitRowOption" type="xs:boolean" default="false" />
 	</xs:complexType>
+
+	<xs:simpleType name="ResizeMethod">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Aspect16_9" />
+			<xs:enumeration value="Aspect4_3" />
+			<xs:enumeration value="Aspect1_1" />
+			<xs:enumeration value="Auto" />
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>
