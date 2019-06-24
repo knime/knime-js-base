@@ -104,7 +104,7 @@ window.knimeStringWidget = (function () {
             return false;
         }
         var regex = input.attr('pattern');
-        if (regex !== null && regex.length > 0) {
+        if (typeof regex !== 'undefined' && regex !== null && regex.length > 0) {
             var valid = matchExact(regex, input.val());
             if (valid) {
                 stringWidget.setValidationErrorMessage(null);
