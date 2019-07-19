@@ -162,6 +162,8 @@
 			// tooltip is re-created every time therefore we need to assign classes accordingly
 			chart.pie.dispatch.on('elementMouseover.tooltipCss', setTooltipCssClasses);
 			chart.pie.dispatch.on('elementMousemove.tooltipCss', setTooltipCssClasses);
+			chart.pie.dispatch.on('elementMouseout.tooltipCss', hideTooltips);
+
 			chart.legend.dispatch.on('legendClick', function(series, index) {
             	//drawChart(true);
             	removeHilightBar("",true);
@@ -882,6 +884,7 @@
 	function setTooltipCssClasses() {
 		// tooltip
 		var tooltip = d3.selectAll('.nvtooltip')
+		.style('display', 'block')
 		.classed('knime-tooltip', true);
 		tooltip.selectAll('.x-value')
 		.classed('knime-tooltip-caption', true)
@@ -893,6 +896,10 @@
 		tooltip.selectAll('.value')
 		.classed('knime-tooltip-value', true);
 	}
+
+    hideTooltips = function () {
+        d3.selectAll('.nvtooltip').style('display', 'none');
+    };
 
 	pie.validate = function() {
 		return true;
