@@ -1,5 +1,5 @@
 # ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME® JS Base
-This repository contains the source code of [KNIME Analytics Platform](http://www.knime.org) JavaScript Nodes. In the this repository all the base nodes are located.
+This repository contains the source code of [KNIME Analytics Platform](http://www.knime.org) JavaScript Nodes. In the this repository all the base nodes containing JavaScript visualizations are located.
 
 ### Overview
 Contained nodes:
@@ -92,9 +92,9 @@ Visit the [KNIME Visualization Guide](https://www.knime.com/nodeguide/visualizat
 
 ### Content
 
-* _org.knime.dynamic.js.*_: Dynamicly created nodes
-* _org.knime.js.quickforms*_: Quickform nodes
-* _org.knime.js.views*_: Manuel created JS view nodes
+* _org.knime.dynamic.js.*_: Dynamically created JavaScript nodes
+* _org.knime.js.quickforms*_: Configuration, Widget and Quickform nodes
+* _org.knime.js.views*_: Regular JavaScript view nodes
 
 ### Development
 Instructions for how to develop extensions for KNIME Analytics Platform can be found in the _knime-sdk-setup_ repository on [BitBucket](https://bitbucket.org/KNIME/knime-sdk-setup) or [GitHub](http://github.com/knime/knime-sdk-setup).
