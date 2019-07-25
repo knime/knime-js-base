@@ -167,21 +167,26 @@ public class CredentialsDialogNodeModel extends
                 Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
                 List<Credentials> loadCredentials =
                         loadHelper.loadCredentialsPrefilled(Collections.singletonList(tempCredentials));
-                tempCredentials = loadCredentials.iterator().next();
+                if (loadCredentials.isEmpty()) {
+                    // components dragged from server/hub won't be prompted for password, see AP-12458
+                    setWarningMessage("Credentials required - please configure the node");
+                } else {
+                    tempCredentials = loadCredentials.iterator().next();
 
-                // set the new password
-                password = tempCredentials.getPassword();
-                value.setPassword(password);
-                if (password == null) {
-                    setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
+                    // set the new password
+                    password = tempCredentials.getPassword();
+                    value.setPassword(password);
+                    if (password == null) {
+                        setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
+                    }
+
+                    // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
+                    // (since this is what the user would expect)
+                    credentialsIdentifier = tempCredentials.getName();
+                    getConfig().setFlowVariableName(credentialsIdentifier);
+                    username = tempCredentials.getLogin();
+                    value.setUsername(username);
                 }
-
-                // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
-                // (since this is what the user would expect)
-                credentialsIdentifier = tempCredentials.getName();
-                getConfig().setFlowVariableName(credentialsIdentifier);
-                username = tempCredentials.getLogin();
-                value.setUsername(username);
             } else {
                 getLogger().debugWithFormat("Inheriting credentials \"%s\" from workflow", credentialsIdentifier);
             }
