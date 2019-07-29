@@ -44,6 +44,7 @@
  */
 package org.knime.js.base.node.quickform.filter.definition.rangeslider;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -253,6 +254,8 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             maximum = filterValues[1];
         }
         boolean[] fixSlider = m_config.getSliderSettings().getFix();
+        minimum = roundToNextStep(minimum);
+        maximum = roundToNextStep(maximum);
         if(fixSlider[0]) {
             minimum = Double.NEGATIVE_INFINITY;
         }
@@ -268,6 +271,45 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         }
         return getOutSpec(spec, columnName, FilterHandler.from(model));
 
+    }
+
+    /**
+     * Function to round a value to the next available tick. If the maximum or minimum is passed in, it stays as is.
+     *
+     * @param value double which should be rounded to the next available tick
+     */
+    private double roundToNextStep(final double value) {
+        double result = value;
+        if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings().getStep() != null
+            && value != Double.NEGATIVE_INFINITY && value != Double.POSITIVE_INFINITY) {
+            double stepSize = getViewRepresentation().getSliderSettings().getStep();
+            double maximum = getViewRepresentation().getSliderSettings().getRangeMaxValue();
+            double minimum = getViewRepresentation().getSliderSettings().getRangeMinValue();
+
+            if (value == maximum) {
+                return maximum;
+            }
+            if (value == minimum) {
+                return minimum;
+            }
+
+            // Need to convert to BigDecimal, as precision of double is not enough and rounding errors would occure.
+            BigDecimal remainder =
+                BigDecimal.valueOf(value).subtract(new BigDecimal(minimum)).remainder(BigDecimal.valueOf(stepSize));
+
+            if (remainder.doubleValue() >= stepSize / 2) {
+                result = value + (stepSize - remainder.doubleValue());
+            } else {
+                result = value - remainder.doubleValue();
+            }
+            if (result <= minimum) {
+                result = minimum;
+            }
+            if (result >= maximum) {
+                result = maximum;
+            }
+        }
+        return result;
     }
 
     private DataTableSpec getOutSpec(final DataTableSpec inSpec, final String columnName, final FilterHandler filter) {
