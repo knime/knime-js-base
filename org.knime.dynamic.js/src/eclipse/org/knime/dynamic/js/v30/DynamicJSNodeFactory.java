@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import org.apache.xmlbeans.XmlException;
 import org.eclipse.core.runtime.FileLocator;
@@ -103,13 +104,17 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 			throws InvalidSettingsException {
 	    String confString = config.getString(DynamicJSNodeSetFactory.NODE_DIR_CONF);
         String[] confParts = confString.split(":");
-	    if (confParts.length != 3) {
-	        throw new InvalidSettingsException("Error reading factory settings. Expected pluginName:configFolder:nodeFolder, but was " + confString);
-	    }
+        if (confParts.length != 3) {
+            throw new InvalidSettingsException(
+                "Error reading factory settings. Expected pluginName:configFolder:nodeFolder, but was " + confString);
+        }
 	    m_pluginName = confParts[0];
 	    m_configFolder = confParts[1];
 	    m_nodeFolder = confParts[2];
 	    Bundle bundle = Platform.getBundle(m_pluginName);
+	    if(bundle == null) {
+	       throw new InvalidSettingsException("Extension not found: " + m_pluginName);
+	    }
         URL configURL = bundle.getEntry(m_configFolder);
         try {
             File configFolder = FileUtil.resolveToPath(FileLocator.toFileURL(configURL)).toFile();
@@ -127,9 +132,9 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 		} catch (XmlException | IOException e) {
 			LOGGER.error("Error reading node config: " + e.getMessage(), e);
 			throw new InvalidSettingsException(e);
-		}
-		super.loadAdditionalFactorySettings(config);
-	}
+        }
+        super.loadAdditionalFactorySettings(config);
+    }
 
 	@Override
 	public void saveAdditionalFactorySettings(final ConfigWO config) {
@@ -172,5 +177,13 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	@Override
 	protected boolean isDeprecatedInternal() {
 	    return m_doc.getKnimeNode().getDeprecated();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Optional<String> getBundleName() {
+	    return Optional.of(m_pluginName);
 	}
 }
