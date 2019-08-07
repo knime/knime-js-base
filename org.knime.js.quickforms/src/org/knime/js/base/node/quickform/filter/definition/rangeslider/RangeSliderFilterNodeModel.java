@@ -44,7 +44,6 @@
  */
 package org.knime.js.base.node.quickform.filter.definition.rangeslider;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,8 +253,9 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             maximum = filterValues[1];
         }
         boolean[] fixSlider = m_config.getSliderSettings().getFix();
-        minimum = roundToNextStep(minimum);
-        maximum = roundToNextStep(maximum);
+        double[] roundedExtremas = roundToNextStep(minimum, maximum);
+        minimum = roundedExtremas[0];
+        maximum = roundedExtremas[1];
         if(fixSlider[0]) {
             minimum = Double.NEGATIVE_INFINITY;
         }
@@ -278,37 +278,37 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      *
      * @param value double which should be rounded to the next available tick
      */
-    private double roundToNextStep(final double value) {
-        double result = value;
-        if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings().getStep() != null
-            && value != Double.NEGATIVE_INFINITY && value != Double.POSITIVE_INFINITY) {
+    private double[] roundToNextStep(final double minimumVal, final double maximumVal) {
+        List<Double> stepValueList = new ArrayList<Double>();
+        double[] resultArray = new double[2];
+
+        if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings().getStep() != null) {
             double stepSize = getViewRepresentation().getSliderSettings().getStep();
             double maximum = getViewRepresentation().getSliderSettings().getRangeMaxValue();
             double minimum = getViewRepresentation().getSliderSettings().getRangeMinValue();
 
-            if (value == maximum) {
-                return maximum;
+            for (double counter = minimum; counter < maximum; counter += stepSize) {
+                stepValueList.add(counter);
             }
-            if (value == minimum) {
-                return minimum;
-            }
+            stepValueList.add(maximum);
 
-            // Need to convert to BigDecimal, as precision of double is not enough and rounding errors would occure.
-            BigDecimal remainder =
-                BigDecimal.valueOf(value).subtract(new BigDecimal(minimum)).remainder(BigDecimal.valueOf(stepSize));
+            resultArray[0] = calculateClostestValue(stepValueList, minimumVal);
+            resultArray[1] = calculateClostestValue(stepValueList, maximumVal);
+        }
+        return resultArray;
+    }
 
-            if (remainder.doubleValue() >= stepSize / 2) {
-                result = value + (stepSize - remainder.doubleValue());
-            } else {
-                result = value - remainder.doubleValue();
-            }
-            if (result <= minimum) {
-                result = minimum;
-            }
-            if (result >= maximum) {
-                result = maximum;
+    private static double calculateClostestValue(final List<Double> stepValueList, final double value) {
+        double distance = Math.abs(stepValueList.get(0) - value);
+        int index = 0;
+        for(int i = 1; i < stepValueList.size(); i++){
+            double cdistance = Math.abs(stepValueList.get(i) - value);
+            if(cdistance < distance){
+                index = i;
+                distance = cdistance;
             }
         }
+        double result = stepValueList.get(index);
         return result;
     }
 
