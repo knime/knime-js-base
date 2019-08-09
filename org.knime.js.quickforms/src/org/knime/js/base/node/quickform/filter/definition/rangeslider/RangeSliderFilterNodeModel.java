@@ -292,13 +292,13 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             }
             stepValueList.add(maximum);
 
-            resultArray[0] = calculateClostestValue(stepValueList, minimumVal);
-            resultArray[1] = calculateClostestValue(stepValueList, maximumVal);
+            resultArray[0] = calculateClosestValue(stepValueList, minimumVal);
+            resultArray[1] = calculateClosestValue(stepValueList, maximumVal);
         }
         return resultArray;
     }
 
-    private static double calculateClostestValue(final List<Double> stepValueList, final double value) {
+    private static double calculateClosestValue(final List<Double> stepValueList, final double value) {
         double distance = Math.abs(stepValueList.get(0) - value);
         int index = 0;
         for(int i = 1; i < stepValueList.size(); i++){
