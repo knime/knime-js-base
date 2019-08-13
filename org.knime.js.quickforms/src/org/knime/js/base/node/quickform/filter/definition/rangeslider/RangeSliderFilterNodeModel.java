@@ -279,37 +279,42 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
      * @param value double which should be rounded to the next available tick
      */
     private double[] roundToNextStep(final double minimumVal, final double maximumVal) {
-        List<Double> stepValueList = new ArrayList<Double>();
         double[] resultArray = new double[2];
 
         if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings().getStep() != null) {
-            double stepSize = getViewRepresentation().getSliderSettings().getStep();
-            double maximum = getViewRepresentation().getSliderSettings().getRangeMaxValue();
-            double minimum = getViewRepresentation().getSliderSettings().getRangeMinValue();
-
-            for (double counter = minimum; counter < maximum; counter += stepSize) {
-                stepValueList.add(counter);
-            }
-            stepValueList.add(maximum);
-
-            resultArray[0] = calculateClosestValue(stepValueList, minimumVal);
-            resultArray[1] = calculateClosestValue(stepValueList, maximumVal);
+            resultArray[0] = calculateClosestValue(minimumVal);
+            resultArray[1] = calculateClosestValue(maximumVal);
         }
         return resultArray;
     }
 
-    private static double calculateClosestValue(final List<Double> stepValueList, final double value) {
-        double distance = Math.abs(stepValueList.get(0) - value);
-        int index = 0;
-        for(int i = 1; i < stepValueList.size(); i++){
-            double cdistance = Math.abs(stepValueList.get(i) - value);
-            if(cdistance < distance){
-                index = i;
+    private double calculateClosestValue(final double value) {
+        final SliderSettings sliderSettings = getViewRepresentation().getSliderSettings();
+        double stepSize = sliderSettings.getStep();
+        double maximum = sliderSettings.getRangeMaxValue();
+        double minimum = sliderSettings.getRangeMinValue();
+        if ((value - minimum) % stepSize == 0 || value == minimum || value == maximum) {
+            // no rounding needed, just boxing
+            return Math.max(Math.min(value, maximum), minimum);
+        }
+        //TODO: this leads to longer waiting times if there are many steps, should be refactored
+        double curStep = minimum;
+        double distance = Double.POSITIVE_INFINITY;
+        double closestStep = Double.NaN;
+        while (curStep < maximum) {
+            double cdistance = Math.abs(curStep - value);
+            if (cdistance < distance){
+                closestStep = curStep;
                 distance = cdistance;
             }
+            curStep += stepSize;
         }
-        double result = stepValueList.get(index);
-        return result;
+        double cdistance = Math.abs(maximum - value);
+        if(cdistance < distance){
+            closestStep = maximum;
+        }
+
+        return closestStep;
     }
 
     private DataTableSpec getOutSpec(final DataTableSpec inSpec, final String columnName, final FilterHandler filter) {
