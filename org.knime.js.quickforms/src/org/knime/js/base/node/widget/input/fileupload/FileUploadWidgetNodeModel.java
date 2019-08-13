@@ -69,8 +69,15 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
@@ -118,12 +125,52 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        try {
+            createAndPushFlowVariable(false);
+        } catch (InvalidSettingsException e) {
+            if (getConfig().getDisableOutput()) {
+                setWarningMessage(e.getMessage());
+                return new PortObjectSpec[]{InactiveBranchPortObjectSpec.INSTANCE};
+            } else {
+                throw e;
+            }
+        }
+        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        try {
+            createAndPushFlowVariable();
+        } catch (InvalidSettingsException e) {
+            getRelevantValue().setPathValid(false);
+            if (getConfig().getDisableOutput()) {
+                setWarningMessage(e.getMessage());
+                return new PortObject[]{InactiveBranchPortObject.INSTANCE};
+            } else {
+                throw e;
+            }
+        }
+        return new PortObject[]{FlowVariablePortObject.INSTANCE};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         createAndPushFlowVariable(true);
     }
 
     private void createAndPushFlowVariable(final boolean openStream) throws InvalidSettingsException {
-        validateViewValue(getRelevantValue());
+        ValidationError error = validateViewValue(getRelevantValue());
+        if (error != null) {
+            throw new InvalidSettingsException(error.getError());
+        }
         Vector<String> fileValues = getFileAndURL(openStream);
         String varIdentifier = getConfig().getFlowVariableName();
         if (fileValues.get(0) != null) {
