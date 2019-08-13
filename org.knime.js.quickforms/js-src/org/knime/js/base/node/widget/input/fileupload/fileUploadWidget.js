@@ -101,7 +101,7 @@ window.knimeFileUploadWidget = (function () {
 
         viewValid = true;
         viewRepresentation = representation;
-        viewValue = value;
+        viewValue = representation.currentValue;
     };
 
     fileUpload.validate = function () {
