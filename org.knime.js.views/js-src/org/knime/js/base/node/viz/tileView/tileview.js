@@ -1,8 +1,10 @@
-window.tiles_namespace = (function () {
+/* eslint-env jquery */
+/* global KnimeBaseTableViewer:false */
+window.knimeTileView = (function () {
 
     var htmlEncode = function (x) {
-        return x.replace(/&/g, '%26').replace(/</g, '%3C').replace(/>/g, '%3E')
-            .replace(/"/g, '%22').replace(/'/g, '%27').replace(/#/g, '%23');
+        return x.replace(/&/g, '%26').replace(/</g, '%3C').replace(/>/g, '%3E').replace(/"/g, '%22').replace(/'/g,
+            '%27').replace(/#/g, '%23');
     };
 
     var TileView = function () {
@@ -51,7 +53,7 @@ window.tiles_namespace = (function () {
     };
 
     // disallow selection of individual cells
-    TileView.prototype._cellMouseDownHandler = function () {};
+    TileView.prototype._cellMouseDownHandler = function () { /* do nothing */ };
 
     TileView.prototype._buildColumnDefinitions = function () {
         KnimeBaseTableViewer.prototype._buildColumnDefinitions.call(this);
@@ -151,7 +153,7 @@ window.tiles_namespace = (function () {
         if (!this._representation.enableSelection) {
             return;
         }
-        $('#knimePagedTable tbody').addClass('knime-selection-enabled').on('click', 'tr', function (e) {
+        this._getJQueryTable().find('tbody').addClass('knime-selection-enabled').on('click', 'tr', function (e) {
             if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
                 return;
             }
@@ -168,7 +170,7 @@ window.tiles_namespace = (function () {
             if (this._representation.useNumCols) {
                 var tableWidth = (this._representation.numCols * (this._representation.colWidth + 2 * 5)) + 'px';
                 var tableStyle = document.createElement('style');
-                tableStyle.textContent = 'table#knimePagedTable { width: ' + tableWidth + ' !important;}';
+                tableStyle.textContent = '.knime-tiles table.knime-table { width: ' + tableWidth + ' !important;}';
                 document.head.appendChild(tableStyle);
             }
         } else {
@@ -176,29 +178,31 @@ window.tiles_namespace = (function () {
             tileWidth = 'calc(100% / ' + this._representation.numCols + ' - 2 * 5px)';
         }
         var style = document.createElement('style');
-        style.textContent = 'table#knimePagedTable tr { width: ' + tileWidth + ';}';
+        style.textContent = '.knime-tiles table.knime-table tr { width: ' + tileWidth + ';}';
         document.head.appendChild(style);
     };
 
     // text alignment support
     TileView.prototype._createHtmlTableContainer = function () {
         KnimeBaseTableViewer.prototype._createHtmlTableContainer.apply(this);
-        $('#knimePagedTableContainer').addClass('knime-tiles');
-        $('#knimePagedTable').removeClass('table-striped').addClass('align-' + this._representation.textAlignment);
+        this._getJQueryTableContainer().addClass('knime-tiles');
+        this._getJQueryTable().removeClass('table-striped').addClass('align-' + this._representation.textAlignment);
     };
 
     // auto-size cell heights
     TileView.prototype._dataTableDrawCallback = function () {
         KnimeBaseTableViewer.prototype._dataTableDrawCallback.apply(this);
-        $('#knimePagedTable thead').remove();
-        $('#knimePagedTableContainer .dataTables_scrollHead').remove();
+        this._getJQueryTable().find('thead').remove();
+        this._getJQueryTableContainer().find('.dataTables_scrollHead').remove();
         TileView.prototype._resetTableLayout.apply(this);
         var infoColsCount = this._infoColsCount;
         var columns = this._dataTableConfig.columns;
+        var self = this;
         // for some reason, images are rendered with size 0x0 in Chromium at this point, hence the timeout
         setTimeout(function () {
             for (var colIndex = infoColsCount; colIndex < columns.length; colIndex++) {
-                var cells = Array.prototype.slice.call(document.querySelectorAll('#knimePagedTable .knime-table-cell:nth-child(' + (colIndex + 1) + ')'));
+                var cells = Array.prototype.slice.call(self._getJQueryTable().find(
+                    '.knime-table-cell:nth-child(' + (colIndex + 1) + ')'));
                 var maxCellHeight = cells.reduce(function (max, cell) {
                     var cellHeight = cell.scrollHeight;
                     return cellHeight > max ? cellHeight : max;
@@ -215,51 +219,49 @@ window.tiles_namespace = (function () {
     TileView.prototype._resetTableLayout = function () {
         // use flex box in case when a single view is opened to always display the page selection
         if (!knimeService.isInteractivityAvailable()) {
+            var wrapper = this._getJQueryTableContainer().find('.dataTables_wrapper');
             $('body').css({
-                'display': 'flex',
+                display: 'flex',
                 'flex-direction': 'column',
-                'position': 'absolute',
-                'top': '0',
-                'bottom': '0',
-                'left': '0',
-                'right': '0' 
+                position: 'absolute',
+                top: '0',
+                bottom: '0',
+                left: '0',
+                right: '0'
             });
-            $('#knimePagedTableContainer').css({
-                'margin': '0',
-                'padding': '0 10px 10px',
-                'overflow': 'hidden',                
-                'flex': '1',
-                'position': 'relative',
-                'display': 'flex',
+            this._getJQueryTableContainer().css({
+                margin: '0',
+                padding: '0 10px 10px',
+                overflow: 'hidden',
+                flex: '1',
+                position: 'relative',
+                display: 'flex',
                 'flex-direction': 'column'
             });
-            $('#knimePagedTable_wrapper').css({
-                'flex': '1',
-                'display': 'flex',
+            wrapper.css({
+                flex: '1',
+                display: 'flex',
                 'flex-direction': 'column'
             });
-            $('#knimePagedTable_wrapper > .row:nth-child(2)').css({
-                'flex': '1',
-                'position': 'relative',
-                'overflow': 'auto'                
+            wrapper.children('.row:nth-child(2)').css({
+                flex: '1',
+                position: 'relative',
+                overflow: 'auto'
             });
-            $('#knimePagedTable_wrapper > .row:nth-child(2) > .col-sm-12').css({
-                'position': 'absolute',
-                'top': '0',
-                'left': '0',
-                'right': '0',
-                'bottom': '0'
+            wrapper.children('.row:nth-child(2)').children('.col-sm-12').css({
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0'
             });
         }
-    }
-    
+    };
+
     // reset cell heights
     TileView.prototype._dataTablePreDrawCallback = function () {
         KnimeBaseTableViewer.prototype._dataTablePreDrawCallback.apply(this);
-        var cells = Array.prototype.slice.call(document.querySelectorAll('#knimePagedTable .knime-table-cell'));
-        cells.forEach(function (cell) {
-            cell.style.minHeight = '';
-        });
+        this._getJQueryTable().find('.knime-table-cell').css('minHeight', '');
     };
 
     return new TileView();

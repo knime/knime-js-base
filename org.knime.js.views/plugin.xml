@@ -580,7 +580,7 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.viz.tileView"
             name="Tile View"
-            namespace="tiles_namespace"
+            namespace="knimeTileView"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
