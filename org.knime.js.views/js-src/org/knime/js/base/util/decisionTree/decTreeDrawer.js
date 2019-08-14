@@ -1184,26 +1184,26 @@ function DecTreeDrawer(representation, value) {
                 return "=";
             case "lessOrEqual":
                 return "\u2264";
-                break;
             case "greaterOrEqual":
                 return "\u2265";
-                break;
             case "greaterThan":
             	return ">";
             case "IS_IN":
                 return /*"\u2208"*/ "in";
-                break;
             case "IS_NOT_IN":
             	return "\u2209";
-            	break;
+			case "isMissing":
+				return "is missing";
+			case "isNotMissing":
+				return "is not missing";
             default:
-                return "something went wrong!";
+                return op;
         }
     }   
 
     function printValue(condition) {
         var text = "";
-        if (condition.name == "SimplePredicate") {
+        if (condition.name === "SimplePredicate") {
         	var val = numFormatter.to(Number(condition.threshold));
         	if (!val) {
         		val = condition.threshold;
@@ -1218,16 +1218,30 @@ function DecTreeDrawer(representation, value) {
                     text += ", ";
                 }
             }
-            text += "]";
-        }
+			text += "]";
+		}
         return text;
-    }
+	}
 
     function conditionText(d) {
-        var text = "";
-        text += resolveOperator(d.condition);
-        text += " ";
-        text += printValue(d.condition);
+		var text = "";
+		var c = d.condition || d;
+		if (c.name === "CompoundPredicate") {
+			var compoundOperator = c.booleanOperator.toLowerCase();
+			for (i = 0, len = c.predicates.length; i < len; i++) {
+				text += conditionText(c.predicates[i]);
+				if (i < len - 1) {
+					text += " " + compoundOperator + " ";
+				}
+			}
+		} else {
+			var op = resolveOperator(c);
+			text += op;
+			if (op !== "is missing" && op !== "is not missing") {
+        		text += " ";
+				text += printValue(c);
+			}
+		}
         return text;
     }
 
