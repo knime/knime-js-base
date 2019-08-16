@@ -220,7 +220,7 @@ window.knimeTileView = (function () {
         // use flex box in case when a single view is opened to always display the page selection
         if (!knimeService.isInteractivityAvailable()) {
             var wrapper = this._getJQueryTableContainer().find('.dataTables_wrapper');
-            $('body').css({
+            this._getJQueryTableContainer().parent().css({
                 display: 'flex',
                 'flex-direction': 'column',
                 position: 'absolute',
