@@ -103,7 +103,10 @@ public class CredentialsWidgetNodeModel extends
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         final CredentialsNodeValue value = getRelevantValue();
-        validateViewValue(value);
+        ValidationError error = validateViewValue(value);
+        if (error != null) {
+            throw new InvalidSettingsException(error.getError());
+        }
         String credentialsIdentifier = getConfig().getFlowVariableName();
         if (getConfig().isUseServerLoginCredentials()
             && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
@@ -160,7 +163,7 @@ public class CredentialsWidgetNodeModel extends
     public ValidationError validateViewValue(final CredentialsNodeValue viewContent) {
         String username = viewContent.getUsername();
         if (username == null) {
-            return new ValidationError("no user name set");
+            return new ValidationError("No user name set");
         }
         return super.validateViewValue(viewContent);
     }
