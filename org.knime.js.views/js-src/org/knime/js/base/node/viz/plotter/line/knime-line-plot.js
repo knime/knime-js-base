@@ -354,6 +354,11 @@ window.knimeLinePlot = (function () {
         if (_value.yAxisMin !== null && _value.yAxisMax !== null) {
             yAxis.setBounds(_value.yAxisMin, _value.yAxisMax, true, false);
         }
+        
+		if (_representation.enforceOrigin) {
+            checkIncludeOrigin(yAxis);
+        }
+        
         if (_representation.gridColor) {
             var gColor = getJsfcColor(_representation.gridColor);
             xAxis.setGridLineColor(gColor, false);
@@ -459,6 +464,24 @@ window.knimeLinePlot = (function () {
             yMax: yAxis.getUpperBound()
         };
     };
+    
+	checkIncludeOrigin = function(yAxis) {
+	    var min = yAxis.getLowerBound();
+        var max = yAxis.getUpperBound();
+
+        if (max < 0) {
+            max = 0;
+        }
+        if(min > 0) {
+            min = 0;
+        }
+        yAxis.setBounds(min, max, false, true);
+        if (min < 0) {
+            yAxis.setBoundsByPercent(-0.05, 1.01, false, true);
+        } else {
+            yAxis.setBoundsByPercent(0, 1.05, false, true);
+        }
+	}
 
     getJsfcColor = function (colorString) {
         var colC = colorString.slice(5, -1).split(',');
@@ -519,6 +542,10 @@ window.knimeLinePlot = (function () {
         chartManager.refreshDisplay();
 
         checkWarningMessages();
+        if (_representation.enforceOrigin) {
+		    checkIncludeOrigin(plot.getYAxis());
+		    chartManager.refreshDisplay();
+		}
 
         // plot.update(chart);
     };
@@ -888,7 +915,10 @@ window.knimeLinePlot = (function () {
             return moment(n).utc().format(this._format);
         } else if (this._knimeColType === 'Zoned Date Time') {
             return moment(n).tz(_representation.dateTimeFormats.timezone).format(this._format);
-        }
+        }if (_representation.enforceOrigin) {
+		    checkIncludeOrigin(plot.getYAxis());
+		    chartManager.refreshDisplay();
+		}
         return null;
     };
 

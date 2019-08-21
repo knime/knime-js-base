@@ -94,6 +94,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_generateImageCheckBox;
     private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_autoRangeAxisCheckBox;
+    private final JCheckBox m_enforceOriginBox;
     private final JCheckBox m_useDomainInformationCheckBox;
     private final JCheckBox m_showGridCheckBox;
     private final JCheckBox m_showCrosshairCheckBox;
@@ -144,6 +145,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
+        m_enforceOriginBox = new JCheckBox("Enforce Origin in view");
         m_useDomainInformationCheckBox = new JCheckBox("Use domain information");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_showCrosshairCheckBox = new JCheckBox("Enable mouse crosshair");
@@ -350,6 +352,8 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         rangePanel.add(m_autoRangeAxisCheckBox, cc);
         cc.gridx++;
         rangePanel.add(m_useDomainInformationCheckBox, cc);
+        cc.gridy++;
+        rangePanel.add(m_enforceOriginBox, cc);
 
         return panel;
     }
@@ -551,6 +555,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         m_showLegendCheckBox.setSelected(m_config.getShowLegend());
         m_autoRangeAxisCheckBox.setSelected(m_config.getAutoRangeAxes());
+        m_enforceOriginBox.setSelected(m_config.isEnforceOrigin());
         m_useDomainInformationCheckBox.setSelected(m_config.getUseDomainInfo());
         m_showGridCheckBox.setSelected(m_config.getShowGrid());
         m_showCrosshairCheckBox.setSelected(m_config.getShowCrosshair());
@@ -614,6 +619,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
 
         m_config.setShowLegend(m_showLegendCheckBox.isSelected());
         m_config.setAutoRangeAxes(m_autoRangeAxisCheckBox.isSelected());
+        m_config.setEnforceOrigin(m_enforceOriginBox.isSelected());
         m_config.setUseDomainInfo(m_useDomainInformationCheckBox.isSelected());
         m_config.setShowGrid(m_showGridCheckBox.isSelected());
         m_config.setShowCrosshair(m_showCrosshairCheckBox.isSelected());

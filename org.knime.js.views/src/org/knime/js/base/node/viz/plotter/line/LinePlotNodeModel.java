@@ -599,6 +599,9 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
         representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
 
+        // added with 4.1
+        representation.setEnforceOrigin(m_config.isEnforceOrigin());
+
         LinePlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {
             viewValue.setChartTitle(m_config.getChartTitle());

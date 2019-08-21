@@ -75,6 +75,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
     private boolean m_showLegend;
     private boolean m_autoRangeAxes;
+    private boolean m_enforceOrigin;
     private boolean m_useDomainInformation;
     private boolean m_showGrid;
     private boolean m_showCrosshair;
@@ -142,6 +143,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
      */
     public void setShowLegend(final boolean showLegend) {
         m_showLegend = showLegend;
+    }
+
+    /**
+     * @return if the origin should be enforced
+     */
+    public boolean isEnforceOrigin() {
+        return m_enforceOrigin;
+    }
+
+    /**
+     * @param enforceOrigin true if origin should be enforce in the view
+     */
+    public void setEnforceOrigin(final boolean enforceOrigin) {
+        m_enforceOrigin = enforceOrigin;
     }
 
     /**
@@ -659,6 +674,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         settings.addBoolean(LinePlotViewConfig.REPORT_ON_MISSING_VALUES, getReportOnMissingValues());
 
         m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(LinePlotViewConfig.DATE_TIME_FORMATS));
+
+        //added with 4.1
+        settings.addBoolean(LinePlotViewConfig.ENFORCE_ORIGIN, isEnforceOrigin());
     }
 
     /**
@@ -727,6 +745,9 @@ public class LinePlotViewRepresentation extends JSONViewContent {
             dateTimeOptions.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
             m_dateTimeFormats = dateTimeOptions.getJSONSerializableObject();
         }
+
+        // added with 4.1
+        setEnforceOrigin(settings.getBoolean(LinePlotViewConfig.ENFORCE_ORIGIN, LinePlotViewConfig.DEFAULT_ENFORCE_ORIGIN));
     }
 
     /**
@@ -748,6 +769,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_keyedDataset, other.m_keyedDataset)
                 .append(m_showLegend, other.m_showLegend)
                 .append(m_autoRangeAxes, other.m_autoRangeAxes)
+                .append(m_enforceOrigin, other.m_enforceOrigin)
                 .append(m_useDomainInformation, other.m_useDomainInformation)
                 .append(m_showGrid, other.m_showGrid)
                 .append(m_showCrosshair, other.m_showCrosshair)
@@ -792,6 +814,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_keyedDataset)
                 .append(m_showLegend)
                 .append(m_autoRangeAxes)
+                .append(m_enforceOrigin)
                 .append(m_useDomainInformation)
                 .append(m_showGrid)
                 .append(m_showCrosshair)
