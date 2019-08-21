@@ -511,7 +511,7 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.viz.plotter.line"
             name="Line Chart"
-            namespace="knime_line_plot"
+            namespace="knimeLinePlot"
             setValidationError-method-name="setValidationError"
             validate-method-name="validate">
       </javascriptComponent>
