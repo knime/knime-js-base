@@ -96,6 +96,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_showLegendCheckBox;
     private final JCheckBox m_displayFullscreenButtonCheckBox;
     private final JCheckBox m_autoRangeAxisCheckBox;
+    private final JCheckBox m_enforceOriginBox;
     private final JCheckBox m_useDomainInformationCheckBox;
     private final JCheckBox m_showGridCheckBox;
     private final JCheckBox m_showCrosshairCheckBox;
@@ -150,6 +151,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
+        m_enforceOriginBox = new JCheckBox("Enforce Origin in view");
         m_useDomainInformationCheckBox = new JCheckBox("Use domain information");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_showCrosshairCheckBox = new JCheckBox("Enable mouse crosshair");
@@ -321,6 +323,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         rangePanel.add(m_autoRangeAxisCheckBox, cc);
         cc.gridx++;
         rangePanel.add(m_useDomainInformationCheckBox, cc);
+        cc.gridx--;
+        cc.gridy++;
+        rangePanel.add(m_enforceOriginBox, cc);
 
         return panel;
     }
@@ -584,6 +589,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
 
         m_displayFullscreenButtonCheckBox.setSelected(m_config.getDisplayFullscreenButton());
         m_autoRangeAxisCheckBox.setSelected(m_config.getAutoRangeAxes());
+        m_enforceOriginBox.setSelected(m_config.isEnforceOrigin());
         m_useDomainInformationCheckBox.setSelected(m_config.getUseDomainInfo());
         m_showGridCheckBox.setSelected(m_config.getShowGrid());
         m_showCrosshairCheckBox.setSelected(m_config.getShowCrosshair());
@@ -658,6 +664,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_config.setShowLegend(m_showLegendCheckBox.isSelected());
         m_config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
         m_config.setAutoRangeAxes(m_autoRangeAxisCheckBox.isSelected());
+        m_config.setEnforceOrigin(m_enforceOriginBox.isSelected());
         m_config.setUseDomainInfo(m_useDomainInformationCheckBox.isSelected());
         m_config.setShowGrid(m_showGridCheckBox.isSelected());
         m_config.setShowCrosshair(m_showCrosshairCheckBox.isSelected());

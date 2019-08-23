@@ -1124,7 +1124,7 @@ public final class LinePlotViewConfig {
         /*m_customCSS = settings.getString(CUSTOM_CSS, "");*/
 
         //added with 4.1
-        setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN));
+        setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
     }
 
     /** Loads parameters in Dialog.

@@ -76,6 +76,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_showLegend;
     private boolean m_displayFullscreenButton;
     private boolean m_autoRangeAxes;
+    private boolean m_enforceOrigin;
     private boolean m_useDomainInformation;
     private boolean m_showGrid;
     private boolean m_showCrosshair;
@@ -145,6 +146,20 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
      */
     public void setShowLegend(final boolean showLegend) {
         m_showLegend = showLegend;
+    }
+
+    /**
+     * @return if the origin should be enforced
+     */
+    public boolean isEnforceOrigin() {
+        return m_enforceOrigin;
+    }
+
+    /**
+     * @param enforceOrigin true if origin should be enforce in the view
+     */
+    public void setEnforceOrigin(final boolean enforceOrigin) {
+        m_enforceOrigin = enforceOrigin;
     }
 
     /**
@@ -693,6 +708,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         // added with 3.5
         m_dateTimeFormats.saveToNodeSettings(settings.addNodeSettings(ScatterPlotViewConfig.DATE_TIME_FORMATS));
+
+        //added with 4.1
+        settings.addBoolean(ScatterPlotViewConfig.ENFORCE_ORIGIN, isEnforceOrigin());
     }
 
     /**
@@ -763,6 +781,9 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
             dateTimeOptions.getGlobalLocalDateTimeFormatModel().setStringValue(newDateTimeFormat);
             m_dateTimeFormats = dateTimeOptions.getJSONSerializableObject();
         }
+
+        // added with 4.1
+        setEnforceOrigin(settings.getBoolean(ScatterPlotViewConfig.ENFORCE_ORIGIN, ScatterPlotViewConfig.DEFAULT_ENFORCE_ORIGIN));
     }
 
     /**
@@ -785,6 +806,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_showLegend, other.m_showLegend)
                 .append(m_displayFullscreenButton, other.m_displayFullscreenButton)
                 .append(m_autoRangeAxes, other.m_autoRangeAxes)
+                .append(m_enforceOrigin, other.m_enforceOrigin)
                 .append(m_useDomainInformation, other.m_useDomainInformation)
                 .append(m_showGrid, other.m_showGrid)
                 .append(m_showCrosshair, other.m_showCrosshair)
@@ -831,6 +853,7 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_showLegend)
                 .append(m_displayFullscreenButton)
                 .append(m_autoRangeAxes)
+                .append(m_enforceOrigin)
                 .append(m_useDomainInformation)
                 .append(m_showGrid)
                 .append(m_showCrosshair)

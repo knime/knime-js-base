@@ -267,7 +267,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             checkIncludeOrigin(yAxis, 0.05);
             checkIncludeOrigin(xAxis, 0.0);
         }
-
+        
         plot.renderer = new jsfc.ScatterRenderer(plot);
         var chart = new jsfc.Chart(plot);
         if (_representation.backgroundColor) {

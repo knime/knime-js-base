@@ -564,6 +564,9 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         // added with 3.5
         representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
 
+        // added with 4.1
+        representation.setEnforceOrigin(m_config.isEnforceOrigin());
+
         ScatterPlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {
             viewValue.setChartTitle(m_config.getChartTitle());

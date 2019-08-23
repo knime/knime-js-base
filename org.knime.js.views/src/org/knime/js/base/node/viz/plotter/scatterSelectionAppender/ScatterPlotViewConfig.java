@@ -87,6 +87,8 @@ final class ScatterPlotViewConfig {
     static final String SHOW_LEGEND = "showLegend";
     final static String CFG_DISPLAY_FULLSCREEN_BUTTON = "displayFullscreenButton";
     static final String AUTO_RANGE_AXES = "autoRange";
+    static final String ENFORCE_ORIGIN = "enforceOrigin";
+    static final boolean DEFAULT_ENFORCE_ORIGIN = false;
     static final String USE_DOMAIN_INFO = "useDomainInformation";
     static final String SHOW_GRID = "showGrid";
     static final String SHOW_CROSSHAIR = "showCrosshair";
@@ -141,6 +143,7 @@ final class ScatterPlotViewConfig {
     private boolean m_showLegend = true;
     private boolean m_displayFullscreenButton = DEFAULT_DISPLAY_FULLSCREEN_BUTTON;
     private boolean m_autoRangeAxes = true;
+    private boolean m_enforceOrigin = false;
     private boolean m_useDomainInfo = false;
     private boolean m_showGrid = true;
     private boolean m_showCrosshair = false;
@@ -230,6 +233,20 @@ final class ScatterPlotViewConfig {
      */
     public void setShowLegend(final boolean showLegend) {
         m_showLegend = showLegend;
+    }
+
+    /**
+     * @return if origin should be enforced
+     */
+    public boolean isEnforceOrigin() {
+        return m_enforceOrigin;
+    }
+
+    /**
+     * @param enforceOrigin true if view should enforce origin
+     */
+    public void setEnforceOrigin(final boolean enforceOrigin) {
+        m_enforceOrigin = enforceOrigin;
     }
 
     /**
@@ -1008,6 +1025,9 @@ final class ScatterPlotViewConfig {
 
         //added with 3.6
         /*settings.addString(CUSTOM_CSS, m_customCSS);*/
+
+        //added with 4.1
+        settings.addBoolean(ENFORCE_ORIGIN, isEnforceOrigin());
     }
 
     /** Loads parameters in NodeModel.
@@ -1095,6 +1115,9 @@ final class ScatterPlotViewConfig {
 
         //added with 3.6
         /*m_customCSS = settings.getString(CUSTOM_CSS, "");*/
+
+        //added with 4.1
+        setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
     }
 
     /** Loads parameters in Dialog.
@@ -1200,5 +1223,8 @@ final class ScatterPlotViewConfig {
 
         //added with 3.6
         /*m_customCSS  = settings.getString(CUSTOM_CSS, "");*/
+
+        //added with 4.1
+        setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
     }
 }
