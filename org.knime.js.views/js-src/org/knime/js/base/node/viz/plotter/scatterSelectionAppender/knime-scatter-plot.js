@@ -267,7 +267,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             checkIncludeOrigin(yAxis, 0.05);
             checkIncludeOrigin(xAxis, 0.0);
         }
-        
+
         plot.renderer = new jsfc.ScatterRenderer(plot);
         var chart = new jsfc.Chart(plot);
         if (_representation.backgroundColor) {
@@ -290,7 +290,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             _legendBuilder.createLegend = createLegend;
         }
         chart.setLegendBuilder(_value.showLegend ? _legendBuilder : null); // if there's no color model, _legendBuilder
-                                                                            // is null by default
+        // is null by default
 
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         document.getElementById(containerID).appendChild(svg);
@@ -598,8 +598,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             if (_representation.enableSubtitleChange) {
                 var chartSubtitleText = knimeService.createMenuTextField('chartSubtitleText', _value.chartSubtitle,
                     updateSubtitle, false);
-                knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null,
-                    knimeService.SMALL_ICON);
+                knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
             }
         }
 
@@ -781,7 +780,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
 
             var oldSelection = []; // row indices from the old selection == item keys of the selected items
             var oldSelectionItems = getSelectionItemsById(dataset, SELECTION_ID); // selected items from the old
-                                                                                    // selection
+            // selection
             if (oldSelectionItems) {
                 // for each item we need to have its key, so we fill it here
                 for (var k = 0; k < oldSelectionItems.length; k++) {
@@ -1123,8 +1122,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             if (_colorModel.type === NOMINAL_MODEL) {
                 info.values = [];
                 for (var i = 0; i < _colorModel.labels.length; i++) {
-                    var item = new jsfc.LegendItemInfo(_colorModel.labels[i],
-                                                        jsfc.Color.fromStr(_colorModel.colors[i]));
+                    var item = new jsfc.LegendItemInfo(_colorModel.labels[i], jsfc.Color.fromStr(_colorModel.colors[i]));
                     item.label = _colorModel.labels[i];
                     info.values.push(item);
                 }

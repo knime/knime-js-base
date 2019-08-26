@@ -353,6 +353,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         cc.gridx++;
         rangePanel.add(m_useDomainInformationCheckBox, cc);
         cc.gridy++;
+        cc.gridx--;
         rangePanel.add(m_enforceOriginBox, cc);
 
         return panel;

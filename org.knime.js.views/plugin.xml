@@ -502,7 +502,7 @@
             init-method-name="init"
             javascriptComponentID="org.knime.js.base.node.viz.plotter.scatterSelectionAppender"
             name="Scatter Chart"
-            namespace="knime_scatter_plot_selection_appender"
+            namespace="knimeScatterPlotSelectionAppender"
             validate-method-name="validate">
       </javascriptComponent>
       <javascriptComponent

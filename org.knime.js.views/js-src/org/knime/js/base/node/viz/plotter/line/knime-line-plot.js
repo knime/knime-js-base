@@ -28,9 +28,9 @@ window.knimeLinePlot = (function () {
     var isTooManyColumns = false;
     var errorSvgId = 'errorSvg';
     var MAX_COLUMNS = 200;
-    
+
     var initialAxisBounds,
-    
+
         /**
          * Function declarations
          */
@@ -141,8 +141,7 @@ window.knimeLinePlot = (function () {
             // ToDo: apply changes to JSFreeChart
             var customRange = function (lowerBound, upperBound) {
                 if (lowerBound > upperBound) { // <-- changed here
-                    throw new Error('Requires lowerBound to be less than upperBound: ' +
-                        lowerBound + ', ' + upperBound);
+                    throw new Error('Requires lowerBound to be less than upperBound: ' + lowerBound + ', ' + upperBound);
                 }
                 this._lowerBound = lowerBound;
                 this._upperBound = upperBound;
@@ -294,7 +293,7 @@ window.knimeLinePlot = (function () {
         // console.timeEnd("Building XYDataset");
         return xyDataset;
     };
-    
+
     // eslint-disable-next-line
     drawChart = function (layoutContainer) {
         if (!_value.yColumns) {
@@ -354,11 +353,11 @@ window.knimeLinePlot = (function () {
         if (_value.yAxisMin !== null && _value.yAxisMax !== null) {
             yAxis.setBounds(_value.yAxisMin, _value.yAxisMax, true, false);
         }
-        
-		if (_representation.enforceOrigin) {
+
+        if (_representation.enforceOrigin) {
             checkIncludeOrigin(yAxis);
         }
-        
+
         if (_representation.gridColor) {
             var gColor = getJsfcColor(_representation.gridColor);
             xAxis.setGridLineColor(gColor, false);
@@ -464,15 +463,15 @@ window.knimeLinePlot = (function () {
             yMax: yAxis.getUpperBound()
         };
     };
-    
-	checkIncludeOrigin = function(yAxis) {
-	    var min = yAxis.getLowerBound();
+
+    checkIncludeOrigin = function (yAxis) {
+        var min = yAxis.getLowerBound();
         var max = yAxis.getUpperBound();
 
         if (max < 0) {
             max = 0;
         }
-        if(min > 0) {
+        if (min > 0) {
             min = 0;
         }
         yAxis.setBounds(min, max, false, true);
@@ -481,7 +480,7 @@ window.knimeLinePlot = (function () {
         } else {
             yAxis.setBoundsByPercent(0, 1.05, false, true);
         }
-	}
+    }
 
     getJsfcColor = function (colorString) {
         var colC = colorString.slice(5, -1).split(',');
@@ -543,9 +542,9 @@ window.knimeLinePlot = (function () {
 
         checkWarningMessages();
         if (_representation.enforceOrigin) {
-		    checkIncludeOrigin(plot.getYAxis());
-		    chartManager.refreshDisplay();
-		}
+            checkIncludeOrigin(plot.getYAxis());
+            chartManager.refreshDisplay();
+        }
 
         // plot.update(chart);
     };
@@ -780,7 +779,7 @@ window.knimeLinePlot = (function () {
             _value.yAxisMax = yMax;
         }
     };
-    
+
     // eslint-disable-next-line
     drawSeries = function (ctx, dataArea, plot, dataset, seriesIndex) {
         var itemCount = dataset.itemCount(seriesIndex);
@@ -826,8 +825,8 @@ window.knimeLinePlot = (function () {
         ctx.stroke();
 
         if (yMissingValuesCount > 0) {
-            yMissingValues.push('\'' + dataset._ycols[seriesIndex] + '\' - ' +
-                yMissingValuesCount + ' missing value(s)');
+            yMissingValues.push('\'' + dataset._ycols[seriesIndex] + '\' - ' + yMissingValuesCount +
+                ' missing value(s)');
         }
     };
 
@@ -840,8 +839,8 @@ window.knimeLinePlot = (function () {
                     knimeService.clearWarningMessage(NO_DATA_AVAILABLE);
                 } else {
                     knimeService.setWarningMessage(
-                        'No chart was generated since data columns have only missing values.' +
-                            '\nChoose another data columns or re-run the workflow with different data.',
+                        'No chart was generated since data columns have only missing values.'
+                            + '\nChoose another data columns or re-run the workflow with different data.',
                         NO_DATA_AVAILABLE);
                 }
             } else {
@@ -880,26 +879,26 @@ window.knimeLinePlot = (function () {
     createDateFormatter = function (knimeColType) {
         var format;
         switch (knimeColType) {
-        case 'Date and Time':
-            format = _representation.dateTimeFormats.globalDateTimeFormat;
-            break;
-        case 'Local Date':
-            format = _representation.dateTimeFormats.globalLocalDateFormat;
-            break;
-        case 'Local Date Time':
-            format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
-            break;
-        case 'Local Time':
-            format = _representation.dateTimeFormats.globalLocalTimeFormat;
-            break;
-        case 'Zoned Date Time':
-            format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
-            break;
-        default:
-            // might be not set correct in case of opening the view of the old workflow, i.e. for backward
-            // compatibility
-            knimeColType = 'Date and Time';
-            format = _representation.dateTimeFormats.globalDateTimeFormat;
+            case 'Date and Time':
+                format = _representation.dateTimeFormats.globalDateTimeFormat;
+                break;
+            case 'Local Date':
+                format = _representation.dateTimeFormats.globalLocalDateFormat;
+                break;
+            case 'Local Date Time':
+                format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
+                break;
+            case 'Local Time':
+                format = _representation.dateTimeFormats.globalLocalTimeFormat;
+                break;
+            case 'Zoned Date Time':
+                format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
+                break;
+            default:
+                // might be not set correct in case of opening the view of the old workflow, i.e. for backward
+                // compatibility
+                knimeColType = 'Date and Time';
+                format = _representation.dateTimeFormats.globalDateTimeFormat;
         }
         return new DateFormat(format, knimeColType);
     };
@@ -915,10 +914,11 @@ window.knimeLinePlot = (function () {
             return moment(n).utc().format(this._format);
         } else if (this._knimeColType === 'Zoned Date Time') {
             return moment(n).tz(_representation.dateTimeFormats.timezone).format(this._format);
-        }if (_representation.enforceOrigin) {
-		    checkIncludeOrigin(plot.getYAxis());
-		    chartManager.refreshDisplay();
-		}
+        }
+        if (_representation.enforceOrigin) {
+            checkIncludeOrigin(plot.getYAxis());
+            chartManager.refreshDisplay();
+        }
         return null;
     };
 
