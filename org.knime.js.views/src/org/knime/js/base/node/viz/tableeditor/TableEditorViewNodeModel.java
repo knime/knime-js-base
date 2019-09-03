@@ -94,6 +94,9 @@ import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.layout.LayoutTemplateProvider;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent;
+import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -101,7 +104,7 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
  * @author Christian Albrecht, KNIME.com GmbH, Konstanz, Germany
  */
 public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEditorViewRepresentation,
-        TableEditorViewValue> implements BufferedDataTableHolder, CSSModifiable {
+        TableEditorViewValue> implements BufferedDataTableHolder, CSSModifiable, LayoutTemplateProvider {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(TableEditorViewNodeModel.class);
 
@@ -509,6 +512,18 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 4.1
+     */
+    @Override
+    public JSONLayoutViewContent getLayoutTemplate() {
+        JSONLayoutViewContent layout = new JSONLayoutViewContent();
+        layout.setMinHeight(200);
+        layout.setResizeMethod(ResizeMethod.VIEW_LOWEST_ELEMENT);
+        return layout;
     }
 
 }
