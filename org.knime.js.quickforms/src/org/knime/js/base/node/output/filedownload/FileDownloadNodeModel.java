@@ -51,7 +51,6 @@ package org.knime.js.base.node.output.filedownload;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 
 import org.knime.core.node.ExecutionContext;
@@ -66,6 +65,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.core.util.FileUtil;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -127,7 +127,7 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
         }
         Path path = null;
         try {
-            path = Paths.get(value);
+            path = FileUtil.resolveToPath(FileUtil.toURL(value));
         } catch (Exception e) {
             throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote a valid file: "
                     + value);
