@@ -102,6 +102,7 @@
             </option>
             <option name="Auto range axes">Select if axes ranges are supposed to be automatically calculated. This also applies if the columns are changed in the view.</option>
             <option name="Use domain information">Using this option, the axis ranges are determined by bounds from the domain on initial layout.</option>
+            <option name="Enforce origin in view">Using this option, the origin will always be displayed inside the view.</option>
 		</tab>
 		<tab name="General Plot Options">
             <option name="Chart title" optional="true">The title of the graph shown above the generated image. If left blank, no title will be shown.</option>
