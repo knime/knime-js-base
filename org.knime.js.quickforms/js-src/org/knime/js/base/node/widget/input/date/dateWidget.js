@@ -80,12 +80,12 @@ window.knimeDateWidget = (function () {
             }
         }
 
-        if (minDate !== null && date.isBefore(minDate)) {
+        if (minDate && date.isBefore(minDate)) {
             errorMessage.text('The set date&time \'' + date.format(format) + '\' must not be before \'' +
                 minDate.format(format) + '\'.');
             errorMessage.css('display', 'inline');
             return false;
-        } else if (maxDate !== null && date.isAfter(maxDate)) {
+        } else if (maxDate && date.isAfter(maxDate)) {
             errorMessage.text('The set date&time \'' + date.format(format) + '\' must not be after \'' +
                 maxDate.format(format) + '\'.');
             errorMessage.css('display', 'inline');
