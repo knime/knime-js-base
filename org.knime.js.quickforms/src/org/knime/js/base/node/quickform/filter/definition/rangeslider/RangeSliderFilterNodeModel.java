@@ -253,9 +253,11 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             maximum = filterValues[1];
         }
         boolean[] fixSlider = m_config.getSliderSettings().getFix();
-        double[] roundedExtremas = roundToNextStep(minimum, maximum);
-        minimum = roundedExtremas[0];
-        maximum = roundedExtremas[1];
+        if(m_config.getSliderSettings().getStep() != null) {
+            double[] roundedExtremas = roundToNextStep(minimum, maximum);
+            minimum = roundedExtremas[0];
+            maximum = roundedExtremas[1];
+        }
         if(fixSlider[0]) {
             minimum = Double.NEGATIVE_INFINITY;
         }
