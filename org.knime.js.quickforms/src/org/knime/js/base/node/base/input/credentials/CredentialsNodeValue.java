@@ -54,12 +54,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.util.CoreConstants;
+import org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormValue;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * The base value for the credentials configuration and widget node
@@ -69,9 +73,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CredentialsNodeValue extends JSONViewContent {
-    // Wince we don't expose the real password to the world, we need to send a magic placeholder instead.
-    // When sent back to the node it indicates that the default password from the node settings should be used.
-    protected static final String MAGIC_DEFAULT_PASSWORD = "*************";
 
     protected static final String CFG_USERNAME = "username";
     protected static final String CFG_PASSWORD = "password";
@@ -82,8 +83,25 @@ public class CredentialsNodeValue extends JSONViewContent {
     private String m_password;
     private boolean m_isSavePassword;
 
+    /**
+     * Creates a new instance with user and password set to null.
+     */
+    public CredentialsNodeValue() {
+    }
+
+    @JsonCreator
+    private CredentialsNodeValue(@JsonProperty(CFG_USERNAME) final String username,
+        @JsonProperty(CFG_PASSWORD) final String password,
+        @JsonProperty(CFG_SAVE_PASSWORD) final boolean isSavePassword,
+        @JsonProperty("magicDefaultPassword") final String magicPassword) {
+        m_username = username;
+        m_password = !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password)
+            ? CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD : password;
+        m_isSavePassword = isSavePassword;
+    }
+
     /** @param string the string to set */
-    @JsonProperty(CFG_USERNAME)
+    @JsonIgnore
     public void setUsername(final String string) {
         m_username = string;
     }
@@ -95,7 +113,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     }
 
     /** @param isSavePassword the property to set */
-    @JsonProperty(CFG_SAVE_PASSWORD)
+    @JsonIgnore
     public void setSavePassword(final boolean isSavePassword) {
         m_isSavePassword = isSavePassword;
     }
@@ -107,15 +125,24 @@ public class CredentialsNodeValue extends JSONViewContent {
     }
 
     /** @param password the password to set */
-    @JsonProperty(CFG_PASSWORD)
+    @JsonIgnore
     public void setPassword(final String password) {
         m_password = password;
     }
 
     /** @return the password */
     @JsonProperty(CFG_PASSWORD)
+    @JsonView(CoreConstants.DefaultView.class)
     public String getPassword() {
         return m_password;
+    }
+
+    /** @return the password */
+    @JsonProperty("magicDefaultPassword")
+    @JsonView(CoreConstants.ArtifactsView.class)
+    private String getMagicPassword() {
+        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null
+            : CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD;
     }
 
     /**

@@ -54,9 +54,11 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
+import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
+import org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -126,7 +128,6 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
      * {@inheritDoc}
      */
     @Override
-    // look into this again
     public JsonValue toJson() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (getUsername() == null) {
@@ -134,12 +135,12 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
         } else {
             builder.add(CFG_USERNAME, getUsername());
         }
-        if (getPassword() == null) {
+        if (StringUtils.isEmpty(getPassword()) || !isSavePassword()) {
             builder.addNull(CFG_PASSWORD);
         } else {
-            builder.add(CFG_PASSWORD, getUsername());
+            builder.add(CFG_PASSWORD, CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD);
         }
-        return builder.build().get(CFG_USERNAME);
+        return builder.build();
     }
 
 }
