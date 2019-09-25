@@ -38,7 +38,11 @@ window.tiles_namespace = (function () {
             textAlignment: textAlignment
         };
 
-        var options = Object.assign({}, representation, overrides);
+        // ideally we would use Object.assign() to create a copy, but this does not work in IE11 (AP-12725)
+        var options = representation;
+        for (var key in overrides) {
+            options[key] = overrides[key];
+        }
 
         // super call
         KnimeBaseTableViewer.prototype.init.call(this, options, value);
