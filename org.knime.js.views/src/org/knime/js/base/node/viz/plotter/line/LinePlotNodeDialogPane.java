@@ -145,7 +145,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_generateImageCheckBox = new JCheckBox("Create image at outport");
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
-        m_enforceOriginBox = new JCheckBox("Enforce origin in view");
+        m_enforceOriginBox = new JCheckBox("Always show origin");
         m_useDomainInformationCheckBox = new JCheckBox("Use domain information");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_showCrosshairCheckBox = new JCheckBox("Enable mouse crosshair");

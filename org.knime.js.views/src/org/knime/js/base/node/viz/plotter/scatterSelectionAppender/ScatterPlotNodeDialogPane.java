@@ -151,7 +151,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_showLegendCheckBox = new JCheckBox("Show color legend");
         m_displayFullscreenButtonCheckBox = new JCheckBox("Display fullscreen button");
         m_autoRangeAxisCheckBox = new JCheckBox("Auto range axes");
-        m_enforceOriginBox = new JCheckBox("Enforce Origin in view");
+        m_enforceOriginBox = new JCheckBox("Always show origin");
         m_useDomainInformationCheckBox = new JCheckBox("Use domain information");
         m_showGridCheckBox = new JCheckBox("Show grid");
         m_showCrosshairCheckBox = new JCheckBox("Enable mouse crosshair");
