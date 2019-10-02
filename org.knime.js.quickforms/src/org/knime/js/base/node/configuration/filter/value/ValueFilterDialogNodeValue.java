@@ -131,22 +131,30 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
+        builder.add("type", "object");
+        subBuilder.add("type", "string");
+
         if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
+            subBuilder.addNull("default");
         } else {
-            builder.add(CFG_COLUMN, getColumn());
+            subBuilder.add("default", getColumn());
         }
+
+        builder.add(CFG_COLUMN, subBuilder.build());
+        subBuilder.add("type", "array");
+
         if (getValues() == null) {
-            builder.addNull(CFG_VALUES);
+            subBuilder.addNull("default");
         } else {
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (String value : getValues()) {
                 arrayBuilder.add(value);
             }
-            builder.add(CFG_VALUES, arrayBuilder);
+            subBuilder.add("default", arrayBuilder);
         }
-        return builder.build();
+        return builder.add(CFG_VALUES, subBuilder.build()).build();
     }
 
 }

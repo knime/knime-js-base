@@ -112,13 +112,14 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
             loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
+        } else if (json instanceof JsonObject || json instanceof JsonArray) {
             try {
-                JsonValue val = ((JsonObject)json).get(CFG_ITEMS);
-                if (JsonValue.NULL.equals(val)) {
+                JsonValue val = json instanceof JsonObject ? ((JsonObject)json).get(CFG_ITEMS) : json;
+                if (JsonValue.NULL.equals(val) && !(json instanceof JsonArray)) {
                     setItems(new FileItem[0]);
                 } else {
-                    JsonArray itemsArray = ((JsonObject)json).getJsonArray(CFG_ITEMS);
+                    JsonArray itemsArray =
+                        json instanceof JsonArray ? (JsonArray)json : ((JsonObject)json).getJsonArray(CFG_ITEMS);
                     setItems(new FileItem[itemsArray.size()]);
                     FileItem[] items = getItems();
                     for (int i = 0; i < itemsArray.size(); i++) {
@@ -132,10 +133,10 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
                             } else {
                                 items[i].setPath(item.getString(FileItem.CFG_PATH));
                             }
-                            if (JsonValue.NULL.equals(item.get(FileItem.CFG_TYPE))) {
+                            if (JsonValue.NULL.equals(item.get("fileType"))) {
                                 items[i].setType((String)null);
                             } else {
-                                items[i].setType(item.getString(FileItem.CFG_TYPE));
+                                items[i].setType(item.getString("fileType"));
                             }
                         }
                     }
@@ -152,34 +153,52 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonArrayBuilder itemsBuilder = Json.createArrayBuilder();
+        builder.add("type", "array");
+
         if (getItems() == null) {
-            builder.addNull(CFG_ITEMS);
+            itemsBuilder.add(createItemJson(null));
         } else {
-            JsonArrayBuilder itemsBuilder = Json.createArrayBuilder();
             for (FileItem item : getItems()) {
-                if (item == null) {
-                    itemsBuilder.addNull();
-                } else {
-                    JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
-                    String path = item.getPath();
-                    if (path == null) {
-                        itemBuilder.addNull(FileItem.CFG_PATH);
-                    } else {
-                        itemBuilder.add(FileItem.CFG_PATH, item.getPath());
-                    }
-                    String type = item.getType();
-                    if (type == null) {
-                        itemBuilder.addNull(FileItem.CFG_TYPE);
-                    } else {
-                        itemBuilder.add(FileItem.CFG_TYPE, item.getType());
-                    }
-                    itemsBuilder.add(itemBuilder);
-                }
+                itemsBuilder.add(createItemJson(item));
             }
-            builder.add(CFG_ITEMS, itemsBuilder);
         }
+        builder.add("default", itemsBuilder);
+
         return builder.build();
     }
 
+    private static JsonObject createItemJson(final FileItem item) {
+        final JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+        final JsonObjectBuilder pathBuilder = Json.createObjectBuilder();
+        final JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
+
+        pathBuilder.add("type", "string");
+        typeBuilder.add("type", "string");
+
+        if (item == null) {
+            pathBuilder.addNull("default");
+            typeBuilder.addNull("default");
+        } else {
+            final String path = item.getPath();
+            if (path == null) {
+                pathBuilder.addNull("default");
+            } else {
+                pathBuilder.add("default", path);
+            }
+
+            String type = item.getType();
+            if (type == null) {
+                typeBuilder.addNull("default");
+            } else {
+                typeBuilder.add("default", item.getType());
+            }
+        }
+        itemBuilder.add("type", "object");
+        itemBuilder.add(FileItem.CFG_PATH, pathBuilder.build());
+        itemBuilder.add("fileType", typeBuilder.build());
+
+        return itemBuilder.build();
+    }
 }

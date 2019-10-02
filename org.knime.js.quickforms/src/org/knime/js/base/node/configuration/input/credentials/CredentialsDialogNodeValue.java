@@ -57,8 +57,8 @@ import javax.json.JsonValue;
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.CoreConstants;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
-import org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -129,17 +129,25 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
      */
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
+        builder.add("type", "object");
+        subBuilder.add("type", "string");
         if (getUsername() == null) {
-            builder.addNull(CFG_USERNAME);
+            subBuilder.addNull("default");
         } else {
-            builder.add(CFG_USERNAME, getUsername());
+            subBuilder.add("default", getUsername());
         }
+        builder.add(CFG_USERNAME, subBuilder.build());
+        subBuilder.add("type", "string");
+
         if (StringUtils.isEmpty(getPassword()) || !isSavePassword()) {
-            builder.addNull(CFG_PASSWORD);
+            subBuilder.addNull("default");
         } else {
-            builder.add(CFG_PASSWORD, CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD);
+            subBuilder.add("default", CoreConstants.MAGIC_DEFAULT_PASSWORD);
         }
+
+        builder.add(CFG_PASSWORD, subBuilder.build());
         return builder.build();
     }
 

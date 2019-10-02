@@ -155,15 +155,17 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "array");
+
         if (getColumns() == null) {
-            builder.addNull(CFG_COLUMNS);
+            builder.addNull("default");
         } else {
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (String col : getColumns()) {
                 arrayBuilder.add(col);
             }
-            builder.add(CFG_COLUMNS, arrayBuilder);
+            builder.add("default", arrayBuilder);
         }
         return builder.build();
     }

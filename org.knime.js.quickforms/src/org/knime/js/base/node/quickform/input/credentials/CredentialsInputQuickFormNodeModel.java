@@ -58,6 +58,7 @@ import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.CredentialsStore.CredentialsNode;
 import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
+import org.knime.core.util.CoreConstants;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 
 /**
@@ -254,7 +255,7 @@ public final class CredentialsInputQuickFormNodeModel extends
     @Override
     public void setInputData(final ExternalNodeData inputData) {
         super.setInputData(inputData);
-        if (CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD.equals(getDialogValue().getPassword())) {
+        if (CoreConstants.MAGIC_DEFAULT_PASSWORD.equals(getDialogValue().getPassword())) {
             getDialogValue().setPassword(getConfig().getDefaultValue().getPassword());
         }
     }

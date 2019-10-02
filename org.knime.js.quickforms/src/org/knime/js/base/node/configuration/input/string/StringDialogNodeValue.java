@@ -117,14 +117,15 @@ public class StringDialogNodeValue extends StringNodeValue implements DialogNode
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+
         if (getString() == null) {
-            builder.addNull(CFG_STRING);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_STRING, getString());
+            builder.add("default", getString());
         }
-        return builder.build().get(CFG_STRING);
+        return builder.build();
     }
 }

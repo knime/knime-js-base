@@ -55,7 +55,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.util.CoreConstants;
-import org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormValue;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -96,7 +95,7 @@ public class CredentialsNodeValue extends JSONViewContent {
         @JsonProperty("magicDefaultPassword") final String magicPassword) {
         m_username = username;
         m_password = !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password)
-            ? CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD : password;
+            ? CoreConstants.MAGIC_DEFAULT_PASSWORD : password;
         m_isSavePassword = isSavePassword;
     }
 
@@ -141,8 +140,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private String getMagicPassword() {
-        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null
-            : CredentialsInputQuickFormValue.MAGIC_DEFAULT_PASSWORD;
+        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null  : CoreConstants.MAGIC_DEFAULT_PASSWORD;
     }
 
     /**

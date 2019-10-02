@@ -104,9 +104,9 @@ public class IntegerSliderDialogNodeValue extends SliderNodeValue implements Dia
             loadFromString(((JsonString)json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                m_double = ((JsonObject) json).getJsonNumber(CFG_DOUBLE).doubleValue();
+                m_double = ((JsonObject) json).getJsonNumber("integer").doubleValue();
             } catch (Exception e) {
-                throw new JsonException("Expected double value for key '" + CFG_DOUBLE + "'."  , e);
+                throw new JsonException("Expected double value for key 'integer'."  , e);
             }
         } else {
             throw new JsonException("Expected JSON object or JSON number, but got " + json.getValueType());
@@ -118,13 +118,15 @@ public class IntegerSliderDialogNodeValue extends SliderNodeValue implements Dia
      */
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "integer");
+
         if (getDouble() == null) {
-            builder.addNull(CFG_DOUBLE);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_DOUBLE, getDouble());
+            builder.add("default", getDouble());
         }
-        return builder.build().get(CFG_DOUBLE);
+        return builder.build();
     }
 
 }

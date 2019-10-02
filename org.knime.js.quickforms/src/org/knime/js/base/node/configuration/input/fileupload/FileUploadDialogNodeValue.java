@@ -114,11 +114,13 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements Di
      */
     @Override
     public JsonObject toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+
         if (m_path == null) {
-            builder.addNull(CFG_PATH);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_PATH, m_path);
+            builder.add("default", m_path);
         }
         return builder.build();
     }

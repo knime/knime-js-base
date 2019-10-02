@@ -78,11 +78,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CredentialsInputQuickFormValue extends JSONViewContent implements DialogNodeValue {
-    /**
-     * Since we don't expose the real password to the world, we need to send a magic placeholder instead. When sent back
-     * to the node it indicates that the default password from the node settings should be used.
-     */
-    public static final String MAGIC_DEFAULT_PASSWORD = "*************";
 
     private static final String CFG_USERNAME = "username";
     private static final String CFG_PASSWORD = "password";
@@ -105,8 +100,8 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
         @JsonProperty(CFG_SAVE_PASSWORD) final boolean isSavePassword,
         @JsonProperty("magicDefaultPassword") final String magicPassword) {
         m_username = username;
-        m_password =
-            !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password) ? MAGIC_DEFAULT_PASSWORD : password;
+        m_password = !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password)
+            ? CoreConstants.MAGIC_DEFAULT_PASSWORD : password;
         m_isSavePassword = isSavePassword;
     }
 
@@ -197,7 +192,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private String getMagicPassword() {
-        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null : MAGIC_DEFAULT_PASSWORD;
+        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null : CoreConstants.MAGIC_DEFAULT_PASSWORD;
     }
 
     /** {@inheritDoc} */
@@ -291,7 +286,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
         if (m_password == null) {
             builder.addNull(CFG_PASSWORD);
         } else {
-            builder.add(CFG_PASSWORD, MAGIC_DEFAULT_PASSWORD);
+            builder.add(CFG_PASSWORD, CoreConstants.MAGIC_DEFAULT_PASSWORD);
         }
         return builder.build();
     }

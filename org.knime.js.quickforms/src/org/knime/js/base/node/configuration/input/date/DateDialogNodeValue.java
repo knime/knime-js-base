@@ -157,12 +157,15 @@ public class DateDialogNodeValue extends DateNodeValue implements DialogNodeValu
      */
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+        builder.add("format", "ZonedDateTime");
+
         if (getDate() == null) {
-            builder.addNull(CFG_DATE);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_DATE, getDate().toString());
+            builder.add("default", getDate().toString());
         }
-        return builder.build().get(CFG_DATE);
+        return builder.build();
     }
 }

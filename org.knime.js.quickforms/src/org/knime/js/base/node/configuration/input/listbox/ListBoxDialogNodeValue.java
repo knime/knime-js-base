@@ -110,11 +110,13 @@ public class ListBoxDialogNodeValue extends ListBoxNodeValue implements DialogNo
      */
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+
         if (getString() == null) {
-            builder.addNull(CFG_STRING);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_STRING, getString());
+            builder.add("default", getString());
         }
         return builder.build();
     }

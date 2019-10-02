@@ -119,6 +119,6 @@ public class IntegerDialogNodeValue extends IntegerNodeValue implements DialogNo
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        return Json.createObjectBuilder().add(CFG_INTEGER, getInteger()).build().get(CFG_INTEGER);
+        return Json.createObjectBuilder().add("type", "integer").add("default", getInteger()).build();
     }
 }

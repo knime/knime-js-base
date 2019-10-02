@@ -125,15 +125,16 @@ public class MultipleSelectionDialogNodeValue extends SingleMultipleSelectionNod
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "array");
         if (getVariableValue() == null) {
-            builder.addNull(CFG_VARIABLE_VALUE);
+            builder.addNull("default");
         } else {
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (String value : getVariableValue()) {
                 arrayBuilder.add(value);
             }
-            builder.add(CFG_VARIABLE_VALUE, arrayBuilder);
+            builder.add("default", arrayBuilder);
         }
         return builder.build();
     }

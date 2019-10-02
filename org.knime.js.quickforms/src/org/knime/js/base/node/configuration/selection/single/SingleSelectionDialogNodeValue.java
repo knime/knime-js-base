@@ -111,11 +111,13 @@ public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeV
      */
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+
         if (getVariableValue() == null || getVariableValue().length < 1 || getVariableValue()[0] == null) {
-            builder.addNull(CFG_VARIABLE_VALUE);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_VARIABLE_VALUE, getVariableValue()[0]);
+            builder.add("default", getVariableValue()[0]);
         }
         return builder.build();
     }

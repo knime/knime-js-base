@@ -47,8 +47,10 @@
  */
 package org.knime.js.base.node.configuration.input.bool;
 
+import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
@@ -118,6 +120,9 @@ public class BooleanDialogNodeValue extends BooleanNodeValue implements DialogNo
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        return getBoolean() ? JsonValue.TRUE : JsonValue.FALSE;
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "boolean");
+        builder.add("default", getBoolean() ? JsonValue.TRUE : JsonValue.FALSE);
+        return builder.build();
     }
 }

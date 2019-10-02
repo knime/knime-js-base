@@ -116,11 +116,13 @@ public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue imp
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("type", "string");
+
         if (getColumn() == null) {
-            builder.addNull(CFG_COLUMN);
+            builder.addNull("default");
         } else {
-            builder.add(CFG_COLUMN, getColumn());
+            builder.add("default", getColumn());
         }
         return builder.build();
     }

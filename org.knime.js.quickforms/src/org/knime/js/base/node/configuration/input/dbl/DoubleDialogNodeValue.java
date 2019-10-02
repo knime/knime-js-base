@@ -113,6 +113,6 @@ public class DoubleDialogNodeValue extends DoubleNodeValue implements DialogNode
      */
     @Override
     public JsonValue toJson() {
-        return Json.createObjectBuilder().add(CFG_DOUBLE, getDouble()).build().get(CFG_DOUBLE);
+        return Json.createObjectBuilder().add("type", "number").add("default", getDouble()).build();
     }
 }
