@@ -48,10 +48,7 @@
  */
 package org.knime.js.base.node.base.input.date;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -85,7 +82,6 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
     private final ZonedDateTime m_min;
     private final ZonedDateTime m_max;
     private final DateTimeType m_type;
-    private final Set<String> m_zones = new TreeSet<String>(ZoneId.getAvailableZoneIds());
 
     @JsonCreator
     protected DateNodeRepresentation(@JsonProperty("label") final String label,
@@ -279,14 +275,6 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
         } else {
             throw new IllegalArgumentException("Not a data time type description");
         }
-    }
-
-    /**
-     * @return the zones
-     */
-    @JsonProperty("zones")
-    public Set<String> getZones() {
-        return m_zones;
     }
 
     /**
