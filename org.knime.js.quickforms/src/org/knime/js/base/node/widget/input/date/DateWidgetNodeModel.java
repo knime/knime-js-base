@@ -190,7 +190,7 @@ public class DateWidgetNodeModel
     @Override
     protected DateNodeRepresentation<DateNodeValue> getRepresentation() {
         DateInputWidgetConfig config = getConfig();
-        return new DateNodeRepresentation<DateNodeValue>(getRelevantValue(), config.getDefaultValue(),
+        return new DateWidgetNodeRepresentation(getRelevantValue(), config.getDefaultValue(),
             config.getDateNodeConfig(), config.getLabelConfig());
     }
 
