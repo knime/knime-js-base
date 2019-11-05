@@ -48,26 +48,26 @@
  */
 package org.knime.js.base.node.viz.tileView;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.knime.core.node.MapNodeFactoryClassMapper;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeFactoryClassMapper;
 import org.knime.core.node.NodeModel;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class TileViewClassMapper extends NodeFactoryClassMapper {
+public class TileViewClassMapper extends MapNodeFactoryClassMapper {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeFactory<? extends NodeModel> mapFactoryClassName(final String factoryClassName) {
+    protected Map<String, Class<? extends NodeFactory<? extends NodeModel>>> getMapInternal() {
         // Renamed card view to tile view because ™ held by 3rd party
-        if ("org.knime.js.base.node.viz.cardView.CardViewNodeFactory".equals(factoryClassName)) {
-            return new TileViewNodeFactory();
-        }
-        return null;
+        return Collections.singletonMap("org.knime.js.base.node.viz.cardView.CardViewNodeFactory",
+            TileViewNodeFactory.class);
     }
-
 }
