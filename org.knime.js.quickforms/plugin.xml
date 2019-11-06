@@ -1549,5 +1549,11 @@
             validate-method-name="validate">
       </javascriptComponent>
    </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="org.knime.js.base.node.quickform.filter.definition.rangeslider.RangeSliderFilterClassMapper">
+      </NodeFactoryClassMapper>
+   </extension>
 
 </plugin>
