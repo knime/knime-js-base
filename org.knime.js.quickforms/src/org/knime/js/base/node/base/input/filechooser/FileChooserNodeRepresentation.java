@@ -195,7 +195,7 @@ public class FileChooserNodeRepresentation<VAL extends FileChooserNodeValue> ext
     /**
      * @return the errorMessage
      */
-    @JsonProperty("errormessage")
+    @JsonProperty("errorMessage")
     public String getErrorMessage() {
         return m_errorMessage;
     }

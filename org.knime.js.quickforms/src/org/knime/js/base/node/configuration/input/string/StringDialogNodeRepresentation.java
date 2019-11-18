@@ -69,7 +69,7 @@ public class StringDialogNodeRepresentation extends StringNodeRepresentation<Str
         @JsonProperty("defaultValue") final StringDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final StringDialogNodeValue currentValue,
         @JsonProperty("regex") final String regex,
-        @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("errorMessage") final String errorMessage,
         @JsonProperty("editorType") final String editorType,
         @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
         @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {

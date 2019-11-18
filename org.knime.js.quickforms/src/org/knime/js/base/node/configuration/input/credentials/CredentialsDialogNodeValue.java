@@ -60,7 +60,9 @@ import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.CoreConstants;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The config for the credentials configuration node.
@@ -70,6 +72,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class CredentialsDialogNodeValue extends CredentialsNodeValue implements DialogNodeValue {
 
     /**
+     * Creates a new instance with user and password set to null.
+     */
+    @JsonIgnore
+    public CredentialsDialogNodeValue() {
+    }
+
+    @JsonCreator
+    private CredentialsDialogNodeValue(@JsonProperty(CFG_USERNAME) final String username,
+        @JsonProperty(CFG_PASSWORD) final String password,
+        @JsonProperty(CFG_SAVE_PASSWORD) final boolean isSavePassword,
+        @JsonProperty("magicDefaultPassword") final String magicPassword) {
+        super(username, password, isSavePassword, magicPassword);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -77,7 +94,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setUsername(settings.getString(CFG_USERNAME, System.getProperty("user.name")));
         setSavePassword(settings.getBoolean(CFG_SAVE_PASSWORD, true));
-        if (settings.getBoolean(CFG_SAVE_PASSWORD,false)) {
+        if (settings.getBoolean(CFG_SAVE_PASSWORD, false)) {
             setPassword(settings.getPassword(CFG_PASSWORD_ENCRYPTED, "SomeWeakEncryption#Password", ""));
         } else {
             setPassword(settings.getTransientString(CFG_PASSWORD));
@@ -117,8 +134,8 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
             JsonValue valPass = json.get(CFG_PASSWORD);
             m_password = JsonValue.NULL.equals(valPass) ? null : json.getString(CFG_PASSWORD);
         } catch (Exception e) {
-            throw new JsonException("Expected string value for key '"
-                    + CFG_USERNAME + "' and '" + CFG_PASSWORD + "'", e);
+            throw new JsonException("Expected string value for key '" + CFG_USERNAME + "' and '" + CFG_PASSWORD + "'",
+                e);
         }
         setUsername(m_username);
         setPassword(m_password);

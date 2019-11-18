@@ -79,6 +79,7 @@ public class CredentialsConfigurationPanel extends AbstractDialogNodeConfigurati
         super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         m_usernameField.setText(representation.getDefaultValue().getUsername());
         m_passwordField.setText(representation.getDefaultValue().getPassword());
+        m_isSavePassword = representation.getDefaultValue().isSavePassword();
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;

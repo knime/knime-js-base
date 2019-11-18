@@ -81,7 +81,7 @@ public class StringNodeRepresentation<VAL extends StringNodeValue> extends Label
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("regex") final String regex,
-        @JsonProperty("errormessage") final String errorMessage,
+        @JsonProperty("errorMessage") final String errorMessage,
         @JsonProperty("editorType") final String editorType,
         @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
         @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {

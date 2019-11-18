@@ -134,6 +134,9 @@ public class MultipleSelectionDialogNodeValue extends SingleMultipleSelectionNod
             for (String value : getVariableValue()) {
                 arrayBuilder.add(value);
             }
+            JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+            itemBuilder.add("type", "string");
+            builder.add("items", itemBuilder);
             builder.add("default", arrayBuilder);
         }
         return builder.build();

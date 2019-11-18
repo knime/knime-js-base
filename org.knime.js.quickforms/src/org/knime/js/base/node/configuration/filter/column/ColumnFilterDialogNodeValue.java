@@ -165,6 +165,9 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
             for (String col : getColumns()) {
                 arrayBuilder.add(col);
             }
+            JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+            itemBuilder.add("type", "string");
+            builder.add("items", itemBuilder);
             builder.add("default", arrayBuilder);
         }
         return builder.build();

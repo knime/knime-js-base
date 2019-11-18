@@ -154,17 +154,20 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     @JsonIgnore
     public JsonValue toJson() {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
-        final JsonArrayBuilder itemsBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         builder.add("type", "array");
 
         if (getItems() == null) {
-            itemsBuilder.add(createItemJson(null));
+            arrayBuilder.add(createItemJson(null));
         } else {
             for (FileItem item : getItems()) {
-                itemsBuilder.add(createItemJson(item));
+                arrayBuilder.add(createItemJson(item));
             }
         }
-        builder.add("default", itemsBuilder);
+        JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+        itemBuilder.add("type", "object");
+        builder.add("items", itemBuilder);
+        builder.add("default", arrayBuilder);
 
         return builder.build();
     }

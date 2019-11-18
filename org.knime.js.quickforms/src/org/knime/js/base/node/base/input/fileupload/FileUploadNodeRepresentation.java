@@ -112,7 +112,7 @@ public class FileUploadNodeRepresentation<VAL extends FileUploadNodeValue> exten
     /**
      * @return the errorMessage
      */
-    @JsonProperty("errormessage")
+    @JsonProperty("errorMessage")
     public String getErrorMessage() {
         return m_errorMessage;
     }
@@ -120,7 +120,7 @@ public class FileUploadNodeRepresentation<VAL extends FileUploadNodeValue> exten
     /**
      * @return the disableOutput
      */
-    @JsonProperty("disableoutput")
+    @JsonProperty("disableOutput")
     public boolean getDisableOutput() {
         return m_disableOutput;
     }

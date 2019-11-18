@@ -152,6 +152,9 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             for (String value : getValues()) {
                 arrayBuilder.add(value);
             }
+            JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+            itemBuilder.add("type", "string");
+            subBuilder.add("items", itemBuilder);
             subBuilder.add("default", arrayBuilder);
         }
         return builder.add(CFG_VALUES, subBuilder.build()).build();

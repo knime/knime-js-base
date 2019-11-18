@@ -57,8 +57,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.util.CoreConstants;
 import org.knime.js.core.JSONViewContent;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -69,17 +67,21 @@ import com.fasterxml.jackson.annotation.JsonView;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CredentialsNodeValue extends JSONViewContent {
 
     protected static final String CFG_USERNAME = "username";
+
     protected static final String CFG_PASSWORD = "password";
+
     protected static final String CFG_SAVE_PASSWORD = "isSavePassword";
+
     protected static final String CFG_PASSWORD_ENCRYPTED = "passwordEncrypted";
 
     private String m_username;
+
     private String m_password;
+
     private boolean m_isSavePassword;
 
     /**
@@ -88,11 +90,16 @@ public class CredentialsNodeValue extends JSONViewContent {
     public CredentialsNodeValue() {
     }
 
-    @JsonCreator
-    private CredentialsNodeValue(@JsonProperty(CFG_USERNAME) final String username,
-        @JsonProperty(CFG_PASSWORD) final String password,
-        @JsonProperty(CFG_SAVE_PASSWORD) final boolean isSavePassword,
-        @JsonProperty("magicDefaultPassword") final String magicPassword) {
+    /**
+     * Creates a new instance with the given values.
+     *
+     * @param username The user name.
+     * @param password The password.
+     * @param isSavePassword {@code true} if the password should be saved (weakly encrypted), {@code false} otherwise.
+     * @param magicPassword The magic password placeholder for the real password.
+     */
+    protected CredentialsNodeValue(final String username, final String password, final boolean isSavePassword,
+        final String magicPassword) {
         m_username = username;
         m_password = !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password)
             ? CoreConstants.MAGIC_DEFAULT_PASSWORD : password;
@@ -140,7 +147,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private String getMagicPassword() {
-        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null  : CoreConstants.MAGIC_DEFAULT_PASSWORD;
+        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null : CoreConstants.MAGIC_DEFAULT_PASSWORD;
     }
 
     /**
@@ -189,11 +196,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_username)
-                .append(m_password)
-                .append(m_isSavePassword)
-                .toHashCode();
+        return new HashCodeBuilder().append(m_username).append(m_password).append(m_isSavePassword).toHashCode();
     }
 
     /**
@@ -211,10 +214,7 @@ public class CredentialsNodeValue extends JSONViewContent {
             return false;
         }
         CredentialsNodeValue other = (CredentialsNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_username, other.m_username)
-                .append(m_password, other.m_password)
-                .append(m_isSavePassword, other.m_isSavePassword)
-                .isEquals();
+        return new EqualsBuilder().append(m_username, other.m_username).append(m_password, other.m_password)
+            .append(m_isSavePassword, other.m_isSavePassword).isEquals();
     }
 }
