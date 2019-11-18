@@ -22,6 +22,10 @@
 		</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization (e.g. batch execution). 
 		  This will also be the name of the exported flow variable.</option>
+		<option name="Type Filter">Allows to restrict the selectable columns to a certain type. Furthermore it is possible to filter out columns that don't have
+          a domain (for nominal and numeric columns). By default all columns are included.</option>
+        <option name="Validation">Allows to specify the minimum number of columns the user has to select along with an error message that is displayed
+        if the user fails to select enough columns.</option>
 		<option name="Default Values">
           The columns that are selected by default.
         </option>

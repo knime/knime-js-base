@@ -54,6 +54,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.validation.InputSpecFilter;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
@@ -63,7 +65,16 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  */
 public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<ColumnFilterDialogNodeValue> {
 
+    private static final String CFG_INPUT_FILTER = "input_filter";
+
+    private static final String CFG_VALIDATION = "validation";
+
     private final ColumnFilterNodeConfig m_config;
+
+    private final InputSpecFilter.Config m_inputSpecFilterConfig = new InputSpecFilter.Config();
+
+    private final ModularValidatorConfig m_validatorConfig =
+        ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createConfig();
 
     /**
      * Instantiate a new config object
@@ -77,6 +88,18 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
      */
     public ColumnFilterNodeConfig getColumnFilterConfig() {
         return m_config;
+    }
+
+
+    /**
+     * @return the inputSpecFilterConfig
+     */
+    InputSpecFilter.Config getInputSpecFilterConfig() {
+        return m_inputSpecFilterConfig;
+    }
+
+    ModularValidatorConfig getValidatorConfig() {
+        return m_validatorConfig;
     }
 
     /**
@@ -94,6 +117,8 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_config.saveSettings(settings);
+        m_validatorConfig.saveTo(settings.addNodeSettings(CFG_VALIDATION));
+        m_inputSpecFilterConfig.saveSettings(settings.addNodeSettings(CFG_INPUT_FILTER));
     }
 
     /**
@@ -103,6 +128,12 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+        if (settings.containsKey(CFG_VALIDATION)) {
+            m_validatorConfig.loadInModel(settings.getNodeSettings(CFG_VALIDATION));
+        }
+        if (settings.containsKey(CFG_INPUT_FILTER)) {
+            m_inputSpecFilterConfig.loadSettingsInModel(settings.getNodeSettings(CFG_INPUT_FILTER));
+        }
     }
 
     /**
@@ -112,6 +143,20 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+        if (settings.containsKey(CFG_VALIDATION)) {
+            try {
+                m_validatorConfig.loadInDialog(settings.getNodeSettings(CFG_VALIDATION));
+            } catch (InvalidSettingsException e) {
+                throw new IllegalStateException("Can't load validation settings.", e);
+            }
+        }
+        if (settings.containsKey(CFG_INPUT_FILTER)) {
+            try {
+                m_inputSpecFilterConfig.loadSettingsInDialog(settings.getNodeSettings(CFG_INPUT_FILTER));
+            } catch (InvalidSettingsException e) {
+                throw new IllegalStateException("Can't load input filter settings.", e);
+            }
+        }
     }
 
     /**
@@ -131,10 +176,8 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_config)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config)
+            .append(m_validatorConfig).append(m_inputSpecFilterConfig).toHashCode();
     }
 
     /**
@@ -152,10 +195,9 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
             return false;
         }
         ColumnFilterDialogNodeConfig other = (ColumnFilterDialogNodeConfig)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(m_config, other.m_config)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_config, other.m_config)
+            .append(m_validatorConfig, other.m_validatorConfig)
+            .append(m_inputSpecFilterConfig, other.m_inputSpecFilterConfig).isEquals();
     }
 
 }

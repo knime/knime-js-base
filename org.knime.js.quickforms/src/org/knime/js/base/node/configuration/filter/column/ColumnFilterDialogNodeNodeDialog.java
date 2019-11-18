@@ -68,6 +68,9 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.validation.InputSpecFilter;
+import org.knime.js.base.node.base.validation.ValidatorDialog;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
@@ -75,7 +78,8 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<ColumnFilterDialogNodeValue> {
+public final class ColumnFilterDialogNodeNodeDialog
+    extends FlowVariableDialogNodeNodeDialog<ColumnFilterDialogNodeValue> {
 
     private final DataColumnSpecFilterPanel m_defaultField;
     private final JComboBox<String> m_type;
@@ -83,18 +87,42 @@ public class ColumnFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNode
     private final JCheckBox m_limitNumberVisOptionsBox;
     private final JSpinner m_numberVisOptionSpinner;
 
+    private final InputSpecFilter.Dialog m_inputSpecFilterDialog = new InputSpecFilter.Dialog();
+
+    private DataTableSpec m_unfilteredSpec;
+
     private final ColumnFilterDialogNodeConfig m_config;
+
+    private final ValidatorDialog<ModularValidatorConfig> m_validatorDialog =
+        ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createDialog();
 
     /**
      * Constructor, inits fields calls layout routines
      */
     public ColumnFilterDialogNodeNodeDialog() {
         m_config = new ColumnFilterDialogNodeConfig();
-        m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
+        m_type = new JComboBox<>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_defaultField = new DataColumnSpecFilterPanel(false);
+        m_inputSpecFilterDialog.addListener(e -> updateDefaultField());
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
+    }
+
+    private void updateDefaultField() {
+        final InputSpecFilter.Config tempConfig = new InputSpecFilter.Config();
+        m_inputSpecFilterDialog.saveToConfig(tempConfig);
+        final DataTableSpec filtered = tempConfig.createFilter().filter(m_unfilteredSpec);
+        NodeSettings filterSettings = m_config.getDefaultValue().getSettings();
+        if (filterSettings == null) {
+            filterSettings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        }
+        DataColumnSpecFilterConfiguration filterConfig =
+            new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        m_defaultField.saveConfiguration(filterConfig);
+        filterConfig.saveConfiguration(filterSettings);
+        filterConfig.loadConfigurationInDialog(filterSettings, filtered);
+        m_defaultField.loadConfiguration(filterConfig, filtered);
     }
 
     /**
@@ -115,6 +143,8 @@ public class ColumnFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNode
         /* This option is hidden because we cannot easily implement it in the sub node dialog
            e.g. if the regex filter from the DataColumnSpecFilterPanel is used we have no equivalent with check boxes */
         // addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
+        addPairToPanel("Type Filter: ", m_inputSpecFilterDialog.getPanel(), panelWithGBLayout, gbc);
+        addPairToPanel("Validation: ", m_validatorDialog.getPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
         addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
         addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
@@ -128,20 +158,26 @@ public class ColumnFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNode
         throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
-        DataTableSpec spec = (DataTableSpec) specs[0];
-        m_possibleColumns = spec.getColumnNames();
+        final DataTableSpec spec = (DataTableSpec) specs[0];
+        m_unfilteredSpec = spec;
+
+        final InputSpecFilter.Config inputSpecFilterConfig = m_config.getInputSpecFilterConfig();
+        m_inputSpecFilterDialog.loadFromConfig(inputSpecFilterConfig, spec);
+        final DataTableSpec filteredSpec = inputSpecFilterConfig.createFilter().filter(spec);
+        m_possibleColumns = filteredSpec.getColumnNames();
         NodeSettings filterSettings = m_config.getDefaultValue().getSettings();
         if (filterSettings == null) {
             filterSettings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         }
         DataColumnSpecFilterConfiguration filterConfig =
             new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
-        filterConfig.loadConfigurationInDialog(filterSettings, (DataTableSpec)specs[0]);
-        m_defaultField.loadConfiguration(filterConfig, (DataTableSpec)specs[0]);
+        filterConfig.loadConfigurationInDialog(filterSettings, filteredSpec);
+        m_defaultField.loadConfiguration(filterConfig, filteredSpec);
         ColumnFilterNodeConfig config = m_config.getColumnFilterConfig();
         m_type.setSelectedItem(config.getType());
         m_limitNumberVisOptionsBox.setSelected(config.isLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(config.getNumberVisOptions());
+        m_validatorDialog.load(m_config.getValidatorConfig());
     }
 
     /**
@@ -161,6 +197,11 @@ public class ColumnFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNode
         config.setPossibleColumns(m_possibleColumns);
         config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
+
+        m_inputSpecFilterDialog.saveToConfig(m_config.getInputSpecFilterConfig());
+
+        m_validatorDialog.save(m_config.getValidatorConfig());
+
         m_config.saveSettings(settings);
     }
 
