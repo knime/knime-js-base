@@ -53,6 +53,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.ExecutionContext;
@@ -62,23 +63,31 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.js.base.node.configuration.DialogNodeModel;
 
 /**
  * Node model for the column selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelectionDialogNodeRepresenation,
     ColumnSelectionDialogNodeValue, ColumnSelectionDialogNodeConfig> implements BufferedDataTableHolder {
 
     private BufferedDataTable m_table;
 
+    private final boolean m_autoConfigure;
+
     /**
      * Creates a new column selection configuration node model
+     *
+     * @param autoConfigure whether the node should autoconfigure if the selected column is missing (behavior prior to
+     *            4.1.0)
      */
-    public ColumnSelectionDialogNodeModel() {
+    public ColumnSelectionDialogNodeModel(final boolean autoConfigure) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{FlowVariablePortObject.TYPE});
+        m_autoConfigure = autoConfigure;
     }
 
     /**
@@ -86,9 +95,16 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        updateColumns((DataTableSpec)inSpecs[0]);
-        createAndPushFlowVariable();
+        DataTableSpec spec = (DataTableSpec)inSpecs[0];
+        updateColumns(prefilter(spec));
+        final String selected = createAndPushFlowVariable();
+        final ColumnRearranger cr = new ColumnRearranger(spec);
+        cr.keepOnly(selected);
         return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+    }
+
+    private DataTableSpec prefilter(final DataTableSpec spec) {
+        return getConfig().getInputSpecFilterConfig().createFilter().filter(spec);
     }
 
     /**
@@ -97,19 +113,23 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         m_table = (BufferedDataTable)inObjects[0];
-        updateColumns(m_table.getDataTableSpec());
-        createAndPushFlowVariable();
+        updateColumns(prefilter(m_table.getDataTableSpec()));
+        final String selectedColumn = createAndPushFlowVariable();
+        final ColumnRearranger cr = new ColumnRearranger(m_table.getDataTableSpec());
+        cr.keepOnly(selectedColumn);
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
 
-    private void createAndPushFlowVariable() throws InvalidSettingsException {
+    private String createAndPushFlowVariable() throws InvalidSettingsException {
         List<String> possibleColumns = Arrays.asList(getConfig().getColumnSelectionConfig().getPossibleColumns());
-        if (possibleColumns.size() < 1) {
+        if (possibleColumns.isEmpty()) {
             throw new InvalidSettingsException("No column available for selection in input table.");
         }
 
         String value = getRelevantValue().getColumn();
         if (!possibleColumns.contains(value)) {
+            CheckUtils.checkSetting(m_autoConfigure,
+                "Column '%s' is not part of the table spec anymore.", value);
             String warning = "";
             if (!StringUtils.isEmpty(value)) {
                 warning = "Column '" + value + "' is not part of the table spec anymore.\n";
@@ -119,6 +139,7 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
             setWarningMessage(warning);
         }
         pushFlowVariableString(getConfig().getFlowVariableName(), value);
+        return value;
     }
 
     /**
@@ -178,7 +199,7 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
     public void setInternalTables(final BufferedDataTable[] tables) {
         if (tables != null && tables.length > 0 && tables[0] != null) {
             m_table = tables[0];
-            updateColumns(m_table.getDataTableSpec());
+            updateColumns(prefilter(m_table.getDataTableSpec()));
         }
     }
 

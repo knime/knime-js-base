@@ -49,8 +49,6 @@
 package org.knime.js.base.node.configuration.selection.column;
 
 import java.awt.GridBagConstraints;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -59,8 +57,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
@@ -70,9 +66,11 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
+import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
@@ -80,15 +78,22 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeNodeDialog
+public final class ColumnSelectionDialogNodeNodeDialog
     extends FlowVariableDialogNodeNodeDialog<ColumnSelectionDialogNodeValue> {
 
     private final ColumnSelectionPanel m_defaultField;
+
     private final JComboBox<String> m_type;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
+
     private final JSpinner m_numberVisOptionSpinner;
 
     private final ColumnSelectionDialogNodeConfig m_config;
+
+    private DataTableSpec m_unfilteredSpec;
+
+    private final InputSpecFilter.Dialog m_inputSpecFilterDialog = new InputSpecFilter.Dialog();
 
     private String[] m_possibleColumns;
 
@@ -98,11 +103,24 @@ public class ColumnSelectionDialogNodeNodeDialog
     @SuppressWarnings("unchecked")
     public ColumnSelectionDialogNodeNodeDialog() {
         m_config = new ColumnSelectionDialogNodeConfig();
-        m_type = new JComboBox<String>(SingleSelectionComponentFactory.listSingleSelectionComponents());
-        m_defaultField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
+        m_type = new JComboBox<>(SingleSelectionComponentFactory.listSingleSelectionComponents());
+        m_defaultField = new ColumnSelectionPanel((Border)null, new Class[]{DataValue.class});
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
+        m_inputSpecFilterDialog.addListener(e -> updateDefaultField());
         createAndAddTab();
+    }
+
+    private void updateDefaultField() {
+        final InputSpecFilter.Config tempConfig = new InputSpecFilter.Config();
+        m_inputSpecFilterDialog.saveToConfig(tempConfig);
+        final DataTableSpec filtered = tempConfig.createFilter().filter(m_unfilteredSpec);
+        final String currentlySelected = m_defaultField.getSelectedColumn();
+        try {
+            m_defaultField.update(filtered, currentlySelected);
+        } catch (NotConfigurableException e) {
+            // TODO handle somehow.. Maybe with an error label?
+        }
     }
 
     /**
@@ -121,40 +139,51 @@ public class ColumnSelectionDialogNodeNodeDialog
     @Override
     protected void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
+        addPairToPanel("Type Filter:", m_inputSpecFilterDialog.getPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
 
-        m_type.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                boolean enabled = SingleSelectionComponentFactory.LIST.equals(m_type.getSelectedItem());
-                m_limitNumberVisOptionsBox.setEnabled(enabled);
-                m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
-            }
-        });
+        m_type.addItemListener(e -> reactToTypeChange());
         addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
-        m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
-            }
-        });
+        m_limitNumberVisOptionsBox
+            .addChangeListener(e -> m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected()));
         addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
+    }
+
+    private void reactToTypeChange() {
+        boolean enabled = SingleSelectionComponentFactory.LIST.equals(m_type.getSelectedItem());
+        m_limitNumberVisOptionsBox.setEnabled(enabled);
+        m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         super.loadSettingsFrom(m_config);
-        DataTableSpec spec = (DataTableSpec) specs[0];
-        m_defaultField.update(spec, null);
-        m_possibleColumns = spec.getColumnNames();
+        DataTableSpec spec = (DataTableSpec)specs[0];
+        m_unfilteredSpec = spec;
+
+        final InputSpecFilter.Config inputSpecValidatorConfig = m_config.getInputSpecFilterConfig();
+        m_inputSpecFilterDialog.loadFromConfig(inputSpecValidatorConfig, spec);
+        final DataTableSpec filteredSpec = inputSpecValidatorConfig.createFilter().filter(spec);
+
+        try {
+            m_defaultField.update(filteredSpec, null);
+        } catch (NotConfigurableException ex) {
+            if (m_unfilteredSpec.getNumColumns() == 0) {
+                throw ex;
+            } else {
+                // ignore since there are columns that could be selected if the input filter is changed
+            }
+        }
+        m_possibleColumns = filteredSpec.getColumnNames();
         String selectedDefault = m_config.getDefaultValue().getColumn();
         if (selectedDefault.isEmpty()) {
             List<DataColumnSpec> cspecs = m_defaultField.getAvailableColumns();
-            if (cspecs.size() > 0) {
+            if (!cspecs.isEmpty()) {
                 selectedDefault = cspecs.get(0).getName();
             }
         }
@@ -170,6 +199,7 @@ public class ColumnSelectionDialogNodeNodeDialog
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        CheckUtils.checkSetting(m_defaultField.getNrItemsInList() > 0, "No column is selectable.");
         saveSettingsTo(m_config);
         m_config.getDefaultValue().setColumn(m_defaultField.getSelectedColumn());
         ColumnSelectionNodeConfig columnSelectionConfig = m_config.getColumnSelectionConfig();
@@ -177,6 +207,7 @@ public class ColumnSelectionDialogNodeNodeDialog
         columnSelectionConfig.setPossibleColumns(m_possibleColumns);
         columnSelectionConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         columnSelectionConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
+        m_inputSpecFilterDialog.saveToConfig(m_config.getInputSpecFilterConfig());
         m_config.saveSettings(settings);
     }
 

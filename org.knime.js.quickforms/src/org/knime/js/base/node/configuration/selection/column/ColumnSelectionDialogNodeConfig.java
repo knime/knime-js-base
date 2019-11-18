@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
+import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
@@ -64,7 +65,11 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 public class ColumnSelectionDialogNodeConfig
     extends LabeledFlowVariableDialogNodeConfig<ColumnSelectionDialogNodeValue> {
 
+    private static final String CFG_INPUT_FILTER = "input_filter";
+
     private final ColumnSelectionNodeConfig m_config;
+
+    private final InputSpecFilter.Config m_inputSpecFilterConfig = new InputSpecFilter.Config();
 
     /**
      * Instantiate a new config object
@@ -79,6 +84,11 @@ public class ColumnSelectionDialogNodeConfig
     public ColumnSelectionNodeConfig getColumnSelectionConfig() {
         return m_config;
     }
+
+    InputSpecFilter.Config getInputSpecFilterConfig() {
+        return m_inputSpecFilterConfig;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -95,6 +105,7 @@ public class ColumnSelectionDialogNodeConfig
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_config.saveSettings(settings);
+        m_inputSpecFilterConfig.saveSettings(settings.addNodeSettings(CFG_INPUT_FILTER));
     }
 
     /**
@@ -104,6 +115,9 @@ public class ColumnSelectionDialogNodeConfig
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+        if (settings.containsKey(CFG_INPUT_FILTER)) {
+            m_inputSpecFilterConfig.loadSettingsInModel(settings.getNodeSettings(CFG_INPUT_FILTER));
+        }
     }
 
     /**
@@ -113,6 +127,13 @@ public class ColumnSelectionDialogNodeConfig
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+        if (settings.containsKey(CFG_INPUT_FILTER)) {
+            try {
+                m_inputSpecFilterConfig.loadSettingsInDialog(settings.getNodeSettings(CFG_INPUT_FILTER));
+            } catch (InvalidSettingsException e) {
+                throw new IllegalStateException("Can't load input filter settings.", e);
+            }
+        }
     }
 
     /**
@@ -135,6 +156,7 @@ public class ColumnSelectionDialogNodeConfig
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
                 .append(m_config)
+                .append(m_inputSpecFilterConfig)
                 .toHashCode();
     }
 
@@ -156,6 +178,7 @@ public class ColumnSelectionDialogNodeConfig
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(m_config, other.m_config)
+                .append(m_inputSpecFilterConfig, other.m_inputSpecFilterConfig)
                 .isEquals();
     }
 

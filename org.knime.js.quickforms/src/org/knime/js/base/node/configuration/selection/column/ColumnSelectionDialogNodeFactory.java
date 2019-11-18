@@ -56,7 +56,9 @@ import org.knime.core.node.NodeView;
  * Factory for the column selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @deprecated Replaced by {@link ColumnSelectionDialogNodeFactory2}
  */
+@Deprecated
 public class ColumnSelectionDialogNodeFactory extends NodeFactory<ColumnSelectionDialogNodeModel> {
 
     /**
@@ -64,7 +66,7 @@ public class ColumnSelectionDialogNodeFactory extends NodeFactory<ColumnSelectio
      */
     @Override
     public ColumnSelectionDialogNodeModel createNodeModel() {
-        return new ColumnSelectionDialogNodeModel();
+        return new ColumnSelectionDialogNodeModel(true);
     }
 
     /**
