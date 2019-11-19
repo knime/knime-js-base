@@ -250,7 +250,7 @@ public final class InputSpecFilter {
 
         private final JCheckBox m_allowAllTypes = new JCheckBox("Allow all types");
 
-        private final JCheckBox m_filterColumnsWithoutDomain = new JCheckBox("Filter columns without domain");
+        private final JCheckBox m_filterColumnsWithoutDomain = new JCheckBox("Hide columns without domain");
 
         private final List<ChangeListener> m_listeners = new LinkedList<>();
 

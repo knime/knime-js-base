@@ -28,7 +28,7 @@
           Type of the selection panel.
         </option>
         <option name="Type Filter">
-          Allows to restrict the selectable columns to a certain type. Furthermore it is possible to filter out columns that don't have
+          Allows to restrict the selectable columns to a certain type. Furthermore it is possible to hide columns that don't have
           a domain (for nominal and numeric columns). By default all columns are included.
         </option>
         <option name="Default Value">
