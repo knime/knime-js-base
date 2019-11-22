@@ -113,10 +113,7 @@ public final class ColumnFilterDialogNodeNodeDialog
         final InputSpecFilter.Config tempConfig = new InputSpecFilter.Config();
         m_inputSpecFilterDialog.saveToConfig(tempConfig);
         final DataTableSpec filtered = tempConfig.createFilter().filter(m_unfilteredSpec);
-        NodeSettings filterSettings = m_config.getDefaultValue().getSettings();
-        if (filterSettings == null) {
-            filterSettings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
-        }
+        final NodeSettings filterSettings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         DataColumnSpecFilterConfiguration filterConfig =
             new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         m_defaultField.saveConfiguration(filterConfig);
