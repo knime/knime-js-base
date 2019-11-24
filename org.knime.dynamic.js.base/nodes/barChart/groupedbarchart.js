@@ -426,11 +426,13 @@ window.knimeGroupedBarChart = (function () {
     // Create a hilight-bar above the cluster with the given name and assigns the given css class to it
     createHilightBar = function (clusterName, selectionClass) {
         var optOrientation = _value.options.orientation;
+        var overallBarCount = -1;
         for (var k = 0; k < plotData.length; k++) {
             for (var j = 0; j < plotData[k].values.length; j++) {
+                overallBarCount++;
                 if (plotData[k].values[j].x === clusterName) {
                     d3.selectAll('.knime-x text').each(function (d, i) {
-                        if (i === j) {
+                        if (i === overallBarCount) {
                             d3.select(this).classed(selectionClass, true);
                             var selectionTitle;
                             if (selectionClass === 'knime-selected') {
