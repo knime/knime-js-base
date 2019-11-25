@@ -284,7 +284,7 @@ window.knimeStreamgraph = (function () {
             var numColumns = columns.length;
             for (var i = 0; i < numColumns; i++) {
                 var columnName = columns[i];
-                var rowIndex = knimeTable1.getColumnNames().indexOf(columnName);
+                var rowIndex = knimeTable2.getColumn(0).indexOf(columnName);
                 var color = rowColors[rowIndex];
 
                 if (!color) {
