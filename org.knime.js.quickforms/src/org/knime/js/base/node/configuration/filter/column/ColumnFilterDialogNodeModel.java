@@ -132,18 +132,6 @@ public class ColumnFilterDialogNodeModel extends
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void validateDialogValue(final ColumnFilterDialogNodeValue value) throws InvalidSettingsException {
-        super.validateDialogValue(value);
-        final ColumnRearranger cr = new ColumnRearranger(m_spec);
-        cr.keepOnly(value.getColumns());
-        final DataTableSpec outSpec = cr.createSpec();
-        createSpecValidator().validateSpec(outSpec);
-    }
-
-    /**
      * Pushes the current value as flow variable.
      */
     private void createAndPushFlowVariable() {
