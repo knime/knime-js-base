@@ -44,51 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2019 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Nov 26, 2019 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
 package org.knime.js.base.node.base.validation;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortObjectSpec;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.knime.core.node.util.CheckUtils;
+import org.knime.js.base.node.base.validation.domain.HasDomainValidatorFactory;
+import org.knime.js.base.node.base.validation.min.column.MinNumColumnsValidatorFactory;
+import org.knime.js.base.node.base.validation.min.row.MinNumRowsValidatorFactory;
+import org.knime.js.base.node.base.validation.missing.MissingValueValidatorFactory;
 
 /**
- * A {@link ValidatorFactory} bundles together a {@link Validator} with its {@link ValidatorConfig} and the
- * corresponding {@link ValidatorDialog}.
- * Please register any new validator factory in the {@link ValidatorRegistry} if it should be compatible with
- * the ModularValidatorFactory (which is almost always the case).
- *
+ * The central registry for {@link ValidatorFactory ValidatorFactories}.
+ * It manages the different factories and makes sure that no key collisions occur.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <S> the type of {@link PortObjectSpec} this factory creates {@link Validator validators} for
- * @param <T> the type of {@link PortObject} this factory creates {@link Validator validators} for
- * @param <C> the type of {@link ValidatorConfig config} this factory uses
  */
-public interface ValidatorFactory<S extends PortObjectSpec, T extends PortObject, C extends ValidatorConfig> {
+public enum ValidatorRegistry {
 
     /**
-     * @return a fresh default config
+     * The singleton instance.
      */
-    C createConfig();
+    INSTANCE;
+
+    private final Map<String, ValidatorFactory<?, ?, ?>> m_keyToFactory = new HashMap<>();
+
+
+    private ValidatorRegistry() {
+        registerFactory(HasDomainValidatorFactory.INSTANCE);
+        registerFactory(MinNumColumnsValidatorFactory.INSTANCE);
+        registerFactory(MinNumRowsValidatorFactory.INSTANCE);
+        registerFactory(MissingValueValidatorFactory.INSTANCE);
+    }
+
+    private void registerFactory(final ValidatorFactory<?, ?, ?> factory) {
+        final String key = factory.getSettingsKey();
+        CheckUtils.checkState(!m_keyToFactory.containsKey(key), "Duplicate key '%s' detected.");
+        m_keyToFactory.put(key, factory);
+    }
 
     /**
-     * @param config the {@link ValidatorConfig} for the {@link Validator}
-     * @return a new {@link Validator} configured according to {@link ValidatorConfig config}
+     * Creates a new {@link ValidatorConfig} by looking up the {@link ValidatorFactory} corresponding to <b>key</b>
+     * and invoking {@link ValidatorFactory#createConfig()} on it.
+     *
+     * @param key the key returned by {@link ValidatorFactory#getSettingsKey()}
+     * @return a fresh config for the provided <b>key</b>
      */
-    Validator<S, T> createValidator(C config);
-
-    /**
-     * @return a fresh instance of the {@link ValidatorDialog}
-     */
-    ValidatorDialog<C> createDialog();
-
-    /**
-     * @return the class of {@link ValidatorConfig} this factory is typed on
-     */
-    Class<C> getConfigClass();
-
-    /**
-     * @return a settings key which MUST be unique!
-     */
-    String getSettingsKey();
+    public ValidatorConfig createConfigForKey(final String key) {
+        CheckUtils.checkArgument(m_keyToFactory.containsKey(key), "Unknown key '%s' encountered.", key);
+        return m_keyToFactory.get(key).createConfig();
+    }
 
 }

@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.base.validation.modular;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -59,6 +60,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.validation.ValidatorConfig;
 import org.knime.js.base.node.base.validation.ValidatorFactory;
+import org.knime.js.base.node.base.validation.ValidatorRegistry;
 
 /**
  * The {@link ValidatorConfig} for a {@link ModularValidatorFactory}. It combines the configs of multiple
@@ -94,6 +96,26 @@ public final class ModularValidatorConfig implements ValidatorConfig {
         }
     }
 
+    /**
+     * Loads a fresh config from the provided {@link NodeSettingsRO settings}. Uses the {@link ValidatorRegistry} to
+     * create the appropriate config objects.
+     *
+     * @param settings {@link NodeSettingsRO} to load from
+     * @return a fresh config corresponding to the configuration stored in {@link NodeSettingsRO settings}
+     * @throws InvalidSettingsException if any settings can't be loaded
+     */
+    public static ModularValidatorConfig load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        final List<String> keys = new ArrayList<>();
+        final List<ValidatorConfig> configs = new ArrayList<>();
+        for (final String key : settings.keySet()) {
+            final ValidatorConfig config = ValidatorRegistry.INSTANCE.createConfigForKey(key);
+            config.loadInModel(settings.getNodeSettings(key));
+            keys.add(key);
+            configs.add(config);
+        }
+        return new ModularValidatorConfig(configs, keys);
+    }
+
     @Override
     public void loadInModel(final NodeSettingsRO settings) throws InvalidSettingsException {
         final Iterator<String> keys = m_keys.iterator();
@@ -118,7 +140,6 @@ public final class ModularValidatorConfig implements ValidatorConfig {
         while (keys.hasNext()) {
             assert configs.hasNext();
             try {
-                // TODO how to ensure backwards compatibility? Silently ignore problems?
                 configs.next().loadInDialog(settings.getNodeSettings(keys.next()));
             } catch (InvalidSettingsException e) {
                 LOGGER.error("No settings available for validator.", e);
