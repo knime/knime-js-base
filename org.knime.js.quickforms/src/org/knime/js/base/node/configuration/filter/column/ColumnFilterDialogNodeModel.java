@@ -62,6 +62,7 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.Validator;
 import org.knime.js.base.node.base.validation.min.column.MinNumColumnsValidatorFactory;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorFactory;
 import org.knime.js.base.node.configuration.DialogNodeModel;
 
@@ -128,7 +129,26 @@ public class ColumnFilterDialogNodeModel extends
     }
 
     private Validator<DataTableSpec, BufferedDataTable> createSpecValidator() {
-        return VALIDATOR_FACTORY.createValidator(getConfig().getValidatorConfig());
+        return createSpecValidator(getConfig().getValidatorConfig());
+    }
+
+    private static Validator<DataTableSpec, BufferedDataTable>
+        createSpecValidator(final ModularValidatorConfig config) {
+        return VALIDATOR_FACTORY.createValidator(config);
+    }
+
+    /**
+     * Validates the settings provided by the user in either the node dialog or the component dialog.
+     *
+     * @param spec the (filtered) {@link DataTableSpec} of the node input
+     * @param included the names of the columns included by the user settings
+     * @param validatorConfig the {@link ModularValidatorConfig} configured by the user in the node dialog
+     */
+    static void validateUserSettings(final DataTableSpec spec, final String[] included,
+        final ModularValidatorConfig validatorConfig) throws InvalidSettingsException {
+        final ColumnRearranger cr = new ColumnRearranger(spec);
+        cr.keepOnly(included);
+        createSpecValidator(validatorConfig).validateSpec(cr.createSpec());
     }
 
     /**

@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
@@ -64,6 +65,7 @@ import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel
 public class ColumnFilterConfigurationPanel extends AbstractDialogNodeConfigurationPanel<ColumnFilterDialogNodeValue> {
 
     private final DataColumnSpecFilterPanel m_columns;
+
     private final ColumnFilterDialogNodeRepresentation m_representation;
 
     /**
@@ -104,7 +106,10 @@ public class ColumnFilterConfigurationPanel extends AbstractDialogNodeConfigurat
         NodeSettings settings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         config.saveConfiguration(settings);
         value.setSettings(settings);
-        value.updateFromSpec(m_representation.getSpec());
+        final DataTableSpec spec = m_representation.getSpec();
+        value.updateFromSpec(spec);
+        ColumnFilterDialogNodeModel.validateUserSettings(spec, value.getColumns(),
+            m_representation.getValidatorConfig());
         return value;
     }
 

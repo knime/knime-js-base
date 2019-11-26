@@ -58,8 +58,6 @@ import javax.swing.SpinnerNumberModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.container.ColumnRearranger;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
@@ -73,7 +71,6 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.ValidatorDialog;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
-import org.knime.js.base.node.base.validation.modular.ModularValidatorFactory;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
@@ -91,9 +88,6 @@ public final class ColumnFilterDialogNodeNodeDialog
     private final JSpinner m_numberVisOptionSpinner;
 
     private final InputSpecFilter.Dialog m_inputSpecFilterDialog = new InputSpecFilter.Dialog();
-
-    private final ModularValidatorFactory<DataTableSpec, BufferedDataTable> VALIDATOR_FACTORY =
-        ColumnFilterDialogNodeModel.VALIDATOR_FACTORY;
 
     private DataTableSpec m_unfilteredSpec;
 
@@ -208,11 +202,8 @@ public final class ColumnFilterDialogNodeNodeDialog
 
         m_validatorDialog.save(m_config.getValidatorConfig());
 
-        final ColumnRearranger cr = new ColumnRearranger(m_filteredSpec);
-        cr.keepOnly(filterConfig.applyTo(m_filteredSpec).getIncludes());
-        final DataTableSpec outSpec = cr.createSpec();
-        VALIDATOR_FACTORY.createValidator(m_config.getValidatorConfig()).validateSpec(outSpec);
-
+        ColumnFilterDialogNodeModel.validateUserSettings(m_filteredSpec,
+            filterConfig.applyTo(m_filteredSpec).getIncludes(), m_config.getValidatorConfig());
 
         m_config.saveSettings(settings);
     }

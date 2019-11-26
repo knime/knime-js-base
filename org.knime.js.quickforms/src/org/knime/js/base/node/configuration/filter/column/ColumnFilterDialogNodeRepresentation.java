@@ -54,6 +54,9 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigDeserializer;
+import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigSerializer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,6 +73,8 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
 
     private final DataTableSpec m_spec;
 
+    private ModularValidatorConfig m_validatorConfig;
+
     @JsonCreator
     private ColumnFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
@@ -80,10 +85,15 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions,
-        @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec) {
+        @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec,
+        // Jackson simply sets validatorConfig to null if old JSON is parsed that doesn't contain the property yet
+        @JsonProperty("validatorConfig") @JsonDeserialize(
+            using = ModularValidatorConfigDeserializer.class) final ModularValidatorConfig validatorConfig) {
         super(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions,
             numberVisOptions);
         m_spec = spec;
+        m_validatorConfig =
+            validatorConfig == null ? ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createConfig() : validatorConfig;
     }
 
     /**
@@ -94,7 +104,17 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
     public ColumnFilterDialogNodeRepresentation(final ColumnFilterDialogNodeValue currentValue,
         final ColumnFilterDialogNodeConfig config, final DataTableSpec spec) {
         super(currentValue, config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig());
+        m_validatorConfig = config.getValidatorConfig();
         m_spec = spec;
+    }
+
+    /**
+     * @return the validator configuration
+     */
+    @JsonProperty("validatorConfig")
+    @JsonSerialize(using = ModularValidatorConfigSerializer.class)
+    public ModularValidatorConfig getValidatorConfig() {
+        return m_validatorConfig;
     }
 
     /**
