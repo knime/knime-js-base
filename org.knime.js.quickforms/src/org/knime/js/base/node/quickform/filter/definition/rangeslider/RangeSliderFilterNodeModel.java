@@ -44,6 +44,8 @@
  */
 package org.knime.js.base.node.quickform.filter.definition.rangeslider;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -290,30 +292,45 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         return resultArray;
     }
 
-    private double calculateClosestValue(final double value) {
+    private double calculateClosestValue(final double value1) {
         final SliderSettings sliderSettings = getViewRepresentation().getSliderSettings();
         double stepSize = sliderSettings.getStep();
-        double maximum = sliderSettings.getRangeMaxValue();
-        double minimum = sliderSettings.getRangeMinValue();
-        if ((value - minimum) % stepSize == 0 || value == minimum || value == maximum) {
+
+        String stepSizeString = Double.toString(stepSize);
+        int decimalPlaces = stepSizeString.length() - stepSizeString.indexOf(".") - 1;
+
+        //double maximum = sliderSettings.getRangeMaxValue();
+        //double minimum = sliderSettings.getRangeMinValue();
+
+        BigDecimal maximum = new BigDecimal(sliderSettings.getRangeMaxValue()).setScale(decimalPlaces, RoundingMode.UP);
+        BigDecimal minimum = new BigDecimal(sliderSettings.getRangeMinValue()).setScale(decimalPlaces, RoundingMode.DOWN);
+        BigDecimal value = new BigDecimal(value1).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
+
+        boolean mod = BigDecimal.ZERO.compareTo(value.subtract(minimum).remainder(new BigDecimal(stepSize).setScale(decimalPlaces, RoundingMode.HALF_EVEN))) == 0 ? true :false;
+
+        if (/*(value - minimum) % stepSize == 0*/ mod|| value == minimum || value == maximum) {
             // no rounding needed, just boxing
-            return Math.max(Math.min(value, maximum), minimum);
+            //return Math.max(Math.min(value, maximum), minimum);
+            return value.min(maximum).max(minimum).doubleValue();
+            //return maximum.doubleValue();
         }
         //TODO: this leads to longer waiting times if there are many steps, should be refactored
-        double curStep = minimum;
+        double curStep = minimum.doubleValue();
         double distance = Double.POSITIVE_INFINITY;
         double closestStep = Double.NaN;
-        while (curStep < maximum) {
-            double cdistance = Math.abs(curStep - value);
+        while (curStep < maximum.doubleValue()) {
+            double cdistance = Math.abs(curStep - value.doubleValue());
             if (cdistance < distance){
                 closestStep = curStep;
                 distance = cdistance;
             }
             curStep += stepSize;
         }
-        double cdistance = Math.abs(maximum - value);
+
+        double cdistance = Math.abs(maximum.doubleValue() - value.doubleValue());
+
         if(cdistance < distance){
-            closestStep = maximum;
+            closestStep = maximum.doubleValue();
         }
 
         return closestStep;
