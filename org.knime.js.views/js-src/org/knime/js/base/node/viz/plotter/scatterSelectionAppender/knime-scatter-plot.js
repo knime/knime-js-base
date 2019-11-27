@@ -937,26 +937,22 @@ window.knimeScatterPlotSelectionAppender = (function () {
             if (isRowIncludedInFilter(rows[i], filter)) {
                 // displaying the point
                 dataset.unselect(FILTERED_ID, 'series 1', String(dataId), false);
-                showIds.push(dataId);
+                showIds.push(dataId.toString());
             } else {
                 // hiding the point
                 dataset.select(FILTERED_ID, 'series 1', String(dataId), false);
-                hideIds.push(dataId);
+                hideIds.push(dataId.toString());
             }
         }
 
         d3.selectAll('circle').classed('filtered', function () {
             var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
-            for (var i = 0; i < showIds.length; i++) {
-                if (itemKey === showIds[i]) {
+                if (showIds.indexOf(itemKey) > -1) {
                     return false;
                 }
-            }
-            for (var j = 0; j < hideIds.length; j++) {
-                if (itemKey === hideIds[j]) {
+                if (hideIds.indexOf(itemKey) > -1) {
                     return true;
                 }
-            }
             return false;
         });
     };
