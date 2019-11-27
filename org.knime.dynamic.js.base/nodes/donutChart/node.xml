@@ -45,7 +45,7 @@
 	    		<columnSelectorOption name="Frequency column" id="freq" 
 	    			inPortIndex="0" label="Frequency Column" saveInView="true" 
 	    			filterClasses="org.knime.core.data.DoubleValue"
-	    			enableDependency="aggr" enableValue="Sum Average">
+	    			enableDependency="aggr" enableValue="Sum Average" optional="true">
 	    			Select the column with the frequency for the chart.
 	    			<n:i>Note:</n:i> negative values will be taken with their absolute magnitude.<n:br/>
 	    			Missing values in the frequency column will be ignored with a corresponding warning message.<n:br/>
