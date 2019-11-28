@@ -1,4 +1,4 @@
-/* global kt:false, require:false*/
+/* global kt:false, require:false */
 window.knimeGenericView = (function () {
 
     var view = {};
@@ -6,8 +6,8 @@ window.knimeGenericView = (function () {
         _value,
         SETTINGS,
         FLOW_VARIABLES,
-    
-    
+
+
         /**
          * Function declarations
          */
@@ -37,10 +37,10 @@ window.knimeGenericView = (function () {
                     var styleDep = document.createElement('link');
                     styleDep.type = 'text/css';
                     styleDep.rel = 'stylesheet';
-                    if (knimeService && knimeService.isRunningInWebportal()) {
+                    if (knimeService.resourceBaseUrl) {
+                        styleDep.href = knimeService.resourceBaseUrl + '/' + representation.cssDependencies[j];
+                    } else if (knimeService.isRunningInWebportal()) { // legacy web portal
                         styleDep.href = './VAADIN/src-js/' + representation.cssDependencies[j];
-                    } else {
-                        styleDep.href = representation.cssDependencies[j];
                     }
                     head.insertBefore(styleDep, linkBefore);
                 }
@@ -62,7 +62,7 @@ window.knimeGenericView = (function () {
             if (!libs) {
                 libs = [];
             }
-            if (knimeService && knimeService.isRunningInWebportal()) {
+            if (knimeService.isRunningInWebportal()) {
                 for (var i = 0; i < libs.length; i++) {
                     libs[i] = './VAADIN/src-js/' + libs[i];
                 }
