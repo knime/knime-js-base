@@ -51,6 +51,8 @@ package org.knime.js.base.node.configuration;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -67,13 +69,23 @@ import org.knime.js.base.node.quickform.ValueOverwriteMode;
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <REP> the type of representation of the node
+ * @param <VAL> the type of value of the node
+ * @param <CONF> the type of configuration of the node
  */
 public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     VAL extends DialogNodeValue, CONF extends DialogNodeConfig<VAL>>
     extends NodeModel implements DialogNode<REP, VAL> {
 
     private final Object m_lock = new Object();
-    private CONF m_config = createEmptyConfig();
+    private final LazyInitializer<CONF> m_configInitializer = new LazyInitializer<CONF>() {
+
+        @Override
+        protected CONF initialize() throws ConcurrentException {
+            return createEmptyConfig();
+        }
+
+    };
     private VAL m_dialogValue = null;
 
     /**
@@ -89,7 +101,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
+        getConfig().saveSettings(settings);
     }
 
     /**
@@ -105,7 +117,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      */
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
+        getConfig().loadSettings(settings);
     }
 
     /**
@@ -122,7 +134,11 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      * @return The config of this node.
      */
     protected CONF getConfig() {
-        return m_config;
+        try {
+            return m_configInitializer.get();
+        } catch (ConcurrentException e) {
+            throw new IllegalStateException("Couldn't create empty config.", e);
+        }
     }
 
     /**
@@ -136,7 +152,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     /** {@inheritDoc} */
     @Override
     public String getParameterName() {
-        return m_config.getParameterName();
+        return getConfig().getParameterName();
     }
 
     /**
@@ -155,7 +171,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     @Override
     public VAL getDefaultValue() {
         synchronized (m_lock) {
-            return m_config.getDefaultValue();
+            return getConfig().getDefaultValue();
         }
     }
 
@@ -182,7 +198,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      */
     @Override
     public boolean isHideInDialog() {
-        return m_config.getHideInDialog();
+        return getConfig().getHideInDialog();
     }
 
     /**
@@ -190,7 +206,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
      */
     @Override
     public void setHideInDialog(final boolean hide) {
-        m_config.setHideInDialog(hide);
+        getConfig().setHideInDialog(hide);
     }
 
     /**
@@ -210,7 +226,7 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
                 case DIALOG:
                     return m_dialogValue;
                 default:
-                    return m_config.getDefaultValue();
+                    return getConfig().getDefaultValue();
             }
         }
     }

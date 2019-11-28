@@ -76,6 +76,26 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements DialogNodeValue {
 
     /**
+     * Constructs a new ColumnFilterDialogNodeValue.
+     *
+     * @deprecated as of KNIME AP 4.1.0 use {@link ColumnFilterDialogNodeValue#ColumnFilterDialogNodeValue(boolean)}
+     *             instead
+     */
+    @Deprecated
+    public ColumnFilterDialogNodeValue() {
+        super();
+    }
+
+    /**
+     * Constructs a new ColumnFilterDialogNodeValue.
+     *
+     * @param initializeFilterSettings set to true if the settings should be initialized
+     */
+    public ColumnFilterDialogNodeValue(final boolean initializeFilterSettings) {
+        super(initializeFilterSettings);
+    }
+
+    /**
      * @return the settings
      */
     @Override

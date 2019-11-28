@@ -87,6 +87,35 @@ public class ColumnFilterNodeValue extends JSONViewContent {
 
     private NodeSettings m_settings = null;
 
+    private static NodeSettings createDefaultSettings() {
+        final NodeSettings settings = new NodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        final DataColumnSpecFilterConfiguration filterConfig =
+            new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        filterConfig.saveConfiguration(settings);
+        return settings;
+    }
+
+    /**
+     * Creates a new column filter value that does not initialize its filter settings.
+     * @deprecated as of KNIME AP 4.1.0 use the {@link ColumnFilterNodeValue#ColumnFilterNodeValue(boolean)} instead
+     */
+    @Deprecated
+    public ColumnFilterNodeValue() {
+        this(false);
+    }
+
+    /**
+     * Creates a new column filter value that optionally initializes its column filter settings.
+     * Prior to 4.1.0 these were not initialized in the constructor which caused the Column Filter Configuration
+     * and Widget nodes to filter out all columns if the user did not open and save the dialog.
+     * @param initializeFilterSettings whether the filter settings should be initialized
+     */
+    public ColumnFilterNodeValue(final boolean initializeFilterSettings) {
+        if (initializeFilterSettings) {
+            m_settings = createDefaultSettings();
+        }
+    }
+
     /**
      * @return the columns
      */

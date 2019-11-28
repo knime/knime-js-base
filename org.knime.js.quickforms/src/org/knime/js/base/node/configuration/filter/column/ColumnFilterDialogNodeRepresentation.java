@@ -57,6 +57,7 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigDeserializer;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigSerializer;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -73,7 +74,9 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
 
     private final DataTableSpec m_spec;
 
-    private ModularValidatorConfig m_validatorConfig;
+    private final Version m_version;
+
+    private final ModularValidatorConfig m_validatorConfig;
 
     @JsonCreator
     private ColumnFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
@@ -88,24 +91,42 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec,
         // Jackson simply sets validatorConfig to null if old JSON is parsed that doesn't contain the property yet
         @JsonProperty("validatorConfig") @JsonDeserialize(
-            using = ModularValidatorConfigDeserializer.class) final ModularValidatorConfig validatorConfig) {
+            using = ModularValidatorConfigDeserializer.class) final ModularValidatorConfig validatorConfig,
+        @JsonProperty("version") final Version version) {
         super(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions,
             numberVisOptions);
         m_spec = spec;
         m_validatorConfig =
             validatorConfig == null ? ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createConfig() : validatorConfig;
+        m_version = version == null ? Version.PRE_4_1 : version;
     }
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
      * @param spec The current table spec
+     * @deprecated as of KNIME AP 4.1.0 use
+     *             {@link ColumnFilterDialogNodeRepresentation#ColumnFilterDialogNodeRepresentation(ColumnFilterDialogNodeValue, ColumnFilterDialogNodeConfig, DataTableSpec, Version)}
+     *             instead
      */
+    @Deprecated
     public ColumnFilterDialogNodeRepresentation(final ColumnFilterDialogNodeValue currentValue,
         final ColumnFilterDialogNodeConfig config, final DataTableSpec spec) {
+        this(currentValue, config, spec, Version.PRE_4_1);
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param config The config of the node
+     * @param spec The current table spec
+     * @param version the version of the corresponding Column Filter Configuration node
+     */
+    public ColumnFilterDialogNodeRepresentation(final ColumnFilterDialogNodeValue currentValue,
+        final ColumnFilterDialogNodeConfig config, final DataTableSpec spec, final Version version) {
         super(currentValue, config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig());
         m_validatorConfig = config.getValidatorConfig();
         m_spec = spec;
+        m_version = version;
     }
 
     /**
@@ -115,6 +136,14 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
     @JsonSerialize(using = ModularValidatorConfigSerializer.class)
     public ModularValidatorConfig getValidatorConfig() {
         return m_validatorConfig;
+    }
+
+    /**
+     * @return the version of the corresponding Column Filter Configuration node
+     */
+    @JsonProperty("version")
+    public Version getVersion() {
+        return m_version;
     }
 
     /**
@@ -155,6 +184,8 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
                 .append(m_spec)
+                .append(m_validatorConfig)
+                .append(m_version)
                 .toHashCode();
     }
 
@@ -176,6 +207,8 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(m_spec, other.m_spec)
+                .append(m_validatorConfig, other.m_validatorConfig)
+                .append(m_version, other.m_version)
                 .isEquals();
     }
 }

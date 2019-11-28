@@ -57,6 +57,7 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
 
 /**
  * The config for the column filter configuration node
@@ -76,10 +77,26 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
     private final ModularValidatorConfig m_validatorConfig =
         ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createConfig();
 
+    private final Version m_version;
+
+    /**
+     * Instantiate a new config object for Column Filter Configuration nodes prior to KNIME AP 4.1.0.
+     *
+     * @deprecated as of KNIME AP 4.1.0 use {@link ColumnFilterDialogNodeConfig#ColumnFilterDialogNodeConfig(Version)}
+     *             instead
+     */
+    @Deprecated
+    public ColumnFilterDialogNodeConfig() {
+        this(Version.PRE_4_1);
+    }
+
     /**
      * Instantiate a new config object
+     *
+     * @param version of the Column Filter Configuration
      */
-    public ColumnFilterDialogNodeConfig() {
+    public ColumnFilterDialogNodeConfig(final Version version) {
+        m_version = version;
         m_config = new ColumnFilterNodeConfig();
     }
 
@@ -107,7 +124,7 @@ public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeC
      */
     @Override
     protected ColumnFilterDialogNodeValue createEmptyValue() {
-        return new ColumnFilterDialogNodeValue();
+        return new ColumnFilterDialogNodeValue(m_version == Version.V_4_1);
     }
 
     /**

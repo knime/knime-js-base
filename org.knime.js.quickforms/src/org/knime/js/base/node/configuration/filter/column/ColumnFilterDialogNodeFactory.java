@@ -56,7 +56,9 @@ import org.knime.core.node.NodeView;
  * Factory for the column filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @deprecated as of KNIME AP 4.1.0 replaced by {@link ColumnFilterDialogNodeFactory2}
  */
+@Deprecated
 public class ColumnFilterDialogNodeFactory extends NodeFactory<ColumnFilterDialogNodeModel> {
 
     /**
@@ -79,7 +81,8 @@ public class ColumnFilterDialogNodeFactory extends NodeFactory<ColumnFilterDialo
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ColumnFilterDialogNodeModel> createNodeView(final int viewIndex, final ColumnFilterDialogNodeModel nodeModel) {
+    public NodeView<ColumnFilterDialogNodeModel> createNodeView(final int viewIndex,
+        final ColumnFilterDialogNodeModel nodeModel) {
         return null;
     }
 

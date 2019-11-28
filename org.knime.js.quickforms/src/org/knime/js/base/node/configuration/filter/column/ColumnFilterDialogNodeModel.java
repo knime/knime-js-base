@@ -58,6 +58,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.VariableType;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.Validator;
@@ -75,18 +76,56 @@ public class ColumnFilterDialogNodeModel extends
     DialogNodeModel<ColumnFilterDialogNodeRepresentation, ColumnFilterDialogNodeValue, ColumnFilterDialogNodeConfig>
     implements BufferedDataTableHolder {
 
+    /**
+     * The version of the Column Filter Configuration node.
+     * The versions correspond to KNIME Analytics Platform versions in which changes were made to the node.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     */
+    public enum Version {
+        /**
+         * The first version of the Column Filter Configuration node.
+         */
+        PRE_4_1,
+        /**
+         * The Column Filter Configuration node in KNIME Analytics Platform 4.1.0.
+         * Following changes were made:
+         * - Input filtering based on type and domain presence
+         * - Output validation based on number of columns selected
+         * - If the node is dragged onto the workbench and the dialog isn't opened before execution,
+         * the node now includes all rows by default (similar to the Column Filter node).
+         * - The node now outputs a string array flow variable instead of a comma separated string
+         */
+        V_4_1;
+    }
+
     static final ModularValidatorFactory<DataTableSpec, BufferedDataTable> VALIDATOR_FACTORY =
         new ModularValidatorFactory<>(MinNumColumnsValidatorFactory.INSTANCE);
+
+    private final Version m_version;
 
     private DataTableSpec m_spec = new DataTableSpec();
 
     private BufferedDataTable m_inTable = null;
 
     /**
-     * Creates a new column filter configuration node model
+     * Creates a new column filter configuration node model corresponding to {@link Version#PRE_4_1}
+     *
+     * @deprecated as of KNIME AP 4.1.0 use {@link ColumnFilterDialogNodeModel#ColumnFilterDialogNodeModel(Version)}
+     *             instead
      */
+    @Deprecated
     public ColumnFilterDialogNodeModel() {
+        this(Version.PRE_4_1);
+    }
+
+    /**
+     * Creates a new column filter configuration node model.
+     * @param version the version of the node to create
+     */
+    public ColumnFilterDialogNodeModel(final Version version) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{BufferedDataTable.TYPE});
+        m_version = version;
     }
 
     /**
@@ -156,7 +195,11 @@ public class ColumnFilterDialogNodeModel extends
      */
     private void createAndPushFlowVariable() {
         final String[] values = getRelevantValue().getColumns();
-        pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+        if (m_version == Version.PRE_4_1) {
+            pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+        } else {
+            pushFlowVariable(getConfig().getFlowVariableName(), VariableType.StringArrayType.INSTANCE, values);
+        }
     }
 
     /**
@@ -164,7 +207,7 @@ public class ColumnFilterDialogNodeModel extends
      */
     @Override
     public ColumnFilterDialogNodeValue createEmptyDialogValue() {
-        return new ColumnFilterDialogNodeValue();
+        return new ColumnFilterDialogNodeValue(m_version == Version.V_4_1);
     }
 
     /**
@@ -172,7 +215,7 @@ public class ColumnFilterDialogNodeModel extends
      */
     @Override
     public ColumnFilterDialogNodeConfig createEmptyConfig() {
-        return new ColumnFilterDialogNodeConfig();
+        return new ColumnFilterDialogNodeConfig(m_version);
     }
 
     /**
@@ -180,7 +223,7 @@ public class ColumnFilterDialogNodeModel extends
      */
     @Override
     protected ColumnFilterDialogNodeRepresentation getRepresentation() {
-        return new ColumnFilterDialogNodeRepresentation(getRelevantValue(), getConfig(), getSpec());
+        return new ColumnFilterDialogNodeRepresentation(getRelevantValue(), getConfig(), getSpec(), m_version);
     }
 
     private void updateValuesFromSpec(final DataTableSpec spec) {

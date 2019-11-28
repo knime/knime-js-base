@@ -72,6 +72,7 @@ import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.ValidatorDialog;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
 
 /**
  * The dialog for the column filter configuration node
@@ -80,6 +81,8 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  */
 public final class ColumnFilterDialogNodeNodeDialog
     extends FlowVariableDialogNodeNodeDialog<ColumnFilterDialogNodeValue> {
+
+    private final Version m_version;
 
     private final DataColumnSpecFilterPanel m_defaultField;
     private final JComboBox<String> m_type;
@@ -99,10 +102,23 @@ public final class ColumnFilterDialogNodeNodeDialog
         ColumnFilterDialogNodeModel.VALIDATOR_FACTORY.createDialog();
 
     /**
-     * Constructor, inits fields calls layout routines
+     * Constructor, inits fields calls layout routines Creates the dialog for Column Filter Configurations prior to
+     * KNIME AP 4.1.0.
+     *
+     * @deprecated as of KNIME AP 4.1.0 use
+     *             {@link ColumnFilterDialogNodeNodeDialog#ColumnFilterDialogNodeNodeDialog(Version)} instead
      */
+    @Deprecated
     public ColumnFilterDialogNodeNodeDialog() {
-        m_config = new ColumnFilterDialogNodeConfig();
+        this(Version.PRE_4_1);
+    }
+
+    /**
+     * @param version
+     */
+    public ColumnFilterDialogNodeNodeDialog(final Version version) {
+        m_version = version;
+        m_config = new ColumnFilterDialogNodeConfig(version);
         m_type = new JComboBox<>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_defaultField = new DataColumnSpecFilterPanel(false);
         m_inputSpecFilterDialog.addListener(e -> updateDefaultField());
@@ -129,7 +145,7 @@ public final class ColumnFilterDialogNodeNodeDialog
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        ColumnFilterDialogNodeValue value = new ColumnFilterDialogNodeValue();
+        ColumnFilterDialogNodeValue value = new ColumnFilterDialogNodeValue(m_version == Version.V_4_1);
         value.loadFromNodeSettings(settings);
         return StringUtils.join(value.getColumns(), ", ");
     }

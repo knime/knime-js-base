@@ -72,7 +72,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
     private boolean m_hideInDialog = DEFAULT_HIDE_IN_DIALOG;
 
     private static final String CFG_DEFAULT_VALUE = "defaultValue";
-    private VAL m_defaultValue = createEmptyValue();
+    private VAL m_defaultValue;
 
     private static final String CFG_PARAMETER_NAME = "parameterName";
     private String m_parameterName = SubNodeContainer.getDialogNodeParameterNameDefault(getClass());
@@ -94,7 +94,10 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
     /**
      * @return the default value
      */
-    public VAL getDefaultValue() {
+    public synchronized VAL getDefaultValue() {
+        if (m_defaultValue == null) {
+            m_defaultValue = createEmptyValue();
+        }
         return m_defaultValue;
     }
 
@@ -130,7 +133,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
      */
     public void saveSettings(final NodeSettingsWO settings) {
         NodeSettingsWO defaultValueSettings = settings.addNodeSettings(CFG_DEFAULT_VALUE);
-        m_defaultValue.saveToNodeSettings(defaultValueSettings);
+        getDefaultValue().saveToNodeSettings(defaultValueSettings);
         settings.addBoolean(CFG_HIDE_IN_DIALOG, m_hideInDialog);
         settings.addString(CFG_PARAMETER_NAME, m_parameterName);
     }
@@ -183,7 +186,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
         sb.append(", ");
         sb.append("defaultValue=");
         sb.append("{");
-        sb.append(m_defaultValue);
+        sb.append(getDefaultValue());
         sb.append("}");
         return sb.toString();
     }
@@ -196,7 +199,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
         return new HashCodeBuilder()
                 .append(m_hideInDialog)
                 .append(m_parameterName)
-                .append(m_defaultValue)
+                .append(getDefaultValue())
                 .toHashCode();
     }
 
@@ -219,7 +222,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
         return new EqualsBuilder()
                 .append(m_hideInDialog, other.m_hideInDialog)
                 .append(m_parameterName, other.m_parameterName)
-                .append(m_defaultValue, other.m_defaultValue)
+                .append(getDefaultValue(), other.getDefaultValue())
                 .isEquals();
     }
 

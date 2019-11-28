@@ -55,6 +55,7 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
 
 /**
  * The component dialog panel for the column filter configuration node
@@ -99,7 +100,8 @@ public class ColumnFilterConfigurationPanel extends AbstractDialogNodeConfigurat
      */
     @Override
     protected ColumnFilterDialogNodeValue createNodeValue() throws InvalidSettingsException {
-        ColumnFilterDialogNodeValue value = new ColumnFilterDialogNodeValue();
+        ColumnFilterDialogNodeValue value =
+            new ColumnFilterDialogNodeValue(m_representation.getVersion() == Version.V_4_1);
         DataColumnSpecFilterConfiguration config =
             new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         m_columns.saveConfiguration(config);
