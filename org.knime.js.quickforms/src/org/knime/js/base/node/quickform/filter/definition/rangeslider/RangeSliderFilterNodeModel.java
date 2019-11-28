@@ -294,54 +294,50 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
 
     private double calculateClosestValue(final double value, final boolean isMax) {
         final SliderSettings sliderSettings = getViewRepresentation().getSliderSettings();
-        double stepSize = sliderSettings.getStep();
+        final BigDecimal stepSize = BigDecimal.valueOf(sliderSettings.getStep());
+        final int decimalPlaces = stepSize.scale();
+        final BigDecimal maximum =
+            BigDecimal.valueOf(sliderSettings.getRangeMaxValue()).setScale(decimalPlaces, RoundingMode.UP);
+        final BigDecimal minimum =
+            BigDecimal.valueOf(sliderSettings.getRangeMinValue()).setScale(decimalPlaces, RoundingMode.DOWN);
+        final BigDecimal valueBig;
+        final boolean mod;
 
-        String stepSizeString = Double.toString(stepSize);
-        int decimalPlaces = stepSizeString.length() - stepSizeString.indexOf(".") - 1;
-
-        //TODO: Check if maximum has to be rounded to the step-size decimals
-        BigDecimal maximum = new BigDecimal(sliderSettings.getRangeMaxValue()).setScale(decimalPlaces, RoundingMode.UP);
-        BigDecimal minimum =
-            new BigDecimal(sliderSettings.getRangeMinValue()).setScale(decimalPlaces, RoundingMode.DOWN);
-
-        BigDecimal valueBig;
-        if (isMax) {
-            valueBig = new BigDecimal(value).setScale(decimalPlaces, RoundingMode.HALF_DOWN);
+        if (!isMax) {
+            valueBig = BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_DOWN);
         } else {
-            valueBig = new BigDecimal(value).setScale(decimalPlaces, RoundingMode.HALF_UP);
+            valueBig = BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_UP);
         }
 
-        boolean mod;
-        if (stepSize != 0) {
+        if (BigDecimal.ZERO.compareTo(stepSize) != 0) {
             mod = BigDecimal.ZERO.compareTo(valueBig.subtract(minimum)
-                .remainder(new BigDecimal(stepSize).setScale(decimalPlaces, RoundingMode.CEILING))) == 0 ? true : false;
+                .remainder(stepSize.setScale(decimalPlaces, RoundingMode.FLOOR))) == 0;
         } else {
             mod = true;
         }
 
-        if (mod || valueBig == minimum || valueBig == maximum) {
+        if (mod || valueBig.equals(minimum) || valueBig.equals(maximum)) {
             return valueBig.min(maximum).max(minimum).doubleValue();
         }
         //TODO: this leads to longer waiting times if there are many steps, should be refactored
-        double curStep = minimum.doubleValue();
-        double distance = Double.POSITIVE_INFINITY;
-        double closestStep = Double.NaN;
-        while (curStep < maximum.doubleValue()) {
-            double cdistance = Math.abs(curStep - valueBig.doubleValue());
-            if (cdistance < distance){
+        BigDecimal curStep = minimum;
+        BigDecimal distance = BigDecimal.valueOf(Double.MAX_VALUE);
+        BigDecimal closestStep = BigDecimal.ZERO;
+        while (curStep.compareTo(maximum) < 0) {
+            BigDecimal cdistance = curStep.subtract(valueBig).abs();
+            if (cdistance.compareTo(distance) < -1){
                 closestStep = curStep;
                 distance = cdistance;
             }
-            curStep += stepSize;
+            curStep =  curStep.add(stepSize);
         }
 
-        double cdistance = Math.abs(maximum.doubleValue() - valueBig.doubleValue());
+        final BigDecimal cdistance = maximum.subtract(valueBig).abs();
 
-        if(cdistance < distance){
-            closestStep = maximum.doubleValue();
+        if(cdistance.compareTo(distance) < 0){
+            closestStep = maximum;
         }
-
-        return closestStep;
+        return closestStep.doubleValue();
     }
 
     private DataTableSpec getOutSpec(final DataTableSpec inSpec, final String columnName, final FilterHandler filter) {
