@@ -138,6 +138,7 @@ public final class ColumnFilterDialogNodeNodeDialog
         filterConfig.saveConfiguration(filterSettings);
         filterConfig.loadConfigurationInDialog(filterSettings, filtered);
         m_defaultField.loadConfiguration(filterConfig, filtered);
+        m_defaultField.revalidate();
     }
 
     /**
