@@ -286,40 +286,48 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         double[] resultArray = new double[2];
 
         if (getViewRepresentation() != null && getViewRepresentation().getSliderSettings().getStep() != null) {
-            resultArray[0] = calculateClosestValue(minimumVal);
-            resultArray[1] = calculateClosestValue(maximumVal);
+            resultArray[0] = calculateClosestValue(minimumVal, false);
+            resultArray[1] = calculateClosestValue(maximumVal, true);
         }
         return resultArray;
     }
 
-    private double calculateClosestValue(final double value1) {
+    private double calculateClosestValue(final double value, final boolean isMax) {
         final SliderSettings sliderSettings = getViewRepresentation().getSliderSettings();
         double stepSize = sliderSettings.getStep();
 
         String stepSizeString = Double.toString(stepSize);
         int decimalPlaces = stepSizeString.length() - stepSizeString.indexOf(".") - 1;
 
-        //double maximum = sliderSettings.getRangeMaxValue();
-        //double minimum = sliderSettings.getRangeMinValue();
-
+        //TODO: Check if maximum has to be rounded to the step-size decimals
         BigDecimal maximum = new BigDecimal(sliderSettings.getRangeMaxValue()).setScale(decimalPlaces, RoundingMode.UP);
-        BigDecimal minimum = new BigDecimal(sliderSettings.getRangeMinValue()).setScale(decimalPlaces, RoundingMode.DOWN);
-        BigDecimal value = new BigDecimal(value1).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
+        BigDecimal minimum =
+            new BigDecimal(sliderSettings.getRangeMinValue()).setScale(decimalPlaces, RoundingMode.DOWN);
 
-        boolean mod = BigDecimal.ZERO.compareTo(value.subtract(minimum).remainder(new BigDecimal(stepSize).setScale(decimalPlaces, RoundingMode.HALF_EVEN))) == 0 ? true :false;
+        BigDecimal valueBig;
+        if (isMax) {
+            valueBig = new BigDecimal(value).setScale(decimalPlaces, RoundingMode.HALF_DOWN);
+        } else {
+            valueBig = new BigDecimal(value).setScale(decimalPlaces, RoundingMode.HALF_UP);
+        }
 
-        if (/*(value - minimum) % stepSize == 0*/ mod|| value == minimum || value == maximum) {
-            // no rounding needed, just boxing
-            //return Math.max(Math.min(value, maximum), minimum);
-            return value.min(maximum).max(minimum).doubleValue();
-            //return maximum.doubleValue();
+        boolean mod;
+        if (stepSize != 0) {
+            mod = BigDecimal.ZERO.compareTo(valueBig.subtract(minimum)
+                .remainder(new BigDecimal(stepSize).setScale(decimalPlaces, RoundingMode.CEILING))) == 0 ? true : false;
+        } else {
+            mod = true;
+        }
+
+        if (mod || valueBig == minimum || valueBig == maximum) {
+            return valueBig.min(maximum).max(minimum).doubleValue();
         }
         //TODO: this leads to longer waiting times if there are many steps, should be refactored
         double curStep = minimum.doubleValue();
         double distance = Double.POSITIVE_INFINITY;
         double closestStep = Double.NaN;
         while (curStep < maximum.doubleValue()) {
-            double cdistance = Math.abs(curStep - value.doubleValue());
+            double cdistance = Math.abs(curStep - valueBig.doubleValue());
             if (cdistance < distance){
                 closestStep = curStep;
                 distance = cdistance;
@@ -327,7 +335,7 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
             curStep += stepSize;
         }
 
-        double cdistance = Math.abs(maximum.doubleValue() - value.doubleValue());
+        double cdistance = Math.abs(maximum.doubleValue() - valueBig.doubleValue());
 
         if(cdistance < distance){
             closestStep = maximum.doubleValue();
