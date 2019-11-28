@@ -58,6 +58,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.VariableType;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
@@ -71,16 +72,53 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
 public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
         ColumnFilterNodeValue, ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
 
+    /**
+     * The version of the Column Filter Widget node.
+     * The versions correspond to KNIME Analytics Platform versions in which changes were made to the node.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     */
+    public enum Version {
+        /**
+         * The first version of the Column Filter Widget node.
+         */
+        PRE_4_1,
+        /**
+         * The Column Filter Widget node in KNIME Analytics Platform 4.1.0.
+         * Following changes were made:
+         * - If the node is dragged onto the workbench and the dialog isn't opened before execution,
+         * the node now includes all rows by default (similar to the Column Filter node).
+         * - The node now outputs a string array flow variable instead of a comma separated string
+         */
+        V_4_1;
+    }
+
     private DataTableSpec m_spec = new DataTableSpec();
     private BufferedDataTable m_inTable = null;
+
+    private final Version m_version;
 
     /**
      * Creates a new column filter widget node model
      *
      * @param viewName the interactive view name
+     * @deprecated as of KNIME AP 4.1.0 use
+     *             {@link ColumnFilterWidgetNodeModel#ColumnFilterWidgetNodeModel(String, Version)} instead
      */
+    @Deprecated
     protected ColumnFilterWidgetNodeModel(final String viewName) {
+        this(viewName, Version.PRE_4_1);
+    }
+
+    /**
+     * Creates a new column filter widget node model
+     *
+     * @param viewName the interactive view name
+     * @param version the version of the Column Filter Widget
+     */
+    protected ColumnFilterWidgetNodeModel(final String viewName, final Version version) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{BufferedDataTable.TYPE}, viewName);
+        m_version = version;
     }
 
     /**
@@ -119,7 +157,11 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     private void createAndPushFlowVariable() {
         final String[] values = getRelevantValue().getColumns();
-        pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+        if (m_version == Version.PRE_4_1) {
+            pushFlowVariableString(getConfig().getFlowVariableName(), StringUtils.join(values, ","));
+        } else {
+            pushFlowVariable(getConfig().getFlowVariableName(), VariableType.StringArrayType.INSTANCE, values);
+        }
     }
 
     /**
@@ -127,7 +169,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     @Override
     public ColumnFilterNodeValue createEmptyViewValue() {
-        return new ColumnFilterNodeValue();
+        return new ColumnFilterNodeValue(m_version == Version.V_4_1);
     }
 
     /**
@@ -143,7 +185,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     @Override
     public ColumnFilterWidgetConfig createEmptyConfig() {
-        return new ColumnFilterWidgetConfig();
+        return new ColumnFilterWidgetConfig(m_version);
     }
 
     /**

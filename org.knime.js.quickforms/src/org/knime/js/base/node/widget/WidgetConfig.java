@@ -71,7 +71,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
     private static final String CFG_DEFAULT_VALUE = "defaultValue";
-    private VAL m_defaultValue = createEmptyValue();
+    private VAL m_defaultValue;
 
     /**
      * @return the hideInWizard
@@ -104,7 +104,10 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     /**
      * @return the default value
      */
-    public VAL getDefaultValue() {
+    public synchronized VAL getDefaultValue() {
+        if (m_defaultValue == null) {
+            m_defaultValue = createEmptyValue();
+        }
         return m_defaultValue;
     }
 
@@ -120,7 +123,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
      */
     public void saveSettings(final NodeSettingsWO settings) {
         NodeSettingsWO defaultValueSettings = settings.addNodeSettings(CFG_DEFAULT_VALUE);
-        m_defaultValue.saveToNodeSettings(defaultValueSettings);
+        getDefaultValue().saveToNodeSettings(defaultValueSettings);
         settings.addBoolean(CFG_HIDE_IN_WIZARD, m_hideInWizard);
         settings.addString(CFG_CUSTOM_CSS, m_customCSS);
     }
@@ -164,7 +167,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         sb.append(", ");
         sb.append("defaultValue=");
         sb.append("{");
-        sb.append(m_defaultValue);
+        sb.append(getDefaultValue());
         sb.append("}");
         return sb.toString();
     }
@@ -177,7 +180,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         return new HashCodeBuilder()
                 .append(m_hideInWizard)
                 .append(m_customCSS)
-                .append(m_defaultValue)
+                .append(getDefaultValue())
                 .toHashCode();
     }
 
@@ -200,7 +203,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
         return new EqualsBuilder()
                 .append(m_hideInWizard, other.m_hideInWizard)
                 .append(m_customCSS, other.m_customCSS)
-                .append(m_defaultValue, other.m_defaultValue)
+                .append(getDefaultValue(), other.getDefaultValue())
                 .isEquals();
     }
 

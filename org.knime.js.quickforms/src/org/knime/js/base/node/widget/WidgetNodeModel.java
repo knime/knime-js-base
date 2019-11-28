@@ -53,6 +53,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -77,7 +79,13 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
 public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends JSONViewContent,
     CONF extends WidgetConfig<VAL>> extends AbstractWizardNodeModel<REP, VAL> implements CSSModifiable {
 
-    private CONF m_config = createEmptyConfig();
+    private final LazyInitializer<CONF> m_configInitializer = new LazyInitializer<CONF>() {
+
+        @Override
+        protected CONF initialize() throws ConcurrentException {
+            return createEmptyConfig();
+        }
+    };
 
     // don't use viewValue from super class to be able check if defaultValue was overwritten @see #getOverwriteMode()
     private VAL m_viewValue;
@@ -96,7 +104,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
+        getConfig().saveSettings(settings);
     }
 
     /**
@@ -112,7 +120,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
+        getConfig().loadSettings(settings);
     }
 
     /**
@@ -124,7 +132,11 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      * @return the config of this node
      */
     protected CONF getConfig() {
-        return m_config;
+        try {
+            return m_configInitializer.get();
+        } catch (ConcurrentException e) {
+            throw new IllegalStateException("Couldn't create empty config.", e);
+        }
     }
 
     /**
@@ -132,7 +144,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public boolean isHideInWizard() {
-        return m_config.isHideInWizard();
+        return getConfig().isHideInWizard();
     }
 
     /**
@@ -140,7 +152,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public void setHideInWizard(final boolean hide) {
-        m_config.setHideInWizard(hide);
+        getConfig().setHideInWizard(hide);
     }
 
     /**
@@ -148,7 +160,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public String getCssStyles() {
-        return m_config.getCustomCSS();
+        return getConfig().getCustomCSS();
     }
 
     /**
@@ -156,7 +168,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public void setCssStyles(final String styles) {
-        m_config.setCustomCSS(styles);
+        getConfig().setCustomCSS(styles);
     }
 
     /**
@@ -240,7 +252,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
                 case WIZARD:
                     return getViewValue();
                 default:
-                    return m_config.getDefaultValue();
+                    return getConfig().getDefaultValue();
             }
         }
     }

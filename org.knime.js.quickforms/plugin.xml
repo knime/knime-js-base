@@ -197,7 +197,7 @@
       </node>
       <node
             category-path="/flowabstraction/widgets/selection"
-            deprecated="false"
+            deprecated="true"
             factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory">
       </node>
       <node
@@ -304,6 +304,11 @@
             category-path="/flowabstraction/configuration/selection"
             deprecated="false"
             factory-class="org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeFactory2">
+      </node>
+      <node
+            category-path="/flowabstraction/widgets/selection"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory2">
       </node>
    </extension>
    <extension

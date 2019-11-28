@@ -56,6 +56,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
  * The config for the column filter widget node
@@ -66,10 +67,25 @@ public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<Co
 
     private final ColumnFilterNodeConfig m_config;
 
+    private final Version m_version;
+
     /**
-     * Instantiate a new config object
+     * Instantiate a new config object for Column Filter Widgets prior to KNIME AP 4.1.
+     *
+     * @deprecated as of KNIME AP 4.1.0 use the {@link ColumnFilterWidgetConfig#ColumnFilterWidgetConfig(Version)}
+     *             instead
      */
+    @Deprecated
     public ColumnFilterWidgetConfig() {
+        this(Version.PRE_4_1);
+    }
+
+    /**
+     * Instantiate a new config object.
+     * @param version of the Column Filter Widget
+     */
+    public ColumnFilterWidgetConfig(final Version version) {
+        m_version = version;
         m_config = new ColumnFilterNodeConfig();
     }
 
@@ -85,7 +101,7 @@ public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<Co
      */
     @Override
     protected ColumnFilterNodeValue createEmptyValue() {
-        return new ColumnFilterNodeValue();
+        return new ColumnFilterNodeValue(m_version == Version.V_4_1);
     }
 
     /**

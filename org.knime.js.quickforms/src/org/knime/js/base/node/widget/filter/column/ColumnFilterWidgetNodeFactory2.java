@@ -54,23 +54,23 @@ import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
  * Factory for the column filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @deprecated as of KNIME AP 4.1.0 replaced by {@link ColumnFilterWidgetNodeFactory2}
  */
-@Deprecated
-public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
+public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidgetNodeModel> implements
+    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
+    ColumnFilterNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName());
+        return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
     }
 
     /**
@@ -85,8 +85,7 @@ public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidge
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final ColumnFilterWidgetNodeModel nodeModel) {
+    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex, final ColumnFilterWidgetNodeModel nodeModel) {
         return null;
     }
 
@@ -103,7 +102,7 @@ public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidge
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterWidgetNodeDialog();
+        return new ColumnFilterWidgetNodeDialog(Version.V_4_1);
     }
 
 }

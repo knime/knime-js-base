@@ -70,6 +70,7 @@ import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFa
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
  * Node dialog for the column filter widget node
@@ -86,12 +87,28 @@ public class ColumnFilterWidgetNodeDialog extends FlowVariableWidgetNodeDialog<C
 
     private final ColumnFilterWidgetConfig m_config;
 
+    private final Version m_version;
+
+    /**
+     * Constructor, inits fields calls layout routines Creates the dialog for Column Filter Widgets prior to KNIME AP
+     * 4.1.
+     *
+     * @deprecated as of KNIME AP 4.1.0 use {@link ColumnFilterWidgetNodeDialog#ColumnFilterWidgetNodeDialog(Version)}
+     *             instead
+     */
+    @Deprecated
+    public ColumnFilterWidgetNodeDialog() {
+        this(Version.PRE_4_1);
+    }
+
     /**
      * Constructor, inits fields calls layout routines
+     * @param version the version of the Column Filter Widget
      */
-    public ColumnFilterWidgetNodeDialog() {
-        m_config = new ColumnFilterWidgetConfig();
-        m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
+    public ColumnFilterWidgetNodeDialog(final Version version) {
+        m_version = version;
+        m_config = new ColumnFilterWidgetConfig(version);
+        m_type = new JComboBox<>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_defaultField = new DataColumnSpecFilterPanel(false);
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
@@ -103,7 +120,7 @@ public class ColumnFilterWidgetNodeDialog extends FlowVariableWidgetNodeDialog<C
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        ColumnFilterNodeValue value = new ColumnFilterNodeValue();
+        ColumnFilterNodeValue value = new ColumnFilterNodeValue(m_version == Version.V_4_1);
         value.loadFromNodeSettings(settings);
         return StringUtils.join(value.getColumns(), ", ");
     }

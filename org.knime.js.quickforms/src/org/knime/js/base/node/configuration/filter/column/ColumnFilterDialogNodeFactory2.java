@@ -44,33 +44,28 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   28 May 2019 (albrecht): created
+ *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.filter.column;
+package org.knime.js.base.node.configuration.filter.column;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
 
 /**
- * Factory for the column filter widget node
+ * Factory for the column filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @deprecated as of KNIME AP 4.1.0 replaced by {@link ColumnFilterWidgetNodeFactory2}
  */
-@Deprecated
-public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
+public class ColumnFilterDialogNodeFactory2 extends NodeFactory<ColumnFilterDialogNodeModel> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName());
+    public ColumnFilterDialogNodeModel createNodeModel() {
+        return new ColumnFilterDialogNodeModel(Version.V_4_1);
     }
 
     /**
@@ -85,8 +80,7 @@ public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidge
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final ColumnFilterWidgetNodeModel nodeModel) {
+    public NodeView<ColumnFilterDialogNodeModel> createNodeView(final int viewIndex, final ColumnFilterDialogNodeModel nodeModel) {
         return null;
     }
 
@@ -103,7 +97,7 @@ public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidge
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterWidgetNodeDialog();
+        return new ColumnFilterDialogNodeNodeDialog(Version.V_4_1);
     }
 
 }
