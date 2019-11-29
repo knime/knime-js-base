@@ -122,6 +122,7 @@ public class BooleanInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Bo
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 

@@ -85,7 +85,7 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
-        addPairToPanel("Push Integer Flow Variable: ", m_pushIntVar, panelWithGBLayout, gbc);
+        addPairToPanel("Output as Integer: ", m_pushIntVar, panelWithGBLayout, gbc);
     }
 
     /**

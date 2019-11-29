@@ -121,6 +121,7 @@ public class BooleanInputDialogNodeConfig extends LabeledFlowVariableDialogNodeC
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 

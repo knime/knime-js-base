@@ -27,13 +27,16 @@
         <option name="Default Value">
           The value that is selected by default.
         </option>
+        <option name="Output as Integer">
+          If set, the output variable will be of type integer (as opposed to type boolean).
+        </option>
 	</fullDescription>
 	<interactiveView name="Boolean Widget">
         Displays a checkbox which represents the boolean value.
     </interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">
-		  Variable output (integer) with the given variable defined.
+		  Variable output with the given variable defined.
 		</outPort>
 	</ports>
 </knimeNode>
