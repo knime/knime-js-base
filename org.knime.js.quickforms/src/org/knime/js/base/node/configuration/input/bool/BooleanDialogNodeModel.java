@@ -45,6 +45,7 @@
 package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.workflow.VariableType.BooleanType;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**
@@ -61,7 +62,13 @@ public class BooleanDialogNodeModel extends
     @Override
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         boolean value = getRelevantValue().getBoolean();
-        pushFlowVariableInt(getConfig().getFlowVariableName(), value ? 1 : 0);
+        final BooleanInputDialogNodeConfig config = getConfig();
+        final String name = config.getFlowVariableName();
+        if (config.getBooleanConfig().isPushIntVar()) {
+            pushFlowVariableInt(name, value ? 1 : 0);
+        } else {
+            pushFlowVariable(name, BooleanType.INSTANCE, value);
+        }
     }
 
     /**

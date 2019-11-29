@@ -50,6 +50,10 @@ package org.knime.js.base.node.widget.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
@@ -60,12 +64,55 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  */
 public class BooleanInputWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanNodeValue> {
 
+    private final BooleanNodeConfig m_config;
+
+    /**
+     * Instantiate a new config object
+     */
+    public BooleanInputWidgetConfig() {
+        m_config = new BooleanNodeConfig();
+    }
+
+    /**
+     * @return the config
+     */
+    public BooleanNodeConfig getBooleanConfig() {
+        return m_config;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected BooleanNodeValue createEmptyValue() {
         return new BooleanNodeValue();
+    }
+
+    @Override
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
+        return sb.toString();
     }
 
     /**
@@ -92,8 +139,10 @@ public class BooleanInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Bo
         if (obj.getClass() != getClass()) {
             return false;
         }
+        final BooleanInputWidgetConfig other = (BooleanInputWidgetConfig)obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 

@@ -44,88 +44,97 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   21 May 2019 (albrecht): created
+ *   29 Nov 2019 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.base.input.bool;
 
-import java.awt.GridBagConstraints;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-
-import org.knime.core.node.InvalidSettingsException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
-import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
- * Node dialog for the boolean widget node
+ * Base config file for the boolean configuration and widget nodes
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class BooleanWidgetNodeDialog extends FlowVariableWidgetNodeDialog<BooleanNodeValue> {
+public class BooleanNodeConfig {
 
-    private final BooleanInputWidgetConfig m_config;
-    private final JCheckBox m_defaultField;
-    private final JCheckBox m_pushIntVar;
+    private static final String CFG_PUSH_INT_VAR = "pushIntVar";
+
+    private static final boolean DEFAULT_PUSH_INT_VAR = false;
+
+    private boolean m_pushIntVar = DEFAULT_PUSH_INT_VAR;
 
     /**
-     * Constructor, inits fields calls layout routines
+     * @return the pushIntVar
      */
-    public BooleanWidgetNodeDialog() {
-        m_config = new BooleanInputWidgetConfig();
-        m_defaultField = new JCheckBox();
-        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
-        m_pushIntVar = new JCheckBox();
-        createAndAddTab();
+    public boolean isPushIntVar() {
+        return m_pushIntVar;
     }
 
     /**
-     * {@inheritDoc}
+     * @param pushIntVar the pushIntVar to set
      */
-    @Override
-    protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        BooleanNodeValue value = new BooleanNodeValue();
-        value.loadFromNodeSettings(settings);
-        return "" + value.getBoolean();
+    public void setPushIntVar(final boolean pushIntVar) {
+        m_pushIntVar = pushIntVar;
     }
 
     /**
-     * {@inheritDoc}
+     * Saves the current settings.
+     *
+     * @param settings the settings to save to
      */
-    @Override
-    protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
-        addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
-        addPairToPanel("Push Integer Flow Variable: ", m_pushIntVar, panelWithGBLayout, gbc);
+    public void saveSettings(final NodeSettingsWO settings) {
+        settings.addBoolean(CFG_PUSH_INT_VAR, m_pushIntVar);
     }
 
     /**
-     * {@inheritDoc}
+     * Loads the config from saved settings.
+     *
+     * @param settings the settings to load from
      */
-    @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-        throws NotConfigurableException {
-        m_config.loadSettingsInDialog(settings);
-        loadSettingsFrom(m_config);
-        m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
-        final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
-        m_pushIntVar.setSelected(booleanConfig.isPushIntVar());
+    public void loadSettings(final NodeSettingsRO settings) {
+        // default is true for reasons of backwards compatibility:
+        // prior to KNIME 4.1, Boolean Widget and Configuration nodes would always push integer flow variables
+        m_pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, true);
     }
 
     /**
-     * {@inheritDoc}
+     * Loads the config from saved settings for dialog display.
+     *
+     * @param settings the settings to load from
      */
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        m_pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, DEFAULT_PUSH_INT_VAR);
+    }
+
     @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        m_config.getDefaultValue().setBoolean(m_defaultField.isSelected());
-        saveSettingsTo(m_config);
-        final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
-        booleanConfig.setPushIntVar(m_pushIntVar.isSelected());
-        m_config.saveSettings(settings);
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("pushIntVar=");
+        sb.append(m_pushIntVar);
+        return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_pushIntVar).toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        final BooleanNodeConfig other = (BooleanNodeConfig)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_pushIntVar, other.m_pushIntVar).isEquals();
     }
 
 }

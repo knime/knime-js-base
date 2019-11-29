@@ -54,6 +54,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
 
 /**
@@ -65,6 +66,7 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
 
     private final BooleanInputDialogNodeConfig m_config;
     private final JCheckBox m_defaultField;
+    private final JCheckBox m_pushIntVar;
 
     /**
      * Constructor, inits fields calls layout routines
@@ -73,6 +75,7 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
         m_config = new BooleanInputDialogNodeConfig();
         m_defaultField = new JCheckBox();
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+        m_pushIntVar = new JCheckBox();
         createAndAddTab();
     }
 
@@ -82,6 +85,7 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
+        addPairToPanel("Push Integer Flow Variable: ", m_pushIntVar, panelWithGBLayout, gbc);
     }
 
     /**
@@ -91,8 +95,10 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
-        super.loadSettingsFrom(m_config);
+        loadSettingsFrom(m_config);
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
+        final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
+        m_pushIntVar.setSelected(booleanConfig.isPushIntVar());
     }
 
     /**
@@ -101,7 +107,9 @@ public class BooleanDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialo
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         m_config.getDefaultValue().setBoolean(m_defaultField.isSelected());
-        super.saveSettingsTo(m_config);
+        saveSettingsTo(m_config);
+        final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
+        booleanConfig.setPushIntVar(m_pushIntVar.isSelected());
         m_config.saveSettings(settings);
     }
 

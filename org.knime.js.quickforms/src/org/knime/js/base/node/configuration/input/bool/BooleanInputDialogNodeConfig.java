@@ -50,6 +50,10 @@ package org.knime.js.base.node.configuration.input.bool;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 
 /**
@@ -59,12 +63,55 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  */
 public class BooleanInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<BooleanDialogNodeValue> {
 
+    private final BooleanNodeConfig m_config;
+
+    /**
+     * Instantiate a new config object
+     */
+    public BooleanInputDialogNodeConfig() {
+        m_config = new BooleanNodeConfig();
+    }
+
+    /**
+     * @return the config
+     */
+    public BooleanNodeConfig getBooleanConfig() {
+        return m_config;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected BooleanDialogNodeValue createEmptyValue() {
         return new BooleanDialogNodeValue();
+    }
+
+    @Override
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
+        return sb.toString();
     }
 
     /**
@@ -91,8 +138,10 @@ public class BooleanInputDialogNodeConfig extends LabeledFlowVariableDialogNodeC
         if (obj.getClass() != getClass()) {
             return false;
         }
+        final BooleanInputDialogNodeConfig other = (BooleanInputDialogNodeConfig)obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 
