@@ -206,11 +206,15 @@ public class RegexPanel {
                 "^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+"
                 + "([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$",
                 "The given input '?' is not a valid email address");
-        addRegex(
-                "URL",
-                "^(https:[/][/]|http:[/][/]|www.)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?"
-                + "([a-zA-Z0-9\\-\\._\\?\\,\\'/\\\\\\+&amp;%\\$#\\=~])*$",
-                "The given input '?' is not a valid URL");
+        addRegex("URL",
+                "^((f|ht)tps?://(.*@)?|www\\.)" // protocol,username(opt.) or "www."
+                    + "[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?" // domain
+                    + "(:[0-9]+)?" // port
+                    + "(/[^#?\\s]*)?" // path
+                    + "(\\?[^#?\\s]*)?" // query
+                    + "(#.*)?" // hash
+                    + "$",
+            "The given input '?' is not a valid URL");
         addRegex(
                 "IPv4",
                 "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",

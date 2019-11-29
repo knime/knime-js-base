@@ -67,7 +67,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
-import org.knime.js.base.node.quickform.input.string.RegexPanel;
+import org.knime.js.base.node.base.input.string.RegexPanel;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 
