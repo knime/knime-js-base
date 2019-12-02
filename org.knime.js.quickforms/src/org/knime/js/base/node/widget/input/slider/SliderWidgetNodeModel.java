@@ -49,7 +49,9 @@
 package org.knime.js.base.node.widget.input.slider;
 
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
@@ -86,6 +88,17 @@ public class SliderWidgetNodeModel
     @Override
     public String getJavascriptObjectID() {
        return "org.knime.js.base.node.widget.input.slider";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        if (getConfig().getSliderSettings() == null) {
+            throw new InvalidSettingsException("No settings defined. Please configure the node.");
+        }
+        return super.performExecute(inObjects, exec);
     }
 
     /**
