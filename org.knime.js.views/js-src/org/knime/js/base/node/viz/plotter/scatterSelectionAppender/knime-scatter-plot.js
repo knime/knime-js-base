@@ -947,12 +947,12 @@ window.knimeScatterPlotSelectionAppender = (function () {
 
         d3.selectAll('circle').classed('filtered', function () {
             var itemKey = extractItemKeyFromRefString(this.getAttribute('ref'));
-                if (showIds.indexOf(itemKey) > -1) {
-                    return false;
-                }
-                if (hideIds.indexOf(itemKey) > -1) {
-                    return true;
-                }
+            if (showIds.indexOf(itemKey) > -1) {
+                return false;
+            }
+            if (hideIds.indexOf(itemKey) > -1) {
+                return true;
+            }
             return false;
         });
     };
@@ -1211,26 +1211,26 @@ window.knimeScatterPlotSelectionAppender = (function () {
     createDateFormatter = function (knimeColType) {
         var format;
         switch (knimeColType) {
-            case 'Date and Time':
-                format = _representation.dateTimeFormats.globalDateTimeFormat;
-                break;
-            case 'Local Date':
-                format = _representation.dateTimeFormats.globalLocalDateFormat;
-                break;
-            case 'Local Date Time':
-                format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
-                break;
-            case 'Local Time':
-                format = _representation.dateTimeFormats.globalLocalTimeFormat;
-                break;
-            case 'Zoned Date Time':
-                format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
-                break;
-            default:
-                // might be not set correct in case of opening the view of the old workflow, i.e. for backward
-                // compatibility
-                knimeColType = 'Date and Time';
-                format = _representation.dateTimeFormats.globalDateTimeFormat;
+        case 'Date and Time':
+            format = _representation.dateTimeFormats.globalDateTimeFormat;
+            break;
+        case 'Local Date':
+            format = _representation.dateTimeFormats.globalLocalDateFormat;
+            break;
+        case 'Local Date Time':
+            format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
+            break;
+        case 'Local Time':
+            format = _representation.dateTimeFormats.globalLocalTimeFormat;
+            break;
+        case 'Zoned Date Time':
+            format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
+            break;
+        default:
+            // might be not set correct in case of opening the view of the old workflow, i.e. for backward
+            // compatibility
+            knimeColType = 'Date and Time';
+            format = _representation.dateTimeFormats.globalDateTimeFormat;
         }
         return new DateFormat(format, knimeColType);
     };
