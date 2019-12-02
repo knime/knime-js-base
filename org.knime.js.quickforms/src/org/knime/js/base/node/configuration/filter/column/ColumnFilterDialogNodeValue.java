@@ -121,7 +121,7 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     @Override
     @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumns(settings.getStringArray(CFG_COLUMNS, DEFAULT_COLUMNS));
+        m_columns = settings.getStringArray(CFG_COLUMNS, DEFAULT_COLUMNS);
         try {
             setSettings((NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER));
         } catch (InvalidSettingsException e) {
@@ -145,20 +145,20 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonArray) {
             JsonArray array = (JsonArray) json;
-            setColumns(new String[array.size()]);
+            m_columns = new String[array.size()];
             for (int i = 0; i < array.size(); i++) {
-                getColumns()[i] = array.getString(i);
+                m_columns[i] = array.getString(i);
             }
         } else if (json instanceof JsonObject) {
             try {
                 JsonValue val = ((JsonObject) json).get(CFG_COLUMNS);
                 if (JsonValue.NULL.equals(val)) {
-                    setColumns(null);
+                    m_columns = null;
                 } else {
                     JsonArray array = ((JsonObject) json).getJsonArray(CFG_COLUMNS);
-                    setColumns(new String[array.size()]);
+                    m_columns = new String[array.size()];
                     for (int i = 0; i < array.size(); i++) {
-                        getColumns()[i] = array.getString(i);
+                        m_columns[i] = array.getString(i);
                     }
                 }
             } catch (Exception e) {

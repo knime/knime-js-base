@@ -57,6 +57,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.js.core.JSONViewContent;
 
@@ -83,7 +84,11 @@ public class ColumnFilterNodeValue extends JSONViewContent {
      * Default column value
      */
     protected static final String[] DEFAULT_COLUMNS = new String[0];
-    private String[] m_columns = DEFAULT_COLUMNS;
+
+    /**
+     * The columns included by the column filter.
+     */
+    protected String[] m_columns = DEFAULT_COLUMNS;
 
     private NodeSettings m_settings = null;
 
@@ -125,11 +130,23 @@ public class ColumnFilterNodeValue extends JSONViewContent {
     }
 
     /**
-     * @param columns the columns to set
+     * Updates which columns are included.<br/>
+     * NOTE: Also updates the column filter settings used to display the column filter in the node dialog.
+     * This means that the column filter switches to standard mode and its include list matches the columns
+     * provided as argument to this method.
+     *
+     * @param columns the columns to include
      */
     @JsonProperty("columns")
     public void setColumns(final String[] columns) {
         m_columns = columns;
+        final DataColumnSpecFilterConfiguration config =
+                new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        config.loadDefaults(columns, null, EnforceOption.EnforceInclusion);
+        if (m_settings == null) {
+            createDefaultSettings();
+        }
+        config.saveConfiguration(m_settings);
     }
 
     /**
@@ -159,7 +176,7 @@ public class ColumnFilterNodeValue extends JSONViewContent {
             DataColumnSpecFilterConfiguration config =
                 new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
             config.loadConfigurationInDialog(m_settings, spec);
-            setColumns(config.applyTo(spec).getIncludes());
+            m_columns = config.applyTo(spec).getIncludes();
         }
     }
 
@@ -181,7 +198,7 @@ public class ColumnFilterNodeValue extends JSONViewContent {
     @Override
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setColumns(settings.getStringArray(CFG_COLUMNS));
+        m_columns = settings.getStringArray(CFG_COLUMNS);
         try {
             m_settings = (NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         } catch (InvalidSettingsException e) {

@@ -58,8 +58,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.VariableType;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.Validator;
 import org.knime.js.base.node.base.validation.min.column.MinNumColumnsValidatorFactory;
@@ -133,15 +134,26 @@ public class ColumnFilterDialogNodeModel extends
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        final DataTableSpec spec = (DataTableSpec)inSpecs[0];
-        m_spec = spec;
-        final DataTableSpec filteredSpec = createSpecFilter().filter(spec);
+        final DataTableSpec unfilteredSpec = (DataTableSpec)inSpecs[0];
+        m_spec = unfilteredSpec;
+        final DataTableSpec filteredSpec = createSpecFilter().filter(unfilteredSpec);
         updateValuesFromSpec(filteredSpec);
         updateColumns(filteredSpec);
         createAndPushFlowVariable();
-        final DataTableSpec outSpec = ColumnFilterNodeUtil.createSpec(filteredSpec, getRelevantValue().getColumns());
+        ColumnRearranger cr = createRearranger(unfilteredSpec, filteredSpec);
+        final DataTableSpec outSpec = cr.createSpec();
         createSpecValidator().validateSpec(outSpec);
         return new DataTableSpec[]{outSpec};
+    }
+
+    private ColumnRearranger createRearranger(final DataTableSpec spec, final DataTableSpec filteredSpec)
+        throws InvalidSettingsException {
+        final DataColumnSpecFilterConfiguration filterConfig =
+                new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        filterConfig.loadConfigurationInModel(getRelevantValue().getSettings());
+        ColumnRearranger cr = new ColumnRearranger(spec);
+        cr.keepOnly(filterConfig.applyTo(filteredSpec).getIncludes());
+        return cr;
     }
 
     private InputSpecFilter createSpecFilter() {
@@ -156,12 +168,10 @@ public class ColumnFilterDialogNodeModel extends
         m_inTable = (BufferedDataTable)inObjects[0];
         DataTableSpec unfilteredSpec = (DataTableSpec)inObjects[0].getSpec();
         final InputSpecFilter specFilter = createSpecFilter();
-        DataTableSpec inSpec = specFilter.filter(unfilteredSpec);
-        updateColumns(inSpec);
+        DataTableSpec filteredSpec = specFilter.filter(unfilteredSpec);
+        updateColumns(filteredSpec);
         createAndPushFlowVariable();
-        DataTableSpec outSpec = ColumnFilterNodeUtil.createSpec(inSpec, getRelevantValue().getColumns());
-        final ColumnRearranger cr = new ColumnRearranger(unfilteredSpec);
-        cr.keepOnly(outSpec.getColumnNames());
+        final ColumnRearranger cr = createRearranger(unfilteredSpec, filteredSpec);
         final BufferedDataTable outTable = exec.createColumnRearrangeTable(m_inTable, cr, exec);
         createSpecValidator().validateObject(outTable);
         return new BufferedDataTable[]{outTable};
