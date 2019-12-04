@@ -62,8 +62,10 @@ window.knimeGenericView = (function () {
             if (!libs) {
                 libs = [];
             }
-            if (knimeService.isRunningInWebportal()) {
-                for (var i = 0; i < libs.length; i++) {
+            for (var i = 0; i < libs.length; i++) {
+                if (knimeService.resourceBaseUrl) {
+                    libs[i] = knimeService.resourceBaseUrl + '/' + libs[i];
+                } else if (knimeService.isRunningInWebportal()) {
                     libs[i] = './VAADIN/src-js/' + libs[i];
                 }
             }
