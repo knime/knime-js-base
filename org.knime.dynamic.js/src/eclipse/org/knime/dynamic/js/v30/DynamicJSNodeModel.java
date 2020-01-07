@@ -55,6 +55,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -241,7 +242,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == portIndex) {
                         org.knime.dynamicnode.v30.DataOutputType.Enum oType = option.getOutputType();
-                        if (DataOutputType.APPEND_COLUMN.equals(oType)) {
+                        if (DataOutputType.APPEND_COLUMN.equals(oType) || DataOutputType.APPEND_SELECTION_COLUMN.equals(oType)) {
                             // column appended
                             if (!option.isSetInPortIndex()) {
                                 throw new IllegalArgumentException("Output option " + option.getId() + " was defined as APPEND_COLUMN but no inport index defined.");
@@ -286,7 +287,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
             }
 		    if (optionList.size() > 0 && inSpecIndex != null) {
 		        // create appended column spec
-		        ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null);
+		        ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null, null);
 		        return rearranger.createSpec();
 		    }
 		    if (newTableOption != null) {
@@ -324,12 +325,18 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
 		    DataOutOption newTableOption = null;
 		    Integer inSpecIndex = null;
+		    Integer selectionColIndex = null;
             if (m_node.getOutputOptions() != null) {
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == outPortIndex) {
-                        if (DataOutputType.APPEND_COLUMN.equals(option.getOutputType())) {
+                        DataOutputType.Enum outType = option.getOutputType();
+                        if (DataOutputType.APPEND_COLUMN.equals(outType)) {
                             optionList.add(option);
                             inSpecIndex = option.getInPortIndex();
+                        } else if (DataOutputType.APPEND_SELECTION_COLUMN.equals(outType)) {
+                            optionList.add(option);
+                            inSpecIndex = option.getInPortIndex();
+                            selectionColIndex = optionList.size() - 1;
                         } else {
                             if (newTableOption != null) {
                                 LOGGER.error("Multiple dataOutOptions creating new tables found for out port "
@@ -358,7 +365,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			        }
 			        values.add(map);
 			    }
-			    ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inObjects[inSpecIndex].getSpec(), optionList, values);
+			    ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inObjects[inSpecIndex].getSpec(), optionList, values, selectionColIndex);
                 return exec.createColumnRearrangeTable((BufferedDataTable)inObjects[inSpecIndex], rearranger, exec);
 			}
 			if (newTableOption != null) {
@@ -504,7 +511,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return specs;
 	}
 
-	private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<DataOutOption> options, final List<Map<String, Object>> values) {
+	private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<DataOutOption> options, final List<Map<String, Object>> values, final Integer selectionColInd) {
 	    if (values != null && options.size() != values.size()) {
 	        throw new IllegalArgumentException("Data out options defined in node description do not match actual values. Possible implementation error.");
 	    }
@@ -529,19 +536,39 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
             }
             outSpecs.add(new DataColumnSpecCreator(newColName, DataType.getType(colClass)).createSpec());
         }
+        /**
+         * create set of selected RowKeys for nodes which have output type APPEND_SELECTED_COLUMN
+         * @since 4.2
+         */
+        boolean appendSelected = selectionColInd != null;
+        final HashSet<String> selectedRowKeys = new HashSet<>();
+        if (appendSelected) {
+            Map<String, Object> temporarySelected = values.get(selectionColInd);
+            Object selectedList = temporarySelected.get("selectedRows");
+            if (selectedList instanceof ArrayList<?>) {
+                selectedRowKeys.addAll((ArrayList<String>)selectedList);
+            }
+        }
         ColumnRearranger rearranger = new ColumnRearranger(spec);
         CellFactory fac = new AbstractCellFactory(outSpecs.toArray(new DataColumnSpec[0])) {
+
+            Integer rowCount = 0;
 
             @Override
             public DataCell[] getCells(final DataRow row) {
                 DataCell[] cells = new DataCell[values.size()];
+                String rowKeyStr = row.getKey().getString();
                 for (int i = 0; i < values.size(); i++) {
+                    if (appendSelected && i == selectionColInd && rowCount < m_config.getMaxRows()) {
+                        cells[i] = BooleanCell.get(selectedRowKeys.contains(rowKeyStr));
+                        continue;
+                    }
                     Map<String, Object> valueMap = values.get(i);
-                    if (!valueMap.containsKey(row.getKey().getString())) {
+                    if (!valueMap.containsKey(rowKeyStr)) {
                         cells[i] = DataType.getMissingCell();
                         break;
                     }
-                    Object value = valueMap.get(row.getKey().getString());
+                    Object value = valueMap.get(rowKeyStr);
                     DataOutOption option = options.get(i);
                     if (option.getAdditionalColumnType().equals(ColumnType.BOOLEAN)) {
                         cells[i] = BooleanCell.get((boolean)value);
@@ -560,6 +587,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                         cells[i] = new StringCell((String)value);
                     }
                 }
+                rowCount++;
                 return cells;
             }
         };

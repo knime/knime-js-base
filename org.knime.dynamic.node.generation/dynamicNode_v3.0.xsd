@@ -353,6 +353,7 @@
   <xs:simpleType name="DataOutputType">
   	<xs:restriction base="xs:token">
   		<xs:enumeration value="APPEND_COLUMN" />
+  		<xs:enumeration value="APPEND_SELECTION_COLUMN" />
   		<xs:enumeration value="EMPTY_TABLE" />
   		<xs:enumeration value="EMPTY_WITH_SPEC" />
   		<xs:enumeration value="INPUT_TABLE" />
