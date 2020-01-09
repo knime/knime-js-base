@@ -549,6 +549,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 selectedRowKeys.addAll((ArrayList<String>)selectedList);
             }
         }
+
+        final Integer maxRows = m_node.getJavaProcessor().xgetHidesLimitRowOption().getBooleanValue() ?
+                Integer.MAX_VALUE : m_config.getMaxRows();
         ColumnRearranger rearranger = new ColumnRearranger(spec);
         CellFactory fac = new AbstractCellFactory(outSpecs.toArray(new DataColumnSpec[0])) {
 
@@ -559,7 +562,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 DataCell[] cells = new DataCell[values.size()];
                 String rowKeyStr = row.getKey().getString();
                 for (int i = 0; i < values.size(); i++) {
-                    if (appendSelected && i == selectionColInd && rowCount < m_config.getMaxRows()) {
+                    if (appendSelected && i == selectionColInd && rowCount < maxRows) {
                         cells[i] = BooleanCell.get(selectedRowKeys.contains(rowKeyStr));
                         continue;
                     }
