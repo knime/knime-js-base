@@ -7,6 +7,9 @@ window.dynamicJSNode = (function () {
     var errorRendered = false;
     var renderError;
 
+    /** @since 4.2 support output type APPEND_SELECTION_COLUMN */
+    node.APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = 'append_selection_out_columns';
+
     node.init = function (representation, value) {
         if (representation.errorMessage) {
             renderError(representation.errorMessage);
