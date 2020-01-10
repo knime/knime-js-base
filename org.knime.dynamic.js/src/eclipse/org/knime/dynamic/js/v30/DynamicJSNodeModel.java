@@ -119,6 +119,7 @@ import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.dynamicjsnode.v30.DynamicJSKnimeNode;
+import org.knime.dynamicjsnode.v30.JavaProcessor;
 import org.knime.dynamicjsnode.v30.WebDependency;
 import org.knime.dynamicjsnode.v30.WebResource;
 import org.knime.dynamicjsnode.v30.WebRessources;
@@ -550,8 +551,12 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
             }
         }
 
-        final Integer maxRows = m_node.getJavaProcessor().xgetHidesLimitRowOption().getBooleanValue() ?
-                Integer.MAX_VALUE : m_config.getMaxRows();
+        JavaProcessor javaProcessor = m_node.getJavaProcessor();
+        boolean ignoreMaxRows = false;
+        if (javaProcessor != null) {
+            ignoreMaxRows = javaProcessor.xgetHidesLimitRowOption().getBooleanValue();
+        }
+        final Integer maxRows = ignoreMaxRows ? Integer.MAX_VALUE : m_config.getMaxRows();
         ColumnRearranger rearranger = new ColumnRearranger(spec);
         CellFactory fac = new AbstractCellFactory(outSpecs.toArray(new DataColumnSpec[0])) {
 
