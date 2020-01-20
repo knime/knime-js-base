@@ -190,9 +190,10 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			   RadioButtonOption rO = (RadioButtonOption)option;
 			   SettingsModelString model = (SettingsModelString)m_config.getModel(rO.getId());
 			   @SuppressWarnings("unchecked")
-			   String[] possibleValues = ((List<String>)rO.getPossibleValues()).toArray(new String[0]);
-			   DialogComponentButtonGroup rComp = new DialogComponentButtonGroup(model, rO.getAlignVertical(), rO.getLabel(), possibleValues);
-			   rComp.setToolTipText(rO.getTooltip());
+                String[] possibleValues = ((List<String>)rO.getPossibleValues()).toArray(new String[0]);
+                DialogComponentButtonGroup rComp =
+                    new DialogComponentButtonGroup(model, rO.getAlignVertical(), rO.getLabel(), possibleValues);
+                rComp.setToolTipText(rO.getTooltip());
 			   m_components.put(rO.getId(), rComp);
 			   addDialogComponent(rComp);
 			} else if (option instanceof StringListOption) {
@@ -207,16 +208,17 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    @SuppressWarnings("unchecked")
                 List<String> valuesFromOptions = sO.getPossibleValues();
 			    possibleValues.addAll(valuesFromOptions);
-			    if (sO.getAllowMultipleSelection()) {
-			        SettingsModelStringArray model = (SettingsModelStringArray)m_config.getModel(sO.getId());
-			        int numRows = -1;
-			        if (sO.isSetNumRowsVisible()) {
-			            numRows = sO.getNumRowsVisible().intValue();
-			        }
-			        sComp = new DialogComponentStringListSelection(model, sO.getLabel(), possibleValues, !sO.getOptional(), numRows);
-			    } else {
-			        SettingsModelString model = (SettingsModelString)m_config.getModel(sO.getId());
-			        sComp = new DialogComponentStringSelection(model, sO.getLabel(), possibleValues, sO.getEditable());
+                if (sO.getAllowMultipleSelection()) {
+                    SettingsModelStringArray model = (SettingsModelStringArray)m_config.getModel(sO.getId());
+                    int numRows = -1;
+                    if (sO.isSetNumRowsVisible()) {
+                        numRows = sO.getNumRowsVisible().intValue();
+                    }
+                    sComp = new DialogComponentStringListSelection(model, sO.getLabel(), possibleValues,
+                        !sO.getOptional(), numRows);
+                } else {
+                    SettingsModelString model = (SettingsModelString)m_config.getModel(sO.getId());
+                    sComp = new DialogComponentStringSelection(model, sO.getLabel(), possibleValues, sO.getEditable());
 			    }
 			    sComp.setToolTipText(sO.getTooltip());
 			    m_components.put(sO.getId(), sComp);
@@ -236,15 +238,16 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 			    config.setShowDateFormatChooser(dfO.getShowDateFormatChooser());
 			    config.setShowDateTimeFormatChooser(dfO.getShowDateTimeFormatChooser());
 			    config.setShowTimeFormatChooser(dfO.getShowTimeFormatChooser());
-			    config.setShowZonedDateTimeFormatChooser(dfO.getShowZonedDateTimeFormatChooser());
-			    config.setShowLegacyDateTimeFormatChooser(dfO.getShowLegacyDateTimeFormatChooser());
-			    config.setShowTimezoneChooser(dfO.getShowTimezoneChooser());
-			    DialogComponentDateTimeOptions dfComp = new DialogComponentDateTimeOptions(model, dfO.getLabel(), config);
-			    dfComp.setToolTipText(dfO.getTooltip());
-			    m_components.put(dfO.getId(), dfComp);
-			    addDialogComponent(dfComp);
-			} else if (option instanceof ColorOption) {
-			    ColorOption cO = (ColorOption)option;
+                config.setShowZonedDateTimeFormatChooser(dfO.getShowZonedDateTimeFormatChooser());
+                config.setShowLegacyDateTimeFormatChooser(dfO.getShowLegacyDateTimeFormatChooser());
+                config.setShowTimezoneChooser(dfO.getShowTimezoneChooser());
+                DialogComponentDateTimeOptions dfComp =
+                    new DialogComponentDateTimeOptions(model, dfO.getLabel(), config);
+                dfComp.setToolTipText(dfO.getTooltip());
+                m_components.put(dfO.getId(), dfComp);
+                addDialogComponent(dfComp);
+            } else if (option instanceof ColorOption) {
+                ColorOption cO = (ColorOption)option;
 			    SettingsModelColor model = (SettingsModelColor)m_config.getModel(cO.getId());
 			    DialogComponentColorChooser cComp = new DialogComponentColorChooser(model, cO.getLabel(), true);
 			    if (cO.isSetDefaultR() && cO.isSetDefaultG() && cO.isSetDefaultB()) {
@@ -345,15 +348,19 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
 	private void createAdditionalOptions() {
 	    createNewGroup("General Settings");
 
-	    if (m_config.getHasSvgImageOutport()) {
-	        m_generateImageComponent = new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.GENERATE_IMAGE_CONF + "model", DynamicJSConfig.DEFAULT_GENERATE_IMAGE), "Generate image");
-	        addDialogComponent(m_generateImageComponent);
-	    }
+        if (m_config.getHasSvgImageOutport()) {
+            m_generateImageComponent =
+                new DialogComponentBoolean(new SettingsModelBoolean(DynamicJSConfig.GENERATE_IMAGE_CONF + "model",
+                    DynamicJSConfig.DEFAULT_GENERATE_IMAGE), "Generate image");
+            addDialogComponent(m_generateImageComponent);
+        }
 
-	    if (m_showMaxRows && m_config.getNumberDataInPorts() > 0) {
-	        m_maxRowsComponent = new DialogComponentNumber(new SettingsModelIntegerBounded(DynamicJSConfig.MAX_ROWS_CONF + "model", DynamicJSConfig.DEFAULT_MAX_ROWS, 0, Integer.MAX_VALUE), "Maximum number of rows", 1);
-	        addDialogComponent(m_maxRowsComponent);
-	    }
+        if (m_showMaxRows && m_config.getNumberDataInPorts() > 0) {
+            m_maxRowsComponent =
+                new DialogComponentNumber(new SettingsModelIntegerBounded(DynamicJSConfig.MAX_ROWS_CONF + "model",
+                    DynamicJSConfig.DEFAULT_MAX_ROWS, 0, Integer.MAX_VALUE), "Maximum number of rows", 1);
+            addDialogComponent(m_maxRowsComponent);
+        }
 
 	    closeCurrentGroup();
 	}
@@ -417,7 +424,8 @@ public class DynamicJSNodeDialog extends DefaultNodeSettingsPane {
             if (model instanceof SettingsModelString) {
                 history.add(((SettingsModelString)model).getStringValue());
             } else if (model instanceof SettingsModelStringArray) {
-                Arrays.stream(((SettingsModelStringArray)model).getStringArrayValue()).forEachOrdered(value -> history.add(value));
+                Arrays.stream(((SettingsModelStringArray)model).getStringArrayValue())
+                    .forEachOrdered(value -> history.add(value));
             }
         });
         super.saveAdditionalSettingsTo(settings);

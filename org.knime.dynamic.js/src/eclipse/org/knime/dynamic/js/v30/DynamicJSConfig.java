@@ -232,7 +232,8 @@ public class DynamicJSConfig {
                 if (iO.isSetDefaultValue()) {
                     defaultValue = iO.getDefaultValue().intValue();
                 }
-                SettingsModelIntegerBounded iModel = new SettingsModelIntegerBounded(iO.getId(), defaultValue, minValue, maxValue);
+                SettingsModelIntegerBounded iModel =
+                    new SettingsModelIntegerBounded(iO.getId(), defaultValue, minValue, maxValue);
                 m_models.put(iO.getId(), iModel);
             } else if (option instanceof DoubleOption) {
                 DoubleOption dO = (DoubleOption)option;
@@ -248,7 +249,8 @@ public class DynamicJSConfig {
                 if (dO.isSetDefaultValue()) {
                     defaultValue = dO.getDefaultValue();
                 }
-                SettingsModelDoubleBounded dModel = new SettingsModelDoubleBounded(dO.getId(), defaultValue, minValue, maxValue);
+                SettingsModelDoubleBounded dModel =
+                    new SettingsModelDoubleBounded(dO.getId(), defaultValue, minValue, maxValue);
                 m_models.put(dO.getId(), dModel);
             } else if (option instanceof RadioButtonOption) {
                 RadioButtonOption rO = (RadioButtonOption)option;

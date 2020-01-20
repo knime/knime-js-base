@@ -1,4 +1,4 @@
-/* global require: false, requirejs: false */
+/* global require: false, requirejs: false, knimeService:false */
 window.dynamicJSNode = (function () {
 
     var node = {};
@@ -8,7 +8,7 @@ window.dynamicJSNode = (function () {
     var renderError;
 
     /** @since 4.2 support output type APPEND_SELECTION_COLUMN */
-    node.APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = 'append_selection_out_columns';
+    node.APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = 'appendSelectionOutColumns';
 
     node.init = function (representation, value) {
         if (representation.errorMessage) {

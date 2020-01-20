@@ -52,7 +52,8 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObject;
 
 /**
- * Abstract {@link DynamicJSProcessor} implementation, which keeps a state, e.g. a warn message, which occurred during execution.
+ * Abstract {@link DynamicJSProcessor} implementation, which keeps a state, e.g. a warn message, which occurred during
+ * execution.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @since 3.4
@@ -70,8 +71,9 @@ public abstract class DynamicStatefulJSProcessor implements DynamicJSProcessor {
     }
 
     /**
-     * Returns an optional warning message. Also erases the warning message from this instance, so it can
-     * only be queried once after every {@link #processInputObjects(PortObject[], ExecutionContext, DynamicJSConfig)} call.
+     * Returns an optional warning message. Also erases the warning message from this instance, so it can only be
+     * queried once after every {@link #processInputObjects(PortObject[], ExecutionContext, DynamicJSConfig)} call.
+     *
      * @return a warning message to display, or null if not set
      */
     String getWarningMessage() {

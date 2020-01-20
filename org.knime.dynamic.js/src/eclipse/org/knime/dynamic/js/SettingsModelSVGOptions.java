@@ -402,7 +402,8 @@ public class SettingsModelSVGOptions extends SettingsModel {
          * @return
          * @throws InvalidSettingsException
          */
-        public static JSONSVGOptions loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        public static JSONSVGOptions loadFromNodeSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
             JSONSVGOptions options = new JSONSVGOptions();
             options.setWidth(settings.getInt(WIDTH));
             options.setHeight(settings.getInt(HEIGHT));

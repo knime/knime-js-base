@@ -52,7 +52,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,7 +77,9 @@ import org.knime.core.data.container.AbstractCellFactory;
 import org.knime.core.data.container.CellFactory;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.date.DateAndTimeCellFactory;
 import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
@@ -116,6 +117,10 @@ import org.knime.core.node.util.filter.NameFilterConfiguration.FilterResult;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.node.workflow.VariableType.DoubleType;
+import org.knime.core.node.workflow.VariableType.IntType;
+import org.knime.core.node.workflow.VariableType.StringType;
 import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
@@ -163,7 +168,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private final String m_rootPath;
 	private final DynamicJSProcessor m_processor;
 
-	private final String APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = "append_selection_out_columns";
+	private final String APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = "appendSelectionOutColumns";
 
 	/**
 	 * @param nodeConfig
@@ -236,76 +241,86 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return null;
 	}
 
-	private PortObjectSpec getPortSpec(final org.knime.dynamicnode.v30.PortType.Enum portType, final PortObjectSpec[] inSpecs, final int portIndex) {
-		if (portType.equals(org.knime.dynamicnode.v30.PortType.DATA)) {
-		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
-		    Integer inSpecIndex = null;
-		    boolean portIndexIsAppendColumn = false;
-		    DataOutOption newTableOption = null;
+    private PortObjectSpec getPortSpec(final org.knime.dynamicnode.v30.PortType.Enum portType,
+        final PortObjectSpec[] inSpecs, final int portIndex) {
+        if (portType.equals(org.knime.dynamicnode.v30.PortType.DATA)) {
+            List<DataOutOption> optionList = new ArrayList<DataOutOption>();
+            Integer inSpecIndex = null;
+            boolean portIndexIsAppendColumn = false;
+            DataOutOption newTableOption = null;
             if (m_node.getOutputOptions() != null) {
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == portIndex) {
                         org.knime.dynamicnode.v30.DataOutputType.Enum oType = option.getOutputType();
-                        if (DataOutputType.APPEND_COLUMN.equals(oType) || DataOutputType.APPEND_SELECTION_COLUMN.equals(oType)) {
+                        if (DataOutputType.APPEND_COLUMN.equals(oType)
+                            || DataOutputType.APPEND_SELECTION_COLUMN.equals(oType)) {
                             // column appended
                             if (!option.isSetInPortIndex()) {
-                                throw new IllegalArgumentException("Output option " + option.getId() + " was defined as APPEND_COLUMN but no inport index defined.");
+                                throw new IllegalArgumentException("Output option " + option.getId()
+                                    + " was defined as APPEND_COLUMN but no inport index defined.");
                             }
                             if (newTableOption != null) {
-                                throw new IllegalArgumentException("Multiple data output options for whole tables defined for output port " + portIndex);
+                                throw new IllegalArgumentException(
+                                    "Multiple data output options for whole tables defined for output port "
+                                        + portIndex);
                             }
                             if (inSpecIndex == null) {
                                 inSpecIndex = option.getInPortIndex();
                                 if (!(inSpecs[inSpecIndex] instanceof DataTableSpec)) {
-                                    throw new IllegalArgumentException(
-                                        "In port index spec for additional column definition should be of type DataTableSpec but was "
-                                                + inSpecs[inSpecIndex].getClass().getSimpleName());
+                                    throw new IllegalArgumentException("In port index spec for additional column "
+                                        + "definition should be of type DataTableSpec but was "
+                                        + inSpecs[inSpecIndex].getClass().getSimpleName());
                                 }
                             }
                             if (!inSpecIndex.equals(option.getInPortIndex())) {
                                 throw new IllegalArgumentException("Several additional columns for data out port "
-                                        + portIndex + " were defined but in port indices do not match (only one allowed).");
+                                    + portIndex + " were defined but in port indices do not match (only one allowed).");
                             }
                             portIndexIsAppendColumn = true;
                             optionList.add(option);
                         } else {
                             // new or edited table
                             if (newTableOption != null || portIndexIsAppendColumn) {
-                                throw new IllegalArgumentException("Multiple data output options for whole tables defined for output port " + portIndex);
+                                throw new IllegalArgumentException(
+                                    "Multiple data output options for whole tables defined for output port "
+                                        + portIndex);
                             }
                             newTableOption = option;
-                            if (DataOutputType.EMPTY_WITH_SPEC.equals(oType) || DataOutputType.INPUT_TABLE.equals(oType)) {
+                            if (DataOutputType.EMPTY_WITH_SPEC.equals(oType)
+                                || DataOutputType.INPUT_TABLE.equals(oType)) {
                                 if (!option.isSetInPortIndex()) {
-                                    throw new IllegalArgumentException("Output option " + option.getId() + " does not have inport index defined.");
+                                    throw new IllegalArgumentException(
+                                        "Output option " + option.getId() + " does not have inport index defined.");
                                 }
                                 inSpecIndex = option.getInPortIndex();
                                 if (!(inSpecs[inSpecIndex] instanceof DataTableSpec)) {
                                     throw new IllegalArgumentException(
                                         "In port index spec for output table needs to be DataTableSpec but was "
-                                                + inSpecs[inSpecIndex].getClass().getSimpleName());
+                                            + inSpecs[inSpecIndex].getClass().getSimpleName());
                                 }
                             }
                         }
                     }
                 }
             }
-		    if (optionList.size() > 0 && inSpecIndex != null) {
-		        // create appended column spec
-		        ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null);
-		        return rearranger.createSpec();
-		    }
-		    if (newTableOption != null) {
-		        // create/retrieve spec for new/edited table
-		        org.knime.dynamicnode.v30.DataOutputType.Enum oType = newTableOption.getOutputType();
-		        if (DataOutputType.EMPTY_TABLE.equals(oType)) {
-		            return new DataTableSpec();
-		        } else if (DataOutputType.EMPTY_WITH_SPEC.equals(oType) || DataOutputType.INPUT_TABLE.equals(oType)) {
-		            return inSpecs[newTableOption.getInPortIndex()];
-		        }
+            if (optionList.size() > 0 && inSpecIndex != null) {
+                // create appended column spec
+                ColumnRearranger rearranger =
+                    createColumnAppender((DataTableSpec)inSpecs[inSpecIndex], optionList, null);
+                return rearranger.createSpec();
             }
-		    // Otherwise spec is unknown at this point
-		    return null;
-		}
+            if (newTableOption != null) {
+                // create/retrieve spec for new/edited table
+                org.knime.dynamicnode.v30.DataOutputType.Enum oType = newTableOption.getOutputType();
+                if (DataOutputType.EMPTY_TABLE.equals(oType)) {
+                    return new DataTableSpec();
+                } else if (DataOutputType.EMPTY_WITH_SPEC.equals(oType) || DataOutputType.INPUT_TABLE.equals(oType)) {
+                    return inSpecs[newTableOption.getInPortIndex()];
+                }
+            }
+            // Otherwise spec is unknown at this point
+            return null;
+        }
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObjectSpec.INSTANCE;
 		}
@@ -322,9 +337,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return null;
 	}
 
-	private PortObject getPortObject(final int outPortIndex, final PortObject[] inObjects, final ExecutionContext exec) throws CanceledExecutionException {
-	    DynamicOutPort port = m_node.getPorts().getOutPortArray(outPortIndex);
-	    Enum portType = port.getPortType();
+    private PortObject getPortObject(final int outPortIndex, final PortObject[] inObjects, final ExecutionContext exec)
+        throws CanceledExecutionException {
+        DynamicOutPort port = m_node.getPorts().getOutPortArray(outPortIndex);
+        Enum portType = port.getPortType();
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.DATA)) {
 		    List<DataOutOption> optionList = new ArrayList<DataOutOption>();
 		    DataOutOption newTableOption = null;
@@ -333,7 +349,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 for (DataOutOption option : m_node.getOutputOptions().getDataOutputOptionArray()) {
                     if (option.getOutPortIndex() == outPortIndex) {
                         DataOutputType.Enum outType = option.getOutputType();
-                        if (DataOutputType.APPEND_COLUMN.equals(outType) || DataOutputType.APPEND_SELECTION_COLUMN.equals(outType)) {
+                        if (DataOutputType.APPEND_COLUMN.equals(outType)
+                            || DataOutputType.APPEND_SELECTION_COLUMN.equals(outType)) {
                             optionList.add(option);
                             inSpecIndex = option.getInPortIndex();
                         } else {
@@ -351,10 +368,11 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			    LOGGER.error("No corresponding dataOutOption found for data out port " + outPortIndex + ".");
 			    return InactiveBranchPortObject.INSTANCE;
 			}
-			if (optionList.size() > 0 && newTableOption != null) {
-			    LOGGER.error("Multiple dataOutOptions creating new tables and appending columns found for out port " + outPortIndex + ".");
-			    return InactiveBranchPortObject.INSTANCE;
-			}
+            if (optionList.size() > 0 && newTableOption != null) {
+                LOGGER.error("Multiple dataOutOptions creating new tables and appending columns found for out port "
+                    + outPortIndex + ".");
+                return InactiveBranchPortObject.INSTANCE;
+            }
 			if (optionList.size() > 0 && inSpecIndex != null) {
 			    List<Map<String, Object>> values = new ArrayList<Map<String,Object>>();
 			    for (DataOutOption option : optionList) {
@@ -364,9 +382,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			        }
 			        values.add(map);
 			    }
-			    ColumnRearranger rearranger = createColumnAppender((DataTableSpec)inObjects[inSpecIndex].getSpec(), optionList, values);
+                ColumnRearranger rearranger =
+                    createColumnAppender((DataTableSpec)inObjects[inSpecIndex].getSpec(), optionList, values);
                 return exec.createColumnRearrangeTable((BufferedDataTable)inObjects[inSpecIndex], rearranger, exec);
-			}
+            }
 			if (newTableOption != null) {
 			    JSONDataTable table = getViewValue().getTables().get(newTableOption.getId());
 			    if (table != null) {
@@ -385,9 +404,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			        return cont.getTable();
 			    }
 			    //TODO detect if table was expected on value after re-execute?
-			    /*LOGGER.error("Table with id " + newTableOption.getId() + " expected but not found. Possible implementation error.");
-			    return InactiveBranchPortObject.INSTANCE;*/
-			}
+                /* LOGGER.error("Table with id " + newTableOption.getId()
+                    + " expected but not found. Possible implementation error.");
+                return InactiveBranchPortObject.INSTANCE; */
+            }
 		}
 		if (portType.equals(org.knime.dynamicnode.v30.PortType.FLOW_VARIABLE)) {
 			return FlowVariablePortObject.INSTANCE;
@@ -510,16 +530,20 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return specs;
 	}
 
-	private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<DataOutOption> options, final List<Map<String, Object>> values) {
-	    if (values != null && options.size() != values.size()) {
-	        throw new IllegalArgumentException("Data out options defined in node description do not match actual values. Possible implementation error.");
-	    }
-	    List<Integer> selectionColumnIndicies = new ArrayList<>();
-	    List<DataColumnSpec> outSpecs = new ArrayList<DataColumnSpec>();
+    private ColumnRearranger createColumnAppender(final DataTableSpec spec, final List<DataOutOption> options,
+        final List<Map<String, Object>> values) {
+        if (values != null && options.size() != values.size()) {
+            throw new IllegalArgumentException(
+                "Data out options defined in node description do not match actual values. "
+                + "Possible implementation error.");
+        }
+        List<Integer> selectionColumnIndicies = new ArrayList<>();
+        List<DataColumnSpec> outSpecs = new ArrayList<DataColumnSpec>();
         for (DataOutOption option : options) {
             String newColName = option.getAdditionalColumnName();
             if (newColName == null || newColName.isEmpty()) {
-                newColName = String.format(DynamicJSConfig.DEFAULT_APPENDED_COLUMN_NAME, m_node.getName(), option.getOutPortIndex());
+                newColName = String.format(DynamicJSConfig.DEFAULT_APPENDED_COLUMN_NAME, m_node.getName(),
+                    option.getOutPortIndex());
             }
             newColName = DataTableSpec.getUniqueColumnName(spec, newColName);
             Class<? extends DataCell> colClass = null;
@@ -565,7 +589,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         JavaProcessor javaProcessor = m_node.getJavaProcessor();
         boolean ignoreMaxRows = false;
         if (javaProcessor != null) {
-            ignoreMaxRows = javaProcessor.xgetHidesLimitRowOption().getBooleanValue();
+            ignoreMaxRows = javaProcessor.getHidesLimitRowOption();
         }
         final Integer maxRows = ignoreMaxRows ? Integer.MAX_VALUE : m_config.getMaxRows();
         ColumnRearranger rearranger = new ColumnRearranger(spec);
@@ -579,7 +603,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 String rowKeyStr = row.getKey().getString();
                 for (int i = 0; i < values.size(); i++) {
                     if (selColIndSet.contains(i) && rowCount < maxRows) {
-                        cells[i] = BooleanCell.get(selectedColumnMap.get(i).contains(rowKeyStr));
+                        cells[i] = BooleanCellFactory.create(selectedColumnMap.get(i).contains(rowKeyStr));
                         continue;
                     }
                     Map<String, Object> valueMap = values.get(i);
@@ -590,15 +614,15 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     Object value = valueMap.get(rowKeyStr);
                     DataOutOption option = options.get(i);
                     if (option.getAdditionalColumnType().equals(ColumnType.BOOLEAN)) {
-                        cells[i] = BooleanCell.get((boolean)value);
+                        cells[i] = BooleanCellFactory.create((boolean)value);
                     } else if (option.getAdditionalColumnType().equals(ColumnType.DOUBLE)) {
                         cells[i] = new DoubleCell((double)value);
                     } else if (option.getAdditionalColumnType().equals(ColumnType.INTEGER)) {
                         cells[i] = new IntCell((int)value);
                     } else if (option.getAdditionalColumnType().equals(ColumnType.DATETIME)) {
                         try {
-                            cells[i] = DateAndTimeCell.fromString((String)value);
-                        } catch (ParseException e) {
+                            cells[i] = DateAndTimeCellFactory.create((String)value);
+                        } catch (IllegalArgumentException e) {
                             LOGGER.error("Parsing value as date time failed: " + e.getMessage());
                             cells[i] = DataType.getMissingCell();
                         }
@@ -614,9 +638,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         return rearranger;
     }
 
-	@Override
-	protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-		synchronized (getLock()) {
+    @Override
+    protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec)
+        throws Exception {
+    	synchronized (getLock()) {
 			DynamicJSViewRepresentation viewRepresentation = getViewRepresentation();
             if (viewRepresentation.isNew()) {
                 try {
@@ -650,8 +675,10 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                                     (BufferedDataTable)processedObject, tableId));
                             } else if (processedObject instanceof ColorHandlerPortObject) {
                                 DataTableSpec colorTableSpec = ((ColorHandlerPortObject)processedObject).getSpec();
-                                if (colorTableSpec.getNumColumns() == 1 && colorTableSpec.getColumnSpec(0).getColorHandler() != null) {
-                                    viewInObjects.add(JSONColorModel.createFromColorModel(colorTableSpec.getColumnSpec(0).getColorHandler().getColorModel()));
+                                if (colorTableSpec.getNumColumns() == 1
+                                    && colorTableSpec.getColumnSpec(0).getColorHandler() != null) {
+                                    viewInObjects.add(JSONColorModel.createFromColorModel(
+                                        colorTableSpec.getColumnSpec(0).getColorHandler().getColorModel()));
                                 } else {
                                     viewInObjects.add(null);
                                 }
@@ -672,7 +699,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     viewRepresentation.setTableIds(tableIdsForProcessed);
 
                     Map<String, String> vStringMap = new HashMap<String, String>();
-                    for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables().entrySet()) {
+                    for (Entry<String, FlowVariable> vEntry : getAvailableFlowVariables(
+                        new VariableType[]{StringType.INSTANCE, DoubleType.INSTANCE, IntType.INSTANCE}).entrySet()) {
                         vStringMap.put(vEntry.getKey(), vEntry.getValue().getValueAsString());
                     }
                     viewRepresentation.setFlowVariables(vStringMap);
@@ -698,11 +726,11 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
     /**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects, final ExecutionContext exec)
-	        throws Exception {
-	    pushFlowVariables();
-	    DynamicOutPort[] ports = m_node.getPorts().getOutPortArray();
+    @Override
+    protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
+        final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        pushFlowVariables();
+        DynamicOutPort[] ports = m_node.getPorts().getOutPortArray();
         PortObject[] pOArray = new PortObject[ports.length];
         for (int i = 0; i < ports.length; i++) {
             if (ports[i].getPortType().equals(org.knime.dynamicnode.v30.PortType.IMAGE)) {
@@ -763,8 +791,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                     try {
                         out = Double.parseDouble(var);
                     } catch (Exception e) {
-                        throw new IllegalArgumentException("Value could not be parsed as double when creating flow variable. "
-                                + e.getMessage());
+                        throw new IllegalArgumentException(
+                            "Value could not be parsed as double when creating flow variable. " + e.getMessage());
                     }
                 }
                 if (out != null) {
@@ -983,7 +1011,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 		return deps;
 	}
 
-	private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec, final BufferedDataTable inTable, final String tableId) throws CanceledExecutionException {
+    private JSONDataTable createJSONTableFromBufferedDataTable(final ExecutionContext exec,
+        final BufferedDataTable inTable, final String tableId) throws CanceledExecutionException {
         JSONDataTable table = JSONDataTable.newBuilder()
                 .setDataTable(inTable)
                 .setId(tableId)
@@ -991,8 +1020,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
                 .setMaxRows(m_config.getMaxRows())
                 .build(exec);
         if (m_config.getMaxRows() < inTable.size()) {
-            String warning = "Only the first "
-                    + m_config.getMaxRows() + " rows are displayed.";
+            String warning = "Only the first " + m_config.getMaxRows() + " rows are displayed.";
             setWarningMessage(warning);
             DynamicJSViewRepresentation rep = getViewRepresentation();
             if (rep != null) {
@@ -1054,7 +1082,7 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
         return jsDependencies;
     }
 
-    private IConfigurationElement getConfigurationFromWebResID(final String id) {
+    private static IConfigurationElement getConfigurationFromWebResID(final String id) {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IConfigurationElement[] configurationElements = registry.getConfigurationElementsFor(ID_WEB_RES);
         for (IConfigurationElement element : configurationElements) {

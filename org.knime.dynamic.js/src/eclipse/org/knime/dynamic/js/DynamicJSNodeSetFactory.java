@@ -171,8 +171,9 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 		return s;
 	}
 
-	private void getFactoryClass(final File nodeConfig, final String nodeID) throws ParserConfigurationException, SAXException, IOException, XmlException {
-	    DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+    private void getFactoryClass(final File nodeConfig, final String nodeID)
+        throws ParserConfigurationException, SAXException, IOException, XmlException {
+        DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
         fac.setNamespaceAware(true);
         DocumentBuilder parser = fac.newDocumentBuilder();
         Document doc;
@@ -182,27 +183,34 @@ public class DynamicJSNodeSetFactory implements NodeSetFactory {
 
         String namespaceUri = doc.getDocumentElement().getNamespaceURI();
         if (namespaceUri != null) {
-            if (namespaceUri.equals(org.knime.dynamicjsnode.v212.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
-                org.knime.dynamicjsnode.v212.KnimeNodeDocument node = org.knime.dynamicjsnode.v212.KnimeNodeDocument.Factory.parse(nodeConfig);
+            if (namespaceUri.equals(
+                org.knime.dynamicjsnode.v212.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
+                org.knime.dynamicjsnode.v212.KnimeNodeDocument node =
+                    org.knime.dynamicjsnode.v212.KnimeNodeDocument.Factory.parse(nodeConfig);
                 String categoryPath = node.getKnimeNode().getCategoryPath();
                 if (!node.validate()) {
-                    throw new XmlException("Node config XML did not validate against Dynamic JavaScript Node v2.12 schema.");
+                    throw new XmlException(
+                        "Node config XML did not validate against Dynamic JavaScript Node v2.12 schema.");
                 }
                 m_factories.put(nodeID, org.knime.dynamic.js.v212.DynamicJSNodeFactory.class);
                 m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
                 m_afterIDs.put(nodeID, node.getKnimeNode().getAfterID());
-            } else if (namespaceUri.equals(org.knime.dynamicjsnode.v30.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
-                org.knime.dynamicjsnode.v30.KnimeNodeDocument node = org.knime.dynamicjsnode.v30.KnimeNodeDocument.Factory.parse(nodeConfig);
+            } else if (namespaceUri.equals(
+                org.knime.dynamicjsnode.v30.KnimeNodeDocument.type.getContentModel().getName().getNamespaceURI())) {
+                org.knime.dynamicjsnode.v30.KnimeNodeDocument node =
+                    org.knime.dynamicjsnode.v30.KnimeNodeDocument.Factory.parse(nodeConfig);
                 String categoryPath = node.getKnimeNode().getCategoryPath();
                 if (!node.validate()) {
-                    throw new XmlException("Node config XML did not validate against Dynamic JavaScript Node v3.0 schema.");
+                    throw new XmlException(
+                        "Node config XML did not validate against Dynamic JavaScript Node v3.0 schema.");
                 }
                 m_factories.put(nodeID, org.knime.dynamic.js.v30.DynamicJSNodeFactory.class);
                 m_paths.put(nodeID, categoryPath == null ? "unknown" : categoryPath);
                 m_afterIDs.put(nodeID, node.getKnimeNode().getAfterID());
             } else {
-                throw new XmlException("Unsupported namespace for node description in " + nodeConfig.getCanonicalPath() + ": " + namespaceUri);
+                throw new XmlException("Unsupported namespace for node description in " + nodeConfig.getCanonicalPath()
+                    + ": " + namespaceUri);
             }
         }
-	}
+    }
 }

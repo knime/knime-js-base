@@ -137,10 +137,11 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
     }
 
 	@Override
-	public void saveAdditionalFactorySettings(final ConfigWO config) {
-		config.addString(DynamicJSNodeSetFactory.NODE_DIR_CONF, m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
-		super.saveAdditionalFactorySettings(config);
-	}
+    public void saveAdditionalFactorySettings(final ConfigWO config) {
+        config.addString(DynamicJSNodeSetFactory.NODE_DIR_CONF,
+            m_pluginName + ":" + m_configFolder + ":" + m_nodeFolder);
+        super.saveAdditionalFactorySettings(config);
+    }
 
 	@Override
 	public DynamicJSNodeModel createNodeModel() {
