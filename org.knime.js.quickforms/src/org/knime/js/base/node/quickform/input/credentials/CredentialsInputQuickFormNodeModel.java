@@ -255,7 +255,7 @@ public final class CredentialsInputQuickFormNodeModel extends
     @Override
     public void setInputData(final ExternalNodeData inputData) {
         super.setInputData(inputData);
-        if (CoreConstants.MAGIC_DEFAULT_PASSWORD.equals(getDialogValue().getPassword())) {
+        if (getDialogValue() != null && CoreConstants.MAGIC_DEFAULT_PASSWORD.equals(getDialogValue().getPassword())) {
             getDialogValue().setPassword(getConfig().getDefaultValue().getPassword());
         }
     }
