@@ -132,9 +132,14 @@ public class FileDownloadNodeModel extends AbstractWizardNodeModel<FileDownloadR
             throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote a valid file: "
                     + value);
         }
-        if (!Files.exists(path)) {
-            throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote an existing file: "
-                + value);
+        if (path != null) {
+            if (!Files.exists(path)) {
+                throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote an existing file: "
+                    + value);
+            }
+        } else {
+            throw new InvalidSettingsException("Variable \"" + varName + "\" does not denote an existing file or is pointing outside of the workflow: "
+                    + value);
         }
         return path;
     }
