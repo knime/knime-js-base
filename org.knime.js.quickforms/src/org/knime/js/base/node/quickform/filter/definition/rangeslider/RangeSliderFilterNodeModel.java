@@ -303,6 +303,11 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         final BigDecimal valueBig;
         final boolean mod;
 
+        // check for inifity values, as Big Decimals cannot handle does.
+        if (value == Double.NEGATIVE_INFINITY || value == Double.POSITIVE_INFINITY) {
+            return value;
+        }
+
         if (!isMax) {
             valueBig = BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_DOWN);
         } else {
