@@ -44,64 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   7 Feb 2020 (albrecht): created
  */
-package org.knime.js.base.node.widget.selection.multiple;
+package org.knime.js.base.node.widget.selection.single;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeConfig;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
- * Factory for the multiple selection widget node
+ * The view representation for the single selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
-public class MultipleSelectionWidgetNodeFactory extends NodeFactory<MultipleSelectionWidgetNodeModel>
-    implements WizardNodeFactoryExtension<MultipleSelectionWidgetNodeModel,
-    MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelectionNodeValue>
+    extends SingleMultipleSelectionNodeRepresentation<VAL> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MultipleSelectionWidgetNodeModel createNodeModel() {
-        return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
+    @JsonCreator
+    private SingleSelectionWidgetRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+
+        super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
+            numberVisOptions);
     }
 
     /**
-     * {@inheritDoc}
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param selectionConfig The config of the node
+     * @param labelConfig The label config of the node
      */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<MultipleSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final MultipleSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
+    public SingleSelectionWidgetRepresentation(final VAL currentValue, final VAL defaultValue,
+        final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig) {
+        super(currentValue, defaultValue, selectionConfig, labelConfig);
     }
 
 }

@@ -52,7 +52,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 /**
@@ -62,7 +61,7 @@ import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelect
  */
 public class SingleSelectionWidgetNodeFactory extends NodeFactory<SingleSelectionWidgetNodeModel>
     implements WizardNodeFactoryExtension<SingleSelectionWidgetNodeModel,
-    SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+    SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
 
     /**
      * {@inheritDoc}
