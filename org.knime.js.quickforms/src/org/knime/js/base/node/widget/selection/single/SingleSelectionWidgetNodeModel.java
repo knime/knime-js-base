@@ -49,7 +49,6 @@
 package org.knime.js.base.node.widget.selection.single;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
@@ -59,7 +58,7 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class SingleSelectionWidgetNodeModel extends
-    WidgetFlowVariableNodeModel<SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue>,
+    WidgetFlowVariableNodeModel<SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>,
     SingleMultipleSelectionNodeValue, SingleSelectionWidgetConfig> {
 
     /**
@@ -121,9 +120,9 @@ public class SingleSelectionWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
+    protected SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
         SingleSelectionWidgetConfig config = getConfig();
-        return new SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
+        return new SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
             config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig());
     }
 

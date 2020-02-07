@@ -64,7 +64,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
@@ -74,7 +73,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class MultipleSelectionWidgetNodeModel extends
-    WidgetNodeModel<SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue>,
+    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>,
     SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
 
     /**
@@ -154,9 +153,9 @@ public class MultipleSelectionWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
+    protected MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
         MultipleSelectionWidgetConfig config = getConfig();
-        return new SingleMultipleSelectionNodeRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
+        return new MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
             config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig());
     }
 
