@@ -64,7 +64,6 @@ import org.knime.core.util.CoreConstants;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -87,23 +86,6 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     private String m_username;
     private String m_password;
     private boolean m_isSavePassword;
-
-    /**
-     * Creates a new instance with password and username set to null.
-     */
-    public CredentialsInputQuickFormValue() {
-    }
-
-    @JsonCreator
-    private CredentialsInputQuickFormValue(@JsonProperty(CFG_USERNAME) final String username,
-        @JsonProperty(CFG_PASSWORD) final String password,
-        @JsonProperty(CFG_SAVE_PASSWORD) final boolean isSavePassword,
-        @JsonProperty("magicDefaultPassword") final String magicPassword) {
-        m_username = username;
-        m_password = !StringUtils.isEmpty(magicPassword) && StringUtils.isEmpty(password)
-            ? CoreConstants.MAGIC_DEFAULT_PASSWORD : password;
-        m_isSavePassword = isSavePassword;
-    }
 
     /**
      * {@inheritDoc}
@@ -152,7 +134,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     }
 
     /** @param string the string to set */
-    @JsonIgnore
+    @JsonProperty(CFG_USERNAME)
     public void setUsername(final String string) {
         m_username = string;
     }
@@ -164,7 +146,7 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     }
 
     /** @param isSavePassword the property to set */
-    @JsonIgnore
+    @JsonProperty(CFG_SAVE_PASSWORD)
     public void setSavePassword(final boolean isSavePassword) {
         m_isSavePassword = isSavePassword;
     }
@@ -176,9 +158,11 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     }
 
     /** @param password the password to set */
-    @JsonIgnore
+    @JsonProperty(CFG_PASSWORD)
     public void setPassword(final String password) {
-        m_password = password;
+        if (!StringUtils.isEmpty(password)) {
+            m_password = password;
+        }
     }
 
     /** @return the password */
@@ -193,6 +177,14 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     @JsonView(CoreConstants.ArtifactsView.class)
     private String getMagicPassword() {
         return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null : CoreConstants.MAGIC_DEFAULT_PASSWORD;
+    }
+
+    /** @param magicPassword the magicPassword to set */
+    @JsonProperty("magicDefaultPassword")
+    private void setMagicPassword(final String magicPassword) {
+        if(StringUtils.isEmpty(m_password) && !StringUtils.isEmpty(magicPassword)) {
+            m_password = CoreConstants.MAGIC_DEFAULT_PASSWORD;
+        }
     }
 
     /** {@inheritDoc} */
