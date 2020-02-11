@@ -144,7 +144,7 @@ public class ColumnFilterNodeValue extends JSONViewContent {
                 new DataColumnSpecFilterConfiguration(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         config.loadDefaults(columns, null, EnforceOption.EnforceInclusion);
         if (m_settings == null) {
-            createDefaultSettings();
+            m_settings = createDefaultSettings();
         }
         config.saveConfiguration(m_settings);
     }
