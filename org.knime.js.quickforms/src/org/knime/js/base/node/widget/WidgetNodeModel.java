@@ -217,7 +217,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      */
     @Override
     public VAL getViewValue() {
-        return m_viewValue;
+        return getRelevantValue();
     }
 
     /**
@@ -250,7 +250,7 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
         synchronized (getLock()) {
             switch (getOverwriteMode()) {
                 case WIZARD:
-                    return getViewValue();
+                    return m_viewValue;
                 default:
                     return getConfig().getDefaultValue();
             }
