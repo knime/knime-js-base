@@ -37,10 +37,12 @@ window.knimeGenericView = (function () {
                     var styleDep = document.createElement('link');
                     styleDep.type = 'text/css';
                     styleDep.rel = 'stylesheet';
-                    if (knimeService.resourceBaseUrl) {
+                    if (knimeService.resourceBaseUrl) { // new web portal
                         styleDep.href = knimeService.resourceBaseUrl + '/' + representation.cssDependencies[j];
                     } else if (knimeService.isRunningInWebportal()) { // legacy web portal
                         styleDep.href = './VAADIN/src-js/' + representation.cssDependencies[j];
+                    } else { // relative path for KAP components and individual views
+                        styleDep.href = representation.cssDependencies[j];
                     }
                     head.insertBefore(styleDep, linkBefore);
                 }
