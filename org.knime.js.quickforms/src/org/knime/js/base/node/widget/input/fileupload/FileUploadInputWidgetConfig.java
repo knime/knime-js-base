@@ -67,6 +67,12 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
 
     private final FileUploadNodeConfig m_config;
 
+    private static final String CFG_STORE_IN_WF_DIR = "store_in_wf_dir";
+
+    private static final boolean DEFAULT_STORE_IN_WF_DIR = false;
+
+    private boolean m_storeInWfDir = false;
+
     /**
      * @return the fileTypes
      */
@@ -94,6 +100,20 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
      */
     public boolean getDisableOutput() {
         return m_config.getDisableOutput();
+    }
+
+    /**
+     * @return the storeRelative
+     */
+    public boolean isStoreInWfDir() {
+        return m_storeInWfDir;
+    }
+
+    /**
+     * @param storeRelative the storeRelative to set
+     */
+    public void setStoreInWfDir(final boolean storeRelative) {
+        m_storeInWfDir = storeRelative;
     }
 
     /**
@@ -125,6 +145,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_config.saveSettings(settings);
+        settings.addBoolean(CFG_STORE_IN_WF_DIR, m_storeInWfDir);
     }
 
     /**
@@ -134,6 +155,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+        m_storeInWfDir = settings.getBoolean(CFG_STORE_IN_WF_DIR, DEFAULT_STORE_IN_WF_DIR);
     }
 
     /**
@@ -143,6 +165,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+        m_storeInWfDir = settings.getBoolean(CFG_STORE_IN_WF_DIR, DEFAULT_STORE_IN_WF_DIR);
     }
 
     /**
@@ -154,6 +177,8 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
         sb.append(super.toString());
         sb.append(", ");
         sb.append(m_config.toString());
+        sb.append(", ");
+        sb.append(m_storeInWfDir);
         return sb.toString();
     }
 
@@ -164,6 +189,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_config)
+                .append(m_storeInWfDir)
                 .toHashCode();
     }
 
@@ -184,7 +210,9 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
         FileUploadInputWidgetConfig other = (FileUploadInputWidgetConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_config, other.m_config)
+                .append(m_storeInWfDir, other.m_storeInWfDir)
                 .isEquals();
     }
+
 
 }
