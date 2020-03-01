@@ -49,6 +49,8 @@
 package org.knime.js.base.node.widget.input.fileupload;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -69,15 +71,22 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
@@ -95,6 +104,14 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 public class FileUploadWidgetNodeModel extends
     WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue,
     FileUploadInputWidgetConfig> {
+
+    private static final String TMP_IN_WORKFLOW = "tmp";
+
+    private static final String KNIME_PROTOCOL = "knime";
+
+    private static final String KNIME_WORKFLOW = "knime.workflow";
+
+    private String m_id;
 
     /**
      * Creates a new file upload widget node model
@@ -127,6 +144,9 @@ public class FileUploadWidgetNodeModel extends
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         try {
+            do {
+                m_id = RandomStringUtils.randomAlphanumeric(12).toLowerCase();
+            } while (computeFileName(m_id).exists());
             createAndPushFlowVariable(false);
         } catch (InvalidSettingsException e) {
             if (getConfig().getDisableOutput()) {
@@ -179,7 +199,6 @@ public class FileUploadWidgetNodeModel extends
         pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
     }
 
-
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
         if (path == null || path.isEmpty()) {
@@ -189,10 +208,10 @@ public class FileUploadWidgetNodeModel extends
         Vector<String> vector = new Vector<String>();
         try {
             URL url = new URL(path);
-            if ("file".equalsIgnoreCase(url.getProtocol())) {
+            if (!getConfig().isStoreInWfDir() && "file".equalsIgnoreCase(url.getProtocol())) {
                 Path p = Paths.get(url.toURI());
                 if (!Files.exists(p)) {
-                    throw new InvalidSettingsException("No such file: \"" + p +"\"");
+                    throw new InvalidSettingsException("No such file: \"" + p + "\"");
                 }
                 vector.add(p.toString());
                 vector.add(url.toString());
@@ -200,27 +219,12 @@ public class FileUploadWidgetNodeModel extends
                 if (openStream) {
                     // For a remote resource we always copy it locally first, because it may be accessed several times
                     // and if it's an upload from the WebPortal it requires special authentication.
-                    String extension = FilenameUtils.getExtension(path);
-                    String basename = FilenameUtils.getBaseName(path);
-                    File tempFile = FileUtil.createTempFile((basename.length() < 3) ? "prefix" + basename : basename,
-                        "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
-
-                    try (InputStream is = openStream(url); OutputStream os = Files.newOutputStream(tempFile.toPath())) {
-                        IOUtils.copyLarge(is, os);
-                    } catch (Exception e) {
-                        StringBuilder b = new StringBuilder("Connection to given URL: \"");
-                        b.append(url.toString());
-                        if (e instanceof SocketTimeoutException) {
-                            b.append("\" timed out. Check that the file is accessible from your network, "
-                                + "and consider increasing the default timeout value.");
-                        } else {
-                            b.append("\" could not be achieved. ");
-                            b.append(e.getMessage());
-                        }
-                        throw new InvalidSettingsException(b.toString(), e);
-                    }
+                    final File tempFile = copyFileToTempLocation(path, url);
                     vector.add(tempFile.getAbsolutePath());
-                    vector.add(tempFile.toURI().toString());
+                    vector.add(getConfig().isStoreInWfDir()
+                        ? new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
+                            "/" + TMP_IN_WORKFLOW + "/" + tempFile.getName()).toString()
+                        : tempFile.toURI().toString());
                 } else {
                     vector.add(null);
                     vector.add(url.toString());
@@ -235,12 +239,22 @@ public class FileUploadWidgetNodeModel extends
             }
             URL url;
             try {
-                url = f.toURI().toURL();
+                if (openStream && getConfig().isStoreInWfDir()) {
+                    final File tempFile = copyFileToTempLocation(path, f.toURI().toURL());
+                    url = new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
+                        "/" + TMP_IN_WORKFLOW + "/" + tempFile.getName());
+                    path = tempFile.getAbsolutePath();
+                } else {
+                    url = f.toURI().toURL();
+                }
             } catch (MalformedURLException e) {
                 StringBuilder b = new StringBuilder("Unable to derive URL from ");
                 b.append("file: \"").append(f.getAbsolutePath()).append("\"");
                 b.append(" (file was set as part of quick form remote control)");
                 throw new InvalidSettingsException(b.toString(), e);
+            } catch (IOException e) {
+                throw new InvalidSettingsException(
+                    "Could not transfer uploaded file to workflow temp directory: " + e.getMessage(), e);
             }
             vector.add(path);
             vector.add(url.toString());
@@ -254,20 +268,99 @@ public class FileUploadWidgetNodeModel extends
         return vector;
     }
 
+    private File copyFileToTempLocation(final String path, final URL url) throws IOException, InvalidSettingsException {
+        final String extension = FilenameUtils.getExtension(path);
+        final String basename = FilenameUtils.getBaseName(path);
+        File tempFile;
+        if (getConfig().isStoreInWfDir()) {
+            tempFile = computeFileName(m_id);
+            tempFile.getParentFile().mkdir();
+        } else {
+            tempFile = FileUtil.createTempFile((basename.length() < 3) ? "prefix" + basename : basename,
+                "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
+        }
 
-    private InputStream openStream(final URL url)
-        throws IOException, URISyntaxException {
+        try (InputStream is = openStream(url); OutputStream os = Files.newOutputStream(tempFile.toPath())) {
+            IOUtils.copyLarge(is, os);
+        } catch (final Exception e) {
+            final StringBuilder b = new StringBuilder("Connection to given URL: \"");
+            b.append(url.toString());
+            if (e instanceof SocketTimeoutException) {
+                b.append("\" timed out. Check that the file is accessible from your network, "
+                    + "and consider increasing the default timeout value.");
+            } else {
+                b.append("\" could not be achieved. ");
+                b.append(e.getMessage());
+            }
+            throw new InvalidSettingsException(b.toString(), e);
+        }
+        return tempFile;
+    }
+
+    private File computeFileName(final String id) {
+        File rootDir = null;
+        // get the flow's tmp dir from its context
+        final NodeContext nodeContext = NodeContext.getContext();
+        if (nodeContext != null) {
+            final WorkflowContext workflowContext = nodeContext.getWorkflowManager().getContext();
+            if (workflowContext != null) {
+                rootDir = new File(workflowContext.getCurrentLocation(), TMP_IN_WORKFLOW);
+                rootDir.mkdir();
+            }
+        }
+        if (rootDir == null) {
+            // use the standard tmp dir then.
+            rootDir = new File(KNIMEConstants.getKNIMETempDir());
+        }
+        final String path = getRelevantValue().getPath();
+        final String extension = FilenameUtils.getExtension(path);
+        final String basename = FilenameUtils.getBaseName(path);
+        return new File(rootDir, basename + id + "." + extension);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onDispose() {
+        if (getConfig().isStoreInWfDir()) {
+            deleteTmpFile();
+        }
+        super.onDispose();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void performReset() {
+        super.performReset();
+        if (getConfig().isStoreInWfDir()) {
+            deleteTmpFile();
+        }
+    }
+
+    private void deleteTmpFile() {
+        if (m_id == null) {
+            return;
+        }
+        final File file = computeFileName(m_id);
+        final StringBuilder debug = new StringBuilder();
+        if (FileUtil.deleteRecursively(file)) {
+            debug.append(getConfig().isStoreInWfDir() && file.getParentFile().delete()
+                ? "Deleted temp directory " + file.getParentFile().getAbsolutePath()
+                : "Deleted temp directory " + file.getAbsolutePath());
+        }
+    }
+
+    private InputStream openStream(final URL url) throws IOException, URISyntaxException {
         if ("file".equalsIgnoreCase(url.getProtocol())) {
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
-            WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-            URLConnection conn = url.openConnection();
+            final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+            final URLConnection conn = url.openConnection();
 
             if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
                 // only pass on the auth token if it's the originating server, we don't want to send it to someone else
-                URI repoUri = wfContext.getRemoteRepositoryAddress().get();
+                final URI repoUri = wfContext.getRemoteRepositoryAddress().get();
                 if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
-                        && repoUri.getScheme().equals(url.getProtocol())) {
+                    && repoUri.getScheme().equals(url.getProtocol())) {
                     conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
                 }
             }
@@ -281,7 +374,6 @@ public class FileUploadWidgetNodeModel extends
             return conn.getInputStream();
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -314,7 +406,7 @@ public class FileUploadWidgetNodeModel extends
     protected FileUploadNodeRepresentation<FileUploadNodeValue> getRepresentation() {
         FileUploadInputWidgetConfig config = getConfig();
         return new FileUploadNodeRepresentation<FileUploadNodeValue>(getRelevantValue(), config.getDefaultValue(),
-                config.getFileUploadConfig(), config.getLabelConfig());
+            config.getFileUploadConfig(), config.getLabelConfig());
     }
 
     /**
@@ -326,4 +418,44 @@ public class FileUploadWidgetNodeModel extends
         getConfig().getDefaultValue().setPathValid(getViewValue().getPathValid());
     }
 
+    private static final String INTERNAL_FILE_NAME = "file-id.xml";
+
+    /** {@inheritDoc} */
+    @Override
+    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        super.loadInternals(nodeInternDir, exec);
+        final File internalFile = new File(nodeInternDir, INTERNAL_FILE_NAME);
+        boolean issueWarning;
+        if (internalFile.exists()) {
+            // in most standard cases this isn't reasonable as the folder gets deleted when the flow is closed.
+            // however, it's useful if the node is run in a temporary workflow that is part of the streaming executor
+            try (InputStream in = new FileInputStream(internalFile)) {
+                final NodeSettingsRO s = NodeSettings.loadFromXML(in);
+                m_id = CheckUtils.checkSettingNotNull(s.getString("upload-file-id"), "id must not be null");
+                issueWarning = !computeFileName(m_id).exists();
+            } catch (final InvalidSettingsException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        } else {
+            issueWarning = getConfig().isStoreInWfDir();
+        }
+        if (issueWarning) {
+            setWarningMessage("Did not restore content; consider to re-execute!");
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        super.saveInternals(nodeInternDir, exec);
+        if (m_id != null) {
+            try (OutputStream w = new FileOutputStream(new File(nodeInternDir, INTERNAL_FILE_NAME))) {
+                final NodeSettings s = new NodeSettings("file-upload-widget-node");
+                s.addString("upload-file-id", m_id);
+                s.saveToXML(w);
+            }
+        }
+    }
 }

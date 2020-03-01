@@ -86,6 +86,7 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
     private final JTextField m_validExtensionsField;
     private final JSpinner m_timeoutSpinner;
     private final JCheckBox m_disableOutputBox;
+    private final JCheckBox m_storeInWfDirBox;
 
     private FileUploadInputWidgetConfig m_config;
 
@@ -114,6 +115,7 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
         });
         m_timeoutSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.0, Integer.MAX_VALUE, 1.0));
         m_disableOutputBox = new JCheckBox();
+        m_storeInWfDirBox = new JCheckBox();
         createAndAddTab();
     }
 
@@ -138,6 +140,8 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
             m_fileHistoryPanel, panelWithGBLayout, gbc);
         addPairToPanel("Timeout (s): ", m_timeoutSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
+        addPairToPanel("Store uploaded file in workflow directory: ",
+            m_storeInWfDirBox, panelWithGBLayout, gbc);
     }
 
     /**
@@ -173,6 +177,7 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
         m_fileHistoryPanel.setSuffixes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         m_timeoutSpinner.setValue((double) m_config.getTimeout() / 1000);
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
+        m_storeInWfDirBox.setSelected(m_config.isStoreInWfDir());
     }
 
     /**
@@ -186,6 +191,7 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
         fileUploadConfig.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
         fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
         m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
+        m_config.setStoreInWfDir(m_storeInWfDirBox.isSelected());
         m_config.saveSettings(settings);
     }
 

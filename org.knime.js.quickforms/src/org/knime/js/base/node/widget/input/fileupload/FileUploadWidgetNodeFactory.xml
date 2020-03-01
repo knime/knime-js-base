@@ -76,6 +76,15 @@
 			This option is helpful in the wizard (WebPortal) execution to keep
 			this and subsequent nodes from failing during execution.
 		</option>
+		<option
+			name="Store uploaded file in workflow directory">
+			Check this box to store the file in a temp directory in the workflow directory (e.g.
+			/path/to/workflow/tmp/file_name). Otherwise, it will be created in the
+			temp directory of the system, which can lead to unwanted behaviour,
+			i.e. reader nodes do not allow direct access to the file system on KNIME Server or due to swapping a job 
+			between systems in a server/executor environment. Note that the uploaded file will be deleted from the
+			workflow when the workflow is discarded or reset.
+		</option>
 	</fullDescription>
 	<interactiveView name="File Upload">View containing the file upload
 		component.</interactiveView>
