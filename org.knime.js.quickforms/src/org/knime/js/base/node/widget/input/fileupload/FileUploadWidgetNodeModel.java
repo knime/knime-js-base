@@ -92,6 +92,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
@@ -104,8 +105,6 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 public class FileUploadWidgetNodeModel extends
     WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue,
     FileUploadInputWidgetConfig> {
-
-    private static final String TMP_IN_WORKFLOW = "tmp";
 
     private static final String KNIME_PROTOCOL = "knime";
 
@@ -223,7 +222,7 @@ public class FileUploadWidgetNodeModel extends
                     vector.add(tempFile.getAbsolutePath());
                     vector.add(getConfig().isStoreInWfDir()
                         ? new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
-                            "/" + TMP_IN_WORKFLOW + "/" + tempFile.getName()).toString()
+                            "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName()).toString()
                         : tempFile.toURI().toString());
                 } else {
                     vector.add(null);
@@ -242,7 +241,7 @@ public class FileUploadWidgetNodeModel extends
                 if (openStream && getConfig().isStoreInWfDir()) {
                     final File tempFile = copyFileToTempLocation(path, f.toURI().toURL());
                     url = new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
-                        "/" + TMP_IN_WORKFLOW + "/" + tempFile.getName());
+                        "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName());
                     path = tempFile.getAbsolutePath();
                 } else {
                     url = f.toURI().toURL();
@@ -304,7 +303,7 @@ public class FileUploadWidgetNodeModel extends
         if (nodeContext != null) {
             final WorkflowContext workflowContext = nodeContext.getWorkflowManager().getContext();
             if (workflowContext != null) {
-                rootDir = new File(workflowContext.getCurrentLocation(), TMP_IN_WORKFLOW);
+                rootDir = new File(workflowContext.getCurrentLocation(), ResolverUtil.IN_WORKFLOW_TEMP_DIR);
                 rootDir.mkdir();
             }
         }
