@@ -193,11 +193,11 @@ window.knimeQuickformFilterSlider = (function () {
             label.appendChild(document.createTextNode(representation.label));
             body.appendChild(label);
         }
-        body.append(document.createElement('br'));
+        body.appendChild(document.createElement('br'));
         errorMessage = document.createElement('span');
         errorMessage.setAttribute('class', 'knime-qf-error');
         errorMessage.style.display = 'none';
-        body.append(errorMessage);
+        body.appendChild(errorMessage);
     };
     
     updateSettings = function (settings) {
