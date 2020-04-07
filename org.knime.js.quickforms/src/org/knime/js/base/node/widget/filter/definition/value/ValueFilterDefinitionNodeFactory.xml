@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode icon="./value_filter.png" type="Visualizer" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+<knimeNode icon="./value_filter.png" type="Widget" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
 	<name>Interactive Value Filter Widget</name>
 	<shortDescription>
 		Defines a filter definition to the input table and provides an interactive value filter on nominal columns.
