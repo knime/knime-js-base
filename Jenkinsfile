@@ -1,7 +1,8 @@
 #!groovy
 def BN = BRANCH_NAME == "master" || BRANCH_NAME.startsWith("releases/") ? BRANCH_NAME : "master"
 
-library "knime-pipeline@$BN"
+// library "knime-pipeline@$BN"
+library "knime-pipeline@todo/DEVOPS-309-enable-testing-for-knime-js-base"
 
 properties([
 	pipelineTriggers([
