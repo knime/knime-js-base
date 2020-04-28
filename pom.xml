@@ -30,9 +30,10 @@
         <module>org.knime.ext.js</module>
         <module>org.knime.features.js.quickforms</module>
         <module>org.knime.features.js.views</module>
+        <module>org.knime.features.testing.js</module>
         <module>org.knime.features.quickform.legacy</module>
         <module>org.knime.js.quickforms</module>
-        <module>org.knime.js.testing</module>
+        <module>org.knime.js.tests</module>
         <module>org.knime.js.views</module>
         <module>org.knime.quickform.nodes.legacy</module>
         <module>org.knime.update.js.base</module>

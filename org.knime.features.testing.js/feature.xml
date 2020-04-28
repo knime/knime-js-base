@@ -727,7 +727,7 @@ propagated with or for interoperation with KNIME.
    </license>
 
    <plugin
-         id="org.knime.js.testing"
+         id="org.knime.js.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"

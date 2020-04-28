@@ -4,6 +4,8 @@
    <feature id="org.knime.features.js.views.source" version="0.0.0"/>
    <feature id="org.knime.features.js.quickforms" version="0.0.0"/>
    <feature id="org.knime.features.js.quickforms.source" version="0.0.0"/>
+   <feature id="org.knime.features.testing.js" version="0.0.0"/>
+   <feature id="org.knime.features.testing.js.source" version="0.0.0"/>
    <feature id="org.knime.features.quickform.legacy" version="0.0.0"/>
    <feature id="org.knime.features.quickform.legacy.source" version="0.0.0"/>
 </site>
