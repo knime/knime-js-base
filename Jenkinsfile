@@ -1,8 +1,7 @@
 #!groovy
 def BN = BRANCH_NAME == "master" || BRANCH_NAME.startsWith("releases/") ? BRANCH_NAME : "master"
 
-// library "knime-pipeline@$BN"
-library "knime-pipeline@todo/DEVOPS-309-enable-testing-for-knime-js-base"
+library "knime-pipeline@$BN"
 
 properties([
 	pipelineTriggers([
@@ -23,8 +22,7 @@ try {
         dependencies: [
             repositories: ['knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep',
 			'knime-weka', 'knime-network', 'knime-xml', 'knime-datageneration',
-			'knime-chemistry', 'knime-chromium', 'knime-textprocessing'], // add knime-parquet after conversion
-			// ius: ['jp.co.infocom.cheminfo.marvin.feature']
+			'knime-chemistry', 'knime-chromium', 'knime-textprocessing']
         ]
     )
 
