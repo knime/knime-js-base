@@ -59,7 +59,6 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.date.DateAndTimeCellFactory;
@@ -124,7 +123,7 @@ public class JSONDataTableTest {
         NodeFactory<NodeModel> dummyFactory =
             (NodeFactory)new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
         ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
-            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
+            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<>());
 
         String json = mapper.writer().writeValueAsString(
             JSONDataTable.newBuilder().setDataTable(expectedTable).setFirstRow(1).setMaxRows(1).build(execContext));
@@ -186,7 +185,7 @@ public class JSONDataTableTest {
         NodeFactory<NodeModel> dummyFactory =
             (NodeFactory)new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
         ExecutionContext execContext = new ExecutionContext(new DefaultNodeProgressMonitor(), new Node(dummyFactory),
-            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<Integer, ContainerTable>());
+            SingleNodeContainer.MemoryPolicy.CacheOnDisc, new HashMap<>());
 
         String json = mapper.writer().writeValueAsString(
             JSONDataTable.newBuilder().setDataTable(expectedTable).setFirstRow(1).setMaxRows(1).build(execContext));
