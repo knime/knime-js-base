@@ -76,6 +76,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnSelectionPanel;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.StringFilterPanel;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
@@ -109,7 +110,7 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_lockColumn = new JCheckBox();
         m_defaultColumnField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
-        m_defaultField = new StringFilterPanel(true);
+        m_defaultField = new StringFilterPanel(false);
         m_defaultColumnField.addItemListener(new ItemListener() {
             /** {@inheritDoc} */
             @Override
@@ -154,7 +155,6 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         }
         List<String> excludes = Arrays.asList(m_possibleValues);
         panel.update(new ArrayList<String>(0), excludes, m_possibleValues);
-        panel.update(new ArrayList<String>(0), excludes, m_possibleValues);
     }
 
     /**
@@ -164,7 +164,20 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
         ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
         value.loadFromNodeSettings(settings);
-        return "Column: " + value.getColumn() + "\nValues: " + StringUtils.join(value.getValues(), ", ");
+        // This is needed here for backwards compatbility because the newly
+        // created ValueFilterDialogNodeValue might be populated with old settings.
+        value.updateWithOldValues(m_possibleValues);
+
+        EnforceOption activeEnforceOption = value.getEnforceOption();
+        String activeEnforceReadable = "";
+        switch (activeEnforceOption) {
+            case EnforceInclusion: activeEnforceReadable = "Enforce inclusion"; break;
+            case EnforceExclusion: activeEnforceReadable = "Enforce exclusion"; break;
+        }
+        return "Column: " + value.getColumn()
+                + "\nIncludes: " + StringUtils.join(value.getIncludes(), ", ")
+                + "\nExcludes: " + StringUtils.join(value.getExcludes(), ", ")
+                + "\n" + activeEnforceReadable;
     }
 
     /**
@@ -223,16 +236,17 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
             }
         }
         m_defaultColumnField.setSelectedColumn(selectedDefaultColumn);
-        List<String> defaultIncludes = Arrays.asList(m_config.getDefaultValue().getValues());
-        List<String> defaultExcludes =
-                new ArrayList<String>(Math.max(0, m_possibleValues.length
-                        - defaultIncludes.size()));
-        for (String string : m_possibleValues) {
-            if (!defaultIncludes.contains(string)) {
-                defaultExcludes.add(string);
-            }
-        }
+
+        m_config.getDefaultValue().updateWithOldValues(m_possibleValues);
+
+        // update default include and exclude lists with previously unseen values
+        m_config.getDefaultValue().updateInclExcl(Arrays.asList(m_possibleValues));
+        // update UI model and display with previously unseen values
+        ArrayList<String> defaultIncludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getIncludes()));
+        ArrayList<String> defaultExcludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getExcludes()));
         m_defaultField.update(defaultIncludes, defaultExcludes, m_possibleValues);
+        m_defaultField.setSelectedEnforceOption( m_config.getDefaultValue().getEnforceOption() );
+
         ValueFilterNodeConfig valueFilterConfig = m_config.getValueFilterConfig();
         m_lockColumn.setSelected(valueFilterConfig.isLockColumn());
         m_type.setSelectedItem(valueFilterConfig.getType());
@@ -248,13 +262,21 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         saveSettingsTo(m_config);
         ValueFilterNodeConfig valueFilterConfig = m_config.getValueFilterConfig();
         valueFilterConfig.setLockColumn(m_lockColumn.isSelected());
-        m_config.getDefaultValue().setColumn(m_defaultColumnField.getSelectedColumn());
-        Set<String> defaultIncludes = m_defaultField.getIncludeList();
-        m_config.getDefaultValue().setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
         valueFilterConfig.setFromSpec(m_spec);
         valueFilterConfig.setType((String)m_type.getSelectedItem());
         valueFilterConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         valueFilterConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
+
+        ValueFilterDialogNodeValue defaultValue = m_config.getDefaultValue();
+        defaultValue.setColumn(m_defaultColumnField.getSelectedColumn());
+        Set<String> defaultIncludes = m_defaultField.getIncludeList();
+        Set<String> defaultExcludes = m_defaultField.getExcludeList();
+        defaultValue.setIncludes(defaultIncludes.toArray(new String[defaultIncludes.size()]));
+        defaultValue.setExcludes(defaultExcludes.toArray(new String[defaultExcludes.size()]));
+        defaultValue.setEnforceOption(
+            m_defaultField.getSelectedEnforceOption().orElse(ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT)
+        );
+
         m_config.saveSettings(settings);
     }
 

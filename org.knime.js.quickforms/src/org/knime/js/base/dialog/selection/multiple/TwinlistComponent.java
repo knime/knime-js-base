@@ -70,7 +70,11 @@ public class TwinlistComponent implements MultipleSelectionsComponent {
      * Create TwinlistComponent.
      */
     TwinlistComponent() {
-        m_filter = new StringFilterPanel(true);
+        this(true);
+    }
+
+    public TwinlistComponent(boolean showSelectionListsOnly) {
+        m_filter = new StringFilterPanel(showSelectionListsOnly);
         m_choices = new String[0];
     }
 

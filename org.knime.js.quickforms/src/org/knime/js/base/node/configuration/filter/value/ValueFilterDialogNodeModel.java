@@ -175,14 +175,15 @@ public class ValueFilterDialogNodeModel extends
     }
 
     /**
-     * Checks if the currently selected value is among the possible values and throws an exception if not.
+     * Validates the selected column. Omits chosen values that are no longer among the possible values.
+     * Includes values not mentioned in include or exclude list, based on the currently active policy.
      *
-     * @throws InvalidSettingsException If the value is not among the possible values
+     * @throws InvalidSettingsException if the chosen column is invalid or no possible values were found.
      */
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
         ValueFilterDialogNodeValue rValue = getRelevantValue();
         String column = rValue.getColumn();
-        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getValues()));
+        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getIncludes()));
         ValueFilterNodeConfig valueFilterConfig = getConfig().getValueFilterConfig();
         Map<String, List<String>> possibleValues = valueFilterConfig.getPossibleValues();
         if (possibleValues.size() < 1) {
@@ -223,6 +224,12 @@ public class ValueFilterDialogNodeModel extends
         }
         Map<String, List<String>> result = new HashMap<String, List<String>>();
         result.put(column, values);
+
+        // Reconcile old configuration now that possible values are known.
+        rValue.updateWithOldValues(columnValues.toArray(new String[0]));
+
+        rValue.updateInclExcl(columnValues);
+
         return result;
     }
 
