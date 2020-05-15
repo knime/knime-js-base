@@ -650,7 +650,7 @@ knime_lift_chart = function() {
     
     function resize(event) {
        legendHeight = 0;
-       var controlHeight = d3.select("#controlContainer").node().getBoundingClientRect().height;
+       var controlHeight = getControlHeight();
         d3.select("#" + layoutContainerID).style({
             "height" : "calc(100% - " + controlHeight + "px)",
             "min-height" :  (minHeight + controlHeight) + "px"
