@@ -67,6 +67,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
 import org.knime.js.base.node.configuration.DialogNodeModel;
 
@@ -224,6 +225,12 @@ public class ValueFilterDialogNodeModel extends
         }
         Map<String, List<String>> result = new HashMap<String, List<String>>();
         result.put(column, values);
+
+        // The list type might have been changed via the configuration node
+        // to a setting under which the enforce policy of the overwriting value should not be considered.
+        if ( ! valueFilterConfig.getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+            rValue.setEnforceOption( getConfig().getDefaultValue().getEnforceOption() );
+        }
 
         // Reconcile old configuration now that possible values are known.
         rValue.updateWithOldValues(columnValues.toArray(new String[0]));

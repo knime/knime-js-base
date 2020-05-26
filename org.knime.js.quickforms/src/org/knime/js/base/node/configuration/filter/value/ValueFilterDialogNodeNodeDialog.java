@@ -164,20 +164,25 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
         ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
         value.loadFromNodeSettings(settings);
-        // This is needed here for backwards compatbility because the newly
+        // This is needed here for backwards compatibility because the newly
         // created ValueFilterDialogNodeValue might be populated with old settings.
         value.updateWithOldValues(m_possibleValues);
 
-        EnforceOption activeEnforceOption = value.getEnforceOption();
-        String activeEnforceReadable = "";
-        switch (activeEnforceOption) {
-            case EnforceInclusion: activeEnforceReadable = "Enforce inclusion"; break;
-            case EnforceExclusion: activeEnforceReadable = "Enforce exclusion"; break;
-        }
-        return "Column: " + value.getColumn()
+        String valueString = "Column: " + value.getColumn()
                 + "\nIncludes: " + StringUtils.join(value.getIncludes(), ", ")
-                + "\nExcludes: " + StringUtils.join(value.getExcludes(), ", ")
-                + "\n" + activeEnforceReadable;
+                + "\nExcludes: " + StringUtils.join(value.getExcludes(), ", ");
+
+        if (MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())) {
+            EnforceOption activeEnforceOption = value.getEnforceOption();
+            String activeEnforceReadable = "";
+            switch (activeEnforceOption) {
+                case EnforceInclusion: activeEnforceReadable = "Enforce inclusion"; break;
+                case EnforceExclusion: activeEnforceReadable = "Enforce exclusion"; break;
+            }
+            valueString += "\n" + activeEnforceReadable;
+        }
+
+        return valueString;
     }
 
     /**

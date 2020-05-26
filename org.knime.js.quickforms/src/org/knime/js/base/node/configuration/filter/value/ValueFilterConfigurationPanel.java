@@ -60,11 +60,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
@@ -87,8 +84,6 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
 
 
     private final boolean m_twinlistUsed;
-    private JRadioButton m_enforceInclusion = null;
-    private JRadioButton m_enforceExclusion = null;
 
     /**
      * A mapping from column names to a list of all possible values of the resp. column.
@@ -121,33 +116,15 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
 
         m_twinlistUsed = representation.getType().equals(MultipleSelectionsComponentFactory.TWINLIST);
 
-        JPanel enforcePanel = null;
         if (m_twinlistUsed) {
             // The twinlist already provides radio buttons for enforce inclusion/exclusion (via NameFilterPanel).
             m_values = new TwinlistComponent(false);
         } else {
             m_values = MultipleSelectionsComponentFactory.createMultipleSelectionsComponent(representation.getType());
-            m_enforceInclusion = new JRadioButton("Enforce inclusion");
-            m_enforceInclusion.setBorder(new EmptyBorder(8, 8, 8, 8));
-            m_enforceExclusion = new JRadioButton("Enforce exclusion");
-            m_enforceExclusion.setBorder(new EmptyBorder(8, 8, 8, 8));
-            final ButtonGroup enforceGroup = new ButtonGroup();
-            m_enforceInclusion .setToolTipText("Force the set of included " + "values" + " to stay the same.");
-            m_enforceExclusion .setToolTipText("Force the set of excluded " + "values" + " to stay the same.");
-            enforceGroup.add(m_enforceInclusion);
-            enforceGroup.add(m_enforceExclusion);
-            enforcePanel = new JPanel();
-            enforcePanel.add(m_enforceExclusion);
-            enforcePanel.add(m_enforceInclusion);
         }
 
         gbc.gridy++;
         panel.add(m_values.getComponent(), gbc);
-
-        if (enforcePanel != null) {
-            gbc.gridy++;
-            panel.add(enforcePanel, gbc);
-        }
 
         loadNodeValue(representation.getDefaultValue());
 
@@ -186,31 +163,25 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
     }
 
     /**
-     * @return The selected enforce inclusion/exclusion policy of the UI.
+     * @return The selected enforce inclusion/exclusion policy of the dialog.
+     *         Empty if dialog does not provide means to select a policy.
      */
     private Optional<EnforceOption> getSelectedEnforceOption() {
         if (m_twinlistUsed) {
             return ((StringFilterPanel) m_values.getComponent()).getSelectedEnforceOption();
         } else {
-            if (m_enforceInclusion.isSelected()) {
-                return Optional.of(EnforceOption.EnforceInclusion);
-            }
-            if (m_enforceExclusion.isSelected()) {
-                return Optional.of(EnforceOption.EnforceExclusion);
-            }
             return Optional.empty();
         }
     }
 
 
+    /**
+     * Set the selected enforce option in the dialog if such controls are provided, else do nothing.
+     * @param enforceOption
+     */
     private void setEnforceOptionSelected(final EnforceOption enforceOption){
         if (m_twinlistUsed) {
             ((StringFilterPanel) m_values.getComponent()).setSelectedEnforceOption(enforceOption);
-        } else {
-            switch (enforceOption) {
-                case EnforceInclusion: m_enforceInclusion.setSelected(true); break;
-                case EnforceExclusion: m_enforceExclusion.setSelected(true); break;
-            }
         }
     }
 
@@ -240,9 +211,8 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         value.setIncludes(selection);
         value.setExcludes(excludes.toArray(new String[0]));
 
-        value.setEnforceOption(
-                getSelectedEnforceOption().orElse(ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT)
-        );
+        // If dialog provides no way to select policy, we use the policy of the default value
+        value.setEnforceOption( getSelectedEnforceOption().orElse(getDefaultValue().getEnforceOption()) );
 
         value.setColumn((String)m_column.getSelectedItem());
         return value;
@@ -255,6 +225,13 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
     public void loadNodeValue(final ValueFilterDialogNodeValue value) {
         super.loadNodeValue(value);
         if (value != null) {
+
+            // value might contain an enforce policy that was set while the dialog provided a means to set
+            // it (i.e. twinlist was enabled). If, then, the list type is changed in the configuration node
+            // dialog, this policy should no longer be considered and the policy of the default value be
+            // used instead.
+            if ( ! m_twinlistUsed) { value.setEnforceOption(getDefaultValue().getEnforceOption()); }
+
             String selectedCol = (String)m_column.getSelectedItem();
             if (selectedCol != null) {
                 List<String> possibleValuesForCol = m_possibleValues.get(selectedCol);
