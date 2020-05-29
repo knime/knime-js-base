@@ -7,6 +7,10 @@
             category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.ext.js.node.quickform.input.molecule.MoleculeStringInputQuickFormNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            factory-class="org.knime.ext.js.node.widget.input.molecule.MoleculeWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
@@ -177,6 +181,34 @@
                webResourceBundleID="RequireJS_2.3.3">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Molecule Widget"
+            version="1.0.0"
+            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule/"
+               relativePathTarget="org/knime/ext/js/node/widget/input/molecule/">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher/"
+               relativePathTarget="js-lib/ketcher/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="js-lib/ketcher/ketcher.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="RequireJS_2.3.3">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -187,6 +219,16 @@
             javascriptComponentID="org.knime.ext.js.node.quickform.input.molecule"
             name="Molecule Input Quickform"
             namespace="org_knime_ext_js_node_quickform_input_molecule"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.ext.js.node.widget.input.molecule.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.ext.js.node.widget.input.molecule"
+            name="Molecule Widget"
+            namespace="org_knime_ext_js_node_widget_input_molecule"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
