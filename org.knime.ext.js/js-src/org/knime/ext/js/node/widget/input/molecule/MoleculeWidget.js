@@ -72,8 +72,8 @@ window.knimeMoleculeWidget = (function () {
     var inWebportal = false;
     var customSketcher = false;
     var callCount = 0;
-    var MIN_WIDTH = 300;
-    var MIN_HEIGHT = 300;
+    var MIN_WIDTH = 850;
+    var MIN_HEIGHT = 500;
     var sketcherFrame,
         errorMessage,
         sketchTranslator,
@@ -99,8 +99,8 @@ window.knimeMoleculeWidget = (function () {
         customSketcher = (inWebportal && sketcherPath);
 
         var body = jQuery('body');
-        var width = Math.max(MIN_WIDTH, representation.width);
-        var height = Math.max(MIN_HEIGHT, representation.height);
+        var width = MIN_WIDTH
+        var height = MIN_HEIGHT
         var qfdiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width style="min-width: ' + width + 'px;min-height: ' + height + 'px">');
         body.append(qfdiv);
 

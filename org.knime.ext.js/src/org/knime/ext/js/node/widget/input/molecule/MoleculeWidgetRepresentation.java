@@ -72,14 +72,11 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         @JsonProperty("defaultValue") final MoleculeWidgetValue defaultValue,
         @JsonProperty("currentValue") final MoleculeWidgetValue currentValue,
         @JsonProperty("sketcherLocation") String sketcherLocation, @JsonProperty("format") String format,
-        @JsonProperty("sketcherPath") String sketcherPath, @JsonProperty("width") int width,
-        @JsonProperty("height") int height) {
+        @JsonProperty("sketcherPath") String sketcherPath) {
         super(label, description, required, defaultValue, currentValue);
         m_sketcherLocation = sketcherLocation;
         m_sketcherPath = sketcherPath;
         m_format = format;
-        m_width = width;
-        m_height = height;
     }
 
     /**
@@ -90,15 +87,11 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         final MoleculeWidgetConfig config, final LabeledConfig labelConfig) {
         super(currentValue, defaultValue, labelConfig);
         m_format = config.getFormat();
-        m_width = config.getWidth();
-        m_height = config.getHeight();
         m_sketcherPath = config.getSketcherPath();
     }
 
     private final String m_format;
     private String m_sketcherLocation;
-    private final int m_width;
-    private final int m_height;
     private final String m_sketcherPath;
 
     /**
@@ -134,22 +127,6 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
 	}
 
     /**
-     * @return the width
-     */
-    @JsonProperty("width")
-    public int getWidth() {
-        return m_width;
-    }
-
-    /**
-     * @return the height
-     */
-    @JsonProperty("height")
-    public int getHeight() {
-        return m_height;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -159,12 +136,6 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         sb.append(", ");
         sb.append("format=");
         sb.append(m_format);
-        sb.append(", ");
-        sb.append("width=");
-        sb.append(m_width);
-        sb.append(", ");
-        sb.append("height=");
-        sb.append(m_height);
         return sb.toString();
     }
 
@@ -177,8 +148,6 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
                 .append(m_format)
                 .append(m_sketcherLocation)
                 .append(m_sketcherPath)
-                .append(m_width)
-                .append(m_height)
                 .toHashCode();
     }
 
@@ -201,8 +170,6 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
                 .append(m_format, other.m_format)
                 .append(m_sketcherLocation, other.m_sketcherLocation)
                 .append(m_sketcherPath, other.m_sketcherPath)
-                .append(m_width, other.m_width)
-                .append(m_height, other.m_height)
                 .isEquals();
     }
 

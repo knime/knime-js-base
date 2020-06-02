@@ -72,12 +72,10 @@ import org.knime.js.core.settings.DialogUtil;
  */
 public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<MoleculeWidgetValue> {
 
-    private static final int TEXT_AREA_HEIGHT = 3;
+    private static final int TEXT_AREA_HEIGHT = 8;
 
     private final JComboBox m_formatBox;
     private final JTextArea m_defaultArea;
-    private final JSpinner m_widthSpinner;
-    private final JSpinner m_heightSpinner;
     
     private MoleculeWidgetConfig m_config;
 
@@ -88,12 +86,6 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
         m_formatBox = new JComboBox(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
         m_formatBox.setEditable(true);
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DialogUtil.DEF_TEXTFIELD_WIDTH);
-        m_widthSpinner =
-            new JSpinner(new SpinnerNumberModel(MoleculeWidgetConfig.DEFAULT_WIDTH, 300,
-                Integer.MAX_VALUE, 1));
-        m_heightSpinner =
-            new JSpinner(new SpinnerNumberModel(MoleculeWidgetConfig.DEFAULT_HEIGHT, 300,
-                Integer.MAX_VALUE, 1));
         createAndAddTab();
     }
 
@@ -102,8 +94,6 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
-        addPairToPanel("Width", m_widthSpinner, panelWithGBLayout, gbc);
-        addPairToPanel("Height", m_heightSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Format: ", m_formatBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
     }
@@ -116,8 +106,6 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
-        m_widthSpinner.setValue(m_config.getWidth());
-        m_heightSpinner.setValue(m_config.getHeight());
         m_defaultArea.setText(m_config.getDefaultValue().getMoleculeString());
         m_formatBox.setSelectedItem(m_config.getFormat());
     }
@@ -128,8 +116,6 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
-        m_config.setWidth((int)m_widthSpinner.getValue());
-        m_config.setHeight((int)m_heightSpinner.getValue());
         m_config.setFormat(m_formatBox.getSelectedItem().toString());
         m_config.getDefaultValue().setMoleculeString(m_defaultArea.getText());
         m_config.saveSettings(settings);

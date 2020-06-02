@@ -66,13 +66,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
     private static final String DEFAULT_FORMAT = MoleculeWidgetNodeModel.DEFAULT_FORMATS[0];
     private String m_format = DEFAULT_FORMAT;
 
-    private static final String CFG_WIDTH = "width";
-    static final int DEFAULT_WIDTH = 830;
-    private int m_width = DEFAULT_WIDTH;
-    private static final String CFG_HEIGHT = "height";
-    static final int DEFAULT_HEIGHT = 500;
-    private int m_height = DEFAULT_HEIGHT;
-    
     private static final String CFG_SKETCHER_PATH = "sketcherPath";
     private static final String DEFAULT_SKETCHER_PATH = "";
     private String m_sketcherPath = DEFAULT_SKETCHER_PATH;
@@ -92,34 +85,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         m_format = format;
     }
 
-    /**
-     * @return the width
-     */
-    public int getWidth() {
-        return m_width;
-    }
-
-    /**
-     * @param width the width to set
-     */
-    public void setWidth(final int width) {
-        m_width = width;
-    }
-
-    /**
-     * @return the height
-     */
-    public int getHeight() {
-        return m_height;
-    }
-
-    /**
-     * @param height the height to set
-     */
-    public void setHeight(final int height) {
-        m_height = height;
-    }
-    
     public String getSketcherPath() {
 		return m_sketcherPath;
 	}
@@ -135,8 +100,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         settings.addString(CFG_FORMAT, m_format);
-        settings.addInt(CFG_WIDTH, m_width);
-        settings.addInt(CFG_HEIGHT, m_height);
         settings.addString(CFG_SKETCHER_PATH, m_sketcherPath);
     }
 
@@ -148,10 +111,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         super.loadSettings(settings);
         m_format = settings.getString(CFG_FORMAT);
 
-        //added with 2.12
-        m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
-        m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
-        
         //added with 3.2
         m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
     }
@@ -164,10 +123,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         super.loadSettingsInDialog(settings);
         m_format = settings.getString(CFG_FORMAT, DEFAULT_FORMAT);
 
-        //added with 2.12
-        m_width = settings.getInt(CFG_WIDTH, DEFAULT_WIDTH);
-        m_height = settings.getInt(CFG_HEIGHT, DEFAULT_HEIGHT);
-        
         //added with 3.2
         m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
     }
@@ -190,12 +145,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         sb.append(", ");
         sb.append("format=");
         sb.append(m_format);
-        sb.append(", ");
-        sb.append("width=");
-        sb.append(m_width);
-        sb.append(", ");
-        sb.append("height=");
-        sb.append(m_height);
         return sb.toString();
     }
 
@@ -206,8 +155,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_format)
-                .append(m_width)
-                .append(m_height)
                 .append(m_sketcherPath)
                 .toHashCode();
     }
@@ -229,8 +176,6 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         MoleculeWidgetConfig other = (MoleculeWidgetConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_format, other.m_format)
-                .append(m_width, other.m_width)
-                .append(m_height, other.m_height)
                 .append(m_sketcherPath, other.m_sketcherPath)
                 .isEquals();
     }
