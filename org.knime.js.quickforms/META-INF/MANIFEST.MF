@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.knime.js.quickforms;singleton:=true
 Bundle-Version: 4.2.0.qualifier
 Bundle-ClassPath: js-quickforms.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Export-Package: org.knime.js.base.node.base.input.credentials,
+Export-Package: org.knime.js.base.node.base,
+ org.knime.js.base.node.base.input.credentials,
  org.knime.js.base.node.configuration.filter.column,
  org.knime.js.base.node.configuration.filter.value,
  org.knime.js.base.node.configuration.input.bool,

@@ -228,7 +228,7 @@
             init-method-name="init"
             javascriptComponentID="org.knime.ext.js.node.widget.input.molecule"
             name="Molecule Widget"
-            namespace="org_knime_ext_js_node_widget_input_molecule"
+            namespace="knimeMoleculeWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

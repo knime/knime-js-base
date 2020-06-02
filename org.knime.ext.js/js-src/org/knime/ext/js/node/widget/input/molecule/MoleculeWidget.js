@@ -1,3 +1,4 @@
+/* global jQuery:false, require:false, resizeParent:false, ketcher:false, checkMissingData:false */
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -41,39 +42,44 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
  * History
  *   Mai 29, 2020 (Daniel Bogenrieder, KNIME AG, Zurich, Switzerland): created
  */
-org_knime_ext_js_node_widget_input_molecule = function () {
+window.knimeMoleculeWidget = (function () {
 
-    var MIN_WIDTH = 300;
-    var MIN_HEIGHT = 300;
 
     var moleculeWidget = {
-        version: "1.0.0"
+        version: '1.0.0'
     };
-    moleculeWidget.name = "Molecule widget";
-    var sketcherFrame;
-    var errorMessage;
-    var sketchTranslator;
-    var currentMolecule, format;
+    moleculeWidget.name = 'Molecule widget';
     var viewValid = false;
 
-    var localInitCode = '       var param_string = document.location.search;'
-        + '            if (param_string.length > 0)' + '                param_string = param_string.substring(1);'
-        + '            var param_list = param_string.split(/&/g);' + '            var param_hash = {};'
-        + '            for (var i = 0; i < param_list.length; ++i) {'
-        + '                var pair = param_list[i].split(\'=\', 2);'
-        + '                param_hash[pair[0]] = pair.length != 2 || unescape(pair[1]);' + '            }'
-        + '	    if (param_hash.ketcher_maximize) {'
-        + '		jQuery(\'ketcher_div\').removeClassName(\'ketcherDivMaxSize\');' + '	    }'
-        + '            // Initialize ketcher'
-        + '            ketcher.init({ketcher_api_url: param_hash.ketcher_api_url});' + '		};'
+    var localInitCode =
+        'var param_string = document.location.search;' +
+        'if (param_string.length > 0)' + '                param_string = param_string.substring(1);' +
+        '    var param_list = param_string.split(/&/g);' + '            var param_hash = {};' +
+        '    for (var i = 0; i < param_list.length; ++i) {' +
+        '        var pair = param_list[i].split(\'=\', 2);' +
+        '        param_hash[pair[0]] = pair.length != 2 || unescape(pair[1]);' +
+        '    }' +
+        '    if (param_hash.ketcher_maximize) {' +
+        '        jQuery(\'ketcher_div\').removeClassName(\'ketcherDivMaxSize\');' +
+        '    }' +
+        '    // Initialize ketcher' +
+        '    ketcher.init({ketcher_api_url: param_hash.ketcher_api_url});' +
+        '};';
 
     var inWebportal = false;
     var customSketcher = false;
     var callCount = 0;
+    var MIN_WIDTH = 300;
+    var MIN_HEIGHT = 300;
+    var sketcherFrame,
+        errorMessage,
+        sketchTranslator,
+        currentMolecule,
+        format;
+
 
     moleculeWidget.init = function (representation) {
         if (callCount++ > 0) {
@@ -93,33 +99,36 @@ org_knime_ext_js_node_widget_input_molecule = function () {
         customSketcher = (inWebportal && sketcherPath);
 
         var body = jQuery('body');
-        var qfdiv = jQuery('<div class="quickformcontainer">');
+        var width = Math.max(MIN_WIDTH, representation.width);
+        var height = Math.max(MIN_HEIGHT, representation.height);
+        var qfdiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width style="min-width: ' + width + 'px;min-height: ' + height + 'px">');
         body.append(qfdiv);
-        // var width = Math.max(MIN_WIDTH, representation.width);
-        // var height = Math.max(MIN_HEIGHT, representation.height);
 
         if (inWebportal) {
             jQuery('script').each(function () {
                 var s = jQuery(this);
-                var src = s.attr("src");
-                if (src && src.indexOf("js-lib/ketcher/") != -1) {
+                var src = s.attr('src');
+                if (src && src.indexOf('js-lib/ketcher/') !== -1) {
                     s.remove();
                 }
             });
+
             sketcherFrame = jQuery('<iframe class="knime-sketcher-frame">');
-            // sketcherFrame.width((width + 20) + "px");
-            // sketcherFrame.height((height + 20) + "px");
-            // qfdiv.width((width + 20) + "px");
-            sketcherFrame.attr("frameborder", "0");
-            sketcherFrame.css("border", "none");
-            sketcherFrame.css("margin", "0");
-            sketcherFrame.css("background", "none");
-            var loc = knimeService.resourceBaseUrl + "/org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.html";
-            sketcherFrame.attr("name", currentMolecule);
+            sketcherFrame.width('100%');
+            sketcherFrame.height((height + 20) + 'px');
+//            qfdiv.width((width + 20) + 'px');
+            sketcherFrame.attr('frameborder', '0');
+            sketcherFrame.css('border', 'none');
+            sketcherFrame.css('margin', '0');
+            sketcherFrame.css('background', 'none');
+            sketcherFrame.css('min-width', width + 'px');
+            sketcherFrame.css('min-height', height + 'px');
+            var loc = './VAADIN/src-js/js-lib/ketcher/ketcher.html';
+            sketcherFrame.attr('name', currentMolecule);
             if (customSketcher) {
                 loc = sketcherPath;
             }
-            sketcherFrame.attr("src", loc);
+            sketcherFrame.attr('src', loc);
             sketcherFrame.load(function () {
                 setTimeout(function () {
                     if (customSketcher) {
@@ -127,7 +136,7 @@ org_knime_ext_js_node_widget_input_molecule = function () {
                         if (sketchTranslator) {
                             sketchTranslator.init(currentMolecule, null, moleculeWidget.update);
                         } else {
-                            errorMessage.text("Could not initialize sketcher. SketchTranslator not found.");
+                            errorMessage.text('Could not initialize sketcher. SketchTranslator not found.');
                             errorMessage.css('display', 'block');
                             resizeParent();
                         }
@@ -137,7 +146,7 @@ org_knime_ext_js_node_widget_input_molecule = function () {
                             ketcher.init();
                             ketcher.setMolecule(currentMolecule);
                         } else {
-                            errorMessage.text("Could not initialize sketcher. Ketcher object not found.");
+                            errorMessage.text('Could not initialize sketcher. Ketcher object not found.');
                             errorMessage.css('display', 'block');
                             resizeParent();
                         }
@@ -148,109 +157,109 @@ org_knime_ext_js_node_widget_input_molecule = function () {
         } else {
             require.config({
                 paths: {
-                    'prototype': 'js-lib/ketcher/prototype-min',
-                    'raphael': 'js-lib/ketcher/raphael',
-                    'base64': 'js-lib/ketcher/base64',
-                    'keymaster': 'js-lib/ketcher/third_party/keymaster',
-                    'common': 'js-lib/ketcher/util/common',
-                    'vec2': 'js-lib/ketcher/util/vec2',
-                    'set': 'js-lib/ketcher/util/set',
-                    'map': 'js-lib/ketcher/util/map',
-                    'pool': 'js-lib/ketcher/util/pool',
-                    'element': 'js-lib/ketcher/chem/element',
-                    'struct': 'js-lib/ketcher/chem/struct',
-                    'molfile': 'js-lib/ketcher/chem/molfile',
-                    'sgroup': 'js-lib/ketcher/chem/sgroup',
-                    'struct_valence': 'js-lib/ketcher/chem/struct_valence',
-                    'dfs': 'js-lib/ketcher/chem/dfs',
-                    'cis_trans': 'js-lib/ketcher/chem/cis_trans',
-                    'stereocenters': 'js-lib/ketcher/chem/stereocenters',
-                    'smiles': 'js-lib/ketcher/chem/smiles',
-                    'inchi': 'js-lib/ketcher/chem/inchi',
-                    'visel': 'js-lib/ketcher/rnd/visel',
-                    'restruct': 'js-lib/ketcher/rnd/restruct',
-                    'restruct_rendering': 'js-lib/ketcher/rnd/restruct_rendering',
-                    'render': 'js-lib/ketcher/rnd/render',
-                    'templates': 'js-lib/ketcher/rnd/templates',
-                    'editor': 'js-lib/ketcher/rnd/editor',
-                    'elem_table': 'js-lib/ketcher/rnd/elem_table',
-                    'rgroup_table': 'js-lib/ketcher/rnd/rgroup_table',
-                    'ui': 'js-lib/ketcher/ui/ui',
-                    'actions': 'js-lib/ketcher/ui/actions',
-                    'reaxys': 'js-lib/ketcher/reaxys/reaxys',
-                    'ketcher': 'js-lib/ketcher/ketcher'
+                    prototype: 'js-lib/ketcher/prototype-min',
+                    raphael: 'js-lib/ketcher/raphael',
+                    base64: 'js-lib/ketcher/base64',
+                    keymaster: 'js-lib/ketcher/third_party/keymaster',
+                    common: 'js-lib/ketcher/util/common',
+                    vec2: 'js-lib/ketcher/util/vec2',
+                    set: 'js-lib/ketcher/util/set',
+                    map: 'js-lib/ketcher/util/map',
+                    pool: 'js-lib/ketcher/util/pool',
+                    element: 'js-lib/ketcher/chem/element',
+                    struct: 'js-lib/ketcher/chem/struct',
+                    molfile: 'js-lib/ketcher/chem/molfile',
+                    sgroup: 'js-lib/ketcher/chem/sgroup',
+                    struct_valence: 'js-lib/ketcher/chem/struct_valence',
+                    dfs: 'js-lib/ketcher/chem/dfs',
+                    cis_trans: 'js-lib/ketcher/chem/cis_trans',
+                    stereocenters: 'js-lib/ketcher/chem/stereocenters',
+                    smiles: 'js-lib/ketcher/chem/smiles',
+                    inchi: 'js-lib/ketcher/chem/inchi',
+                    visel: 'js-lib/ketcher/rnd/visel',
+                    restruct: 'js-lib/ketcher/rnd/restruct',
+                    restruct_rendering: 'js-lib/ketcher/rnd/restruct_rendering',
+                    render: 'js-lib/ketcher/rnd/render',
+                    templates: 'js-lib/ketcher/rnd/templates',
+                    editor: 'js-lib/ketcher/rnd/editor',
+                    elem_table: 'js-lib/ketcher/rnd/elem_table',
+                    rgroup_table: 'js-lib/ketcher/rnd/rgroup_table',
+                    ui: 'js-lib/ketcher/ui/ui',
+                    actions: 'js-lib/ketcher/ui/actions',
+                    reaxys: 'js-lib/ketcher/reaxys/reaxys',
+                    ketcher: 'js-lib/ketcher/ketcher'
                 },
                 shim: {
-                    'vec2': {
+                    vec2: {
                         deps: ['common']
                     },
-                    'pool': {
+                    pool: {
                         deps: ['map', 'set', 'vec2']
                     },
-                    'element': {
+                    element: {
                         deps: ['vec2']
                     },
-                    'struct': {
+                    struct: {
                         deps: ['pool']
                     },
-                    'molfile': {
+                    molfile: {
                         deps: ['struct']
                     },
-                    'sgroup': {
+                    sgroup: {
                         deps: ['pool']
                     },
-                    'struct_valence': {
+                    struct_valence: {
                         deps: ['struct']
                     },
-                    'dfs': {
+                    dfs: {
                         deps: ['struct']
                     },
-                    'cis_trans': {
+                    cis_trans: {
                         deps: ['struct']
                     },
-                    'stereocenters': {
+                    stereocenters: {
                         deps: ['struct']
                     },
-                    'smiles': {
+                    smiles: {
                         deps: ['struct']
                     },
-                    'inchi': {
+                    inchi: {
                         deps: ['struct']
                     },
-                    'visel': {
+                    visel: {
                         deps: ['struct']
                     },
-                    'restruct': {
+                    restruct: {
                         deps: ['raphael', 'struct', 'visel']
                     },
-                    'restruct_rendering': {
+                    restruct_rendering: {
                         deps: ['restruct']
                     },
-                    'render': {
+                    render: {
                         deps: ['prototype', 'restruct']
                     },
-                    'templates': {
+                    templates: {
                         deps: ['visel']
                     },
-                    'editor': {
+                    editor: {
                         deps: ['prototype', 'restruct']
                     },
-                    'elem_table': {
+                    elem_table: {
                         deps: ['prototype', 'raphael', 'visel']
                     },
-                    'rgroup_table': {
+                    rgroup_table: {
                         deps: ['prototype', 'visel']
                     },
-                    'ui': {
+                    ui: {
                         deps: ['render', 'templates', 'editor', 'elem_table', 'rgroup_table']
                     },
-                    'actions': {
+                    actions: {
                         deps: ['ui']
                     },
-                    'reaxys': {
+                    reaxys: {
                         deps: ['ui']
                     },
-                    'ketcher': {
+                    ketcher: {
                         deps: ['prototype', 'raphael', 'base64', 'keymaster', 'common', 'vec2', 'set', 'map', 'pool',
                             'element', 'struct', 'molfile', 'sgroup', 'struct_valence', 'dfs', 'cis_trans',
                             'stereocenters', 'smiles', 'inchi', 'visel', 'restruct', 'restruct_rendering', 'render',
@@ -260,26 +269,46 @@ org_knime_ext_js_node_widget_input_molecule = function () {
                 }
             });
             require(['ketcher'], function () {
-                var sketcherDiv = jQuery('<div class="knime-sketcher-div">');
-                // sketcherDiv.width(width + "px");
-                // sketcherDiv.height(height + "px");
+                var sketcherDiv = jQuery('<div class="knime-sketcher-div" style="height:calc(100% - 20px)">');
+//                sketcherDiv.width(width + 'px');
+//                sketcherDiv.height(height + 'px');
                 var xhr = new XMLHttpRequest();
-                debugger;
                 xhr.open('GET', 'org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.html', true);
                 var ketcherHTML;
                 xhr.onreadystatechange = function () {
-                    if (this.readyState !== 4)
+                    if (this.readyState !== 4) {
                         return;
+                    }
                     // if (this.status!==200) return; // or whatever error handling you want
                     ketcherHTML = this.responseText;
-                    eval(localInitCode);
+                    var paramString = document.location.search;
+                    if (paramString.length > 0) {
+                        paramString = paramString.substring(1);
+                        var paramList = paramString.split(/&/g);
+                        var paramHash = {};
+                        for (var i = 0; i < paramList.length; ++i) {
+                            var pair = paramList[i].split('=', 2);
+                            paramHash[pair[0]] = pair.length !== 2 || unescape(pair[1]);
+                        }
+                        if (paramHash.ketcher_maximize) {
+                            jQuery('ketcher_div').removeClassName('ketcherDivMaxSize');
+                        }
+                        // Initialize ketcher' +
+                        ketcher.init({ketcher_api_url: param_hash.ketcher_api_url});
+                    }
+//                    eval(localInitCode);
                     sketcherDiv.html(ketcherHTML);
                     ketcher.init();
                     ketcher.setMolecule(currentMolecule);
+                    document.getElementById('client_area').style.height = '';
                 };
                 xhr.send();
-                sketcherDiv.css("position", "relative");
+                sketcherDiv.css('position', 'relative');
                 qfdiv.append(sketcherDiv);
+                qfdiv[0].style.height = '100%';
+                qfdiv[0].style.overflow = 'auto';
+                qfdiv[0].parentElement.style.height = '100%';
+                qfdiv[0].parentElement.parentElement.style.height = '100%';
                 // qfdiv.width(width + "px");
             });
         }
@@ -295,52 +324,56 @@ org_knime_ext_js_node_widget_input_molecule = function () {
         resizeParent();
         viewValid = true;
     };
+    
+    $(window).resize(function (event) {
+        resizeParent(event.target.innerWidth, event.target.innerHeight);
+    });
 
     moleculeWidget.update = function () {
     // Do we need to remember the value right away? Probably not.
-    }
+    };
 
     moleculeWidget.validate = function () {
         if (customSketcher) {
             if (!sketchTranslator) {
-                errorMessage.text("Could not fetch molecule from sketcher. SketchTranslator not found.");
+                errorMessage.text('Could not fetch molecule from sketcher. SketchTranslator not found.');
                 errorMessage.css('display', 'block');
                 resizeParent();
                 return false;
             }
             try {
-                molecule = sketchTranslator.getData(format);
+                sketchTranslator.getData(format);
             } catch (exception) {
-                errorMessage.text("Could not fetch molecule from sketcher: " + exception);
+                errorMessage.text('Could not fetch molecule from sketcher: ' + exception);
                 errorMessage.css('display', 'block');
                 resizeParent();
                 return false;
             }
         } else {
             var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
-            if (typeof k == 'undefined') {
-                errorMessage.text("Ketcher object not defined.");
+            if (typeof k === 'undefined') {
+                errorMessage.text('Ketcher object not defined.');
                 errorMessage.css('display', 'block');
                 resizeParent();
                 return false;
             }
         }
         return true;
-    }
+    };
 
     moleculeWidget.setValidationErrorMessage = function (message) {
         if (!viewValid) {
             return;
         }
-        if (message != null) {
-            errorMessage.text(message);
-            errorMessage.css('display', 'block');
-        } else {
+        if (message === null) {
             errorMessage.text('');
             errorMessage.css('display', 'none');
+        } else {
+            errorMessage.text(message);
+            errorMessage.css('display', 'block');
         }
         resizeParent();
-    }
+    };
 
     moleculeWidget.value = function () {
         if (!viewValid) {
@@ -357,24 +390,22 @@ org_knime_ext_js_node_widget_input_molecule = function () {
         } else {
             var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
             if (!format) {
-                format = "SDF";
+                format = 'SDF';
             }
-            if (typeof k != 'undefined') {
-                debugger;
-                if (format.toLowerCase() === "rxn" || format.toLowerCase() === "sdf" || format.toLowerCase() === "mol")
-                    molecule = k.getMolfile();
-                else
-                    molecule = k.getSmiles();
-            } else {
+            if (typeof k === 'undefined') {
                 // should not happen after succesful validate
                 molecule = null;
+            } else if (format.toLowerCase() === 'rxn' || format.toLowerCase() === 'sdf' || format.toLowerCase() === 'mol') {
+                molecule = k.getMolfile();
+            } else {
+                molecule = k.getSmiles();
             }
         }
-        var viewValue = new Object();
+        var viewValue = {};
         viewValue.moleculeString = molecule;
         return viewValue;
     };
 
     return moleculeWidget;
 
-}();
+})();

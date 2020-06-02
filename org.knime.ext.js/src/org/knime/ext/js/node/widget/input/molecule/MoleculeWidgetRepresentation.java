@@ -49,7 +49,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.LabeledNodeRepresentation;
-import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
