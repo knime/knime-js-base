@@ -32,7 +32,9 @@
             The column containing the values.
         </option>
         <option name="Default Values">
-          The values that are selected by default.
+          The values that are selected by default. "Enforce inclusion" asserts that the set of included values stays
+          the same, "Enforce exclusion" behaves likewise. The enforce inclusion/exclusion options are available in the
+          component dialog only for the Twinlist selection type.
         </option>
         <option name="Limit number of visible options">
           By default the List and Twinlist components adjust their height to display all possible choices without a 
