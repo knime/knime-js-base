@@ -133,12 +133,16 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
         Set<String> currentIncludes = new HashSet<String>(Arrays.asList(m_values));
         Set<String> currentExcludes = new HashSet<String>(Arrays.asList(m_excludes));
         values.stream()
-            .filter((val) -> ! currentIncludes.contains(val))
-            .filter((val) -> ! currentExcludes.contains(val))
-            .forEach((newValue) -> {
-                if (m_enforceOption == EnforceOption.EnforceInclusion) { currentExcludes.add(newValue); }
-                if (m_enforceOption == EnforceOption.EnforceExclusion) { currentIncludes.add(newValue); }
-            });
+                .filter((val) -> !currentIncludes.contains(val))
+                .filter((val) -> !currentExcludes.contains(val))
+                .forEach((newValue) -> {
+                    if (m_enforceOption == EnforceOption.EnforceInclusion) {
+                        currentExcludes.add(newValue);
+                    }
+                    if (m_enforceOption == EnforceOption.EnforceExclusion) {
+                        currentIncludes.add(newValue);
+                    }
+                });
         m_values = currentIncludes.toArray(new String[0]);
         m_excludes = currentExcludes.toArray(new String[0]);
     }

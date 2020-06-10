@@ -176,8 +176,8 @@ public class ValueFilterDialogNodeModel extends
     }
 
     /**
-     * Validates the selected column. Omits chosen values that are no longer among the possible values.
-     * Includes values not mentioned in include or exclude list, based on the currently active policy.
+     * Validates the selected column. Omits chosen values that are no longer among the possible values. Includes values
+     * not mentioned in include or exclude list, based on the currently active policy.
      *
      * @throws InvalidSettingsException if the chosen column is invalid or no possible values were found.
      */
@@ -228,8 +228,8 @@ public class ValueFilterDialogNodeModel extends
 
         // The list type might have been changed via the configuration node
         // to a setting under which the enforce policy of the overwriting value should not be considered.
-        if ( ! valueFilterConfig.getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
-            rValue.setEnforceOption( getConfig().getDefaultValue().getEnforceOption() );
+        if (!valueFilterConfig.getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+            rValue.setEnforceOption(getConfig().getDefaultValue().getEnforceOption());
         }
 
         rValue.updateInclExcl(columnValues);

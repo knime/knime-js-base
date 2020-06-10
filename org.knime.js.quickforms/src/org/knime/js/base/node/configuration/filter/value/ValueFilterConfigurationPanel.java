@@ -230,7 +230,9 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
             // it (i.e. twinlist was enabled). If, then, the list type is changed in the configuration node
             // dialog, this policy should no longer be considered and the policy of the default value be
             // used instead.
-            if ( ! m_twinlistUsed) { value.setEnforceOption(getDefaultValue().getEnforceOption()); }
+            if (!m_twinlistUsed) {
+                value.setEnforceOption(getDefaultValue().getEnforceOption());
+            }
 
             updateValuesWithPossible(m_possibleValues, value);
             m_column.setSelectedItem(value.getColumn());
