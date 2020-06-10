@@ -184,7 +184,7 @@ public class ValueFilterDialogNodeModel extends
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
         ValueFilterDialogNodeValue rValue = getRelevantValue();
         String column = rValue.getColumn();
-        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getIncludes()));
+        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getValues()));
         ValueFilterNodeConfig valueFilterConfig = getConfig().getValueFilterConfig();
         Map<String, List<String>> possibleValues = valueFilterConfig.getPossibleValues();
         if (possibleValues.size() < 1) {
@@ -231,9 +231,6 @@ public class ValueFilterDialogNodeModel extends
         if ( ! valueFilterConfig.getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
             rValue.setEnforceOption( getConfig().getDefaultValue().getEnforceOption() );
         }
-
-        // Reconcile old configuration now that possible values are known.
-        rValue.updateWithOldValues(columnValues.toArray(new String[0]));
 
         rValue.updateInclExcl(columnValues);
 

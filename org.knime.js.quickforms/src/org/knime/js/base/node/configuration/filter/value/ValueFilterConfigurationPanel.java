@@ -149,7 +149,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         value.updateInclExcl(possibleValuesForCol);
         // update state of ui
         m_values.setChoices(possibleValuesForCol.toArray(new String[0]));
-        m_values.setSelections(value.getIncludes());
+        m_values.setSelections(value.getValues());
     }
 
     /**
@@ -159,7 +159,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
     protected void resetToDefault() {
         setEnforceOptionSelected(getDefaultValue().getEnforceOption());
         m_column.setSelectedItem(getDefaultValue().getColumn());
-        m_values.setSelections(getDefaultValue().getIncludes());
+        m_values.setSelections(getDefaultValue().getValues());
     }
 
     /**
@@ -208,7 +208,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         for (String choice : possibleValuesForCol) {
             if (!selectionSet.contains(choice)) excludes.add(choice);
         }
-        value.setIncludes(selection);
+        value.setValues(selection);
         value.setExcludes(excludes.toArray(new String[0]));
 
         // If dialog provides no way to select policy, we use the policy of the default value
@@ -232,17 +232,9 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
             // used instead.
             if ( ! m_twinlistUsed) { value.setEnforceOption(getDefaultValue().getEnforceOption()); }
 
-            String selectedCol = (String)m_column.getSelectedItem();
-            if (selectedCol != null) {
-                List<String> possibleValuesForCol = m_possibleValues.get(selectedCol);
-                // This is needed for backwards compatibility because upon opening the component dialog, a
-                // new ValueFilterDialogNodeValue is created and populated with (potentially old) settings.
-                value.updateWithOldValues(possibleValuesForCol.toArray(new String[0]));
-            }
-            // Likewise, need to update that value with new possible values
             updateValuesWithPossible(m_possibleValues, value);
             m_column.setSelectedItem(value.getColumn());
-            m_values.setSelections(value.getIncludes());
+            m_values.setSelections(value.getValues());
             setEnforceOptionSelected(value.getEnforceOption());
         }
     }

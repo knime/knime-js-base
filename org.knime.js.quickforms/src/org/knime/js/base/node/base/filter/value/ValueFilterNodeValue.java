@@ -91,7 +91,7 @@ public class ValueFilterNodeValue extends JSONViewContent {
      * Default values
      */
     protected static final String[] DEFAULT_VALUES = new String[0];
-    private String[] m_values = DEFAULT_VALUES;
+    protected String[] m_values = DEFAULT_VALUES;
 
     /**
      * @return the column

@@ -164,12 +164,10 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
         ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
         value.loadFromNodeSettings(settings);
-        // This is needed here for backwards compatibility because the newly
-        // created ValueFilterDialogNodeValue might be populated with old settings.
-        value.updateWithOldValues(m_possibleValues);
+        value.updateInclExcl(Arrays.asList(m_possibleValues));
 
         String valueString = "Column: " + value.getColumn()
-                + "\nIncludes: " + StringUtils.join(value.getIncludes(), ", ")
+                + "\nIncludes: " + StringUtils.join(value.getValues(), ", ")
                 + "\nExcludes: " + StringUtils.join(value.getExcludes(), ", ");
 
         if (MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())) {
@@ -242,12 +240,10 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         }
         m_defaultColumnField.setSelectedColumn(selectedDefaultColumn);
 
-        m_config.getDefaultValue().updateWithOldValues(m_possibleValues);
-
         // update default include and exclude lists with previously unseen values
         m_config.getDefaultValue().updateInclExcl(Arrays.asList(m_possibleValues));
         // update UI model and display with previously unseen values
-        ArrayList<String> defaultIncludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getIncludes()));
+        ArrayList<String> defaultIncludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getValues()));
         ArrayList<String> defaultExcludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getExcludes()));
         m_defaultField.update(defaultIncludes, defaultExcludes, m_possibleValues);
         m_defaultField.setSelectedEnforceOption( m_config.getDefaultValue().getEnforceOption() );
@@ -276,7 +272,7 @@ public class ValueFilterDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         defaultValue.setColumn(m_defaultColumnField.getSelectedColumn());
         Set<String> defaultIncludes = m_defaultField.getIncludeList();
         Set<String> defaultExcludes = m_defaultField.getExcludeList();
-        defaultValue.setIncludes(defaultIncludes.toArray(new String[defaultIncludes.size()]));
+        defaultValue.setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
         defaultValue.setExcludes(defaultExcludes.toArray(new String[defaultExcludes.size()]));
         defaultValue.setEnforceOption(
             m_defaultField.getSelectedEnforceOption().orElse(ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT)
