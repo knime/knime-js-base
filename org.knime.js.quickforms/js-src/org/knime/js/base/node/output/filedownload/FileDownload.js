@@ -59,9 +59,39 @@ org_knime_js_base_node_output_filedownload = function() {
 		}
 		
 		var messageNotFound = "File download not available. Native component not found.";
-		var messageNotStandalone = "File download only available on server.";
-		insertNativeComponent(representation, messageNotFound, messageNotStandalone);
+        var messageNotStandalone = "File download only available on server.";
 		
+		if (knimeService.pageBuilderPresent) {
+		    var body = document.getElementsByTagName('body')[0];
+	        var div = document.createElement('div');
+	        div.setAttribute('class', 'quickformcontainer knime-qf-container');
+	        body.appendChild(div);
+	        var label = document.createElement('div');
+	        label.setAttribute('class', 'label knime-qf-title');
+	        label.appendChild(document.createTextNode(representation.label));
+	        div.appendChild(label);
+	        div.setAttribute('title', representation.description);
+	        div.setAttribute('aria-label', representation.label);
+	        div.setAttribute('tabindex', 0);
+		    var link = document.createElement('a');
+		    var href;
+		    try { 
+		        href = parent.KnimePageBuilderAPI.getDownloadLink(representation.resourceName);
+		    } catch (e) {
+		        href = null;
+		    }
+		    if (href) {
+		        link.setAttribute('href', href);
+		        div.appendChild(link);
+		        link.appendChild(document.createTextNode(representation.linkTitle));
+		    } else {
+		        var placeHolder = window.createPlaceHolder(messageNotStandalone);
+		        div.appendChild(placeHolder);
+		    }
+		} else {
+		    // legacy behaviour for Vaadin based WebPortal integration
+		    insertNativeComponent(representation, messageNotFound, messageNotStandalone);
+		}
 		var link = document.getElementsByTagName('a')[0];
 		if (link) {
 			//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
@@ -76,7 +106,6 @@ org_knime_js_base_node_output_filedownload = function() {
 			}
 		}
 		
-		resizeParent();
 		viewValid = true;
 		m_value = value;
 	};
