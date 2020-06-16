@@ -64,11 +64,17 @@ window.knimeGenericView = (function () {
             if (!libs) {
                 libs = [];
             }
-            for (var i = 0; i < libs.length; i++) {
-                if (knimeService.resourceBaseUrl) {
-                    libs[i] = knimeService.resourceBaseUrl + '/' + libs[i];
-                } else if (knimeService.isRunningInWebportal()) {
-                    libs[i] = './VAADIN/src-js/' + libs[i];
+            // @since 4.2 detect "new" PageBuilder + AP Wrapper
+            var apWrapperPresent = typeof knimeService.isRunningInAPWrapper === 'function' && 
+                knimeService.isRunningInAPWrapper();
+            if (!apWrapperPresent) {
+                var baseUrl = knimeService.resourceBaseUrl;
+                for (var i = 0; i < libs.length; i++) {
+                    if (baseUrl) { // @since 4.2 will be defined in "new" WebPortal
+                        libs[i] = baseUrl + '/' + libs[i];
+                    } else if (knimeService.isRunningInWebportal()) {
+                        libs[i] = './VAADIN/src-js/' + libs[i];
+                    }
                 }
             }
 
