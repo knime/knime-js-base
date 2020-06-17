@@ -72,8 +72,9 @@ import org.openqa.selenium.TimeoutException;
 
 /**
  * The model for the molecule string input quick form node.
+ * Mostly copied from MoleculeStringInputQuickFormNodeModel
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
+ * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */
 public class MoleculeWidgetNodeModel
         extends WidgetFlowVariableNodeModel

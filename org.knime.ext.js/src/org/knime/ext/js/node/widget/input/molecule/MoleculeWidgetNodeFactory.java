@@ -51,8 +51,9 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 
 /**
  * The factory for the molecule string input quick form node.
+ * Mostly copied from MoleculeStringInputQuickFormNodeFactory
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
+ * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */
 public class MoleculeWidgetNodeFactory
         extends NodeFactory<MoleculeWidgetNodeModel>

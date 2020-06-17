@@ -54,31 +54,21 @@ window.knimeMoleculeWidget = (function () {
     moleculeWidget.name = 'Molecule widget';
     var viewValid = false;
 
-    var localInitCode =
-        'var param_string = document.location.search;' +
-        'if (param_string.length > 0)' + '                param_string = param_string.substring(1);' +
-        '    var param_list = param_string.split(/&/g);' + '            var param_hash = {};' +
-        '    for (var i = 0; i < param_list.length; ++i) {' +
-        '        var pair = param_list[i].split(\'=\', 2);' +
-        '        param_hash[pair[0]] = pair.length != 2 || unescape(pair[1]);' +
-        '    }' +
-        '    if (param_hash.ketcher_maximize) {' +
-        '        jQuery(\'ketcher_div\').removeClassName(\'ketcherDivMaxSize\');' +
-        '    }' +
-        '    // Initialize ketcher' +
-        '    ketcher.init({ketcher_api_url: param_hash.ketcher_api_url});' +
-        '};';
-
     var inWebportal = false;
     var customSketcher = false;
     var callCount = 0;
-    var MIN_WIDTH = 850;
     var MIN_HEIGHT = 500;
+    var LABEL_HEIGHT = 20;
+    var TIMEOUT_TRESHOLD = 500;
+    var DONE_STATE = 4;
+
     var sketcherFrame,
         errorMessage,
         sketchTranslator,
         currentMolecule,
-        format;
+        format,
+
+        createContainerFrame;
 
 
     moleculeWidget.init = function (representation) {
@@ -88,23 +78,24 @@ window.knimeMoleculeWidget = (function () {
         if (checkMissingData(representation)) {
             return;
         }
-        inWebportal = (knimeService && knimeService.isRunningInWebportal());
+        inWebportal = knimeService && knimeService.isRunningInWebportal();
         customSketcher = inWebportal;
         currentMolecule = representation.currentValue.moleculeString;
         format = representation.format;
         var sketcherPath = representation.sketcherPath;
+        var loc,
+            cssLink;
         if (!sketcherPath) {
             sketcherPath = representation.sketcherLocation;
         }
-        customSketcher = (inWebportal && sketcherPath);
+        customSketcher = inWebportal && sketcherPath;
 
         var body = jQuery('body');
-        var width = MIN_WIDTH
-        var height = MIN_HEIGHT
-        var qfdiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width style="min-width: ' + width + 'px;min-height: ' + height + 'px">');
+        var qfdiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width>');
         body.append(qfdiv);
-
-        if (inWebportal) {
+        
+        // Check if it's executed in the new WebPortal
+        if (knimeService.resourceBaseUrl) {
             jQuery('script').each(function () {
                 var s = jQuery(this);
                 var src = s.attr('src');
@@ -113,28 +104,65 @@ window.knimeMoleculeWidget = (function () {
                 }
             });
 
-            sketcherFrame = jQuery('<iframe class="knime-sketcher-frame">');
-            sketcherFrame.width('100%');
-            sketcherFrame.height((height + 20) + 'px');
-//            qfdiv.width((width + 20) + 'px');
-            sketcherFrame.attr('frameborder', '0');
-            sketcherFrame.css('border', 'none');
-            sketcherFrame.css('margin', '0');
-            sketcherFrame.css('background', 'none');
-            sketcherFrame.css('min-width', width + 'px');
-            sketcherFrame.css('min-height', height + 'px');
-            var loc = './VAADIN/src-js/js-lib/ketcher/ketcher.html';
+            sketcherFrame = createContainerFrame();
+            loc = knimeService.resourceBaseUrl + '/js-lib/ketcher/ketcher.html';
+            sketcherFrame.attr('name', currentMolecule);
+            sketcherFrame.attr('src', loc);
+            cssLink = document.createElement('link');
+            cssLink.href = knimeService.resourceBaseUrl +
+                '/org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.css';
+            cssLink.rel = 'stylesheet';
+            cssLink.type = 'text/css';
+            sketcherFrame.load(function () {
+                // Inject MoleculeWidget.css file as it is otherwise not in the iFrame
+                sketcherFrame.get(0).contentWindow.document.body.appendChild(cssLink);
+                setTimeout(function () {
+                    var ketcher = sketcherFrame.get(0).contentWindow.ketcher;
+                    if (ketcher) {
+                        ketcher.init();
+                        ketcher.setMolecule(currentMolecule);
+                        // Adjust iFrame Height as otherwise the iFrame will not resize to the new rendered content
+                        sketcherFrame.css('height',
+                            sketcherFrame.get(0).contentWindow.document.body.scrollHeight + 'px');
+                    } else {
+                        errorMessage.text('Could not initialize sketcher. Ketcher object not found.');
+                        errorMessage.css('display', 'block');
+                        resizeParent();
+                    }
+                }, TIMEOUT_TRESHOLD);
+            });
+            qfdiv.append(sketcherFrame);
+        // Check if it is executed in the old WebPortal
+        } else if (inWebportal) {
+            jQuery('script').each(function () {
+                var s = jQuery(this);
+                var src = s.attr('src');
+                if (src && src.indexOf('js-lib/ketcher/') !== -1) {
+                    s.remove();
+                }
+            });
+
+            sketcherFrame = createContainerFrame();
+            loc = './VAADIN/src-js/js-lib/ketcher/ketcher.html';
             sketcherFrame.attr('name', currentMolecule);
             if (customSketcher) {
                 loc = sketcherPath;
             }
             sketcherFrame.attr('src', loc);
+            cssLink = document.createElement('link');
+            cssLink.href = './VAADIN/src-js/org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.css';
+            cssLink.rel = 'stylesheet';
+            cssLink.type = 'text/css';
             sketcherFrame.load(function () {
+                // Inject MoleculeWidget.css file as it is otherwise not in the iFrame
+                sketcherFrame.get(0).contentWindow.document.body.appendChild(cssLink);
                 setTimeout(function () {
                     if (customSketcher) {
                         sketchTranslator = sketcherFrame.get(0).contentWindow.SketchTranslator;
                         if (sketchTranslator) {
                             sketchTranslator.init(currentMolecule, null, moleculeWidget.update);
+                            sketcherFrame.css('height',
+                                sketcherFrame.get(0).contentWindow.document.body.scrollHeight + 'px');
                         } else {
                             errorMessage.text('Could not initialize sketcher. SketchTranslator not found.');
                             errorMessage.css('display', 'block');
@@ -151,7 +179,7 @@ window.knimeMoleculeWidget = (function () {
                             resizeParent();
                         }
                     }
-                }, 500);
+                }, TIMEOUT_TRESHOLD);
             });
             qfdiv.append(sketcherFrame);
         } else {
@@ -269,47 +297,22 @@ window.knimeMoleculeWidget = (function () {
                 }
             });
             require(['ketcher'], function () {
-                var sketcherDiv = jQuery('<div class="knime-sketcher-div" style="height:calc(100% - 20px)">');
-//                sketcherDiv.width(width + 'px');
-//                sketcherDiv.height(height + 'px');
+                var sketcherDiv = jQuery('<div class="knime-sketcher-div">');
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', 'org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.html', true);
                 var ketcherHTML;
                 xhr.onreadystatechange = function () {
-                    if (this.readyState !== 4) {
+                    if (this.readyState !== DONE_STATE) {
                         return;
                     }
-                    // if (this.status!==200) return; // or whatever error handling you want
                     ketcherHTML = this.responseText;
-                    var paramString = document.location.search;
-                    if (paramString.length > 0) {
-                        paramString = paramString.substring(1);
-                        var paramList = paramString.split(/&/g);
-                        var paramHash = {};
-                        for (var i = 0; i < paramList.length; ++i) {
-                            var pair = paramList[i].split('=', 2);
-                            paramHash[pair[0]] = pair.length !== 2 || unescape(pair[1]);
-                        }
-                        if (paramHash.ketcher_maximize) {
-                            jQuery('ketcher_div').removeClassName('ketcherDivMaxSize');
-                        }
-                        // Initialize ketcher' +
-                        ketcher.init({ketcher_api_url: param_hash.ketcher_api_url});
-                    }
-//                    eval(localInitCode);
                     sketcherDiv.html(ketcherHTML);
                     ketcher.init();
                     ketcher.setMolecule(currentMolecule);
-                    document.getElementById('client_area').style.height = '';
                 };
                 xhr.send();
                 sketcherDiv.css('position', 'relative');
                 qfdiv.append(sketcherDiv);
-                qfdiv[0].style.height = '100%';
-                qfdiv[0].style.overflow = 'auto';
-                qfdiv[0].parentElement.style.height = '100%';
-                qfdiv[0].parentElement.parentElement.style.height = '100%';
-                // qfdiv.width(width + "px");
             });
         }
 
@@ -324,7 +327,16 @@ window.knimeMoleculeWidget = (function () {
         resizeParent();
         viewValid = true;
     };
-    
+
+    createContainerFrame = function () {
+        sketcherFrame = jQuery('<iframe class="knime-sketcher-frame">');
+        sketcherFrame.width('100%');
+        sketcherFrame.height('calc(100% - 20px)');
+        sketcherFrame.attr('frameborder', '0');
+        sketcherFrame.css('min-height', (MIN_HEIGHT + LABEL_HEIGHT) + 'px');
+        return sketcherFrame;
+    };
+
     $(window).resize(function (event) {
         resizeParent(event.target.innerWidth, event.target.innerHeight);
     });
@@ -334,6 +346,7 @@ window.knimeMoleculeWidget = (function () {
     };
 
     moleculeWidget.validate = function () {
+        var k;
         if (customSketcher) {
             if (!sketchTranslator) {
                 errorMessage.text('Could not fetch molecule from sketcher. SketchTranslator not found.');
@@ -349,8 +362,16 @@ window.knimeMoleculeWidget = (function () {
                 resizeParent();
                 return false;
             }
+        } else if (knimeService.resourceBaseUrl) {
+            k = knimeService.resourceBaseUrl ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
+            if (typeof k === 'undefined') {
+                errorMessage.text('Ketcher object not defined.');
+                errorMessage.css('display', 'block');
+                resizeParent();
+                return false;
+            }
         } else {
-            var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
+            k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
             if (typeof k === 'undefined') {
                 errorMessage.text('Ketcher object not defined.');
                 errorMessage.css('display', 'block');
@@ -376,10 +397,10 @@ window.knimeMoleculeWidget = (function () {
     };
 
     moleculeWidget.value = function () {
+        var k, molecule;
         if (!viewValid) {
             return null;
         }
-        var molecule;
         if (customSketcher && sketchTranslator) {
             try {
                 molecule = sketchTranslator.getData(format);
@@ -388,14 +409,16 @@ window.knimeMoleculeWidget = (function () {
                 molecule = null;
             }
         } else {
-            var k = inWebportal ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
+            k = inWebportal || knimeService.resourceBaseUrl ? sketcherFrame.get(0).contentWindow.ketcher : ketcher;
             if (!format) {
                 format = 'SDF';
             }
             if (typeof k === 'undefined') {
                 // should not happen after succesful validate
                 molecule = null;
-            } else if (format.toLowerCase() === 'rxn' || format.toLowerCase() === 'sdf' || format.toLowerCase() === 'mol') {
+            } else if (format.toLowerCase() === 'rxn' ||
+                        format.toLowerCase() === 'sdf' ||
+                        format.toLowerCase() === 'mol') {
                 molecule = k.getMolfile();
             } else {
                 molecule = k.getSmiles();
@@ -407,5 +430,4 @@ window.knimeMoleculeWidget = (function () {
     };
 
     return moleculeWidget;
-
 })();

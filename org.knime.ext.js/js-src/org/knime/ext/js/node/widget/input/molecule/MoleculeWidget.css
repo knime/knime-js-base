@@ -1,0 +1,23 @@
+#client_area
+{
+    height: 100% !important;
+}
+
+.knime-sketcher-frame {
+    border: none;
+    margin: 0;
+    background: none;
+}
+
+.ketcherDivMaxSize
+{
+    max-width: unset;
+    max-height: unset;
+    position: unset !important;
+    overflow: auto;
+}
+
+#ketcher_window {
+    position: unset !important;
+    width: 99% !important;
+}

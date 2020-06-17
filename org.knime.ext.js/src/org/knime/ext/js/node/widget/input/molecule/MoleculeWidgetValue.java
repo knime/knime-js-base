@@ -69,8 +69,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * The value for the molecule string input quick form node.
+ * Mostly copied from MoleculeStringInputQuickFormValue
  *
- * @author Patrick Winter, KNIME AG, Zurich, Switzerland
+ * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
