@@ -93,9 +93,9 @@ window.knimeMoleculeWidget = (function () {
         var body = jQuery('body');
         var qfdiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width>');
         body.append(qfdiv);
-        
+
         // Check if it's executed in the new WebPortal
-        if (knimeService.resourceBaseUrl) {
+        if (inWebportal && knimeService.resourceBaseUrl) {
             jQuery('script').each(function () {
                 var s = jQuery(this);
                 var src = s.attr('src');
