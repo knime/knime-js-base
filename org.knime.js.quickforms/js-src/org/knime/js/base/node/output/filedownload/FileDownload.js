@@ -1,3 +1,4 @@
+/* global checkMissingData:false, insertNativeComponent:false */
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -41,90 +42,90 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Oct 21, 2014 (Christian Albrecht, KNIME AG, Zurich, Switzerland): created
  */
-org_knime_js_base_node_output_filedownload = function() {
-	var fileDownload = {
-			version: "1.0.0"
-	};
-	fileDownload.name = "File download";
-	var m_value = null;
-	var viewValid = false;
+window.org_knime_js_base_node_output_filedownload = (function () { // eslint-disable-line camelcase
+    var fileDownload = {
+        version: '1.0.0'
+    };
+    fileDownload.name = 'File download';
+    var _value = null;
+    var viewValid = false;
 
-	fileDownload.init = function(representation, value) {
-		if (checkMissingData(representation)) {
-			return;
-		}
-		
-		var messageNotFound = "File download not available. Native component not found.";
-        var messageNotStandalone = "File download only available on server.";
-		
-		if (knimeService.pageBuilderPresent) {
-		    var body = document.getElementsByTagName('body')[0];
-	        var div = document.createElement('div');
-	        div.setAttribute('class', 'quickformcontainer knime-qf-container');
-	        body.appendChild(div);
-	        var label = document.createElement('div');
-	        label.setAttribute('class', 'label knime-qf-title');
-	        label.appendChild(document.createTextNode(representation.label));
-	        div.appendChild(label);
-	        div.setAttribute('title', representation.description);
-	        div.setAttribute('aria-label', representation.label);
-	        div.setAttribute('tabindex', 0);
-		    var link = document.createElement('a');
-		    var href;
-		    try { 
-		        href = parent.KnimePageBuilderAPI.getDownloadLink(representation.resourceName);
-		    } catch (e) {
-		        href = null;
-		    }
-		    if (href) {
-		        link.setAttribute('href', href);
-		        div.appendChild(link);
-		        link.appendChild(document.createTextNode(representation.linkTitle));
-		    } else {
-		        var placeHolder = window.createPlaceHolder(messageNotStandalone);
-		        div.appendChild(placeHolder);
-		    }
-		} else {
-		    // legacy behaviour for Vaadin based WebPortal integration
-		    insertNativeComponent(representation, messageNotFound, messageNotStandalone);
-		}
-		var link = document.getElementsByTagName('a')[0];
-		if (link) {
-			//adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
-			link.setAttribute('download', '');
-			link.setAttribute('class', 'knime-string knime-single-line');
-		
-			// for IE just open in new tab
-			var ua = window.navigator.userAgent;
-			var msie = ua.indexOf("MSIE ");
-			if (msie > -1 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-				link.setAttribute("target", "_blank");
-			}
-		}
-		
-		viewValid = true;
-		m_value = value;
-	};
-	
-	fileDownload.validate = function() {
-		return true;
-	};
-	
-	fileDownload.setValidationErrorMessage = function(message) {
-		//TODO display message
-	};
+    fileDownload.init = function (representation, value) {
+        if (checkMissingData(representation)) {
+            return;
+        }
 
-	fileDownload.value = function() {
-		if (!viewValid) {
-			return null;
-		}
-		return m_value;
-	};
-	
-	return fileDownload;
-	
-}();
+        var messageNotFound = 'File download not available. Native component not found.';
+        var messageNotStandalone = 'File download only available on server.';
+
+        var link, href;
+        if (knimeService.pageBuilderPresent) {
+            var body = document.getElementsByTagName('body')[0];
+            var div = document.createElement('div');
+            div.setAttribute('class', 'quickformcontainer knime-qf-container');
+            body.appendChild(div);
+            var label = document.createElement('div');
+            label.setAttribute('class', 'label knime-qf-title');
+            label.appendChild(document.createTextNode(representation.label));
+            div.appendChild(label);
+            div.setAttribute('title', representation.description);
+            div.setAttribute('aria-label', representation.label);
+            div.setAttribute('tabindex', 0);
+            link = document.createElement('a');
+            try {
+                href = parent.KnimePageBuilderAPI.getDownloadLink(representation.resourceName);
+            } catch (e) {
+                href = null;
+            }
+            if (href) {
+                link.setAttribute('href', href);
+                div.appendChild(link);
+                link.appendChild(document.createTextNode(representation.linkTitle));
+            } else {
+                var placeHolder = window.createPlaceHolder(messageNotStandalone);
+                div.appendChild(placeHolder);
+            }
+        } else {
+            // legacy behaviour for Vaadin based WebPortal integration
+            insertNativeComponent(representation, messageNotFound, messageNotStandalone);
+        }
+        link = document.getElementsByTagName('a')[0];
+        if (link) {
+            // adding download attribute to force download. This works for Chrome, Firefox, Edge, Safari and Opera
+            link.setAttribute('download', '');
+            link.setAttribute('class', 'knime-string knime-single-line');
+
+            // for IE just open in new tab
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf('MSIE ');
+            if (msie > -1 || Boolean(navigator.userAgent.match(/Trident.*rv\:11\./))) {
+                link.setAttribute('target', '_blank');
+            }
+        }
+
+        viewValid = true;
+        _value = value;
+    };
+
+    fileDownload.validate = function () {
+        return true;
+    };
+
+    fileDownload.setValidationErrorMessage = function (message) {
+        /* nothing to display */
+    };
+
+    fileDownload.value = function () {
+        if (!viewValid) {
+            return null;
+        }
+        return _value;
+    };
+
+    return fileDownload;
+
+})();
