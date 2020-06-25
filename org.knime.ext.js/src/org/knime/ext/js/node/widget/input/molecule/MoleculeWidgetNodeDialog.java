@@ -46,22 +46,16 @@ package org.knime.ext.js.node.widget.input.molecule;
 
 import java.awt.GridBagConstraints;
 
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.js.base.node.quickform.QuickFormNodeDialog;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 

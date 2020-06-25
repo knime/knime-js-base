@@ -44,12 +44,6 @@
  */
 package org.knime.ext.js.node.widget.input.molecule;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.knime.base.data.xml.SvgCell;
-import org.knime.base.data.xml.SvgImageContent;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -58,17 +52,10 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.port.image.ImagePortObject;
-import org.knime.core.node.port.image.ImagePortObjectSpec;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
-import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
-import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
-import org.knime.js.core.AbstractImageGenerator;
 import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
-import org.openqa.selenium.TimeoutException;
 
 /**
  * The model for the molecule string input quick form node.
@@ -89,7 +76,7 @@ public class MoleculeWidgetNodeModel
      */
     static final String[] DEFAULT_FORMATS = {"SDF", "SMILES", "MOL", "SMARTS", "RXN", "HELM"};
 
-    /** Creates a new node model with no inports and a flow variable and SVG outport. */
+    /** Creates a new node model with no inports and a flow variable outport. */
     protected MoleculeWidgetNodeModel(final String viewName) {
         super(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
     }
