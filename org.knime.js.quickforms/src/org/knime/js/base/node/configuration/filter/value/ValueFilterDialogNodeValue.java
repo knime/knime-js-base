@@ -59,6 +59,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -278,7 +279,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
 
             try {
                 JsonArray excludes = ((JsonObject) json).getJsonArray(CFG_EXCLUDES);
-                if (!JsonValue.NULL.equals(excludes)) {
+                if (excludes != null && !JsonValue.NULL.equals(excludes)) {
                     setExcludes(jsonToStrArr(excludes));
                 } else {
                     setExcludes(null);
@@ -288,9 +289,9 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             }
 
             try {
-                JsonValue enforceOption = ((JsonObject) json).get(CFG_ENFORCE_OPT);
-                if (!JsonValue.NULL.equals(enforceOption)) {
-                    setEnforceOption(EnforceOption.parse(enforceOption.toString(), DEFAULT_ENFORCE_OPT));
+                JsonString enforceOption = ((JsonObject) json).getJsonString(CFG_ENFORCE_OPT);
+                if (enforceOption != null && !JsonValue.NULL.equals(enforceOption)) {
+                    setEnforceOption(EnforceOption.parse(enforceOption.getString(), DEFAULT_ENFORCE_OPT));
                 } else {
                     setEnforceOption(DEFAULT_ENFORCE_OPT);
                 }
@@ -310,7 +311,6 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     @JsonIgnore
     public JsonValue toJson() {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
-        final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
         builder.add("type", "object");
 
         builder.add(CFG_COLUMN, createStringTypeBuilder(this.getColumn()).build());
