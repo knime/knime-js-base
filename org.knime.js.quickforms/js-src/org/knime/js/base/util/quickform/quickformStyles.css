@@ -1,14 +1,21 @@
+.knime-qf-container {
+	outline: none;
+}
+
 div {
 	margin: 0;
 	padding: 0;
 }
+
 button {
 	margin: 5px;
 }
+
 .ui-datepicker-year {
 	padding: 0;
 	border: none;
 }
+
 dropdown {
 	padding: 0;
 	border: thin solid silver;
