@@ -118,13 +118,11 @@ window.knimeFileUploadWidget = (function () {
             this.xhr.upload.addEventListener('progress', function (e) {
                 if (e.lengthComputable) {
                     var percentage = Math.round((e.loaded * 100) / e.total);
-                    console.log('Upload progress: ' + percentage + '%');
                     progressBar.style.width = percentage + '%';
                     progressContainer.title = progressPrefix + ' - ' + percentage + '%';
                 }
             }, false);
             xhr.upload.addEventListener('load', function () {
-                console.info('Upload complete');
                 progressBar.style.width = '100%';
             }, false);
             xhr.open('PUT', uploadUrl);
@@ -164,7 +162,7 @@ window.knimeFileUploadWidget = (function () {
             return;
         }
         viewRepresentation = representation;
-        viewValue = value;
+        viewValue = representation.currentValue;
         
         var messageNotFound = 'File upload not available. Native component not found.';
         var messageNotStandalone = 'File upload only available on server.';
@@ -222,7 +220,7 @@ window.knimeFileUploadWidget = (function () {
                 sizeLabel = document.createElement('label');
                 sizeLabel.style.marginLeft = '10px';
                 if (viewValue.path) {
-                    sizeLabel.appendChild(document.createTextNode('Default: ' + getFileFromPath(viewValue.path)));
+                    sizeLabel.appendChild(document.createTextNode('Default file: ' + getFileFromPath(viewValue.path)));
                     sizeLabel.setAttribute('title', viewValue.path);
                 } else {
                     sizeLabel.appendChild(document.createTextNode('*'));
@@ -263,8 +261,6 @@ window.knimeFileUploadWidget = (function () {
         document.getElementsByTagName('body')[0].appendChild(viewErrorDiv);
 
         viewValid = true;
-        viewRepresentation = representation;
-        viewValue = representation.currentValue;
     };
 
     fileUpload.validate = function () {
@@ -276,18 +272,16 @@ window.knimeFileUploadWidget = (function () {
             if (viewValue.path) {
                 return true;
             }
-        } else {
-            if (viewComponent) {
-                // get label component to check if uploaded file exists
-                var uLabel = viewComponent.getElementsByClassName('knime-upload-label')[0];
-                if (uLabel && uLabel.textContent.indexOf('<no file selected>') === -1) {
-                    fileUpload.setValidationErrorMessage(null);
-                    return true;
-                }
-            } else {
-                // if native component is not present there can be no validation
+        } else if (viewComponent) {
+            // get label component to check if uploaded file exists
+            var uLabel = viewComponent.getElementsByClassName('knime-upload-label')[0];
+            if (uLabel && uLabel.textContent.indexOf('<no file selected>') === -1) {
+                fileUpload.setValidationErrorMessage(null);
                 return true;
             }
+        } else {
+            // if native component is not present there can be no validation
+            return true;
         }
         
         var errorMessage = 'No file selected';
