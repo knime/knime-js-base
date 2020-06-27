@@ -1,4 +1,4 @@
-/* global kt:false, require:false */
+/* global kt:false, requirejs:false, require:false */
 window.knimeGenericView = (function () {
 
     var view = {};
@@ -77,6 +77,8 @@ window.knimeGenericView = (function () {
                     }
                 }
             }
+
+            requirejs.config({ waitSeconds: 30 }); // added 4.2
 
             require(libs, function () {
                 // set global variable if defined by library
