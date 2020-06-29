@@ -69,7 +69,7 @@ window.dynamicJSNode = (function () {
         // Build config object for RequireJS
         var depArray = [];
         var configObj = {};
-        config.waitSeconds = 30; // added 4.2
+        configObj.waitSeconds = 30; // added 4.2
         configObj.paths = {};
         configObj.shim = {};
         for (var l = 0; l < libs.length; l++) {
