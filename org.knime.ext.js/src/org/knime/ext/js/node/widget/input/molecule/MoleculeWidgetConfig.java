@@ -57,7 +57,6 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
  * The config for the molecule string input quick form node.
- * Mostly copied from MoleculeStringInputQuickFormConfig.
  *
  * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */

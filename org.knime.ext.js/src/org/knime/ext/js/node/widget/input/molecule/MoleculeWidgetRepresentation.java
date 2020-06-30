@@ -56,7 +56,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * The representation for the molecule string input quick form node.
- * Mostly copied from MoleculeStringInputQuickFormRepresentation
  *
  * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */

@@ -59,7 +59,6 @@ import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 
 /**
  * The model for the molecule string input quick form node.
- * Mostly copied from MoleculeStringInputQuickFormNodeModel
  *
  * @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
  */
