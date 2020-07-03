@@ -247,16 +247,21 @@ window.knimeFileChooserWidget = (function () {
         }
         
         // resolve children
-        if (repositoryItem.children && repositoryItem.children.length > 0) {
-            repositoryItem.children.forEach(function (child) {
-                var childItem = createTreeItemRecursively(child);
-                if (childItem) {
-                    treeItem.children.push(childItem);
-                }
-            });
+        if (treeItem.type === WIDGET_ITEM_TYPE.DIR) {
+            if (repositoryItem.children) {
+                repositoryItem.children.forEach(function (child) {
+                    var childItem = createTreeItemRecursively(child);
+                    if (childItem) {
+                        treeItem.children.push(childItem);
+                    }
+                });
+            }
+            
+            // remove empty directories if directories can't be selected
+            if (treeItem.children.length < 1 && !_representation.selectDirectories) {
+                return null;
+            }
         }
-        
-        // TODO remove if dir && no children && no dir can be selected
         
         return treeItem;
     };
