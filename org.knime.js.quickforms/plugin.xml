@@ -1163,8 +1163,8 @@
             version="2.0.0"
             webResourceBundleID="org.knime.js.base.node.widget.input.filechooser.bundle">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js"
-               relativePathTarget="org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js">
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/filechooser"
+               relativePathTarget="org/knime/js/base/node/widget/input/filechooser">
          </webResource>
          <importResource
                relativePath="org/knime/js/base/node/widget/input/filechooser/fileChooserWidget.js"

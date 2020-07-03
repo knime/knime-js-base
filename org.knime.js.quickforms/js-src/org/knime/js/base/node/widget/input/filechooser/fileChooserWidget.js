@@ -56,7 +56,41 @@ window.knimeFileChooserWidget = (function () {
     var _representation = null;
     var _value = null;
     var _viewValid = false;
+    var _container;
     var _errorMessage = null;
+    
+    var SCHEME = 'knime';
+    var SCHEME_PART = SCHEME + '://';
+    var WORKFLOW_RELATIVE = 'knime.workflow';
+    var MOUNTPOINT_RELATIVE = 'knime.mountpoint';
+    
+    var SERVER_ITEM_TYPE = {
+        WORKFLOW: 'Workflow',
+        WORKFLOW_GROUP: 'WorkflowGroup',
+        DATA: 'Data'
+    };
+    var WIDGET_ITEM_TYPE = {
+        WORKFLOW: 'WORKFLOW',
+        DIR: 'DIRECTORY',
+        DATA: 'DATA',
+        UNKNOWN: 'UNKNOWN'
+    };
+    
+    // define startsWith function on strings
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (searchString, position) { // eslint-disable-line no-extend-native
+            position = position || 0;
+            return this.substr(position, searchString.length) === searchString;
+        };
+    }
+    
+    var getNameFromPath = function (path) {
+        var index = path.lastIndexOf('/');
+        if (index + 1 >= path.length) {
+            index = -1;
+        }
+        return index < 0 ? path : path.substring(index + 1);
+    };
     
     var getTypeFromSelectedItem = function (node, path) {
         var childNodes;
@@ -73,57 +107,29 @@ window.knimeFileChooserWidget = (function () {
                 return getTypeFromSelectedItem(childNodes[i], path);
             }
         }
-        return 'UNKNOWN';
+        return WIDGET_ITEM_TYPE.UNKNOWN;
     };
-
-    fileChooser.init = function (representation, value) {
-        if (checkMissingData(representation)) {
-            return;
-        }
-        _representation = representation;
-        _value = representation.currentValue;
-        // erase default selection when running on server
-        if (representation.runningOnServer) {
-            _value.items = [];
-        }
-
-        // define startsWith function on strings
-        if (!String.prototype.startsWith) {
-            String.prototype.startsWith = function (searchString, position) { // eslint-disable-line no-extend-native
-                position = position || 0;
-                return this.substr(position, searchString.length) === searchString;
-            };
-        }
-
-        var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
-        $('body').append(qfdiv);
-
-        qfdiv.attr('title', representation.description);
-        qfdiv.attr('aria-label', representation.label);
-        qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
-
-        if (!representation.tree || representation.tree.length < 1) {
-            var errorText = 'No items found for selection. ';
-            errorText += representation.runningOnServer ? 'Check your settings.'
-                : 'View selection only possible on server.';
-            representation.tree = [{
-                id: 'emptyTree',
-                text: errorText,
-                icon: null,
-                state: {
-                    opened: false,
-                    disabled: true,
-                    selected: false
-                },
-                children: []
-            }];
-        }
-
-        qfdiv.append('<div id="treeContainer" class="knime-qf-tree" aria-label="' + representation.label + '">');
+    
+    var addEmptyRootItem = function (message) {
+        var rootItem = {
+            id: 'emptyTree',
+            text: message + ' Please check your settings.',
+            icon: null,
+            state: {
+                disabled: true,
+                selected: false,
+                opened: false
+            }
+        };
+        _representation.tree = [rootItem];
+    };
+    
+    var createTree = function () {
+        _container.append('<div id="treeContainer" class="knime-qf-tree" aria-label="' + _representation.label + '">');
         $('#treeContainer').jstree({
             core: {
-                data: representation.tree,
-                multiple: representation.multipleSelection,
+                data: _representation.tree,
+                multiple: _representation.multipleSelection,
                 worker: false
             }
         });
@@ -145,13 +151,210 @@ window.knimeFileChooserWidget = (function () {
             _value.items = selectedItems;
         });
 
-        qfdiv.append($('<br>'));
+        _container.append($('<br>'));
         _errorMessage = $('<span class="knime-qf-error">');
         _errorMessage.css('display', 'none');
         _errorMessage.attr('role', 'alert');
-        qfdiv.append(_errorMessage);
+        _container.append(_errorMessage);
 
         _viewValid = true;
+    };
+    
+    var createTreeItemRecursively = function (repositoryItem, defaultPaths) {
+        if (!repositoryItem || !repositoryItem.path) {
+            return null;
+        }
+        var treeItem = {
+            id: repositoryItem.path,
+            text: getNameFromPath(repositoryItem.path),
+            state: {
+                opened: false,
+                disabled: false,
+                selected: false
+            },
+            children: []
+        };
+        
+        // set type and icons
+        var baseUrl = knimeService.resourceBaseUrl + '/org/knime/js/base/node/widget/input/filechooser/img/';
+        if (repositoryItem.type === SERVER_ITEM_TYPE.WORKFLOW) {
+            if (!_representation.selectWorkflows) {
+                return null;
+            }
+            treeItem.type = WIDGET_ITEM_TYPE.WORKFLOW;
+            treeItem.icon = baseUrl + 'workflow.png';
+        } else if (repositoryItem.type === SERVER_ITEM_TYPE.WORKFLOW_GROUP) {
+            treeItem.type = WIDGET_ITEM_TYPE.DIR;
+            treeItem.icon = baseUrl + 'workflowgroup.png';
+            if (!_representation.selectDirectories) {
+                treeItem.state.disabled = true;
+            }
+        } else if (repositoryItem.type === SERVER_ITEM_TYPE.DATA) {
+            if (!_representation.selectDataFiles) {
+                return null;
+            }
+            var fileBasePath = baseUrl + 'file-icons/';
+            var endIndex = treeItem.text.lastIndexOf('.');
+            var fileEnding = treeItem.name;
+            if (endIndex > 0 && endIndex < treeItem.text.length - 1) {
+                fileEnding = treeItem.text.substring(endIndex);
+            }
+            // TODO test for allowed file types
+            
+            treeItem.type = WIDGET_ITEM_TYPE.DATA;
+            
+            // set custom icon if possible
+            var icon = fileBasePath + 'file.png';
+            if (fileEnding) {
+                switch (fileEnding) {
+                case '.csv':
+                    icon = fileBasePath + 'csv.png';
+                    break;
+                case '.json':
+                    icon = fileBasePath + 'json.png';
+                    break;
+                case '.pmml':
+                    icon = fileBasePath + 'pmml.png';
+                    break;
+                case '.table':
+                    icon = fileBasePath + 'table.png';
+                    break;
+                case '.xls':
+                    icon = fileBasePath + 'xls.png';
+                    break;
+                case '.xlsx':
+                    icon = fileBasePath + 'xls.png';
+                    break;
+                case '.xml':
+                    icon = fileBasePath + 'xml.png';
+                    break;
+                }
+            }
+            treeItem.icon = icon;
+        }
+        
+        // set selection if default paths match
+        if (defaultPaths && defaultPaths.length > 0) {
+            defaultPaths.forEach(function (defaultPath) {
+                if (defaultPath && defaultPath.startsWith(treeItem.id)) {
+                    treeItem.state.opened = true;
+                    if (defaultPath === treeItem.id) {
+                        treeItem.state.opened = false;
+                        treeItem.state.selected = true;
+                    }
+                }
+            });
+        }
+        
+        // resolve children
+        if (repositoryItem.children && repositoryItem.children.length > 0) {
+            repositoryItem.children.forEach(function (child) {
+                var childItem = createTreeItemRecursively(child);
+                if (childItem) {
+                    treeItem.children.push(childItem);
+                }
+            });
+        }
+        
+        // TODO remove if dir && no children && no dir can be selected
+        
+        return treeItem;
+    };
+    
+    var setRepository = function (repository, rootPath, defaultPaths) {
+        if (repository && repository.children && repository.children.length > 0) {
+            var tree = [];
+            repository.children.forEach(function (child) {
+                var childItem = createTreeItemRecursively(child, defaultPaths);
+                if (childItem) {
+                    tree.push(childItem);
+                }
+            });
+            if (tree.length > 0) {
+                _representation.tree = tree;
+            }
+        } else {
+            addEmptyRootItem('The root path ' + rootPath + ' could not be resolved or yielded an empty selection.');
+        }
+        createTree();
+    };
+    
+    var setEmptyRepository = function (error) {
+        if (!_representation.tree || _representation.tree.length < 1) {
+            var errorText = 'No items found for selection. ';
+            if (error) {
+                errorText += error;
+            }
+            errorText += _representation.runningOnServer ? 'Check your settings.'
+                : 'View selection only possible on server.';
+            _representation.tree = [{
+                id: 'emptyTree',
+                text: errorText,
+                icon: null,
+                state: {
+                    opened: false,
+                    disabled: true,
+                    selected: false
+                },
+                children: []
+            }];
+        }
+        createTree();
+    };
+
+    fileChooser.init = function (representation) {
+        if (checkMissingData(representation)) {
+            return;
+        }
+        _representation = representation;
+        _value = representation.currentValue;
+        // erase default selection when running on server
+        if (representation.runningOnServer) {
+            _value.items = [];
+        }
+        
+        var defaultPaths = [];
+        var pathArray = _representation.currentValue.items;
+        pathArray.forEach(function (defaultPath) {
+            var path;
+            if (typeof URL === 'function') {
+                var url = new URL(defaultPath.path);
+                path = url.pathname;
+            } else {
+                path = defaultPath.path;
+            }
+            if (path.substring(path.length - 1) === '/') {
+                path = path.substring(0, path.length() - 1);
+            }
+            defaultPaths.push(path);
+        });
+        
+        _container = $('<div class="quickformcontainer knime-qf-container">');
+        $('body').append(_container);
+
+        _container.attr('title', representation.description);
+        _container.attr('aria-label', representation.label);
+        _container.append('<div class="label knime-qf-title">' + representation.label + '</div>');
+        
+        var rootPath = _representation.rootDir || '/';
+        // TODO resolve workflow and mountpoint-relative paths
+        
+        try {
+            var request = parent.KnimePageBuilderAPI.getRepository({ path: rootPath, filter: null });
+            if (request) {
+                request.then(function (repo) {
+                    setRepository(repo.response, rootPath, defaultPaths);
+                }).catch(function (e) {
+                    setEmptyRepository(e);
+                });
+            } else {
+                setEmptyRepository();
+            }
+        } catch (e) {
+            setEmptyRepository(e);
+        }
+        
+        //TODO calls for legacy WebPortal
     };
 
     fileChooser.validate = function () {
