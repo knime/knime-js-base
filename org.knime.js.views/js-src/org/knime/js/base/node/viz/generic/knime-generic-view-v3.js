@@ -78,7 +78,7 @@ window.knimeGenericView = (function () {
                 }
             }
 
-            requirejs.config({ waitSeconds: 30 }); // added 4.2
+            requirejs.config({ waitSeconds: 60 }); // added 4.2
 
             require(libs, function () {
                 // set global variable if defined by library
