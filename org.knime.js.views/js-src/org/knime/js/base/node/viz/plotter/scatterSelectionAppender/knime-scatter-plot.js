@@ -215,9 +215,9 @@ window.knimeScatterPlotSelectionAppender = (function () {
 
         var plot = new jsfc.XYPlot(dataset);
         var stagger = _representation.enableStaggeredRendering;
-        if (knimeService && knimeService.isInteractivityAvailable()) {
-            // always disable if interactivity available
-            stagger = false;
+        if (knimeService) {
+            // Since 4.2, if running in WebPortal or AP, only enable if the view is a single view.
+            stagger = knimeService.isSingleView();
         }
         plot.setStaggerRendering(stagger);
         var xAxis = plot.getXAxis();
