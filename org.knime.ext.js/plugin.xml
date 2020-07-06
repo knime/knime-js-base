@@ -190,10 +190,6 @@
                relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule/"
                relativePathTarget="org/knime/ext/js/node/widget/input/molecule/">
          </webResource>
-         <webResource
-               relativePathSource="js-lib/ketcher/"
-               relativePathTarget="js-lib/ketcher/">
-         </webResource>
          <importResource
                relativePath="org/knime/ext/js/node/widget/input/molecule/MoleculeWidget.js"
                type="JAVASCRIPT">
