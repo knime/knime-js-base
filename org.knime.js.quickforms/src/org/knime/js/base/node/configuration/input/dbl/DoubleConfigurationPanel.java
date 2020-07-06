@@ -50,7 +50,6 @@ package org.knime.js.base.node.configuration.input.dbl;
 
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
@@ -73,13 +72,14 @@ public class DoubleConfigurationPanel extends AbstractDialogNodeConfigurationPan
         super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         double min = Double.NEGATIVE_INFINITY;
         double max = Double.POSITIVE_INFINITY;
+        double stepSize = 0.1;
         if (representation.isUseMin()) {
             min = representation.getMin();
         }
         if (representation.isUseMax()) {
             max = representation.getMax();
         }
-        m_component = new JSpinner(new SpinnerNumberModel(representation.getDefaultValue().getDouble(), min, max, 0.1));
+        m_component = DoubleDialogNodeNodeDialog.createSpinner(representation.getDefaultValue().getDouble(), min, max, stepSize);
         m_component.setPreferredSize(new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH).getPreferredSize());
         m_component.setValue(representation.getDefaultValue().getDouble());
         setComponent(m_component);

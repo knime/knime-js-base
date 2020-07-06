@@ -96,9 +96,9 @@ public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_config = new DoubleInputDialogNodeConfig();
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
-        m_min = createSpinner();
-        m_max = createSpinner();
-        m_defaultSpinner = createSpinner();
+        m_min = createSpinner(0.0, 1.0);
+        m_max = createSpinner(1.0, 1.0);
+        m_defaultSpinner = createSpinner(0.0, 0.1);
 
         m_useMin.addItemListener(e -> m_min.setEnabled(m_useMin.isSelected()));
         m_useMax.addItemListener(e -> m_max.setEnabled(m_useMax.isSelected()));
@@ -120,14 +120,29 @@ public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     }
 
     /**
-     * @return a default spinner model
+     * Create a spinner control element with an unbounded value.
+     * @param value the value of the spinner element
+     * @param stepSize the increment to add/subtract when using the arrow controls next to the text field
+     * @return a spinner control element
      */
-    private static JSpinner createSpinner() {
+    static JSpinner createSpinner(final double value, final double stepSize) {
+        return createSpinner(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, stepSize);
+    }
+
+    /**
+     * Create a spinner control element with the given value and limitations.
+     * @param value the value of the spinner element
+     * @param min the minimum selectable value
+     * @param max the maximum selectable value
+     * @param stepSize the increment to add/subtract when using the arrow controls next to the text field
+     * @return a spinner control element
+     */
+    static JSpinner createSpinner(final double value, final double min, final double max, final double stepSize) {
 
         // Create a spinner model with precise arithmetics by calculating the result of adding/subtract one step size
         // as BigDecimal. When calculating with doubles, we see numeric errors like 2.000001 - 2 = 1.000000000139778E-6
         SpinnerNumberModel model =
-            new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1) {
+            new SpinnerNumberModel(value, min, max, stepSize) {
                 private static final long serialVersionUID = 1L;
 
                 private final BigDecimal increment = BigDecimal.valueOf(getStepSize().doubleValue());
