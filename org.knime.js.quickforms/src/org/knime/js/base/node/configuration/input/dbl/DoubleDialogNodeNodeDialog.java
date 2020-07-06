@@ -51,15 +51,13 @@ package org.knime.js.base.node.configuration.input.dbl;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -75,6 +73,12 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<DoubleDialogNodeValue> {
+
+    /**
+     * The maximum number of digits to display in a {@link JSpinner}'s number editor.
+     * Currently prevents rounding by setting (almost) no limit on the number of digits after the decimal point.
+     */
+    private static final int SPINNER_MAXIMUM_FRACTION_DIGITS = Integer.MAX_VALUE;
 
     private final JCheckBox m_useMin;
     private final JCheckBox m_useMax;
@@ -92,37 +96,22 @@ public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_config = new DoubleInputDialogNodeConfig();
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
-        m_min = new JSpinner(getSpinnerModel());
-        m_max = new JSpinner(getSpinnerModel());
-        m_defaultSpinner = new JSpinner(getSpinnerModel());
-        m_useMin.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                m_min.setEnabled(m_useMin.isSelected());
+        m_min = createSpinner();
+        m_max = createSpinner();
+        m_defaultSpinner = createSpinner();
+
+        m_useMin.addItemListener(e -> m_min.setEnabled(m_useMin.isSelected()));
+        m_useMax.addItemListener(e -> m_max.setEnabled(m_useMax.isSelected()));
+        m_min.addChangeListener(e -> {
+            double min = (Double)m_min.getValue();
+            if (((Double)m_max.getValue()) < min) {
+                m_max.setValue(min);
             }
         });
-        m_useMax.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                m_max.setEnabled(m_useMax.isSelected());
-            }
-        });
-        m_min.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                double min = (Double)m_min.getValue();
-                if (((Double)m_max.getValue()) < min) {
-                    m_max.setValue(min);
-                }
-            }
-        });
-        m_max.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                double max = (Double)m_max.getValue();
-                if (((Double)m_min.getValue()) > max) {
-                    m_min.setValue(max);
-                }
+        m_max.addChangeListener(e -> {
+            double max = (Double)m_max.getValue();
+            if (((Double)m_min.getValue()) > max) {
+                m_min.setValue(max);
             }
         });
         m_min.setEnabled(m_useMin.isSelected());
@@ -133,8 +122,34 @@ public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     /**
      * @return a default spinner model
      */
-    private static SpinnerNumberModel getSpinnerModel() {
-        return new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
+    private static JSpinner createSpinner() {
+
+        // Create a spinner model with precise arithmetics by calculating the result of adding/subtract one step size
+        // as BigDecimal. When calculating with doubles, we see numeric errors like 2.000001 - 2 = 1.000000000139778E-6
+        SpinnerNumberModel model =
+            new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1) {
+                private static final long serialVersionUID = 1L;
+
+                private final BigDecimal increment = BigDecimal.valueOf(getStepSize().doubleValue());
+
+                @Override
+                public Object getNextValue() {
+                    return BigDecimal.valueOf((Double)getValue()).add(increment).doubleValue();
+                }
+
+                @Override
+                public Object getPreviousValue() {
+                    return BigDecimal.valueOf((Double)getValue()).subtract(increment).doubleValue();
+                }
+            };
+        JSpinner spinner = new JSpinner(model);
+
+        // Prevent the editor from rounding the current value for display, e.g., 0.0000001 to 0.
+        JSpinner.NumberEditor e = (JSpinner.NumberEditor) spinner.getEditor();
+        DecimalFormat df = e.getFormat();
+        df.setMaximumFractionDigits(SPINNER_MAXIMUM_FRACTION_DIGITS);
+
+        return spinner;
     }
 
     /**
