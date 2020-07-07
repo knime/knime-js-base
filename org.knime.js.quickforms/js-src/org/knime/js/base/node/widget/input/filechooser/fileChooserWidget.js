@@ -92,6 +92,37 @@ window.knimeFileChooserWidget = (function () {
         return index < 0 ? path : path.substring(index + 1);
     };
     
+    var normalizeArray = function (parts, allowAboveRoot) {
+        var res = [];
+        for (var i = 0; i < parts.length; i++) {
+            var p = parts[i];
+
+            // ignore empty parts
+            if (!p || p === '.') {
+                continue;
+            }
+            if (p === '..') {
+                if (res.length && res[res.length - 1] !== '..') {
+                    res.pop();
+                } else if (allowAboveRoot) {
+                    res.push('..');
+                }
+            } else {
+                res.push(p);
+            }
+        }
+
+        return res;
+    };
+    
+    var normalizePath = function (path) {
+        var normalizedPath = normalizeArray(path.split('/'), true).join('/');
+        if (!normalizedPath.startsWith('/')) {
+            normalizedPath = '/' + normalizedPath;
+        }
+        return normalizedPath;
+    };
+    
     var getTypeFromSelectedItem = function (node, path) {
         var childNodes;
         if (node) {
@@ -160,6 +191,7 @@ window.knimeFileChooserWidget = (function () {
         _viewValid = true;
     };
     
+    // eslint-disable-next-line complexity
     var createTreeItemRecursively = function (repositoryItem, defaultPaths) {
         if (!repositoryItem || !repositoryItem.path) {
             return null;
@@ -199,10 +231,17 @@ window.knimeFileChooserWidget = (function () {
             if (endIndex > 0 && endIndex < treeItem.text.length - 1) {
                 fileEnding = treeItem.text.substring(endIndex);
             }
-            // TODO test for allowed file types
+            // check if file type is allowed
+            if (_representation.fileTypes && _representation.fileTypes.length > 0) {
+                var allowedFileEnding = _representation.fileTypes.some(function (fileType) {
+                    return fileType.toLowerCase() === fileEnding.toLowerCase();
+                });
+                if (!allowedFileEnding) {
+                    return null;
+                }
+            }
             
             treeItem.type = WIDGET_ITEM_TYPE.DATA;
-            
             // set custom icon if possible
             var icon = fileBasePath + 'file.png';
             if (fileEnding) {
@@ -250,7 +289,7 @@ window.knimeFileChooserWidget = (function () {
         if (treeItem.type === WIDGET_ITEM_TYPE.DIR) {
             if (repositoryItem.children) {
                 repositoryItem.children.forEach(function (child) {
-                    var childItem = createTreeItemRecursively(child);
+                    var childItem = createTreeItemRecursively(child, defaultPaths);
                     if (childItem) {
                         treeItem.children.push(childItem);
                     }
@@ -306,6 +345,18 @@ window.knimeFileChooserWidget = (function () {
         }
         createTree();
     };
+    
+    var resolveWorkflowRelativePath = function (path) {
+        var relativePath = path;
+        var workflowPath = parent.KnimePageBuilderAPI.getWorkflow();
+        if (workflowPath) {
+            if (workflowPath.endsWith('/')) {
+                workflowPath = workflowPath.substring(0, workflowPath.length - 1);
+            }
+            relativePath = normalizePath(workflowPath + path);
+        }
+        return relativePath;
+    };
 
     fileChooser.init = function (representation) {
         if (checkMissingData(representation)) {
@@ -318,21 +369,26 @@ window.knimeFileChooserWidget = (function () {
             _value.items = [];
         }
         
+        // determine relative default paths from default urls
         var defaultPaths = [];
         var pathArray = _representation.currentValue.items;
         pathArray.forEach(function (defaultPath) {
-            var path;
-            if (typeof URL === 'function') {
-                var url = new URL(defaultPath.path);
-                path = url.pathname;
-            } else {
-                path = defaultPath.path;
-            }
+            var pathWithoutScheme = defaultPath.path.replace(SCHEME_PART, '');
+            var path = pathWithoutScheme.substring(pathWithoutScheme.indexOf('/'));
             if (path.substring(path.length - 1) === '/') {
                 path = path.substring(0, path.length() - 1);
             }
-            defaultPaths.push(path);
+            defaultPaths.push(decodeURIComponent(path));
         });
+        
+        // determine path prefix from mountId
+        var mountId = _representation.customMountId;
+        if (_representation.useDefaultMountId) {
+            mountId = parent.KnimePageBuilderAPI.getDefaultMountId();
+        }
+        if (mountId) {
+            _representation.prefix = SCHEME_PART + mountId;
+        }
         
         _container = $('<div class="quickformcontainer knime-qf-container">');
         $('body').append(_container);
@@ -341,8 +397,21 @@ window.knimeFileChooserWidget = (function () {
         _container.attr('aria-label', representation.label);
         _container.append('<div class="label knime-qf-title">' + representation.label + '</div>');
         
-        var rootPath = _representation.rootDir || '/';
-        // TODO resolve workflow and mountpoint-relative paths
+        var rootPath = decodeURIComponent(_representation.rootDir || '/');
+        
+        if (rootPath.toLowerCase().startsWith(SCHEME_PART)) {
+            var pathWithoutScheme = rootPath.replace(SCHEME_PART, '');
+            var schemeIndex = pathWithoutScheme.indexOf('/') + 1;
+            rootPath = pathWithoutScheme.substring(schemeIndex - 1);
+            var host = pathWithoutScheme.substring(0, schemeIndex - 1);
+            
+            if (host === WORKFLOW_RELATIVE) {
+                rootPath = resolveWorkflowRelativePath(rootPath);
+            } else if (host === MOUNTPOINT_RELATIVE || !host.startsWith(SCHEME)) {
+                rootPath = normalizePath(rootPath);
+            }
+        }
+        
         
         try {
             var request = parent.KnimePageBuilderAPI.getRepository({ path: rootPath, filter: null });
@@ -359,7 +428,7 @@ window.knimeFileChooserWidget = (function () {
             setEmptyRepository(e);
         }
         
-        //TODO calls for legacy WebPortal
+        //TODO calls for legacy WebPortal?
     };
 
     fileChooser.validate = function () {
