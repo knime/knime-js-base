@@ -63,8 +63,8 @@ window.knimeMoleculeWidget = (function () {
     var TIMEOUT_TRESHOLD = 500;
     var DONE_STATE = 4;
     var basePathMoleculeFolder = 'org/knime/ext/js/node/widget/input/molecule/';
-    var cssPathWebPortal =  basePathMoleculeFolder + 'MoleculeWidget.css';
-    var cssPathLegacyWebPortal = document.baseURI + 'VAADIN/src-js/' + basePathMoleculeFolder + 'MoleculeWidget.css';
+    var cssPathWebPortal = '/' + basePathMoleculeFolder + 'MoleculeWidget.css';
+    var cssPathLegacyWebPortal = document.URL + 'VAADIN/src-js/' + basePathMoleculeFolder + 'MoleculeWidget.css';
     var ketcherBasePath = '/js-lib/ketcher/ketcher.html';
     var ketcherPathLegacyWebPortal = './VAADIN/src-js' + ketcherBasePath;
 
