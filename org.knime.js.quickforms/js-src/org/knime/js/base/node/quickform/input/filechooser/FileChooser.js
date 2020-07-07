@@ -392,7 +392,9 @@ window.org_knime_js_base_node_quickform_input_filechooser = (function () { // es
                 }];
             }
             // erase default selection (already present in item states)
-            _value.items = [];
+            if (representation.runningOnServer) {
+                _value.items = [];
+            }
             createTree();
         } else {
             // determine relative default paths from default urls
