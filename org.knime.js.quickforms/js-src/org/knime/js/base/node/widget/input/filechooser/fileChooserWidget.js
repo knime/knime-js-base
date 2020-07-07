@@ -320,6 +320,8 @@ window.knimeFileChooserWidget = (function () {
         } else {
             addEmptyRootItem('The root path ' + rootPath + ' could not be resolved or yielded an empty selection.');
         }
+        // erase default selection, which is present in item states now
+        _value.items = [];
         createTree();
     };
     
@@ -364,71 +366,89 @@ window.knimeFileChooserWidget = (function () {
         }
         _representation = representation;
         _value = representation.currentValue;
-        // erase default selection when running on server
-        if (representation.runningOnServer) {
-            _value.items = [];
-        }
-        
-        // determine relative default paths from default urls
-        var defaultPaths = [];
-        var pathArray = _representation.currentValue.items;
-        pathArray.forEach(function (defaultPath) {
-            var pathWithoutScheme = defaultPath.path.replace(SCHEME_PART, '');
-            var path = pathWithoutScheme.substring(pathWithoutScheme.indexOf('/'));
-            if (path.substring(path.length - 1) === '/') {
-                path = path.substring(0, path.length() - 1);
-            }
-            defaultPaths.push(decodeURIComponent(path));
-        });
-        
-        // determine path prefix from mountId
-        var mountId = _representation.customMountId;
-        if (_representation.useDefaultMountId) {
-            mountId = parent.KnimePageBuilderAPI.getDefaultMountId();
-        }
-        if (mountId) {
-            _representation.prefix = SCHEME_PART + mountId;
-        }
-        
+
         _container = $('<div class="quickformcontainer knime-qf-container">');
         $('body').append(_container);
 
         _container.attr('title', representation.description);
         _container.attr('aria-label', representation.label);
         _container.append('<div class="label knime-qf-title">' + representation.label + '</div>');
-        
-        var rootPath = decodeURIComponent(_representation.rootDir || '/');
-        
-        if (rootPath.toLowerCase().startsWith(SCHEME_PART)) {
-            var pathWithoutScheme = rootPath.replace(SCHEME_PART, '');
-            var schemeIndex = pathWithoutScheme.indexOf('/') + 1;
-            rootPath = pathWithoutScheme.substring(schemeIndex - 1);
-            var host = pathWithoutScheme.substring(0, schemeIndex - 1);
+
+        if (representation.runningOnServer || knimeService.isRunningInAPWrapper()) {
+            // legacy WebPortal fills the tree on the server with the FileChooserIncomingInterceptor
+            if (!representation.tree || representation.tree.length < 1) {
+                var errorText = 'No items found for selection. ';
+                errorText += representation.runningOnServer ? 'Check your settings.'
+                    : 'View selection only possible on server.';
+                representation.tree = [{
+                    id: 'emptyTree',
+                    text: errorText,
+                    icon: null,
+                    state: {
+                        opened: false,
+                        disabled: true,
+                        selected: false
+                    },
+                    children: []
+                }];
+            }
+            // erase default selection (already present in item states)
+            _value.items = [];
+            createTree();
+        } else {
+            // determine relative default paths from default urls
+            var defaultPaths = [];
+            var pathArray = _representation.currentValue.items;
+            pathArray.forEach(function (defaultPath) {
+                var pathWithoutScheme = defaultPath.path.replace(SCHEME_PART, '');
+                var path = pathWithoutScheme.substring(pathWithoutScheme.indexOf('/'));
+                if (path.substring(path.length - 1) === '/') {
+                    path = path.substring(0, path.length() - 1);
+                }
+                defaultPaths.push(decodeURIComponent(path));
+            });
             
-            if (host === WORKFLOW_RELATIVE) {
-                rootPath = resolveWorkflowRelativePath(rootPath);
-            } else if (host === MOUNTPOINT_RELATIVE || !host.startsWith(SCHEME)) {
-                rootPath = normalizePath(rootPath);
+            // determine path prefix from mountId
+            var mountId = _representation.customMountId;
+            if (_representation.useDefaultMountId) {
+                mountId = parent.KnimePageBuilderAPI.getDefaultMountId();
+            }
+            if (mountId) {
+                _representation.prefix = SCHEME_PART + mountId;
+            }
+
+            var rootPath = decodeURIComponent(_representation.rootDir || '/');
+
+            // resolve workflow and mountpoint relative root paths
+            if (rootPath.toLowerCase().startsWith(SCHEME_PART)) {
+                var pathWithoutScheme = rootPath.replace(SCHEME_PART, '');
+                var schemeIndex = pathWithoutScheme.indexOf('/') + 1;
+                rootPath = pathWithoutScheme.substring(schemeIndex - 1);
+                var host = pathWithoutScheme.substring(0, schemeIndex - 1);
+
+                if (host === WORKFLOW_RELATIVE) {
+                    rootPath = resolveWorkflowRelativePath(rootPath);
+                } else if (host === MOUNTPOINT_RELATIVE || !host.startsWith(SCHEME)) {
+                    rootPath = normalizePath(rootPath);
+                }
+            }
+
+            // get repository from rootPath
+            try {
+                var request = parent.KnimePageBuilderAPI.getRepository({ path: rootPath, filter: null });
+                if (request) {
+                    request.then(function (repo) {
+                        setRepository(repo.response, rootPath, defaultPaths);
+                    }).catch(function (e) {
+                        setEmptyRepository(e);
+                    });
+                } else {
+                    setEmptyRepository();
+                }
+            } catch (e) {
+                setEmptyRepository(e);
             }
         }
-        
-        
-        try {
-            var request = parent.KnimePageBuilderAPI.getRepository({ path: rootPath, filter: null });
-            if (request) {
-                request.then(function (repo) {
-                    setRepository(repo.response, rootPath, defaultPaths);
-                }).catch(function (e) {
-                    setEmptyRepository(e);
-                });
-            } else {
-                setEmptyRepository();
-            }
-        } catch (e) {
-            setEmptyRepository(e);
-        }
-        
-        //TODO calls for legacy WebPortal?
     };
 
     fileChooser.validate = function () {
