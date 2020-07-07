@@ -62,7 +62,7 @@ window.knimeMoleculeWidget = (function () {
     var LABEL_HEIGHT = 20;
     var TIMEOUT_TRESHOLD = 500;
     var DONE_STATE = 4;
-    var basePathMoleculeFolder = '/org/knime/ext/js/node/widget/input/molecule/';
+    var basePathMoleculeFolder = 'org/knime/ext/js/node/widget/input/molecule/';
     var cssPathWebPortal =  basePathMoleculeFolder + 'MoleculeWidget.css';
     var cssPathLegacyWebPortal = document.baseURI + 'VAADIN/src-js/' + basePathMoleculeFolder + 'MoleculeWidget.css';
     var ketcherBasePath = '/js-lib/ketcher/ketcher.html';
@@ -99,11 +99,12 @@ window.knimeMoleculeWidget = (function () {
 
         // Check if it's executed in the new WebPortal
         if (inWebportal && isPageBuilderPresent) {
+            sketcherPath = knimeService.resourceBaseUrl + ketcherBasePath;
             var customSketcherPath = parent.KnimePageBuilderAPI.getCustomSketcherPath();
-            sketcherPath = customSketcherPath ? customSketcherPath : knimeService.resourceBaseUrl + ketcherBasePath;
             cssPathWebPortal = knimeService.resourceBaseUrl + cssPathWebPortal;
-            if (customSketcherPath) {
+            if (customSketcherPath && customSketcherPath.startsWith('/')) {
                 customSketcher = true;
+                sketcherPath = customSketcherPath;
             }
             sketcherFrame = initSketcher(sketcherPath, cssPathWebPortal, customSketcher, currentMolecule);
             wgdiv.append(sketcherFrame);
