@@ -361,6 +361,10 @@ public class FileUploadWidgetNodeModel extends
                 if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
                     && repoUri.getScheme().equals(url.getProtocol())) {
                     conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
+                } else {
+                    NodeLogger.getLogger(this.getClass())
+                        .debug("The host and/or port of the provided URL to get the uploaded file "
+                            + "from doesn't match with the actual server URL: " + url + " vs. " + repoUri);
                 }
             }
 
