@@ -901,6 +901,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 		body.append(qfdiv);
 		var width = Math.max(MIN_WIDTH, representation.width);
 		var height = Math.max(MIN_HEIGHT, representation.height);
+		var isPageBuilderPresent = knimeService && knimeService.pageBuilderPresent;
     	
 		if (inWebportal) {
 			jQuery('script').each(function() {
@@ -919,9 +920,18 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 	    	sketcherFrame.css("margin", "0");
 	    	sketcherFrame.css("background", "none");
 			var loc = "./VAADIN/src-js/js-lib/ketcher/ketcher.html";
+
 			sketcherFrame.attr("name", currentMolecule);
 			if (customSketcher) {
 				loc = sketcherPath;
+			}
+			if (isPageBuilderPresent) {
+			    var customSketcherPath = parent.KnimePageBuilderAPI.getCustomSketcherPath();
+			    loc = knimeService.resourceBaseUrl + '/js-lib/ketcher/ketcher.html';
+			    if (customSketcherPath && customSketcherPath.startsWith('/')) {
+			        customSketcher = true;
+			        loc = customSketcherPath;
+			    }
 			}
 			sketcherFrame.attr("src", loc);
 			sketcherFrame.load(function() {
