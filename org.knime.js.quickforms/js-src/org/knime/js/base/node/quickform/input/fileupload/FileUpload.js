@@ -106,7 +106,10 @@ window.org_knime_js_base_node_quickform_input_fileupload = (function () { // esl
         }
         var uploadUrl;
         try {
-            uploadUrl = parent.KnimePageBuilderAPI.getUploadLink(fileToUpload.name);
+            uploadUrl = parent.KnimePageBuilderAPI.getUploadLink({
+                resourceId: fileToUpload.name,
+                nodeId: knimeService.nodeId
+            });
         } catch (e) {
             uploadUrl = null;
         }

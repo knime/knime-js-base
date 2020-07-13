@@ -106,7 +106,10 @@ window.knimeFileUploadWidget = (function () {
         }
         var uploadUrl;
         try {
-            uploadUrl = parent.KnimePageBuilderAPI.getUploadLink(fileToUpload.name);
+            uploadUrl = parent.KnimePageBuilderAPI.getUploadLink({
+                resourceId: fileToUpload.name,
+                nodeId: knimeService.nodeId
+            });
         } catch (e) {
             uploadUrl = null;
         }

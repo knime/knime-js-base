@@ -77,7 +77,10 @@ window.org_knime_js_base_node_output_filedownload = (function () { // eslint-dis
             div.setAttribute('tabindex', 0);
             link = document.createElement('a');
             try {
-                href = parent.KnimePageBuilderAPI.getDownloadLink(representation.resourceName);
+                href = parent.KnimePageBuilderAPI.getDownloadLink({
+                    resourceId: representation.resourceName, 
+                    nodeId: knimeService.nodeId
+                });
             } catch (e) {
                 href = null;
             }
