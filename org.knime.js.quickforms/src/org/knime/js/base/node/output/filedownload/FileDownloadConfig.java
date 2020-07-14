@@ -65,7 +65,7 @@ import org.knime.js.base.util.LabeledViewConfig;
 public class FileDownloadConfig extends LabeledViewConfig {
 
     private static final String CFG_LINK_TITLE = "linktitle";
-    private static final String DEFAULT_LINK_TITLE = "";
+    private static final String DEFAULT_LINK_TITLE = "Download";
     private String m_linkTitle = DEFAULT_LINK_TITLE;
 
     private static final String CFG_FLOW_VARIABLE = "flowvariable";

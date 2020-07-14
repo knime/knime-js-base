@@ -55,6 +55,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -139,6 +140,9 @@ public class FileDownloadNodeDialog extends LabeledViewNodeDialog {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+        if (StringUtils.isEmpty(m_linkTitle.getText())) {
+            throw new InvalidSettingsException("Please provide a link title for the download link.");
+        }
         saveSettingsTo(m_config);
         m_config.setLinkTitle(m_linkTitle.getText());
         m_config.setResourceName(m_resourceName.getText());

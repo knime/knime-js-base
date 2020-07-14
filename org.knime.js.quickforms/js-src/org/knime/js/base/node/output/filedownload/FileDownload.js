@@ -51,6 +51,7 @@ window.org_knime_js_base_node_output_filedownload = (function () { // eslint-dis
         version: '1.0.0'
     };
     fileDownload.name = 'File download';
+    var DEFAULT_LINK_TITLE = 'Download';
     var _value = null;
     var viewValid = false;
 
@@ -78,7 +79,7 @@ window.org_knime_js_base_node_output_filedownload = (function () { // eslint-dis
             link = document.createElement('a');
             try {
                 href = parent.KnimePageBuilderAPI.getDownloadLink({
-                    resourceId: representation.resourceName, 
+                    resourceId: representation.resourceName,
                     nodeId: knimeService.nodeId
                 });
             } catch (e) {
@@ -87,7 +88,8 @@ window.org_knime_js_base_node_output_filedownload = (function () { // eslint-dis
             if (href) {
                 link.setAttribute('href', href);
                 div.appendChild(link);
-                link.appendChild(document.createTextNode(representation.linkTitle));
+                var linkTitle = representation.linkTitle || DEFAULT_LINK_TITLE;
+                link.appendChild(document.createTextNode(linkTitle));
             } else {
                 var placeHolder = window.createPlaceHolder(messageNotStandalone);
                 div.appendChild(placeHolder);
