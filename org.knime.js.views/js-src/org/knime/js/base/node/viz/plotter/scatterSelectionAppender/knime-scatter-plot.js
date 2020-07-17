@@ -215,7 +215,8 @@ window.knimeScatterPlotSelectionAppender = (function () {
 
         var plot = new jsfc.XYPlot(dataset);
         var stagger = _representation.enableStaggeredRendering;
-        if (knimeService) {
+        // If stagger is set to false, we may be running image generation so do *NOT* override.
+        if (stagger && knimeService) {
             // Since 4.2, if running in WebPortal or AP, only enable if the view is a single view.
             stagger = knimeService.isSingleView();
         }
