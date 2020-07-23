@@ -55,7 +55,6 @@ import javax.swing.text.JTextComponent;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 import org.knime.js.base.node.quickform.input.string.StringInputQuickFormConfig;
-import org.knime.js.core.settings.DialogUtil;
 
 /**
  * The component dialog panel for the string configuration node
@@ -73,10 +72,11 @@ public class StringConfigurationPanel extends AbstractDialogNodeConfigurationPan
     public StringConfigurationPanel(final StringDialogNodeRepresentation representation) {
         super(representation.getLabel(), representation.getDescription(), representation.getDefaultValue());
         if (representation.getEditorType().equals(StringInputQuickFormConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
-            m_component = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
+            m_component = new JTextField(representation.getMultilineEditorWidth());
         } else {
             // Multi-line editor
-            m_component = new JTextArea(5, DialogUtil.DEF_TEXTFIELD_WIDTH);
+            m_component =
+                new JTextArea(representation.getMultilineEditorHeight(), representation.getMultilineEditorWidth());
         }
         m_component.setText(representation.getDefaultValue().getString());
         setComponent(m_component);
