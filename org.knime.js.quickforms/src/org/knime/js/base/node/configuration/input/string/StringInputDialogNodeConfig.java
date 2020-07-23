@@ -63,6 +63,8 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
  */
 public class StringInputDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<StringDialogNodeValue> {
 
+    private static final int DEFAULT_EDITOR_WIDTH = 40;
+
     private final StringNodeConfig m_stringConfig;
 
     /**
@@ -70,6 +72,9 @@ public class StringInputDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
      */
     public StringInputDialogNodeConfig() {
         m_stringConfig = new StringNodeConfig();
+        // Overwrite the default editor line with:
+        // 40 is more reasonable for the component dialogs
+        m_stringConfig.setMultilineEditorWidth(DEFAULT_EDITOR_WIDTH);
     }
 
     /**
