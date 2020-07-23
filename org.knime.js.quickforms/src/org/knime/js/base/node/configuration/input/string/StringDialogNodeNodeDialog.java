@@ -81,8 +81,8 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     private final ButtonGroup m_editorTypeGroup;
     private final JRadioButton m_singleLineEditorButton;
     private final JRadioButton m_multilineEditorButton;
-    private final JSpinner m_multilineEditorWidthSpinner;
-    private final JSpinner m_multilineEditorHeightSpinner;
+    private final JSpinner m_editorWidthSpinner;
+    private final JSpinner m_editorHeightSpinner;
 
     private StringInputDialogNodeConfig m_config;
 
@@ -98,8 +98,8 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_editorTypeGroup = new ButtonGroup();
         m_editorTypeGroup.add(m_singleLineEditorButton);
         m_editorTypeGroup.add(m_multilineEditorButton);
-        m_multilineEditorWidthSpinner = new JSpinner(new SpinnerNumberModel(60, 10, Integer.MAX_VALUE, 10));
-        m_multilineEditorHeightSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
+        m_editorWidthSpinner = new JSpinner(new SpinnerNumberModel(60, 10, Integer.MAX_VALUE, 10));
+        m_editorHeightSpinner = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
 
         m_multilineEditorButton.addChangeListener(new ChangeListener() {
             @Override
@@ -118,8 +118,8 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     protected void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Editor type: ", m_singleLineEditorButton, panelWithGBLayout, gbc);
         addPairToPanel("", m_multilineEditorButton, panelWithGBLayout, gbc);
-        addPairToPanel("Multi-line editor width: ", m_multilineEditorWidthSpinner, panelWithGBLayout, gbc);
-        addPairToPanel("Multi-line editor height: ", m_multilineEditorHeightSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Editor width: ", m_editorWidthSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Editor height: ", m_editorHeightSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Regular Expression: ", m_regexField.getRegexPanel(), panelWithGBLayout, gbc);
         addPairToPanel("Validation Error Message: ", m_regexField.getErrorMessagePanel(), panelWithGBLayout, gbc);
         addPairToPanel("Common Regular Expressions: ", m_regexField.getCommonRegexesPanel(), panelWithGBLayout, gbc);
@@ -151,8 +151,8 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
             m_config.getEditorType().equals(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
         m_singleLineEditorButton.setSelected(isSingleEditor);
         m_multilineEditorButton.setSelected(!isSingleEditor);
-        m_multilineEditorWidthSpinner.setValue(m_config.getMultilineEditorWidth());
-        m_multilineEditorHeightSpinner.setValue(m_config.getMultilineEditorHeight());
+        m_editorWidthSpinner.setValue(m_config.getMultilineEditorWidth());
+        m_editorHeightSpinner.setValue(m_config.getMultilineEditorHeight());
         updateComponents();
     }
 
@@ -169,8 +169,8 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
         m_config.setEditorType(
             m_singleLineEditorButton.isSelected() ? StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING
                 : StringNodeConfig.EDITOR_TYPE_MULTI_LINE_STRING);
-        m_config.setMultilineEditorWidth((int)m_multilineEditorWidthSpinner.getValue());
-        m_config.setMultilineEditorHeight((int)m_multilineEditorHeightSpinner.getValue());
+        m_config.setMultilineEditorWidth((int)m_editorWidthSpinner.getValue());
+        m_config.setMultilineEditorHeight((int)m_editorHeightSpinner.getValue());
 
         m_config.saveSettings(settings);
     }
@@ -181,12 +181,10 @@ public class StringDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
     protected void updateComponents() {
         boolean isMultiEditor = m_multilineEditorButton.isSelected();
 
-        m_multilineEditorWidthSpinner.setEnabled(isMultiEditor);
-        m_multilineEditorHeightSpinner.setEnabled(isMultiEditor);
+        m_editorHeightSpinner.setEnabled(isMultiEditor);
         String multiLineTooltip = isMultiEditor ? "" : "To enable the control choose the "
             + StringNodeConfig.EDITOR_TYPE_MULTI_LINE_STRING + " editor type";
-        m_multilineEditorWidthSpinner.setToolTipText(multiLineTooltip);
-        m_multilineEditorHeightSpinner.setToolTipText(multiLineTooltip);
+        m_editorHeightSpinner.setToolTipText(multiLineTooltip);
 
         m_regexField.setEnabled(!isMultiEditor);
         String regexTooltip = isMultiEditor ? "To enable the control choose the "
