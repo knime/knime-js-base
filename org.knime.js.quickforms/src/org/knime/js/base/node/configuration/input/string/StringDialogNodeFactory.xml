@@ -28,10 +28,10 @@
           Its sizes can be parameterized (see the options below) and the scroll bar will automatically appear, if the 
           text is too long.          
         </option>
-        <option name="Multi-line editor width">
-          The width of the editor in number of characters per line. Multi-line editor only.
+        <option name="Editor width">
+          The width of the editor in number of characters per line.
         </option>
-        <option name="Multi-line editor height">
+        <option name="Editor height">
           The height of the editor in number of text lines. Multi-line editor only.
         </option>
         <option name="Regular Expression">
