@@ -123,11 +123,16 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
         }
         viewValid = true;
         
+        if (representation.currentValue.disableServerCredentials) {
+            displayServerCredentialsErrorMessage();
+        }
+        
         if (knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper() &&
                 representation.useServerLoginCredentials) {
             enableInputFields(false);
             viewValid = false;
             parent.KnimePageBuilderAPI.getUser().then(function (user) {
+                viewValid = true;
                 if (user) {
                     var viewValue = viewRepresentation.currentValue;
                     viewValue.username = user.userName;
@@ -139,7 +144,6 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
                 } else {
                     displayServerCredentialsErrorMessage();
                 }
-                viewValid = true;
                 enableInputFields(true);
             }).catch(function () {
                 viewValid = true;
@@ -157,12 +161,14 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
     };
 
     credentialsInput.setValidationErrorMessage = function (message) {
-        if (!viewValid || viewRepresentation.noDisplay) {
+        if (!viewValid) {
             return;
         }
         if (message === null) {
             errorMessage.text('');
             errorMessage.css('display', 'none');
+        } else if (viewRepresentation.noDisplay) {
+            alert(message);
         } else {
             errorMessage.text(message);
             errorMessage.css('display', 'block');
