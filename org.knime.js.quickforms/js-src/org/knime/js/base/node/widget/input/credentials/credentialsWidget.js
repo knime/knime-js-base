@@ -124,11 +124,11 @@ window.knimeCredentialsWidget = (function () {
         }
         viewValid = true;
         
-        if (knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper()
-            && representation.useServerLoginCredentials) {
+        if (knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper() &&
+                representation.useServerLoginCredentials) {
             enableInputFields(false);
             viewValid = false;
-            parent.KnimePageBuilderAPI.getUser().then(function(user) {
+            parent.KnimePageBuilderAPI.getUser().then(function (user) {
                 if (user) {
                     var viewValue = viewRepresentation.currentValue;
                     viewValue.username = user.userName;
@@ -148,7 +148,6 @@ window.knimeCredentialsWidget = (function () {
                 displayServerCredentialsErrorMessage();
             });
         }
-        
     };
 
     credentialsInput.validate = function () {
