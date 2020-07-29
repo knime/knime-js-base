@@ -1,3 +1,5 @@
+/* eslint-env jquery */
+/* global checkMissingData:false, callUpdate:false, resizeParent:false*/
 /*
  * ------------------------------------------------------------------------
  *  Copyright by KNIME AG, Zurich, Switzerland
@@ -41,112 +43,109 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Oct 14, 2013 (Patrick Winter, KNIME AG, Zurich, Switzerland): created
  */
-org_knime_js_base_node_quickform_input_credentials = function() {
-	var credentialsInput = {
-			version: "1.0.0"
-	};
-	credentialsInput.name = "Credentials input";
-	var user_input;
-	var password_input;
-	var errorMessage;
-	var viewRepresentation;
-	var viewValid = false;
+window.org_knime_js_base_node_quickform_input_credentials = (function () { // eslint-disable-line camelcase
+    var credentialsInput = {
+        version: '1.0.0'
+    };
+    credentialsInput.name = 'Credentials input';
+    var userInput,
+        passwordInput,
+        errorMessage,
+        viewRepresentation;
+    var viewValid = false;
 
-	credentialsInput.init = function(representation) {
-		if (checkMissingData(representation)) {
-			return;
-		}
-		viewRepresentation = representation;
-		if (knimeService && knimeService.isRunningInWebportal() 
-				&& representation.useServerLoginCredentials 
-				&& representation.noDisplay) {
-			resizeParent();
-			viewValid = true;
-			return;
-		}
-		var body = $('body');
-		var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
-		body.append(qfdiv);
-		qfdiv.attr("title", representation.description);
-		qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
-		qfdiv.attr("aria-label", representation.label);
-		
-		if (representation.promptUsername) {
-			var user_label = $('<label class="knime-qf-label" style="display:block;" for="user_input">');
-			user_label.append('User');
-			qfdiv.append(user_label);
-			user_input = $('<input id="user_input" type="text">');
-			user_input.css("margin-bottom", "5px");
-			user_input.attr("class", "standard-sizing knime-qf-input knime-string knime-single-line");
-			user_input.attr("aria-label", 'User');
-			//user_input.width(400);
-			var usernameValue = representation.currentValue.username;
-			user_input.val(usernameValue);
-			qfdiv.append(user_input);
-			user_input.blur(callUpdate);
-		}
-		
-		password_input = $('<input>');
-		password_input.attr('id', 'pw_input');
-		password_input.attr("type", "password");
-		password_input.attr("class", "standard-sizing knime-qf-input knime-string knime-single-line");
-		password_input.attr("aria-label", 'Password');
-		//password_input.width(400);
-		var passwordValue = representation.currentValue.password;
-		password_input.val(passwordValue);
-		var password_label = $('<label class="knime-qf-label" style="display:block;" for="pw_input">');
-		password_label.append('Password');
-		qfdiv.append(password_label);
-		qfdiv.append(password_input);
-		
-		errorMessage = $('<div class="knime-qf-error">');
-		errorMessage.css('display', 'none');
-		errorMessage.attr("role", "alert");
-		qfdiv.append(errorMessage);
-		password_input.blur(callUpdate);
-		resizeParent();
-		viewValid = true;
-	};
+    credentialsInput.init = function (representation) {
+        if (checkMissingData(representation)) {
+            return;
+        }
+        viewRepresentation = representation;
+        if (knimeService && knimeService.isRunningInWebportal() && representation.useServerLoginCredentials &&
+            representation.noDisplay) {
+            resizeParent();
+            viewValid = true;
+            return;
+        }
+        var body = $('body');
+        var qfdiv = $('<div class="quickformcontainer knime-qf-container">');
+        body.append(qfdiv);
+        qfdiv.attr('title', representation.description);
+        qfdiv.append('<div class="label knime-qf-title">' + representation.label + '</div>');
+        qfdiv.attr('aria-label', representation.label);
 
-	credentialsInput.validate = function() {
-		if (!viewValid) {
-			return false;
-		}
-		return true;
-	};
-	
-	credentialsInput.setValidationErrorMessage = function(message) {
-		if (!viewValid) {
-			return;
-		}
-		if (message != null) {
-			errorMessage.text(message);
-			errorMessage.css('display', 'block');
-		} else {
-			errorMessage.text('');
-			errorMessage.css('display', 'none');
-		}
-		resizeParent();
-	}
+        if (representation.promptUsername) {
+            var userLabel = $('<label class="knime-qf-label" style="display:block;" for="user_input">');
+            userLabel.append('User');
+            qfdiv.append(userLabel);
+            userInput = $('<input id="user_input" type="text">');
+            userInput.css('margin-bottom', '5px');
+            userInput.attr('class', 'standard-sizing knime-qf-input knime-string knime-single-line');
+            userInput.attr('aria-label', 'User');
+            var usernameValue = representation.currentValue.username;
+            userInput.val(usernameValue);
+            qfdiv.append(userInput);
+            userInput.blur(callUpdate);
+        }
 
-	credentialsInput.value = function() {
-		if (!viewValid) {
-			return null;
-		}
-		var viewValue = viewRepresentation.currentValue;
-		if (viewRepresentation.promptUsername && user_input) {
-			viewValue.username = user_input.val();
-		}
-		if (password_input) {
-			viewValue.password = password_input.val();
-		}
-		return viewValue;
-	};
-	
-	return credentialsInput;
-	
-}();
+        passwordInput = $('<input>');
+        passwordInput.attr('id', 'pw_input');
+        passwordInput.attr('type', 'password');
+        passwordInput.attr('class', 'standard-sizing knime-qf-input knime-string knime-single-line');
+        passwordInput.attr('aria-label', 'Password');
+        var passwordValue = representation.currentValue.password;
+        passwordInput.val(passwordValue);
+        var passwordLabel = $('<label class="knime-qf-label" style="display:block;" for="pw_input">');
+        passwordLabel.append('Password');
+        qfdiv.append(passwordLabel);
+        qfdiv.append(passwordInput);
+
+        errorMessage = $('<div class="knime-qf-error">');
+        errorMessage.css('display', 'none');
+        errorMessage.attr('role', 'alert');
+        qfdiv.append(errorMessage);
+        passwordInput.blur(callUpdate);
+        resizeParent();
+        viewValid = true;
+    };
+
+    credentialsInput.validate = function () {
+        if (!viewValid) {
+            return false;
+        }
+        return true;
+    };
+
+    credentialsInput.setValidationErrorMessage = function (message) {
+        if (!viewValid) {
+            return;
+        }
+        if (message === null) {
+            errorMessage.text('');
+            errorMessage.css('display', 'none');
+        } else {
+            errorMessage.text(message);
+            errorMessage.css('display', 'block');
+        }
+        resizeParent();
+    };
+
+    credentialsInput.value = function () {
+        if (!viewValid) {
+            return null;
+        }
+        var viewValue = viewRepresentation.currentValue;
+        if (viewRepresentation.promptUsername && userInput) {
+            viewValue.username = userInput.val();
+        }
+        if (passwordInput) {
+            viewValue.password = passwordInput.val();
+        }
+        return viewValue;
+    };
+
+    return credentialsInput;
+
+})();
