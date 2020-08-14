@@ -55,7 +55,9 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
 import org.apache.commons.lang.StringUtils;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.CoreConstants;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
@@ -68,6 +70,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class CredentialsDialogNodeValue extends CredentialsNodeValue implements DialogNodeValue {
+
+    private boolean m_noDisplay;
+
+
+    public void setNoDisplay(final boolean noDisplay) {
+        m_noDisplay = noDisplay;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        super.saveToNodeSettings(settings);
+        settings.addBoolean("noDisplay", m_noDisplay);
+    }
 
     /**
      * {@inheritDoc}
@@ -82,6 +100,18 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
         } else {
             setPassword(settings.getTransientString(CFG_PASSWORD));
         }
+
+        m_noDisplay = settings.getBoolean("noDisplay", false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadFromNodeSettings(settings);
+
+        m_noDisplay = settings.getBoolean("noDisplay", false);
     }
 
     /** {@inheritDoc} */
@@ -129,6 +159,10 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
      */
     @Override
     public JsonValue toJson() {
+        if(m_noDisplay) {
+            return Json.createObjectBuilder().build();
+        }
+
         final JsonObjectBuilder builder = Json.createObjectBuilder();
         final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
         builder.add("type", "object");
