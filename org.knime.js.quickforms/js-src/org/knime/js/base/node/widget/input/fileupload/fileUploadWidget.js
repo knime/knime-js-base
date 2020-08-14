@@ -222,6 +222,7 @@ window.knimeFileUploadWidget = (function () {
                 div.appendChild(input);
                 sizeLabel = document.createElement('label');
                 sizeLabel.style.marginLeft = '10px';
+                sizeLabel.style.paddingBottom = '2px';
                 if (viewValue.path) {
                     sizeLabel.appendChild(document.createTextNode('Default file: ' + getFileFromPath(viewValue.path)));
                     sizeLabel.setAttribute('title', viewValue.path);
