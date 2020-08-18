@@ -13,7 +13,6 @@ window.knimePieChart = (function () {
         svg,
         knimeTable,
         plotData,
-        colorRange,
         excludeCat,
         missValCatValue,
         _translator,
@@ -27,7 +26,7 @@ window.knimePieChart = (function () {
         subscribeToSelection, drawChart, drawControls, getClusterToRowMapping, sortByClusterName, processData,
         setColorRange, setCssClasses, redrawSelection, removeHilightBar, setTooltipCssClasses, hideTooltips,
         updateTitles, publishSelection, handleHighlightClick, createHilightBar, checkClearSelectionButton,
-        onSelectionChanged, getSelectedRowIDs, selectCorrectBar, processMissingValues, // updateData
+        onSelectionChanged, getSelectedRowIDs, selectCorrectBar, processMissingValues, colorScale, // updateData
 
         /**
          * Helper classes
@@ -154,7 +153,9 @@ window.knimePieChart = (function () {
                 return d.label;
             }).y(function (d) {
                 return d.value;
-            }).color(colorRange).duration(0).showLegend(showLegend).showLabels(showLabels).labelThreshold(
+            }).color(function(categorie){
+                return colorScale(categorie.label);
+            }).duration(0).showLegend(showLegend).showLabels(showLabels).labelThreshold(
                 labelThreshold).labelType(labelType); // "key", "value" or "percent"
 
             chart.dispatch.on('renderEnd.css', function () {
@@ -617,21 +618,21 @@ window.knimePieChart = (function () {
         }
         if (_representation.options.customColors) {
             colorRange = [];
-            for (var i = 0; i < numCat; i++) {
-                var color = knimeTable.getRowColors()[i];
-                if (!color) {
-                    color = '#7C7C7C';
-                }
-                colorRange.push(color);
+            var possibleValues = [];
+            colorRange = _representation.inObjects[0].table.spec.colorModels[0].colors;
+            possibleValues = _representation.inObjects[0].table.spec.colorModels[0].labels;
+            if (_representation.options.enableSwitchMissValCat) {
+                colorRange.push('#7C7C7C');
+                possibleValues.push('Missing values');
             }
+            colorScale = d3.scale.ordinal().domain(possibleValues)
+                .range(colorRange);
         } else {
-            var colorScale;
             if (numCat > 10) {
                 colorScale = d3.scale.category20();
             } else {
                 colorScale = d3.scale.category10();
             }
-            colorRange = colorScale.range();
         }
     };
 
