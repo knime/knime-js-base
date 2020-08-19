@@ -206,7 +206,12 @@ public class CredentialsWidgetNodeModel extends
                     // components dragged from server/hub won't be prompted for password, see AP-12458
                     setWarningMessage("Credentials required - please configure the node");
                 } else {
-                    tempCredentials = loadCredentials.iterator().next();
+                    final String identifierFinal = credentialsIdentifier;
+                    tempCredentials = loadCredentials.stream().//
+                        filter(l -> l.getName().equals(identifierFinal)).//
+                        findFirst().//
+                        orElseThrow(() -> new IllegalStateException("Coding issue: Credentials gone after consulting '"
+                            + loadHelper.getClass().getName() + "'"));
 
                     // set the new password
                     password = tempCredentials.getPassword();
