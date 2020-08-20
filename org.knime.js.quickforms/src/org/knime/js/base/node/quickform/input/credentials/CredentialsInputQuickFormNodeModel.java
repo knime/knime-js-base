@@ -166,48 +166,55 @@ public final class CredentialsInputQuickFormNodeModel extends
             return;
         }
         if (getConfig().isUseServerLoginCredentials()
-                && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
+            && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
             return; // exit here -- flow variable is pushed
-        }
-        String password = value.getPassword();
-        UserNameAndPasswordPair pair = new UserNameAndPasswordPair(username, password);
-        if (!value.isSavePassword() && !isExecuted && !isInactive) {
-            pair = readFromCredentialsProviderIfBlank(credProvider, credentialsIdentifier, username, password);
-            if (StringUtils.isEmpty(pair.getPassword())) {
-                Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
-                List<Credentials> loadCredentials =
+        } else if (getConfig().isUseServerLoginCredentials() && loadHelper.getSystemDefaultCredentials().isPresent()) {
+            final Credentials cred = loadHelper.getSystemDefaultCredentials().get();
+            value.setUsername(cred.getLogin());
+            value.setPassword(cred.getPassword());
+            pushCredentialsFlowVariable(credentialsIdentifier, cred.getLogin(), cred.getPassword());
+        } else {
+            String password = value.getPassword();
+            UserNameAndPasswordPair pair = new UserNameAndPasswordPair(username, password);
+            if (!value.isSavePassword() && !isExecuted && !isInactive) {
+                pair = readFromCredentialsProviderIfBlank(credProvider, credentialsIdentifier, username, password);
+                if (StringUtils.isEmpty(pair.getPassword())) {
+                    Credentials tempCredentials = new Credentials(credentialsIdentifier, username, password);
+                    List<Credentials> loadCredentials =
                         loadHelper.loadCredentialsPrefilled(Collections.singletonList(tempCredentials));
-                if (loadCredentials.isEmpty()) {
-                    // components dragged from server/hub won't be prompted for password, see AP-12458
-                    setWarningMessage("Credentials required - please configure the node");
-                } else {
-                    String identifierFinal = credentialsIdentifier;
-                    tempCredentials = loadCredentials.stream().//
+                    if (loadCredentials.isEmpty()) {
+                        // components dragged from server/hub won't be prompted for password, see AP-12458
+                        setWarningMessage("Credentials required - please configure the node");
+                    } else {
+                        String identifierFinal = credentialsIdentifier;
+                        tempCredentials = loadCredentials.stream().//
                             filter(l -> l.getName().equals(identifierFinal)).//
                             findFirst().//
-                            orElseThrow(() -> new IllegalStateException(
-                                "Coding issue: Credentials gone after consulting '"
-                                        + loadHelper.getClass().getName() + "'"));
+                            orElseThrow(
+                                () -> new IllegalStateException("Coding issue: Credentials gone after consulting '"
+                                    + loadHelper.getClass().getName() + "'"));
 
-                    // set the new password
-                    password = tempCredentials.getPassword();
-                    value.setPassword(password);
-                    if (password == null) {
-                        setWarningMessage("No password set after loading workflow - reconfigure the node to fix it");
+                        // set the new password
+                        password = tempCredentials.getPassword();
+                        value.setPassword(password);
+                        if (password == null) {
+                            setWarningMessage(
+                                "No password set after loading workflow - reconfigure the node to fix it");
+                        }
+
+                        // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
+                        // (since this is what the user would expect)
+                        credentialsIdentifier = tempCredentials.getName();
+                        getConfig().setFlowVariableName(credentialsIdentifier);
+                        username = tempCredentials.getLogin();
+                        value.setUsername(username);
                     }
-
-                    // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
-                    // (since this is what the user would expect)
-                    credentialsIdentifier = tempCredentials.getName();
-                    getConfig().setFlowVariableName(credentialsIdentifier);
-                    username = tempCredentials.getLogin();
-                    value.setUsername(username);
+                } else {
+                    getLogger().debugWithFormat("Inheriting credentials \"%s\" from workflow", credentialsIdentifier);
                 }
-            } else {
-                getLogger().debugWithFormat("Inheriting credentials \"%s\" from workflow", credentialsIdentifier);
             }
+            pushCredentialsFlowVariable(credentialsIdentifier, username, password);
         }
-        pushCredentialsFlowVariable(credentialsIdentifier, username, password);
     }
 
     /** {@inheritDoc} */
