@@ -124,10 +124,6 @@ window.knimeCredentialsWidget = (function () {
         }
         viewValid = true;
         
-        if (representation.currentValue.disableServerCredentials) {
-            displayServerCredentialsErrorMessage();
-        }
-        
         if (knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper() &&
                 representation.useServerLoginCredentials) {
             enableInputFields(false);

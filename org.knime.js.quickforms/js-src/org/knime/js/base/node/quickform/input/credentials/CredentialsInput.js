@@ -123,10 +123,6 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
         }
         viewValid = true;
         
-        if (representation.currentValue.disableServerCredentials) {
-            displayServerCredentialsErrorMessage();
-        }
-        
         if (knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper() &&
                 representation.useServerLoginCredentials) {
             enableInputFields(false);
