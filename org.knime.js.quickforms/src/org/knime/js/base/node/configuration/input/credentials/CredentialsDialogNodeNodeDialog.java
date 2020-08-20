@@ -155,7 +155,7 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         defaultValue.setUsername(m_usernameField.getText());
         defaultValue.setPassword(new String(m_passwordField.getPassword()));
         defaultValue.setSavePassword(m_savePasswordChecker.isSelected());
-        defaultValue.setNoDisplay(m_noDisplayChecker.isSelected());
+        defaultValue.setUseServerCredentials(m_useServerLoginChecker.isSelected());
 
         m_config.saveSettings(settings);
     }

@@ -71,11 +71,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class CredentialsDialogNodeValue extends CredentialsNodeValue implements DialogNodeValue {
 
-    private boolean m_noDisplay;
+    private static final String USE_SERVER_CREDENTIALS = "useServerLoginCredentials";
+
+    private boolean m_useServerCredentials;
 
 
-    public void setNoDisplay(final boolean noDisplay) {
-        m_noDisplay = noDisplay;
+    /**
+     * Sets if the server credentials used be used.
+     *
+     * @param serverCredentials <code>true</code> if the server credentials should be used, <code>false</code> otherwise
+     */
+    public void setUseServerCredentials(final boolean serverCredentials) {
+        m_useServerCredentials = serverCredentials;
     }
 
     /**
@@ -84,7 +91,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
     @Override
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         super.saveToNodeSettings(settings);
-        settings.addBoolean("noDisplay", m_noDisplay);
+        settings.addBoolean(USE_SERVER_CREDENTIALS, m_useServerCredentials);
     }
 
     /**
@@ -101,7 +108,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
             setPassword(settings.getTransientString(CFG_PASSWORD));
         }
 
-        m_noDisplay = settings.getBoolean("noDisplay", false);
+        m_useServerCredentials = settings.getBoolean(USE_SERVER_CREDENTIALS, false);
     }
 
     /**
@@ -111,7 +118,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadFromNodeSettings(settings);
 
-        m_noDisplay = settings.getBoolean("noDisplay", false);
+        m_useServerCredentials = settings.getBoolean(USE_SERVER_CREDENTIALS, false);
     }
 
     /** {@inheritDoc} */
@@ -159,15 +166,13 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
      */
     @Override
     public JsonValue toJson() {
-        if(m_noDisplay) {
-            return Json.createObjectBuilder().build();
-        }
-
         final JsonObjectBuilder builder = Json.createObjectBuilder();
         final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
         builder.add("type", "object");
         subBuilder.add("type", "string");
-        if (getUsername() == null) {
+        if (m_useServerCredentials) {
+            subBuilder.add("default", "<logged.in.user>");
+        } else if (getUsername() == null) {
             subBuilder.addNull("default");
         } else {
             subBuilder.add("default", getUsername());
@@ -175,7 +180,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
         builder.add(CFG_USERNAME, subBuilder.build());
         subBuilder.add("type", "string");
 
-        if (StringUtils.isEmpty(getPassword()) || !isSavePassword()) {
+        if (!m_useServerCredentials && (StringUtils.isEmpty(getPassword()) || !isSavePassword())) {
             subBuilder.addNull("default");
         } else {
             subBuilder.add("default", CoreConstants.MAGIC_DEFAULT_PASSWORD);
