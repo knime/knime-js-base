@@ -153,8 +153,8 @@ window.knimePieChart = (function () {
                 return d.label;
             }).y(function (d) {
                 return d.value;
-            }).color(function(categorie){
-                return colorScale(categorie.label);
+            }).color(function(category){
+                return colorScale(category.label);
             }).duration(0).showLegend(showLegend).showLabels(showLabels).labelThreshold(
                 labelThreshold).labelType(labelType); // "key", "value" or "percent"
 
@@ -617,7 +617,7 @@ window.knimePieChart = (function () {
             numCat++;
         }
         if (_representation.options.customColors) {
-            colorRange = [];
+            var colorRange = [];
             var possibleValues = [];
             colorRange = _representation.inObjects[0].table.spec.colorModels[0].colors;
             possibleValues = _representation.inObjects[0].table.spec.colorModels[0].labels;
