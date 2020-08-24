@@ -106,6 +106,8 @@ public class FileUploadWidgetNodeModel extends
     WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue,
     FileUploadInputWidgetConfig> {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(FileUploadWidgetNodeModel.class);
+
     private static final String KNIME_PROTOCOL = "knime";
 
     private static final String KNIME_WORKFLOW = "knime.workflow";
@@ -349,32 +351,50 @@ public class FileUploadWidgetNodeModel extends
     }
 
     private InputStream openStream(final URL url) throws IOException, URISyntaxException {
+        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+
         if ("file".equalsIgnoreCase(url.getProtocol())) {
+            LOGGER.debug("A file system path has been provided: " + url);
+
             return Files.newInputStream(Paths.get(url.toURI()));
-        } else {
-            final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+        } else if (KNIME_PROTOCOL.equals(url.getProtocol())) {
+            LOGGER.debug("A KNIME relative path has been provided: " + url);
+
             final URLConnection conn = url.openConnection();
 
-            if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
-                // only pass on the auth token if it's the originating server, we don't want to send it to someone else
-                final URI repoUri = wfContext.getRemoteRepositoryAddress().get();
-                if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
-                    && repoUri.getScheme().equals(url.getProtocol())) {
-                    conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
-                } else {
-                    NodeLogger.getLogger(this.getClass())
-                        .debug("The host and/or port of the provided URL to get the uploaded file "
-                            + "from doesn't match with the actual server URL: " + url + " vs. " + repoUri);
-                }
-            }
-
-            if (conn instanceof HttpsURLConnection) {
-                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-            }
             conn.setConnectTimeout(getConfig().getTimeout());
             conn.setReadTimeout(getConfig().getTimeout());
 
             return conn.getInputStream();
+        } else if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
+            LOGGER.debug("A server upload has been detected. An attempt will be made"
+                + " to connect. The provided URL is: " + url);
+
+            final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
+            if (repoUri.getScheme().equals(url.getProtocol())) {
+
+                final URLConnection conn =
+                    new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
+                conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
+
+                if (conn instanceof HttpsURLConnection) {
+                    ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+                }
+                conn.setConnectTimeout(getConfig().getTimeout());
+                conn.setReadTimeout(getConfig().getTimeout());
+
+                return conn.getInputStream();
+
+            } else {
+                final String unknownProtocolMsg = "The protocol of the provided URL to the uploaded file "
+                    + "doesn't match with the actual server URL: " + url + " vs. " + repoUri;
+                LOGGER.debug(unknownProtocolMsg);
+                throw new URISyntaxException(url.toString(), unknownProtocolMsg);
+            }
+        } else {
+            final String unknownURLMsg = "The URL provided could not be recognized: " + url;
+            LOGGER.debug(unknownURLMsg);
+            throw new URISyntaxException(url.toString(), unknownURLMsg);
         }
     }
 
