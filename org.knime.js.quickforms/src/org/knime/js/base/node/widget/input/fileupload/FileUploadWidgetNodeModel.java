@@ -70,8 +70,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -196,6 +196,9 @@ public class FileUploadWidgetNodeModel extends
             pushFlowVariableString(varIdentifier, fileValues.get(0));
         }
         pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
+        if (StringUtils.isNoneEmpty(getRelevantValue().getFileName())) {
+            pushFlowVariableString(varIdentifier + " (file name)", getRelevantValue().getFileName());
+        }
     }
 
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
@@ -417,8 +420,10 @@ public class FileUploadWidgetNodeModel extends
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setPath(getViewValue().getPath());
-        getConfig().getDefaultValue().setPathValid(getViewValue().getPathValid());
+        FileUploadNodeValue defaultValue = getConfig().getDefaultValue();
+        defaultValue.setPath(getViewValue().getPath());
+        defaultValue.setPathValid(getViewValue().isPathValid());
+        defaultValue.setFileName(getViewValue().getFileName());
     }
 
     private static final String INTERNAL_FILE_NAME = "file-id.xml";

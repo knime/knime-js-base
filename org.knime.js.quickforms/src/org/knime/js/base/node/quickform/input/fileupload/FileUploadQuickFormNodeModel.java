@@ -69,7 +69,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -169,6 +169,9 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
             pushFlowVariableString(varIdentifier, fileValues.get(0));
         }
         pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
+        if (StringUtils.isNoneEmpty(getRelevantValue().getFileName())) {
+            pushFlowVariableString(varIdentifier + " (file name)", getRelevantValue().getFileName());
+        }
     }
 
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {

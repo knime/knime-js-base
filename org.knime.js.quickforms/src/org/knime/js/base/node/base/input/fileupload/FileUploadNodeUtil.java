@@ -58,8 +58,12 @@ import javax.swing.JTextField;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadNodeUtil {
+public final class FileUploadNodeUtil {
+
+    private FileUploadNodeUtil() { /* utility class */ }
+
     /**
+     * @param m_validExtensionsField the text field with valid extension string
      * @return String[] file types
      */
     public static String[] getFileTypes(final JTextField m_validExtensionsField) {
@@ -88,5 +92,21 @@ public class FileUploadNodeUtil {
             filteredFileTypes.add(0, String.join("|", filteredFileTypes));
         }
         return filteredFileTypes.toArray(new String[filteredFileTypes.size()]);
+    }
+
+    /**
+     * Tries to determine the file name of an arbitrary path
+     * @param path The path including the file name as last component, can be file system path or a url string
+     * @return the file name or the path itself if the file name can not be deduced from it
+     */
+    public static String getFileNameFromPath(final String path) {
+        int index = path.lastIndexOf('/');
+        if (index < 0) {
+            index = path.lastIndexOf('\\');
+        }
+        if (index + 1 >= path.length()) {
+            index = -1;
+        }
+        return index < 0 ? path : path.substring(index + 1);
     }
 }

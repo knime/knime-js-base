@@ -50,6 +50,7 @@ package org.knime.js.base.node.configuration.input.fileupload;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.util.FilesHistoryPanel;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
 import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel;
 
 /**
@@ -93,8 +94,9 @@ public class FileConfigurationPanel extends AbstractDialogNodeConfigurationPanel
     @Override
     public FileUploadDialogNodeValue createNodeValue() throws InvalidSettingsException {
         FileUploadDialogNodeValue value = new FileUploadDialogNodeValue();
-        String sel = m_historyPanel.getSelectedFile();
-        value.setPath(sel);
+        String selectedFile = m_historyPanel.getSelectedFile();
+        value.setPath(selectedFile);
+        value.setFileName(FileUploadNodeUtil.getFileNameFromPath(selectedFile));
         m_historyPanel.addToHistory();
         return value;
     }
