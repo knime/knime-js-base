@@ -168,7 +168,6 @@ public class FileDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<F
         m_fileHistoryPanel.setSelectedFile(m_config.getDefaultValue().getPath());
         m_fileHistoryPanel.setSuffixes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         m_timeoutSpinner.setValue((double) m_config.getTimeout() / 1000);
-        // m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
     /**
@@ -180,8 +179,9 @@ public class FileDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<F
         FileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         fileUploadConfig.setFileTypes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         fileUploadConfig.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
-        // fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
-        m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
+        String selectedFile = m_fileHistoryPanel.getSelectedFile();
+        m_config.getDefaultValue().setPath(selectedFile);
+        m_config.getDefaultValue().setFileName(FileUploadNodeUtil.getFileNameFromPath(selectedFile));
         m_config.saveSettings(settings);
     }
 

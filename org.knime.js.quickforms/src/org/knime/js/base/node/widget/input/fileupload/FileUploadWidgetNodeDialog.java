@@ -152,7 +152,6 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
             throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
-        FileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         String[] fileExtensions = m_config.getFileTypes();
         String text;
         if (fileExtensions == null || fileExtensions.length == 0) {
@@ -190,7 +189,9 @@ public class FileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Fil
         fileUploadConfig.setFileTypes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         fileUploadConfig.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
         fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
-        m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
+        String selectedFile = m_fileHistoryPanel.getSelectedFile();
+        m_config.getDefaultValue().setPath(selectedFile);
+        m_config.getDefaultValue().setFileName(FileUploadNodeUtil.getFileNameFromPath(selectedFile));
         m_config.setStoreInWfDir(m_storeInWfDirBox.isSelected());
         m_config.saveSettings(settings);
     }

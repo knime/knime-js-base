@@ -155,13 +155,26 @@ public class FileUploadQuickFormNodeDialog extends QuickFormNodeDialog {
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
     }
 
+    private static String getFileNameFromPath(final String path) {
+        int index = path.lastIndexOf('/');
+        if (index < 0) {
+            index = path.lastIndexOf('\\');
+        }
+        if (index + 1 >= path.length()) {
+            index = -1;
+        }
+        return index < 0 ? path : path.substring(index + 1);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
-        m_config.getDefaultValue().setPath(m_fileHistoryPanel.getSelectedFile());
+        String selectedFile = m_fileHistoryPanel.getSelectedFile();
+        m_config.getDefaultValue().setPath(selectedFile);
+        m_config.getDefaultValue().setFileName(getFileNameFromPath(selectedFile));
         m_config.setFileTypes(getFileTypes());
         m_config.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
         m_config.setDisableOutput(m_disableOutputBox.isSelected());
