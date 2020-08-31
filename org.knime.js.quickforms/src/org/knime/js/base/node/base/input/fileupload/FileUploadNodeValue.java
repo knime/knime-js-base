@@ -77,6 +77,10 @@ public class FileUploadNodeValue extends JSONViewContent {
     protected static final boolean DEFAULT_PATH_VALID = true;
     protected boolean m_pathValid = DEFAULT_PATH_VALID;
 
+    protected static final String CFG_FILE_NAME = "fileName";
+    protected static final String DEFAULT_FILE_NAME = "";
+    protected String m_fileName = DEFAULT_FILE_NAME;
+
     /**
      * @return the path
      */
@@ -97,7 +101,7 @@ public class FileUploadNodeValue extends JSONViewContent {
      * @return the pathValid
      */
     @JsonProperty("pathValid")
-    public boolean getPathValid() {
+    public boolean isPathValid() {
         return m_pathValid;
     }
 
@@ -110,6 +114,22 @@ public class FileUploadNodeValue extends JSONViewContent {
     }
 
     /**
+     * @return the fileName
+     */
+    @JsonProperty("fileName")
+    public String getFileName() {
+        return m_fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    @JsonProperty("fileName")
+    public void setFileName(final String fileName) {
+        m_fileName = fileName;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -117,6 +137,7 @@ public class FileUploadNodeValue extends JSONViewContent {
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_PATH, getPath());
         settings.addBoolean(CFG_PATH_VALID, m_pathValid);
+        settings.addString(CFG_FILE_NAME, m_fileName);
     }
 
     /**
@@ -127,8 +148,11 @@ public class FileUploadNodeValue extends JSONViewContent {
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         setPath(settings.getString(CFG_PATH));
 
-        //added with 3.2
+        // added with 3.2
         setPathValid(settings.getBoolean(CFG_PATH_VALID, DEFAULT_PATH_VALID));
+
+        // added with 4.2.2
+        setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
     }
 
     /**
@@ -137,7 +161,9 @@ public class FileUploadNodeValue extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("path=");
+        sb.append("name=");
+        sb.append(m_fileName);
+        sb.append(", path=");
         sb.append(m_path);
         return sb.toString();
     }
@@ -150,6 +176,7 @@ public class FileUploadNodeValue extends JSONViewContent {
         return new HashCodeBuilder()
                 .append(m_path)
                 .append(m_pathValid)
+                .append(m_fileName)
                 .toHashCode();
     }
 
@@ -171,6 +198,7 @@ public class FileUploadNodeValue extends JSONViewContent {
         return new EqualsBuilder()
                 .append(m_path, other.m_path)
                 .append(m_pathValid, other.m_pathValid)
+                .append(m_fileName, other.m_fileName)
                 .isEquals();
     }
 }
