@@ -134,6 +134,7 @@ window.org_knime_js_base_node_quickform_input_fileupload = (function () { // esl
                 var path = this.getResponseHeader('location');
                 if (this.status === HTTP_CREATED && path) {
                     _value.path = path;
+                    _value.fileName = fileToUpload.name;
                     fileUpload.setValidationErrorMessage(null);
                     sizeLabel.innerHTML = formatSize(fileToUpload.size);
                     sizeLabel.setAttribute('class', '');
@@ -157,6 +158,9 @@ window.org_knime_js_base_node_quickform_input_fileupload = (function () { // esl
                 xhr.send(evt.target.result);
             };
             reader.readAsBinaryString(fileToUpload);
+        } else {
+            input.setAttribute('disabled', 'disabled');
+            fileUpload.setValidationErrorMessage('Upload not possible. Could not generate upload link.');
         }
     };
 
@@ -217,24 +221,36 @@ window.org_knime_js_base_node_quickform_input_fileupload = (function () { // esl
                 if (representation.fileTypes && representation.fileTypes.length > 0) {
                     input.setAttribute('accept', representation.fileTypes.join(','));
                 }
-                if (value.path) {
+                if (_value.path) {
                     input.setAttribute('title', value.path);
                 }
                 div.appendChild(input);
                 sizeLabel = document.createElement('label');
                 sizeLabel.style.marginLeft = '10px';
                 sizeLabel.style.paddingBottom = '2px';
+                var labelText = '';
                 if (_value.path) {
-                    sizeLabel.appendChild(document.createTextNode('Default file: ' + getFileFromPath(_value.path)));
-                    sizeLabel.setAttribute('title', _value.path);
+                    if (_value.path === _representation.defaultValue.path) {
+                        labelText += 'Default file: ';
+                    } else {
+                        labelText += 'Current file: ';
+                    }
+                    if (_value.fileName) {
+                        labelText += _value.fileName;
+                        sizeLabel.setAttribute('title', _value.fileName);
+                    } else {
+                        var fileName = getFileFromPath(viewValue.path);
+                        labelText += fileName;
+                        sizeLabel.setAttribute('title', fileName);
+                    }
                 } else {
-                    sizeLabel.appendChild(document.createTextNode('*'));
+                    labelText = '*';
                     sizeLabel.setAttribute('title', 'File upload required');
                     sizeLabel.setAttribute('class', 'knime-qf-error');
                 }
+                sizeLabel.appendChild(document.createTextNode(labelText));
                 div.appendChild(sizeLabel);
-                
-                
+                                
                 // Progress bar
                 progressContainer = document.createElement('div');
                 progressContainer.setAttribute('class', 'progressBar');
