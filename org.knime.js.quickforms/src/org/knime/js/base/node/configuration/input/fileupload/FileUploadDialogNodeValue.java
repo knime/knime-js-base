@@ -76,6 +76,7 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements Di
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setPath(settings.getString(CFG_PATH, DEFAULT_PATH));
         setPathValid(settings.getBoolean(CFG_PATH, DEFAULT_PATH_VALID));
+        setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
     }
 
     /**
@@ -95,11 +96,17 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements Di
             m_path = ((JsonString) json).getString();
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_PATH);
-                if (JsonValue.NULL.equals(val)) {
+                JsonValue jsonPath = ((JsonObject)json).get(CFG_PATH);
+                if (JsonValue.NULL.equals(jsonPath)) {
                     m_path = null;
                 } else {
                     m_path = ((JsonObject) json).getString(CFG_PATH);
+                }
+                JsonValue jsonFileName = ((JsonObject)json).get(CFG_FILE_NAME);
+                if (JsonValue.NULL.equals(jsonFileName)) {
+                    m_fileName = DEFAULT_FILE_NAME;
+                } else {
+                    m_fileName = ((JsonObject)json).getString(CFG_FILE_NAME);
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected path value for key '" + CFG_PATH + "'.", e);
@@ -121,6 +128,11 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements Di
             builder.addNull("default");
         } else {
             builder.add("default", m_path);
+        }
+        if (m_fileName == null) {
+            builder.addNull(CFG_FILE_NAME);
+        } else {
+            builder.add(CFG_FILE_NAME, m_fileName);
         }
         return builder.build();
     }

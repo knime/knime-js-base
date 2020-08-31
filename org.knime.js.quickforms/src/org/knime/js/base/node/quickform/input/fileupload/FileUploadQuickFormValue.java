@@ -84,6 +84,10 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     private static final boolean DEFAULT_PATH_VALID = true;
     private boolean m_pathValid = DEFAULT_PATH_VALID;
 
+    private static final String CFG_FILE_NAME = "fileName";
+    private static final String DEFAULT_FILE_NAME = "";
+    private String m_fileName = DEFAULT_FILE_NAME;
+
     /**
      * @return the path
      */
@@ -104,7 +108,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
      * @return the pathValid
      */
     @JsonProperty("pathValid")
-    public boolean getPathValid() {
+    public boolean isPathValid() {
         return m_pathValid;
     }
 
@@ -117,6 +121,22 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     }
 
     /**
+     * @return the fileName
+     */
+    @JsonProperty("fileName")
+    public String getFileName() {
+        return m_fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    @JsonProperty("fileName")
+    public void setFileName(final String fileName) {
+        m_fileName = fileName;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -124,6 +144,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_PATH, getPath());
         settings.addBoolean(CFG_PATH_VALID, m_pathValid);
+        settings.addString(CFG_FILE_NAME, m_fileName);
     }
 
     /**
@@ -136,6 +157,9 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
 
         //added with 3.2
         setPathValid(settings.getBoolean(CFG_PATH_VALID, DEFAULT_PATH_VALID));
+
+        // added with 4.2.2
+        setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
     }
 
     /**
@@ -146,6 +170,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         setPath(settings.getString(CFG_PATH, DEFAULT_PATH));
         setPathValid(settings.getBoolean(CFG_PATH, DEFAULT_PATH_VALID));
+        setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
     }
 
     /**
@@ -154,7 +179,9 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("path=");
+        sb.append("name=");
+        sb.append(m_fileName);
+        sb.append(", path=");
         sb.append(m_path);
         return sb.toString();
     }
@@ -167,6 +194,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
         return new HashCodeBuilder()
                 .append(m_path)
                 .append(m_pathValid)
+                .append(m_fileName)
                 .toHashCode();
     }
 
@@ -188,6 +216,7 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
         return new EqualsBuilder()
                 .append(m_path, other.m_path)
                 .append(m_pathValid, other.m_pathValid)
+                .append(m_fileName, other.m_fileName)
                 .isEquals();
     }
 
@@ -208,11 +237,17 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
             m_path = ((JsonString) json).getString();
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_PATH);
-                if (JsonValue.NULL.equals(val)) {
+                JsonValue jsonPath = ((JsonObject)json).get(CFG_PATH);
+                if (JsonValue.NULL.equals(jsonPath)) {
                     m_path = null;
                 } else {
                     m_path = ((JsonObject) json).getString(CFG_PATH);
+                }
+                JsonValue jsonFileName = ((JsonObject)json).get(CFG_FILE_NAME);
+                if (JsonValue.NULL.equals(jsonFileName)) {
+                    m_fileName = DEFAULT_FILE_NAME;
+                } else {
+                    m_fileName = ((JsonObject)json).getString(CFG_FILE_NAME);
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected path value for key '" + CFG_PATH + "'.", e);
@@ -232,6 +267,11 @@ public class FileUploadQuickFormValue extends JSONViewContent implements DialogN
             builder.addNull(CFG_PATH);
         } else {
             builder.add(CFG_PATH, m_path);
+        }
+        if (m_fileName == null) {
+            builder.addNull(CFG_FILE_NAME);
+        } else {
+            builder.add(CFG_FILE_NAME, m_fileName);
         }
         return builder.build();
     }
