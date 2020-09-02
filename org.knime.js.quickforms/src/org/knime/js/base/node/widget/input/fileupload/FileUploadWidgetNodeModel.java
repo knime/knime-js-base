@@ -107,9 +107,7 @@ public class FileUploadWidgetNodeModel extends
     FileUploadInputWidgetConfig> {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(FileUploadWidgetNodeModel.class);
-
     private static final String KNIME_PROTOCOL = "knime";
-
     private static final String KNIME_WORKFLOW = "knime.workflow";
 
     private String m_id;
@@ -264,7 +262,7 @@ public class FileUploadWidgetNodeModel extends
             vector.add(url.toString());
         } catch (URISyntaxException ex) {
             // shouldn't happen
-            NodeLogger.getLogger(getClass()).debug("Invalid file URI encountered: " + ex.getMessage());
+            LOGGER.debug("Invalid file URI encountered: " + ex.getMessage());
         } catch (IOException ex) {
             throw new InvalidSettingsException(
                 "Could not download uploaded file to local temp directory: " + ex.getMessage(), ex);
@@ -357,9 +355,15 @@ public class FileUploadWidgetNodeModel extends
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
 
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            LOGGER.debug("A file system path has been provided: " + url);
-
-            return Files.newInputStream(Paths.get(url.toURI()));
+            // a file system path should only be provided when a default file is used, otherwise access should be
+            // blocked due to security reasons
+            String defaultPath = getRepresentation().getDefaultValue().getPath();
+            if (defaultPath != null && defaultPath.equals(getRelevantValue().getPath())) {
+                LOGGER.debug("A file system path has been provided: " + url);
+                return Files.newInputStream(Paths.get(url.toURI()));
+            } else {
+                throw new IllegalArgumentException("A file system path has been provided, but access was denied");
+            }
         } else if (KNIME_PROTOCOL.equals(url.getProtocol())) {
             LOGGER.debug("A KNIME relative path has been provided: " + url);
 
