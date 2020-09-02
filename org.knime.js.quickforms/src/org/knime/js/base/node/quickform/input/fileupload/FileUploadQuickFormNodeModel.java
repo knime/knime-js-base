@@ -94,6 +94,9 @@ import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel<FileUploadQuickFormRepresentation,
         FileUploadQuickFormValue, FileUploadQuickFormConfig> {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(FileUploadQuickFormNodeModel.class);
+    private static final String KNIME_PROTOCOL = "knime";
+
     /**
      * @param viewName
      */
@@ -249,30 +252,57 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     }
 
 
-    private InputStream openStream(final URL url)
-        throws IOException, URISyntaxException {
+    private InputStream openStream(final URL url) throws IOException, URISyntaxException {
+        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            return Files.newInputStream(Paths.get(url.toURI()));
-        } else {
-            WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-            URLConnection conn = url.openConnection();
-
-            if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
-                // only pass on the auth token if it's the originating server, we don't want to send it to someone else
-                URI repoUri = wfContext.getRemoteRepositoryAddress().get();
-                if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
-                        && repoUri.getScheme().equals(url.getProtocol())) {
-                    conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
-                }
+            // a file system path should only be provided when a default file is used, otherwise access should be
+            // blocked due to security reasons
+            String defaultPath = getRepresentation().getDefaultValue().getPath();
+            if (defaultPath != null && defaultPath.equals(getRelevantValue().getPath())) {
+                LOGGER.debug("A file system path has been provided: " + url);
+                return Files.newInputStream(Paths.get(url.toURI()));
+            } else {
+                throw new IllegalArgumentException("A file system path has been provided, but access was denied");
             }
+        } else if (KNIME_PROTOCOL.equals(url.getProtocol())) {
+            LOGGER.debug("A KNIME relative path has been provided: " + url);
 
-            if (conn instanceof HttpsURLConnection) {
-                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-            }
+            final URLConnection conn = url.openConnection();
+
             conn.setConnectTimeout(getConfig().getTimeout());
             conn.setReadTimeout(getConfig().getTimeout());
 
             return conn.getInputStream();
+        } else if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
+            LOGGER.debug("A server upload has been detected. An attempt will be made"
+                + " to connect. The provided URL is: " + url);
+
+            final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
+            if (repoUri.getScheme().equals(url.getProtocol())) {
+
+                final URLConnection conn =
+                    new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
+                conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
+
+                if (conn instanceof HttpsURLConnection) {
+                    ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+                }
+                conn.setConnectTimeout(getConfig().getTimeout());
+                conn.setReadTimeout(getConfig().getTimeout());
+
+                return conn.getInputStream();
+
+            } else {
+                final String unknownProtocolMsg = "The protocol of the provided URL to the uploaded file "
+                    + "doesn't match with the actual server URL: " + url + " vs. " + repoUri;
+                LOGGER.debug(unknownProtocolMsg);
+                throw new URISyntaxException(url.toString(), unknownProtocolMsg);
+            }
+        } else {
+            final String unknownURLMsg = "The URL provided could not be recognized: " + url;
+            LOGGER.debug(unknownURLMsg);
+            throw new URISyntaxException(url.toString(), unknownURLMsg);
         }
     }
 
