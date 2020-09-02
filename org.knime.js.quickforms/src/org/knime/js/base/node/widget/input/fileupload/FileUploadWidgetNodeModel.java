@@ -203,13 +203,26 @@ public class FileUploadWidgetNodeModel extends
 
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
+        getRelevantValue().setLocalUpload(false);
         if (path == null || path.isEmpty()) {
             throw new InvalidSettingsException("No file or URL provided");
         }
 
         Vector<String> vector = new Vector<String>();
         try {
-            URL url = new URL(path);
+            URL url;
+            if (path.startsWith(DataURL.SCHEME)) {
+                // local uploads utilize data protocol URLs, which need to be further processed
+                DataURL dataUrl = new DataURL(path);
+                String fileName = getRelevantValue().getFileName();
+                File tempFile = writeTempFileFromDataUrl(dataUrl, fileName);
+                path = tempFile.getAbsolutePath();
+                getRelevantValue().setPath(path);
+                getRelevantValue().setLocalUpload(true);
+                url = tempFile.toURI().toURL();
+            } else {
+                url = new URL(path);
+            }
             if (!getConfig().isStoreInWfDir() && "file".equalsIgnoreCase(url.getProtocol())) {
                 Path p = Paths.get(url.toURI());
                 if (!Files.exists(p)) {
@@ -270,16 +283,33 @@ public class FileUploadWidgetNodeModel extends
         return vector;
     }
 
+    private static File writeTempFileFromDataUrl(final DataURL dataUrl, final String fileName)
+            throws IOException, InvalidSettingsException {
+        final String basename = FilenameUtils.getBaseName(fileName);
+        final String extension = FilenameUtils.getExtension(fileName);
+        File tempFile = getTempFile(basename, extension);
+        try {
+            Files.write(tempFile.toPath(), dataUrl.getDecodedData());
+        } catch (IllegalArgumentException | IOException ex) {
+            throw new InvalidSettingsException("Could not write to temporary file " + tempFile, ex);
+        }
+        return tempFile;
+    }
+
+    private static File getTempFile(final String basename, final String extension) throws IOException {
+        return FileUtil.createTempFile((basename.length() < 3) ? ("prefix" + basename) : basename,
+            "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
+    }
+
     private File copyFileToTempLocation(final String path, final URL url) throws IOException, InvalidSettingsException {
-        final String extension = FilenameUtils.getExtension(path);
         final String basename = FilenameUtils.getBaseName(path);
+        final String extension = FilenameUtils.getExtension(path);
         File tempFile;
         if (getConfig().isStoreInWfDir()) {
             tempFile = computeFileName(m_id);
             tempFile.getParentFile().mkdir();
         } else {
-            tempFile = FileUtil.createTempFile((basename.length() < 3) ? "prefix" + basename : basename,
-                "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
+            tempFile = getTempFile(basename, extension);
         }
 
         try (InputStream is = openStream(url); OutputStream os = Files.newOutputStream(tempFile.toPath())) {
@@ -355,10 +385,11 @@ public class FileUploadWidgetNodeModel extends
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
 
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            // a file system path should only be provided when a default file is used, otherwise access should be
-            // blocked due to security reasons
+            // a file system path should only be provided when a default file is used or a file was uploaded from a
+            // local view instance, otherwise access should be blocked due to security reasons
             String defaultPath = getRepresentation().getDefaultValue().getPath();
-            if (defaultPath != null && defaultPath.equals(getRelevantValue().getPath())) {
+            FileUploadNodeValue currentValue = getRelevantValue();
+            if (currentValue.isLocalUpload() || (defaultPath != null && defaultPath.equals(currentValue.getPath()))) {
                 LOGGER.debug("A file system path has been provided: " + url);
                 return Files.newInputStream(Paths.get(url.toURI()));
             } else {
@@ -429,7 +460,7 @@ public class FileUploadWidgetNodeModel extends
     @Override
     protected FileUploadNodeRepresentation<FileUploadNodeValue> getRepresentation() {
         FileUploadInputWidgetConfig config = getConfig();
-        return new FileUploadNodeRepresentation<FileUploadNodeValue>(getRelevantValue(), config.getDefaultValue(),
+        return new FileUploadNodeRepresentation<>(getRelevantValue(), config.getDefaultValue(),
             config.getFileUploadConfig(), config.getLabelConfig());
     }
 

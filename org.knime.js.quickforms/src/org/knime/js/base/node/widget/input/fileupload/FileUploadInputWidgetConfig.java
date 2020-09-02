@@ -55,7 +55,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeConfig;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
-import org.knime.js.base.node.configuration.input.fileupload.FileUploadDialogNodeValue;
 import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 
 /**
@@ -134,8 +133,8 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
      * {@inheritDoc}
      */
     @Override
-    protected FileUploadDialogNodeValue createEmptyValue() {
-        return new FileUploadDialogNodeValue();
+    protected FileUploadNodeValue createEmptyValue() {
+        return new FileUploadNodeValue();
     }
 
     /**

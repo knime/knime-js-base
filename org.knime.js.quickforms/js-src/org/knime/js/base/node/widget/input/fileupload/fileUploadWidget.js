@@ -93,6 +93,15 @@ window.knimeFileUploadWidget = (function () {
         return index < 0 ? path : path.substring(index + 1);
     };
     
+    var uploadFinished = function (filePath, fileBlob) {
+        viewValue.path = filePath;
+        viewValue.fileName = fileBlob.name;
+        fileUpload.setValidationErrorMessage(null);
+        sizeLabel.innerHTML = formatSize(fileBlob.size);
+        sizeLabel.setAttribute('class', '');
+        sizeLabel.setAttribute('title', '');
+    };
+    
     var uploadFile = function () {
         fileUpload.setValidationErrorMessage(null);
         viewValue.path = null;
@@ -102,6 +111,18 @@ window.knimeFileUploadWidget = (function () {
         
         var fileToUpload = this.files[0];
         if (!fileToUpload) {
+            return;
+        }
+        if (knimeService.isRunningInAPWrapper()) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                uploadFinished(evt.target.result, fileToUpload);
+                viewValid = true;
+                toggleProgress(false);
+            };
+            viewValid = false;
+            toggleProgress(true);
+            reader.readAsDataURL(fileToUpload);
             return;
         }
         var uploadUrl;
@@ -133,12 +154,7 @@ window.knimeFileUploadWidget = (function () {
             xhr.onloadend = function () {
                 var path = this.getResponseHeader('location');
                 if (this.status === HTTP_CREATED && path) {
-                    viewValue.path = path;
-                    viewValue.fileName = fileToUpload.name;
-                    fileUpload.setValidationErrorMessage(null);
-                    sizeLabel.innerHTML = formatSize(fileToUpload.size);
-                    sizeLabel.setAttribute('class', '');
-                    sizeLabel.setAttribute('title', '');
+                    uploadFinished(path, fileToUpload);
                 } else {
                     viewValue.path = null;
                     fileUpload.setValidationErrorMessage('Upload failed.');
@@ -173,7 +189,7 @@ window.knimeFileUploadWidget = (function () {
         
         var messageNotFound = 'File upload not available. Native component not found.';
         var messageNotStandalone = 'File upload only available on server.';
-        var displayElement = knimeService.pageBuilderPresent && !knimeService.isRunningInAPWrapper();
+        var displayElement = knimeService.pageBuilderPresent;
         var insertNative = !knimeService.pageBuilderPresent && knimeService.isRunningInWebportal();
         
         if (insertNative) {

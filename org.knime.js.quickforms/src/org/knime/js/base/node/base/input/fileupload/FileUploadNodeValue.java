@@ -81,6 +81,10 @@ public class FileUploadNodeValue extends JSONViewContent {
     protected static final String DEFAULT_FILE_NAME = "";
     protected String m_fileName = DEFAULT_FILE_NAME;
 
+    private static final String CFG_LOCAL_UPLOAD = "localUpload";
+    private static final boolean DEFAULT_LOCAL_UPLOAD = false;
+    private boolean m_localUpload = DEFAULT_LOCAL_UPLOAD;
+
     /**
      * @return the path
      */
@@ -130,6 +134,22 @@ public class FileUploadNodeValue extends JSONViewContent {
     }
 
     /**
+     * @return the localUpload
+     */
+    @JsonIgnore
+    public boolean isLocalUpload() {
+        return m_localUpload;
+    }
+
+    /**
+     * @param localUpload the localUpload to set
+     */
+    @JsonIgnore
+    public void setLocalUpload(final boolean localUpload) {
+        m_localUpload = localUpload;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -138,6 +158,7 @@ public class FileUploadNodeValue extends JSONViewContent {
         settings.addString(CFG_PATH, getPath());
         settings.addBoolean(CFG_PATH_VALID, m_pathValid);
         settings.addString(CFG_FILE_NAME, m_fileName);
+        settings.addBoolean(CFG_LOCAL_UPLOAD, m_localUpload);
     }
 
     /**
@@ -153,6 +174,7 @@ public class FileUploadNodeValue extends JSONViewContent {
 
         // added with 4.2.2
         setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
+        setLocalUpload(settings.getBoolean(CFG_LOCAL_UPLOAD));
     }
 
     /**
@@ -177,6 +199,7 @@ public class FileUploadNodeValue extends JSONViewContent {
                 .append(m_path)
                 .append(m_pathValid)
                 .append(m_fileName)
+                .append(m_localUpload)
                 .toHashCode();
     }
 
@@ -199,6 +222,7 @@ public class FileUploadNodeValue extends JSONViewContent {
                 .append(m_path, other.m_path)
                 .append(m_pathValid, other.m_pathValid)
                 .append(m_fileName, other.m_fileName)
+                .append(m_localUpload, other.m_localUpload)
                 .isEquals();
     }
 }
