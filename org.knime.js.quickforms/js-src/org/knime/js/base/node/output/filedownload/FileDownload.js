@@ -77,13 +77,17 @@ window.org_knime_js_base_node_output_filedownload = (function () { // eslint-dis
             div.setAttribute('aria-label', representation.label);
             div.setAttribute('tabindex', 0);
             link = document.createElement('a');
-            try {
-                href = parent.KnimePageBuilderAPI.getDownloadLink({
-                    resourceId: representation.resourceName,
-                    nodeId: knimeService.nodeId
-                });
-            } catch (e) {
-                href = null;
+            if (knimeService.isRunningInAPWrapper()) {
+                href = 'file://' + representation.path;
+            } else {
+                try {
+                    href = parent.KnimePageBuilderAPI.getDownloadLink({
+                        resourceId: representation.resourceName,
+                        nodeId: knimeService.nodeId
+                    });
+                } catch (e) {
+                    href = null;
+                }
             }
             if (href) {
                 link.setAttribute('href', href);
