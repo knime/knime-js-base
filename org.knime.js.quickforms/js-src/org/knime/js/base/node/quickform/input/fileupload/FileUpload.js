@@ -239,7 +239,7 @@ window.org_knime_js_base_node_quickform_input_fileupload = (function () { // esl
                         labelText += _value.fileName;
                         sizeLabel.setAttribute('title', _value.fileName);
                     } else {
-                        var fileName = getFileFromPath(viewValue.path);
+                        var fileName = getFileFromPath(_value.path);
                         labelText += fileName;
                         sizeLabel.setAttribute('title', fileName);
                     }
