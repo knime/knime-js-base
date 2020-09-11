@@ -794,7 +794,7 @@ window.heatmapNamespace = (function () {
             var label = self._representation.labelColumn
                 ? self._table.getCell(row.rowKey, self._representation.labelColumn)
                 : row.rowKey;
-            rowLabels[row.rowKey] = label;
+            rowLabels.push(label);
 
             // Storing images in an separate array is enough
             if (self._representation.svgLabelColumn) {
