@@ -44,60 +44,64 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 4, 2019 (Daniel Bogenrieder): created
+ *   Sep 17, 2020 (Christian Albrecht, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.widget.output.image;
+package org.knime.js.base.node.widget.output.filedownload;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
 
 /**
-*
-* @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
-*/
-public class ImageOutputWidgetNodeFactory extends NodeFactory<ImageOutputWidgetNodeModel>
-    implements WizardNodeFactoryExtension<ImageOutputWidgetNodeModel, ImageOutputWidgetRepresentation, ImageOutputWidgetValue> {
+ *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ */
+public class FileDownloadWidgetValue extends JSONViewContent {
+
+    //empty value implementation
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ImageOutputWidgetNodeModel createNodeModel() {
-        return new ImageOutputWidgetNodeModel(getInteractiveViewName());
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        // do nothing
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // do nothing
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ImageOutputWidgetNodeModel> createNodeView(final int viewIndex, final ImageOutputWidgetNodeModel nodeModel) {
-        return null;
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        //FileDownloadValue other = (FileDownloadValue)obj;
+        return new EqualsBuilder().isEquals();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
+    public int hashCode() {
+        return new HashCodeBuilder().toHashCode();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ImageOutputWidgetDialog();
-    }
-
 }

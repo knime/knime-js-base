@@ -52,24 +52,20 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.output.filedownload.FileDownloadNodeDialog;
-import org.knime.js.base.node.output.filedownload.FileDownloadNodeModel;
-import org.knime.js.base.node.output.filedownload.FileDownloadRepresentation;
-import org.knime.js.base.node.output.filedownload.FileDownloadValue;
 
 /**
 *
-* @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
+* @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
 */
-public class FileDownloadWidgetNodeFactory extends NodeFactory<FileDownloadNodeModel>
-    implements WizardNodeFactoryExtension<FileDownloadNodeModel, FileDownloadRepresentation, FileDownloadValue> {
+public class FileDownloadWidgetNodeFactory extends NodeFactory<FileDownloadWidgetNodeModel>
+    implements WizardNodeFactoryExtension<FileDownloadWidgetNodeModel, FileDownloadWidgetRepresentation, FileDownloadWidgetValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FileDownloadNodeModel createNodeModel() {
-        return new FileDownloadNodeModel(getInteractiveViewName());
+    public FileDownloadWidgetNodeModel createNodeModel() {
+        return new FileDownloadWidgetNodeModel(getInteractiveViewName());
     }
 
     /**
@@ -84,7 +80,7 @@ public class FileDownloadWidgetNodeFactory extends NodeFactory<FileDownloadNodeM
      * {@inheritDoc}
      */
     @Override
-    public NodeView<FileDownloadNodeModel> createNodeView(final int viewIndex, final FileDownloadNodeModel nodeModel) {
+    public NodeView<FileDownloadWidgetNodeModel> createNodeView(final int viewIndex, final FileDownloadWidgetNodeModel nodeModel) {
         return null;
     }
 
@@ -101,7 +97,7 @@ public class FileDownloadWidgetNodeFactory extends NodeFactory<FileDownloadNodeM
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new FileDownloadNodeDialog();
+        return new FileDownloadWidgetDialog();
     }
 
 }

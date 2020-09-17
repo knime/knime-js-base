@@ -52,24 +52,20 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.output.text.TextOutputNodeDialog;
-import org.knime.js.base.node.output.text.TextOutputNodeModel;
-import org.knime.js.base.node.output.text.TextOutputRepresentation;
-import org.knime.js.base.node.output.text.TextOutputValue;
 
 /**
 *
-* @author Daniel Bogenrieder, KNIME AG, Zurich, Switzerland
+* @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
 */
-public class TextOutputWidgetNodeFactory extends NodeFactory<TextOutputNodeModel>
-    implements WizardNodeFactoryExtension<TextOutputNodeModel, TextOutputRepresentation, TextOutputValue> {
+public class TextOutputWidgetNodeFactory extends NodeFactory<TextOutputWidgetNodeModel>
+    implements WizardNodeFactoryExtension<TextOutputWidgetNodeModel, TextOutputWidgetRepresentation, TextOutputWidgetValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public TextOutputNodeModel createNodeModel() {
-        return new TextOutputNodeModel(getInteractiveViewName());
+    public TextOutputWidgetNodeModel createNodeModel() {
+        return new TextOutputWidgetNodeModel(getInteractiveViewName());
     }
 
     /**
@@ -84,7 +80,7 @@ public class TextOutputWidgetNodeFactory extends NodeFactory<TextOutputNodeModel
      * {@inheritDoc}
      */
     @Override
-    public NodeView<TextOutputNodeModel> createNodeView(final int viewIndex, final TextOutputNodeModel nodeModel) {
+    public NodeView<TextOutputWidgetNodeModel> createNodeView(final int viewIndex, final TextOutputWidgetNodeModel nodeModel) {
         return null;
     }
 
@@ -101,7 +97,7 @@ public class TextOutputWidgetNodeFactory extends NodeFactory<TextOutputNodeModel
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new TextOutputNodeDialog();
+        return new TextOutputWidgetDialog();
     }
 
 }

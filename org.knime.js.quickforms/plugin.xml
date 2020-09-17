@@ -1195,6 +1195,60 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="File Download Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.output.filedownload.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/output/filedownload/fileDownloadWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/output/filedownload/fileDownloadWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/output/filedownload/fileDownloadWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Text Output Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.output.text.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/output/text/textOutputWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/output/text/textOutputWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/output/text/textOutputWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Image Output Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.output.image.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/output/image/imageOutputWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/output/image/imageOutputWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/output/image/imageOutputWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1560,6 +1614,36 @@
             javascriptComponentID="org.knime.js.base.node.widget.input.fileupload"
             name="File Upload Widget"
             namespace="knimeFileUploadWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.output.filedownload.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.output.filedownload"
+            name="File Download Widget"
+            namespace="knimeFileDownloadWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.output.text.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.output.text"
+            name="Text Output Widget"
+            namespace="knimeTextOutputWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.output.image.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.output.image"
+            name="Image Output Widget"
+            namespace="knimeImageOutputWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
