@@ -41,61 +41,113 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
+ *
+ * History
+ *   Sep 18, 2020 (Christian Albrecht, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.widget.filter.definition.rangeslider;
+package org.knime.js.base.node.widget.filter.definition;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.selections.json.RangeSelection;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Factory for the range slider filter appender node.
+ * View value for filter definition nodes.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RangeSliderFilterNodeFactory extends NodeFactory<RangeSliderFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class RangeFilterWidgetValue extends JSONViewContent {
+
+    private static final String CFG_FILTER = "filter";
+    private RangeSelection m_filter;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public RangeSliderFilterWidgetNodeModel createNodeModel() {
-        return new RangeSliderFilterWidgetNodeModel(getInteractiveViewName());
+    @JsonIgnore
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        NodeSettingsWO filterSettings = settings.addNodeSettings(CFG_FILTER);
+        m_filter.saveToNodeSettings(filterSettings);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        NodeSettingsRO filterSettings = settings.getNodeSettings(CFG_FILTER);
+        m_filter = new RangeSelection();
+        m_filter.loadFromNodeSettings(filterSettings);
+    }
+
+    /**
+     * @return the filter
+     */
+    @JsonProperty("filter")
+    public RangeSelection getFilter() {
+        return m_filter;
+    }
+
+    /**
+     * @param filter the filter to set
+     */
+    @JsonProperty("filter")
+    public void setFilter(final RangeSelection filter) {
+        m_filter = filter;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<RangeSliderFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final RangeSliderFilterWidgetNodeModel nodeModel) {
-        return null;
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("filter=");
+        sb.append(m_filter);
+        return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(m_filter)
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new RangeSliderFilterWidgetDialog();
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        RangeFilterWidgetValue other = (RangeFilterWidgetValue)obj;
+        return new EqualsBuilder()
+                .append(m_filter, other.m_filter)
+                .isEquals();
     }
+
 }

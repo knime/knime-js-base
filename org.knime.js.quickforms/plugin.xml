@@ -1249,6 +1249,50 @@
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Range Slider Filter Widget"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.filter.definition.slider.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/filter/definition/slider/"
+               relativePathTarget="org/knime/js/base/node/widget/filter/definition/slider/">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/filter/definition/slider/rangeSliderFilterDefinitionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/filter/definition/slider/rangeSliderFilterDefinitionWidget.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="noUISlider_12_1_0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Value Filter Definition Widget"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.filter.definition.value.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/js/base/node/widget/filter/definition/value/valueFilterDefinitionWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/filter/definition/value/valueFilterDefinitionWidget.js">
+         </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/filter/definition/value/valueFilterDefinitionWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <webDependency
+               webResourceBundleID="SingleSelection">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="MultipleSelections">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1644,6 +1688,26 @@
             javascriptComponentID="org.knime.js.base.node.widget.output.image"
             name="Image Output Widget"
             namespace="knimeImageOutputWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.filter.definition.slider.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.filter.definition.slider"
+            name="Range Slider Filter Definition Widget"
+            namespace="knimeRangeSliderFilterWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="getComponentValue"
+            implementationBundleID="org.knime.js.base.node.widget.filter.definition.value.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.filter.definition.value"
+            name="Value Filter Definition Widget"
+            namespace="knimeValueFilterWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

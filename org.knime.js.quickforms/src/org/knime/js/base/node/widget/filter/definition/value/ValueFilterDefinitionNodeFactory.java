@@ -52,25 +52,22 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.quickform.filter.definition.RangeFilterValue;
-import org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeDialog;
-import org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionNodeModel;
-import org.knime.js.base.node.quickform.filter.definition.value.ValueFilterDefinitionRepresentation;
+import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
 
 /**
  * Factory for the value filter definition node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDefinitionNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterDefinitionNodeModel, ValueFilterDefinitionRepresentation, RangeFilterValue> {
+public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDefinitionWidgetNodeModel> implements
+    WizardNodeFactoryExtension<ValueFilterDefinitionWidgetNodeModel, ValueFilterDefinitionWidgetRepresentation, RangeFilterWidgetValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValueFilterDefinitionNodeModel createNodeModel() {
-        return new ValueFilterDefinitionNodeModel(getInteractiveViewName());
+    public ValueFilterDefinitionWidgetNodeModel createNodeModel() {
+        return new ValueFilterDefinitionWidgetNodeModel(getInteractiveViewName());
     }
 
     /**
@@ -85,8 +82,8 @@ public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDef
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ValueFilterDefinitionNodeModel> createNodeView(final int viewIndex,
-        final ValueFilterDefinitionNodeModel nodeModel) {
+    public NodeView<ValueFilterDefinitionWidgetNodeModel> createNodeView(final int viewIndex,
+        final ValueFilterDefinitionWidgetNodeModel nodeModel) {
         return null;
     }
 
@@ -103,7 +100,7 @@ public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDef
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new ValueFilterDefinitionNodeDialog();
+        return new ValueFilterDefinitionWidgetDialog();
     }
 
 }

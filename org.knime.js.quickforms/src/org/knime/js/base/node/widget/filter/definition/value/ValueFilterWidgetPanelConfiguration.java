@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,62 +41,76 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Sep 18, 2020 (Christian Albrecht, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.widget.filter.definition.rangeslider;
+package org.knime.js.base.node.widget.filter.definition.value;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.util.filter.NameFilterConfiguration;
 
 /**
- * Factory for the range slider filter appender node.
+ * Configuration for a generic filter that can includes and excludes possible string values and takes care on
+ * additional/missing names using the enforce inclusion/exclusion option. It also supports filtering based on name
+ * patterns.
+ *
+ * Subclass to enable certain methods to be called from the containing package. No additional functionality.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RangeSliderFilterNodeFactory extends NodeFactory<RangeSliderFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
+public class ValueFilterWidgetPanelConfiguration extends NameFilterConfiguration {
 
     /**
-     * {@inheritDoc}
+     * Creates a new name filter configuration with the given settings name. Also enables the name pattern filter.
+     *
+     * @param configRootName the config name to used to store the settings
+     * @throws IllegalArgumentException If config name is null or empty
      */
-    @Override
-    public RangeSliderFilterWidgetNodeModel createNodeModel() {
-        return new RangeSliderFilterWidgetNodeModel(getInteractiveViewName());
+    public ValueFilterWidgetPanelConfiguration(final String configRootName) {
+        super(configRootName);
+    }
+
+    /**
+     * Load config in dialog, init defaults if necessary.
+     *
+     * @param settings to load from.
+     * @param names all names available for filtering
+     */
+    protected void loadConfigInDialog(final NodeSettingsRO settings, final String[] names) {
+        super.loadConfigurationInDialog(settings, names);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    protected FilterResult applyTo(final String[] names) {
+        return super.applyTo(names);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<RangeSliderFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final RangeSliderFilterWidgetNodeModel nodeModel) {
-        return null;
+    protected void setIncludeList(final String[] includeList) {
+        super.setIncludeList(includeList);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
+    protected void setExcludeList(final String[] excludeList) {
+        super.setExcludeList(excludeList);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new RangeSliderFilterWidgetDialog();
+    protected void setEnforceOption(final EnforceOption enforceOption) {
+        super.setEnforceOption(enforceOption);
     }
 }
