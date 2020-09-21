@@ -174,7 +174,9 @@ public class FileUploadNodeValue extends JSONViewContent {
 
         // added with 4.2.2
         setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
-        setLocalUpload(settings.getBoolean(CFG_LOCAL_UPLOAD));
+
+        // added with 4.3
+        setLocalUpload(settings.getBoolean(CFG_LOCAL_UPLOAD, DEFAULT_LOCAL_UPLOAD));
     }
 
     /**

@@ -61,8 +61,8 @@
 		</option>
 	</fullDescription>
 	<interactiveView name="File Upload">
-		View containing the file upload component. Please note that only small files should be uploaded when not using
-		the view in the KNIME Analytics Platform (not on the WebPortal). If a large file is supposed to be selected 
+		View containing the file upload component. Please note that only small files should be uploaded when using
+		the view inside the KNIME Analytics Platform (not on the WebPortal). If a large file is supposed to be selected 
 		consider setting it as the default file or use the <i>Local File Browser</i> node. 
 	</interactiveView>
 	<ports>

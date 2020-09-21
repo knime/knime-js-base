@@ -203,26 +203,13 @@ public class FileUploadWidgetNodeModel extends
 
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
-        getRelevantValue().setLocalUpload(false);
         if (path == null || path.isEmpty()) {
             throw new InvalidSettingsException("No file or URL provided");
         }
 
         Vector<String> vector = new Vector<String>();
         try {
-            URL url;
-            if (path.startsWith(DataURL.SCHEME)) {
-                // local uploads utilize data protocol URLs, which need to be further processed
-                DataURL dataUrl = new DataURL(path);
-                String fileName = getRelevantValue().getFileName();
-                File tempFile = writeTempFileFromDataUrl(dataUrl, fileName);
-                path = tempFile.getAbsolutePath();
-                getRelevantValue().setPath(path);
-                getRelevantValue().setLocalUpload(true);
-                url = tempFile.toURI().toURL();
-            } else {
-                url = new URL(path);
-            }
+            URL url = new URL(path);
             if (!getConfig().isStoreInWfDir() && "file".equalsIgnoreCase(url.getProtocol())) {
                 Path p = Paths.get(url.toURI());
                 if (!Files.exists(p)) {
@@ -468,11 +455,41 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
+    public void loadViewValue(final FileUploadNodeValue viewValue, final boolean useAsDefault) {
+        synchronized (getLock()) {
+            String path = viewValue.getPath();
+            viewValue.setLocalUpload(false);
+            if (path.startsWith(DataURL.SCHEME)) {
+                try {
+                    // local uploads utilize data protocol URLs, which need to be further processed
+                    DataURL dataUrl = new DataURL(path);
+                    String fileName = viewValue.getFileName();
+                    File tempFile = writeTempFileFromDataUrl(dataUrl, fileName);
+                    path = tempFile.getAbsolutePath();
+                    viewValue.setPath(path);
+                    viewValue.setLocalUpload(true);
+                } catch (IOException | InvalidSettingsException e) {
+                    LOGGER.error("Local file upload could not be processed. " + e.getMessage(), e);
+                    // avoid having invalid paths in the output
+                    viewValue.setPath(null);
+                    viewValue.setPathValid(false);
+                }
+            }
+        }
+        super.loadViewValue(viewValue, useAsDefault);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void useCurrentValueAsDefault() {
         FileUploadNodeValue defaultValue = getConfig().getDefaultValue();
-        defaultValue.setPath(getViewValue().getPath());
-        defaultValue.setPathValid(getViewValue().isPathValid());
-        defaultValue.setFileName(getViewValue().getFileName());
+        FileUploadNodeValue currentValue = getViewValue();
+        defaultValue.setPath(currentValue.getPath());
+        defaultValue.setPathValid(currentValue.isPathValid());
+        defaultValue.setFileName(currentValue.getFileName());
+        defaultValue.setLocalUpload(currentValue.isLocalUpload());
     }
 
     private static final String INTERNAL_FILE_NAME = "file-id.xml";
