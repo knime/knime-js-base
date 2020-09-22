@@ -64,6 +64,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -352,55 +353,70 @@ public class FileUploadWidgetNodeModel extends
     }
 
     private InputStream openStream(final URL url) throws IOException, URISyntaxException {
-        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            // a file system path should only be provided when a default file is used, otherwise access should be
-            // blocked due to security reasons
-            String defaultPath = getRepresentation().getDefaultValue().getPath();
-            if (defaultPath != null && defaultPath.equals(getRelevantValue().getPath())) {
-                LOGGER.debug("A file system path has been provided: " + url);
-                return Files.newInputStream(Paths.get(url.toURI()));
-            } else {
-                throw new IllegalArgumentException("A file system path has been provided, but access was denied");
-            }
+            return openFileStream(url);
         } else if (KNIME_PROTOCOL.equals(url.getProtocol())) {
             LOGGER.debug("A KNIME relative path has been provided: " + url);
-
-            final URLConnection conn = url.openConnection();
-
-            conn.setConnectTimeout(getConfig().getTimeout());
-            conn.setReadTimeout(getConfig().getTimeout());
-
-            return conn.getInputStream();
+            return openSimpleStream(url);
         } else {
-            boolean knimeServerConnectionPossible =
-                    wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent();
-            if (getRepresentation().getDefaultValue().equals(getRelevantValue())) {
-                // the default value can be an arbitrary URL
-                // first check for a potential match to the known server URI
-                URI repoUri = wfContext.getRemoteRepositoryAddress().orElse(new URI(""));
-                if (knimeServerConnectionPossible && repoUri.getHost().equals(url.getHost())
-                    && (repoUri.getPort() == url.getPort()) && repoUri.getScheme().equals(url.getProtocol())) {
-                    return openConnectionToKnimeServer(url);
-                } else {
-                    // otherwise try to open the connection without authentication
-                    URLConnection conn = url.openConnection();
-                    conn.setConnectTimeout(getConfig().getTimeout());
-                    conn.setReadTimeout(getConfig().getTimeout());
-                    return conn.getInputStream();
-                }
-            } else if (knimeServerConnectionPossible) {
-                return openConnectionToKnimeServer(url);
-            } else {
-                final String unknownURLMsg = "The URL provided could not be recognized: " + url;
-                LOGGER.debug(unknownURLMsg);
-                throw new URISyntaxException(url.toString(), unknownURLMsg);
-            }
+            return openRemoteStream(url);
         }
     }
 
-    private InputStream openConnectionToKnimeServer(final URL url) throws IOException, URISyntaxException {
+    private InputStream openFileStream(final URL url) throws IOException, URISyntaxException {
+        // a file system path should only be provided when a default file is used or a file was uploaded from a
+        // local view instance, otherwise access should be blocked due to security reasons
+        String defaultPath = getRepresentation().getDefaultValue().getPath();
+        FileUploadNodeValue currentValue = getRelevantValue();
+        if (currentValue.isLocalUpload() || (defaultPath != null && defaultPath.equals(currentValue.getPath()))) {
+            LOGGER.debug("A file system path has been provided: " + url);
+            return Files.newInputStream(Paths.get(url.toURI()));
+        } else {
+            throw new IllegalArgumentException("A file system path has been provided, but access was denied");
+        }
+    }
+
+    private InputStream openSimpleStream(final URL url) throws IOException {
+        final URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(getConfig().getTimeout());
+        conn.setReadTimeout(getConfig().getTimeout());
+        return conn.getInputStream();
+    }
+
+    private InputStream openRemoteStream(final URL url) throws IOException, URISyntaxException {
+
+        // Opening a remote stream can either be an arbitrary URL or a connection to a KNIME Server to retrieve
+        // an uploaded file via WebPortal
+
+        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+        final Optional<URI> repoUri = wfContext.getRemoteRepositoryAddress();
+        final boolean isRunningOnKnimeServer = repoUri.isPresent() && wfContext.getServerAuthToken().isPresent();
+        final boolean isUsingDefaultFile = getRepresentation().getDefaultValue().equals(getRelevantValue());
+        final boolean isExactKnimeServerMatch = isRunningOnKnimeServer && repoUri.get().getHost().equals(url.getHost())
+            && (repoUri.get().getPort() == url.getPort()) && repoUri.get().getScheme().equals(url.getProtocol());
+
+        if (isUsingDefaultFile) {
+            // For a default file we can not necessarily assume that it is pointing to a KNIME server instance.
+            // If the server information matches exactly though, a connection to the KNIME Server is still established
+            if (isExactKnimeServerMatch) {
+                return openStreamToKnimeServer(url);
+            } else {
+                // Otherwise it is assumed that the URL can be accessed with the simple connection logic.
+                return openSimpleStream(url);
+            }
+        } else if (isRunningOnKnimeServer) {
+            // If the value has been changed, assume that a file has been uploaded to the connected KNIME server and
+            // open a connection to the known server from this executor.
+            return openStreamToKnimeServer(url);
+        } else {
+            // The value has been changed but this instance is not running as an executor to a KNIME Server.
+            final String unknownURLMsg = "The URL provided could not be recognized: " + url;
+            LOGGER.debug(unknownURLMsg);
+            throw new URISyntaxException(url.toString(), unknownURLMsg);
+        }
+    }
+
+    private InputStream openStreamToKnimeServer(final URL url) throws IOException {
         LOGGER.debug("A server upload has been detected. An attempt will be made"
                 + " to connect. The provided URL is: " + url);
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
