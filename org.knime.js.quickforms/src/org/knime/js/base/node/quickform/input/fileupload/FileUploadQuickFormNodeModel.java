@@ -279,26 +279,19 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
                 + " to connect. The provided URL is: " + url);
 
             final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
-            if (repoUri.getScheme().equals(url.getProtocol())) {
 
-                final URLConnection conn =
+            final URLConnection conn =
                     new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
-                conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
+            conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
 
-                if (conn instanceof HttpsURLConnection) {
-                    ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-                }
-                conn.setConnectTimeout(getConfig().getTimeout());
-                conn.setReadTimeout(getConfig().getTimeout());
-
-                return conn.getInputStream();
-
-            } else {
-                final String unknownProtocolMsg = "The protocol of the provided URL to the uploaded file "
-                    + "doesn't match with the actual server URL: " + url + " vs. " + repoUri;
-                LOGGER.debug(unknownProtocolMsg);
-                throw new URISyntaxException(url.toString(), unknownProtocolMsg);
+            if (conn instanceof HttpsURLConnection) {
+                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
             }
+            conn.setConnectTimeout(getConfig().getTimeout());
+            conn.setReadTimeout(getConfig().getTimeout());
+
+            return conn.getInputStream();
+
         } else {
             final String unknownURLMsg = "The URL provided could not be recognized: " + url;
             LOGGER.debug(unknownURLMsg);
