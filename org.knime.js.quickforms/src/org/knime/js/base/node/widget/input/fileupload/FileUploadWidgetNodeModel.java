@@ -373,30 +373,50 @@ public class FileUploadWidgetNodeModel extends
             conn.setReadTimeout(getConfig().getTimeout());
 
             return conn.getInputStream();
-        } else if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
-            LOGGER.debug("A server upload has been detected. An attempt will be made"
-                + " to connect. The provided URL is: " + url);
-
-            // we only get the path information from the given value and take the rest of the URL parts from the known
-            // connection information to the server
-            final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
-            final URLConnection conn =
-                    new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
-            conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
-
-            if (conn instanceof HttpsURLConnection) {
-                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-            }
-            conn.setConnectTimeout(getConfig().getTimeout());
-            conn.setReadTimeout(getConfig().getTimeout());
-
-            return conn.getInputStream();
-
         } else {
-            final String unknownURLMsg = "The URL provided could not be recognized: " + url;
-            LOGGER.debug(unknownURLMsg);
-            throw new URISyntaxException(url.toString(), unknownURLMsg);
+            boolean knimeServerConnectionPossible =
+                    wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent();
+            if (getRepresentation().getDefaultValue().equals(getRelevantValue())) {
+                // the default value can be an arbitrary URL
+                // first check for a potential match to the known server URI
+                URI repoUri = wfContext.getRemoteRepositoryAddress().orElse(new URI(""));
+                if (knimeServerConnectionPossible && repoUri.getHost().equals(url.getHost())
+                    && (repoUri.getPort() == url.getPort()) && repoUri.getScheme().equals(url.getProtocol())) {
+                    return openConnectionToKnimeServer(url);
+                } else {
+                    // otherwise try to open the connection without authentication
+                    URLConnection conn = url.openConnection();
+                    conn.setConnectTimeout(getConfig().getTimeout());
+                    conn.setReadTimeout(getConfig().getTimeout());
+                    return conn.getInputStream();
+                }
+            } else if (knimeServerConnectionPossible) {
+                return openConnectionToKnimeServer(url);
+            } else {
+                final String unknownURLMsg = "The URL provided could not be recognized: " + url;
+                LOGGER.debug(unknownURLMsg);
+                throw new URISyntaxException(url.toString(), unknownURLMsg);
+            }
         }
+    }
+
+    private InputStream openConnectionToKnimeServer(final URL url) throws IOException, URISyntaxException {
+        LOGGER.debug("A server upload has been detected. An attempt will be made"
+                + " to connect. The provided URL is: " + url);
+        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
+        final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
+
+        final URLConnection conn =
+                new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
+        conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
+
+        if (conn instanceof HttpsURLConnection) {
+            ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+        }
+        conn.setConnectTimeout(getConfig().getTimeout());
+        conn.setReadTimeout(getConfig().getTimeout());
+
+        return conn.getInputStream();
     }
 
     /**
