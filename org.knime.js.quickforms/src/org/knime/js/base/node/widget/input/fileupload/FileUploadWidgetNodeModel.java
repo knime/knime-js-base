@@ -368,7 +368,7 @@ public class FileUploadWidgetNodeModel extends
         // local view instance, otherwise access should be blocked due to security reasons
         String defaultPath = getRepresentation().getDefaultValue().getPath();
         FileUploadNodeValue currentValue = getRelevantValue();
-        if (currentValue.isLocalUpload() || (defaultPath != null && defaultPath.equals(currentValue.getPath()))) {
+        if (defaultPath != null && defaultPath.equals(currentValue.getPath())) {
             LOGGER.debug("A file system path has been provided: " + url);
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
