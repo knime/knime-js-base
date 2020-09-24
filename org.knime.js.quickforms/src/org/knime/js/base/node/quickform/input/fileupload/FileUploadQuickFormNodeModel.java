@@ -343,7 +343,14 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         // check for a valid file extension
         // no items in file types <=> any file type is valid
         if (getConfig().getFileTypes().length > 0) {
-            String ext = "." + FilenameUtils.getExtension(viewValue.getPath());
+            String fileName = viewValue.getFileName();
+            String nameToTest = StringUtils.isEmpty(fileName) ? viewValue.getPath() : fileName;
+            String ext = FilenameUtils.getExtension(nameToTest);
+            if (StringUtils.isEmpty(ext)) {
+                return new ValidationError("File with no extension is not valid");
+            } else {
+                ext = "." + ext;
+            }
             if (!Arrays.asList(getConfig().getFileTypes()).contains(ext)) {
                 return new ValidationError("File extension " + ext + " is not valid");
             }
