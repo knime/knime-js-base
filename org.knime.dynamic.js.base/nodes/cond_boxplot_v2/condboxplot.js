@@ -259,7 +259,7 @@ window.knimeConditionalBoxplot = (function () {
         var w = Math.max(50, parseInt(d3svg.style('width'), 10) - margins.left - margins.right);
 
         // x-axis scale
-        var xScale = d3.scale.ordinal().domain(d3.keys(_data)).rangeBands([0, w], 0.75, 0.5);
+        var xScale = d3.scale.ordinal().domain(d3.keys(_data).sort()).rangeBands([0, w], 0.75, 0.5);
 
         // color scale
         var colorScale = d3.scale.category10();
