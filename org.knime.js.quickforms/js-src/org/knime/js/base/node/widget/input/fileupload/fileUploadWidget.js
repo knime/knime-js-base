@@ -231,6 +231,7 @@ window.knimeFileUploadWidget = (function () {
                 input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.style.width = '250px';
+                input.style.paddingBottom = '2px';
                 input.addEventListener('change', uploadFile);
                 if (representation.fileTypes && representation.fileTypes.length > 0) {
                     input.setAttribute('accept', representation.fileTypes.join(','));
