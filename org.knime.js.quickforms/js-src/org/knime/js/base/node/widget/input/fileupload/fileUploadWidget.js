@@ -115,7 +115,7 @@ window.knimeFileUploadWidget = (function () {
         }
         if (uploadUrl) {
             var progressPrefix = 'Uploading ' + fileToUpload.name;
-            var reader = new FileReader();
+
             var xhr = new XMLHttpRequest();
             this.xhr = xhr;
             this.xhr.upload.addEventListener('progress', function (e) {
@@ -153,10 +153,8 @@ window.knimeFileUploadWidget = (function () {
                 xhr.abort();
             });
             
-            reader.onload = function (evt) {
-                xhr.send(evt.target.result);
-            };
-            reader.readAsArrayBuffer(fileToUpload);
+            xhr.send(fileToUpload);
+            
         } else {
             input.setAttribute('disabled', 'disabled');
             fileUpload.setValidationErrorMessage('Upload not possible. Could not generate upload link.');
