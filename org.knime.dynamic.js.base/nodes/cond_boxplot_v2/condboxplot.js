@@ -11,7 +11,8 @@ window.knimeConditionalBoxplot = (function () {
     
     var _representation, _value, layoutContainer,
         _switchMissValClassCbx, _missValClass,
-        drawChart, drawControls, processMissingValues, updateSubtitle, updateTitle, resize;
+        drawChart, drawControls, processMissingValues, updateSubtitle, updateTitle,
+        compareCategories, resize;
 
     var MISSING_VALUES_CLASS = 'Missing values';
 
@@ -259,7 +260,7 @@ window.knimeConditionalBoxplot = (function () {
         var w = Math.max(50, parseInt(d3svg.style('width'), 10) - margins.left - margins.right);
 
         // x-axis scale
-        var xScale = d3.scale.ordinal().domain(d3.keys(_data).sort()).rangeBands([0, w], 0.75, 0.5);
+        var xScale = d3.scale.ordinal().domain(d3.keys(_data).sort(compareCategories)).rangeBands([0, w], 0.75, 0.5);
 
         // color scale
         var colorScale = d3.scale.category10();
@@ -587,6 +588,20 @@ window.knimeConditionalBoxplot = (function () {
             var win = document.defaultView || document.parentWindow;
             win.onresize = resize;
         }
+    };
+
+    // Use custom compare function to ensure that the missing values category is the last one
+    compareCategories = function (a, b) {
+        if (a = 'Missing values') {
+            return 1;
+        }
+        if (a < b) {
+            return -1;
+        }
+        if (a > b) {
+            return 1;
+        }
+        return 0;
     };
 
     resize = function (event) {
