@@ -227,7 +227,7 @@ window.knimeFileChooserWidget = (function () {
             }
             var fileBasePath = baseUrl + 'file-icons/';
             var endIndex = treeItem.text.lastIndexOf('.');
-            var fileEnding = treeItem.name;
+            var fileEnding = treeItem.text;
             if (endIndex > 0 && endIndex < treeItem.text.length - 1) {
                 fileEnding = treeItem.text.substring(endIndex);
             }
@@ -404,8 +404,8 @@ window.knimeFileChooserWidget = (function () {
             pathArray.forEach(function (defaultPath) {
                 var pathWithoutScheme = defaultPath.path.replace(SCHEME_PART, '');
                 var path = pathWithoutScheme.substring(pathWithoutScheme.indexOf('/'));
-                if (path.substring(path.length - 1) === '/') {
-                    path = path.substring(0, path.length() - 1);
+                if (path.length > 0 && path.substring(path.length - 1) === '/') {
+                    path = path.substring(0, path.length - 1);
                 }
                 defaultPaths.push(decodeURIComponent(path));
             });
