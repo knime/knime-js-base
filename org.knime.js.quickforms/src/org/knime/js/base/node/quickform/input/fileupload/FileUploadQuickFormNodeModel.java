@@ -87,6 +87,11 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
+import org.knime.workbench.explorer.ServerRequestModifier;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  *
@@ -98,11 +103,29 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     private static final NodeLogger LOGGER = NodeLogger.getLogger(FileUploadQuickFormNodeModel.class);
     private static final String KNIME_PROTOCOL = "knime";
 
+    private final ServerRequestModifier m_requestModifier;
+
     /**
      * @param viewName
      */
     protected FileUploadQuickFormNodeModel(final String viewName) {
         super(viewName);
+        Bundle myself = FrameworkUtil.getBundle(getClass());
+        if (myself != null) {
+            BundleContext ctx = myself.getBundleContext();
+            ServiceReference<ServerRequestModifier> ser = ctx.getServiceReference(ServerRequestModifier.class);
+            if (ser != null) {
+                try {
+                    m_requestModifier = ctx.getService(ser);
+                } finally {
+                    ctx.ungetService(ser);
+                }
+            } else {
+                m_requestModifier = (p, c) -> {};
+            }
+        } else {
+            m_requestModifier = (p, c) -> {};
+        }
     }
 
     /**
@@ -331,6 +354,7 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         }
         conn.setConnectTimeout(getConfig().getTimeout());
         conn.setReadTimeout(getConfig().getTimeout());
+        m_requestModifier.modifyRequest(repoUri, conn);
 
         return conn.getInputStream();
     }

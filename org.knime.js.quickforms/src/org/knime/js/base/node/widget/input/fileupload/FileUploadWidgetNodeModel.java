@@ -97,6 +97,11 @@ import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.workbench.explorer.ServerRequestModifier;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The node model for the file upload widget node
@@ -112,6 +117,7 @@ public class FileUploadWidgetNodeModel extends
     private static final String KNIME_WORKFLOW = "knime.workflow";
 
     private String m_id;
+    private final ServerRequestModifier m_requestModifier;
 
     /**
      * Creates a new file upload widget node model
@@ -120,6 +126,22 @@ public class FileUploadWidgetNodeModel extends
      */
     protected FileUploadWidgetNodeModel(final String viewName) {
         super(viewName);
+        Bundle myself = FrameworkUtil.getBundle(getClass());
+        if (myself != null) {
+            BundleContext ctx = myself.getBundleContext();
+            ServiceReference<ServerRequestModifier> ser = ctx.getServiceReference(ServerRequestModifier.class);
+            if (ser != null) {
+                try {
+                    m_requestModifier = ctx.getService(ser);
+                } finally {
+                    ctx.ungetService(ser);
+                }
+            } else {
+                m_requestModifier = (p, c) -> {};
+            }
+        } else {
+            m_requestModifier = (p, c) -> {};
+        }
     }
 
     /**
@@ -208,7 +230,7 @@ public class FileUploadWidgetNodeModel extends
             throw new InvalidSettingsException("No file or URL provided");
         }
 
-        Vector<String> vector = new Vector<String>();
+        Vector<String> vector = new Vector<>();
         try {
             URL url = new URL(path);
             if (!getConfig().isStoreInWfDir() && "file".equalsIgnoreCase(url.getProtocol())) {
@@ -347,8 +369,8 @@ public class FileUploadWidgetNodeModel extends
         final StringBuilder debug = new StringBuilder();
         if (FileUtil.deleteRecursively(file)) {
             debug.append(getConfig().isStoreInWfDir() && file.getParentFile().delete()
-                ? "Deleted temp directory " + file.getParentFile().getAbsolutePath()
-                : "Deleted temp directory " + file.getAbsolutePath());
+                ? ("Deleted temp directory " + file.getParentFile().getAbsolutePath())
+                : ("Deleted temp directory " + file.getAbsolutePath()));
         }
     }
 
@@ -431,6 +453,7 @@ public class FileUploadWidgetNodeModel extends
         }
         conn.setConnectTimeout(getConfig().getTimeout());
         conn.setReadTimeout(getConfig().getTimeout());
+        m_requestModifier.modifyRequest(repoUri, conn);
 
         return conn.getInputStream();
     }
