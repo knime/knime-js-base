@@ -1,23 +1,9 @@
-#client_area
-{
-    height: 100% !important;
+.knime-sketcher-div {
+    height: 100%;
 }
-
-.knime-sketcher-frame {
-    border: none;
-    margin: 0;
-    background: none;
-}
-
-.ketcherDivMaxSize
-{
-    max-width: unset;
-    max-height: unset;
-    position: unset !important;
-    overflow: auto;
-}
-
-#ketcher_window {
-    position: unset !important;
-    width: 100% !important;
+.quickformcontainer {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    outline: none;
 }

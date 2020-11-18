@@ -7,6 +7,10 @@
             category-path="/flowabstraction/quickforms/input"
             factory-class="org.knime.ext.js.node.quickform.input.molecule.MoleculeStringInputQuickFormNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            factory-class="org.knime.ext.js.node.widget.input.molecule.MoleculeWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
@@ -191,7 +195,7 @@
                type="JAVASCRIPT">
          </importResource>
          <importResource
-               relativePath="js-lib/ketcher/ketcher.css"
+               relativePath="js-lib/ketcher2.0/ketcher.css"
                type="CSS">
          </importResource>
          <importResource
@@ -204,6 +208,33 @@
          <webDependency
                webResourceBundleID="RequireJS_2.3.3">
          </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="false"
+            name="Ketcher Molecule Sketcher"
+            usesDefine="false"
+            version="2.0"
+            webResourceBundleID="Ketcher_2.0">
+         <webResource
+               relativePathSource="js-lib/ketcher2.0/"
+               relativePathTarget="js-lib/ketcher2.0/">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher2.0/doc"
+               relativePathTarget="doc">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher2.0/logo"
+               relativePathTarget="logo">
+         </webResource>
+         <importResource
+               relativePath="js-lib/ketcher2.0/raphael.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="js-lib/ketcher2.0/ketcher.css"
+               type="CSS">
+         </importResource>
       </webResourceBundle>
    </extension>
    <extension

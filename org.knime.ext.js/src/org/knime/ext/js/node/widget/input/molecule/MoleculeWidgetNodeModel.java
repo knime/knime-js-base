@@ -123,7 +123,6 @@ public class MoleculeWidgetNodeModel
         pushFlowVariableString("molecule_format", getViewRepresentation().getFormat());
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -143,11 +142,11 @@ public class MoleculeWidgetNodeModel
                 config,
                 config.getLabelConfig());
     }
-    
+
     @Override
     public JSONLayoutViewContent getLayoutTemplate() {
-    	 JSONLayoutViewContent view = new JSONLayoutViewContent();
-         view.setResizeMethod(ResizeMethod.VIEW_TAGGED_ELEMENT);
+         JSONLayoutViewContent view = new JSONLayoutViewContent();
+         view.setResizeMethod(ResizeMethod.ASPECT_RATIO_4by3);
          return view;
     }
 
