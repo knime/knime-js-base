@@ -2,5 +2,5 @@
 target/
 */build/
 org.knime.dynamic.js/src/xmlbeans
-.flattened-pom.xml
-*/**.flattened-pom.xml
+**/.flattened-pom.xml
+**/CHANGELOG.md
