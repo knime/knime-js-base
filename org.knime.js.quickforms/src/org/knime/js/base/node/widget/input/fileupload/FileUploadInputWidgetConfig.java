@@ -68,9 +68,9 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
 
     private static final String CFG_STORE_IN_WF_DIR = "store_in_wf_dir";
 
-    private static final boolean DEFAULT_STORE_IN_WF_DIR = false;
+    private static final boolean DEFAULT_STORE_IN_WF_DIR = true;
 
-    private boolean m_storeInWfDir = false;
+    private boolean m_storeInWfDir = true;
 
     /**
      * @return the fileTypes

@@ -485,13 +485,13 @@ public class FileUploadWidgetNodeModel extends
         if (getConfig().getFileTypes().length > 0) {
             String fileName = value.getFileName();
             String nameToTest = StringUtils.isEmpty(fileName) ? value.getPath() : fileName;
-            String ext = FilenameUtils.getExtension(nameToTest);
-            if (StringUtils.isEmpty(ext)) {
+            String check_ext = FilenameUtils.getExtension(nameToTest);
+            if (StringUtils.isEmpty(check_ext)) {
                 return new ValidationError("File with no extension is not valid");
-            } else {
-                ext = "." + ext;
             }
-            if (!Arrays.asList(getConfig().getFileTypes()).contains(ext)) {
+            final String ext = "." + check_ext.toLowerCase();
+            if (!Arrays.asList(getConfig().getFileTypes()).stream()
+                    .anyMatch(type -> StringUtils.equalsIgnoreCase(type, ext))) {
                 return new ValidationError("File extension " + ext + " is not valid");
             }
         }
