@@ -70,11 +70,13 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         @JsonProperty("defaultValue") final MoleculeWidgetValue defaultValue,
         @JsonProperty("currentValue") final MoleculeWidgetValue currentValue,
         @JsonProperty("sketcherLocation") String sketcherLocation, @JsonProperty("format") String format,
-        @JsonProperty("sketcherPath") String sketcherPath) {
+        @JsonProperty("sketcherPath") String sketcherPath,
+        @JsonProperty("disableLineNotification") boolean disableLineNotifications) {
         super(label, description, required, defaultValue, currentValue);
         m_sketcherLocation = sketcherLocation;
         m_sketcherPath = sketcherPath;
         m_format = format;
+        m_disableLineNotification = disableLineNotifications;
     }
 
     /**
@@ -86,11 +88,13 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         super(currentValue, defaultValue, labelConfig);
         m_format = config.getFormat();
         m_sketcherPath = config.getSketcherPath();
+        m_disableLineNotification = config.isDisableLineNotifications();
     }
 
     private final String m_format;
     private String m_sketcherLocation;
     private final String m_sketcherPath;
+    private final boolean m_disableLineNotification;
 
     /**
      * @return the sketcherLocation (injected by server)
@@ -125,6 +129,14 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
 	}
 
     /**
+     * @return the format
+     */
+    @JsonProperty("disableLineNotification")
+    public boolean isDisableLineNotification() {
+        return m_disableLineNotification;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -134,6 +146,7 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
         sb.append(", ");
         sb.append("format=");
         sb.append(m_format);
+        sb.append(m_disableLineNotification);
         return sb.toString();
     }
 
@@ -146,6 +159,7 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
                 .append(m_format)
                 .append(m_sketcherLocation)
                 .append(m_sketcherPath)
+                .append(m_disableLineNotification)
                 .toHashCode();
     }
 
@@ -168,6 +182,7 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
                 .append(m_format, other.m_format)
                 .append(m_sketcherLocation, other.m_sketcherLocation)
                 .append(m_sketcherPath, other.m_sketcherPath)
+                .append(m_disableLineNotification, other.m_disableLineNotification)
                 .isEquals();
     }
 

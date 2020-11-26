@@ -69,6 +69,10 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
     private static final String CFG_SKETCHER_PATH = "sketcherPath";
     private static final String DEFAULT_SKETCHER_PATH = "";
     private String m_sketcherPath = DEFAULT_SKETCHER_PATH;
+
+    private static final String CFG_DISABLE_LINE_NOTIFICATIONS = "disableLineNotifications";
+    private static final boolean DEFAULT_DISABLE_LINE_NOTIFICATIONS = true;
+    private boolean m_disableLineNotification;
     
 
     /**
@@ -93,6 +97,14 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
 		m_sketcherPath = sketcherPath;
 	}
 
+    public void setDisableLineNotifications(boolean disableLineNotifications) {
+        m_disableLineNotification = disableLineNotifications;
+    }
+
+    public boolean isDisableLineNotifications() {
+        return m_disableLineNotification;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -101,6 +113,7 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         super.saveSettings(settings);
         settings.addString(CFG_FORMAT, m_format);
         settings.addString(CFG_SKETCHER_PATH, m_sketcherPath);
+        settings.addBoolean(CFG_DISABLE_LINE_NOTIFICATIONS, m_disableLineNotification);
     }
 
     /**
@@ -111,8 +124,9 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         super.loadSettings(settings);
         m_format = settings.getString(CFG_FORMAT);
 
-        //added with 3.2
         m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
+
+       m_disableLineNotification = settings.getBoolean(CFG_DISABLE_LINE_NOTIFICATIONS, DEFAULT_DISABLE_LINE_NOTIFICATIONS);
     }
 
     /**
@@ -123,8 +137,9 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         super.loadSettingsInDialog(settings);
         m_format = settings.getString(CFG_FORMAT, DEFAULT_FORMAT);
 
-        //added with 3.2
         m_sketcherPath = settings.getString(CFG_SKETCHER_PATH, DEFAULT_SKETCHER_PATH);
+
+        m_disableLineNotification = settings.getBoolean(CFG_DISABLE_LINE_NOTIFICATIONS, DEFAULT_DISABLE_LINE_NOTIFICATIONS);
     }
 
     /**
@@ -145,6 +160,7 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         sb.append(", ");
         sb.append("format=");
         sb.append(m_format);
+        sb.append(m_disableLineNotification);
         return sb.toString();
     }
 
@@ -156,6 +172,7 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_format)
                 .append(m_sketcherPath)
+                .append(m_disableLineNotification)
                 .toHashCode();
     }
 
@@ -177,6 +194,7 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_format, other.m_format)
                 .append(m_sketcherPath, other.m_sketcherPath)
+                .append(m_disableLineNotification, other.m_disableLineNotification)
                 .isEquals();
     }
 

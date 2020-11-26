@@ -14,22 +14,30 @@
 			</p>
 		</intro>
 		<option name="Label">AA descriptive label that will be shown in the
-			view.</option>
+			view.
+		</option>
 		<option name="Description">Some lines of description that will be shown in
 			the view,
 			for instance by means of a tooltip.
 		</option>
 
 		<option name="Hide in Dialog">
-			If the setting should be hidden in the sub node dialog.
+			If the setting should be hidden in the sub node
+			dialog.
 		</option>
 		<option name="Variable Name">Variable identifier.</option>
 		<option name="Parameter Name">Parameter identifier for external parameterization
-			(e.g. batch execution).</option>
+			(e.g. batch execution).
+		</option>
 		<option name="Format">The format of the molecule string. Please note
-			that not all molecule sketchers support all formats.</option>
+			that not all molecule sketchers support all formats.
+		</option>
 		<option name="Default Value">
 			The value that is selected by default.
+		</option>
+		<option name="Disable SMILES/SMARTS/HELM">
+			If this is selected, the SMILES/SMARTS/HELM formats cannot be selected from the format list.
+			This is useful, as the ketcher sketcher cannot display those formats.
 		</option>
 	</fullDescription>
 	<interactiveView name="Molecule Widget">
@@ -37,6 +45,7 @@
 	</interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">Variable output with the given
-			variable defined.</outPort>
+			variable defined.
+		</outPort>
 	</ports>
 </knimeNode>

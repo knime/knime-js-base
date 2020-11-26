@@ -45,7 +45,11 @@
 package org.knime.ext.js.node.widget.input.molecule;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -68,19 +72,40 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
 
     private static final int TEXT_AREA_HEIGHT = 8;
 
-    private final JComboBox m_formatBox;
+    private final JComboBox<String> m_formatBox;
     private final JTextArea m_defaultArea;
+    private final JCheckBox m_disableLineNotations;
     
     private MoleculeWidgetConfig m_config;
 
     /** Constructors, inits fields calls layout routines. */
-    @SuppressWarnings("unchecked")
     MoleculeWidgetNodeDialog() {
         m_config = new MoleculeWidgetConfig();
-        m_formatBox = new JComboBox(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
+        m_formatBox = new JComboBox<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
         m_formatBox.setEditable(true);
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DialogUtil.DEF_TEXTFIELD_WIDTH);
+
+        // Add a checkbox to disable the SMILES/SMARTS/HELM format,
+        // as they are not supported by the ketcher sketcher when used without a ketcher server.
+        m_disableLineNotations = new JCheckBox();
+
+        setupDisableLineNotificationListener();
         createAndAddTab();
+    }
+
+    private void setupDisableLineNotificationListener () {
+        m_disableLineNotations.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                DefaultComboBoxModel<String> model;
+                if (m_disableLineNotations.isSelected()) {
+                    model = new DefaultComboBoxModel<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS_WITHOUT_LINES);
+                } else {
+                    model = new DefaultComboBoxModel<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
+                }
+                m_formatBox.setModel(model);
+            }
+        });
     }
 
     /**
@@ -90,6 +115,7 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Format: ", m_formatBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
+        addPairToPanel("Disable SMILES/SMARTS/HELM", m_disableLineNotations, panelWithGBLayout, gbc);
     }
 
     /**
@@ -102,6 +128,7 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
         loadSettingsFrom(m_config);
         m_defaultArea.setText(m_config.getDefaultValue().getMoleculeString());
         m_formatBox.setSelectedItem(m_config.getFormat());
+        m_disableLineNotations.setSelected(m_config.isDisableLineNotifications());
     }
 
     /**
@@ -112,6 +139,7 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
         saveSettingsTo(m_config);
         m_config.setFormat(m_formatBox.getSelectedItem().toString());
         m_config.getDefaultValue().setMoleculeString(m_defaultArea.getText());
+        m_config.setDisableLineNotifications(m_disableLineNotations.isSelected());
         m_config.saveSettings(settings);
     }
 
