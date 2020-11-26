@@ -61,6 +61,7 @@ import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.CredentialsStore.CredentialsNode;
 import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
+import org.knime.core.util.CoreConstants;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
@@ -175,8 +176,11 @@ public class CredentialsWidgetNodeModel extends
     @Override
     protected void useCurrentValueAsDefault() {
         getConfig().getDefaultValue().setUsername(getViewValue().getUsername());
-        getConfig().getDefaultValue().setPassword(getViewValue().getPassword());
         getConfig().getDefaultValue().setSavePassword(getViewValue().isSavePassword());
+        // since 4.3
+        if (!StringUtils.equals(getViewValue().getPassword(), CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
+            getConfig().getDefaultValue().setPassword(getViewValue().getPassword());
+        }
     }
 
     /** {@inheritDoc} */

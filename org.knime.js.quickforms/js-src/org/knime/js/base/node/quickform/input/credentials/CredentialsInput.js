@@ -108,7 +108,7 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
             passwordInput.attr('class', 'standard-sizing knime-qf-input knime-string knime-single-line');
             passwordInput.attr('aria-label', 'Password');
             // password_input.width(400);
-            var passwordValue = representation.currentValue.password;
+            var passwordValue = representation.currentValue.magicDefaultPassword;
             passwordInput.val(passwordValue);
             var passwordLabel = $('<label class="knime-qf-label" style="display:block;" for="pw_input">');
             passwordLabel.append('Password');
@@ -132,10 +132,10 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
                 if (user) {
                     var viewValue = viewRepresentation.currentValue;
                     viewValue.username = user.userName;
-                    viewValue.password = user.userPw;
+                    viewValue.magicDefaultPassword = user.userPw;
                     if (!viewRepresentation.noDisplay) {
                         userInput.val(viewValue.username);
-                        passwordInput.val(viewValue.password);
+                        passwordInput.val(viewValue.magicDefaultPassword);
                     }
                 } else {
                     displayServerCredentialsErrorMessage();
@@ -181,7 +181,7 @@ window.org_knime_js_base_node_quickform_input_credentials = (function () { // es
             viewValue.username = userInput.val();
         }
         if (passwordInput) {
-            viewValue.password = passwordInput.val();
+            viewValue.magicDefaultPassword = passwordInput.val();
         }
         return viewValue;
     };

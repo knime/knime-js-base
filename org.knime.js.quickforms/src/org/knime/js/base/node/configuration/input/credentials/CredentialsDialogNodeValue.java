@@ -75,6 +75,16 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
 
     private boolean m_useServerCredentials;
 
+    // since 4.3
+    private boolean hasArtifactsView = true;
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean getHasArtifactsView() {
+        return hasArtifactsView;
+    }
 
     /**
      * Sets if the server credentials used be used.

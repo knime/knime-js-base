@@ -87,6 +87,17 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     private String m_password;
     private boolean m_isSavePassword;
 
+    // since 4.3
+    private boolean hasArtifactsView = true;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean getHasArtifactsView() {
+        return hasArtifactsView;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -182,8 +193,8 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     /** @param magicPassword the magicPassword to set */
     @JsonProperty("magicDefaultPassword")
     private void setMagicPassword(final String magicPassword) {
-        if(StringUtils.isEmpty(m_password) && !StringUtils.isEmpty(magicPassword)) {
-            m_password = CoreConstants.MAGIC_DEFAULT_PASSWORD;
+        if(StringUtils.isEmpty(m_password) && !StringUtils.equals(magicPassword, CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
+            m_password = StringUtils.isEmpty(magicPassword) ? null : magicPassword;
         }
     }
 
