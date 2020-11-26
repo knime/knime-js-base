@@ -81,7 +81,7 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
     /** Constructors, inits fields calls layout routines. */
     MoleculeWidgetNodeDialog() {
         m_config = new MoleculeWidgetConfig();
-        m_formatBox = new JComboBox<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
+        m_formatBox = new JComboBox<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS_WITHOUT_LINES);
         m_formatBox.setEditable(true);
         m_defaultArea = new JTextArea(TEXT_AREA_HEIGHT, DialogUtil.DEF_TEXTFIELD_WIDTH);
 
@@ -99,9 +99,9 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
             public void itemStateChanged(ItemEvent e) {
                 DefaultComboBoxModel<String> model;
                 if (m_disableLineNotations.isSelected()) {
-                    model = new DefaultComboBoxModel<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS_WITHOUT_LINES);
-                } else {
                     model = new DefaultComboBoxModel<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS);
+                } else {
+                    model = new DefaultComboBoxModel<String>(MoleculeWidgetNodeModel.DEFAULT_FORMATS_WITHOUT_LINES);
                 }
                 m_formatBox.setModel(model);
             }
@@ -113,9 +113,9 @@ public class MoleculeWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Molec
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Add SMILES, SMARTS, HELM Formats", m_disableLineNotations, panelWithGBLayout, gbc);
         addPairToPanel("Format: ", m_formatBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", new JScrollPane(m_defaultArea), panelWithGBLayout, gbc);
-        addPairToPanel("Disable SMILES/SMARTS/HELM", m_disableLineNotations, panelWithGBLayout, gbc);
     }
 
     /**

@@ -71,7 +71,7 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
     private String m_sketcherPath = DEFAULT_SKETCHER_PATH;
 
     private static final String CFG_DISABLE_LINE_NOTIFICATIONS = "disableLineNotifications";
-    private static final boolean DEFAULT_DISABLE_LINE_NOTIFICATIONS = true;
+    private static final boolean DEFAULT_DISABLE_LINE_NOTIFICATIONS = false;
     private boolean m_disableLineNotification;
     
 

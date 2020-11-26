@@ -29,15 +29,14 @@
 		<option name="Parameter Name">Parameter identifier for external parameterization
 			(e.g. batch execution).
 		</option>
+		<option name="Add SMILES, SMARTS, HELM Formats">
+			If this is selected, the SMILES, SMARTS, HELM formats can be selected from the format list.
+		</option>
 		<option name="Format">The format of the molecule string. Please note
 			that not all molecule sketchers support all formats.
 		</option>
 		<option name="Default Value">
 			The value that is selected by default.
-		</option>
-		<option name="Disable SMILES/SMARTS/HELM">
-			If this is selected, the SMILES/SMARTS/HELM formats cannot be selected from the format list.
-			This is useful, as the ketcher sketcher cannot display those formats.
 		</option>
 	</fullDescription>
 	<interactiveView name="Molecule Widget">
