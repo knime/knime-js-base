@@ -74,6 +74,10 @@ public class MoleculeWidgetNodeModel
      * The default formats shown in the molecule widget.
      */
     static final String[] DEFAULT_FORMATS = {"SDF", "SMILES", "MOL", "SMARTS", "RXN", "HELM"};
+
+    /**
+     * @since 4.3
+     */
     static final String[] DEFAULT_FORMATS_WITHOUT_LINES = {"SDF", "MOL", "RXN"};
 
     /** Creates a new node model with no inports and a flow variable outport. */

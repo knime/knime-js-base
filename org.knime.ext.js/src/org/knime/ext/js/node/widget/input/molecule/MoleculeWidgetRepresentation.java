@@ -129,7 +129,8 @@ public class MoleculeWidgetRepresentation<VAL extends MoleculeWidgetValue> exten
 	}
 
     /**
-     * @return the format
+     * @return disableLineNotification
+     * @since 4.3
      */
     @JsonProperty("disableLineNotification")
     public boolean isDisableLineNotification() {

@@ -97,10 +97,18 @@ public class MoleculeWidgetConfig extends LabeledFlowVariableWidgetConfig<Molecu
 		m_sketcherPath = sketcherPath;
 	}
 
+    /**
+     * @param disableLineNotifications
+     * @since 4.3
+     */
     public void setDisableLineNotifications(boolean disableLineNotifications) {
         m_disableLineNotification = disableLineNotifications;
     }
 
+    /**
+     * @return disableLineNotification
+     * @since 4.3
+     */
     public boolean isDisableLineNotifications() {
         return m_disableLineNotification;
     }
