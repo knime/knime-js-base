@@ -8,15 +8,16 @@
 	<shortDescription>
        Creates a file upload widget for use in components views. Variable output representing the file path as variable.
        In case an absolute file path is selected the node will populate three variables: one representing the path, one
-       representing the URL and one representing the URL as a path variable. If a URL is selected as default file only the URL variable and the URL(path) variable are defined.
+       representing the URL and one representing the URL as a path variable. If a URL is selected as default file only
+       the URL variable and the URL(path) variable are defined.
     </shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
 				Creates a file upload widget for use in components views. Variable output representing the file path as 
 				variable. In case an absolute file path is selected the node will populate three variables: one
-				representing the path, one representing the URL and one representing the URL as a path variable. If a URL is selected as default file only the URL 
-				variable and the URL(path) variable are defined.
+				representing the path, one representing the URL and one representing the URL as a path variable. If a
+				URL is selected as default file only the URL variable and the URL(path) variable are defined.
 			</p>
 			<p>
 				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
@@ -68,9 +69,9 @@
 	<ports>
 		<outPort index="0" name="Flow Variable Output">
 			Variable output representing the file path as variable. In case an absolute file path is selected the node
-			will populate three variables: one representing the path, one representing the URL and one representing the URL as a path variable.
-			If a URL is selected as default file only the URL variable and the URL(path) variable are defined. Additionally the original file name is retained as a flow
-			variable.
+			will populate three variables: one representing the path, one representing the URL and one representing the
+			URL as a path variable. If a URL is selected as default file only the URL variable and the URL(path) variable
+			are defined. Additionally the original file name is retained as a flow variable.
 		</outPort>
 	</ports>
 </knimeNode>

@@ -82,6 +82,9 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 
 /**
@@ -138,7 +141,10 @@ public class FileDialogNodeModel extends
         Vector<String> fileValues = getFileAndURL(openStream);
         String varIdentifier = getConfig().getFlowVariableName();
         if (fileValues.get(0) != null) {
-            pushFlowVariableString(varIdentifier, fileValues.get(0));
+            // since 4.3
+            FSLocation location = new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()),
+                fileValues.get(1));
+            pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);
         }
         pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
         if (StringUtils.isNoneEmpty(getRelevantValue().getFileName())) {
