@@ -48,19 +48,29 @@
  */
 package org.knime.js.views;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.knime.core.node.web.WebViewContent;
+import org.knime.core.wizard.SubnodeViewValue;
 import org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewRepresentation;
 import org.knime.js.base.node.viz.decisiontree.classification.JSDecisionTree;
 import org.knime.js.base.node.viz.decisiontree.classification.JSDecisionTreeMetaData;
 import org.knime.js.base.node.viz.decisiontree.classification.JSDecisionTreeNode;
 import org.knime.js.base.node.viz.decisiontree.classification.JSNodeContent;
 import org.knime.js.base.node.viz.plotter.roc.ROCCurveViewRepresentation;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Tests for de-/serialization of view-objects, such as {@link WebViewContent}-implementations.
@@ -76,11 +86,17 @@ public class DeSerializationTest {
      * @return the newly deserialized web view content object
      * @throws Exception if an error occurs
      */
-    public static <C extends WebViewContent> C testDeSerializeWebViewContent(final C webViewContent) throws Exception {
+    @SuppressWarnings({"resource"})
+    private static <C extends WebViewContent> C testDeSerializeWebViewContent(final C webViewContent) throws Exception {
         String s = ((ByteArrayOutputStream)webViewContent.saveToStream()).toString("UTF-8");
-        @SuppressWarnings("unchecked")
-        C newWebViewContent = (C)webViewContent.getClass().newInstance();
-        newWebViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
+        return deserialize(s, webViewContent.getClass());
+    }
+
+    @SuppressWarnings({"unchecked", "resource"})
+    private static <C extends WebViewContent> C deserialize(final String content, final Class<?> webViewContentClass)
+        throws IOException, InstantiationException, IllegalAccessException {
+        C newWebViewContent = (C)webViewContentClass.newInstance();
+        newWebViewContent.loadFromStream(IOUtils.toInputStream(content, StandardCharsets.UTF_8));
         return newWebViewContent;
     }
 
@@ -97,9 +113,8 @@ public class DeSerializationTest {
         rep.setDataAreaColor(Color.green);
         rep.setGridColor(Color.blue);
 
-        testDeSerializeWebViewContent(rep);
-
-        //TODO compare and test more properties
+        ROCCurveViewRepresentation newRep = testDeSerializeWebViewContent(rep);
+        assertThat(newRep, is(rep));
     }
 
     /**
@@ -117,8 +132,34 @@ public class DeSerializationTest {
         JSDecisionTree tree = new JSDecisionTree(root, metaData);
         rep.setTree(tree);
 
-        testDeSerializeWebViewContent(rep);
+        DecisionTreeViewRepresentation newRep = testDeSerializeWebViewContent(rep);
+        assertThat(newRep, is(rep));
+    }
 
-        //TODO compare and test more properties
+    /**
+     * Tests de-/serialization of {@link SubnodeViewValue}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeSerializationSubnodeViewValue() throws Exception {
+        SubnodeViewValue subnodeViewVal = new SubnodeViewValue();
+        Map<String, String> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode val = mapper.createObjectNode();
+        val.put("prop1", "propval1");
+        val.put("prop2", "propval2");
+        map.put("key", mapper.writeValueAsString(val));
+        subnodeViewVal.setViewValues(map);
+        SubnodeViewValue subnodeViewVal2 = testDeSerializeWebViewContent(subnodeViewVal);
+        assertThat("differing view values after deserialization", subnodeViewVal2.getViewValues(),
+            is(subnodeViewVal.getViewValues()));
+
+        // try to deserialize a value as it would arrive from JS
+        ObjectNode jsonObj = mapper.createObjectNode();
+        jsonObj.set("key", val);
+        subnodeViewVal2 = deserialize(mapper.writeValueAsString(jsonObj), SubnodeViewValue.class);
+        assertThat("differing view values after deserialization", subnodeViewVal2.getViewValues(),
+            is(subnodeViewVal.getViewValues()));
     }
 }
