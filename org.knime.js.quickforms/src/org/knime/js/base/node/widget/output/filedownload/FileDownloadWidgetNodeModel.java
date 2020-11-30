@@ -48,10 +48,14 @@
  */
 package org.knime.js.base.node.widget.output.filedownload;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -65,7 +69,18 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.core.node.workflow.VariableType;
 import org.knime.core.util.FileUtil;
+import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.connections.FSPath;
+import org.knime.filehandling.core.connections.location.FSPathProvider;
+import org.knime.filehandling.core.connections.location.FSPathProviderFactory;
+import org.knime.filehandling.core.connections.uriexport.URIExporter;
+import org.knime.filehandling.core.connections.uriexport.URIExporterID;
+import org.knime.filehandling.core.connections.uriexport.URIExporterIDs;
+import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -121,7 +136,20 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
 
         String value;
         try {
-            value = peekFlowVariableString(varName);
+            if (getAvailableFlowVariables(
+                new VariableType[] {FSLocationVariableType.INSTANCE,
+                VariableType.StringType.INSTANCE}).get(varName).getVariableType() instanceof FSLocationVariableType) {
+                FSLocation fsLocation = peekFlowVariable(varName, FSLocationVariableType.INSTANCE);
+                if (fsLocation.getFSCategory().equals(FSCategory.RELATIVE)) {
+                    value = getRelativePath(fsLocation);
+                } else if (fsLocation.getFSCategory().equals(FSCategory.LOCAL) || fsLocation.getFSCategory().equals(FSCategory.CUSTOM_URL))  {
+                    value = fsLocation.getPath();
+                } else {
+                    throw new InvalidSettingsException("Connection type is not yet supported");
+                }
+            } else {
+                value = peekFlowVariableString(varName);
+            }
         } catch (NoSuchElementException e) {
             throw new InvalidSettingsException(e.getMessage(), e);
         }
@@ -142,6 +170,24 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
                     + value);
         }
         return path;
+    }
+
+    private static String getRelativePath (final FSLocation fsLocation) {
+        String value;
+        try (final FSPathProviderFactory factory = FSPathProviderFactory.newFactory(Optional.empty(), fsLocation);
+                final FSPathProvider pathProvider = factory.create(fsLocation);
+                final FSConnection fsConnection = pathProvider.getFSConnection();) {
+            final Map<URIExporterID, URIExporter> uriExporters = fsConnection.getURIExporters();
+            final URIExporter uriExporter = uriExporters.get(URIExporterIDs.LEGACY_KNIME_URL);
+            final FSPath path = pathProvider.getPath();
+            value = uriExporter.toUri(path).toString();
+            return value;
+        } catch (IOException | URISyntaxException e) {
+            throw new IllegalArgumentException(
+                String.format("The path '%s' could not be converted to a KNIME URL: %s", fsLocation.getPath(),
+                    e.getMessage()),
+                e);
+        }
     }
 
     /**

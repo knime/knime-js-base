@@ -63,6 +63,8 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FlowVariableListCellRenderer;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.js.base.util.LabeledViewNodeDialog;
 
 /**
@@ -122,12 +124,12 @@ public class FileDownloadWidgetDialog extends LabeledViewNodeDialog {
         DefaultComboBoxModel<FlowVariable> m =
             (DefaultComboBoxModel<FlowVariable>)m_filePathVariableNameCombo.getModel();
         m.removeAllElements();
-        for (FlowVariable v : getAvailableFlowVariables().values()) {
-            if (v.getType().equals(FlowVariable.Type.STRING)) {
-                m.addElement(v);
-                if (v.getName().equals(flowVariableName)) {
-                    selectedVar = v;
-                }
+        for (FlowVariable v : getAvailableFlowVariables(
+                new VariableType[] {FSLocationVariableType.INSTANCE,
+                VariableType.StringType.INSTANCE}).values()) {
+            m.addElement(v);
+            if (v.getName().equals(flowVariableName)) {
+                selectedVar = v;
             }
         }
         if (selectedVar != null) {

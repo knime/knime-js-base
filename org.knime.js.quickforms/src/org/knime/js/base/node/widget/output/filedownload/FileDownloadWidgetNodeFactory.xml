@@ -10,7 +10,7 @@
         <intro>
             <p>
               Provides a link with a downloadable file. The user
-              needs to select a string flow variable pointing to an existing 
+              needs to select a string or path flow variable pointing to an existing
               file. This node is typically connected to a file writer (e.g.
               CSV writer), whereby the writer exposes its destination file
               as variable that is selected in this node's configuration dialog.
@@ -18,7 +18,7 @@
             <p>
             The node supports custom CSS styling. 
             You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
-            in the node configuration dialog. 
+            in the node configuration dialog.
             You will find the list of available classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
             </p>            
         </intro>
