@@ -69,6 +69,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.util.FileUtil;
 import org.knime.filehandling.core.connections.FSCategory;
@@ -136,9 +137,11 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
 
         String value;
         try {
-            if (getAvailableFlowVariables(
-                new VariableType[] {FSLocationVariableType.INSTANCE,
-                VariableType.StringType.INSTANCE}).get(varName).getVariableType() instanceof FSLocationVariableType) {
+            final Map<String, FlowVariable> flowVariables = getAvailableFlowVariables(
+                new VariableType[] {FSLocationVariableType.INSTANCE,VariableType.StringType.INSTANCE}
+            );
+            // since 4.3
+            if (flowVariables.get(varName).getVariableType() instanceof FSLocationVariableType) {
                 FSLocation fsLocation = peekFlowVariable(varName, FSLocationVariableType.INSTANCE);
                 if (fsLocation.getFSCategory().equals(FSCategory.RELATIVE)) {
                     value = getRelativePath(fsLocation);
@@ -173,15 +176,15 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
     }
 
     private static String getRelativePath (final FSLocation fsLocation) {
-        String value;
-        try (final FSPathProviderFactory factory = FSPathProviderFactory.newFactory(Optional.empty(), fsLocation);
+        try (
+                final FSPathProviderFactory factory = FSPathProviderFactory.newFactory(Optional.empty(), fsLocation);
                 final FSPathProvider pathProvider = factory.create(fsLocation);
-                final FSConnection fsConnection = pathProvider.getFSConnection();) {
+                final FSConnection fsConnection = pathProvider.getFSConnection();
+            ) {
             final Map<URIExporterID, URIExporter> uriExporters = fsConnection.getURIExporters();
             final URIExporter uriExporter = uriExporters.get(URIExporterIDs.LEGACY_KNIME_URL);
             final FSPath path = pathProvider.getPath();
-            value = uriExporter.toUri(path).toString();
-            return value;
+            return uriExporter.toUri(path).toString();
         } catch (IOException | URISyntaxException e) {
             throw new IllegalArgumentException(
                 String.format("The path '%s' could not be converted to a KNIME URL: %s", fsLocation.getPath(),
