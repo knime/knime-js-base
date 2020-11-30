@@ -29,7 +29,7 @@
 		<option name="Parameter Name">Parameter identifier for external parameterization
 			(e.g. batch execution).
 		</option>
-		<option name="Add SMILES, SMARTS, HELM Formats">
+		<option name="Enable SMILES, SMARTS, HELM Formats">
 			If this is selected, the SMILES, SMARTS, HELM formats can be selected from the format list.
 		</option>
 		<option name="Format">The format of the molecule string. Please note
