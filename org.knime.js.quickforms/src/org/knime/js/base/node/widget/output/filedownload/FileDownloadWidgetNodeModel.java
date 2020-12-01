@@ -141,7 +141,8 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
                 new VariableType[] {FSLocationVariableType.INSTANCE,VariableType.StringType.INSTANCE}
             );
             // since 4.3
-            if (flowVariables.get(varName).getVariableType() instanceof FSLocationVariableType) {
+            if (flowVariables.get(varName) != null &&
+                    flowVariables.get(varName).getVariableType() instanceof FSLocationVariableType) {
                 FSLocation fsLocation = peekFlowVariable(varName, FSLocationVariableType.INSTANCE);
                 if (fsLocation.getFSCategory().equals(FSCategory.RELATIVE)) {
                     value = getRelativePath(fsLocation);
