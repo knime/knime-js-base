@@ -87,17 +87,6 @@ public class CredentialsInputQuickFormValue extends JSONViewContent implements D
     private String m_password;
     private boolean m_isSavePassword;
 
-    // since 4.3
-    private boolean hasArtifactsView = true;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean getHasArtifactsView() {
-        return hasArtifactsView;
-    }
-
     /**
      * {@inheritDoc}
      */

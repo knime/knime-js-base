@@ -82,17 +82,6 @@ public class CredentialsNodeValue extends JSONViewContent {
 
     private String m_username;
 
-    // since 4.3
-    private boolean hasArtifactsView = true;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean getHasArtifactsView() {
-        return hasArtifactsView;
-    }
-
     private String m_password;
 
     private boolean m_isSavePassword;
@@ -145,7 +134,8 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private void setMagicPassword(final String magicPassword) {
-        if(StringUtils.isEmpty(m_password) && !StringUtils.equals(magicPassword, CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
+        if (StringUtils.isEmpty(m_password)
+            && !StringUtils.equals(magicPassword, CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
             m_password = StringUtils.isEmpty(magicPassword) ? null : magicPassword;
         }
     }
