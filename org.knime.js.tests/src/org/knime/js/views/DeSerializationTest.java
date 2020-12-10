@@ -150,6 +150,7 @@ public class DeSerializationTest {
         val.put("prop1", "propval1");
         val.put("prop2", "propval2");
         map.put("key", mapper.writeValueAsString(val));
+        map.put("key2", mapper.writeValueAsString(val));
         subnodeViewVal.setViewValues(map);
         SubnodeViewValue subnodeViewVal2 = testDeSerializeWebViewContent(subnodeViewVal);
         assertThat("differing view values after deserialization", subnodeViewVal2.getViewValues(),
@@ -158,6 +159,7 @@ public class DeSerializationTest {
         // try to deserialize a value as it would arrive from JS
         ObjectNode jsonObj = mapper.createObjectNode();
         jsonObj.set("key", val);
+        jsonObj.set("key2", val);
         subnodeViewVal2 = deserialize(mapper.writeValueAsString(jsonObj), SubnodeViewValue.class);
         assertThat("differing view values after deserialization", subnodeViewVal2.getViewValues(),
             is(subnodeViewVal.getViewValues()));
