@@ -141,12 +141,15 @@ public class FileDialogNodeModel extends
         Vector<String> fileValues = getFileAndURL(openStream);
         String varIdentifier = getConfig().getFlowVariableName();
         if (fileValues.get(0) != null) {
+            pushFlowVariableString(varIdentifier, fileValues.get(0));
+        }
+        if (fileValues.get(1) != null) {
             // since 4.3
             FSLocation location = new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()),
                 fileValues.get(1));
             pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);
+            pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
         }
-        pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
         if (StringUtils.isNoneEmpty(getRelevantValue().getFileName())) {
             pushFlowVariableString(varIdentifier + " (file name)", getRelevantValue().getFileName());
         }
