@@ -156,7 +156,7 @@ public class IntegerSliderDialogNodeModel
                 if (min == null || !min.getType().isCompatible(DoubleValue.class)) {
                     minFailed = true;
                 } else {
-                    config.getSliderConfig().setCustomMin(((DoubleValue)min).getDoubleValue());
+                    config.setCustomMin(((DoubleValue)min).getDoubleValue());
                 }
             }
             if (!config.isUseCustomMax()) {
@@ -164,7 +164,7 @@ public class IntegerSliderDialogNodeModel
                 if (max == null || !max.getType().isCompatible(DoubleValue.class)) {
                     maxFailed = true;
                 } else {
-                    config.getSliderConfig().setCustomMax(((DoubleValue)max).getDoubleValue());
+                    config.setCustomMax(((DoubleValue)max).getDoubleValue());
                 }
             }
             if (minFailed || maxFailed) {

@@ -73,14 +73,6 @@ public class SliderNodeConfig {
     private static boolean DEFAULT_USE_CUSTOM_MAX = false;
     private boolean m_useCustomMax = DEFAULT_USE_CUSTOM_MAX;
 
-    private static final String CFG_MIN = "customMin";
-    private static final double DEFAULT_MIN = 0;
-    private double m_customMin = DEFAULT_MIN;
-
-    private static final String CFG_MAX = "customMax";
-    private static final double DEFAULT_MAX = 100;
-    private double m_customMax = DEFAULT_MAX;
-
     /**
      * @return the domainColumn
      */
@@ -93,34 +85,6 @@ public class SliderNodeConfig {
      */
     public void setDomainColumn(final SettingsModelString domainColumn) {
         m_domainColumn = domainColumn;
-    }
-
-    /**
-     * @return the customMin value of the slider
-     */
-    public double getCustomMin() {
-        return m_customMin;
-    }
-
-    /**
-     * @param customMin the customMin value to set
-     */
-    public void setCustomMin(final double customMin) {
-        m_customMin = customMin;
-    }
-
-    /**
-     * @return the customMax value of the slider
-     */
-    public double getCustomMax() {
-        return m_customMax;
-    }
-
-    /**
-     * @param customMax the max value to set
-     */
-    public void setCustomMax(final double customMax) {
-        m_customMax = customMax;
     }
 
     /**
@@ -160,8 +124,6 @@ public class SliderNodeConfig {
         m_domainColumn.saveSettingsTo(settings);
         settings.addBoolean(CFG_USE_CUSTOM_MIN, m_useCustomMin);
         settings.addBoolean(CFG_USE_CUSTOM_MAX, m_useCustomMax);
-        settings.addDouble(CFG_MIN, m_customMin);
-        settings.addDouble(CFG_MAX, m_customMax);
     }
 
     /**
@@ -173,8 +135,6 @@ public class SliderNodeConfig {
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN);
         m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX);
-        m_customMin = settings.getDouble(CFG_MIN);
-        m_customMax = settings.getDouble(CFG_MAX);
         m_domainColumn.loadSettingsFrom(settings);
     }
 
@@ -186,8 +146,6 @@ public class SliderNodeConfig {
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN, DEFAULT_USE_CUSTOM_MIN);
         m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX, DEFAULT_USE_CUSTOM_MAX);
-        m_customMin = settings.getDouble(CFG_MIN, DEFAULT_MIN);
-        m_customMax = settings.getDouble(CFG_MAX, DEFAULT_MAX);
     }
 
     /**
@@ -203,12 +161,6 @@ public class SliderNodeConfig {
         sb.append(", ");
         sb.append("useCustomMax=");
         sb.append(m_useCustomMax);
-        sb.append(", ");
-        sb.append("customMin=");
-        sb.append(m_customMin);
-        sb.append(", ");
-        sb.append("customMax=");
-        sb.append(m_customMax);
         if (m_domainColumn != null) {
             sb.append(", domainColumn=");
             sb.append(m_domainColumn);
@@ -225,8 +177,6 @@ public class SliderNodeConfig {
                 .append(m_domainColumn)
                 .append(m_useCustomMin)
                 .append(m_useCustomMax)
-                .append(m_customMin)
-                .append(m_customMax)
                 .toHashCode();
     }
 
@@ -249,8 +199,6 @@ public class SliderNodeConfig {
                 .append(m_useCustomMin, other.m_useCustomMin)
                 .append(m_useCustomMax, other.m_useCustomMax)
                 .append(m_domainColumn, other.m_domainColumn)
-                .append(m_customMin, other.m_customMin)
-                .append(m_customMax, other.m_customMax)
                 .isEquals();
     }
 
