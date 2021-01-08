@@ -596,6 +596,8 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
         m_config.getDomainColumn().saveSettingsTo(settings);
         m_config.setUseCustomMin(m_useMin.isSelected());
         m_config.setUseCustomMax(m_useMax.isSelected());
+        m_config.setCustomMin((Double)m_min.getValue());
+        m_config.setCustomMax((Double)m_max.getValue());
 
         SliderSettings sSettings = new SliderSettings();
         sSettings.setRangeMinValue((Double)m_min.getValue());

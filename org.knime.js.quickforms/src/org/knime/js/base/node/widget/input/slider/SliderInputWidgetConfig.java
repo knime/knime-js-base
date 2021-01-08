@@ -144,10 +144,24 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
     }
 
     /**
+     * @param min sets the customMin value
+     */
+    public void setCustomMin(final double min) {
+        m_sliderConfig.setCustomMin(min);
+    }
+
+    /**
      * @return customMax
      */
     public double getCustomMax() {
         return m_sliderConfig.getCustomMax();
+    }
+
+    /**
+     * @param max sets the customMax value
+     */
+    public void setCustomMax(final double max) {
+        m_sliderConfig.setCustomMax(max);
     }
 
     /**

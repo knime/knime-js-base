@@ -58,6 +58,7 @@ import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.js.core.settings.slider.SliderSettings;
 
 /**
  * The node model for the slider widget node
@@ -97,6 +98,14 @@ public class SliderWidgetNodeModel
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         if (getConfig().getSliderSettings() == null) {
             throw new InvalidSettingsException("No settings defined. Please configure the node.");
+        }
+        SliderInputWidgetConfig config = getConfig();
+        SliderSettings sliderSettings = config.getSliderSettings();
+        if (getConfig().isUseCustomMin()) {
+            sliderSettings.setRangeMinValue(config.getCustomMin());
+        }
+        if (getConfig().isUseCustomMax()) {
+            sliderSettings.setRangeMaxValue(config.getCustomMax());
         }
         return super.performExecute(inObjects, exec);
     }
@@ -150,14 +159,27 @@ public class SliderWidgetNodeModel
     public ValidationError validateViewValue(final SliderNodeValue value) {
         double dialogValue = value.getDouble();
         if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
-            return new ValidationError("The set integer " + dialogValue
+            return new ValidationError("The set value " + dialogValue
                 + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
         }
         if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
-            return new ValidationError("The set integer " + dialogValue
+            return new ValidationError("The set value " + dialogValue
                 + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
         }
         return super.validateViewValue(value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void performReset() {
+        SliderSettings sliderSettings = getConfig().getSliderSettings();
+        if (sliderSettings != null) {
+            sliderSettings.setRangeMinValue(sliderSettings.getRangeMinValue());
+            sliderSettings.setRangeMaxValue(sliderSettings.getRangeMaxValue());
+        }
+        super.performReset();
     }
 
 }
