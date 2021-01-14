@@ -100,12 +100,15 @@ public class SliderWidgetNodeModel
             throw new InvalidSettingsException("No settings defined. Please configure the node.");
         }
         SliderInputWidgetConfig config = getConfig();
-        SliderSettings sliderSettings = config.getSliderSettings();
-        if (getConfig().isUseCustomMin()) {
-            sliderSettings.setRangeMinValue(config.getCustomMin());
+        SliderSettings sliderSettings = getRepresentation().getSliderSettings();
+
+        // Apply the new value only if the value is set.
+        // This is needed, as otherwise the range variable might be overwritten.
+        if (config.isUseCustomMin() && !Double.isNaN(config.getCustomMinValue())) {
+            sliderSettings.setRangeMinValue(config.getCustomMinValue());
         }
-        if (getConfig().isUseCustomMax()) {
-            sliderSettings.setRangeMaxValue(config.getCustomMax());
+        if (config.isUseCustomMax() && !Double.isNaN(config.getCustomMaxValue())) {
+            sliderSettings.setRangeMaxValue(config.getCustomMaxValue());
         }
         return super.performExecute(inObjects, exec);
     }
@@ -138,10 +141,11 @@ public class SliderWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    protected SliderNodeRepresentation<SliderNodeValue> getRepresentation() {
+    protected SliderWidgetNodeRepresentation getRepresentation() {
         SliderInputWidgetConfig config = getConfig();
         return new SliderWidgetNodeRepresentation(getRelevantValue(), config.getDefaultValue(),
-            config.getSliderConfig(), config.getLabelConfig(), config.getSliderSettings());
+            config.getSliderConfig(), config.getLabelConfig(), config.getSliderSettings(),
+            config.getCustomMinValue(), config.getCustomMaxValue());
     }
 
     /**
@@ -157,29 +161,26 @@ public class SliderWidgetNodeModel
      */
     @Override
     public ValidationError validateViewValue(final SliderNodeValue value) {
-        double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
-            return new ValidationError("The set value " + dialogValue
-                + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
-        }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
-            return new ValidationError("The set value " + dialogValue
-                + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
+        if (getConfig().getSliderSettings() != null) {
+            double dialogValue = value.getDouble();
+            // Take the customMinValue if it exists, which means that the flow variable is set or the range min otherwise.
+            double minimum = !Double.isNaN(getConfig().getCustomMinValue()) ? getConfig().getCustomMinValue()
+                                                                            : getConfig().getSliderSettings().getRangeMinValue();
+            // Take the customMaxValue if it exists, which means that the flow variable is set or the range max otherwise.
+            double maximum = !Double.isNaN(getConfig().getCustomMaxValue()) ? getConfig().getCustomMaxValue()
+                                                                            : getConfig().getSliderSettings().getRangeMaxValue();
+            if (getConfig().isUseCustomMin()
+                    && dialogValue < minimum) {
+                return new ValidationError("The set value " + dialogValue
+                    + " is smaller than the allowed minimum of " + minimum);
+            }
+            if (getConfig().isUseCustomMax()
+                    && dialogValue > maximum) {
+                return new ValidationError("The set value " + dialogValue
+                    + " is bigger than the allowed maximum of " + maximum);
+            }
         }
         return super.validateViewValue(value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void performReset() {
-        SliderSettings sliderSettings = getConfig().getSliderSettings();
-        if (sliderSettings != null) {
-            sliderSettings.setRangeMinValue(sliderSettings.getRangeMinValue());
-            sliderSettings.setRangeMaxValue(sliderSettings.getRangeMaxValue());
-        }
-        super.performReset();
     }
 
 }

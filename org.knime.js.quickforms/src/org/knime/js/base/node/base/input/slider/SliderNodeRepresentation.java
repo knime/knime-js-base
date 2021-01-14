@@ -71,8 +71,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
 
     private final boolean m_useCustomMin;
     private final boolean m_useCustomMax;
-    private final double m_customMin;
-    private final double m_customMax;
 
     @JsonCreator
     protected SliderNodeRepresentation(@JsonProperty("label") final String label,
@@ -86,8 +84,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
         super(label, description, required, defaultValue, currentValue);
         m_useCustomMin = useCustomMin;
         m_useCustomMax = useCustomMax;
-        m_customMin = customMin;
-        m_customMax = customMax;
     }
 
     /**
@@ -101,8 +97,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
         super(currentValue, defaultValue, labelConfig);
         m_useCustomMin = config.isUseCustomMin();
         m_useCustomMax = config.isUseCustomMax();
-        m_customMin = config.getCustomMin();
-        m_customMax = config.getCustomMax();
     }
 
     /**
@@ -122,22 +116,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
     }
 
     /**
-     * @return the customMin
-     */
-    @JsonProperty("customMin")
-    public double getCustomMin() {
-        return m_customMin;
-    }
-
-    /**
-     * @return the customMax
-     */
-    @JsonProperty("customMax")
-    public double getCustomMax() {
-        return m_customMax;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -151,12 +129,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
         sb.append(", ");
         sb.append("useCustomMax=");
         sb.append(m_useCustomMax);
-        sb.append(", ");
-        sb.append("customMin=");
-        sb.append(m_customMin);
-        sb.append(", ");
-        sb.append("customMax=");
-        sb.append(m_customMax);
         return sb.toString();
     }
 
@@ -170,8 +142,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
                 .appendSuper(super.hashCode())
                 .append(m_useCustomMin)
                 .append(m_useCustomMax)
-                .append(m_customMin)
-                .append(m_customMax)
                 .toHashCode();
     }
 
@@ -196,8 +166,6 @@ public class SliderNodeRepresentation<VAL extends SliderNodeValue> extends Label
                 .appendSuper(super.equals(obj))
                 .append(m_useCustomMin, other.m_useCustomMin)
                 .append(m_useCustomMax, other.m_useCustomMax)
-                .append(m_customMin, other.m_customMin)
-                .append(m_customMax, other.m_customMax)
                 .isEquals();
     }
 }

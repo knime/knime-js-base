@@ -69,9 +69,15 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
 
     private final SliderNodeConfig m_sliderConfig;
 
-    private static String CFG_SLIDER = "sliderSettings";
-    private static String CFG_SLIDER_EXISTS = "sliderExists";
+    private static final String CFG_SLIDER = "sliderSettings";
+    private static final String CFG_SLIDER_EXISTS = "sliderExists";
     private SliderSettings m_sliderSettings = null;
+
+    private static final String CFG_MIN_VALUE = "customMinValue";
+    private double m_customMinValue = Double.NaN;
+
+    private static final String CFG_MAX_VALUE = "customMaxValue";
+    private double m_customMaxValue = Double.NaN;
 
     /**
      * Instantiate a new config object
@@ -139,29 +145,15 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
     /**
      * @return customMin
      */
-    public double getCustomMin() {
-        return m_sliderConfig.getCustomMin();
-    }
-
-    /**
-     * @param min sets the customMin value
-     */
-    public void setCustomMin(final double min) {
-        m_sliderConfig.setCustomMin(min);
+    public double getCustomMinValue() {
+        return m_customMinValue;
     }
 
     /**
      * @return customMax
      */
-    public double getCustomMax() {
-        return m_sliderConfig.getCustomMax();
-    }
-
-    /**
-     * @param max sets the customMax value
-     */
-    public void setCustomMax(final double max) {
-        m_sliderConfig.setCustomMax(max);
+    public double getCustomMaxValue() {
+        return m_customMaxValue;
     }
 
     /**
@@ -181,6 +173,8 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
         NodeSettingsWO sliderSettings = settings.addNodeSettings(CFG_SLIDER);
         boolean sliderExists = m_sliderSettings != null;
         sliderSettings.addBoolean(CFG_SLIDER_EXISTS, sliderExists);
+        settings.addDouble(CFG_MIN_VALUE, m_customMinValue);
+        settings.addDouble(CFG_MAX_VALUE, m_customMaxValue);
         if (sliderExists) {
             m_sliderSettings.saveToNodeSettings(sliderSettings);
         }
@@ -193,6 +187,8 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
+        m_customMinValue = settings.getDouble(CFG_MIN_VALUE, Double.NaN);
+        m_customMaxValue = settings.getDouble(CFG_MAX_VALUE, Double.NaN);
         NodeSettingsRO sliderSettings = settings.getNodeSettings(CFG_SLIDER);
         boolean sliderExists = sliderSettings.getBoolean(CFG_SLIDER_EXISTS);
         m_sliderSettings = sliderExists ? new SliderSettings() : null;
@@ -209,6 +205,8 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_sliderConfig.loadSettingsInDialog(settings);
+        m_customMinValue = settings.getDouble(CFG_MIN_VALUE, Double.NaN);
+        m_customMaxValue = settings.getDouble(CFG_MAX_VALUE, Double.NaN);
         try {
             NodeSettingsRO sliderSettings = settings.getNodeSettings(CFG_SLIDER);
             m_sliderSettings = new SliderSettings();
@@ -231,6 +229,12 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
         sb.append(", ");
         sb.append("sliderSettings=");
         sb.append(m_sliderSettings);
+        sb.append(", ");
+        sb.append("customMinValue=");
+        sb.append(m_customMinValue);
+        sb.append(", ");
+        sb.append("customMaxValue=");
+        sb.append(m_customMaxValue);
         return sb.toString();
     }
 
@@ -242,6 +246,8 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_sliderSettings)
                 .append(m_sliderConfig)
+                .append(m_customMinValue)
+                .append(m_customMaxValue)
                 .toHashCode();
     }
 
@@ -263,6 +269,8 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_sliderConfig, other.m_sliderConfig)
                 .append(m_sliderSettings, other.m_sliderSettings)
+                .append(m_customMinValue, other.m_customMinValue)
+                .append(m_customMaxValue, other.m_customMaxValue)
                 .isEquals();
     }
 

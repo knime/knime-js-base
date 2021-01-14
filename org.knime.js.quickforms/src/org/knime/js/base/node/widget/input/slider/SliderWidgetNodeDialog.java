@@ -160,8 +160,8 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
         m_min.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-                double min = (Double)m_min.getValue();
-                if (((Double)m_max.getValue()) < min) {
+                double min = (double)m_min.getValue();
+                if (((double)m_max.getValue()) < min) {
                     m_max.setValue(min);
                 }
             }
@@ -169,8 +169,8 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
         m_max.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-                double max = (Double)m_max.getValue();
-                if (((Double)m_min.getValue()) > max) {
+                double max = (double)m_max.getValue();
+                if (((double)m_min.getValue()) > max) {
                     m_min.setValue(max);
                 }
             }
@@ -444,7 +444,7 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
             }
         }
         if (domainColumn != null && forceDomain) {
-            double newDefault = ((Double)m_max.getValue() - (Double)m_min.getValue()) / 2 + (Double)m_min.getValue();
+            double newDefault = ((double)m_max.getValue() - (double)m_min.getValue()) / 2 + (double)m_min.getValue();
             m_defaultSpinner.setValue(newDefault);
         }
     }
@@ -566,9 +566,9 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
     }
 
     private void validateSettings() throws InvalidSettingsException{
-        double min = (Double)m_min.getValue();
-        double max = (Double)m_max.getValue();
-        double value = (Double)m_defaultSpinner.getValue();
+        double min = (double)m_min.getValue();
+        double max = (double)m_max.getValue();
+        double value = (double)m_defaultSpinner.getValue();
         if (max <= min) {
             throw new InvalidSettingsException("Maximum range has to be larger than minimum.");
         }
@@ -576,7 +576,7 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
             throw new InvalidSettingsException("Default value has to be in between selected minimum and maximum");
         }
         if (m_useStepCheckbox.isSelected()) {
-            double stepSize = (Double)m_stepSpinner.getValue();
+            double stepSize = (double)m_stepSpinner.getValue();
             if (stepSize >= (max-min)) {
                 throw new InvalidSettingsException("Step size needs to be smaller than slider range.");
             }
@@ -596,17 +596,15 @@ public class SliderWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SliderN
         m_config.getDomainColumn().saveSettingsTo(settings);
         m_config.setUseCustomMin(m_useMin.isSelected());
         m_config.setUseCustomMax(m_useMax.isSelected());
-        m_config.setCustomMin((Double)m_min.getValue());
-        m_config.setCustomMax((Double)m_max.getValue());
 
         SliderSettings sSettings = new SliderSettings();
-        sSettings.setRangeMinValue((Double)m_min.getValue());
-        sSettings.setRangeMaxValue((Double)m_max.getValue());
-        double defaultValue = (Double)m_defaultSpinner.getValue();
+        sSettings.setRangeMinValue((double)m_min.getValue());
+        sSettings.setRangeMaxValue((double)m_max.getValue());
+        double defaultValue = (double)m_defaultSpinner.getValue();
         m_config.getDefaultValue().setDouble(defaultValue);
         sSettings.setStart(new double[]{defaultValue});
         if (m_useStepCheckbox.isSelected()) {
-            sSettings.setStep((Double)m_stepSpinner.getValue());
+            sSettings.setStep((double)m_stepSpinner.getValue());
         }
         sSettings.setConnect(new boolean[]{m_lowerConnectCheckbox.isSelected(), m_upperConnectCheckbox.isSelected()});
         sSettings.setOrientation(m_orientationVerticalButton.isSelected() ? Orientation.VERTICAL : Orientation.HORIZONTAL);

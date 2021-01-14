@@ -65,6 +65,13 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<IntegerSliderDialogNodeValue> {
 
     private final SliderNodeConfig m_sliderConfig;
+    private static final String CFG_MIN = "customMin";
+    private static final double DEFAULT_MIN = 0;
+    private double m_customMin = DEFAULT_MIN;
+
+    private static final String CFG_MAX = "customMax";
+    private static final double DEFAULT_MAX = 100;
+    private double m_customMax = DEFAULT_MAX;
 
     /**
      * Instantiate a new config object
@@ -116,31 +123,31 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
     }
 
     /**
-     * @return the customMin
+     * @return the customMin value of the slider
      */
     public double getCustomMin() {
-        return m_sliderConfig.getCustomMin();
+        return m_customMin;
     }
 
     /**
-     * @param customMin the useCustomMin to set
+     * @param customMin the customMin value to set
      */
     public void setCustomMin(final double customMin) {
-        m_sliderConfig.setCustomMin(customMin);
+        m_customMin = customMin;
     }
 
     /**
-     * @return the useCustomMax
+     * @return the customMax value of the slider
      */
     public double getCustomMax() {
-        return m_sliderConfig.getCustomMax();
+        return m_customMax;
     }
 
     /**
-     * @param customMax the useCustomMax to set
+     * @param customMax the max value to set
      */
     public void setCustomMax(final double customMax) {
-        m_sliderConfig.setCustomMax(customMax);
+        m_customMax = customMax;
     }
 
     /**
@@ -157,6 +164,8 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
+        settings.addDouble(CFG_MIN, m_customMin);
+        settings.addDouble(CFG_MAX, m_customMax);
         m_sliderConfig.saveSettings(settings);
     }
 
@@ -166,6 +175,8 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
+        m_customMin = settings.getDouble(CFG_MIN, DEFAULT_MIN);
+        m_customMax = settings.getDouble(CFG_MAX, DEFAULT_MAX);
         m_sliderConfig.loadSettings(settings);
     }
 
@@ -175,6 +186,8 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
+        m_customMin = settings.getDouble(CFG_MIN, DEFAULT_MIN);
+        m_customMax = settings.getDouble(CFG_MAX, DEFAULT_MAX);
         m_sliderConfig.loadSettingsInDialog(settings);
     }
 
@@ -187,6 +200,12 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
         sb.append(super.toString());
         sb.append(", ");
         sb.append(m_sliderConfig.toString());
+        sb.append(", ");
+        sb.append("customMin=");
+        sb.append(m_customMin);
+        sb.append(", ");
+        sb.append("customMax=");
+        sb.append(m_customMax);
         return sb.toString();
     }
 
@@ -197,6 +216,8 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
                 .append(m_sliderConfig)
+                .append(m_customMin)
+                .append(m_customMax)
                 .toHashCode();
     }
 
@@ -217,6 +238,8 @@ public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNode
         IntegerSliderDialogNodeConfig other = (IntegerSliderDialogNodeConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_sliderConfig, other.m_sliderConfig)
+                .append(m_customMin, other.m_customMin)
+                .append(m_customMax, other.m_customMax)
                 .isEquals();
     }
 

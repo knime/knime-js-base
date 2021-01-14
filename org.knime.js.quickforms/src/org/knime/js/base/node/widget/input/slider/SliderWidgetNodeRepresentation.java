@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.widget.input.slider;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.input.slider.SliderNodeConfig;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
@@ -56,6 +58,7 @@ import org.knime.js.core.settings.slider.SliderSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -70,19 +73,40 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class SliderWidgetNodeRepresentation extends SliderNodeRepresentation<SliderNodeValue> {
 
     private final SliderSettings m_sliderSettings;
+    private double m_customMinValue;
+    private double m_customMaxValue;
+
 
     /**
      * @param currentValue
      * @param defaultValue
      * @param config
      * @param labelConfig
+     * @param sliderSettings the settings of the noUI-slider
+     * @param customMinValue a custom minimum of the slider
+     * @param customMaxValue a custom maximum of the slider
      */
     @JsonCreator
     public SliderWidgetNodeRepresentation(final SliderNodeValue currentValue, final SliderNodeValue defaultValue,
         final SliderNodeConfig config, final LabeledConfig labelConfig,
-        @JsonProperty("sliderSettings") final SliderSettings sliderSettings) {
+        @JsonProperty("sliderSettings") final SliderSettings sliderSettings,
+        @JsonProperty("customMinValue") final double customMinValue,
+        @JsonProperty("customMaxValue") final double customMaxValue) {
         super(currentValue, defaultValue, config, labelConfig);
         m_sliderSettings = sliderSettings;
+        m_customMinValue = customMinValue;
+        m_customMaxValue = customMaxValue;
+    }
+
+    /**
+     * @param currentValue
+     * @param config
+     */
+    public SliderWidgetNodeRepresentation(final SliderNodeValue currentValue, final SliderInputWidgetConfig config) {
+        super(currentValue, config.getDefaultValue(),config.getSliderConfig(), config.getLabelConfig());
+        m_sliderSettings = config.getSliderSettings();
+        m_customMinValue = config.getCustomMinValue();
+        m_customMaxValue = config.getCustomMaxValue();
     }
 
     /**
@@ -93,4 +117,73 @@ public class SliderWidgetNodeRepresentation extends SliderNodeRepresentation<Sli
         return m_sliderSettings;
     }
 
+    /**
+     * @return the customMin
+     */
+    @JsonProperty("customMinValue")
+    public double getCustomMinValue() {
+        return m_customMinValue;
+    }
+
+    /**
+     * @return the customMax
+     */
+    @JsonProperty("customMaxValue")
+    public double getCustomMaxValue() {
+        return m_customMaxValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append("customMinValue=");
+        sb.append(m_customMinValue);
+        sb.append(", ");
+        sb.append("customMaxValue=");
+        sb.append(m_customMaxValue);
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(m_customMinValue)
+                .append(m_customMaxValue)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        SliderWidgetNodeRepresentation other = (SliderWidgetNodeRepresentation)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                .appendSuper(super.equals(obj))
+                .append(m_customMinValue, other.m_customMinValue)
+                .append(m_customMaxValue, other.m_customMaxValue)
+                .isEquals();
+    }
 }
