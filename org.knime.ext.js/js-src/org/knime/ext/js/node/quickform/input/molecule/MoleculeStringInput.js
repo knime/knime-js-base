@@ -939,7 +939,7 @@ org_knime_ext_js_node_quickform_input_molecule = function() {
 					if (customSketcher) {
 						sketchTranslator = sketcherFrame.get(0).contentWindow.SketchTranslator;
 						if (sketchTranslator) {
-							sketchTranslator.init(currentMolecule, null, moleculeInput.update);
+							sketchTranslator.init(currentMolecule, null, moleculeInput.update, format);
 						} else {
 							errorMessage.text("Could not initialize sketcher. SketchTranslator not found.");
 							errorMessage.css('display', 'block');

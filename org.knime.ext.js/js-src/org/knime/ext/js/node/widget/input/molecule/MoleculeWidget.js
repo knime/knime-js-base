@@ -148,7 +148,7 @@ window.knimeMoleculeWidget = (function () {
                 if (customSketcher) {
                     sketchTranslator = sketcherFrame.get(0).contentWindow.SketchTranslator;
                     if (sketchTranslator) {
-                        sketchTranslator.init(currentMolecule, null, moleculeWidget.update);
+                        sketchTranslator.init(currentMolecule, null, moleculeWidget.update, format);
                     } else {
                         errorMessage.text('Could not initialize sketcher. SketchTranslator not found.');
                         errorMessage.css('display', 'block');
