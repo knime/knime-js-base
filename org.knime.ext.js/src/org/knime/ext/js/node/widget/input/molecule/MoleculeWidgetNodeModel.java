@@ -157,8 +157,7 @@ public class MoleculeWidgetNodeModel
 
     @Override
     protected void useCurrentValueAsDefault() {
-        // TODO Auto-generated method stub
-        
+        getConfig().getDefaultValue().setMoleculeString(getViewValue().getMoleculeString());
     }
 
 }
