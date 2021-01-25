@@ -113,12 +113,6 @@ window.knimeMoleculeWidget = (function () {
             requestResource(jsonPath, requireKetcher);
         }
 
-        errorMessage = jQuery('<div>');
-        errorMessage.css('display', 'none');
-        errorMessage.css('color', 'red');
-        errorMessage.css('font-style', 'italic');
-        errorMessage.css('margin', '10px');
-        wgdiv.prepend(errorMessage);
         var titleDiv = jQuery('<div class="label knime-qf-title"></div>');
         titleDiv.css('margin-left', '10px');
         titleDiv.text(representation.label);
@@ -126,6 +120,14 @@ window.knimeMoleculeWidget = (function () {
         wgdiv.attr('title', representation.description);
         wgdiv.attr('aria-label', representation.label);
         wgdiv.attr('tabindex', 0);
+
+        // append error message to the bottom of the widget
+        errorMessage = jQuery('<div>');
+        errorMessage.css('display', 'none');
+        errorMessage.css('color', 'red');
+        errorMessage.css('font-style', 'italic');
+        errorMessage.css('margin', '10px');
+        wgdiv.append(errorMessage);
         viewValid = true;
     };
 
