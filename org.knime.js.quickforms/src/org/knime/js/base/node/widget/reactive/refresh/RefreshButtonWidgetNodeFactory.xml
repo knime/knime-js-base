@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_refresh.png" type="Widget" xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+	<name>Refresh Button Widget</name>
+	<shortDescription>
+       Creates a button widget with configurable text which emits reactivity events in component visualizations.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+			   Creates a button widget with configurable text which emits reactivity events in component visualizations. These
+		       events trigger partial re-execution within a component of downstream nodes, allowing users to leverage the power
+		       of the KNIME Reactive Visualization framework and create interactive web applications and visualizations in real-
+		       time.
+			</p>
+		</intro>
+		<option name="Label">A descriptive label that will be shown above the button.</option>
+		<option name="Description">Native browser tooltip text to be shown for the button.</option>
+		<option name="Text">The text of the button.</option>
+	</fullDescription>
+	<interactiveView name="Refresh Button Widget">
+		Displays a button with text and an optional label which emits reactivity events to re-execute downstream nodes. 
+	</interactiveView>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output port to connect to downstream nodes which should be re-executed when the widget is clicked.
+		</outPort>
+	</ports>
+</knimeNode>
