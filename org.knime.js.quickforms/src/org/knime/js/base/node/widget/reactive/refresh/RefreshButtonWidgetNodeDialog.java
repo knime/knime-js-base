@@ -97,10 +97,7 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
-        String s = m_config.getText();
-        if (s == null) {
-            s = "";
-        }
+        String s = m_config.getButtonText();
         m_textField.setText(s);
         loadSettingsFrom(m_config);
     }
@@ -112,7 +109,7 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
         saveSettingsTo(m_config);
         String s = m_textField.getText();
-        m_config.setText(s);
+        m_config.setButtonText(s);
         m_config.saveSettings(settings);
     }
 }

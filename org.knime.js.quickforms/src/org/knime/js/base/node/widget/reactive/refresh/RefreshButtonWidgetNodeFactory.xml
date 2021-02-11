@@ -24,7 +24,10 @@
 	</interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">
-			Variable output port to connect to downstream nodes which should be re-executed when the widget is clicked.
+			Variable output port to connect to nodes which should be re-executed when the widget is clicked. Nodes downstream of
+			a node connected to this flow variable output port will also be re-executed, so it's only necessary to connect to the
+			root node in each workflow branch for which re-execution is desired. The flow variable value is trivial and does not
+			contain any information.
 		</outPort>
 	</ports>
 </knimeNode>

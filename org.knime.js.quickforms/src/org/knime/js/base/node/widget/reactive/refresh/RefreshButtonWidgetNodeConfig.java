@@ -62,6 +62,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
 
+    /** node flow variable output name */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
 
     private static final String DEFAULT_LABEL = "";
@@ -73,8 +74,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     private String m_description = DEFAULT_DESCRIPTION;
 
     private static final String DEFAULT_TEXT = "Refresh";
-    private static final String CFG_TEXT = "text";
-    private String m_text = DEFAULT_TEXT;
+    private static final String CFG_BUTTON_TEXT = "buttonText";
+    private String m_buttonText = DEFAULT_TEXT;
 
     /**
      * @return the label
@@ -111,17 +112,17 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     }
 
     /**
-     * @return the text
+     * @return the button text
      */
-    public String getText() {
-        return m_text;
+    public String getButtonText() {
+        return m_buttonText;
     }
 
     /**
-     * @param text the text to set
+     * @param buttonText the button text to set
      */
-    public void setText(final String text) {
-        m_text = text;
+    public void setButtonText(final String buttonText) {
+        m_buttonText = buttonText;
     }
 
     /**
@@ -131,7 +132,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_LABEL, m_label);
         settings.addString(CFG_DESCRIPTION, m_description);
-        settings.addString(CFG_TEXT, m_text);
+        settings.addString(CFG_BUTTON_TEXT, m_buttonText);
     }
 
     /**
@@ -139,7 +140,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
      */
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_text = settings.getString(CFG_TEXT, DEFAULT_TEXT);
+        m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
         m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
     }
@@ -163,12 +164,11 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(RefreshButtonWidgetViewRepresentation.class);
+        sb.append(RefreshButtonWidgetNodeConfig.class);
         sb.append(", label=");
         sb.append(m_label);
         sb.append(", description=");
         sb.append(m_description);
-        sb.append(", format=");
         return sb.toString();
     }
 
@@ -180,7 +180,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         return new HashCodeBuilder()
             .append(m_label)
             .append(m_description)
-            .append(m_text)
+            .append(m_buttonText)
             .toHashCode();
     }
 
@@ -202,7 +202,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         return new EqualsBuilder()
             .append(m_label, other.m_label)
             .append(m_description, other.m_description)
-            .append(m_text, other.m_text)
+            .append(m_buttonText, other.m_buttonText)
             .isEquals();
     }
 }

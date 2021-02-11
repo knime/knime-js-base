@@ -103,11 +103,12 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
             representation.setDescription(m_config.getDescription());
             String flowVarCorrectedText;
             try {
-                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getText(), this);
+                // replaces $${S ‘<variable name here>’}$$ with flow variable value for in-line replacement
+                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getButtonText(), this);
             } catch (NoSuchElementException nse) {
                 throw new InvalidSettingsException(nse.getMessage(), nse);
             }
-            representation.setText(flowVarCorrectedText);
+            representation.setButtonText(flowVarCorrectedText);
             pushFlowVariableString(RefreshButtonWidgetNodeConfig.FLOW_VARIABLE_NAME, flowVarCorrectedText);
         }
         return new PortObject[]{FlowVariablePortObject.INSTANCE};

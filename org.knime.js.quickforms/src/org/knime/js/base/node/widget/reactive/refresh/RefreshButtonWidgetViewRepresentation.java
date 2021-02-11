@@ -98,17 +98,17 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     }
 
     /**
-     * @return the text
+     * @return the button text
      */
-    public String getText() {
-        return m_config.getText();
+    public String getButtonText() {
+        return m_config.getButtonText();
     }
 
     /**
-     * @param text the text to set
+     * @param buttonText the button text to set
      */
-    public void setText(final String text) {
-        m_config.setText(text);
+    public void setButtonText(final String buttonText) {
+        m_config.setButtonText(buttonText);
     }
 
     /**
@@ -146,7 +146,7 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
         return new HashCodeBuilder()
             .append(m_config.getLabel())
             .append(m_config.getDescription())
-            .append(m_config.getText())
+            .append(m_config.getButtonText())
             .toHashCode();
     }
 
@@ -168,7 +168,7 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
         return new EqualsBuilder()
             .append(m_config.getLabel(), other.m_config.getLabel())
             .append(m_config.getDescription(), other.m_config.getDescription())
-            .append(m_config.getText(), other.m_config.getText())
+            .append(m_config.getButtonText(), other.m_config.getButtonText())
             .isEquals();
     }
 }
