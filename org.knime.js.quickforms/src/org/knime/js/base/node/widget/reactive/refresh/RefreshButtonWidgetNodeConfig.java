@@ -49,6 +49,7 @@ package org.knime.js.base.node.widget.reactive.refresh;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.util.LabeledViewConfig;
@@ -61,6 +62,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
  */
 public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(RefreshButtonWidgetNodeConfig.class);
 
     /** node flow variable output name */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
@@ -154,7 +157,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         try {
             loadSettings(settings);
         } catch (InvalidSettingsException e) {
-            // do nothing
+            LOGGER.error("Refresh Button Widget node settings could not be loaded in configuration dialog.", e);
         }
     }
 
