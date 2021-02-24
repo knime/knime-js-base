@@ -127,7 +127,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private String getMagicPassword() {
-        return StringUtils.isEmpty(m_password) || !m_isSavePassword ? null : CoreConstants.MAGIC_DEFAULT_PASSWORD;
+        return StringUtils.isEmpty(m_password) ? null : CoreConstants.MAGIC_DEFAULT_PASSWORD;
     }
 
     /** @param magicPassword the magicPassword to set */
