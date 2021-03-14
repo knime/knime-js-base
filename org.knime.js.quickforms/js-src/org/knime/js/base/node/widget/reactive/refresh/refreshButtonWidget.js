@@ -51,23 +51,21 @@ window.knimeRefreshButtonWidget = (function () {
     };
 
     refreshButton.init = function () {
-        var unsupportedMessage = 'Reactive widgets are not supported in "Legacy Mode" or on '
-            + 'KNIME Server Legacy WebPortal. Please disable the legacy option for this widget '
-            + 'in the layout editor or view this WebPortal application in the latest user interface.'
-        var body = $('body');
-        var div = $('<div>' + unsupportedMessage + '</div>');
-        body.append(div);
+        var unsupportedMessage = 'Refresh Button Widget does not support legacy rendering.';
+        var div = document.createElement('div');
+        div.textContent = unsupportedMessage;
+        document.body.appendChild(div);
     };
 
     refreshButton.value = function () {
         // do nothing
     };
 
-    fileChooser.setValidationErrorMessage = function () {
+    refreshButton.setValidationErrorMessage = function () {
         // do nothing
     };
 
-    fileChooser.validate = function () {
+    refreshButton.validate = function () {
         // unsupported in Legacy Mode and "old" WebPortal but should not break the entire component
         return true;
     };
