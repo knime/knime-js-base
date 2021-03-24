@@ -82,6 +82,11 @@
 			<layout>p2</layout>
 			<url>${knime.textprocessing.p2}</url>
 		</repository>
+        <repository>
+			<id>p2-knime-filehandling-core</id>
+			<layout>p2</layout>
+			<url>${knime.filehandling.core.p2}</url>
+		</repository>
 	</repositories>
 	<build>
 		<plugins>
