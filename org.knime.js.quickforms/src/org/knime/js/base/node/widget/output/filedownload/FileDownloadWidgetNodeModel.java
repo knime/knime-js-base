@@ -79,8 +79,8 @@ import org.knime.filehandling.core.connections.FSPath;
 import org.knime.filehandling.core.connections.location.FSPathProvider;
 import org.knime.filehandling.core.connections.location.FSPathProviderFactory;
 import org.knime.filehandling.core.connections.uriexport.URIExporter;
-import org.knime.filehandling.core.connections.uriexport.URIExporterID;
 import org.knime.filehandling.core.connections.uriexport.URIExporterIDs;
+import org.knime.filehandling.core.connections.uriexport.noconfig.NoConfigURIExporterFactory;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
@@ -182,10 +182,12 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
                 final FSPathProvider pathProvider = factory.create(fsLocation);
                 final FSConnection fsConnection = pathProvider.getFSConnection();
             ) {
-            final Map<URIExporterID, URIExporter> uriExporters = fsConnection.getURIExporters();
-            final URIExporter uriExporter = uriExporters.get(URIExporterIDs.LEGACY_KNIME_URL);
+
+                final URIExporter exporter =
+                    ((NoConfigURIExporterFactory)fsConnection.getURIExporterFactory(URIExporterIDs.LEGACY_KNIME_URL))
+                        .getExporter();
             final FSPath path = pathProvider.getPath();
-            return uriExporter.toUri(path).toString();
+            return exporter.toUri(path).toString();
         } catch (IOException | URISyntaxException e) {
             throw new IllegalArgumentException(
                 String.format("The path '%s' could not be converted to a KNIME URL: %s", fsLocation.getPath(),
