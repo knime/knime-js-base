@@ -75,6 +75,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
@@ -123,6 +124,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private boolean m_runningInView = true;
 
     @JsonProperty("jsCode")
+    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
     public String[] getJsCode() {
 		return m_jsCode;
 	}
@@ -133,6 +135,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssCode")
+    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
     public String[] getCssCode() {
 		return m_cssCode;
 	}
@@ -153,6 +156,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("jsNamespace")
+    @JsonSerialize(using = DynamicJSStrSerializer.class)
     public String getJsNamespace() {
 		return m_jsNamespace;
 	}
@@ -163,6 +167,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssDependencies")
+    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
     public String[] getCssDependencies() {
 		return m_cssDependencies.toArray(new String[0]);
 	}
@@ -191,6 +196,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
      * @since 3.3
      */
     @JsonProperty("tableIds")
+    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
     public String[] getTableIds() {
         return m_tableIds;
     }
