@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Quick Form Nodes
 Bundle-SymbolicName: org.knime.js.quickforms;singleton:=true
-Bundle-Version: 4.3.2.qualifier
+Bundle-Version: 4.3.3.qualifier
 Bundle-ClassPath: js-quickforms.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.js.base.node.base,
@@ -58,7 +58,7 @@ Require-Bundle: org.knime.base;bundle-version="[4.3.0,5.0.0)",
  org.eclipse.jface;bundle-version="[3.11.0,4.0.0)",
  org.eclipse.core.filesystem;bundle-version="[1.5.0,2.0.0)",
  org.apache.commons.lang3;bundle-version="[3.9.0,4.0.0)",
- org.knime.filehandling.core
+ org.knime.filehandling.core;bundle-version="[4.3.3,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
