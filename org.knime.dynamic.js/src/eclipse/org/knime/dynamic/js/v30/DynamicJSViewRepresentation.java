@@ -65,6 +65,7 @@ import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions.JSONDateTimeOptions;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -75,7 +76,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
@@ -124,7 +124,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private boolean m_runningInView = true;
 
     @JsonProperty("jsCode")
-    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
+    @JsonSanitizeIgnore
     public String[] getJsCode() {
 		return m_jsCode;
 	}
@@ -135,7 +135,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssCode")
-    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
+    @JsonSanitizeIgnore
     public String[] getCssCode() {
 		return m_cssCode;
 	}
@@ -156,7 +156,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("jsNamespace")
-    @JsonSerialize(using = DynamicJSStrSerializer.class)
+    @JsonSanitizeIgnore
     public String getJsNamespace() {
 		return m_jsNamespace;
 	}
@@ -167,7 +167,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssDependencies")
-    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
+    @JsonSanitizeIgnore
     public String[] getCssDependencies() {
 		return m_cssDependencies.toArray(new String[0]);
 	}
@@ -196,7 +196,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
      * @since 3.3
      */
     @JsonProperty("tableIds")
-    @JsonSerialize(contentUsing = DynamicJSStrSerializer.class)
+    @JsonSanitizeIgnore
     public String[] getTableIds() {
         return m_tableIds;
     }
