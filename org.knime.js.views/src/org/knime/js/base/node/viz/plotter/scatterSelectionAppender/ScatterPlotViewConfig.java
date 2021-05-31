@@ -77,6 +77,7 @@ final class ScatterPlotViewConfig {
     final static boolean DEFAULT_DISPLAY_FULLSCREEN_BUTTON = true;
     final static boolean DEFAULT_PUBLISH_SELECTION = true;
     final static boolean DEFAULT_ENABLE_SHOW_SELECTED_ONLY = true;
+    final static boolean DEFAULT_SHOW_SELECTED_ROWS_ONLY = false;
     final static boolean DEFAULT_SUBSCRIBE_SELECTION = true;
     final static boolean DEFAULT_SUBSCRIBE_FILTER = true;
     final static boolean DEFAULT_SHOW_WARNING_IN_VIEW = true;
@@ -112,6 +113,7 @@ final class ScatterPlotViewConfig {
     static final String ENABLE_LASSO_SELECTION = "enableLassoSelection";
     final static String CFG_PUBLISH_SELECTION = "publishSelection";
     final static String CFG_ENABLE_SHOW_SELECTED_ONLY = "enableShowSelectedOnly";
+    final static String CFG_SHOW_SELECTED_ROWS_ONLY = "showSelectedOnly";
     final static String CFG_SUBSCRIBE_SELECTION = "subscribeSelection";
     final static String CFG_SUBSCRIBE_FILTER = "subscribeFilter";
     static final String CHART_TITLE = "chartTitle";
@@ -168,6 +170,7 @@ final class ScatterPlotViewConfig {
     private boolean m_publishSelection = DEFAULT_PUBLISH_SELECTION;
     private boolean m_subscribeSelection = DEFAULT_SUBSCRIBE_SELECTION;
     private boolean m_enableShowSelectedOnly = DEFAULT_ENABLE_SHOW_SELECTED_ONLY;
+    private boolean m_showSelectedRowsOnly = DEFAULT_SHOW_SELECTED_ROWS_ONLY;
     private boolean m_subscribeFilter = DEFAULT_SUBSCRIBE_FILTER;
     private int m_maxRows = DEFAULT_MAX_ROWS;
     private String m_selectionColumnName = DEFAULT_SELECTION_COLUMN_NAME;
@@ -401,6 +404,20 @@ final class ScatterPlotViewConfig {
      */
     public void setEnableShowSelectedOnly(final boolean enableShowSelectedOnly) {
         m_enableShowSelectedOnly = enableShowSelectedOnly;
+    }
+
+    /**
+     * @return the showSelectedOnly
+     */
+    public boolean getShowSelectedRowsOnly() {
+        return m_showSelectedRowsOnly;
+    }
+
+    /**
+     * @param showSelectedRowsOnly the showSelectedOnly to set
+     */
+    public void setShowSelectedRowsOnly(final boolean showSelectedRowsOnly) {
+        m_showSelectedRowsOnly = showSelectedRowsOnly;
     }
 
 
@@ -1028,6 +1045,9 @@ final class ScatterPlotViewConfig {
 
         //added with 4.1
         settings.addBoolean(ENFORCE_ORIGIN, isEnforceOrigin());
+
+        //added with 4.4
+        settings.addBoolean(CFG_SHOW_SELECTED_ROWS_ONLY, getShowSelectedRowsOnly());
     }
 
     /** Loads parameters in NodeModel.
@@ -1118,6 +1138,9 @@ final class ScatterPlotViewConfig {
 
         //added with 4.1
         setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
+
+        //added with 4.4
+        setShowSelectedRowsOnly(settings.getBoolean(CFG_SHOW_SELECTED_ROWS_ONLY, DEFAULT_SHOW_SELECTED_ROWS_ONLY));
     }
 
     /** Loads parameters in Dialog.
@@ -1226,5 +1249,8 @@ final class ScatterPlotViewConfig {
 
         //added with 4.1
         setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
+
+        //added with 4.4
+        setShowSelectedRowsOnly(settings.getBoolean(CFG_SHOW_SELECTED_ROWS_ONLY, DEFAULT_SHOW_SELECTED_ROWS_ONLY));
     }
 }

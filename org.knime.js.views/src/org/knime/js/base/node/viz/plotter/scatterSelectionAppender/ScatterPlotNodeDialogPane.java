@@ -120,6 +120,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_allowLassoSelectionCheckBox;
     private final JCheckBox m_publishSelectionCheckBox;
     private final JCheckBox m_enableShowSelectedOnlyCheckBox;
+    private final JCheckBox m_showSelectedRowOnlyCheckBox;
     private final JCheckBox m_subscribeSelectionCheckBox;
     private final JCheckBox m_subscribeFilterCheckBox;
 
@@ -176,6 +177,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_publishSelectionCheckBox = new JCheckBox("Publish selection events");
         m_subscribeSelectionCheckBox = new JCheckBox("Subscribe to selection events");
         m_enableShowSelectedOnlyCheckBox = new JCheckBox("Enable 'Show selected points only' option");
+        m_showSelectedRowOnlyCheckBox = new JCheckBox("Show selected rows only");
         m_subscribeFilterCheckBox = new JCheckBox("Subscribe to filter events");
 
         m_maxRowsSpinner = new JSpinner();
@@ -494,6 +496,9 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         selectionControlPanel.add(m_subscribeSelectionCheckBox, cc);
         cc.gridx++;
         selectionControlPanel.add(m_enableShowSelectedOnlyCheckBox, cc);
+        cc.gridx = 0;
+        cc.gridy++;
+        selectionControlPanel.add(m_showSelectedRowOnlyCheckBox, cc);
 
         c.gridx = 0;
         c.gridy++;
@@ -615,6 +620,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_publishSelectionCheckBox.setSelected(m_config.getPublishSelection());
         m_subscribeSelectionCheckBox.setSelected(m_config.getSubscribeSelection());
         m_enableShowSelectedOnlyCheckBox.setSelected(m_config.getEnableShowSelectedOnly());
+        m_showSelectedRowOnlyCheckBox.setSelected(m_config.getShowSelectedRowsOnly());
         m_subscribeFilterCheckBox.setSelected(m_config.getSubscribeFilter());
 
         m_chartTitleTextField.setText(m_config.getChartTitle());
@@ -691,6 +697,7 @@ public class ScatterPlotNodeDialogPane extends NodeDialogPane {
         m_config.setPublishSelection(m_publishSelectionCheckBox.isSelected());
         m_config.setSubscribeSelection(m_subscribeSelectionCheckBox.isSelected());
         m_config.setEnableShowSelectedOnly(m_enableShowSelectedOnlyCheckBox.isSelected());
+        m_config.setShowSelectedRowsOnly(m_showSelectedRowOnlyCheckBox.isSelected());
         m_config.setSubscribeFilter(m_subscribeFilterCheckBox.isSelected());
 
         m_config.setChartTitle(m_chartTitleTextField.getText());

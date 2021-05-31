@@ -135,6 +135,7 @@
             <option name="Publish selection events">If checked, notifies other interactive views when user changes the selection in the current view. See also "Subscribe to selection events".</option>
             <option name="Subscribe to selection events">If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also "Publish selection events".</option>
             <option name="Enable 'Show selected rows only' option">If checked, a checkbox to switch on and off the mode of displaying only selected rows is rendered in the view.</option>
+            <option name="Show selected rows only">If enabled, only the selected rows will be displayed.</option>
             <option name="Subscribe to filter events">If checked, the view reacts when applied filters have been changed.</option>
             <option name="Enable panning">Enable panning on the plot. To start panning activate the corresponding button in the view then click and drag the mouse.</option>
             <option name="Enable mouse wheel zooming">Enable zooming on the plot using the mouse wheel.</option>
