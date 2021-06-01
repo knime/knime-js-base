@@ -328,7 +328,7 @@ public class LinePlotViewValue extends JSONViewContent {
         setImage(settings.getString(LinePlotViewValue.IMAGE));
 
         // added with 4.4
-        setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE));
+        setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE, LinePlotViewConfig.DEFAULT_LINE_SIZE));
     }
 
     /**

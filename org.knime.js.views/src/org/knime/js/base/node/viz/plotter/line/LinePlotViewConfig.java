@@ -75,7 +75,7 @@ public final class LinePlotViewConfig {
     static final int DEFAULT_WIDTH = 800;
     static final int DEFAULT_HEIGHT = 600;
     static final int DEFAULT_DOT_SIZE = 3;
-    static final int DEFAULT_LINE_SIZE = 3;
+    static final int DEFAULT_LINE_SIZE = 2;
     static final String COLOR_STRING_PREFIX = "rgba(";
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(255, 255, 255);

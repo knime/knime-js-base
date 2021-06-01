@@ -784,7 +784,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
         setEnforceOrigin(settings.getBoolean(LinePlotViewConfig.ENFORCE_ORIGIN, LinePlotViewConfig.DEFAULT_ENFORCE_ORIGIN));
 
         // added with 4.4
-        setEnableLineSizeChange(settings.getBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE));
+        setEnableLineSizeChange(settings.getBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE, LinePlotViewConfig.DEFAULT_LINE_SIZE_CHANGE));
         setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE, LinePlotViewConfig.DEFAULT_LINE_SIZE));
     }
 
