@@ -113,6 +113,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_allowPanningCheckBox;
     private final JCheckBox m_showZoomResetCheckBox;
     private final JCheckBox m_enableDotSizeChangeCheckBox;
+    private final JCheckBox m_enableLineSizeChangeCheckBox;
     /*private final JCheckBox m_enableSelectionCheckBox;
     private final JCheckBox m_allowRectangleSelectionCheckBox;
     private final JCheckBox m_allowLassoSelectionCheckBox;*/
@@ -129,6 +130,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
     private final JTextField m_xAxisLabelField;
     private final JTextField m_yAxisLabelField;
     private final JSpinner m_dotSize;
+    private final JSpinner m_lineSize;
     private final JSpinner m_imageWidthSpinner;
     private final JSpinner m_imageHeightSpinner;
     private final DialogComponentColorChooser m_gridColorChooser;
@@ -160,6 +162,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableXAxisLabelEditCheckBox = new JCheckBox("Enable label edit for x-axis");
         m_enableYAxisLabelEditCheckBox = new JCheckBox("Enable label edit for y-axis");
         m_enableDotSizeChangeCheckBox = new JCheckBox("Enable dot size edit");
+        m_enableLineSizeChangeCheckBox = new JCheckBox("Enable line size edit");
         m_allowMouseWheelZoomingCheckBox = new JCheckBox("Enable mouse wheel zooming");
         m_allowDragZoomingCheckBox = new JCheckBox("Enable drag zooming");
         m_allowPanningCheckBox = new JCheckBox("Enable panning");
@@ -184,6 +187,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_xAxisLabelField = new JTextField(TEXT_FIELD_SIZE);
         m_yAxisLabelField = new JTextField(TEXT_FIELD_SIZE);
         m_dotSize = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        m_lineSize = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         m_imageWidthSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
         m_imageHeightSpinner = new JSpinner(new SpinnerNumberModel(100, 100, Integer.MAX_VALUE, 1));
         m_gridColorChooser = new DialogComponentColorChooser(
@@ -425,9 +429,6 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         cc.gridy++;
         backgroundPanel.add(m_gridColorChooser.getComponentPanel(), cc);
 
-        c.gridx = 0;
-        c.gridy++;
-        panel.add(m_showWarningInViewCheckBox, c);
 
         /*c.gridx = 0;
         c.gridy++;
@@ -438,6 +439,24 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         c.gridx++;
         c.gridwidth = 2;
         panel.add(m_enableDotSizeChangeCheckBox, c);*/
+
+
+        c.gridx = 0;
+        c.gridy++;
+        JPanel stylePanel = new JPanel(new GridBagLayout());
+        stylePanel.setBorder(BorderFactory.createTitledBorder("Appearance"));
+        panel.add(stylePanel, c);
+        c.gridx = 0;
+        c.gridy++;
+        stylePanel.add(new JLabel("Line Size: "), c);
+        c.gridx++;
+        m_lineSize.setPreferredSize(new Dimension(100, 20));
+        stylePanel.add(m_lineSize, c);
+
+
+        c.gridx = 0;
+        c.gridy++;
+        panel.add(m_showWarningInViewCheckBox, c);
 
         return panel;
     }
@@ -520,6 +539,14 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         cc.gridx++;
         zoomControlPanel.add(m_showZoomResetCheckBox, cc);
 
+        c.gridy++;
+        JPanel styleControlPanel = new JPanel(new GridBagLayout());
+        styleControlPanel.setBorder(BorderFactory.createTitledBorder("Appearance"));
+        panel.add(styleControlPanel, c);
+        cc.gridx = 0;
+        cc.gridy = 0;
+        styleControlPanel.add(m_enableLineSizeChangeCheckBox, c);
+
         return panel;
     }
 
@@ -532,6 +559,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableXAxisLabelEditCheckBox.setEnabled(enable);
         m_enableYAxisLabelEditCheckBox.setEnabled(enable);
         m_enableDotSizeChangeCheckBox.setEnabled(enable);
+        m_enableLineSizeChangeCheckBox.setEnabled(enable);
     }
 
     /*private void enableSelectionControls() {
@@ -573,6 +601,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_enableXAxisLabelEditCheckBox.setSelected(m_config.getEnableXAxisLabelEdit());
         m_enableYAxisLabelEditCheckBox.setSelected(m_config.getEnableYAxisLabelEdit());
         m_enableDotSizeChangeCheckBox.setSelected(m_config.getEnableDotSizeChange());
+        m_enableLineSizeChangeCheckBox.setSelected(m_config.getEnableLineSizeChange());
         m_allowMouseWheelZoomingCheckBox.setSelected(m_config.getEnableZooming());
         m_allowDragZoomingCheckBox.setSelected(m_config.getEnableDragZooming());
         m_allowPanningCheckBox.setSelected(m_config.getEnablePanning());
@@ -590,6 +619,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_xAxisLabelField.setText(m_config.getxAxisLabel());
         m_yAxisLabelField.setText(m_config.getyAxisLabel());
         m_dotSize.setValue(m_config.getDotSize());
+        m_lineSize.setValue(m_config.getLineSize());
         m_maxRowsSpinner.setValue(m_config.getMaxRows());
 
         m_dateTimeFormats.loadSettingsFromModel(m_config.getDateTimeFormats());
@@ -637,6 +667,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_config.setEnableXAxisLabelEdit(m_enableXAxisLabelEditCheckBox.isSelected());
         m_config.setEnableYAxisLabelEdit(m_enableYAxisLabelEditCheckBox.isSelected());
         m_config.setEnableDotSizeChange(m_enableDotSizeChangeCheckBox.isSelected());
+        m_config.setEnableLineSizeChange(m_enableLineSizeChangeCheckBox.isSelected());
         m_config.setEnableZooming(m_allowMouseWheelZoomingCheckBox.isSelected());
         m_config.setEnableDragZooming(m_allowDragZoomingCheckBox.isSelected());
         m_config.setEnablePanning(m_allowPanningCheckBox.isSelected());
@@ -653,6 +684,7 @@ public class LinePlotNodeDialogPane extends NodeDialogPane {
         m_config.setxAxisLabel(m_xAxisLabelField.getText());
         m_config.setyAxisLabel(m_yAxisLabelField.getText());
         m_config.setDotSize((Integer)m_dotSize.getValue());
+        m_config.setLineSize((Integer)m_lineSize.getValue());
         m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
 
         m_config.setDateTimeFormats((SettingsModelDateTimeOptions)m_dateTimeFormats.getModel());

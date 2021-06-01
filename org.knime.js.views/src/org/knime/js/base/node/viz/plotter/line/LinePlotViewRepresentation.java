@@ -91,6 +91,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private boolean m_enableXAxisLabelEdit;
     private boolean m_enableYAxisLabelEdit;
     private boolean m_enableDotSizeChange;
+    private boolean m_enableLineSizeChange;
     private boolean m_enableZooming;
     private boolean m_enableDragZooming;
     private boolean m_enablePanning;
@@ -105,6 +106,7 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private String m_backgroundColor;
     private String m_dataAreaColor;
     private String m_gridColor;
+    private int m_lineSize;
 
     private boolean m_enableStaggeredRendering = true;
 
@@ -370,6 +372,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the allowLineSizeChange
+     */
+    public boolean getEnableLineSizeChange() {
+        return m_enableLineSizeChange;
+    }
+
+    /**
+     * @param enableLineSizeChange the allowLineSizeChange to set
+     */
+    public void setEnableLineSizeChange(final boolean enableLineSizeChange) {
+        m_enableLineSizeChange = enableLineSizeChange;
+    }
+
+    /**
      * @return the allowZooming
      */
     public boolean getEnableZooming() {
@@ -622,6 +638,20 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the line size
+     */
+    public int getLineSize() {
+        return m_lineSize;
+    }
+
+    /**
+     * @param lineSize the lineSize to set
+     */
+    public void setLineSize(final int lineSize) {
+        m_lineSize = lineSize;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -677,6 +707,10 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         //added with 4.1
         settings.addBoolean(LinePlotViewConfig.ENFORCE_ORIGIN, isEnforceOrigin());
+
+        //added with 4.4
+        settings.addBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE, getEnableLineSizeChange());
+        settings.addInt(LinePlotViewConfig.LINE_SIZE, getLineSize());
     }
 
     /**
@@ -748,6 +782,10 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         // added with 4.1
         setEnforceOrigin(settings.getBoolean(LinePlotViewConfig.ENFORCE_ORIGIN, LinePlotViewConfig.DEFAULT_ENFORCE_ORIGIN));
+
+        // added with 4.4
+        setEnableLineSizeChange(settings.getBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE));
+        setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE, LinePlotViewConfig.DEFAULT_LINE_SIZE));
     }
 
     /**
@@ -802,6 +840,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_showWarningInView, other.m_showWarningInView)
                 .append(m_warnings, other.m_warnings)
                 .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
+                .append(m_enableLineSizeChange, other.m_enableLineSizeChange)
+                .append(m_lineSize, other.m_lineSize)
                 .isEquals();
     }
 
@@ -847,6 +887,8 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_showWarningInView)
                 .append(m_warnings)
                 .append(m_reportOnMissingValues)
+                .append(m_enableLineSizeChange)
+                .append(m_lineSize)
                 .toHashCode();
     }
 }

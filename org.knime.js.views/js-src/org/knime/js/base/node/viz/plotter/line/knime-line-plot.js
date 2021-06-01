@@ -36,7 +36,7 @@ window.knimeLinePlot = (function () {
          */
         drawControls, drawChart, buildXYDataset, tooManyColumnsError, getJsfcColor, createDateFormatter,
         setChartDimensions, checkWarningMessages, updateTitle, updateSubtitle, setTitles, updateXAxisLabel,
-        updateYAxisLabel, updateChart, setAxisBoundsToValue, drawSeries, resize;
+        updateYAxisLabel, updateChart, setAxisBoundsToValue, drawSeries, resize, changeLineSize;
 
     // eslint-disable-next-line
     view.init = function (representation, value) {
@@ -374,6 +374,7 @@ window.knimeLinePlot = (function () {
         }
 
         var renderer = new jsfc.XYLineRenderer();
+        changeLineSize(renderer);
         renderer.drawSeries = drawSeries;
         plot.setRenderer(renderer);
         var chart = new jsfc.Chart(plot);
@@ -706,6 +707,24 @@ window.knimeLinePlot = (function () {
             }
         }
 
+        if (_representation.enableLineSizeChange) {
+            var lineSizeText = knimeService.createMenuTextField('lineSizeText', _value.lineSize,
+                function () {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                    // set new line size value
+                    _value.lineSize = this.value;
+                    var renderer = chartManager.getChart().getPlot().getRenderer();
+                    changeLineSize(renderer);
+                    chartManager.getChart().getPlot().setRenderer(renderer);
+                }, true);
+            lineSizeText.setAttribute('type', 'number');
+            lineSizeText.setAttribute('min', 1);
+            lineSizeText.setAttribute('step', 1);
+            knimeService.addMenuItem('Line size:', 'minus', lineSizeText);
+        }
+
         /*
          * if (_representation.enableDotSizeChange) { var dotSizeContainer = controlContainer.append("tr");
          * dotSizeContainer.append("td").append("label").attr("for", "dotSizeInput").text("Dot
@@ -713,6 +732,14 @@ window.knimeLinePlot = (function () {
          * .attr("id", "dotSizeInput") .attr("name", "dotSizeInput") .attr("value", _value.dotSize)
          * .style("font-family", defaultFont) .style("font-size", defaultFontSize+"px"); }
          */
+    };
+
+    changeLineSize = function (renderer) {
+        var strokeSource = renderer.getStrokeSource();
+        strokeSource._strokes.forEach(stroke => {
+            stroke.lineWidth = _value.lineSize;
+        });
+        renderer.setStrokeSource(strokeSource);
     };
 
     getSelection = function () {

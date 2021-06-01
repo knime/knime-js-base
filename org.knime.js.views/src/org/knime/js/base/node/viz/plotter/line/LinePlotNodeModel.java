@@ -602,6 +602,10 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         // added with 4.1
         representation.setEnforceOrigin(m_config.isEnforceOrigin());
 
+        // added with 4.4
+        representation.setEnableLineSizeChange(m_config.getEnableLineSizeChange());
+        representation.setLineSize(m_config.getLineSize());
+
         LinePlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {
             viewValue.setChartTitle(m_config.getChartTitle());
@@ -651,6 +655,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
             }
 
             viewValue.setDotSize(m_config.getDotSize());
+            viewValue.setLineSize(m_config.getLineSize());
         }
     }
 
@@ -667,6 +672,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         m_config.setyAxisMin(viewValue.getyAxisMin());
         m_config.setyAxisMax(viewValue.getyAxisMax());
         m_config.setDotSize(viewValue.getDotSize());
+        m_config.setLineSize(viewValue.getLineSize());
     }
 
     private Double getMinimumFromColumns(final DataTableSpec spec, final String... columnNames) {

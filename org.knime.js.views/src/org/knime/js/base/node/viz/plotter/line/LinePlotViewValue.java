@@ -80,6 +80,7 @@ public class LinePlotViewValue extends JSONViewContent {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize;
+    private int m_lineSize;
     private String[] m_selection;
     private String m_image;
 
@@ -238,6 +239,20 @@ public class LinePlotViewValue extends JSONViewContent {
     }
 
     /**
+     * @return the lineSize
+     */
+    public Integer getLineSize() {
+        return m_lineSize;
+    }
+
+    /**
+     * @param lineSize the lineSize to set
+     */
+    public void setLineSize(final Integer lineSize) {
+        m_lineSize = lineSize;
+    }
+
+    /**
      * @return the selection
      */
     public String[] getSelection() {
@@ -283,6 +298,9 @@ public class LinePlotViewValue extends JSONViewContent {
         settings.addString(LinePlotViewConfig.DOT_SIZE, getDotSize() == null ? null : getDotSize().toString());
         settings.addStringArray(LinePlotViewValue.SELECTED_KEYS, m_selection);
         settings.addString(LinePlotViewValue.IMAGE, getImage());
+
+        // added with 4.4
+        settings.addInt(LinePlotViewConfig.LINE_SIZE, getLineSize());
     }
 
     /**
@@ -308,6 +326,9 @@ public class LinePlotViewValue extends JSONViewContent {
         setDotSize(dotSize == null ? null : Integer.parseInt(dotSize));
         setSelection(settings.getStringArray(LinePlotViewValue.SELECTED_KEYS));
         setImage(settings.getString(LinePlotViewValue.IMAGE));
+
+        // added with 4.4
+        setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE));
     }
 
     /**
@@ -339,6 +360,7 @@ public class LinePlotViewValue extends JSONViewContent {
                 .append(m_dotSize, other.m_dotSize)
                 .append(m_selection, other.m_selection)
                 .append(m_image, other.m_image)
+                .append(m_lineSize, other.m_lineSize)
                 .isEquals();
     }
 
@@ -361,6 +383,7 @@ public class LinePlotViewValue extends JSONViewContent {
                 .append(m_dotSize)
                 .append(m_selection)
                 .append(m_image)
+                .append(m_lineSize)
                 .toHashCode();
     }
 

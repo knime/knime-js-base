@@ -75,6 +75,7 @@ public final class LinePlotViewConfig {
     static final int DEFAULT_WIDTH = 800;
     static final int DEFAULT_HEIGHT = 600;
     static final int DEFAULT_DOT_SIZE = 3;
+    static final int DEFAULT_LINE_SIZE = 3;
     static final String COLOR_STRING_PREFIX = "rgba(";
     static final Color DEFAULT_BACKGROUND_COLOR = new Color(255, 255, 255);
     static final Color DEFAULT_DATA_AREA_COLOR = new Color(255, 255, 255);
@@ -102,6 +103,8 @@ public final class LinePlotViewConfig {
     static final String ENABLE_X_LABEL_EDIT = "enableXAxisLabelEdit";
     static final String ENABLE_Y_LABEL_EDIT = "enableYAxisLabelEdit";
     static final String ENABLE_DOT_SIZE_CHANGE = "enableDotSizeChange";
+    static final String ENABLE_LINE_SIZE_CHANGE = "enableLineSizeChange";
+    static final boolean DEFAULT_LINE_SIZE_CHANGE = false;
     static final String ENABLE_ZOOMING = "enableZooming";
     static final String ENABLE_DRAG_ZOOMING = "enableDragZooming";
     static final String ENABLE_PANNING = "enablePanning";
@@ -122,6 +125,7 @@ public final class LinePlotViewConfig {
     static final String Y_AXIS_MIN = "yAxisMin";
     static final String Y_AXIS_MAX = "yAxisMax";
     static final String DOT_SIZE = "dot_size";
+    static final String LINE_SIZE = "line_size";
     static final String DATE_FORMAT = "date_format";  // legacy date&time format
     static final String IMAGE_WIDTH = "imageWidth";
     static final String IMAGE_HEIGHT = "imageHeight";
@@ -153,6 +157,7 @@ public final class LinePlotViewConfig {
     private boolean m_enableXAxisLabelEdit = true;
     private boolean m_enableYAxisLabelEdit = true;
     private boolean m_enableDotSizeChange = false;
+    private boolean m_enableLineSizeChange = false;
     private boolean m_enableZooming = true;
     private boolean m_enablePanning = true;
     private boolean m_enableDragZooming = false;
@@ -173,6 +178,7 @@ public final class LinePlotViewConfig {
     private Double m_yAxisMin;
     private Double m_yAxisMax;
     private Integer m_dotSize = DEFAULT_DOT_SIZE;
+    private Integer m_lineSize = DEFAULT_LINE_SIZE;
     private int m_imageWidth = DEFAULT_WIDTH;
     private int m_imageHeight = DEFAULT_HEIGHT;
     private Color m_backgroundColor = DEFAULT_BACKGROUND_COLOR;
@@ -736,6 +742,20 @@ public final class LinePlotViewConfig {
     }
 
     /**
+     * @return the enableLineSizeChange
+     */
+    public boolean getEnableLineSizeChange() {
+        return m_enableLineSizeChange;
+    }
+
+    /**
+     * @param enableLineSizeChange the enableLineSizeChange to set
+     */
+    public void setEnableLineSizeChange(final boolean enableLineSizeChange) {
+        m_enableLineSizeChange = enableLineSizeChange;
+    }
+
+    /**
      * @return the xAxisMin
      */
     public Double getxAxisMin() {
@@ -859,6 +879,20 @@ public final class LinePlotViewConfig {
      */
     public void setDotSize(final Integer dotSize) {
         m_dotSize = dotSize;
+    }
+
+    /**
+     * @return the lineSize
+     */
+    public Integer getLineSize() {
+        return m_lineSize;
+    }
+
+    /**
+     * @param lineSize the lineSize to set
+     */
+    public void setLineSize(final Integer lineSize) {
+        m_lineSize = lineSize;
     }
 
     /**
@@ -1040,6 +1074,10 @@ public final class LinePlotViewConfig {
 
         //added with 4.1
         settings.addBoolean(ENFORCE_ORIGIN, isEnforceOrigin());
+
+        //added with 4.4
+        settings.addBoolean(ENABLE_LINE_SIZE_CHANGE, getEnableLineSizeChange());
+        settings.addInt(LINE_SIZE, getLineSize());
     }
 
     /** Loads parameters in NodeModel.
@@ -1125,6 +1163,11 @@ public final class LinePlotViewConfig {
 
         //added with 4.1
         setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
+
+        //added with 4.4
+        setEnableLineSizeChange(settings.getBoolean(ENABLE_LINE_SIZE_CHANGE, DEFAULT_LINE_SIZE_CHANGE));
+        setLineSize(settings.getInt(LINE_SIZE, DEFAULT_LINE_SIZE));
+
     }
 
     /** Loads parameters in Dialog.
@@ -1229,5 +1272,9 @@ public final class LinePlotViewConfig {
 
         //added with 4.1
         setEnforceOrigin(settings.getBoolean(ENFORCE_ORIGIN, DEFAULT_ENFORCE_ORIGIN));
+
+        //added with 4.4
+        setEnableLineSizeChange(settings.getBoolean(ENABLE_LINE_SIZE_CHANGE, DEFAULT_LINE_SIZE_CHANGE));
+        setLineSize(settings.getInt(LINE_SIZE, DEFAULT_LINE_SIZE));
     }
 }
