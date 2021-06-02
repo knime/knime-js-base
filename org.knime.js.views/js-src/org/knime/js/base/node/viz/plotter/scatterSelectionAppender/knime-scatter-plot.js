@@ -1,6 +1,5 @@
 /* global d3:false, jsfc:false, moment:false, DateFormat: false, extractXYDatasetFromColumns2D: false*/
 window.knimeScatterPlotSelectionAppender = (function () {
-
     var view = {};
     var _representation = null;
     var _value = null;
@@ -185,6 +184,7 @@ window.knimeScatterPlotSelectionAppender = (function () {
             alert('No column set for y axis!');
             return;
         }
+
         var xAxisLabel = _value.xAxisLabel ? _value.xAxisLabel : _value.xColumn;
         var yAxisLabel = _value.yAxisLabel ? _value.yAxisLabel : _value.yColumn;
 
@@ -219,6 +219,11 @@ window.knimeScatterPlotSelectionAppender = (function () {
         if (stagger && knimeService) {
             // Since 4.2, if running in WebPortal or AP, only enable if the view is a single view.
             stagger = knimeService.isSingleView();
+        }
+        // Since 4.4, turn off staggered loading if showSelectedOnly is true, as otherwise only the
+        // first batch of data points would be hidden
+        if (stagger && _value.showSelectedOnly) {
+            stagger = false;
         }
         plot.setStaggerRendering(stagger);
         var xAxis = plot.getXAxis();

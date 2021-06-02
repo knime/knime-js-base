@@ -653,6 +653,9 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
 
         // added with 3.4
         m_config.setShowLegend(viewValue.getShowLegend());
+
+        // added with 4.4
+        m_config.setShowSelectedRowsOnly(viewValue.getShowSelectedOnly());
     }
 
     /**

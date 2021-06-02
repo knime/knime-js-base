@@ -353,6 +353,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
 
         // added with 3.4
         settings.addBoolean(ScatterPlotViewConfig.SHOW_LEGEND, getShowLegend());
+
+        // added with 4.4
+        settings.addBoolean(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, getShowSelectedOnly());
     }
 
     /**
@@ -386,6 +389,9 @@ public class ScatterPlotViewValue extends JSONViewContent {
 
         // added with 3.4
         setShowLegend(settings.getBoolean(ScatterPlotViewConfig.SHOW_LEGEND, true));
+
+        // added with 4.4
+        setShowSelectedOnly(settings.getBoolean(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, ScatterPlotViewConfig.DEFAULT_ENABLE_SHOW_SELECTED_ONLY));
     }
 
     /**
