@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.js.base.node.widget.reactive.refresh;
+package org.knime.js.base.node.widget.reexecution.refresh;
 
 import java.util.NoSuchElementException;
 
@@ -143,7 +143,7 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
      */
     @Override
     public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.reactive.refresh";
+        return "org.knime.js.base.node.widget.reexecution.refresh";
     }
 
     /**

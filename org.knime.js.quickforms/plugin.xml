@@ -311,9 +311,9 @@
             factory-class="org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeFactory2">
       </node>
       <node
-            category-path="/flowabstraction/widgets/reactive"
+            category-path="/flowabstraction/widgets/reexecution"
             deprecated="false"
-            factory-class="org.knime.js.base.node.widget.reactive.refresh.RefreshButtonWidgetNodeFactory">
+            factory-class="org.knime.js.base.node.widget.reexecution.refresh.RefreshButtonWidgetNodeFactory">
       </node>
    </extension>
    <extension
@@ -384,8 +384,8 @@
       <category
             after="output"
             icon="icons/missing.gif"
-            level-id="reactive"
-            name="Reactive"
+            level-id="reexecution"
+            name="Re-execution"
             path="/flowabstraction/widgets">
       </category>
    </extension>
@@ -1310,13 +1310,13 @@
             name="Refresh Button Widget"
             usesDefine="false"
             version="2.0.0"
-            webResourceBundleID="org.knime.js.base.node.widget.reactive.refresh.bundle">
+            webResourceBundleID="org.knime.js.base.node.widget.reexecution.refresh.bundle">
          <webResource
-               relativePathSource="js-src/org/knime/js/base/node/widget/reactive/refresh/refreshButtonWidget.js"
-               relativePathTarget="org/knime/js/base/node/widget/reactive/refresh/refreshButtonWidget.js">
+               relativePathSource="js-src/org/knime/js/base/node/widget/reexecution/refresh/refreshButtonWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/reexecution/refresh/refreshButtonWidget.js">
          </webResource>
          <importResource
-               relativePath="org/knime/js/base/node/widget/reactive/refresh/refreshButtonWidget.js"
+               relativePath="org/knime/js/base/node/widget/reexecution/refresh/refreshButtonWidget.js"
                type="JAVASCRIPT">
          </importResource>
       </webResourceBundle>
@@ -1740,9 +1740,9 @@
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
-            implementationBundleID="org.knime.js.base.node.widget.reactive.refresh.bundle"
+            implementationBundleID="org.knime.js.base.node.widget.reexecution.refresh.bundle"
             init-method-name="init"
-            javascriptComponentID="org.knime.js.base.node.widget.reactive.refresh"
+            javascriptComponentID="org.knime.js.base.node.widget.reexecution.refresh"
             name="Refresh Button Widget"
             namespace="knimeRefreshButtonWidget"
             setValidationError-method-name="setValidationErrorMessage"

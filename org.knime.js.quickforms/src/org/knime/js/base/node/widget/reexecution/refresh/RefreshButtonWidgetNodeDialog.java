@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.js.base.node.widget.reactive.refresh;
+package org.knime.js.base.node.widget.reexecution.refresh;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;

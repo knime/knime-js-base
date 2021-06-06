@@ -9,10 +9,13 @@
 	<fullDescription>
 		<intro>
 			<p>
-			   Creates a button widget with configurable text which emits reactivity events in component visualizations. These
-		       events trigger partial re-execution within a component of downstream nodes, allowing users to leverage the power
-		       of the KNIME Reactive Visualization framework and create interactive web applications and visualizations in real-
-		       time.
+			   Adds a button widget with configurable text which can be used to refresh the composite view of the component. The
+			   button widget emits reactivity events that trigger the re-execution of downstream nodes in a component when
+			   clicked. It allows users to create interactive Data Apps and visualizations.
+				<br /><br />
+				To use the node, connect the variable output port to the nodes which should be re-executed.
+				<b>The downstream nodes
+				of those connected nodes will also be re-executed when the widget is clicked.</b>
 			</p>
 		</intro>
 		<option name="Label">A descriptive label that will be shown above the button.</option>
@@ -24,7 +27,7 @@
 	</interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">
-			Variable output port to connect to nodes which should be re-executed when the widget is clicked. Nodes downstream of
+			Variable output port to connect to nodes which should be re-executed when the widget is clicked. Downstream nodes of
 			a node connected to this flow variable output port will also be re-executed, so it's only necessary to connect to the
 			root node in each workflow branch for which re-execution is desired. The flow variable value is trivial and does not
 			contain any information.

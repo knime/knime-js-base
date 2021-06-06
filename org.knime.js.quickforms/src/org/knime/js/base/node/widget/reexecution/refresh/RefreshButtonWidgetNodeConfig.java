@@ -44,87 +44,121 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.js.base.node.widget.reactive.refresh;
+package org.knime.js.base.node.widget.reexecution.refresh;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.util.LabeledViewConfig;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
+ * The node configuration for the refresh button widget node.
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
+public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
 
-    private final RefreshButtonWidgetNodeConfig m_config = new RefreshButtonWidgetNodeConfig();
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(RefreshButtonWidgetNodeConfig.class);
+
+    /** node flow variable output name */
+    protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
+
+    private static final String DEFAULT_LABEL = "";
+    private static final String CFG_LABEL = "label";
+    private String m_label = DEFAULT_LABEL;
+
+    private static final String DEFAULT_DESCRIPTION = "";
+    private static final String CFG_DESCRIPTION = "description";
+    private String m_description = DEFAULT_DESCRIPTION;
+
+    private static final String DEFAULT_TEXT = "Refresh";
+    private static final String CFG_BUTTON_TEXT = "buttonText";
+    private String m_buttonText = DEFAULT_TEXT;
 
     /**
      * @return the label
      */
+    @Override
     @JsonProperty("label")
     public String getLabel() {
-        return m_config.getLabel();
+        return m_label;
     }
 
     /**
      * @param label the label to set
      */
+    @Override
     public void setLabel(final String label) {
-        m_config.setLabel(label);
+        m_label = label;
     }
 
     /**
      * @return the description
      */
+    @Override
     @JsonProperty("description")
     public String getDescription() {
-        return m_config.getDescription();
+        return m_description;
     }
 
     /**
      * @param description the description to set
      */
+    @Override
     public void setDescription(final String description) {
-        m_config.setDescription(description);
+        m_description = description;
     }
 
     /**
      * @return the button text
      */
     public String getButtonText() {
-        return m_config.getButtonText();
+        return m_buttonText;
     }
 
     /**
      * @param buttonText the button text to set
      */
     public void setButtonText(final String buttonText) {
-        m_config.setButtonText(buttonText);
+        m_buttonText = buttonText;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
+    public void saveSettings(final NodeSettingsWO settings) {
+        settings.addString(CFG_LABEL, m_label);
+        settings.addString(CFG_DESCRIPTION, m_description);
+        settings.addString(CFG_BUTTON_TEXT, m_buttonText);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
+        m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
+        m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        try {
+            loadSettings(settings);
+        } catch (InvalidSettingsException e) {
+            LOGGER.error("Refresh Button Widget node settings could not be loaded in configuration dialog.", e);
+        }
     }
 
     /**
@@ -133,8 +167,11 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(RefreshButtonWidgetViewRepresentation.class);
-        sb.append(m_config.toString());
+        sb.append(RefreshButtonWidgetNodeConfig.class);
+        sb.append(", label=");
+        sb.append(m_label);
+        sb.append(", description=");
+        sb.append(m_description);
         return sb.toString();
     }
 
@@ -144,9 +181,9 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .append(m_config.getLabel())
-            .append(m_config.getDescription())
-            .append(m_config.getButtonText())
+            .append(m_label)
+            .append(m_description)
+            .append(m_buttonText)
             .toHashCode();
     }
 
@@ -164,11 +201,11 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        RefreshButtonWidgetViewRepresentation other = (RefreshButtonWidgetViewRepresentation)obj;
+        RefreshButtonWidgetNodeConfig other = (RefreshButtonWidgetNodeConfig)obj;
         return new EqualsBuilder()
-            .append(m_config.getLabel(), other.m_config.getLabel())
-            .append(m_config.getDescription(), other.m_config.getDescription())
-            .append(m_config.getButtonText(), other.m_config.getButtonText())
+            .append(m_label, other.m_label)
+            .append(m_description, other.m_description)
+            .append(m_buttonText, other.m_buttonText)
             .isEquals();
     }
 }
