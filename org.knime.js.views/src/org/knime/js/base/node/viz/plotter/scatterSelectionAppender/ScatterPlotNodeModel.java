@@ -567,9 +567,6 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         // added with 4.1
         representation.setEnforceOrigin(m_config.isEnforceOrigin());
 
-        // added with 4.4
-        representation.setShowSelectedRowsOnly(m_config.getShowSelectedRowsOnly());
-
         ScatterPlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {
             viewValue.setChartTitle(m_config.getChartTitle());

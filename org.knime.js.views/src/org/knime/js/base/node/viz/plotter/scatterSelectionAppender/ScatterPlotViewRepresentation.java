@@ -101,7 +101,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     private boolean m_enableRectangleSelection;
     private boolean m_enableLassoSelection;
     private boolean m_enableShowSelectedOnly;
-    private boolean m_showSelectedRowsOnly;
 
     private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
     private String[] m_subscriptionFilterIds;
@@ -500,20 +499,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the showSelectedRowsOnly
-     */
-    public boolean getShowSelectedRowsOnly() {
-        return m_showSelectedRowsOnly;
-    }
-
-    /**
-     * @param showSelectedRowsOnly the showSelectedOnly to set
-     */
-    public void setShowSelectedRowsOnly(final boolean showSelectedRowsOnly) {
-        m_showSelectedRowsOnly = showSelectedRowsOnly;
-    }
-
-    /**
      * @return the subscriptionFilterIds
      */
     public String[] getSubscriptionFilterIds() {
@@ -726,9 +711,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         //added with 4.1
         settings.addBoolean(ScatterPlotViewConfig.ENFORCE_ORIGIN, isEnforceOrigin());
-
-        //added with 4.4
-        settings.addBoolean(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, getShowSelectedRowsOnly());
     }
 
     /**
@@ -802,9 +784,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
 
         // added with 4.1
         setEnforceOrigin(settings.getBoolean(ScatterPlotViewConfig.ENFORCE_ORIGIN, ScatterPlotViewConfig.DEFAULT_ENFORCE_ORIGIN));
-
-        //added with 4.4
-        setShowSelectedRowsOnly(settings.getBoolean(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, ScatterPlotViewConfig.DEFAULT_SHOW_SELECTED_ROWS_ONLY));
     }
 
     /**
@@ -861,7 +840,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_warnings, other.m_warnings)
                 .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
                 .append(m_dateTimeFormats, other.m_dateTimeFormats)
-                .append(m_showSelectedRowsOnly, other.m_showSelectedRowsOnly)
                 .isEquals();
     }
 
@@ -909,7 +887,6 @@ public class ScatterPlotViewRepresentation extends JSONViewContent {
                 .append(m_warnings)
                 .append(m_reportOnMissingValues)
                 .append(m_dateTimeFormats)
-                .append(m_showSelectedRowsOnly)
                 .toHashCode();
     }
 }
