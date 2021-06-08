@@ -604,7 +604,6 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
         // added with 4.4
         representation.setEnableLineSizeChange(m_config.getEnableLineSizeChange());
-        representation.setLineSize(m_config.getLineSize());
 
         LinePlotViewValue viewValue = getViewValue();
         if (isViewValueEmpty()) {

@@ -106,7 +106,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     private String m_backgroundColor;
     private String m_dataAreaColor;
     private String m_gridColor;
-    private int m_lineSize;
 
     private boolean m_enableStaggeredRendering = true;
 
@@ -638,20 +637,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the line size
-     */
-    public int getLineSize() {
-        return m_lineSize;
-    }
-
-    /**
-     * @param lineSize the lineSize to set
-     */
-    public void setLineSize(final int lineSize) {
-        m_lineSize = lineSize;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -710,7 +695,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         //added with 4.4
         settings.addBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE, getEnableLineSizeChange());
-        settings.addInt(LinePlotViewConfig.LINE_SIZE, getLineSize());
     }
 
     /**
@@ -785,7 +769,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
 
         // added with 4.4
         setEnableLineSizeChange(settings.getBoolean(LinePlotViewConfig.ENABLE_LINE_SIZE_CHANGE, LinePlotViewConfig.DEFAULT_LINE_SIZE_CHANGE));
-        setLineSize(settings.getInt(LinePlotViewConfig.LINE_SIZE, LinePlotViewConfig.DEFAULT_LINE_SIZE));
     }
 
     /**
@@ -841,7 +824,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_warnings, other.m_warnings)
                 .append(m_reportOnMissingValues, other.m_reportOnMissingValues)
                 .append(m_enableLineSizeChange, other.m_enableLineSizeChange)
-                .append(m_lineSize, other.m_lineSize)
                 .isEquals();
     }
 
@@ -888,7 +870,6 @@ public class LinePlotViewRepresentation extends JSONViewContent {
                 .append(m_warnings)
                 .append(m_reportOnMissingValues)
                 .append(m_enableLineSizeChange)
-                .append(m_lineSize)
                 .toHashCode();
     }
 }
