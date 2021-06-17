@@ -52,12 +52,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatter;
+import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.text.NumberFormatter;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -73,12 +77,6 @@ import org.knime.js.base.node.configuration.FlowVariableDialogNodeNodeDialog;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog<DoubleDialogNodeValue> {
-
-    /**
-     * The maximum number of digits to display in a {@link JSpinner}'s number editor.
-     * Currently prevents rounding by setting (almost) no limit on the number of digits after the decimal point.
-     */
-    private static final int SPINNER_MAXIMUM_FRACTION_DIGITS = Integer.MAX_VALUE;
 
     private final JCheckBox m_useMin;
     private final JCheckBox m_useMax;
@@ -145,24 +143,44 @@ public class DoubleDialogNodeNodeDialog extends FlowVariableDialogNodeNodeDialog
             new SpinnerNumberModel(value, min, max, stepSize) {
                 private static final long serialVersionUID = 1L;
 
-                private final BigDecimal increment = BigDecimal.valueOf(getStepSize().doubleValue());
+                private final BigDecimal m_increment = BigDecimal.valueOf(getStepSize().doubleValue());
 
                 @Override
                 public Object getNextValue() {
-                    return BigDecimal.valueOf((Double)getValue()).add(increment).doubleValue();
+                    return BigDecimal.valueOf((Double)getValue()).add(m_increment).doubleValue();
                 }
 
                 @Override
                 public Object getPreviousValue() {
-                    return BigDecimal.valueOf((Double)getValue()).subtract(increment).doubleValue();
+                    return BigDecimal.valueOf((Double)getValue()).subtract(m_increment).doubleValue();
                 }
             };
         JSpinner spinner = new JSpinner(model);
 
-        // Prevent the editor from rounding the current value for display, e.g., 0.0000001 to 0.
         JSpinner.NumberEditor e = (JSpinner.NumberEditor) spinner.getEditor();
-        DecimalFormat df = e.getFormat();
-        df.setMaximumFractionDigits(SPINNER_MAXIMUM_FRACTION_DIGITS);
+        e.getTextField().setFormatterFactory(new AbstractFormatterFactory() {
+            @Override
+            @SuppressWarnings("serial")
+            public AbstractFormatter getFormatter(final JFormattedTextField tf) {
+                return new NumberFormatter() {
+                    @Override
+                    public Object stringToValue(final String text) throws ParseException {
+                        try {
+                            // We want to ignore the case of the scientific notation exponent separator ("e" and "E")
+                            // NumberEditor relies on DecimalFormat, which supports only "E" as exponent separator
+                            return Double.valueOf(text);
+                        } catch (NumberFormatException er) {
+                            // this is handled gracefully by the spinner, NumberFormatException is not
+                            throw new ParseException(er.getMessage(), 0);
+                        }
+                    }
+                    @Override
+                    public String valueToString(final Object v) {
+                        return v.toString();
+                    }
+                };
+            }
+        });
 
         return spinner;
     }
