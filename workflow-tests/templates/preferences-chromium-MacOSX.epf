@@ -1,5 +1,3 @@
 \!/=
-/instance/org.knime.js.core/js.core.browserCliArgs=--no-sandbox
-/instance/org.knime.js.core/js.core.headlessBrowserCliArgs=--no-sandbox
 /instance/org.knime.js.core/js.core.headlessBrowser=org.knime.ext.seleniumdrivers.multios.ChromiumImageGenerator
 file_export_version=3.0

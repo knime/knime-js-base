@@ -1,0 +1,4 @@
+\!/=
+/instance/org.knime.js.core/js.core.headlessBrowser=org.knime.js.cef.headless.CEFImageGenerator
+/instance/org.knime.js.core/js.core.viewBrowser=org.knime.js.cef.wizardnodeview.CEFWizardNodeView
+file_export_version=3.0
