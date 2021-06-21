@@ -277,7 +277,7 @@ public class FileUploadWidgetNodeModel extends
                 if (openStream && getConfig().isStoreInWfDir()) {
                     final File tempFile = copyFileToTempLocation(path, f.toURI().toURL());
                     url = new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
-                        "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName());
+                        "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + encodeFileName(tempFile.getName()));
                     path = tempFile.getAbsolutePath();
                 } else {
                     url = f.toURI().toURL();
