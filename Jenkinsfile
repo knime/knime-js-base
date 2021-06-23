@@ -16,12 +16,15 @@ try {
     knimetools.defaultTychoBuild('org.knime.update.js.base')
 
     workflowTests.runTests(
-        dependencies: [ repositories: [
-            'knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep',
-            'knime-weka', 'knime-network', 'knime-xml', 'knime-datageneration',
-            'knime-chemistry', 'knime-chromium', 'knime-textprocessing', 'knime-svm',  'knime-jfreechart',
-            'knime-js-labs', 'knime-stats', 'knime-r', 'knime-database', 'knime-filehandling', 'knime-kerberos'
-        ] ]
+        dependencies: [
+            repositories: [
+                'knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep',
+                'knime-weka', 'knime-network', 'knime-xml', 'knime-datageneration',
+                'knime-chemistry', 'knime-chromium', 'knime-textprocessing', 'knime-svm',  'knime-jfreechart',
+                'knime-js-labs', 'knime-stats', 'knime-r', 'knime-database', 'knime-filehandling', 'knime-kerberos'
+            ],
+            ius: [ 'org.knime.features.ext.chromium.feature.group' ]
+        ]
     )
 
     stage('Sonarqube analysis') {
