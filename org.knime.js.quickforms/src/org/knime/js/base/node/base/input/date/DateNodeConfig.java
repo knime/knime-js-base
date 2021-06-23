@@ -49,7 +49,6 @@
 package org.knime.js.base.node.base.input.date;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -268,7 +267,8 @@ public class DateNodeConfig {
                 throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");
             }
 
-            return ZonedDateTime.of(DateTimeUtils.asLocalDate(string).get(), LocalTime.now(), ZoneId.systemDefault());
+            return ZonedDateTime.of(DateTimeUtils.asLocalDate(string).get(), DateTimeUtils.nowLocalTimeMillis(),
+                ZoneId.systemDefault());
         } else if (DateTimeUtils.asLocalTime(string).isPresent()) {
             if (m_type != DateTimeType.LOCAL_TIME) {
                 throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");

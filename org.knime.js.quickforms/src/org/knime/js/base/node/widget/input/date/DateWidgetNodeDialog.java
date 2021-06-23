@@ -74,6 +74,7 @@ import org.knime.js.base.node.base.input.date.GranularityTime;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DateTimeUtils;
 import org.knime.time.util.DialogComponentDateTimeSelection;
 import org.knime.time.util.DialogComponentDateTimeSelection.DisplayOption;
 import org.knime.time.util.SettingsModelDateTime;
@@ -163,7 +164,8 @@ public class DateWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DateNodeV
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
         DateDialogNodeValue value = new DateDialogNodeValue();
         value.loadFromNodeSettings(settings);
-        final ZonedDateTime zdt = m_useDefaultExecTime.isSelected() ? ZonedDateTime.now() : value.getDate();
+        final ZonedDateTime zdt =
+            m_useDefaultExecTime.isSelected() ? DateTimeUtils.nowZonedDateTimeMillis() : value.getDate();
         final DateTimeType type = (DateTimeType)m_type.getSelectedItem();
         final Temporal temporal;
         if (type == DateTimeType.LOCAL_DATE) {

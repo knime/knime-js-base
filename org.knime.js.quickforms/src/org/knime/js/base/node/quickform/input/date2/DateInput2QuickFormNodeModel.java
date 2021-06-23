@@ -60,6 +60,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DateTimeUtils;
 
 /**
  * The model for the date input quick form node.
@@ -118,7 +119,7 @@ public class DateInput2QuickFormNodeModel extends
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = getConfig().getUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
@@ -143,7 +144,7 @@ public class DateInput2QuickFormNodeModel extends
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = getConfig().getUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
@@ -163,7 +164,8 @@ public class DateInput2QuickFormNodeModel extends
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         final ZonedDateTime value;
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().getUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+            value = getConfig().getUseDefaultExecTime() ? DateTimeUtils.nowZonedDateTimeMillis()
+                : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }

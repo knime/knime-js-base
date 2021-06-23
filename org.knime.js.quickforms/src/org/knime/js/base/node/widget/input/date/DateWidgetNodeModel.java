@@ -65,6 +65,7 @@ import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DateTimeUtils;
 
 /**
  * The node model for the double widget node
@@ -87,7 +88,7 @@ public class DateWidgetNodeModel
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
@@ -115,7 +116,7 @@ public class DateWidgetNodeModel
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = getConfig().getDateNodeConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
         } else {
@@ -153,7 +154,8 @@ public class DateWidgetNodeModel
         final ZonedDateTime value;
         DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = dateConfig.isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? DateTimeUtils.nowZonedDateTimeMillis()
+                : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }

@@ -49,7 +49,6 @@
 package org.knime.js.base.node.quickform.input.date2;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -326,7 +325,8 @@ public class DateTimeInputQuickFormConfig extends QuickFormFlowVariableConfig<Da
                 throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");
             }
 
-            return ZonedDateTime.of(DateTimeUtils.asLocalDate(string).get(), LocalTime.now(), ZoneId.systemDefault());
+            return ZonedDateTime.of(DateTimeUtils.asLocalDate(string).get(), DateTimeUtils.nowLocalTimeMillis(),
+                ZoneId.systemDefault());
         } else if (DateTimeUtils.asLocalTime(string).isPresent()) {
             if (m_type != DateTimeType.LOCAL_TIME) {
                 throw new InvalidSettingsException("'" + string + "' could not be parsed as " + m_type + ".");

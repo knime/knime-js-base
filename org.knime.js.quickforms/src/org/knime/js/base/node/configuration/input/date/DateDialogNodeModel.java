@@ -62,6 +62,7 @@ import org.knime.js.base.node.base.input.date.DateNodeUtil;
 import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 import org.knime.time.util.DateTimeType;
+import org.knime.time.util.DateTimeUtils;
 
 /**
  * Node model for the date configuration node
@@ -77,7 +78,7 @@ public class DateDialogNodeModel
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
@@ -105,7 +106,7 @@ public class DateDialogNodeModel
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         final ZonedDateTime value;
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
             value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
@@ -135,7 +136,8 @@ public class DateDialogNodeModel
         final ZonedDateTime value;
         DateNodeConfig dateConfig = getConfig().getDateConfig();
         if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = dateConfig.isUseDefaultExecTime() ? ZonedDateTime.now() : getRelevantValue().getDate();
+            value = dateConfig.isUseDefaultExecTime() ? DateTimeUtils.nowZonedDateTimeMillis()
+                : getRelevantValue().getDate();
         } else {
             value = getRelevantValue().getDate();
         }
