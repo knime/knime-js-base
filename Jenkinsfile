@@ -23,7 +23,7 @@ try {
                 'knime-chemistry', 'knime-chromium', 'knime-textprocessing', 'knime-svm',  'knime-jfreechart',
                 'knime-js-labs', 'knime-stats', 'knime-r', 'knime-database', 'knime-filehandling', 'knime-kerberos'
             ],
-            ius: [ 'org.knime.features.ext.chromium.feature.group' ]
+            ius: [ 'org.knime.features.ext.chromium.feature.group', 'org.knime.features.chem.types.feature.group', 'org.knime.features.network.feature.group' ]
         ]
     )
 
