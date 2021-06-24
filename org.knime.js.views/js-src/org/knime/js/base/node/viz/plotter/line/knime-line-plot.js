@@ -736,7 +736,7 @@ window.knimeLinePlot = (function () {
 
     changeLineSize = function (renderer) {
         var strokeSource = renderer.getStrokeSource();
-        strokeSource._strokes.forEach(stroke => {
+        strokeSource._strokes.forEach(function (stroke) {
             stroke.lineWidth = _value.lineSize;
         });
         renderer.setStrokeSource(strokeSource);
