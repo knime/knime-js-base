@@ -18,6 +18,11 @@ try {
     knimetools.defaultTychoBuild('org.knime.update.js.base')
 
     testConfigs = [:]
+    baseIus = [ 'org.knime.features.quickform.legacy.feature.group', 'org.knime.features.ext.r.feature.group',
+                'org.knime.features.xml.feature.group', 'org.knime.features.chem.types.feature.group',
+                'org.knime.features.datageneration.feature.group', 'org.knime.features.ext.jfreechart.feature.group',
+                'org.knime.features.network.feature.group', 'org.knime.features.ext.textprocessing.feature.group',
+                'org.knime.features.ext.weka.feature.group' ]
     repositories = [ 'knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep', 'knime-weka',
                      'knime-network', 'knime-xml', 'knime-datageneration', 'knime-chemistry', 'knime-textprocessing',
                      'knime-svm', 'knime-jfreechart', 'knime-js-labs', 'knime-stats', 'knime-r', 'knime-database',
@@ -29,7 +34,7 @@ try {
                     workflowTests.runTests(
                         dependencies: [
                             repositories: repositories,
-                            ius: [ 'com.knime.features.workbench.cef.feature.group' ]
+                            ius: baseIus + 'com.knime.features.workbench.cef.feature.group'
                         ]
                     )
                 }
@@ -43,8 +48,9 @@ try {
                 withEnv(["KNIME_JS_IMAGE_GENARATION_MODE=chromium"]) {
                     workflowTests.runTests(
                         dependencies: [
-                            repositories: repositories + 'knime-chromium'
-                        ]
+                            repositories: repositories + 'knime-chromium',
+                            ius: baseIus + 'org.knime.features.ext.chromium.feature.group'
+                        ],
                     )
                 }
             }
