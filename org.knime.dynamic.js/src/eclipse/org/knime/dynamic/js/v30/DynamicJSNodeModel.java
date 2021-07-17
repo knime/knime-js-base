@@ -849,12 +849,9 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 			    value = ((SettingsModelSVGOptions)model).getJSONSerializableObject();
 			}
 			if (value != null) {
-			    if (option.getSaveInView()) {
-			        // Don't overwrite options in view value if already set!
-			        if (!valueOptions.containsKey(entry.getKey())) {
-			            valueOptions.put(entry.getKey(), value);
-			        }
-			    } else {
+                if (option.getSaveInView()) {
+                    valueOptions.put(entry.getKey(), value);
+                } else {
 			        repOptions.put(entry.getKey(), value);
 			    }
 			}
