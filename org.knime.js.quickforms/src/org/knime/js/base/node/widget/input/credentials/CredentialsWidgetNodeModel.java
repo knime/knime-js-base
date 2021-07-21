@@ -76,6 +76,11 @@ public class CredentialsWidgetNodeModel extends
     implements CredentialsNode {
 
     /**
+     * Temporary instance field for handling wizard execution.
+     */
+    private UserNameAndPasswordPair m_wizardPair;
+
+    /**
      * @param viewName
      */
     public CredentialsWidgetNodeModel(final String viewName) {
@@ -109,16 +114,28 @@ public class CredentialsWidgetNodeModel extends
             throw new InvalidSettingsException(error.getError());
         }
         String credentialsIdentifier = getConfig().getFlowVariableName();
-        if (getConfig().isUseServerLoginCredentials()
-            && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
-            getLogger().debugWithFormat("Pushing credentials flow variable using system credentials");
-        } else {
-            String username = value.getUsername();
-            String password = value.getPassword();
-            UserNameAndPasswordPair pair = readFromCredentialsProviderIfBlank(
-                getCredentialsProvider(), credentialsIdentifier, username, password);
-            pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
+        if (getConfig().isUseServerLoginCredentials()) {
+            if (pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
+                getLogger().debugWithFormat("Pushing credentials flow variable using system credentials");
+                return;
+            }
+            if (m_wizardPair != null && value.getPassword() != null) {
+                if (!StringUtils.equals(m_wizardPair.getUsername(), value.getUsername())
+                    || !StringUtils.equals(m_wizardPair.getPassword(), value.getPassword())) {
+                    m_wizardPair = new UserNameAndPasswordPair(value.getUsername(), value.getPassword());
+                }
+            }
         }
+        String username = value.getUsername();
+        String password = value.getPassword();
+        UserNameAndPasswordPair pair =
+            readFromCredentialsProviderIfBlank(getCredentialsProvider(), credentialsIdentifier, username, password);
+        if (StringUtils.isEmpty(pair.m_password) && m_wizardPair != null) {
+            value.setUsername(m_wizardPair.getUsername());
+            value.setPassword(m_wizardPair.getPassword());
+            pair = m_wizardPair;
+        }
+        pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
     }
 
     /**
@@ -199,6 +216,7 @@ public class CredentialsWidgetNodeModel extends
             return; // exit here -- flow variable is pushed
         } else if (getConfig().isUseServerLoginCredentials() && loadHelper.getSystemDefaultCredentials().isPresent()) {
             final Credentials cred = loadHelper.getSystemDefaultCredentials().get();
+            m_wizardPair = new UserNameAndPasswordPair(cred.getLogin(), cred.getPassword());
             value.setUsername(cred.getLogin());
             value.setPassword(cred.getPassword());
             pushCredentialsFlowVariable(credentialsIdentifier, cred.getLogin(), cred.getPassword());
