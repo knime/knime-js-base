@@ -101,6 +101,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  *
@@ -114,6 +115,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
     private final LinePlotViewConfig m_config;
 
     private BufferedDataTable m_table;
+
+    private ValueStore m_valueStore;
 
     static final String ROWS_LIMITATION_WARNING_ID = "rowsLimitation";
     static final String SKIP_Y_COLUMNS_WARNING_ID = "skipYColumns";
@@ -559,103 +562,121 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
     }
 
     private void copyConfigToView(final DataTableSpec spec) {
-        LinePlotViewRepresentation representation = getViewRepresentation();
-        representation.setShowLegend(m_config.getShowLegend());
-        representation.setAutoRangeAxes(m_config.getAutoRangeAxes());
-        representation.setUseDomainInformation(m_config.getUseDomainInfo());
-        representation.setShowGrid(m_config.getShowGrid());
-        representation.setShowCrosshair(m_config.getShowCrosshair());
-        representation.setSnapToPoints(m_config.getSnapToPoints());
+        copyConfigToViewRepresentation(m_config, getViewRepresentation());
 
-        representation.setEnableViewConfiguration(m_config.getEnableViewConfiguration());
-        representation.setEnableTitleChange(m_config.getEnableTitleChange());
-        representation.setEnableSubtitleChange(m_config.getEnableSubtitleChange());
-        representation.setEnableXColumnChange(m_config.getEnableXColumnChange());
-        representation.setEnableYColumnChange(m_config.getEnableYColumnChange());
-        representation.setEnableXAxisLabelEdit(m_config.getEnableXAxisLabelEdit());
-        representation.setEnableYAxisLabelEdit(m_config.getEnableYAxisLabelEdit());
-        representation.setEnableDotSizeChange(m_config.getEnableDotSizeChange());
+        if (m_valueStore == null) {
+            m_valueStore = new ValueStore();
+        } else if (isViewValueEmpty()) {
+            m_valueStore.clear();
+        }
+        copyConfigToViewValue(m_valueStore, spec, m_config, getViewValue());
+    }
 
-        representation.setEnablePanning(m_config.getEnablePanning());
-        representation.setEnableZooming(m_config.getEnableZooming());
-        representation.setEnableDragZooming(m_config.getEnableDragZooming());
-        representation.setShowZoomResetButton(m_config.getShowZoomResetButton());
-        representation.setEnableSelection(m_config.getEnableSelection());
-        representation.setEnableRectangleSelection(m_config.getEnableRectangleSelection());
-        representation.setEnableLassoSelection(m_config.getEnableLassoSelection());
+    private static void copyConfigToViewRepresentation(final LinePlotViewConfig config,
+        final LinePlotViewRepresentation representation) {
+        representation.setShowLegend(config.getShowLegend());
+        representation.setAutoRangeAxes(config.getAutoRangeAxes());
+        representation.setUseDomainInformation(config.getUseDomainInfo());
+        representation.setShowGrid(config.getShowGrid());
+        representation.setShowCrosshair(config.getShowCrosshair());
+        representation.setSnapToPoints(config.getSnapToPoints());
 
-        representation.setImageWidth(m_config.getImageWidth());
-        representation.setImageHeight(m_config.getImageHeight());
-        representation.setBackgroundColor(m_config.getBackgroundColorString());
-        representation.setDataAreaColor(m_config.getDataAreaColorString());
-        representation.setGridColor(m_config.getGridColorString());
+        representation.setEnableViewConfiguration(config.getEnableViewConfiguration());
+        representation.setEnableTitleChange(config.getEnableTitleChange());
+        representation.setEnableSubtitleChange(config.getEnableSubtitleChange());
+        representation.setEnableXColumnChange(config.getEnableXColumnChange());
+        representation.setEnableYColumnChange(config.getEnableYColumnChange());
+        representation.setEnableXAxisLabelEdit(config.getEnableXAxisLabelEdit());
+        representation.setEnableYAxisLabelEdit(config.getEnableYAxisLabelEdit());
+        representation.setEnableDotSizeChange(config.getEnableDotSizeChange());
+
+        representation.setEnablePanning(config.getEnablePanning());
+        representation.setEnableZooming(config.getEnableZooming());
+        representation.setEnableDragZooming(config.getEnableDragZooming());
+        representation.setShowZoomResetButton(config.getShowZoomResetButton());
+        representation.setEnableSelection(config.getEnableSelection());
+        representation.setEnableRectangleSelection(config.getEnableRectangleSelection());
+        representation.setEnableLassoSelection(config.getEnableLassoSelection());
+
+        representation.setImageWidth(config.getImageWidth());
+        representation.setImageHeight(config.getImageHeight());
+        representation.setBackgroundColor(config.getBackgroundColorString());
+        representation.setDataAreaColor(config.getDataAreaColorString());
+        representation.setGridColor(config.getGridColorString());
 
         // added with 3.3
-        representation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
+        representation.setDisplayFullscreenButton(config.getDisplayFullscreenButton());
 
         // added with 3.4
-        representation.setMissingValueMethod(m_config.getMissingValueMethod());
-        representation.setShowWarningInView(m_config.getShowWarningInView());
-        representation.setDateTimeFormats(m_config.getDateTimeFormats().getJSONSerializableObject());
-        representation.setReportOnMissingValues(m_config.getReportOnMissingValues());
+        representation.setMissingValueMethod(config.getMissingValueMethod());
+        representation.setShowWarningInView(config.getShowWarningInView());
+        representation.setDateTimeFormats(config.getDateTimeFormats().getJSONSerializableObject());
+        representation.setReportOnMissingValues(config.getReportOnMissingValues());
 
         // added with 4.1
-        representation.setEnforceOrigin(m_config.isEnforceOrigin());
+        representation.setEnforceOrigin(config.isEnforceOrigin());
 
         // added with 4.4
-        representation.setEnableLineSizeChange(m_config.getEnableLineSizeChange());
+        representation.setEnableLineSizeChange(config.getEnableLineSizeChange());
+    }
 
-        LinePlotViewValue viewValue = getViewValue();
-        if (isViewValueEmpty()) {
-            viewValue.setChartTitle(m_config.getChartTitle());
-            viewValue.setChartSubtitle(m_config.getChartSubtitle());
-            viewValue.setxColumn(m_config.getxColumn());
-            FilterResult filter = m_config.getyColumnsConfig().applyTo(spec);
+    private static void copyConfigToViewValue(final ValueStore valStore, final DataTableSpec spec,
+        final LinePlotViewConfig config, final LinePlotViewValue viewValue) {
+
+        valStore.storeAndTransfer(LinePlotViewConfig.CHART_TITLE, config.getChartTitle(), viewValue::setChartTitle);
+        valStore.storeAndTransfer(LinePlotViewConfig.CHART_SUBTITLE, config.getChartSubtitle(),
+            viewValue::setChartSubtitle);
+        valStore.storeAndTransfer(LinePlotViewConfig.X_COL, config.getxColumn(), viewValue::setxColumn);
+        valStore.storeAndTransfer(LinePlotViewConfig.X_AXIS_LABEL, config.getxAxisLabel(), viewValue::setxAxisLabel);
+        valStore.storeAndTransfer(LinePlotViewConfig.Y_AXIS_LABEL, config.getyAxisLabel(), viewValue::setyAxisLabel);
+        valStore.storeAndTransfer(LinePlotViewConfig.DOT_SIZE, config.getDotSize(), viewValue::setDotSize);
+        valStore.storeAndTransfer(LinePlotViewConfig.LINE_SIZE, config.getLineSize(), viewValue::setLineSize);
+
+        // we store (i.e. memorize) the table spec such that we can overwrite the view values
+        // if the table spec changed on re-execution (a re-execution triggered by the node view)
+        valStore.storeAndTransfer("tablespec", spec, s -> {
+            FilterResult filter = config.getyColumnsConfig().applyTo(spec);
             viewValue.setyColumns(filter.getIncludes());
-            viewValue.setxAxisLabel(m_config.getxAxisLabel());
-            viewValue.setyAxisLabel(m_config.getyAxisLabel());
-            if ((m_config.getxAxisMin() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-                viewValue.setxAxisMin(getMinimumFromColumns(spec, m_config.getxColumn()));
+
+            if ((config.getxAxisMin() == null) && config.getUseDomainInfo() && (config.getxColumn() != null)) {
+                viewValue.setxAxisMin(getMinimumFromColumns(spec, config.getxColumn()));
             } else {
-                viewValue.setxAxisMin(m_config.getxAxisMin());
+                viewValue.setxAxisMin(config.getxAxisMin());
             }
-            if ((m_config.getxAxisMax() == null) && m_config.getUseDomainInfo() && (m_config.getxColumn() != null)) {
-                viewValue.setxAxisMax(getMaximumFromColumns(spec, m_config.getxColumn()));
+            if ((config.getxAxisMax() == null) && config.getUseDomainInfo() && (config.getxColumn() != null)) {
+                viewValue.setxAxisMax(getMaximumFromColumns(spec, config.getxColumn()));
             } else {
-                viewValue.setxAxisMax(m_config.getxAxisMax());
+                viewValue.setxAxisMax(config.getxAxisMax());
             }
-            if (m_config.getyAxisMin() == null && m_config.getUseDomainInfo()) {
+            if (config.getyAxisMin() == null && config.getUseDomainInfo()) {
                 viewValue.setyAxisMin(getMinimumFromColumns(spec, filter.getIncludes()));
             } else {
-                viewValue.setyAxisMin(m_config.getyAxisMin());
+                viewValue.setyAxisMin(config.getyAxisMin());
             }
-            if (m_config.getyAxisMax() == null && m_config.getUseDomainInfo()) {
+            if (config.getyAxisMax() == null && config.getUseDomainInfo()) {
                 viewValue.setyAxisMax(getMaximumFromColumns(spec, filter.getIncludes()));
             } else {
-                viewValue.setyAxisMax(m_config.getyAxisMax());
+                viewValue.setyAxisMax(config.getyAxisMax());
             }
 
             // Check axes ranges
             Double xMin = viewValue.getxAxisMin();
             Double xMax = viewValue.getxAxisMax();
             if (xMin != null && xMax != null && xMin >= xMax) {
-                LOGGER.info("Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax
-                    + ").");
+                LOGGER.info(
+                    "Unsetting x-axis ranges. Minimum (" + xMin + ") has to be smaller than maximum (" + xMax + ").");
                 viewValue.setxAxisMin(null);
                 viewValue.setxAxisMax(null);
             }
             Double yMin = viewValue.getyAxisMin();
             Double yMax = viewValue.getyAxisMax();
             if (yMin != null && yMax != null && yMin >= yMax) {
-                LOGGER.info("Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax
-                    + ").");
+                LOGGER.info(
+                    "Unsetting y-axis ranges. Minimum (" + yMin + ") has to be smaller than maximum (" + yMax + ").");
                 viewValue.setyAxisMin(null);
                 viewValue.setyAxisMax(null);
             }
-
-            viewValue.setDotSize(m_config.getDotSize());
-            viewValue.setLineSize(m_config.getLineSize());
-        }
+        }, (s1, s2) -> s1.equalStructure(s2));
     }
 
     private void copyValueToConfig() {
@@ -674,7 +695,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         m_config.setLineSize(viewValue.getLineSize());
     }
 
-    private Double getMinimumFromColumns(final DataTableSpec spec, final String... columnNames) {
+    private static Double getMinimumFromColumns(final DataTableSpec spec, final String... columnNames) {
         double minimum = Double.MAX_VALUE;
         for (String column : columnNames) {
             DataColumnSpec colSpec = spec.getColumnSpec(column);
@@ -691,7 +712,7 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         return null;
     }
 
-    private Double getMaximumFromColumns(final DataTableSpec spec, final String... columnNames) {
+    private static Double getMaximumFromColumns(final DataTableSpec spec, final String... columnNames) {
         double maximum = Double.MIN_VALUE;
         for (String column : columnNames) {
             DataColumnSpec colSpec = spec.getColumnSpec(column);
