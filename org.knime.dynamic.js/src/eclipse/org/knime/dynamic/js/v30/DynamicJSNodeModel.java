@@ -152,6 +152,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  *
@@ -169,6 +170,8 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private final DynamicJSProcessor m_processor;
 
 	private final String APPEND_SELECTION_GLOBAL_OUT_VALUE_KEY = "appendSelectionOutColumns";
+
+	private ValueStore m_valueStore;
 
 	/**
 	 * @param nodeConfig
@@ -808,58 +811,69 @@ public class DynamicJSNodeModel extends AbstractSVGWizardNodeModel<DynamicJSView
 	private void setOptionsOnViewContent(final PortObject[] inObjects) {
 	    Map<String, Object> repOptions = getViewRepresentation().getOptions();
 	    Map<String, Object> valueOptions = getViewValue().getOptions();
+        if (m_valueStore == null) {
+            m_valueStore = new ValueStore();
+        } else if (isViewValueEmpty()) {
+            m_valueStore.clear();
+        }
 		for (Entry<String, SettingsModel> entry : m_config.getModels().entrySet()) {
 		    SettingsModel model = entry.getValue();
 		    DynamicOption option = getOptionForId(entry.getKey());
 		    if (option == null || option.getConfigOnly()) {
 		        continue;
 		    }
-		    Object value = null;
-			if (model instanceof SettingsModelBoolean) {
-				value = ((SettingsModelBoolean)model).getBooleanValue();
-			} else  if (model instanceof SettingsModelInteger) {
-			    value = ((SettingsModelInteger)model).getIntValue();
-			} else if (model instanceof SettingsModelDouble) {
-			    value = ((SettingsModelDouble)model).getDoubleValue();
-			} else if (model instanceof SettingsModelDate) {
-			    value = ((SettingsModelDate)model).getTimeInMillis();
-			} else if (model instanceof SettingsModelDateTimeOptions) {
-			    value = ((SettingsModelDateTimeOptions)model).getJSONSerializableObject();
-			} else if (model instanceof SettingsModelColor) {
-			    Color color = ((SettingsModelColor)model).getColorValue();
-			    org.knime.dynamicnode.v30.ColorFormat.Enum colorFormat = ((ColorOption)option).getFormat();
-			    if (colorFormat.equals(ColorFormat.HEX_STRING)) {
-			        value = CSSUtils.cssHexStringFromColor(color);
-			    } else if (colorFormat.equals(ColorFormat.RGBA_STRING)) {
-			        value = CSSUtils.rgbaStringFromColor(color);
-			    }
-			} else if (model instanceof SettingsModelColumnFilter2) {
-				SettingsModelColumnFilter2 cM = (SettingsModelColumnFilter2)model;
-				ColumnFilterOption cf = (ColumnFilterOption)option;
-				FilterResult filter = cM.applyTo((DataTableSpec)inObjects[cf.getInPortIndex()].getSpec());
-				value = filter.getIncludes();
-			} else if (model instanceof SettingsModelColumnName) {
-			    value = ((SettingsModelColumnName)model).getColumnName();
-			} else if (model instanceof SettingsModelString) {
-                // This covers various components (String, FlowVariableSelection, FileInput, etc.)
-                value = ((SettingsModelString)model).getStringValue();
-			} else if (model instanceof SettingsModelStringArray) {
-			    value = ((SettingsModelStringArray)model).getStringArrayValue();
-			} else if (model instanceof SettingsModelSVGOptions) {
-			    value = ((SettingsModelSVGOptions)model).getJSONSerializableObject();
-			}
-			if (value != null) {
-			    if (option.getSaveInView()) {
-			        // Don't overwrite options in view value if already set!
-			        if (!valueOptions.containsKey(entry.getKey())) {
-			            valueOptions.put(entry.getKey(), value);
-			        }
-			    } else {
-			        repOptions.put(entry.getKey(), value);
-			    }
-			}
+		    Object value = getValueFromConfig(inObjects, model, option);
+            if (value != null) {
+                if (option.getSaveInView()) {
+                    // Only set options in view value if the config value has changed (when controlled by a flow variable)
+                    // or never has been set, yet
+                    String key = entry.getKey();
+                    m_valueStore.storeAndTransfer(key, value, v -> valueOptions.put(key, value));
+                } else {
+                    repOptions.put(entry.getKey(), value);
+                }
+            }
 		}
 	}
+
+    private static Object getValueFromConfig(final PortObject[] inObjects, final SettingsModel model,
+        final DynamicOption option) {
+        Object value = null;
+        if (model instanceof SettingsModelBoolean) {
+        	value = ((SettingsModelBoolean)model).getBooleanValue();
+        } else  if (model instanceof SettingsModelInteger) {
+            value = ((SettingsModelInteger)model).getIntValue();
+        } else if (model instanceof SettingsModelDouble) {
+            value = ((SettingsModelDouble)model).getDoubleValue();
+        } else if (model instanceof SettingsModelDate) {
+            value = ((SettingsModelDate)model).getTimeInMillis();
+        } else if (model instanceof SettingsModelDateTimeOptions) {
+            value = ((SettingsModelDateTimeOptions)model).getJSONSerializableObject();
+        } else if (model instanceof SettingsModelColor) {
+            Color color = ((SettingsModelColor)model).getColorValue();
+            org.knime.dynamicnode.v30.ColorFormat.Enum colorFormat = ((ColorOption)option).getFormat();
+            if (colorFormat.equals(ColorFormat.HEX_STRING)) {
+                value = CSSUtils.cssHexStringFromColor(color);
+            } else if (colorFormat.equals(ColorFormat.RGBA_STRING)) {
+                value = CSSUtils.rgbaStringFromColor(color);
+            }
+        } else if (model instanceof SettingsModelColumnFilter2) {
+        	SettingsModelColumnFilter2 cM = (SettingsModelColumnFilter2)model;
+        	ColumnFilterOption cf = (ColumnFilterOption)option;
+        	FilterResult filter = cM.applyTo((DataTableSpec)inObjects[cf.getInPortIndex()].getSpec());
+        	value = filter.getIncludes();
+        } else if (model instanceof SettingsModelColumnName) {
+            value = ((SettingsModelColumnName)model).getColumnName();
+        } else if (model instanceof SettingsModelString) {
+            // This covers various components (String, FlowVariableSelection, FileInput, etc.)
+            value = ((SettingsModelString)model).getStringValue();
+        } else if (model instanceof SettingsModelStringArray) {
+            value = ((SettingsModelStringArray)model).getStringArrayValue();
+        } else if (model instanceof SettingsModelSVGOptions) {
+            value = ((SettingsModelSVGOptions)model).getJSONSerializableObject();
+        }
+        return value;
+    }
 
 	private void setOptionsOnConfig() {
 	    for (Entry<String, Object> entry : getViewValue().getOptions().entrySet()) {

@@ -73,6 +73,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  *
@@ -86,6 +87,8 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
     private final LiftChartViewConfig m_config;
 
     private BufferedDataTable m_table;
+
+    private ValueStore m_valueStore;
 
     static final String LIFT_CALCULATOR_WARNING_ID = "LiftCalculatorWarning";
 
@@ -385,20 +388,31 @@ final class LiftChartNodeModel extends AbstractSVGWizardNodeModel<LiftChartViewR
         // added with 3.4
         representation.setShowWarningInView(m_config.getShowWarningInView());
 
-        LiftChartPlotViewValue value = getViewValue();
-        if (isViewValueEmpty()) {
-            value.setTitleLift(m_config.getTitleLift());
-            value.setSubtitleLift(m_config.getSubtitleLift());
-            value.setxAxisTitleLift(m_config.getxAxisTitleLift());
-            value.setyAxisTitleLift(m_config.getyAxisTitleLift());
-
-            value.setTitleGain(m_config.getTitleGain());
-            value.setSubtitleGain(m_config.getSubtitleGain());
-            value.setxAxisTitleGain(m_config.getxAxisTitleGain());
-            value.setyAxisTitleGain(m_config.getyAxisTitleGain());
-            value.setShowGainChart(m_config.getShowGainChart());
-            value.setSmoothing(m_config.getSmoothing());
+        if (m_valueStore == null) {
+            m_valueStore = new ValueStore();
+        } else if (isViewValueEmpty()) {
+            m_valueStore.clear();
         }
+        LiftChartPlotViewValue value = getViewValue();
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.TITLE_LIFT, m_config.getTitleLift(), value::setTitleLift);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.SUBTITLE_LIFT, m_config.getSubtitleLift(),
+            value::setSubtitleLift);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.X_AXIS_TITLE_LIFT, m_config.getxAxisTitleLift(),
+            value::setxAxisTitleLift);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.Y_AXIS_TITLE_LIFT, m_config.getyAxisTitleLift(),
+            value::setyAxisTitleLift);
+
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.TITLE_GAIN, m_config.getTitleGain(), value::setTitleGain);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.SUBTITLE_GAIN, m_config.getSubtitleGain(),
+            value::setSubtitleGain);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.X_AXIS_TITLE_GAIN, m_config.getxAxisTitleGain(),
+            value::setxAxisTitleGain);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.Y_AXIS_TITLE_GAIN, m_config.getyAxisTitleGain(),
+            value::setyAxisTitleGain);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.SHOW_GAIN_CHART, m_config.getShowGainChart(),
+            value::setShowGainChart);
+        m_valueStore.storeAndTransfer(LiftChartViewConfig.SMOOTHING, m_config.getSmoothing(),
+            value::setSmoothing);
     }
 
     /**

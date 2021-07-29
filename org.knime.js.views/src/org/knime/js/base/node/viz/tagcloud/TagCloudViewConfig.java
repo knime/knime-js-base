@@ -127,11 +127,11 @@ public class TagCloudViewConfig {
     private final static String DEFAULT_SUBTITLE = "";
     private String m_subtitle = DEFAULT_SUBTITLE;
 
-    private final static String CFG_WORD_COLUMN = "wordColumn";
+    final static String CFG_WORD_COLUMN = "wordColumn";
     private final static String DEFAULT_WORD_COLUMN = "";
     private String m_wordColumn = DEFAULT_WORD_COLUMN;
 
-    private final static String CFG_SIZE_COLUMN = "sizeColumn";
+    final static String CFG_SIZE_COLUMN = "sizeColumn";
     private final static String DEFAULT_SIZE_COLUMN = "";
     private String m_sizeColumn = DEFAULT_SIZE_COLUMN;
 

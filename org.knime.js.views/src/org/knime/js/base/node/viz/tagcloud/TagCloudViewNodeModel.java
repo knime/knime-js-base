@@ -88,6 +88,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  * Node model for the tag cloud view
@@ -101,6 +102,8 @@ public class TagCloudViewNodeModel extends AbstractSVGWizardNodeModel<TagCloudVi
 
     private final TagCloudViewConfig m_config;
     private BufferedDataTable m_table;
+
+    private ValueStore m_valueStore;
 
     /**
      * @param viewName The name of the interactive view
@@ -427,22 +430,35 @@ public class TagCloudViewNodeModel extends AbstractSVGWizardNodeModel<TagCloudVi
         representation.setEnableShowSelectedOnly(m_config.getEnableShowSelectedOnly());
         representation.setDisplayClearSelectionButton(m_config.getDisplayClearSelectionButton());
 
-        TagCloudViewValue value = getViewValue();
-        if (isViewValueEmpty()) {
-            value.setTitle(m_config.getTitle());
-            value.setSubtitle(m_config.getSubtitle());
-            value.setMinFontSize(m_config.getMinFontSize());
-            value.setMaxFontSize(m_config.getMaxFontSize());
-            value.setFontScaleType(m_config.getFontScaleType());
-            value.setSpiralType(m_config.getSpiralType());
-            value.setNumOrientations(m_config.getNumOrientations());
-            value.setStartAngle(m_config.getStartAngle());
-            value.setEndAngle(m_config.getEndAngle());
-            value.setPublishSelection(m_config.getPublishSelection());
-            value.setSubscribeSelection(m_config.getSubscribeSelection());
-            value.setShowSelectedOnly(m_config.getDefaultShowSelectedOnly());
-            value.setSubscribeFilter(m_config.getSubscribeFilter());
+        if (m_valueStore == null) {
+            m_valueStore = new ValueStore();
+        } else if (isViewValueEmpty()) {
+            m_valueStore.clear();
         }
+        TagCloudViewValue value = getViewValue();
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_TITLE, m_config.getTitle(), value::setTitle);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_SUBTITLE, m_config.getSubtitle(), value::setSubtitle);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_MIN_FONT_SIZE, m_config.getMinFontSize(),
+            value::setMinFontSize);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_MAX_FONT_SIZE, m_config.getMaxFontSize(),
+            value::setMaxFontSize);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_FONT_SCALE_TYPE, m_config.getFontScaleType(),
+            value::setFontScaleType);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_SPIRAL_TYPE, m_config.getSpiralType(),
+            value::setSpiralType);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_NUM_ORIENTATIONS, m_config.getNumOrientations(),
+            value::setNumOrientations);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_START_ANGLE, m_config.getStartAngle(),
+            value::setStartAngle);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_END_ANGLE, m_config.getEndAngle(), value::setEndAngle);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_PUBLISH_SELECTION, m_config.getPublishSelection(),
+            value::setPublishSelection);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_SUBSCRIBE_SELECTION, m_config.getSubscribeSelection(),
+            value::setSubscribeSelection);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_DEFAULT_SHOW_SELECTED_ONLY,
+            m_config.getDefaultShowSelectedOnly(), value::setShowSelectedOnly);
+        m_valueStore.storeAndTransfer(TagCloudViewConfig.CFG_SUBSCRIBE_FILTER, m_config.getSubscribeFilter(),
+            value::setSubscribeFilter);
     }
 
     private void copyValueToConfig() {

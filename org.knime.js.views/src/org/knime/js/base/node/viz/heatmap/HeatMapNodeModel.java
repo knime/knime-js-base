@@ -87,6 +87,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  * The model for the heatmap node.
@@ -101,6 +102,7 @@ implements CSSModifiable, BufferedDataTableHolder, LayoutTemplateProvider {
 
     private final HeatMapViewConfig m_config;
     private BufferedDataTable m_table;
+    private ValueStore m_valueStore;
 
     /**
      * @param viewName the name of the view
@@ -296,18 +298,33 @@ implements CSSModifiable, BufferedDataTableHolder, LayoutTemplateProvider {
             representation.setFilterIds(jsonTable.getSpec().getFilterIds());
             representation.setRunningInView(false);
 
+            if (m_valueStore == null) {
+                m_valueStore = new ValueStore();
+            } else if (isViewValueEmpty()) {
+                m_valueStore.clear();
+            }
             final HeatMapViewValue value = getViewValue();
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_CHART_TITLE, m_config.getChartTitle(),
+                value::setChartTitle);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_CHART_SUBTITLE, m_config.getChartSubtitle(),
+                value::setChartSubtitle);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_SHOW_TOOL_TIPS, m_config.getShowToolTips(),
+                value::setShowToolTips);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_CONTINUOUS_GRADIENT, m_config.getContinuousGradient(),
+                value::setContinuousGradient);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_PUBLISH_SELECTION, m_config.getPublishSelection(),
+                value::setPublishSelection);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_SUBSCRIBE_SELECTION, m_config.getSubscribeSelection(),
+                value::setSubscribeSelection);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_SUBSCRIBE_FILTER, m_config.getSubscribeFilter(),
+                value::setSubscribeFilter);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY,
+                m_config.getShowSelectedRowsOnly(), value::setShowSelectedRowsOnly);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_INITIAL_PAGE_SIZE, m_config.getInitialPageSize(),
+                value::setInitialPageSize);
+
             if (isViewValueEmpty()) {
-                value.setChartTitle(m_config.getChartTitle());
-                value.setChartSubtitle(m_config.getChartSubtitle());
-                value.setShowToolTips(m_config.getShowToolTips());
-                value.setContinuousGradient(m_config.getContinuousGradient());
                 value.setSelection(new String[0]);
-                value.setPublishSelection(m_config.getPublishSelection());
-                value.setSubscribeSelection(m_config.getSubscribeSelection());
-                value.setSubscribeFilter(m_config.getSubscribeFilter());
-                value.setShowSelectedRowsOnly(m_config.getShowSelectedRowsOnly());
-                value.setInitialPageSize(m_config.getInitialPageSize());
                 value.setCurrentPage(1);
                 value.setZoomX(0);
                 value.setZoomY(0);

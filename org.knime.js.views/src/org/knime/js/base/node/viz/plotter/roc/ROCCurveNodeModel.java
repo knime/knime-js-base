@@ -86,6 +86,7 @@ import org.knime.js.core.layout.LayoutTemplateProvider;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent;
 import org.knime.js.core.layout.bs.JSONLayoutViewContent.ResizeMethod;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
+import org.knime.js.core.settings.ValueStore;
 
 /**
  *
@@ -101,6 +102,8 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
     private BufferedDataTable m_table;
 
     static final String ROC_CALCULATOR_WARNING_ID = "RocCalculatorWarning";
+
+    private ValueStore m_valueStore;
 
     /**
      * Creates a new model instance.
@@ -307,13 +310,16 @@ final class ROCCurveNodeModel extends AbstractSVGWizardNodeModel<ROCCurveViewRep
         // added with 3.4
         representation.setShowWarningInView(m_config.getShowWarningInView());
 
-        ROCCurveViewValue value = getViewValue();
-        if (isViewValueEmpty()) {
-            value.setTitle(m_config.getTitle());
-            value.setSubtitle(m_config.getSubtitle());
-            value.setxAxisTitle(m_config.getxAxisTitle());
-            value.setyAxisTitle(m_config.getyAxisTitle());
+        if (m_valueStore == null) {
+            m_valueStore = new ValueStore();
+        } else if (isViewValueEmpty()) {
+            m_valueStore.clear();
         }
+        ROCCurveViewValue value = getViewValue();
+        m_valueStore.storeAndTransfer(ROCCurveViewConfig.TITLE, m_config.getTitle(), value::setTitle);
+        m_valueStore.storeAndTransfer(ROCCurveViewConfig.SUBTITLE, m_config.getSubtitle(), value::setSubtitle);
+        m_valueStore.storeAndTransfer(ROCCurveViewConfig.X_AXIS_TITLE, m_config.getxAxisTitle(), value::setxAxisTitle);
+        m_valueStore.storeAndTransfer(ROCCurveViewConfig.Y_AXIS_TITLE, m_config.getyAxisTitle(), value::setyAxisTitle);
     }
 
     /**

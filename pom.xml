@@ -32,6 +32,7 @@
         <module>org.knime.js.quickforms</module>
         <module>org.knime.js.tests</module>
         <module>org.knime.js.views</module>
+        <module>org.knime.js.views.tests</module>
         <module>org.knime.quickform.nodes.legacy</module>
         <module>org.knime.update.js.base</module>
 	</modules>
