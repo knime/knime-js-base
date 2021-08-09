@@ -53,13 +53,19 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.math.BigDecimal;
+import java.text.ParseException;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatter;
+import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.NumberFormatter;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -83,6 +89,7 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleN
     private final JSpinner m_max;
     private final JSpinner m_defaultSpinner;
 
+
     private final DoubleInputWidgetConfig m_config;
 
     /**
@@ -92,9 +99,9 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleN
         m_config = new DoubleInputWidgetConfig();
         m_useMin = new JCheckBox();
         m_useMax = new JCheckBox();
-        m_min = new JSpinner(getSpinnerModel());
-        m_max = new JSpinner(getSpinnerModel());
-        m_defaultSpinner = new JSpinner(getSpinnerModel());
+        m_min = createSpinner();
+        m_max = createSpinner();
+        m_defaultSpinner = createSpinner();
         m_useMin.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(final ItemEvent e) {
@@ -131,10 +138,69 @@ public class DoubleWidgetNodeDialog extends FlowVariableWidgetNodeDialog<DoubleN
     }
 
     /**
-     * @return a default spinner model
+     * Create a spinner control element with a default spinner model.
+     * @return a spinner control element
      */
-    private static SpinnerNumberModel getSpinnerModel() {
-        return new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
+    static JSpinner createSpinner() {
+        return createSpinner(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
+    }
+
+    /**
+     * Create a spinner control element with the given value and limitations.
+     * @param value the value of the spinner element
+     * @param min the minimum selectable value
+     * @param max the maximum selectable value
+     * @param stepSize the increment to add/subtract when using the arrow controls next to the text field
+     * @return a spinner control element
+     */
+    static JSpinner createSpinner(final double value, final double min, final double max, final double stepSize) {
+
+        // Create a spinner model with precise arithmetics by calculating the result of adding/subtract one step size
+        // as BigDecimal. When calculating with doubles, we see numeric errors like 2.000001 - 2 = 1.000000000139778E-6
+        SpinnerNumberModel model =
+            new SpinnerNumberModel(value, min, max, stepSize) {
+                private static final long serialVersionUID = 1L;
+
+                private final BigDecimal m_increment = BigDecimal.valueOf(getStepSize().doubleValue());
+
+                @Override
+                public Object getNextValue() {
+                    return BigDecimal.valueOf((Double)getValue()).add(m_increment).doubleValue();
+                }
+
+                @Override
+                public Object getPreviousValue() {
+                    return BigDecimal.valueOf((Double)getValue()).subtract(m_increment).doubleValue();
+                }
+            };
+        JSpinner spinner = new JSpinner(model);
+
+        JSpinner.NumberEditor e = (JSpinner.NumberEditor) spinner.getEditor();
+        e.getTextField().setFormatterFactory(new AbstractFormatterFactory() {
+            @Override
+            @SuppressWarnings("serial")
+            public AbstractFormatter getFormatter(final JFormattedTextField tf) {
+                return new NumberFormatter() {
+                    @Override
+                    public Object stringToValue(final String text) throws ParseException {
+                        try {
+                            // We want to ignore the case of the scientific notation exponent separator ("e" and "E")
+                            // NumberEditor relies on DecimalFormat, which supports only "E" as exponent separator
+                            return Double.valueOf(text);
+                        } catch (NumberFormatException er) {
+                            // this is handled gracefully by the spinner, NumberFormatException is not
+                            throw new ParseException(er.getMessage(), 0);
+                        }
+                    }
+                    @Override
+                    public String valueToString(final Object v) {
+                        return v.toString();
+                    }
+                };
+            }
+        });
+
+        return spinner;
     }
 
     /**
