@@ -75,10 +75,12 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 import org.knime.js.core.components.datetime.DialogComponentDateTimeOptions;
 import org.knime.js.core.components.datetime.SettingsModelDateTimeOptions;
+
 
 /**
  *
@@ -104,6 +106,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
     private final JTextField m_titleField;
     private final JTextField m_subtitleField;
     private final DataColumnSpecFilterPanel m_columnFilterPanel;
+    private final JCheckBox m_allowAddValueCheckbox;
+    private final DataColumnSpecFilterPanel m_columnAutosuggestFilterPanel;
     private final JCheckBox m_enableSelectionCheckbox;
     private final JCheckBox m_enableClearSelectionButtonCheckbox;
     private final JRadioButton m_singleSelectionRadioButton;
@@ -175,6 +179,9 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
                 enableSelectionFields();
             }
         });
+        m_columnAutosuggestFilterPanel = new DataColumnSpecFilterPanel();
+        m_columnAutosuggestFilterPanel.setSelectedEnforceOption(EnforceOption.EnforceExclusion);
+        m_allowAddValueCheckbox = new JCheckBox("Allow to add new values");
         m_enableClearSelectionButtonCheckbox = new JCheckBox("Enable 'Clear Selection' button");
         m_singleSelectionRadioButton = new JRadioButton("Single Selection");
         m_multipleSelectionRadioButton = new JRadioButton("Multiple Selection");
@@ -298,6 +305,19 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridwidth = 3;
         displayPanel.add(m_columnFilterPanel, gbcD);
 
+        JPanel autosuggestPanel = new JPanel(new GridBagLayout());
+        autosuggestPanel.setBorder(new TitledBorder("Autosuggest Options"));
+        GridBagConstraints gbcA = createConfiguredGridBagConstraints();
+        gbcA.gridwidth = 1;
+        gbcA.gridx = 0;
+        autosuggestPanel.add(m_allowAddValueCheckbox, gbcA);
+        gbcA.gridx = 0;
+        gbcA.gridy++;
+        autosuggestPanel.add(new JLabel("Autosuggest for columns: "), gbcA);
+        gbcA.gridy++;
+        gbcA.gridwidth = 3;
+        autosuggestPanel.add(m_columnAutosuggestFilterPanel, gbcA);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -306,6 +326,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         panel.add(titlePanel, gbc);
         gbc.gridy++;
         panel.add(displayPanel, gbc);
+        gbc.gridy++;
+        panel.add(autosuggestPanel, gbc);
         return panel;
     }
 
@@ -493,6 +515,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_titleField.setText(m_config.getTitle());
         m_subtitleField.setText(m_config.getSubtitle());
         m_columnFilterPanel.loadConfiguration(m_config.getColumnFilterConfig(), inSpec);
+        m_allowAddValueCheckbox.setSelected(m_config.getAllowAddValue());
+        m_columnAutosuggestFilterPanel.loadConfiguration(m_config.getColumnAutosuggestFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(m_config.getEnableSelection());
         m_enableClearSelectionButtonCheckbox.setSelected(m_config.getEnableClearSelectionButton());
         boolean single = m_config.getSingleSelection();
@@ -550,6 +574,10 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         DataColumnSpecFilterConfiguration filterConfig = new DataColumnSpecFilterConfiguration(TableEditorViewConfig.CFG_COLUMN_FILTER);
         m_columnFilterPanel.saveConfiguration(filterConfig);
         m_config.setColumnFilterConfig(filterConfig);
+        m_config.setAllowAddValue(m_allowAddValueCheckbox.isSelected());
+        DataColumnSpecFilterConfiguration autosuggestFilterConfig = new DataColumnSpecFilterConfiguration(TableEditorViewConfig.CFG_AUTOSUGGEST_COLUMN_FILTER);
+        m_columnAutosuggestFilterPanel.saveConfiguration(autosuggestFilterConfig);
+        m_config.setColumnAutosuggestFilterConfig(autosuggestFilterConfig);
         m_config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         m_config.setEnableClearSelectionButton(m_enableClearSelectionButtonCheckbox.isSelected());
         m_config.setSingleSelection(m_singleSelectionRadioButton.isSelected());
