@@ -97,6 +97,10 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     private int m_globalNumberFormatDecimals;
     private boolean m_displayMissingValueAsQuestionMark;
 
+    private boolean m_allowAddValue;
+    private static final String CFG_AUTOSUGGEST_COLUMNS = "autosuggestColumns";
+    private String[] m_autosuggestColumns;
+
     private static final String CFG_PUBLISH_FILTER_ID = "publishFilterId";
     private String m_publishFilterId;
     private static final String CFG_SUBSCRIPTION_FILTER_IDS = "subscriptionFilterIds";
@@ -525,6 +529,34 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the allowAddValue
+     */
+    public boolean getAllowAddValue() {
+        return m_allowAddValue;
+    }
+
+    /**
+     * @param allowAddValue the allowAddValue to set
+     */
+    public void setAllowAddValue(final boolean allowAddValue) {
+        m_allowAddValue = allowAddValue;
+    }
+
+    /**
+     * @return the autosuggestColumns
+     */
+    public String[] getAutosuggestColumns() {
+        return m_autosuggestColumns;
+    }
+
+    /**
+     * @param autosuggestColumns the editableColumns to set
+     */
+    public void setAutosuggestColumns(final String[] autosuggestColumns) {
+        m_autosuggestColumns = autosuggestColumns;
+    }
+
+    /**
      * @return the editableColumns
      */
     public String[] getEditableColumns() {
@@ -565,6 +597,9 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON, m_enableClearSortButton);
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
+
+        settings.addBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES, m_allowAddValue);
+        settings.addStringArray(CFG_AUTOSUGGEST_COLUMNS, m_autosuggestColumns);
 
         //added with 3.3
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
@@ -611,6 +646,9 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         m_enableClearSortButton = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_CLEAR_SORT_BUTTON);
         m_enableGlobalNumberFormat = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
+
+        m_allowAddValue = settings.getBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES);
+        m_autosuggestColumns = settings.getStringArray(CFG_AUTOSUGGEST_COLUMNS, (String[])null);
 
         //added with 3.3
         m_enableHideUnselected = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_HIDE_UNSELECTED, TableEditorViewConfig.DEFAULT_ENABLE_HIDE_UNSELECTED);

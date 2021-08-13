@@ -435,6 +435,9 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             viewRepresentation.setEnableGlobalNumberFormat(m_config.getEnableGlobalNumberFormat());
             viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());
 
+            viewRepresentation.setAllowAddValue(m_config.getAllowAddValue());
+            viewRepresentation.setAutosuggestColumns(m_config.getColumnAutosuggestFilterConfig().applyTo(m_table.getDataTableSpec()).getIncludes());
+
             //added with 3.3
             viewRepresentation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());
             viewRepresentation.setEnableHideUnselected(m_config.getEnableHideUnselected());

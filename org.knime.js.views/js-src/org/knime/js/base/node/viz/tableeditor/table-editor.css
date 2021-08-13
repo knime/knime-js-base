@@ -183,3 +183,11 @@ h2 {
     float: right;
     padding-top: 2px;
 }
+
+.knime-autosuggest-dropdown {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    outline: none;
+    width: 100%;
+}

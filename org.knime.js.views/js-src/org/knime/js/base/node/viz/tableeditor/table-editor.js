@@ -24,7 +24,7 @@ window.table_editor = (function () {
      * String values editor
      */
     var StringEditor = function () {
-        this.component = $('<input type="text" class="knime-table-control-text knime-string knime-single-line"/>');
+        this.component = $('<input type="text" class="knime-table-control-text knime-string knime-single-line"/>')       
     };
 
     StringEditor.prototype = Object.create(CellEditor.prototype);
@@ -36,6 +36,38 @@ window.table_editor = (function () {
         }
         return value;
     };
+
+    /**
+     * String values editor with autosuggest
+     */
+    var StringAutosuggestEditor = function (columnValues, cellValue) {
+       
+        let autosuggest_dropdown = '<select name="autosuggest_values" class="knime-autosuggest-dropdown">';
+        autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}" selected>${cellValue}</option>`);
+
+        columnValues.forEach((value) => {
+            if(value !== cellValue) {
+                autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">${value}</option>`);
+            }
+        });
+
+        autosuggest_dropdown = autosuggest_dropdown.concat('</select>');
+
+        this.component = $(autosuggest_dropdown);
+
+        
+    };
+    
+        StringAutosuggestEditor.prototype = Object.create(CellEditor.prototype);
+    
+        StringAutosuggestEditor.prototype.getValue = function () {
+            var value = this.component.val();
+            if (value == '') {
+                return null;
+            }
+            return value;
+        };
+
 
     /**
      * Integer or Long values editor
@@ -123,6 +155,7 @@ window.table_editor = (function () {
      * @extends KnimeBaseTableViewer TableViewer with added editing functionality
      */
     var TableEditor = function () {
+        debugger;
         KnimeBaseTableViewer.apply(this);
 
         this._selectedCell = undefined;
@@ -390,8 +423,15 @@ window.table_editor = (function () {
         var colInd = cell.index().column;
         var dataInd = this._dataIndexFromColIndex(colInd);
         var colType = this._knimeTable.getKnimeColumnTypes()[dataInd];
-        var editor = createEditor(colType);
-        editor.setValue(cellValue !== undefined ? cellValue : cell.data());
+
+        var editor;
+        if (this._hasAutosuggest(cell) && colType === 'String') {
+            editor = new StringAutosuggestEditor(this._getPossibleColumnValues(cell), (cellValue !== undefined ? cellValue : cell.data()));
+        }  else {
+            editor = createEditor(colType);
+            editor.setValue(cellValue !== undefined ? cellValue : cell.data());
+        }
+        
         return editor;
     };
 
@@ -673,6 +713,17 @@ window.table_editor = (function () {
         var dataIndex = this._dataIndexFromColIndex(cell.index().column);
         var colName = this._knimeTable.getColumnNames()[dataIndex];
         return this._representation.editableColumns.indexOf(colName) !== -1;
+    };
+
+    TableEditor.prototype._hasAutosuggest = function (cell) {
+        var dataIndex = this._dataIndexFromColIndex(cell.index().column);
+        var colName = this._knimeTable.getColumnNames()[dataIndex];
+        return this._representation.autosuggestColumns.indexOf(colName) !== -1;
+    };
+
+    TableEditor.prototype._getPossibleColumnValues = function (cell) {
+        var dataIndex = this._dataIndexFromColIndex(cell.index().column);
+        return this._representation.table.spec.possibleValues[dataIndex];;
     };
 
     TableEditor.prototype._isEqualCell = function (cell1, cell2) {
