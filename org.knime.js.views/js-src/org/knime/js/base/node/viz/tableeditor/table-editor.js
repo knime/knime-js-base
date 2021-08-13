@@ -40,22 +40,28 @@ window.table_editor = (function () {
     /**
      * String values editor with autosuggest
      */
-    var StringAutosuggestEditor = function (columnValues, cellValue) {
-       
-        let autosuggest_dropdown = '<select name="autosuggest_values" class="knime-autosuggest-dropdown">';
-        autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}" selected>${cellValue}</option>`);
-
-        columnValues.forEach((value) => {
-            if(value !== cellValue) {
-                autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">${value}</option>`);
-            }
-        });
-
-        autosuggest_dropdown = autosuggest_dropdown.concat('</select>');
-
+    var StringAutosuggestEditor = function (allowAddValue,columnValues, cellValue) {
+        let autosuggest_dropdown;
+        if(allowAddValue) {
+            autosuggest_dropdown = '<input list="browsers" id="myBrowser" name="myBrowser" /><datalist id="browsers">';
+            autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}">`);
+            columnValues.forEach((value) => {
+                if(value !== cellValue) {
+                    autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">`);
+                }
+            });
+            autosuggest_dropdown = autosuggest_dropdown.concat('</datalist>');
+        } else {
+            autosuggest_dropdown = '<select class="knime-autosuggest-dropdown">';
+            autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}" selected>${cellValue}</option>`);
+            columnValues.forEach((value) => {
+                if(value !== cellValue) {
+                    autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">${value}</option>`);
+                }
+            });
+            autosuggest_dropdown = autosuggest_dropdown.concat('</select>');
+       }
         this.component = $(autosuggest_dropdown);
-
-        
     };
     
         StringAutosuggestEditor.prototype = Object.create(CellEditor.prototype);
@@ -426,7 +432,7 @@ window.table_editor = (function () {
 
         var editor;
         if (this._hasAutosuggest(cell) && colType === 'String') {
-            editor = new StringAutosuggestEditor(this._getPossibleColumnValues(cell), (cellValue !== undefined ? cellValue : cell.data()));
+            editor = new StringAutosuggestEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), (cellValue !== undefined ? cellValue : cell.data()));
         }  else {
             editor = createEditor(colType);
             editor.setValue(cellValue !== undefined ? cellValue : cell.data());
@@ -723,7 +729,7 @@ window.table_editor = (function () {
 
     TableEditor.prototype._getPossibleColumnValues = function (cell) {
         var dataIndex = this._dataIndexFromColIndex(cell.index().column);
-        return this._representation.table.spec.possibleValues[dataIndex];;
+        return this._representation.table.spec.possibleValues[dataIndex];
     };
 
     TableEditor.prototype._isEqualCell = function (cell1, cell2) {
