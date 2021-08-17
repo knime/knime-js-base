@@ -906,8 +906,8 @@ public class TableEditorViewConfig {
         m_subtitle = settings.getString(CFG_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInModel(settings);
 
+        m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         try {
-            m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES);
             m_columnAutosuggestFilterConfig.loadConfigurationInModel(settings);
         } catch (InvalidSettingsException e) {
             // return default
