@@ -41,27 +41,16 @@ window.table_editor = (function () {
      * String values editor with autosuggest
      */
     var StringAutosuggestEditor = function (allowAddValue,columnValues, cellValue) {
-        let autosuggest_dropdown;
-        if(allowAddValue) {
-            autosuggest_dropdown = '<input list="browsers" id="myBrowser" name="myBrowser" /><datalist id="browsers">';
-            autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}">`);
-            columnValues.forEach((value) => {
-                if(value !== cellValue) {
-                    autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">`);
-                }
-            });
-            autosuggest_dropdown = autosuggest_dropdown.concat('</datalist>');
-        } else {
-            autosuggest_dropdown = '<select class="knime-autosuggest-dropdown">';
-            autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${cellValue}" selected>${cellValue}</option>`);
-            columnValues.forEach((value) => {
-                if(value !== cellValue) {
-                    autosuggest_dropdown = autosuggest_dropdown.concat(`<option value="${value}">${value}</option>`);
-                }
-            });
-            autosuggest_dropdown = autosuggest_dropdown.concat('</select>');
-       }
-        this.component = $(autosuggest_dropdown);
+        
+        let autosuggestDropdown = allowAddValue ? '<input list="suggestions" /><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
+        autosuggestDropdown = autosuggestDropdown.concat(`<option value="${cellValue}" selected class="knime-autosuggest-dropdown--option">${cellValue}</option>`);
+        columnValues.forEach((value) => {
+            if(value !== cellValue || !value) {
+                autosuggestDropdown = autosuggestDropdown.concat(`<option value="${value}" class="knime-autosuggest-dropdown--option">${value}</option>`);
+            }
+        });
+        autosuggestDropdown = allowAddValue ? autosuggestDropdown.concat('</datalist>') : autosuggestDropdown.concat('</select>');
+        this.component = $(autosuggestDropdown);
     };
     
         StringAutosuggestEditor.prototype = Object.create(CellEditor.prototype);
@@ -352,7 +341,7 @@ window.table_editor = (function () {
         var self = this;
         var $td = $(cell.node());
         this._catchTdEventsOff($td);
-
+        
         var editor = this._createCellEditorComponent(cell, cellValue);
         var editorComponent = editor.getComponent();
 
@@ -433,11 +422,13 @@ window.table_editor = (function () {
         var editor;
         if (this._hasAutosuggest(cell) && colType === 'String') {
             editor = new StringAutosuggestEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), (cellValue !== undefined ? cellValue : cell.data()));
+            if (!this._representation.allowAddValue) {
+                return editor;
+            }
         }  else {
             editor = createEditor(colType);
-            editor.setValue(cellValue !== undefined ? cellValue : cell.data());
         }
-        
+        editor.setValue(cellValue !== undefined ? cellValue : cell.data());
         return editor;
     };
 

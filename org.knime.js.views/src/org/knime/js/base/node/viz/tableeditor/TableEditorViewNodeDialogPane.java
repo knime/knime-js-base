@@ -575,9 +575,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel.saveConfiguration(filterConfig);
         m_config.setColumnFilterConfig(filterConfig);
         m_config.setAllowAddValue(m_allowAddValueCheckbox.isSelected());
-        DataColumnSpecFilterConfiguration autosuggestFilterConfig = new DataColumnSpecFilterConfiguration(TableEditorViewConfig.CFG_AUTOSUGGEST_COLUMN_FILTER);
-        m_columnAutosuggestFilterPanel.saveConfiguration(autosuggestFilterConfig);
-        m_config.setColumnAutosuggestFilterConfig(autosuggestFilterConfig);
+        m_columnAutosuggestFilterPanel.saveConfiguration(m_config.getColumnAutosuggestFilterConfig());
         m_config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         m_config.setEnableClearSelectionButton(m_enableClearSelectionButtonCheckbox.isSelected());
         m_config.setSingleSelection(m_singleSelectionRadioButton.isSelected());

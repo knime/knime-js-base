@@ -45,6 +45,12 @@
 	        <option name="Columns to display">
 	        	Select the columns to be included in the table view.
 	        </option>
+	        <option name="Allow to add new values">
+	        	Enable or disable the possibility to add new values when autosuggest is enabled for specific columns.
+	        </option>
+	        <option name="Autosuggest for columns">
+	        	Select the columns for which autosuggest should be enabled. Autosuggest is based on the domain values of each column.
+	        </option>
         </tab>
         <tab name="Editor">
             <description>

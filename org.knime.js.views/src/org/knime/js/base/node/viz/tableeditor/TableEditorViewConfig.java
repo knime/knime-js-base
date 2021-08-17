@@ -905,8 +905,14 @@ public class TableEditorViewConfig {
         m_title = settings.getString(CFG_TITLE);
         m_subtitle = settings.getString(CFG_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInModel(settings);
-        m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES);
-        m_columnAutosuggestFilterConfig.loadConfigurationInModel(settings);
+
+        try {
+            m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES);
+            m_columnAutosuggestFilterConfig.loadConfigurationInModel(settings);
+        } catch (InvalidSettingsException e) {
+            // return default
+        }
+
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION);
         m_selectionColumnName = settings.getString(CFG_SELECTION_COLUMN_NAME);
         m_enableSearching = settings.getBoolean(CFG_ENABLE_SEARCHING);
@@ -973,20 +979,22 @@ public class TableEditorViewConfig {
         try {
             NodeSettingsRO subSettings = settings.getNodeSettings(CFG_AUTOSUGGEST_COLUMN_FILTER);
             String[] included_list = subSettings.getStringArray("included_names", new String[0]);
+            final InputFilter<DataColumnSpec> AUTOSUGGEST_FILTER = new InputFilter<DataColumnSpec>() {
+
+                @Override
+                public boolean include(final DataColumnSpec spec) {
+                    DataType type = spec.getType();
+                    return type.isCompatible(StringValue.class);
+                }
+            };
             if(included_list.length != 0) {
                 m_columnAutosuggestFilterConfig.loadConfigurationInDialog(settings, spec);
             } else {
-                final InputFilter<DataColumnSpec> AUTOSUGGEST_FILTER = new InputFilter<DataColumnSpec>() {
-
-                    @Override
-                    public boolean include(final DataColumnSpec spec) {
-                        DataType type = spec.getType();
-                        return type.isCompatible(StringValue.class);
-                    }
-                };
                 m_columnAutosuggestFilterConfig.loadDefault(spec, AUTOSUGGEST_FILTER, false);
             }
-        } catch(Exception e) {}
+        } catch(InvalidSettingsException e) {
+            // return default
+        }
 
         m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION, DEFAULT_ENABLE_SELECTION);
