@@ -51,6 +51,7 @@ package org.knime.js.base.node.widget.filter.definition.value;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.naming.OperationNotSupportedException;
@@ -91,6 +92,8 @@ import org.knime.js.core.selections.json.RangeSelection;
 public class ValueFilterDefinitionWidgetNodeModel
     extends AbstractWizardNodeModel<ValueFilterDefinitionWidgetRepresentation, RangeFilterWidgetValue>
     implements CSSModifiable {
+
+    private UUID m_filterId;
 
     private final ValueFilterDefinitionWidgetConfig m_config;
 
@@ -246,12 +249,15 @@ public class ValueFilterDefinitionWidgetNodeModel
             } else {
                 valStream.findFirst().ifPresent(val -> filterCells.add(val));
             }
-            model = FilterModel.newNominalModel(filterCells);
+            model = FilterModel.newNominalModel(m_filterId, filterCells);
+        }
+        if (m_filterId == null) {
+            m_filterId = model.getFilterUUID();
         }
         ValueFilterDefinitionWidgetRepresentation rep = getViewRepresentation();
         if (rep != null) {
             rep.setTableID(getTableId(0));
-            rep.setFilterID(model.getFilterUUID().toString());
+            rep.setFilterID(m_filterId.toString());
             rep.setPossibleValues(possibleValues);
             rep.setConfig(m_config);
         }
