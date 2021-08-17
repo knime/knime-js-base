@@ -48,6 +48,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -85,6 +86,8 @@ import org.knime.js.core.settings.slider.SliderSettings;
  */
 public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSliderFilterRepresentation,
         RangeFilterValue> implements CSSModifiable {
+
+    private UUID m_filterId;
 
     private final RangeSliderFilterConfig m_config;
 
@@ -266,12 +269,15 @@ public class RangeSliderFilterNodeModel extends AbstractWizardNodeModel<RangeSli
         if(fixSlider[2]) {
             maximum = Double.POSITIVE_INFINITY;
         }
-        FilterModelRange model = FilterModel.newRangeModel(minimum, maximum, true, true);
+        FilterModelRange model = FilterModel.newRangeModel(m_filterId, minimum, maximum, true, true);
+        if (m_filterId == null) {
+            m_filterId = model.getFilterUUID();
+        }
         RangeSliderFilterRepresentation rep = getViewRepresentation();
         if (rep != null) {
             rep.setConfig(m_config);
             rep.setTableId(getTableId(0));
-            rep.setFilterId(model.getFilterUUID().toString());
+            rep.setFilterId(m_filterId.toString());
         }
         return getOutSpec(spec, columnName, FilterHandler.from(model));
 
