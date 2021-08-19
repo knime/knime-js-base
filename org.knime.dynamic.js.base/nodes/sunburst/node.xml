@@ -90,6 +90,11 @@
 					label="Display breadcrumb" defaultValue="true" saveInView="true">
 					When checked, a breadcrumb is displayed (on mouseover, etc.). The breadcrumb depicts a (sub-)path in the hierarchy.
 				</checkBoxOption>
+				<checkBoxOption name="Display tooltip" id="tooltip"
+					label="Display tooltip" defaultValue="false" saveInView="true">
+					When checked,
+					a tooltip is shown on mouse hover.
+				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole" id="donutHole"
 					label="Enable donut hole" defaultValue="true" saveInView="true">
 					When checked,
@@ -182,6 +187,11 @@
 					label="Enable breadcrumb toggle" defaultValue="true"
 					enableDependency="enableViewControls" enableValue="true">
 					Check to enable toggling of the breadcrumb within the view.
+				</checkBoxOption>
+				<checkBoxOption name="Enable tooltip toggle" id="tooltipToggle"
+					label="Enable tooltip toggle" defaultValue="true" enableDependency="enableViewControls"
+					enableValue="true">
+					Check to enable toggling of the tooltip within the view.
 				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole toggle" id="donutHoleToggle"
 					label="Enable donut hole toggle" defaultValue="true" enableDependency="enableViewControls" enableValue="true">
