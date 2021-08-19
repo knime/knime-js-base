@@ -86,6 +86,10 @@ public class ScatterPlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
         res.put(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, Boolean.class);
         res.put(ScatterPlotViewConfig.SHOW_LEGEND, Boolean.class);
         res.put(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, Boolean.class);
+        res.put(ScatterPlotViewConfig.X_AXIS_MIN, DoubleStoredAsString.class);
+        res.put(ScatterPlotViewConfig.X_AXIS_MAX, DoubleStoredAsString.class);
+        res.put(ScatterPlotViewConfig.Y_AXIS_MIN, DoubleStoredAsString.class);
+        res.put(ScatterPlotViewConfig.Y_AXIS_MAX, DoubleStoredAsString.class);
         return res;
     }
 
@@ -114,6 +118,16 @@ public class ScatterPlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
             return RANDOM_COL_NAMES[(numCalls++) % 3];
         } else {
             return super.randomString(key);
+        }
+    }
+
+    @Override
+    protected double randomDouble(final String key) {
+        // make sure that max > min
+        if (key.endsWith("Max")) {
+            return super.randomDouble(key) * 10;
+        } else {
+            return super.randomDouble(key);
         }
     }
 

@@ -141,41 +141,27 @@ public abstract class AbstractUpdateViewValuesOnSpecChangeTest extends RandomNod
         NodeSettings ns = new NodeSettings("");
         n.saveModelSettingsTo(ns);
 
-        // 2. pre-set (mostly random) configs and 'execute' the node for the first time
+        // 2. 'execute' the node for the first time (without any configs set)
         n.reset();
-        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            addRandomValue(e.getKey(), e.getValue(), ns);
-        });
+        initialNodeSettings(ns);
         n.loadModelSettingsFrom(ns);
         performExecute(n, exec, m_spec1);
         JSONViewContent viewVal1 = getViewValue(n);
         JsonNode viewValJson1 = toJsonNode(viewVal1);
 
-        // 3. re-execute with same spec but different config -> no view value changes expected
+        // 3. re-execute with same spec and same config -> no view value changes expected
         n.reset();
-        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            addRandomValue(e.getKey(), e.getValue(), ns);
-        });
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal1, false);
         n.loadModelSettingsFrom(ns);
         performExecute(n, exec, m_spec1);
         JSONViewContent viewVal2 = getViewValue(n);
         JsonNode viewValJson2 = toJsonNode(viewVal2);
-        m_viewValuePropertiesExpectedToChange.keySet().forEach(k -> {
-            String key = m_configKeyToValueKeyMap.get(k);
-            if (key == null) {
-                key = k;
-            }
-            Assert.assertFalse(viewValJson1.get(key).isNull());
-        });
         Assert.assertEquals(viewValJson1, viewValJson2);
 
-        // 4. re-execute different spec and config -> view value changes expected
+        // 4. re-execute different spec and different config -> view value changes expected
         n.reset();
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal2, false);
-        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            addRandomValue(e.getKey(), e.getValue(), ns);
-        });
+        changedNodeSettings(ns);
         n.loadModelSettingsFrom(ns);
         performExecute(n, exec, m_spec2);
         JsonNode viewValJson3 = toJsonNode(getViewValue(n));
@@ -188,6 +174,24 @@ public abstract class AbstractUpdateViewValuesOnSpecChangeTest extends RandomNod
             Assert.assertFalse(viewValJson3.get(key).isNull());
             Assert.assertNotEquals(viewValJson3.get(key), viewValJson2.get(key));
         });
+    }
+
+    /**
+     * The initial node settings.
+     *
+     * @param ns
+     */
+    protected void initialNodeSettings(final NodeSettings ns) {
+        //
+    }
+
+    /**
+     * The changed node settings.
+     *
+     * @param ns
+     */
+    protected void changedNodeSettings(final NodeSettings ns) {
+        //
     }
 
     @SuppressWarnings("javadoc")

@@ -50,9 +50,11 @@ package org.knime.js.base.node.viz.plotter.scatterSelectionAppender;
 
 import java.util.Map;
 
+import org.knime.core.data.DataColumnDomainCreator;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.node.NodeSettings;
 import org.knime.js.views.AbstractUpdateViewValuesOnSpecChangeTest;
 
 /**
@@ -66,9 +68,25 @@ public class ScatterPlotUpdateValuesOnSpecChangeTest extends AbstractUpdateViewV
             ScatterPlotViewConfig.X_AXIS_MIN, DoubleStoredAsString.class, //
             ScatterPlotViewConfig.X_AXIS_MAX, DoubleStoredAsString.class, //
             ScatterPlotViewConfig.Y_AXIS_MIN, DoubleStoredAsString.class, //
-            ScatterPlotViewConfig.Y_AXIS_MAX, DoubleStoredAsString.class),
-            new DataTableSpec(new DataColumnSpecCreator("col1", IntCell.TYPE).createSpec()),
-            new DataTableSpec(new DataColumnSpecCreator("col2", IntCell.TYPE).createSpec()));
+            ScatterPlotViewConfig.Y_AXIS_MAX, DoubleStoredAsString.class), spec1(), spec2());
+    }
+
+    private static DataTableSpec spec1() {
+        DataColumnDomainCreator colDom = new DataColumnDomainCreator();
+        colDom.setLowerBound(new DoubleCell(1));
+        colDom.setUpperBound(new DoubleCell(2));
+        DataColumnSpecCreator colSpec = new DataColumnSpecCreator("col1", DoubleCell.TYPE);
+        colSpec.setDomain(colDom.createDomain());
+        return new DataTableSpec(colSpec.createSpec());
+    }
+
+    private static DataTableSpec spec2() {
+        DataColumnDomainCreator colDom = new DataColumnDomainCreator();
+        colDom.setLowerBound(new DoubleCell(10));
+        colDom.setUpperBound(new DoubleCell(20));
+        DataColumnSpecCreator colSpec = new DataColumnSpecCreator("col2", DoubleCell.TYPE);
+        colSpec.setDomain(colDom.createDomain());
+        return new DataTableSpec(colSpec.createSpec());
     }
 
     @Override
@@ -79,6 +97,20 @@ public class ScatterPlotUpdateValuesOnSpecChangeTest extends AbstractUpdateViewV
         } else {
             return super.randomDouble(key);
         }
+    }
+
+    @Override
+    protected void initialNodeSettings(final NodeSettings ns) {
+        ns.addBoolean(ScatterPlotViewConfig.USE_DOMAIN_INFO, true);
+        ns.addString(ScatterPlotViewConfig.X_COL, "col1");
+        ns.addString(ScatterPlotViewConfig.Y_COL, "col1");
+    }
+
+    @Override
+    protected void changedNodeSettings(final NodeSettings ns) {
+        ns.addBoolean(ScatterPlotViewConfig.USE_DOMAIN_INFO, true);
+        ns.addString(ScatterPlotViewConfig.X_COL, "col2");
+        ns.addString(ScatterPlotViewConfig.Y_COL, "col2");
     }
 
 }

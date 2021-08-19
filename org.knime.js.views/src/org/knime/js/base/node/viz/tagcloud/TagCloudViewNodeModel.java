@@ -433,6 +433,8 @@ public class TagCloudViewNodeModel extends AbstractSVGWizardNodeModel<TagCloudVi
         if (m_valueStore == null) {
             m_valueStore = new ValueStore();
         } else if (isViewValueEmpty()) {
+            // if the node is reset and executed again, the empty view value indicates that we also need to clear
+            // the value store to make sure all values are transferred from the configuration
             m_valueStore.clear();
         }
         TagCloudViewValue value = getViewValue();
