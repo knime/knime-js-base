@@ -567,6 +567,8 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         if (m_valueStore == null) {
             m_valueStore = new ValueStore();
         } else if (isViewValueEmpty()) {
+            // if the node is reset and executed again, the empty view value indicates that we also need to clear
+            // the value store to make sure all values are transferred from the configuration
             m_valueStore.clear();
         }
         copyConfigToViewValue(m_valueStore, spec, m_config, getViewValue());
@@ -631,6 +633,10 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
         valStore.storeAndTransfer(LinePlotViewConfig.Y_AXIS_LABEL, config.getyAxisLabel(), viewValue::setyAxisLabel);
         valStore.storeAndTransfer(LinePlotViewConfig.DOT_SIZE, config.getDotSize(), viewValue::setDotSize);
         valStore.storeAndTransfer(LinePlotViewConfig.LINE_SIZE, config.getLineSize(), viewValue::setLineSize);
+        valStore.storeAndTransfer(LinePlotViewConfig.X_AXIS_MIN, config.getxAxisMin(), viewValue::setxAxisMin);
+        valStore.storeAndTransfer(LinePlotViewConfig.X_AXIS_MAX, config.getxAxisMax(), viewValue::setxAxisMax);
+        valStore.storeAndTransfer(LinePlotViewConfig.Y_AXIS_MIN, config.getyAxisMin(), viewValue::setyAxisMin);
+        valStore.storeAndTransfer(LinePlotViewConfig.Y_AXIS_MAX, config.getyAxisMax(), viewValue::setyAxisMax);
 
         // we store (i.e. memorize) the table spec such that we can overwrite the view values
         // if the table spec changed on re-execution (a re-execution triggered by the node view)
@@ -640,23 +646,15 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
 
             if ((config.getxAxisMin() == null) && config.getUseDomainInfo() && (config.getxColumn() != null)) {
                 viewValue.setxAxisMin(getMinimumFromColumns(spec, config.getxColumn()));
-            } else {
-                viewValue.setxAxisMin(config.getxAxisMin());
             }
             if ((config.getxAxisMax() == null) && config.getUseDomainInfo() && (config.getxColumn() != null)) {
                 viewValue.setxAxisMax(getMaximumFromColumns(spec, config.getxColumn()));
-            } else {
-                viewValue.setxAxisMax(config.getxAxisMax());
             }
             if (config.getyAxisMin() == null && config.getUseDomainInfo()) {
                 viewValue.setyAxisMin(getMinimumFromColumns(spec, filter.getIncludes()));
-            } else {
-                viewValue.setyAxisMin(config.getyAxisMin());
             }
             if (config.getyAxisMax() == null && config.getUseDomainInfo()) {
                 viewValue.setyAxisMax(getMaximumFromColumns(spec, filter.getIncludes()));
-            } else {
-                viewValue.setyAxisMax(config.getyAxisMax());
             }
 
             // Check axes ranges

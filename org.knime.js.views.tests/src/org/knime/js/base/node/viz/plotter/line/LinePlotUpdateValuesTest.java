@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.viz.plotter.line;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -60,16 +61,25 @@ import org.knime.js.views.AbstractUpdateViewValuesTest;
 public class LinePlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
 
     @SuppressWarnings("javadoc")
-    public LinePlotUpdateValuesTest() throws InstantiationException, IllegalAccessException,
-        InvalidSettingsException, InvalidNodeFactoryExtensionException {
-        super(LinePlotNodeFactory.class.getName(), Map.of(//
-            LinePlotViewConfig.CHART_TITLE, String.class, //
-            LinePlotViewConfig.CHART_SUBTITLE, String.class, //
-            LinePlotViewConfig.X_COL, String.class, //
-            LinePlotViewConfig.X_AXIS_LABEL, String.class, //
-            LinePlotViewConfig.Y_AXIS_LABEL, String.class, //
-            LinePlotViewConfig.DOT_SIZE, IntegerStoredAsString.class, //
-            LinePlotViewConfig.LINE_SIZE, Integer.class));
+    public LinePlotUpdateValuesTest() throws InstantiationException, IllegalAccessException, InvalidSettingsException,
+        InvalidNodeFactoryExtensionException {
+        super(LinePlotNodeFactory.class.getName(), createPropertyMap());
+    }
+
+    private static Map<String, Class<?>> createPropertyMap() {
+        Map<String, Class<?>> res = new HashMap<>();
+        res.put(LinePlotViewConfig.CHART_TITLE, String.class);
+        res.put(LinePlotViewConfig.CHART_SUBTITLE, String.class);
+        res.put(LinePlotViewConfig.X_COL, String.class);
+        res.put(LinePlotViewConfig.X_AXIS_LABEL, String.class);
+        res.put(LinePlotViewConfig.Y_AXIS_LABEL, String.class);
+        res.put(LinePlotViewConfig.DOT_SIZE, IntegerStoredAsString.class);
+        res.put(LinePlotViewConfig.LINE_SIZE, Integer.class);
+        res.put(LinePlotViewConfig.X_AXIS_MIN, DoubleStoredAsString.class);
+        res.put(LinePlotViewConfig.X_AXIS_MAX, DoubleStoredAsString.class);
+        res.put(LinePlotViewConfig.Y_AXIS_MIN, DoubleStoredAsString.class);
+        res.put(LinePlotViewConfig.Y_AXIS_MAX, DoubleStoredAsString.class);
+        return res;
     }
 
     @Override
@@ -77,6 +87,16 @@ public class LinePlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
         return Map.of(LinePlotViewConfig.X_COL, "xColumn", //
             LinePlotViewConfig.DOT_SIZE, "dotSize", //
             LinePlotViewConfig.LINE_SIZE, "lineSize");
+    }
+
+    @Override
+    protected double randomDouble(final String key) {
+        // make sure that max > min
+        if (key.endsWith("Max")) {
+            return super.randomDouble(key) * 10;
+        } else {
+            return super.randomDouble(key);
+        }
     }
 
 }

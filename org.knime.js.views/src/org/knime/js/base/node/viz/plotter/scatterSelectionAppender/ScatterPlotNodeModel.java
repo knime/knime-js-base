@@ -525,11 +525,13 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
     }
 
     private void copyConfigToView(final DataTableSpec spec) {
-        copyConfigtoViewRepresentation(m_config, getViewRepresentation());
+        copyConfigToViewRepresentation(m_config, getViewRepresentation());
 
         if (m_valueStore == null) {
             m_valueStore = new ValueStore();
         } else if (isViewValueEmpty()) {
+            // if the node is reset and executed again, the empty view value indicates that we also need to clear
+            // the value store to make sure all values are transferred from the configuration
             m_valueStore.clear();
         }
         copyConfigToViewValue(m_valueStore, spec, m_config, getViewValue());
@@ -545,6 +547,11 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         valStore.storeAndTransfer(ScatterPlotViewConfig.X_AXIS_LABEL, config.getxAxisLabel(), viewValue::setxAxisLabel);
         valStore.storeAndTransfer(ScatterPlotViewConfig.Y_AXIS_LABEL, config.getyAxisLabel(), viewValue::setyAxisLabel);
         valStore.storeAndTransfer(ScatterPlotViewConfig.DOT_SIZE, config.getDotSize(), viewValue::setDotSize);
+        valStore.storeAndTransfer(ScatterPlotViewConfig.X_AXIS_MIN, config.getxAxisMin(), viewValue::setxAxisMin);
+        valStore.storeAndTransfer(ScatterPlotViewConfig.X_AXIS_MAX, config.getxAxisMax(), viewValue::setxAxisMax);
+        valStore.storeAndTransfer(ScatterPlotViewConfig.Y_AXIS_MIN, config.getyAxisMin(), viewValue::setyAxisMin);
+        valStore.storeAndTransfer(ScatterPlotViewConfig.Y_AXIS_MAX, config.getyAxisMax(), viewValue::setyAxisMax);
+
 
         // added with 3.3
         valStore.storeAndTransfer(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, config.getPublishSelection(),
@@ -566,23 +573,15 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         valStore.storeAndTransfer("tablespec", spec, s -> {
             if (config.getxAxisMin() == null && config.getUseDomainInfo() && (config.getxColumn() != null)) {
                 viewValue.setxAxisMin(getMinimumFromColumn(spec, config.getxColumn()));
-            } else {
-                viewValue.setxAxisMin(config.getxAxisMin());
             }
             if (config.getxAxisMax() == null && config.getUseDomainInfo() && (config.getxColumn() != null)) {
                 viewValue.setxAxisMax(getMaximumFromColumn(spec, config.getxColumn()));
-            } else {
-                viewValue.setxAxisMax(config.getxAxisMax());
             }
             if (config.getyAxisMin() == null && config.getUseDomainInfo() && (config.getyColumn() != null)) {
                 viewValue.setyAxisMin(getMinimumFromColumn(spec, config.getyColumn()));
-            } else {
-                viewValue.setyAxisMin(config.getyAxisMin());
             }
             if (config.getyAxisMax() == null && config.getUseDomainInfo() && (config.getyColumn() != null)) {
                 viewValue.setyAxisMax(getMaximumFromColumn(spec, config.getyColumn()));
-            } else {
-                viewValue.setyAxisMax(config.getyAxisMax());
             }
 
             // Check axes ranges
@@ -605,7 +604,7 @@ public class ScatterPlotNodeModel extends AbstractSVGWizardNodeModel<ScatterPlot
         }, (s1, s2) -> s1.equalStructure(s2));
     }
 
-    private static void copyConfigtoViewRepresentation(final ScatterPlotViewConfig config,
+    private static void copyConfigToViewRepresentation(final ScatterPlotViewConfig config,
         final ScatterPlotViewRepresentation representation) {
         representation.setAutoRangeAxes(config.getAutoRangeAxes());
         representation.setUseDomainInformation(config.getUseDomainInfo());
