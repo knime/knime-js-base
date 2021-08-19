@@ -362,6 +362,7 @@
 		var options = {
 				legend: _value.options.legend,
 				breadcrumb: _value.options.breadcrumb,
+				tooltip: _value.options.tooltip,
 				zoomable: _representation.options.zoomable,
 				donutHole: _value.options.donutHole,
 				aggregationType: _value.options.aggregationType,
@@ -471,6 +472,7 @@
 		.classed("knime-selected", function(d) { return d.selected; })
 		.attr("stroke-width", 1)
 		.on("mouseover", mouseover)
+		.on("mousemove", (d) => { toggleTooltip(true, d) })
 		.on("click", click);
 
 		// Basic setup of page elements.
@@ -480,6 +482,10 @@
 
 		if (options.legend) {
 			drawLegend(plottingSurface, options.breadcrumb, b.h);
+		}
+
+		if (options.tooltip) {
+			initializeTooltip();
 		}
 
 		var rootRadius = d3.scale.sqrt().range([0, radius])(nodes[0].dy);
@@ -543,6 +549,9 @@
 				}
 			})
 			.on("mouseover", function() {
+				if (_value.options.tooltip) {
+					toggleTooltip(false, d);
+				}
 				if (mouseMode == "highlite" && highlitedPath == null) {
 					setPropAllNodes('active', true);
 					sunburstGroup.selectAll("path")
@@ -627,6 +636,9 @@
 
 		// Handle mouseleave on sunburst segments
 		function mouseleave(d) {
+			if (_value.options.tooltip) {
+				toggleTooltip(false, d);
+			}
 			if ((mouseMode == "highlite") && highlitedPath == null) {
 				// set sunburst segment properties
 				setPropAllNodes('active', true);
@@ -959,6 +971,31 @@
 			}
 		}
 
+		// Show/hide tooltip for sunburst element
+		function toggleTooltip(visible, d) {
+			if (_value.options.tooltip) {
+				if (visible) {
+					var tooltip = d3.select('#tooltip')
+					.style('display', 'block')
+					.style('top', d3.event.pageY - 20 + 'px')
+					.style('left', d3.event.pageX + 20 +'px');
+
+					tooltip.select('#color')
+					.select('div')
+					.style('background', _colorMap(d.name));
+					
+					tooltip.select('#key')
+					.html(d.name);
+
+					tooltip.select('#value')
+					.html(d.value);
+				} else {
+					d3.select('#tooltip')
+					.style('display', 'none');
+				}
+			}
+		}
+
 		// Travers through tree and set property of nodes.
 		function setPropsForward(start, prop, val) {
 			var stack = [start];
@@ -1033,6 +1070,32 @@
 			.attr("id", "endlabel")
 			.attr("class", "knime-tooltip-value")
 			.attr("fill", "#000");
+		}
+
+		function initializeTooltip() {
+			var tableRow = d3.select('body').append("div")
+			.attr('id', 'tooltip')
+			.style('position', 'absolute')
+			.style('display', 'none')
+			.style('background', 'rgba(255,255,255,.8)')
+			.style('border', '1px solid rgba(0,0,0,.5)')
+			.style('border-radius', '4px')
+			.append('table')
+			.append('tbody')
+			.append('tr');
+			
+			tableRow.append('td')
+			.attr('id', 'color')
+			.append('div')
+			.style('width', '12px')
+			.style('height', '12px')
+			.style('border', '1px solid #999');
+
+			tableRow.append('td')
+			.attr('id', 'key');
+
+			tableRow.append('td')
+			.attr('id', 'value');
 		}
 
 		function drawLegend(plottingSurface, breadcrumb, breadcrumbHeight) {
@@ -1232,6 +1295,18 @@
 
 				knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
 			}
+		}
+
+		// Tooltip configuration
+		var tooltipToggle = _representation.options.tooltipToggle;
+		if (tooltipToggle) {
+			knimeService.addMenuDivider();
+			var tooltipCheckbox = knimeService.createMenuCheckbox(
+				'tooltipCheckbox', _value.options.tooltip,
+				function() {
+					_value.options.tooltip = this.checked;
+				});
+			knimeService.addMenuItem('Tooltip:', 'info-circle', tooltipCheckbox);
 		}
 
 		// Donut hole configuration
