@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.testing.js"
       label="KNIME Testing Framework - JavaScript support"
-      version="4.4.0.qualifier">
+      version="4.4.1.qualifier">
 
    <description>
       This feature contains nodes that helps you creating test workflows for JavaScript views.
