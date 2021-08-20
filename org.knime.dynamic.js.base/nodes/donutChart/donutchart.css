@@ -15,3 +15,6 @@ text.knime-tick-label.knime-partially-selected {
 path.nv-bar.positive {
 	cursor:pointer;
 }
+.nv-pie-title {
+	fill: black !important; 
+}
