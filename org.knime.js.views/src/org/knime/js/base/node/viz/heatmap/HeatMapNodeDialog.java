@@ -123,6 +123,10 @@ public class HeatMapNodeDialog extends NodeDialogPane {
     private final JTextField m_chartTitleTextField;
     private final JTextField m_chartSubtitleTextField;
 
+    private final JTextField m_chartXAxisTextField;
+    private final JTextField m_chartYAxisTextField;
+    private final JCheckBox m_enableAxisLabelChangeCheckBox;
+
     private final JCheckBox m_enableViewConfigurationCheckBox;
     private final JCheckBox m_enableTitleChangeCheckBox;
     private final JCheckBox m_enableColorModeEditCheckBox;
@@ -209,9 +213,13 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         m_chartTitleTextField = new JTextField(TEXT_FIELD_SIZE);
         m_chartSubtitleTextField = new JTextField(TEXT_FIELD_SIZE);
 
+        m_chartXAxisTextField = new JTextField(TEXT_FIELD_SIZE);
+        m_chartYAxisTextField = new JTextField(TEXT_FIELD_SIZE);
+
         m_enableViewConfigurationCheckBox = new JCheckBox("Enable view edit controls");
         m_enableViewConfigurationCheckBox.addChangeListener(e -> enableViewEdit());
         m_enableTitleChangeCheckBox = new JCheckBox("Enable title/subtitle edit controls");
+        m_enableAxisLabelChangeCheckBox = new JCheckBox("Enable axis label edit controls");
         m_enableColorModeEditCheckBox = new JCheckBox("Enable color mode edit");
         m_enableShowToolTipsCheckBox = new JCheckBox("Enable 'show tool tips' option");
         m_showToolTipsCheckBox = new JCheckBox("Show tool tips");
@@ -274,6 +282,10 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         m_config.setDisplayFullscreenButton(m_displayFullscreenButtonCheckBox.isSelected());
         m_config.setChartTitle(m_chartTitleTextField.getText());
         m_config.setChartSubtitle(m_chartSubtitleTextField.getText());
+
+        m_config.setXAxisLabel(m_chartXAxisTextField.getText());
+        m_config.setYAxisLabel(m_chartYAxisTextField.getText());
+        m_config.setEnableAxisLabelChange(m_enableAxisLabelChangeCheckBox.isSelected());
 
         m_config.setEnableViewConfiguration(m_enableViewConfigurationCheckBox.isSelected());
         m_config.setEnableTitleChange(m_enableTitleChangeCheckBox.isSelected());
@@ -339,6 +351,10 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         m_displayFullscreenButtonCheckBox.setSelected(m_config.getDisplayFullscreenButton());
         m_chartTitleTextField.setText(m_config.getChartTitle());
         m_chartSubtitleTextField.setText(m_config.getChartSubtitle());
+
+        m_chartXAxisTextField.setText(m_config.getXAxisLabel());
+        m_chartYAxisTextField.setText(m_config.getYAxisLabel());
+        m_enableAxisLabelChangeCheckBox.setSelected(m_config.getEnableAxisLabelChange());
 
         m_enableViewConfigurationCheckBox.setSelected(m_config.getEnableViewConfiguration());
         m_enableTitleChangeCheckBox.setSelected(m_config.getEnableTitleChange());
@@ -500,6 +516,16 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         displayPanel.add(m_chartSubtitleTextField, displayPanelConstraints);
         displayPanelConstraints.gridx = 0;
         displayPanelConstraints.gridy++;
+        displayPanel.add(new JLabel("X-Axis:"), displayPanelConstraints);
+        displayPanelConstraints.gridx++;
+        displayPanel.add(m_chartXAxisTextField, displayPanelConstraints);
+        displayPanelConstraints.gridx = 0;
+        displayPanelConstraints.gridy++;
+        displayPanel.add(new JLabel("Y-Axis:"), displayPanelConstraints);
+        displayPanelConstraints.gridx++;
+        displayPanel.add(m_chartYAxisTextField, displayPanelConstraints);
+        displayPanelConstraints.gridx = 0;
+        displayPanelConstraints.gridy++;
         displayPanel.add(m_showToolTipsCheckBox, displayPanelConstraints);
         displayPanelConstraints.gridx = 0;
         displayPanelConstraints.gridy++;
@@ -594,6 +620,9 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         viewEditPanel.add(m_enableColorModeEditCheckBox, viewEditPanelConstraints);
         viewEditPanelConstraints.gridx++;
         viewEditPanel.add(m_enableShowToolTipsCheckBox, viewEditPanelConstraints);
+        viewEditPanelConstraints.gridx = 0;
+        viewEditPanelConstraints.gridy++;
+        viewEditPanel.add(m_enableAxisLabelChangeCheckBox, viewEditPanelConstraints);
         viewEditPanelConstraints.gridx = 0;
         viewEditPanelConstraints.gridy++;
 

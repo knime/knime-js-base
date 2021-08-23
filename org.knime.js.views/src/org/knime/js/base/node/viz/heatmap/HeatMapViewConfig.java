@@ -105,6 +105,18 @@ public final class HeatMapViewConfig {
     final static String DEFAULT_CHART_SUBTITLE = "";
     private String m_chartSubtitle = DEFAULT_CHART_SUBTITLE;
 
+    final static String CFG_X_AXIS_LABEL = "xAxisLabel";
+    final static String DEFAULT_X_AXIS_LABEL = "";
+    private String m_xAxisLabel = DEFAULT_X_AXIS_LABEL;
+
+    final static String CFG_Y_AXIS_LABEL = "yAxisLabel";
+    final static String DEFAULT_Y_AXIS_LABEL = "";
+    private String m_yAxisLabel = DEFAULT_Y_AXIS_LABEL;
+
+    final static String CFG_ENABLE_AXIS_LABEL_CHANGE = "enableAxisLabelChange";
+    final static boolean DEFAULT_ENABLE_AXIS_LABEL_CHANGE = true;
+    private boolean m_enableAxisLabelChange = DEFAULT_ENABLE_AXIS_LABEL_CHANGE;
+
     final static String CFG_MIN_VALUE = "minValue";
     final static double DEFAULT_MIN_VALUE = 0.0;
     private double m_minValue = DEFAULT_MIN_VALUE;
@@ -399,6 +411,34 @@ public final class HeatMapViewConfig {
     }
 
     /**
+     * @return the xAxisLabel
+     */
+    public String getXAxisLabel() {
+        return m_xAxisLabel;
+    }
+
+    /**
+     * @param xAxisLabel the chartSubtitle to set
+     */
+    public void setXAxisLabel(final String xAxisLabel) {
+        m_xAxisLabel = xAxisLabel;
+    }
+
+    /**
+     * @return the yAxisLabel
+     */
+    public String getYAxisLabel() {
+        return m_yAxisLabel;
+    }
+
+    /**
+     * @param yAxisLabel the chartSubtitle to set
+     */
+    public void setYAxisLabel(final String yAxisLabel) {
+        m_yAxisLabel = yAxisLabel;
+    }
+
+    /**
      * @return the minValue
      */
     public double getMinValue() {
@@ -482,6 +522,20 @@ public final class HeatMapViewConfig {
      */
     public void setEnableTitleChange(final boolean enableTitleChange) {
         m_enableTitleChange = enableTitleChange;
+    }
+
+    /**
+     * @return the enableAxisLabelChange
+     */
+    public boolean getEnableAxisLabelChange() {
+        return m_enableAxisLabelChange;
+    }
+
+    /**
+     * @param enableAxisLabelChange the enableTitleChange to set
+     */
+    public void setEnableAxisLabelChange(final boolean enableAxisLabelChange) {
+        m_enableAxisLabelChange = enableAxisLabelChange;
     }
 
     /**
@@ -918,6 +972,11 @@ public final class HeatMapViewConfig {
         settings.addBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, m_displayFullscreenButton);
         settings.addString(CFG_CHART_TITLE, m_chartTitle);
         settings.addString(CFG_CHART_SUBTITLE, m_chartSubtitle);
+
+        settings.addString(CFG_X_AXIS_LABEL, m_xAxisLabel);
+        settings.addString(CFG_Y_AXIS_LABEL, m_yAxisLabel);
+        settings.addBoolean(CFG_ENABLE_AXIS_LABEL_CHANGE, m_enableAxisLabelChange);
+
         settings.addDouble(CFG_MIN_VALUE, m_minValue);
         settings.addDouble(CFG_MAX_VALUE, m_maxValue);
         settings.addBoolean(CFG_USE_CUSTOM_MIN, m_useCustomMin);
@@ -977,6 +1036,12 @@ public final class HeatMapViewConfig {
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_chartTitle = settings.getString(CFG_CHART_TITLE);
         m_chartSubtitle = settings.getString(CFG_CHART_SUBTITLE);
+
+        try {
+            m_xAxisLabel = settings.getString(CFG_X_AXIS_LABEL);
+            m_yAxisLabel = settings.getString(CFG_Y_AXIS_LABEL);
+            m_enableAxisLabelChange = settings.getBoolean(CFG_ENABLE_AXIS_LABEL_CHANGE);
+        } catch (Exception e){}
 
         final double min = settings.getDouble(CFG_MIN_VALUE);
         final double max = settings.getDouble(CFG_MAX_VALUE);
@@ -1042,6 +1107,11 @@ public final class HeatMapViewConfig {
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON, DEFAULT_DISPLAY_FULLSCREEN_BUTTON);
         m_chartTitle = settings.getString(CFG_CHART_TITLE, DEFAULT_CHART_TITLE);
         m_chartSubtitle = settings.getString(CFG_CHART_SUBTITLE, DEFAULT_CHART_SUBTITLE);
+
+        m_xAxisLabel = settings.getString(CFG_X_AXIS_LABEL, DEFAULT_X_AXIS_LABEL);
+        m_yAxisLabel = settings.getString(CFG_Y_AXIS_LABEL, DEFAULT_Y_AXIS_LABEL);
+        m_enableAxisLabelChange = settings.getBoolean(CFG_ENABLE_AXIS_LABEL_CHANGE, DEFAULT_ENABLE_AXIS_LABEL_CHANGE);
+
         m_minValue = settings.getDouble(CFG_MIN_VALUE, DEFAULT_MIN_VALUE);
         m_maxValue = settings.getDouble(CFG_MAX_VALUE, DEFAULT_MAX_VALUE);
         m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN, DEFAULT_USE_CUSTOM_MIN);

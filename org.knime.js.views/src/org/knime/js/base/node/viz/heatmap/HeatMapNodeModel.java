@@ -271,6 +271,7 @@ implements CSSModifiable, BufferedDataTableHolder, LayoutTemplateProvider {
             representation.setEnableTitleChange(m_config.getEnableTitleChange());
             representation.setEnableColorModeEdit(m_config.getEnableColorModeEdit());
             representation.setEnableShowToolTips(m_config.getEnableShowToolTips());
+            representation.setEnableAxisLabelChange(m_config.getEnableAxisLabelChange());
             representation.setThreeColorGradient(m_config.getThreeColorGradient());
             representation.setDiscreteGradientColors(m_config.getDiscreteGradientColors());
             representation.setNumDiscreteColors(m_config.getNumDiscreteColors());
@@ -310,6 +311,10 @@ implements CSSModifiable, BufferedDataTableHolder, LayoutTemplateProvider {
                 value::setChartTitle);
             m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_CHART_SUBTITLE, m_config.getChartSubtitle(),
                 value::setChartSubtitle);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_X_AXIS_LABEL, m_config.getXAxisLabel(),
+                value::setXAxisLabel);
+            m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_Y_AXIS_LABEL, m_config.getYAxisLabel(),
+                value::setYAxisLabel);
             m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_SHOW_TOOL_TIPS, m_config.getShowToolTips(),
                 value::setShowToolTips);
             m_valueStore.storeAndTransfer(HeatMapViewConfig.CFG_CONTINUOUS_GRADIENT, m_config.getContinuousGradient(),
@@ -450,6 +455,8 @@ implements CSSModifiable, BufferedDataTableHolder, LayoutTemplateProvider {
         final HeatMapViewValue viewValue = getViewValue();
         m_config.setChartTitle(viewValue.getChartTitle());
         m_config.setChartSubtitle(viewValue.getChartSubtitle());
+        m_config.setXAxisLabel(viewValue.getXAxisLabel());
+        m_config.setYAxisLabel(viewValue.getYAxisLabel());
         m_config.setShowToolTips(viewValue.getShowToolTips());
         m_config.setContinuousGradient(viewValue.getContinuousGradient());
         m_config.setInitialPageSize(viewValue.getInitialPageSize());

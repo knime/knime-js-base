@@ -86,6 +86,12 @@
 				graph shown above the generated image. If left blank, no subtitle
 				will be shown.
 			</option>
+			<option name="X-Axis" optional="true">
+				The label of the x-axis. If left blank, no label for the x-axis will be shown.
+			</option>
+			<option name="Y-Axis" optional="true">
+				The label of the y-axis. If left blank, no label for the y-axis will be shown.
+			</option>
 			<option name="Show tool tips">
 				If selected, tool tips containing additional
 				information will be displayed when hovering over a cell within the
@@ -136,6 +142,9 @@
 			<option name="Enable 'show tool tips' option">
 				If enabled, tool tips for the heatmap data cells
 				and row labels can be toggled on/off from within the view.
+			</option>
+			<option name="Enable axis label edit controls">
+				Renders a text box to change the axis labels in the view.
 			</option>
 			<option name="Enable selection">
 				When this option is checked, data points can be

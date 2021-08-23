@@ -25,7 +25,7 @@ window.heatmapNamespace = (function () {
         // Hardcoded Default Settings
         this._minCellSize = 12;
         this._maxCanvasHeight = 8000; // canvas has native size limits
-        this._defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
+        this._defaultMargin = { top: 20, left: 35, right: 35, bottom: 10 };
         this._margin = {};
         this._defaultZoomX = 0;
         this._defaultZoomY = 0;
@@ -327,6 +327,11 @@ window.heatmapNamespace = (function () {
         return completeTitleHeight;
     };
 
+    Heatmap.prototype.updateLabels = function () {
+        document.querySelector('#x-axis').textContent = this._value.xaxisLabel;
+        document.querySelector('#y-axis').textContent = this._value.yaxisLabel;
+    };
+
     Heatmap.prototype.drawControls = function () {
         var self = this;
         if (!this._representation.enableViewConfiguration) {
@@ -447,6 +452,34 @@ window.heatmapNamespace = (function () {
                 self._value.showToolTips = this.checked;
             });
             knimeService.addMenuItem('Show Tooltips', 'info', showToolTips);
+        }
+
+        if (this._representation.enableAxisLabelChange) {
+            var xaxisLabelText = knimeService.createMenuTextField(
+                'xaxisLabelText',
+                this._value.xaxisLabel,
+                function () {
+                    if (self._value.xaxisLabel !== this.value) {
+                        self._value.xaxisLabel = this.value;
+                        self.updateLabels();
+                    }
+                },
+                true
+            );
+            knimeService.addMenuItem('X-Axis Label:', 'header', xaxisLabelText);
+            var yaxisLabelText = knimeService.createMenuTextField(
+                'yaxisLabelText',
+                this._value.yaxisLabel,
+                function () {
+                    if (self._value.yaxisLabel !== this.value) {
+                        self._value.yaxisLabel = this.value;
+                        self.updateLabels();
+                    }
+                },
+                true
+            );
+            knimeService.addMenuItem('Y-Axis Label:', 'header', yaxisLabelText);
+            knimeService.addMenuDivider();
         }
 
         if (this._representation.enableShowSelectedRowsOnly) {
@@ -1385,6 +1418,26 @@ window.heatmapNamespace = (function () {
         this.registerEvents();
 
         this.getProgressBar(formattedDataset.data.length);
+
+        // Create axis labels
+        svg.append('text')
+            .attr('class', 'knime-label')
+            .attr('id', 'x-axis')
+            .attr('text-anchor', 'middle')
+            .attr('x', wrapper.node().getBBox().x + wrapper.node().getBBox().width / 2)
+            .attr('y', 50)
+            .text(this._value.xaxisLabel);
+
+            svg.append('text')
+            .attr('class', 'knime-label')
+            .attr('id', 'y-axis')
+            .attr('text-anchor', 'middle')
+            .attr('x', -(wrapper.node().getBBox().y + wrapper.node().getBBox().height / 2))
+            .attr('y', 15)
+            .style('transform', 'rotate(-90deg)')
+            .text(this._value.yaxisLabel);
+        this.updateLabels();
+
 
         this.drawAxis(svg, formattedDataset.rowLabelImages);
 

@@ -82,6 +82,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
     private boolean m_enableTitleChange;
     private boolean m_enableColorModeEdit;
     private boolean m_enableShowToolTips;
+    private boolean m_enableAxisLabelChange;
 
     private String[] m_threeColorGradient;
     private String[] m_discreteGradientColors;
@@ -274,6 +275,21 @@ public class HeatMapViewRepresentation extends JSONViewContent {
     public void setEnableShowToolTips(final boolean enableShowToolTips) {
         m_enableShowToolTips = enableShowToolTips;
     }
+
+    /**
+     * @return the enableShowToolTips
+     */
+    public boolean getEnableAxisLabelChange() {
+        return m_enableAxisLabelChange;
+    }
+
+    /**
+     * @param enableAxisLabelChange the enableShowToolTips to set
+     */
+    public void setEnableAxisLabelChange(final boolean enableAxisLabelChange) {
+        m_enableAxisLabelChange = enableAxisLabelChange;
+    }
+
 
     // -- Gradient getters & setters --
 
@@ -648,6 +664,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
         settings.addBoolean(HeatMapViewConfig.CFG_ENABLE_TTILE_CHANGE, m_enableTitleChange);
         settings.addBoolean(HeatMapViewConfig.CFG_ENABLE_COLOR_MODE_EDIT, m_enableColorModeEdit);
         settings.addBoolean(HeatMapViewConfig.CFG_ENABLE_SHOW_TOOLTIPS, m_enableShowToolTips);
+        settings.addBoolean(HeatMapViewConfig.CFG_ENABLE_AXIS_LABEL_CHANGE, m_enableAxisLabelChange);
 
         settings.addStringArray(HeatMapViewConfig.CFG_THREE_COLOR_GRADIENT, m_threeColorGradient);
         settings.addStringArray(HeatMapViewConfig.CFG_DISCRETE_GRADIENT_COLORS, m_discreteGradientColors);
@@ -696,6 +713,10 @@ public class HeatMapViewRepresentation extends JSONViewContent {
         m_enableTitleChange = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_TTILE_CHANGE);
         m_enableColorModeEdit = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_COLOR_MODE_EDIT);
         m_enableShowToolTips = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_SHOW_TOOLTIPS);
+
+        try {
+            m_enableAxisLabelChange = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_AXIS_LABEL_CHANGE);
+        } catch (Exception e){}
 
         m_threeColorGradient = settings.getStringArray(HeatMapViewConfig.CFG_THREE_COLOR_GRADIENT);
         m_discreteGradientColors = settings.getStringArray(HeatMapViewConfig.CFG_DISCRETE_GRADIENT_COLORS);
@@ -754,6 +775,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
                 .append(m_enableTitleChange, other.getEnableTitleChange())
                 .append(m_enableColorModeEdit, other.getEnableColorModeEdit())
                 .append(m_enableShowToolTips, other.getEnableShowToolTips())
+                .append(m_enableAxisLabelChange, other.getEnableAxisLabelChange())
                 .append(m_threeColorGradient, other.getThreeColorGradient())
                 .append(m_discreteGradientColors, other.getDiscreteGradientColors())
                 .append(m_numDiscreteColors, other.getNumDiscreteColors())
@@ -798,6 +820,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
                 .append(m_enableTitleChange)
                 .append(m_enableColorModeEdit)
                 .append(m_enableShowToolTips)
+                .append(m_enableAxisLabelChange)
                 .append(m_threeColorGradient)
                 .append(m_discreteGradientColors)
                 .append(m_numDiscreteColors)

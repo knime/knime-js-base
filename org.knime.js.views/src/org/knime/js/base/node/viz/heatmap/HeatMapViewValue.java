@@ -69,6 +69,10 @@ public class HeatMapViewValue extends JSONViewContent {
 
     private String m_chartTitle;
     private String m_chartSubtitle;
+
+    private String m_xAxisLabel;
+    private String m_yAxisLabel;
+
     private boolean m_showToolTips;
 
     private boolean m_continuousGradient;
@@ -120,6 +124,34 @@ public class HeatMapViewValue extends JSONViewContent {
      */
     public void setChartSubtitle(final String chartSubtitle) {
         m_chartSubtitle = chartSubtitle;
+    }
+
+    /**
+     * @return the xAxisLabel
+     */
+    public String getXAxisLabel() {
+        return m_xAxisLabel;
+    }
+
+    /**
+     * @param xAxisLabel the chartSubtitle to set
+     */
+    public void setXAxisLabel(final String xAxisLabel) {
+        m_xAxisLabel = xAxisLabel;
+    }
+
+    /**
+     * @return the yAxisLabel
+     */
+    public String getYAxisLabel() {
+        return m_yAxisLabel;
+    }
+
+    /**
+     * @param yAxisLabel the chartSubtitle to set
+     */
+    public void setYAxisLabel(final String yAxisLabel) {
+        m_yAxisLabel = yAxisLabel;
     }
 
     /**
@@ -309,6 +341,10 @@ public class HeatMapViewValue extends JSONViewContent {
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         settings.addString(HeatMapViewConfig.CFG_CHART_TITLE, m_chartTitle);
         settings.addString(HeatMapViewConfig.CFG_CHART_SUBTITLE, m_chartSubtitle);
+
+        settings.addString(HeatMapViewConfig.CFG_X_AXIS_LABEL, m_xAxisLabel);
+        settings.addString(HeatMapViewConfig.CFG_Y_AXIS_LABEL, m_yAxisLabel);
+
         settings.addBoolean(HeatMapViewConfig.CFG_SHOW_TOOL_TIPS, m_showToolTips);
 
         settings.addBoolean(HeatMapViewConfig.CFG_CONTINUOUS_GRADIENT, m_continuousGradient);
@@ -334,6 +370,10 @@ public class HeatMapViewValue extends JSONViewContent {
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_chartTitle = settings.getString(HeatMapViewConfig.CFG_CHART_TITLE);
         m_chartSubtitle = settings.getString(HeatMapViewConfig.CFG_CHART_SUBTITLE);
+
+        m_xAxisLabel = settings.getString(HeatMapViewConfig.CFG_X_AXIS_LABEL);
+        m_yAxisLabel = settings.getString(HeatMapViewConfig.CFG_Y_AXIS_LABEL);
+
         m_showToolTips = settings.getBoolean(HeatMapViewConfig.CFG_SHOW_TOOL_TIPS);
 
         m_continuousGradient = settings.getBoolean(HeatMapViewConfig.CFG_CONTINUOUS_GRADIENT);
@@ -371,6 +411,8 @@ public class HeatMapViewValue extends JSONViewContent {
                 .append(m_chartTitle, other.getChartTitle())
                 .append(m_chartSubtitle, other.getChartSubtitle())
                 .append(m_showToolTips, other.getShowToolTips())
+                .append(m_xAxisLabel, other.getXAxisLabel())
+                .append(m_yAxisLabel, other.getYAxisLabel())
                 .append(m_continuousGradient, other.getContinuousGradient())
                 .append(m_selection, other.getSelection())
                 .append(m_showSelectedRowsOnly, other.getShowSelectedRowsOnly())
@@ -394,6 +436,8 @@ public class HeatMapViewValue extends JSONViewContent {
                 .append(m_chartTitle)
                 .append(m_chartSubtitle)
                 .append(m_showToolTips)
+                .append(m_xAxisLabel)
+                .append(m_yAxisLabel)
                 .append(m_continuousGradient)
                 .append(m_selection)
                 .append(m_publishSelection)
