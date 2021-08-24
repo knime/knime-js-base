@@ -237,6 +237,9 @@ window.knimeGroupedBarChart = (function () {
 
             chart.dispatch.on('renderEnd.css', function () {
                 setCssClasses();
+                if(_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
+                    createStaticBarValues();
+                }
             });
             // tooltip is re-created every time therefore we need to assign
             // classes accordingly
@@ -476,6 +479,9 @@ window.knimeGroupedBarChart = (function () {
     // Create static values on top of each bar
     createStaticBarValues = function () {
         d3.selectAll('.static-bar-value').remove();
+
+        if (!_value.options.showStaticBarValues) { return; }
+        console.log(_value.options.showStaticBarValues);
         var optOrientation = _value.options.orientation;
         var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
         d3.selectAll('.nv-bar.positive').each(function (d, i) {
@@ -529,9 +535,7 @@ window.knimeGroupedBarChart = (function () {
     };
 
     calculateBackgroundContrast = function (color) {
-        var rgb = d3.rgb(color);
-        var hex = '0x' + Number(rgb.r).toString(16) + Number(rgb.g).toString(16) + Number(rgb.b).toString(16);
-        return parseInt(hex, 16) < 0.6 * 0xffffff;
+        return d3.hsl(color).l >= 0.5;
     };
 
     getClusterToRowMapping = function () {
@@ -1637,6 +1641,7 @@ window.knimeGroupedBarChart = (function () {
         var showMaximum = _representation.options.enableMaximumValue;
         var enableSelection = _representation.options.enableSelection;
         var displayClearButton = _representation.options.displayClearSelectionButton;
+        var enableStaticValuesEdit = _representation.options.enableStaticValuesEdit;
 
         if (titleEdit) {
             var chartTitleText = knimeService.createMenuTextField('chartTitleText', _value.options.title,
@@ -1787,6 +1792,17 @@ window.knimeGroupedBarChart = (function () {
             });
             d3.select('#clearSelectionButton').classed('inactive', true);
         }
+
+        if (enableStaticValuesEdit) {
+            knimeService.addMenuDivider();
+            var enableStaticValues = knimeService.createMenuCheckbox('enableStaticValues', _value.options.showStaticBarValues, function () {
+               if ( _value.options.showStaticBarValues !== this.checked) {
+                _value.options.showStaticBarValues = this.checked;
+                createStaticBarValues();
+               }
+            }, true);
+            knimeService.addMenuItem('Show static bar values:', '', enableStaticValues);
+        }
     };
 
     setCssClasses = function () {
@@ -1830,9 +1846,7 @@ window.knimeGroupedBarChart = (function () {
             registerClickHandler();
         }
 
-        if(_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
-            createStaticBarValues();
-        }
+
     };
 
     setTooltipCssClasses = function () {

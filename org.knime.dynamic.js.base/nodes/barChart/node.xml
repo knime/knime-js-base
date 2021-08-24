@@ -183,6 +183,11 @@
                     label="Enable showing maximum value on y-axis" defaultValue="true" enableDependency="enableViewControls" enableValue="true" loadDefaults="true">
                     Check to enable to show and hide maximum value on the y-axis.
                 </checkBoxOption>
+				<checkBoxOption name="Enable showing static bar values" id="enableStaticValuesEdit"
+					label="Enable showing static bar values" defaultValue="true"
+					enableDependency="enableViewControls" enableValue="true">
+					Check to enable to show and hide the static bar values within the view.
+				</checkBoxOption>
                 
 				<!-- <checkBoxOption name="Enable Category Chooser" id="enableCategoryChooser"
 					label="Enable Category Chooser" defaultValue="false"
