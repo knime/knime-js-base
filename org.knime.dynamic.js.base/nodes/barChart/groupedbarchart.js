@@ -76,7 +76,7 @@ window.knimeGroupedBarChart = (function () {
         handleHighlightClick, sortByClusterName, setCssClasses, setTooltipCssClasses, updateTitles, updateAxisLabels,
         updateLabels, updateChartType, redrawSelection, onSelectionChanged, registerClickHandler, getActiveBars,
         checkClearSelectionButton, selectCorrectBar, processMissingValues, checkMaxSizeXAxis, KeyNameMap,
-        handleWarnings, handleMissingValues, getStackedMaxValue;
+        handleWarnings, handleMissingValues, getStackedMaxValue, createStaticBarValues, calculateBackgroundContrast;
 
     var MISSING_VALUES_LABEL = 'Missing values';
     var MISSING_VALUES_ONLY = 'missingValuesOnly';
@@ -471,6 +471,67 @@ window.knimeGroupedBarChart = (function () {
                 }
             }
         }
+    };
+
+    // Create static values on top of each bar
+    createStaticBarValues = function () {
+        d3.selectAll('.static-bar-value').remove();
+        var optOrientation = _value.options.orientation;
+        var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
+        d3.selectAll('.nv-bar.positive').each(function (d, i) {
+
+            var label = d3.select(this.parentNode).append('text')
+                .attr('class', 'static-bar-value')
+                .attr('dominant-baseline', 'middle')
+                .attr('transform', d3.select(this).attr('transform'))
+                .attr('fill', 'black')
+                .attr('fill-opacity', 1)
+                .attr('stroke', 'none')
+                .text(d.y);
+            
+            var barBBox = this.getBBox();
+            var labelBBox = label.node().getBBox();
+            var x, y;
+
+            // Position text-elements based on orientation and free space
+            if (optOrientation) {
+                x = barBBox.width;
+                y = barBBox.y + barBBox.height / 2;
+
+                if (barBBox.width + labelBBox.width < parentBBox.width) {
+                    label
+                        .attr('text-anchor', 'start')
+                        .attr({ x: x + 10, y: y });
+                } else {
+                    label
+                        .attr('fill', calculateBackgroundContrast(this.style.fill) ? 'black' : 'white')
+                        .attr('text-anchor', 'end')
+                        .attr({ x: x - 10, y: y });
+                }
+            } else {
+                x = barBBox.x + barBBox.width / 2;
+                y = barBBox.y;
+                label.attr('text-anchor', 'middle');
+                if (barBBox.height + 1.5 * labelBBox.height < parentBBox.height) {
+                    label
+                        .attr({ x: x, y: y - labelBBox.height });
+                } else {
+                    label
+                        .attr({ x: x, y: y + labelBBox.height })
+                        .attr('fill', calculateBackgroundContrast(this.style.fill) ? 'black' : 'white');
+                }
+            }
+            // If the free space is too small, the value does not get displayed
+            if (labelBBox.height >= barBBox.height || labelBBox.width >= barBBox.width) {
+                d3.select(label).node().remove();
+            }
+        });
+    };
+
+    calculateBackgroundContrast = function (color) {
+        var rgb = d3.rgb(color);
+        var hex = '0x' + Number(rgb.r).toString(16) + Number(rgb.g).toString(16) + Number(rgb.b).toString(16);
+        return parseInt(hex, 16) < 0.6 * 0xffffff;
     };
 
     getClusterToRowMapping = function () {
@@ -1767,6 +1828,10 @@ window.knimeGroupedBarChart = (function () {
         updateLabels();
         if (_representation.options.enableSelection) {
             registerClickHandler();
+        }
+
+        if(_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
+            createStaticBarValues();
         }
     };
 

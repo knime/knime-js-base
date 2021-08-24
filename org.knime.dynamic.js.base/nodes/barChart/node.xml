@@ -118,6 +118,11 @@
                     label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check if the maximum of the Y-Axis should be displayed.
                 </checkBoxOption>
+
+				<checkBoxOption name="Show static bar values" id="showStaticBarValues"
+                    label="Display static bar values" defaultValue="false" loadDefaults="true" saveInView="true">
+                    Check if the value of each bar should be displayed.
+                </checkBoxOption>
                 
 				<svgOption name="Image" id="svg" portIndex="0" label="Image"
 					additionalWait="500" defaultWidth="800" defaultHeight="600"
