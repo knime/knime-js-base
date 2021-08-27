@@ -15,6 +15,7 @@ text.knime-tick-label.knime-partially-selected {
 path.nv-bar.positive {
 	cursor:pointer;
 }
-.nv-pie-title {
-	fill: black !important; 
+/* Overwrite the default title fill of pie/donut chart */
+.nvd3.nv-pie text.nv-pie-title {
+	fill: black;
 }
