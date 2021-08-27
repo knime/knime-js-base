@@ -528,7 +528,7 @@ window.knimeGroupedBarChart = (function () {
                 }
             }
             // If the free space is too small, the value does not get displayed
-            if (labelBBox.height >= barBBox.height || labelBBox.width >= barBBox.width) {
+            if (labelBBox.width >= barBBox.width) {
                 d3.select(label).node().remove();
             }
         });
