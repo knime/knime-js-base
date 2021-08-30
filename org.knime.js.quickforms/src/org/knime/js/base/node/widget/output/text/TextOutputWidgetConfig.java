@@ -83,6 +83,14 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
     private static final boolean DEFAULT_SANITIZE_INPUT = false;
     private boolean m_sanitizeInput = DEFAULT_SANITIZE_INPUT;
 
+    private static final String CFG_COLLAPSIBLE = "collapsible";
+    private static final Boolean DEFAULT_COLLAPSIBLE = false;
+    private Boolean m_collapsible = DEFAULT_COLLAPSIBLE;
+
+    private static final String CFG_COLLAPSIBLE_TITLE = "collapsibleTitle";
+    private static final String DEFAULT_COLLAPSIBLE_TITLE = "Title";
+    private String m_collapsibleTitle = DEFAULT_COLLAPSIBLE_TITLE;
+
     /**
      * @return the text
      */
@@ -126,6 +134,34 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
     }
 
     /**
+     * @return the collapsible
+     */
+    public Boolean isCollapsible() {
+        return m_collapsible;
+    }
+
+    /**
+     * @param collapsible the collapsible to set
+     */
+    public void setCollapsible(final Boolean collapsible) {
+        m_collapsible = collapsible;
+    }
+
+    /**
+     * @return the collapsibleTitle
+     */
+    public String getCollapsibleTitle() {
+        return m_collapsibleTitle;
+    }
+
+    /**
+     * @param collapsibleTitle the collapsibleTitle to set
+     */
+    public void setCollapsibleTitle(final String collapsibleTitle) {
+        m_collapsibleTitle = collapsibleTitle;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -134,6 +170,8 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
         settings.addString(CFG_FORMAT, m_textFormat.toString());
         settings.addString(CFG_TEXT, m_text);
         settings.addBoolean(CFG_SANITIZE_INPUT, m_sanitizeInput);
+        settings.addBoolean(CFG_COLLAPSIBLE, m_collapsible);
+        settings.addString(CFG_COLLAPSIBLE_TITLE, m_collapsibleTitle);
     }
 
     /**
@@ -147,6 +185,10 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
 
         // added with 5.2
         m_sanitizeInput = settings.getBoolean(CFG_SANITIZE_INPUT, DEFAULT_SANITIZE_INPUT);
+
+        // added with 5.3
+        m_collapsible = settings.getBoolean(CFG_COLLAPSIBLE, DEFAULT_COLLAPSIBLE);
+        m_collapsibleTitle = settings.getString(CFG_COLLAPSIBLE_TITLE, DEFAULT_COLLAPSIBLE_TITLE);
     }
 
     /**
@@ -164,6 +206,10 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
 
         // added with 5.2
         m_sanitizeInput = settings.getBoolean(CFG_SANITIZE_INPUT, DEFAULT_SANITIZE_INPUT);
+
+        // added with 5.3
+        m_collapsible = settings.getBoolean(CFG_COLLAPSIBLE, DEFAULT_COLLAPSIBLE);
+        m_collapsibleTitle = settings.getString(CFG_COLLAPSIBLE_TITLE, DEFAULT_COLLAPSIBLE_TITLE);
     }
 
     /**

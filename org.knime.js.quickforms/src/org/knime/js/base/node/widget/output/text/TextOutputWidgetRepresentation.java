@@ -80,6 +80,14 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
     private static final String CFG_TEXT = "text";
     private String m_text;
 
+    private static final String CFG_COLLAPSIBLE = "collapsible";
+    private static final Boolean DEFAULT_COLLAPSIBLE = false;
+    private Boolean m_collapsible;
+
+    private static final String CFG_COLLAPSIBLE_TITLE = "collapsibleTitle";
+    private static final String DEFAULT_COLLAPSIBLE_TITLE = "Title";
+    private String m_collapsibleTitle = DEFAULT_COLLAPSIBLE_TITLE;
+
     /**
      * @return the label
      */
@@ -139,6 +147,34 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
     }
 
     /**
+     * @return the collapsible
+     */
+    public Boolean isCollapsible() {
+        return m_collapsible;
+    }
+
+    /**
+     * @param collapsible the collapsible to set
+     */
+    public void setCollapsible(final Boolean collapsible) {
+        m_collapsible = collapsible;
+    }
+
+    /**
+     * @return the collapsibleTitle
+     */
+    public String getCollapsibleTitle() {
+        return m_collapsibleTitle;
+    }
+
+    /**
+     * @param collapsibleTitle the collapsibleTitle to set
+     */
+    public void setCollapsibleTitle(final String collapsibleTitle) {
+        m_collapsibleTitle = collapsibleTitle;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -147,6 +183,8 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
         settings.addString(CFG_DESCRIPTION, m_description);
         settings.addString(CFG_TEXT_FORMAT, m_textFormat);
         settings.addString(CFG_TEXT, m_text);
+        settings.addBoolean(CFG_COLLAPSIBLE, m_collapsible);
+        settings.addString(CFG_COLLAPSIBLE_TITLE, m_collapsibleTitle);
     }
 
     /**
@@ -160,6 +198,8 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
         m_label = settings.getString(CFG_LABEL, DEFAULT_STRING);
         m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_STRING);
         m_textFormat = settings.getString(CFG_TEXT_FORMAT, DEFAULT_STRING);
+        m_collapsible = settings.getBoolean(CFG_COLLAPSIBLE, DEFAULT_COLLAPSIBLE);
+        m_collapsibleTitle = settings.getString(CFG_COLLAPSIBLE_TITLE, DEFAULT_COLLAPSIBLE_TITLE);
     }
 
     /**
@@ -188,6 +228,8 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
             .append(m_description)
             .append(m_textFormat)
             .append(m_text)
+            .append(m_collapsible)
+            .append(m_collapsibleTitle)
             .toHashCode();
     }
 
@@ -211,6 +253,8 @@ public class TextOutputWidgetRepresentation extends JSONViewContent {
             .append(m_description, other.m_description)
             .append(m_textFormat, other.m_textFormat)
             .append(m_text, other.m_text)
+            .append(m_collapsible, other.m_collapsible)
+            .append(m_collapsibleTitle, other.m_collapsibleTitle)
             .isEquals();
     }
 

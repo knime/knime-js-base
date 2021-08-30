@@ -111,6 +111,8 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
             representation.setLabel(m_config.getLabel());
             representation.setDescription(m_config.getDescription());
             representation.setTextFormat(m_config.getTextFormat().toString());
+            representation.setCollapsible(m_config.isCollapsible());
+            representation.setCollapsibleTitle(m_config.getCollapsibleTitle());
             String flowVarCorrectedText;
             try {
                 flowVarCorrectedText = FlowVariableResolver.parse(m_config.getText(), this, new FlowVariableEscaper() {

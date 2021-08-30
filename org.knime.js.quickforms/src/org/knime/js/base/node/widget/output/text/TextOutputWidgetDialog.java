@@ -49,6 +49,8 @@
 package org.knime.js.base.node.widget.output.text;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -60,6 +62,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
@@ -84,6 +87,8 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
     private final JComboBox<?> m_textFormatBox;
     private final JCheckBox m_sanitizeCheckbox;
     private final JTextArea m_textArea;
+    private final JCheckBox m_collapsible;
+    private final JTextField m_collapsibleTitle;
     private final TextOutputWidgetConfig m_config;
 
     /**
@@ -95,6 +100,17 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
         m_textFormatBox = new JComboBox(OutputTextFormat.values());
         m_sanitizeCheckbox = new JCheckBox("Sanitize input data");
         m_textArea = new JTextArea(10, DEF_TEXTFIELD_WIDTH);
+        m_collapsible = new JCheckBox();
+        m_collapsibleTitle = new JTextField(20);
+        m_collapsibleTitle.setEnabled(m_collapsible.isSelected());
+
+        m_collapsible.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
+                m_collapsibleTitle.setEnabled(m_collapsible.isSelected());
+            }
+        });
+
         m_flowVarList = new JList(new DefaultListModel());
         m_flowVarList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_flowVarList.setCellRenderer(new FlowVariableListCellRenderer());
@@ -120,6 +136,8 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
      */
     @Override
     protected void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Collapse text", m_collapsible, panelWithGBLayout, gbc);
+        addPairToPanel("Collapse title", m_collapsibleTitle, panelWithGBLayout, gbc);
         addPairToPanel("Text format: ", m_textFormatBox, panelWithGBLayout, gbc);
         addPairToPanel("", m_sanitizeCheckbox, panelWithGBLayout, gbc);
 
@@ -154,6 +172,8 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
         for (FlowVariable e : getAvailableFlowVariables().values()) {
             listModel.addElement(e);
         }
+        m_collapsible.setSelected(m_config.isCollapsible());
+        m_collapsibleTitle.setText(m_config.getCollapsibleTitle());
         m_textArea.setText(s);
         m_textFormatBox.setSelectedItem(m_config.getTextFormat());
         m_sanitizeCheckbox.setSelected(m_config.isSanitizeInput());
@@ -170,6 +190,8 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
         m_config.setText(s);
         m_config.setTextFormat((OutputTextFormat)m_textFormatBox.getSelectedItem());
         m_config.setSanitizeInput(m_sanitizeCheckbox.isSelected());
+        m_config.setCollapsible(m_collapsible.isSelected());
+        m_config.setCollapsibleTitle(m_collapsibleTitle.getText());
         m_config.saveSettings(settings);
     }
 }

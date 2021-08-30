@@ -26,6 +26,12 @@
           Some lines of description that will be shown in the remote control 
           form, for instance by means of a tooltip.
         </option>
+        <option name="Collapsible">
+          If selected, text will be collapsed.
+        </option>
+         <option name="Collapsible title">
+          Title of the collapsible. This title is shown when the text is collapsed or expanded.
+        </option>
         <option name="Text format">
           The format of the text. Can be plain text, pre-formatted (monospace text, retaining line breaks) or
           simple HTML. 
