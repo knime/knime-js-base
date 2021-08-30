@@ -481,7 +481,6 @@ window.knimeGroupedBarChart = (function () {
         d3.selectAll('.static-bar-value').remove();
 
         if (!_value.options.showStaticBarValues) { return; }
-        console.log(_value.options.showStaticBarValues);
         var optOrientation = _value.options.orientation;
         var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
         d3.selectAll('.nv-bar.positive').each(function (d, i) {
