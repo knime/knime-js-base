@@ -472,7 +472,7 @@
 		.classed("knime-selected", function(d) { return d.selected; })
 		.attr("stroke-width", 1)
 		.on("mouseover", mouseover)
-		.on("mousemove", (d) => { toggleTooltip(true, d) })
+		.on("mousemove", function (d) { toggleTooltip(true, d) })
 		.on("click", click);
 
 		// Basic setup of page elements.
@@ -484,7 +484,7 @@
 			drawLegend(plottingSurface, options.breadcrumb, b.h);
 		}
 
-		if (options.tooltip) {
+		if (options.tooltip || _representation.options.tooltipToggle) {
 			initializeTooltip();
 		}
 
@@ -550,7 +550,7 @@
 			})
 			.on("mouseover", function() {
 				if (_value.options.tooltip) {
-					toggleTooltip(false, d);
+					toggleTooltip(false);
 				}
 				if (mouseMode == "highlite" && highlitedPath == null) {
 					setPropAllNodes('active', true);
@@ -975,10 +975,11 @@
 		function toggleTooltip(visible, d) {
 			if (_value.options.tooltip) {
 				if (visible) {
+					const DEFAULT_MARGIN = 20;
 					var tooltip = d3.select('#tooltip')
 					.style('display', 'block')
-					.style('top', d3.event.pageY - 20 + 'px')
-					.style('left', d3.event.pageX + 20 +'px');
+					.style('left', d3.event.pageX + DEFAULT_MARGIN +'px')
+					.style('top', d3.event.pageY - DEFAULT_MARGIN + 'px');
 
 					tooltip.select('#color')
 					.select('div')
