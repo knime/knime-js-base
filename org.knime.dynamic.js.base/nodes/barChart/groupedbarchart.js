@@ -478,62 +478,60 @@ window.knimeGroupedBarChart = (function () {
 
     // Create static values on top of each bar
     createStaticBarValues = function () {
-        d3.selectAll('.static-bar-value').remove();
-
-        if (!_value.options.showStaticBarValues) { return; }
-        var optOrientation = _value.options.orientation;
         var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
-        d3.selectAll('.nv-bar.positive').each(function (d, i) {
 
+        d3.selectAll('.nv-bar.positive').each(function (d, i) {
             var label = d3.select(this.parentNode).append('text')
-                .attr('class', 'static-bar-value')
+                .attr('class', 'knime-static-bar-value')
                 .attr('dominant-baseline', 'middle')
                 .attr('transform', d3.select(this).attr('transform'))
                 .attr('fill', 'black')
-                .attr('fill-opacity', 1)
                 .attr('stroke', 'none')
                 .text(d.y);
             
             var barBBox = this.getBBox();
             var labelBBox = label.node().getBBox();
-            var x, y;
+            const DEFAULT_MARGIN = 10;
 
-            // Position text-elements based on orientation and free space
-            if (optOrientation) {
-                x = barBBox.width;
-                y = barBBox.y + barBBox.height / 2;
-
-                if (barBBox.width + labelBBox.width < parentBBox.width) {
-                    label
-                        .attr('text-anchor', 'start')
-                        .attr({ x: x + 10, y: y });
-                } else {
-                    label
-                        .attr('fill', calculateBackgroundContrast(this.style.fill) ? 'black' : 'white')
-                        .attr('text-anchor', 'end')
-                        .attr({ x: x - 10, y: y });
-                }
-            } else {
-                x = barBBox.x + barBBox.width / 2;
-                y = barBBox.y;
-                label.attr('text-anchor', 'middle');
-                if (barBBox.height + 1.5 * labelBBox.height < parentBBox.height) {
-                    label
-                        .attr({ x: x, y: y - labelBBox.height });
-                } else {
-                    label
-                        .attr({ x: x, y: y + labelBBox.height })
-                        .attr('fill', calculateBackgroundContrast(this.style.fill) ? 'black' : 'white');
-                }
-            }
             // If the free space is too small, the value does not get displayed
             if (labelBBox.width >= barBBox.width) {
                 d3.select(label).node().remove();
             }
+
+            // Position text-elements based on orientation and free space
+            if (_value.options.orientation) {
+                var y = barBBox.y + barBBox.height / 2;
+
+                if (barBBox.width + labelBBox.width < parentBBox.width) {
+                    label
+                        .attr('text-anchor', 'start')
+                        .attr({ x: barBBox.width + DEFAULT_MARGIN, y: y });
+                } else {
+                    label
+                        .attr('fill', revertBackgroundContrast(this.style.fill) ? 'black' : 'white')
+                        .attr('text-anchor', 'end')
+                        .attr({ x: barBBox.width - DEFAULT_MARGIN, y: y });
+                }
+            } else {
+                var x = barBBox.x + barBBox.width / 2;
+                label.attr('text-anchor', 'middle');
+                if (barBBox.height + DEFAULT_MARGIN + labelBBox.height < parentBBox.height) {
+                    label
+                        .attr({ x: x, y: barBBox.y - labelBBox.height });
+                } else {
+                    label
+                        .attr({ x: x, y: barBBox.y + labelBBox.height})
+                        .attr('fill', revertBackgroundContrast(this.style.fill) ? 'black' : 'white');
+                }
+            }
         });
     };
 
-    calculateBackgroundContrast = function (color) {
+    removeStaticBarValues = function () {
+        d3.selectAll('.knime-static-bar-value').remove();
+    };
+
+    revertBackgroundContrast = function (color) {
         return d3.hsl(color).l >= 0.5;
     };
 
@@ -1795,10 +1793,14 @@ window.knimeGroupedBarChart = (function () {
         if (enableStaticValuesEdit) {
             knimeService.addMenuDivider();
             var enableStaticValues = knimeService.createMenuCheckbox('enableStaticValues', _value.options.showStaticBarValues, function () {
-               if ( _value.options.showStaticBarValues !== this.checked) {
-                _value.options.showStaticBarValues = this.checked;
-                createStaticBarValues();
-               }
+                if ( _value.options.showStaticBarValues !== this.checked) {
+                    _value.options.showStaticBarValues = this.checked;
+                    if (_value.options.showStaticBarValues) {
+                        createStaticBarValues();
+                    } else {
+                        removeStaticBarValues();
+                    }
+                }
             }, true);
             knimeService.addMenuItem('Show static bar values:', '', enableStaticValues);
         }
@@ -1844,8 +1846,6 @@ window.knimeGroupedBarChart = (function () {
         if (_representation.options.enableSelection) {
             registerClickHandler();
         }
-
-
     };
 
     setTooltipCssClasses = function () {
