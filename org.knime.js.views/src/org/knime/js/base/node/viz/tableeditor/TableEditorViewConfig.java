@@ -504,14 +504,14 @@ public class TableEditorViewConfig {
     }
 
     /**
-     * @return the columnFilterConfig
+     * @return the columnAutosuggestFilterConfig
      */
     public DataColumnSpecFilterConfiguration getColumnAutosuggestFilterConfig() {
         return m_columnAutosuggestFilterConfig;
     }
 
     /**
-     * @param columnAutosuggestFilterConfig the columnFilterConfig to set
+     * @param columnAutosuggestFilterConfig the columnAutosuggestFilterConfig to set
      */
     public void setColumnAutosuggestFilterConfig(final DataColumnSpecFilterConfiguration columnAutosuggestFilterConfig) {
         m_columnAutosuggestFilterConfig = columnAutosuggestFilterConfig;
@@ -910,7 +910,7 @@ public class TableEditorViewConfig {
         try {
             m_columnAutosuggestFilterConfig.loadConfigurationInModel(settings);
         } catch (InvalidSettingsException e) {
-            // return default
+            // ignore InvalidSettingsException to load/return default value for m_columnAutosuggestFilterConfig
         }
 
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION);
@@ -993,7 +993,7 @@ public class TableEditorViewConfig {
                 m_columnAutosuggestFilterConfig.loadDefault(spec, AUTOSUGGEST_FILTER, false);
             }
         } catch(InvalidSettingsException e) {
-            // return default
+            // ignore InvalidSettingsException to load/return default value for m_columnAutosuggestFilterConfig
         }
 
         m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);

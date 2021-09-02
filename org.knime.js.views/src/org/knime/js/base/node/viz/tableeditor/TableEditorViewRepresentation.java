@@ -550,7 +550,7 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @param autosuggestColumns the editableColumns to set
+     * @param autosuggestColumns the autosuggestColumns to set
      */
     public void setAutosuggestColumns(final String[] autosuggestColumns) {
         m_autosuggestColumns = autosuggestColumns;

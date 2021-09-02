@@ -24,7 +24,7 @@ window.table_editor = (function () {
      * String values editor
      */
     var StringEditor = function () {
-        this.component = $('<input type="text" class="knime-table-control-text knime-string knime-single-line"/>')       
+        this.component = $('<input type="text" class="knime-table-control-text knime-string knime-single-line"/>');
     };
 
     StringEditor.prototype = Object.create(CellEditor.prototype);
@@ -43,10 +43,13 @@ window.table_editor = (function () {
     var StringAutosuggestEditor = function (allowAddValue,columnValues, cellValue) {
         
         let autosuggestDropdown = allowAddValue ? '<input list="suggestions" /><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
-        autosuggestDropdown = autosuggestDropdown.concat(`<option value="${cellValue}" selected class="knime-autosuggest-dropdown--option">${cellValue}</option>`);
+
+        if (cellValue) {
+            autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
+        }
         columnValues.forEach((value) => {
-            if(value !== cellValue || !value) {
-                autosuggestDropdown = autosuggestDropdown.concat(`<option value="${value}" class="knime-autosuggest-dropdown--option">${value}</option>`);
+            if(value !== cellValue && value) {
+                autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
             }
         });
         autosuggestDropdown = allowAddValue ? autosuggestDropdown.concat('</datalist>') : autosuggestDropdown.concat('</select>');
@@ -150,7 +153,6 @@ window.table_editor = (function () {
      * @extends KnimeBaseTableViewer TableViewer with added editing functionality
      */
     var TableEditor = function () {
-        debugger;
         KnimeBaseTableViewer.apply(this);
 
         this._selectedCell = undefined;
@@ -341,7 +343,6 @@ window.table_editor = (function () {
         var self = this;
         var $td = $(cell.node());
         this._catchTdEventsOff($td);
-        
         var editor = this._createCellEditorComponent(cell, cellValue);
         var editorComponent = editor.getComponent();
 
@@ -421,7 +422,8 @@ window.table_editor = (function () {
 
         var editor;
         if (this._hasAutosuggest(cell) && colType === 'String') {
-            editor = new StringAutosuggestEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), (cellValue !== undefined ? cellValue : cell.data()));
+            var cellDataValue = cellValue || cell.data();
+            editor = new StringAutosuggestEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), cellDataValue);
             if (!this._representation.allowAddValue) {
                 return editor;
             }

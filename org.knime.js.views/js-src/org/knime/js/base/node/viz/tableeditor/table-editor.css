@@ -189,12 +189,9 @@ h2 {
     color: inherit;
     border: none;
     outline: none;
-    width: 100% !important; 
-    box-sizing: border-box;
+    width: 100%; 
 }
 
 .knime-autosuggest-dropdown option {
-    width: 60px !important; 
-    box-sizing: border-box;
     word-wrap: break-word;
 }
