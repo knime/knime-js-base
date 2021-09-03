@@ -86,10 +86,10 @@
 				graph shown above the generated image. If left blank, no subtitle
 				will be shown.
 			</option>
-			<option name="X-Axis" optional="true">
+			<option name="X-Axis Label" optional="true">
 				The label of the x-axis. If left blank, no label for the x-axis will be shown.
 			</option>
-			<option name="Y-Axis" optional="true">
+			<option name="Y-Axis Label" optional="true">
 				The label of the y-axis. If left blank, no label for the y-axis will be shown.
 			</option>
 			<option name="Show tool tips">

@@ -134,7 +134,7 @@ public class HeatMapViewValue extends JSONViewContent {
     }
 
     /**
-     * @param xAxisLabel the chartSubtitle to set
+     * @param xAxisLabel the xAxisLabel to set
      */
     public void setXAxisLabel(final String xAxisLabel) {
         m_xAxisLabel = xAxisLabel;
@@ -148,7 +148,7 @@ public class HeatMapViewValue extends JSONViewContent {
     }
 
     /**
-     * @param yAxisLabel the chartSubtitle to set
+     * @param yAxisLabel the yAxisLabel to set
      */
     public void setYAxisLabel(final String yAxisLabel) {
         m_yAxisLabel = yAxisLabel;

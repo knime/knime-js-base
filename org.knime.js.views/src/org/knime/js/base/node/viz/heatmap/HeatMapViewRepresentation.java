@@ -277,14 +277,14 @@ public class HeatMapViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the enableShowToolTips
+     * @return the enableAxisLabelChange
      */
     public boolean getEnableAxisLabelChange() {
         return m_enableAxisLabelChange;
     }
 
     /**
-     * @param enableAxisLabelChange the enableShowToolTips to set
+     * @param enableAxisLabelChange the enableAxisLabelChange to set
      */
     public void setEnableAxisLabelChange(final boolean enableAxisLabelChange) {
         m_enableAxisLabelChange = enableAxisLabelChange;
@@ -716,7 +716,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
 
         try {
             m_enableAxisLabelChange = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_AXIS_LABEL_CHANGE);
-        } catch (Exception e){}
+        } catch (InvalidSettingsException e){}
 
         m_threeColorGradient = settings.getStringArray(HeatMapViewConfig.CFG_THREE_COLOR_GRADIENT);
         m_discreteGradientColors = settings.getStringArray(HeatMapViewConfig.CFG_DISCRETE_GRADIENT_COLORS);

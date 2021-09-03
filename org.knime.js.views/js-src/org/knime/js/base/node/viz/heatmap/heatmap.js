@@ -25,7 +25,7 @@ window.heatmapNamespace = (function () {
         // Hardcoded Default Settings
         this._minCellSize = 12;
         this._maxCanvasHeight = 8000; // canvas has native size limits
-        this._defaultMargin = { top: 20, left: 35, right: 35, bottom: 10 };
+        this._defaultMargin = { top: 30, left: 35, right: 35, bottom: 10 };
         this._margin = {};
         this._defaultZoomX = 0;
         this._defaultZoomY = 0;
@@ -328,8 +328,20 @@ window.heatmapNamespace = (function () {
     };
 
     Heatmap.prototype.updateLabels = function () {
-        document.querySelector('#x-axis').textContent = this._value.xaxisLabel;
-        document.querySelector('#y-axis').textContent = this._value.yaxisLabel;
+        var svgHeight = parseInt(d3.select('svg').style('height'), 10);
+        var svgWidth = parseInt(d3.select('svg').style('width'), 10);
+        var configObject = {
+            container: document.querySelector('svg'),
+            maxWidth: svgWidth / 2,
+            maxHeight: svgHeight / 2,
+            minimalChars: 1
+        };
+        
+        var xaxisLabelSize = knimeService.measureAndTruncate(this._value.xaxisLabel ? [this._value.xaxisLabel] : [''], configObject);
+        var yaxisLabelSize = knimeService.measureAndTruncate(this._value.yaxisLabel ? [this._value.yaxisLabel] : [''], configObject);
+
+        document.querySelector('#x-axis').textContent = xaxisLabelSize.values[0].truncated;
+        document.querySelector('#y-axis').textContent = yaxisLabelSize.values[0].truncated;
     };
 
     Heatmap.prototype.drawControls = function () {
@@ -1420,20 +1432,21 @@ window.heatmapNamespace = (function () {
         this.getProgressBar(formattedDataset.data.length);
 
         // Create axis labels
+        var margin = 15;
         svg.append('text')
             .attr('class', 'knime-label')
             .attr('id', 'x-axis')
             .attr('text-anchor', 'middle')
             .attr('x', wrapper.node().getBBox().x + wrapper.node().getBBox().width / 2)
-            .attr('y', 50)
+            .attr('y', this.titleHeight + this.subtitleHeight + margin)
             .text(this._value.xaxisLabel);
 
-            svg.append('text')
+        svg.append('text')
             .attr('class', 'knime-label')
             .attr('id', 'y-axis')
             .attr('text-anchor', 'middle')
             .attr('x', -(wrapper.node().getBBox().y + wrapper.node().getBBox().height / 2))
-            .attr('y', 15)
+            .attr('y', margin)
             .style('transform', 'rotate(-90deg)')
             .text(this._value.yaxisLabel);
         this.updateLabels();
