@@ -141,8 +141,8 @@ public class TableEditorViewConfig {
     final static boolean DEFAULT_ALLOW_ADD_VALUES = false;
     private boolean m_allowAddValue = DEFAULT_ALLOW_ADD_VALUES;
 
-    final static String CFG_AUTOSUGGEST_COLUMN_FILTER = "autosuggestColumnFilter";
-    final InputFilter<DataColumnSpec> AUTOSUGGEST_FILTER = new InputFilter<DataColumnSpec>() {
+    final static String CFG_DROPDOWN_COLUMN_FILTER = "dropdownColumnFilter";
+    final InputFilter<DataColumnSpec> DROPDOWN_FILTER = new InputFilter<DataColumnSpec>() {
 
         @Override
         public boolean include(final DataColumnSpec spec) {
@@ -150,8 +150,7 @@ public class TableEditorViewConfig {
             return type.isCompatible(StringValue.class);
         }
     };
-    private DataColumnSpecFilterConfiguration m_columnAutosuggestFilterConfig = new DataColumnSpecFilterConfiguration(CFG_AUTOSUGGEST_COLUMN_FILTER, AUTOSUGGEST_FILTER);
-
+    private DataColumnSpecFilterConfiguration m_columnDropdownFilterConfig = new DataColumnSpecFilterConfiguration(CFG_DROPDOWN_COLUMN_FILTER, DROPDOWN_FILTER);
 
     final static String CFG_ENABLE_SELECTION = "enableSelection";
     final static boolean DEFAULT_ENABLE_SELECTION = false;
@@ -504,17 +503,17 @@ public class TableEditorViewConfig {
     }
 
     /**
-     * @return the columnAutosuggestFilterConfig
+     * @return the columnDropdownFilterConfig
      */
-    public DataColumnSpecFilterConfiguration getColumnAutosuggestFilterConfig() {
-        return m_columnAutosuggestFilterConfig;
+    public DataColumnSpecFilterConfiguration getColumnDropdownFilterConfig() {
+        return m_columnDropdownFilterConfig;
     }
 
     /**
-     * @param columnAutosuggestFilterConfig the columnAutosuggestFilterConfig to set
+     * @param columnDropdownFilterConfig the columnDropdownFilterConfig to set
      */
-    public void setColumnAutosuggestFilterConfig(final DataColumnSpecFilterConfiguration columnAutosuggestFilterConfig) {
-        m_columnAutosuggestFilterConfig = columnAutosuggestFilterConfig;
+    public void setColumnDropdownFilterConfig(final DataColumnSpecFilterConfiguration columnDropdownFilterConfig) {
+        m_columnDropdownFilterConfig = columnDropdownFilterConfig;
     }
 
     /**
@@ -847,7 +846,7 @@ public class TableEditorViewConfig {
         settings.addString(CFG_SUBTITLE, m_subtitle);
         m_columnFilterConfig.saveConfiguration(settings);
         settings.addBoolean(CFG_ALLOW_ADD_VALUES, m_allowAddValue);
-        m_columnAutosuggestFilterConfig.saveConfiguration(settings);
+        m_columnDropdownFilterConfig.saveConfiguration(settings);
         settings.addBoolean(CFG_ENABLE_SELECTION, m_enableSelection);
         settings.addString(CFG_SELECTION_COLUMN_NAME, m_selectionColumnName);
         settings.addBoolean(CFG_ENABLE_SEARCHING, m_enableSearching);
@@ -908,9 +907,9 @@ public class TableEditorViewConfig {
 
         m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         try {
-            m_columnAutosuggestFilterConfig.loadConfigurationInModel(settings);
+            m_columnDropdownFilterConfig.loadConfigurationInModel(settings);
         } catch (InvalidSettingsException e) {
-            // ignore InvalidSettingsException to load/return default value for m_columnAutosuggestFilterConfig
+            // ignore InvalidSettingsException to load/return default value for m_columnDropdownFilterConfig
         }
 
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION);
@@ -976,25 +975,8 @@ public class TableEditorViewConfig {
         m_subtitle = settings.getString(CFG_SUBTITLE, DEFAULT_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInDialog(settings, spec);
 
-        try {
-            NodeSettingsRO subSettings = settings.getNodeSettings(CFG_AUTOSUGGEST_COLUMN_FILTER);
-            String[] included_list = subSettings.getStringArray("included_names", new String[0]);
-            final InputFilter<DataColumnSpec> AUTOSUGGEST_FILTER = new InputFilter<DataColumnSpec>() {
-
-                @Override
-                public boolean include(final DataColumnSpec spec) {
-                    DataType type = spec.getType();
-                    return type.isCompatible(StringValue.class);
-                }
-            };
-            if(included_list.length != 0) {
-                m_columnAutosuggestFilterConfig.loadConfigurationInDialog(settings, spec);
-            } else {
-                m_columnAutosuggestFilterConfig.loadDefault(spec, AUTOSUGGEST_FILTER, false);
-            }
-        } catch(InvalidSettingsException e) {
-            // ignore InvalidSettingsException to load/return default value for m_columnAutosuggestFilterConfig
-        }
+        loadDefaultsForColDropdownConfig(spec);
+        m_columnDropdownFilterConfig.loadConfigurationInDialog(settings, spec);
 
         m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION, DEFAULT_ENABLE_SELECTION);
@@ -1045,6 +1027,13 @@ public class TableEditorViewConfig {
             // return default
         }
         m_tableHash = settings.getString(CFG_TABLE_HASH, null);
+    }
+
+    /** Loads defaults for columnDropdownFilterConfig.
+     * @param spec The spec from the incoming data table
+     */
+    public void loadDefaultsForColDropdownConfig(final DataTableSpec spec) {
+        m_columnDropdownFilterConfig.loadDefaults(new DataTableSpec(), false);
     }
 
 }

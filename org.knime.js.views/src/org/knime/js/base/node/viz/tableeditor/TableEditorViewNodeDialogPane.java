@@ -107,7 +107,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
     private final JTextField m_subtitleField;
     private final DataColumnSpecFilterPanel m_columnFilterPanel;
     private final JCheckBox m_allowAddValueCheckbox;
-    private final DataColumnSpecFilterPanel m_columnAutosuggestFilterPanel;
+    private final DataColumnSpecFilterPanel m_columnDropdownFilterPanel;
     private final JCheckBox m_enableSelectionCheckbox;
     private final JCheckBox m_enableClearSelectionButtonCheckbox;
     private final JRadioButton m_singleSelectionRadioButton;
@@ -179,8 +179,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
                 enableSelectionFields();
             }
         });
-        m_columnAutosuggestFilterPanel = new DataColumnSpecFilterPanel();
-        m_columnAutosuggestFilterPanel.setSelectedEnforceOption(EnforceOption.EnforceExclusion);
+        m_columnDropdownFilterPanel = new DataColumnSpecFilterPanel();
+        m_columnDropdownFilterPanel.setSelectedEnforceOption(EnforceOption.EnforceExclusion);
         m_allowAddValueCheckbox = new JCheckBox("Allow to add new values");
         m_enableClearSelectionButtonCheckbox = new JCheckBox("Enable 'Clear Selection' button");
         m_singleSelectionRadioButton = new JRadioButton("Single Selection");
@@ -305,18 +305,18 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridwidth = 3;
         displayPanel.add(m_columnFilterPanel, gbcD);
 
-        JPanel autosuggestPanel = new JPanel(new GridBagLayout());
-        autosuggestPanel.setBorder(new TitledBorder("Autosuggest Options"));
+        JPanel dropdownPanel = new JPanel(new GridBagLayout());
+        dropdownPanel.setBorder(new TitledBorder("Dropdown Options"));
         GridBagConstraints gbcA = createConfiguredGridBagConstraints();
         gbcA.gridwidth = 1;
         gbcA.gridx = 0;
-        autosuggestPanel.add(m_allowAddValueCheckbox, gbcA);
+        dropdownPanel.add(m_allowAddValueCheckbox, gbcA);
         gbcA.gridx = 0;
         gbcA.gridy++;
-        autosuggestPanel.add(new JLabel("Autosuggest for columns: "), gbcA);
+        dropdownPanel.add(new JLabel("Dropdown suggestions for columns: "), gbcA);
         gbcA.gridy++;
         gbcA.gridwidth = 3;
-        autosuggestPanel.add(m_columnAutosuggestFilterPanel, gbcA);
+        dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
@@ -327,7 +327,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbc.gridy++;
         panel.add(displayPanel, gbc);
         gbc.gridy++;
-        panel.add(autosuggestPanel, gbc);
+        panel.add(dropdownPanel, gbc);
         return panel;
     }
 
@@ -516,7 +516,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_subtitleField.setText(m_config.getSubtitle());
         m_columnFilterPanel.loadConfiguration(m_config.getColumnFilterConfig(), inSpec);
         m_allowAddValueCheckbox.setSelected(m_config.getAllowAddValue());
-        m_columnAutosuggestFilterPanel.loadConfiguration(m_config.getColumnAutosuggestFilterConfig(), inSpec);
+        m_columnDropdownFilterPanel.loadConfiguration(m_config.getColumnDropdownFilterConfig(), inSpec);
         m_enableSelectionCheckbox.setSelected(m_config.getEnableSelection());
         m_enableClearSelectionButtonCheckbox.setSelected(m_config.getEnableClearSelectionButton());
         boolean single = m_config.getSingleSelection();
@@ -575,7 +575,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_columnFilterPanel.saveConfiguration(filterConfig);
         m_config.setColumnFilterConfig(filterConfig);
         m_config.setAllowAddValue(m_allowAddValueCheckbox.isSelected());
-        m_columnAutosuggestFilterPanel.saveConfiguration(m_config.getColumnAutosuggestFilterConfig());
+        m_columnDropdownFilterPanel.saveConfiguration(m_config.getColumnDropdownFilterConfig());
         m_config.setEnableSelection(m_enableSelectionCheckbox.isSelected());
         m_config.setEnableClearSelectionButton(m_enableClearSelectionButtonCheckbox.isSelected());
         m_config.setSingleSelection(m_singleSelectionRadioButton.isSelected());

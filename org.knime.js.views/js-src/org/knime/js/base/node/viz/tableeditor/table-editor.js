@@ -38,16 +38,16 @@ window.table_editor = (function () {
     };
 
     /**
-     * String values editor with autosuggest
+     * String values editor with dropdown
      */
-    var StringAutosuggestEditor = function (allowAddValue,columnValues, cellValue) {
+    var StringDropdownEditor = function (allowAddValue, columnValues, cellValue) {
         
-        let autosuggestDropdown = allowAddValue ? '<input list="suggestions" /><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
+        var autosuggestDropdown = allowAddValue ? '<input list="suggestions" /><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
 
         if (cellValue) {
             autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
         }
-        columnValues.forEach((value) => {
+        columnValues.forEach(function (value) {
             if(value !== cellValue && value) {
                 autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
             }
@@ -56,9 +56,9 @@ window.table_editor = (function () {
         this.component = $(autosuggestDropdown);
     };
     
-        StringAutosuggestEditor.prototype = Object.create(CellEditor.prototype);
+        StringDropdownEditor.prototype = Object.create(CellEditor.prototype);
     
-        StringAutosuggestEditor.prototype.getValue = function () {
+        StringDropdownEditor.prototype.getValue = function () {
             var value = this.component.val();
             if (value == '') {
                 return null;
@@ -421,9 +421,9 @@ window.table_editor = (function () {
         var colType = this._knimeTable.getKnimeColumnTypes()[dataInd];
 
         var editor;
-        if (this._hasAutosuggest(cell) && colType === 'String') {
+        if (this._hasDropdown(cell) && colType === 'String') {
             var cellDataValue = cellValue || cell.data();
-            editor = new StringAutosuggestEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), cellDataValue);
+            editor = new StringDropdownEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), cellDataValue);
             if (!this._representation.allowAddValue) {
                 return editor;
             }
@@ -714,10 +714,10 @@ window.table_editor = (function () {
         return this._representation.editableColumns.indexOf(colName) !== -1;
     };
 
-    TableEditor.prototype._hasAutosuggest = function (cell) {
+    TableEditor.prototype._hasDropdown = function (cell) {
         var dataIndex = this._dataIndexFromColIndex(cell.index().column);
         var colName = this._knimeTable.getColumnNames()[dataIndex];
-        return this._representation.autosuggestColumns.indexOf(colName) !== -1;
+        return this._representation.dropdownColumns.indexOf(colName) !== -1;
     };
 
     TableEditor.prototype._getPossibleColumnValues = function (cell) {

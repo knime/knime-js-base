@@ -133,6 +133,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         DataTableSpec tableSpec = (DataTableSpec)inSpecs[0];
+        m_config.loadDefaultsForColDropdownConfig(tableSpec);
         if (m_config.getEnableSelection()) {
             ColumnRearranger rearranger = createColumnAppender(tableSpec, null);
             tableSpec = rearranger.createSpec();
@@ -436,7 +437,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
             viewRepresentation.setGlobalNumberFormatDecimals(m_config.getGlobalNumberFormatDecimals());
 
             viewRepresentation.setAllowAddValue(m_config.getAllowAddValue());
-            viewRepresentation.setAutosuggestColumns(m_config.getColumnAutosuggestFilterConfig().applyTo(m_table.getDataTableSpec()).getIncludes());
+            viewRepresentation.setDropdownColumns(m_config.getColumnDropdownFilterConfig().applyTo(m_table.getDataTableSpec()).getIncludes());
 
             //added with 3.3
             viewRepresentation.setDisplayFullscreenButton(m_config.getDisplayFullscreenButton());

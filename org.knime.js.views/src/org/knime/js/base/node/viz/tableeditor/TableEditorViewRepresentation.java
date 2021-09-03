@@ -98,8 +98,8 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     private boolean m_displayMissingValueAsQuestionMark;
 
     private boolean m_allowAddValue;
-    private static final String CFG_AUTOSUGGEST_COLUMNS = "autosuggestColumns";
-    private String[] m_autosuggestColumns;
+    private static final String CFG_DROPDOWN_COLUMNS = "dropdownColumns";
+    private String[] m_dropdownColumns;
 
     private static final String CFG_PUBLISH_FILTER_ID = "publishFilterId";
     private String m_publishFilterId;
@@ -543,17 +543,17 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the autosuggestColumns
+     * @return the dropdownColumns
      */
-    public String[] getAutosuggestColumns() {
-        return m_autosuggestColumns;
+    public String[] getDropdownColumns() {
+        return m_dropdownColumns;
     }
 
     /**
-     * @param autosuggestColumns the autosuggestColumns to set
+     * @param dropdownColumns the dropdownColumns to set
      */
-    public void setAutosuggestColumns(final String[] autosuggestColumns) {
-        m_autosuggestColumns = autosuggestColumns;
+    public void setDropdownColumns(final String[] dropdownColumns) {
+        m_dropdownColumns = dropdownColumns;
     }
 
     /**
@@ -599,7 +599,7 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         settings.addInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
 
         settings.addBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES, m_allowAddValue);
-        settings.addStringArray(CFG_AUTOSUGGEST_COLUMNS, m_autosuggestColumns);
+        settings.addStringArray(CFG_DROPDOWN_COLUMNS, m_dropdownColumns);
 
         //added with 3.3
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_HIDE_UNSELECTED, m_enableHideUnselected);
@@ -648,7 +648,7 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         m_globalNumberFormatDecimals = settings.getInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
 
         m_allowAddValue = settings.getBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES);
-        m_autosuggestColumns = settings.getStringArray(CFG_AUTOSUGGEST_COLUMNS, (String[])null);
+        m_dropdownColumns = settings.getStringArray(CFG_DROPDOWN_COLUMNS, (String[])null);
 
         //added with 3.3
         m_enableHideUnselected = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_HIDE_UNSELECTED, TableEditorViewConfig.DEFAULT_ENABLE_HIDE_UNSELECTED);
