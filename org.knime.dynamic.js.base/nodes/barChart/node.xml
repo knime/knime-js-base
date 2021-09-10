@@ -115,11 +115,12 @@
                 </checkBoxOption>
 				
                 <checkBoxOption name="Show maximum value" id="showMaximum"
-                    label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
+                	label="Display maximum value" defaultValue="true" loadDefaults="true" saveInView="true">
                     Check if the maximum of the Y-Axis should be displayed.
                 </checkBoxOption>
 
-				<checkBoxOption name="Show static bar values" id="showStaticBarValues" label="Display static bar values" defaultValue="false" loadDefaults="true" saveInView="true">
+				<checkBoxOption name="Show static bar values" id="showStaticBarValues" 
+					label="Display static bar values" defaultValue="false" loadDefaults="true" saveInView="true">
                     Check if the value of each bar should be displayed next to the bar.
                 </checkBoxOption>
                 

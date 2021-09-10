@@ -76,7 +76,7 @@ window.knimeGroupedBarChart = (function () {
         handleHighlightClick, sortByClusterName, setCssClasses, setTooltipCssClasses, updateTitles, updateAxisLabels,
         updateLabels, updateChartType, redrawSelection, onSelectionChanged, registerClickHandler, getActiveBars,
         checkClearSelectionButton, selectCorrectBar, processMissingValues, checkMaxSizeXAxis, KeyNameMap,
-        handleWarnings, handleMissingValues, getStackedMaxValue, createStaticBarValues, calculateBackgroundContrast;
+        handleWarnings, handleMissingValues, getStackedMaxValue, createStaticBarValues, removeStaticBarValues, hasSufficientBackgroundContrast;
 
     var MISSING_VALUES_LABEL = 'Missing values';
     var MISSING_VALUES_ONLY = 'missingValuesOnly';
@@ -237,7 +237,8 @@ window.knimeGroupedBarChart = (function () {
 
             chart.dispatch.on('renderEnd.css', function () {
                 setCssClasses();
-                if(_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
+                if (_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
+                    removeStaticBarValues();
                     createStaticBarValues();
                 }
             });
@@ -480,7 +481,7 @@ window.knimeGroupedBarChart = (function () {
     createStaticBarValues = function () {
         var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
 
-        d3.selectAll('.nv-bar.positive').each(function (d, i) {
+        d3.selectAll('.nv-bar.positive').each(function (d) {
             var label = d3.select(this.parentNode).append('text')
                 .attr('class', 'knime-static-bar-value')
                 .attr('dominant-baseline', 'middle')
@@ -491,7 +492,7 @@ window.knimeGroupedBarChart = (function () {
             
             var barBBox = this.getBBox();
             var labelBBox = label.node().getBBox();
-            const DEFAULT_MARGIN = 10;
+            var DEFAULT_MARGIN = 10;
 
             // If the free space is too small, the value does not get displayed
             if (labelBBox.width >= barBBox.width) {
@@ -501,27 +502,26 @@ window.knimeGroupedBarChart = (function () {
             // Position text-elements based on orientation and free space
             if (_value.options.orientation) {
                 var y = barBBox.y + barBBox.height / 2;
-
-                if (barBBox.width + labelBBox.width < parentBBox.width) {
+                if (barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width) {
                     label
                         .attr('text-anchor', 'start')
                         .attr({ x: barBBox.width + DEFAULT_MARGIN, y: y });
                 } else {
                     label
-                        .attr('fill', revertBackgroundContrast(this.style.fill) ? 'black' : 'white')
                         .attr('text-anchor', 'end')
-                        .attr({ x: barBBox.width - DEFAULT_MARGIN, y: y });
+                        .attr({ x: barBBox.width - DEFAULT_MARGIN, y: y })
+                        .style('fill', hasSufficientBackgroundContrast(this.parentNode.style.fill) ? 'black' : 'white');
                 }
             } else {
                 var x = barBBox.x + barBBox.width / 2;
                 label.attr('text-anchor', 'middle');
-                if (barBBox.height + DEFAULT_MARGIN + labelBBox.height < parentBBox.height) {
+                if (barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height) {
                     label
                         .attr({ x: x, y: barBBox.y - labelBBox.height });
                 } else {
                     label
-                        .attr({ x: x, y: barBBox.y + labelBBox.height})
-                        .attr('fill', revertBackgroundContrast(this.style.fill) ? 'black' : 'white');
+                        .attr({ x: x, y: barBBox.y + labelBBox.height })
+                        .style('fill', hasSufficientBackgroundContrast(this.parentNode.style.fill) ? 'black' : 'white');
                 }
             }
         });
@@ -531,7 +531,7 @@ window.knimeGroupedBarChart = (function () {
         d3.selectAll('.knime-static-bar-value').remove();
     };
 
-    revertBackgroundContrast = function (color) {
+    hasSufficientBackgroundContrast = function (color) {
         return d3.hsl(color).l >= 0.5;
     };
 
@@ -1755,6 +1755,20 @@ window.knimeGroupedBarChart = (function () {
             knimeService.addMenuItem('Display maximum value:', 'arrows-v', displayMaximumCbx);
         }
 
+        if (enableStaticValuesEdit) {
+            var enableStaticValues = knimeService.createMenuCheckbox('enableStaticValues', _value.options.showStaticBarValues, function () {
+                if (_value.options.showStaticBarValues !== this.checked) {
+                    _value.options.showStaticBarValues = this.checked;
+                    if (_value.options.showStaticBarValues) {
+                        createStaticBarValues();
+                    } else {
+                        removeStaticBarValues();
+                    }
+                }
+            }, true);
+            knimeService.addMenuItem('Show static bar values:', '', enableStaticValues);
+        }
+
         if (enableSelection) {
             knimeService.addMenuDivider();
             var subscribeToSelectionIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right',
@@ -1788,21 +1802,6 @@ window.knimeGroupedBarChart = (function () {
                 publishSelection(true);
             });
             d3.select('#clearSelectionButton').classed('inactive', true);
-        }
-
-        if (enableStaticValuesEdit) {
-            knimeService.addMenuDivider();
-            var enableStaticValues = knimeService.createMenuCheckbox('enableStaticValues', _value.options.showStaticBarValues, function () {
-                if ( _value.options.showStaticBarValues !== this.checked) {
-                    _value.options.showStaticBarValues = this.checked;
-                    if (_value.options.showStaticBarValues) {
-                        createStaticBarValues();
-                    } else {
-                        removeStaticBarValues();
-                    }
-                }
-            }, true);
-            knimeService.addMenuItem('Show static bar values:', '', enableStaticValues);
         }
     };
 
