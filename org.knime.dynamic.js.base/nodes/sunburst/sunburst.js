@@ -972,10 +972,10 @@
 		}
 
 		// Show/hide tooltip for sunburst element
-		function toggleTooltip(visible, d) {
+		function toggleTooltip(visible, data) {
 			if (_value.options.tooltip) {
 				if (visible) {
-					const DEFAULT_MARGIN = 20;
+					var DEFAULT_MARGIN = 20;
 					var tooltip = d3.select('#tooltip')
 					.style('display', 'block')
 					.style('left', d3.event.pageX + DEFAULT_MARGIN +'px')
@@ -983,13 +983,13 @@
 
 					tooltip.select('#color')
 					.select('div')
-					.style('background', _colorMap(d.name));
+					.style('background', _colorMap(data.name));
 					
 					tooltip.select('#key')
-					.html(d.name);
+					.html(data.name);
 
 					tooltip.select('#value')
-					.html(d.value);
+					.html(data.value);
 				} else {
 					d3.select('#tooltip')
 					.style('display', 'none');
