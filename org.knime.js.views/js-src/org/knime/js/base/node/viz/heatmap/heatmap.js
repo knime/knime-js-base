@@ -25,7 +25,7 @@ window.heatmapNamespace = (function () {
         // Hardcoded Default Settings
         this._minCellSize = 12;
         this._maxCanvasHeight = 8000; // canvas has native size limits
-        this._defaultMargin = { top: 30, left: 35, right: 35, bottom: 10 };
+        this._defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
         this._margin = {};
         this._defaultZoomX = 0;
         this._defaultZoomY = 0;
@@ -46,6 +46,7 @@ window.heatmapNamespace = (function () {
         this.showProgressBarMaxPercentage = 20;
         this.titleHeight = 30;
         this.subtitleHeight = 20;
+        this.axisLabelHeight = 20;
         this.onSelectionChange = this.onSelectionChange.bind(this);
         this.onFilterChange = this.onFilterChange.bind(this);
 
@@ -327,21 +328,47 @@ window.heatmapNamespace = (function () {
         return completeTitleHeight;
     };
 
-    Heatmap.prototype.updateLabels = function () {
-        var svgHeight = parseInt(d3.select('svg').style('height'), 10);
-        var svgWidth = parseInt(d3.select('svg').style('width'), 10);
+    Heatmap.prototype.updateAxisLabels = function () {
+        var svgD3 = d3.select('.knime-svg-container svg');
+        var svgHeight = parseInt(svgD3.style('height'), 10);
         var configObject = {
             container: document.querySelector('svg'),
-            maxWidth: svgWidth / 2,
-            maxHeight: svgHeight / 2,
+            maxWidth: svgHeight,
             minimalChars: 1
         };
-        
-        var xaxisLabelSize = knimeService.measureAndTruncate(this._value.xaxisLabel ? [this._value.xaxisLabel] : [''], configObject);
-        var yaxisLabelSize = knimeService.measureAndTruncate(this._value.yaxisLabel ? [this._value.yaxisLabel] : [''], configObject);
 
-        document.querySelector('#x-axis').textContent = xaxisLabelSize.values[0].truncated;
-        document.querySelector('#y-axis').textContent = yaxisLabelSize.values[0].truncated;
+        var xaxisLabelSize = knimeService.measureAndTruncate([this._value.xaxisLabel], configObject);
+        var yaxisLabelSize = knimeService.measureAndTruncate([this._value.yaxisLabel], configObject);
+
+        document.querySelector('.knime-axis-label.knime-x').textContent = xaxisLabelSize.values[0].truncated;
+        document.querySelector('.knime-axis-label.knime-y').textContent = yaxisLabelSize.values[0].truncated;
+        svgD3.select('.knime-axis-label.knime-x').append('title').text(this._value.xaxisLabel);
+        svgD3.select('.knime-axis-label.knime-y').append('title').text(this._value.yaxisLabel);
+    };
+
+    Heatmap.prototype.getXAxisLabelMargins = function () {
+        var svgD3 = d3.select('.knime-svg-container svg');
+        var xAxis = svgD3.select('.knime-axis-label.knime-x');
+        var completeXAxisLabelMargins = 0;
+
+        if (this._representation.enableAxisLabelChange || this._value.xaxisLabel !== '') {
+            completeXAxisLabelMargins += Math.max(this.axisLabelHeight, xAxis.node().getBBox().height);
+            completeXAxisLabelMargins += this.getTitlesHeight() === 0 ? this.titleHeight + this.subtitleHeight : 0;
+            completeXAxisLabelMargins += this._defaultMargin.top;
+        }
+        return completeXAxisLabelMargins;
+
+    };
+
+    Heatmap.prototype.getYAxisLabelMargins = function () {
+        var svgD3 = d3.select('.knime-svg-container svg');
+        var yAxis = svgD3.select('.knime-axis-label.knime-y');
+        var completeYAxisLabelMargins = 0;
+
+        if (this._representation.enableAxisLabelChange || this._value.xaxisLabel !== '') {
+            completeYAxisLabelMargins = Math.max(this.axisLabelHeight, yAxis.node().getBBox().height);
+        }
+        return completeYAxisLabelMargins;
     };
 
     Heatmap.prototype.drawControls = function () {
@@ -459,13 +486,6 @@ window.heatmapNamespace = (function () {
             knimeService.addMenuDivider();
         }
 
-        if (this._representation.enableShowToolTips) {
-            var showToolTips = knimeService.createMenuCheckbox('showToolTips', this._value.showToolTips, function () {
-                self._value.showToolTips = this.checked;
-            });
-            knimeService.addMenuItem('Show Tooltips', 'info', showToolTips);
-        }
-
         if (this._representation.enableAxisLabelChange) {
             var xaxisLabelText = knimeService.createMenuTextField(
                 'xaxisLabelText',
@@ -473,25 +493,32 @@ window.heatmapNamespace = (function () {
                 function () {
                     if (self._value.xaxisLabel !== this.value) {
                         self._value.xaxisLabel = this.value;
-                        self.updateLabels();
+                        self.updateAxisLabels();
                     }
                 },
                 true
             );
-            knimeService.addMenuItem('X-Axis Label:', 'header', xaxisLabelText);
+            knimeService.addMenuItem('X-Axis Label:', 'ellipsis-h', xaxisLabelText);
             var yaxisLabelText = knimeService.createMenuTextField(
                 'yaxisLabelText',
                 this._value.yaxisLabel,
                 function () {
                     if (self._value.yaxisLabel !== this.value) {
                         self._value.yaxisLabel = this.value;
-                        self.updateLabels();
+                        self.updateAxisLabels();
                     }
                 },
                 true
             );
-            knimeService.addMenuItem('Y-Axis Label:', 'header', yaxisLabelText);
+            knimeService.addMenuItem('Y-Axis Label:', 'ellipsis-v', yaxisLabelText);
             knimeService.addMenuDivider();
+        }
+
+        if (this._representation.enableShowToolTips) {
+            var showToolTips = knimeService.createMenuCheckbox('showToolTips', this._value.showToolTips, function () {
+                self._value.showToolTips = this.checked;
+            });
+            knimeService.addMenuItem('Show Tooltips', 'info', showToolTips);
         }
 
         if (this._representation.enableShowSelectedRowsOnly) {
@@ -807,11 +834,13 @@ window.heatmapNamespace = (function () {
         }
         var labelBufferMargin = 15; // leave some wiggleroom for longer labels (e.g. counting up labels)
         var titlesHeight = this.getTitlesHeight();
-        var headerHeight = Math.max(knimeService.headerHeight(), titlesHeight);
+        var xAxisLabelMargins = this.getXAxisLabelMargins();
+        var yAxisLabelMargins = this.getYAxisLabelMargins();
+        var headerHeight = Math.max(knimeService.headerHeight(), titlesHeight + xAxisLabelMargins);
 
         this._margin = JSON.parse(JSON.stringify(this._defaultMargin));
         this._margin.top = measuredLabels.x.max.maxHeight + labelBufferMargin + this._defaultMargin.top + headerHeight;
-        this._margin.left = measuredLabels.y.max.maxWidth + labelBufferMargin + this._defaultMargin.left;
+        this._margin.left = measuredLabels.y.max.maxWidth + labelBufferMargin + this._defaultMargin.left + yAxisLabelMargins;
 
         this._labelsMargins = {
             x: measuredLabels.y.max.maxWidth + labelBufferMargin,
@@ -969,6 +998,39 @@ window.heatmapNamespace = (function () {
                 return label && label.truncated ? label.truncated : label.originalData;
             })
         };
+    };
+
+    Heatmap.prototype.createAxisLabels = function (svg) {
+        svg.append('text')
+            .attr('class', 'knime-axis-label knime-x')
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'hanging')
+            .text(this._value.xaxisLabel)
+            .append('title')
+            .text(this._value.xaxisLabel);
+        svg.append('text')
+            .attr('class', 'knime-axis-label knime-y')
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'hanging')
+            .style('transform', 'rotate(-90deg)')
+            .text(this._value.yaxisLabel)
+            .append('title')
+            .text(this._value.yaxisLabel);
+        
+    };
+
+    Heatmap.prototype.positionAxisLabels = function (svg) {
+        var xAxisEl = svg.select('.knime-axis.knime-x').node();
+        var yAxisEl = svg.select('.knime-axis.knime-y').node();
+        var xAxisWidth = xAxisEl ? xAxisEl.getBoundingClientRect().width : 0;
+        var yAxisHeight = yAxisEl ? yAxisEl.getBoundingClientRect().height : 0;
+
+        svg.select('.knime-axis-label.knime-x')
+            .attr('x', this._margin.left + xAxisWidth / 2)
+            .attr('y', this.titleHeight + this.subtitleHeight + this.axisLabelHeight);
+        svg.select('.knime-axis-label.knime-y')
+            .attr('x', -(this._margin.top + yAxisHeight / 2))
+            .attr('y', 0);
     };
 
     /**
@@ -1343,32 +1405,33 @@ window.heatmapNamespace = (function () {
             return;
         }
 
+        var svg = d3.select('.knime-svg-container svg');
+        this.createAxisLabels(svg);
+
         var formattedDataset = this.formatPageData(rows);
         this._colorRange = this._value.continuousGradient
             ? this._representation.threeColorGradient
             : this._representation.discreteGradientColors;
 
-        var svg = d3.select('.knime-svg-container svg');
-
         // Create titles
         svg.append('text')
             .attr('class', 'knime-title')
-            .attr('x', this._defaultMargin.left)
+            .attr('x', this._defaultMargin.left + this.getYAxisLabelMargins())
             .attr('y', this.titleHeight)
             .text(this._value.chartTitle);
         svg.append('text')
             .attr('class', 'knime-subtitle')
-            .attr('x', this._defaultMargin.left)
+            .attr('x', this._defaultMargin.left + this.getYAxisLabelMargins())
             .attr('y', this.titleHeight + this.subtitleHeight)
             .text(this._value.chartSubtitle);
         this.updateTitles();
-
 
         // Determine cell sizes
         if (!this._cellHeight || !this._cellWidth) {
             infoWrapperHeight = document.querySelector('.info-wrapper').getBoundingClientRect().height || 0;
             var extraAxisLabelBuffer = 30; // TODO: calculate programatically
-            var headerHeight = Math.max(knimeService.headerHeight(), this.getTitlesHeight());
+            var headerHeight = Math.max(knimeService.headerHeight(), this.getTitlesHeight() +
+            this.getXAxisLabelMargins());
             var containerWidth = this._representation.resizeToWindow
                 ? window.innerWidth
                 : this._representation.imageWidth;
@@ -1431,28 +1494,10 @@ window.heatmapNamespace = (function () {
 
         this.getProgressBar(formattedDataset.data.length);
 
-        // Create axis labels
-        var margin = 15;
-        svg.append('text')
-            .attr('class', 'knime-label')
-            .attr('id', 'x-axis')
-            .attr('text-anchor', 'middle')
-            .attr('x', wrapper.node().getBBox().x + wrapper.node().getBBox().width / 2)
-            .attr('y', this.titleHeight + this.subtitleHeight + margin)
-            .text(this._value.xaxisLabel);
-
-        svg.append('text')
-            .attr('class', 'knime-label')
-            .attr('id', 'y-axis')
-            .attr('text-anchor', 'middle')
-            .attr('x', -(wrapper.node().getBBox().y + wrapper.node().getBBox().height / 2))
-            .attr('y', margin)
-            .style('transform', 'rotate(-90deg)')
-            .text(this._value.yaxisLabel);
-        this.updateLabels();
-
-
         this.drawAxis(svg, formattedDataset.rowLabelImages);
+
+        this.positionAxisLabels(svg);
+        this.updateAxisLabels();
 
         this.drawLegend(svg);
 

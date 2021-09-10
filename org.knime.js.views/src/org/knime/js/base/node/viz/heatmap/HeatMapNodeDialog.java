@@ -516,12 +516,12 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         displayPanel.add(m_chartSubtitleTextField, displayPanelConstraints);
         displayPanelConstraints.gridx = 0;
         displayPanelConstraints.gridy++;
-        displayPanel.add(new JLabel("X-Axis:"), displayPanelConstraints);
+        displayPanel.add(new JLabel("X-Axis Label:"), displayPanelConstraints);
         displayPanelConstraints.gridx++;
         displayPanel.add(m_chartXAxisTextField, displayPanelConstraints);
         displayPanelConstraints.gridx = 0;
         displayPanelConstraints.gridy++;
-        displayPanel.add(new JLabel("Y-Axis:"), displayPanelConstraints);
+        displayPanel.add(new JLabel("Y-Axis Label:"), displayPanelConstraints);
         displayPanelConstraints.gridx++;
         displayPanel.add(m_chartYAxisTextField, displayPanelConstraints);
         displayPanelConstraints.gridx = 0;
@@ -741,6 +741,7 @@ public class HeatMapNodeDialog extends NodeDialogPane {
         m_enableTitleChangeCheckBox.setEnabled(enabled);
         m_enableColorModeEditCheckBox.setEnabled(enabled);
         m_enableShowToolTipsCheckBox.setEnabled(enabled);
+        m_enableAxisLabelChangeCheckBox.setEnabled(enabled);
     }
 
     private void enablePaging() {

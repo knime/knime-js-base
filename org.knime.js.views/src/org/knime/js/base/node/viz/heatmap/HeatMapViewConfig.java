@@ -1036,12 +1036,9 @@ public final class HeatMapViewConfig {
         m_displayFullscreenButton = settings.getBoolean(CFG_DISPLAY_FULLSCREEN_BUTTON);
         m_chartTitle = settings.getString(CFG_CHART_TITLE);
         m_chartSubtitle = settings.getString(CFG_CHART_SUBTITLE);
-
-        try {
-            m_xAxisLabel = settings.getString(CFG_X_AXIS_LABEL);
-            m_yAxisLabel = settings.getString(CFG_Y_AXIS_LABEL);
-            m_enableAxisLabelChange = settings.getBoolean(CFG_ENABLE_AXIS_LABEL_CHANGE);
-        } catch (Exception e){}
+        m_xAxisLabel = settings.getString(CFG_X_AXIS_LABEL, DEFAULT_X_AXIS_LABEL);
+        m_yAxisLabel = settings.getString(CFG_Y_AXIS_LABEL, DEFAULT_Y_AXIS_LABEL);
+        m_enableAxisLabelChange = settings.getBoolean(CFG_ENABLE_AXIS_LABEL_CHANGE, DEFAULT_ENABLE_AXIS_LABEL_CHANGE);
 
         final double min = settings.getDouble(CFG_MIN_VALUE);
         final double max = settings.getDouble(CFG_MAX_VALUE);
