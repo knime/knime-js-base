@@ -48,6 +48,8 @@
  */
 package org.knime.js.views;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -57,7 +59,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.filestore.internal.NotInWorkflowDataRepository;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DefaultNodeProgressMonitor;
@@ -77,6 +78,11 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SingleNodeContainer.MemoryPolicy;
+import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.WorkflowCreationHelper;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.util.FileUtil;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -97,6 +103,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHelper {
 
     private static final ObjectMapper MAPPER = JSONViewContent.createObjectMapper();
+
+    private WorkflowManager m_wfm;
 
     private final NodeFactory<NodeModel> m_nodeFactory;
 
@@ -179,7 +187,7 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
     public void testViewValueChangeOnConfigValueChange() throws Exception {
         Node n = new Node(m_nodeFactory);
 
-        ExecutionContext exec = createExec(n);
+        ExecutionContext exec = createExec(n, m_wfm);
 
         // 1. get node settings object
         NodeSettings ns = new NodeSettings("");
@@ -285,9 +293,39 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
         return container.getTable();
     }
 
-    static ExecutionContext createExec(final Node n) {
+    static ExecutionContext createExec(final Node n, final WorkflowManager wfm) {
         return new ExecutionContext(new DefaultNodeProgressMonitor(), n, MemoryPolicy.CacheInMemory,
-            NotInWorkflowDataRepository.newInstance());
+            wfm.getWorkflowDataRepository());
+    }
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void createEmptyWorkflowBefore() throws IOException {
+        m_wfm = createEmptyWorkflow();
+    }
+
+    static WorkflowManager createEmptyWorkflow() throws IOException {
+        File dir = FileUtil.createTempDir("workflow");
+        File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
+        if (workflowFile.createNewFile()) {
+            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
+            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
+            creationHelper.setWorkflowContext(fac.createContext());
+
+            return WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
+        } else {
+            throw new IllegalStateException("Creating empty workflow failed");
+        }
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeEmptyWorkflow() {
+        disposeWorkflow(m_wfm);
+    }
+
+    static void disposeWorkflow(final WorkflowManager wfm) {
+        wfm.getParent().removeProject(wfm.getID());
     }
 
 }

@@ -93,7 +93,7 @@ public class LinePlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
     protected double randomDouble(final String key) {
         // make sure that max > min
         if (key.endsWith("Max")) {
-            return super.randomDouble(key) * 10;
+            return super.randomDouble(key) * 100000;
         } else {
             return super.randomDouble(key);
         }

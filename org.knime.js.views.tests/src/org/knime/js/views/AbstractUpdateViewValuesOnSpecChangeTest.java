@@ -53,6 +53,7 @@ import static org.knime.js.views.AbstractUpdateViewValuesTest.getViewValue;
 import static org.knime.js.views.AbstractUpdateViewValuesTest.performExecute;
 import static org.knime.js.views.AbstractUpdateViewValuesTest.toJsonNode;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -69,6 +70,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -90,6 +92,8 @@ public abstract class AbstractUpdateViewValuesOnSpecChangeTest extends RandomNod
     private final DataTableSpec m_spec2;
 
     private final Map<String, String> m_configKeyToValueKeyMap;
+
+    private WorkflowManager m_wfm;
 
     /**
      * @param nodeFactoryClass the node factory to run the test for (expected to be a {@link WizardNode})
@@ -135,7 +139,7 @@ public abstract class AbstractUpdateViewValuesOnSpecChangeTest extends RandomNod
         NodeFactory<NodeModel> nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(m_nodeFactoryClass);
         Node n = new Node(nodeFactory);
 
-        ExecutionContext exec = createExec(n);
+        ExecutionContext exec = createExec(n, m_wfm);
 
         // 1. get node settings object
         NodeSettings ns = new NodeSettings("");
@@ -198,6 +202,18 @@ public abstract class AbstractUpdateViewValuesOnSpecChangeTest extends RandomNod
     @After
     public void removeNodeContext() {
         NodeContext.removeLastContext();
+    }
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void createEmptyWorkflowBefore() throws IOException {
+        m_wfm = AbstractUpdateViewValuesTest.createEmptyWorkflow();
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeEmptyWorkflow() {
+        AbstractUpdateViewValuesTest.disposeWorkflow(m_wfm);
     }
 
 }
