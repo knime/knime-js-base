@@ -41,13 +41,13 @@ window.table_editor = (function () {
      * String values editor with dropdown
      */
     var StringDropdownEditor = function (allowAddValue, columnValues, cellValue) {
-        
-        var autosuggestDropdown = allowAddValue ? '<input list="suggestions" /><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
+        this.suggestions = columnValues;
+        var autosuggestDropdown = allowAddValue ? '<input list="suggestions" autocomplete="off"/><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
 
         if (cellValue) {
             autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
         }
-        columnValues.forEach(function (value) {
+        this.suggestions.forEach(function (value) {
             if(value !== cellValue && value) {
                 autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
             }
@@ -66,6 +66,11 @@ window.table_editor = (function () {
             return value;
         };
 
+        StringDropdownEditor.prototype.updateList = function (newValue) {
+            if (!this.suggestions.includes(newValue)) {
+                this.suggestions.push(newValue);
+            }
+        };
 
     /**
      * Integer or Long values editor
@@ -360,6 +365,9 @@ window.table_editor = (function () {
             var newValue = editor.getValue();
             $td.empty().append(newValue);
             self._setCellValue(cell, newValue);
+            if (editor instanceof StringDropdownEditor) {
+                editor.updateList(newValue);
+            }
         };
 
         var editCancelCallback = function () {
