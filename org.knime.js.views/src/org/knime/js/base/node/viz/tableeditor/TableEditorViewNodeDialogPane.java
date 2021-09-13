@@ -313,7 +313,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         dropdownPanel.add(m_allowAddValueCheckbox, gbcA);
         gbcA.gridx = 0;
         gbcA.gridy++;
-        dropdownPanel.add(new JLabel("Dropdown suggestions for columns: "), gbcA);
+        dropdownPanel.add(new JLabel("Columns with dropdown suggestions: "), gbcA);
         gbcA.gridy++;
         gbcA.gridwidth = 3;
         dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);

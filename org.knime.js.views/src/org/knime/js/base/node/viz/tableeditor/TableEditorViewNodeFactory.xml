@@ -48,7 +48,7 @@
 	        <option name="Allow to add new values">
 	        	Enable or disable the possibility to add new values when dropdown suggestions are enabled for specific columns.
 	        </option>
-	        <option name="Dropdown suggestions for columns">
+	        <option name="Columns with dropdown suggestions">
 	        	Select the columns for which dropdown suggestions should be enabled. Dropdown suggestions are based on the domain values of each column.
 	        </option>
         </tab>
