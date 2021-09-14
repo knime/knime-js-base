@@ -306,14 +306,14 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         displayPanel.add(m_columnFilterPanel, gbcD);
 
         JPanel dropdownPanel = new JPanel(new GridBagLayout());
-        dropdownPanel.setBorder(new TitledBorder("Dropdown Options"));
+        dropdownPanel.setBorder(new TitledBorder("Nominal Values Options"));
         GridBagConstraints gbcA = createConfiguredGridBagConstraints();
         gbcA.gridwidth = 1;
         gbcA.gridx = 0;
         dropdownPanel.add(m_allowAddValueCheckbox, gbcA);
         gbcA.gridx = 0;
         gbcA.gridy++;
-        dropdownPanel.add(new JLabel("Columns with dropdown suggestions: "), gbcA);
+        dropdownPanel.add(new JLabel("Suggestion dropdown for columns: "), gbcA);
         gbcA.gridy++;
         gbcA.gridwidth = 3;
         dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);
