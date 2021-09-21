@@ -48,6 +48,8 @@
  */
 package org.knime.js.views;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -57,7 +59,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.filestore.internal.NotInWorkflowDataRepository;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DefaultNodeProgressMonitor;
@@ -77,6 +78,11 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SingleNodeContainer.MemoryPolicy;
+import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.WorkflowCreationHelper;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.util.FileUtil;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -97,6 +103,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHelper {
 
     private static final ObjectMapper MAPPER = JSONViewContent.createObjectMapper();
+
+    private WorkflowManager m_wfm;
 
     private final NodeFactory<NodeModel> m_nodeFactory;
 
@@ -178,28 +186,14 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
     @Test
     public void testViewValueChangeOnConfigValueChange() throws Exception {
         Node n = new Node(m_nodeFactory);
+        ExecutionContext exec = createExec(n, m_wfm);
 
-        ExecutionContext exec = createExec(n);
-
-        // 1. get node settings object
-        NodeSettings ns = new NodeSettings("");
-        n.saveModelSettingsTo(ns);
-
-        // 2. pre-set (mostly random) config values and 'execute' the node for the first time
-        n.reset();
-        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            String[] key = e.getKey().split("/");
-            addRandomValue(key[key.length - 1], e.getValue(), ns);
-        });
-        m_independentConfigValues.entrySet().forEach(e -> {
-            addRandomValue(e.getKey(), e.getValue(), ns);
-        });
-        n.loadModelSettingsFrom(ns);
-        performExecute(n, exec, m_spec);
+        // 1. prepare node
+        NodeSettings ns = prepareNode(n, exec);
         JSONViewContent viewVal1 = getViewValue(n);
         JsonNode viewValJson1 = toJsonNode(viewVal1);
 
-        // 3. re-execute with same config -> no view value changes expected
+        // 2. re-execute with same config -> no view value changes expected
         n.reset();
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal1, false);
         n.loadModelSettingsFrom(ns);
@@ -215,12 +209,11 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
         });
         Assert.assertEquals(viewValJson1, viewValJson2);
 
-        // 4. re-execute with different config -> view value changes expected
+        // 3. re-execute with different config -> view value changes expected
         n.reset();
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal2, false);
         m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            String[] key = e.getKey().split("/");
-            addRandomValue(key[key.length - 1], e.getValue(), ns);
+            addRandomValue(e.getKey(), e.getValue(), ns);
         });
         n.loadModelSettingsFrom(ns);
         performExecute(n, exec, m_spec);
@@ -234,6 +227,39 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
             Assert.assertFalse(get(viewValJson3, key).isNull());
             Assert.assertNotEquals(get(viewValJson3, key), get(viewValJson2, key));
         });
+
+        // 4. re-execute with same config BUT without loading new view values -> view values expected to be copied
+        // from the config
+        n.reset();
+        performExecute(n, exec, m_spec);
+        JsonNode viewValJson4 = toJsonNode(getViewValue(n));
+        m_viewValuePropertiesExpectedToChange.keySet().forEach(k -> {
+            String key = m_configKeyToValueKeyMap.get(k);
+            if (key == null) {
+                key = k;
+            }
+            Assert.assertEquals("values for key " + key + " expected to match", get(viewValJson4, key),
+                get(viewValJson3, key));
+        });
+
+    }
+
+    private NodeSettings prepareNode(final Node n, final ExecutionContext exec) throws InvalidSettingsException {
+        // 1. get node settings object
+        NodeSettings ns = new NodeSettings("");
+        n.saveModelSettingsTo(ns);
+
+        // 2. pre-set (mostly random) config values and 'execute' the node for the first time
+        n.reset();
+        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
+            addRandomValue(e.getKey(), e.getValue(), ns);
+        });
+        m_independentConfigValues.entrySet().forEach(e -> {
+            addRandomValue(e.getKey(), e.getValue(), ns);
+        });
+        n.loadModelSettingsFrom(ns);
+        performExecute(n, exec, m_spec);
+        return ns;
     }
 
     @SuppressWarnings("javadoc")
@@ -285,9 +311,39 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
         return container.getTable();
     }
 
-    static ExecutionContext createExec(final Node n) {
+    static ExecutionContext createExec(final Node n, final WorkflowManager wfm) {
         return new ExecutionContext(new DefaultNodeProgressMonitor(), n, MemoryPolicy.CacheInMemory,
-            NotInWorkflowDataRepository.newInstance());
+            wfm.getWorkflowDataRepository());
+    }
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void createEmptyWorkflowBefore() throws IOException {
+        m_wfm = createEmptyWorkflow();
+    }
+
+    static WorkflowManager createEmptyWorkflow() throws IOException {
+        File dir = FileUtil.createTempDir("workflow");
+        File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
+        if (workflowFile.createNewFile()) {
+            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
+            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
+            creationHelper.setWorkflowContext(fac.createContext());
+
+            return WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
+        } else {
+            throw new IllegalStateException("Creating empty workflow failed");
+        }
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeEmptyWorkflow() {
+        disposeWorkflow(m_wfm);
+    }
+
+    static void disposeWorkflow(final WorkflowManager wfm) {
+        wfm.getParent().removeProject(wfm.getID());
     }
 
 }

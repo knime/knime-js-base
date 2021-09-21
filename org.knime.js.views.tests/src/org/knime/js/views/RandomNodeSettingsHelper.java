@@ -53,6 +53,7 @@ import java.util.UUID;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.MissingCell;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 
 /**
@@ -64,7 +65,20 @@ abstract class RandomNodeSettingsHelper {
 
     protected static final Random RANDOM = new Random();
 
-    protected void addRandomValue(final String key, final Class<?> clazz, final NodeSettings ns) {
+    void addRandomValue(final String key, final Class<?> clazz, final NodeSettings ns) {
+        String[] keys = key.split("/");
+        NodeSettings subSettings = ns;
+        for (int i = 0; i < keys.length - 1; i++) {
+            try {
+                subSettings = subSettings.getNodeSettings(keys[i]);
+            } catch (InvalidSettingsException e1) {
+                subSettings = (NodeSettings)subSettings.addNodeSettings(keys[i]);
+            }
+        }
+        addRandomValueInternal(keys[keys.length - 1], clazz, subSettings);
+    }
+
+    private void addRandomValueInternal(final String key, final Class<?> clazz, final NodeSettings ns) {
         if (clazz.equals(Integer.class)) {
             int val = RANDOM.nextInt();
             ns.addInt(key, val);

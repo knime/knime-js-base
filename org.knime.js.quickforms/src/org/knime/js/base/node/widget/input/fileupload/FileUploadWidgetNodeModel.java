@@ -234,6 +234,29 @@ public class FileUploadWidgetNodeModel extends
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileUploadNodeValue copyConfigToViewValue(final FileUploadNodeValue currentViewValue,
+        final FileUploadInputWidgetConfig config, final FileUploadInputWidgetConfig previousConfig) {
+        var defaultVal = config.getDefaultValue();
+        var previousDefaultVal = previousConfig.getDefaultValue();
+        if (!defaultVal.getPath().equals(previousDefaultVal.getPath())) {
+            currentViewValue.setPath(defaultVal.getPath());
+        }
+        if (defaultVal.isPathValid() != previousDefaultVal.isPathValid()) {
+            currentViewValue.setPathValid(defaultVal.isPathValid());
+        }
+        if (!defaultVal.getFileName().equals(previousDefaultVal.getFileName())) {
+            currentViewValue.setFileName(defaultVal.getFileName());
+        }
+        if (defaultVal.isLocalUpload() != previousDefaultVal.isLocalUpload()) {
+            currentViewValue.setLocalUpload(defaultVal.isLocalUpload());
+        }
+        return currentViewValue;
+    }
+
     private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
         String path = getRelevantValue().getPath();
         if (path == null || path.isEmpty()) {

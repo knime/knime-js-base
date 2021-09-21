@@ -139,6 +139,27 @@ public class CredentialsWidgetNodeModel extends
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected CredentialsNodeValue copyConfigToViewValue(final CredentialsNodeValue currentViewValue,
+        final CredentialsInputWidgetConfig config, final CredentialsInputWidgetConfig previousConfig) {
+
+        var defaultVal = config.getDefaultValue();
+        var previousDefaultVal = previousConfig.getDefaultValue();
+        if (!previousDefaultVal.getPassword().equals(defaultVal.getPassword())) {
+            currentViewValue.setPassword(defaultVal.getPassword());
+        }
+        if (!previousDefaultVal.getUsername().equals(defaultVal.getUsername())) {
+            currentViewValue.setUsername(defaultVal.getUsername());
+        }
+        if (previousDefaultVal.isSavePassword() != defaultVal.isSavePassword()) {
+            currentViewValue.setSavePassword(defaultVal.isSavePassword());
+        }
+        return currentViewValue;
+    }
+
+    /**
      * If the password is blank, read out a credentials from the credentials provider. Workaround for bug AP-5974:
      * Credentials QF node to inherit password from workflow credentials, if present
      */

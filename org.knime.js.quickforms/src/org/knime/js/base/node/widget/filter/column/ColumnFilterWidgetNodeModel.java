@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.widget.filter.column;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.ColumnRearranger;
@@ -150,6 +152,23 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
         BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0],
                 rearranger, exec);
         return new BufferedDataTable[]{outTable};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ColumnFilterNodeValue copyConfigToViewValue(final ColumnFilterNodeValue currentViewValue,
+        final ColumnFilterWidgetConfig config, final ColumnFilterWidgetConfig previousConfig) {
+        var defaultVal = config.getDefaultValue();
+        var previousDefaultVal = previousConfig.getDefaultValue();
+        if (!Arrays.equals(defaultVal.getColumns(), previousDefaultVal.getColumns())) {
+            currentViewValue.setColumns(defaultVal.getColumns());
+        }
+        if (!defaultVal.getSettings().equals(previousDefaultVal.getSettings())) {
+            currentViewValue.setSettings(defaultVal.getSettings());
+        }
+        return currentViewValue;
     }
 
     /**

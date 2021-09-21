@@ -44,18 +44,12 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 29, 2021 (hornm): created
+ *   Sep 19, 2021 (hornm): created
  */
-package org.knime.js.base.node.viz.plotter.scatterSelectionAppender;
+package org.knime.js.base.node.widget.input.string;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.js.views.AbstractUpdateViewValuesTest;
@@ -63,72 +57,20 @@ import org.knime.js.views.AbstractUpdateViewValuesTest;
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class ScatterPlotUpdateValuesTest extends AbstractUpdateViewValuesTest {
-
-    private static final String[] RANDOM_COL_NAMES = new String[]{randomString(), randomString(), randomString()};
+public class StringWidgetUpdateValuesTest extends AbstractUpdateViewValuesTest {
 
     @SuppressWarnings("javadoc")
-    public ScatterPlotUpdateValuesTest() throws InstantiationException, IllegalAccessException,
+    public StringWidgetUpdateValuesTest() throws InstantiationException, IllegalAccessException,
         InvalidSettingsException, InvalidNodeFactoryExtensionException {
-        super(ScatterPlotNodeFactory.class.getName(), createPropertyMap());
+        super(StringWidgetNodeFactory.class.getName(), Map.of("defaultValue/string", String.class));
     }
 
-    private static Map<String, Class<?>> createPropertyMap() {
-        Map<String, Class<?>> res = new HashMap<>();
-        res.put(ScatterPlotViewConfig.CHART_TITLE, String.class);
-        res.put(ScatterPlotViewConfig.CHART_SUBTITLE, String.class);
-        res.put(ScatterPlotViewConfig.X_COL, String.class);
-        res.put(ScatterPlotViewConfig.X_AXIS_LABEL, String.class);
-        res.put(ScatterPlotViewConfig.Y_AXIS_LABEL, String.class);
-        res.put(ScatterPlotViewConfig.DOT_SIZE, IntegerStoredAsString.class);
-        res.put(ScatterPlotViewConfig.CFG_PUBLISH_SELECTION, Boolean.class);
-        res.put(ScatterPlotViewConfig.CFG_SUBSCRIBE_SELECTION, Boolean.class);
-        res.put(ScatterPlotViewConfig.CFG_SUBSCRIBE_FILTER, Boolean.class);
-        res.put(ScatterPlotViewConfig.SHOW_LEGEND, Boolean.class);
-        res.put(ScatterPlotViewConfig.CFG_SHOW_SELECTED_ROWS_ONLY, Boolean.class);
-        res.put(ScatterPlotViewConfig.X_AXIS_MIN, DoubleStoredAsString.class);
-        res.put(ScatterPlotViewConfig.X_AXIS_MAX, DoubleStoredAsString.class);
-        res.put(ScatterPlotViewConfig.Y_AXIS_MIN, DoubleStoredAsString.class);
-        res.put(ScatterPlotViewConfig.Y_AXIS_MAX, DoubleStoredAsString.class);
-        return res;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Map<String, String> getConfigKeyToValueKeyMap() {
-        return Map.of(ScatterPlotViewConfig.X_COL, "xColumn", //
-            ScatterPlotViewConfig.DOT_SIZE, "dotSize");
-    }
-
-    @Override
-    protected DataTableSpec getSpec() {
-        var types = new DataType[3];
-        Arrays.fill(types, StringCell.TYPE);
-        return new DataTableSpec("scatterplotview_input", RANDOM_COL_NAMES, types);
-    }
-
-    private static String randomString() {
-        return UUID.randomUUID().toString();
-    }
-
-    private int numCalls = 0;
-
-    @Override
-    protected String randomString(final String key) {
-        if (key.equals("xCol")) {
-            return RANDOM_COL_NAMES[(numCalls++) % 3];
-        } else {
-            return super.randomString(key);
-        }
-    }
-
-    @Override
-    protected double randomDouble(final String key) {
-        // make sure that max > min
-        if (key.endsWith("Max")) {
-            return super.randomDouble(key) * 10000;
-        } else {
-            return super.randomDouble(key);
-        }
+        return Map.of("defaultValue/string", "string");
     }
 
 }
