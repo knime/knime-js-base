@@ -82,17 +82,37 @@ public class DynamicJSNodeViewUpdateValuesTest extends AbstractUpdateViewValuesT
 
     private static Map<String, Class<?>> createPropertyMap() {
         Map<String, Class<?>> res = new HashMap<>();
-        res.put("options/includeMissValCat", Boolean.class);
-        res.put("options/freq", String.class);
-        res.put("options/title", String.class);
-        res.put("options/subtitle", String.class);
-        res.put("options/togglePie", Boolean.class);
-        res.put("options/holeSize", Double.class);
-        res.put("options/insideTitle", String.class);
-        res.put("options/showLabels", Boolean.class);
-        res.put("options/labelType", String.class);
-        res.put("options/subscribeToSelection", Boolean.class);
-        res.put("options/publishSelection", Boolean.class);
+        res.put("includeMissValCat", Boolean.class);
+        res.put("freq", String.class);
+        res.put("title", String.class);
+        res.put("subtitle", String.class);
+        res.put("togglePie", Boolean.class);
+        res.put("holeSize", Double.class);
+        res.put("insideTitle", String.class);
+        res.put("showLabels", Boolean.class);
+        res.put("labelType", String.class);
+        res.put("subscribeToSelection", Boolean.class);
+        res.put("publishSelection", Boolean.class);
+        return res;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Map<String, String> getConfigKeyToValueKeyMap() {
+        Map<String, String> res = new HashMap<>();
+        res.put("includeMissValCat", "options/includeMissValCat");
+        res.put("freq", "options/freq");
+        res.put("title", "options/title");
+        res.put("subtitle", "options/subtitle");
+        res.put("togglePie", "options/togglePie");
+        res.put("holeSize", "options/holeSize");
+        res.put("insideTitle", "options/insideTitle");
+        res.put("showLabels", "options/showLabels");
+        res.put("labelType", "options/labelType");
+        res.put("subscribeToSelection", "options/subscribeToSelection");
+        res.put("publishSelection", "options/publishSelection");
         return res;
     }
 

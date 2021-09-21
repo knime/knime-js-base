@@ -186,28 +186,14 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
     @Test
     public void testViewValueChangeOnConfigValueChange() throws Exception {
         Node n = new Node(m_nodeFactory);
-
         ExecutionContext exec = createExec(n, m_wfm);
 
-        // 1. get node settings object
-        NodeSettings ns = new NodeSettings("");
-        n.saveModelSettingsTo(ns);
-
-        // 2. pre-set (mostly random) config values and 'execute' the node for the first time
-        n.reset();
-        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            String[] key = e.getKey().split("/");
-            addRandomValue(key[key.length - 1], e.getValue(), ns);
-        });
-        m_independentConfigValues.entrySet().forEach(e -> {
-            addRandomValue(e.getKey(), e.getValue(), ns);
-        });
-        n.loadModelSettingsFrom(ns);
-        performExecute(n, exec, m_spec);
+        // 1. prepare node
+        NodeSettings ns = prepareNode(n, exec);
         JSONViewContent viewVal1 = getViewValue(n);
         JsonNode viewValJson1 = toJsonNode(viewVal1);
 
-        // 3. re-execute with same config -> no view value changes expected
+        // 2. re-execute with same config -> no view value changes expected
         n.reset();
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal1, false);
         n.loadModelSettingsFrom(ns);
@@ -223,12 +209,11 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
         });
         Assert.assertEquals(viewValJson1, viewValJson2);
 
-        // 4. re-execute with different config -> view value changes expected
+        // 3. re-execute with different config -> view value changes expected
         n.reset();
         ((WizardNode)n.getNodeModel()).loadViewValue(viewVal2, false);
         m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
-            String[] key = e.getKey().split("/");
-            addRandomValue(key[key.length - 1], e.getValue(), ns);
+            addRandomValue(e.getKey(), e.getValue(), ns);
         });
         n.loadModelSettingsFrom(ns);
         performExecute(n, exec, m_spec);
@@ -242,6 +227,39 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
             Assert.assertFalse(get(viewValJson3, key).isNull());
             Assert.assertNotEquals(get(viewValJson3, key), get(viewValJson2, key));
         });
+
+        // 4. re-execute with same config BUT without loading new view values -> view values expected to be copied
+        // from the config
+        n.reset();
+        performExecute(n, exec, m_spec);
+        JsonNode viewValJson4 = toJsonNode(getViewValue(n));
+        m_viewValuePropertiesExpectedToChange.keySet().forEach(k -> {
+            String key = m_configKeyToValueKeyMap.get(k);
+            if (key == null) {
+                key = k;
+            }
+            Assert.assertEquals("values for key " + key + " expected to match", get(viewValJson4, key),
+                get(viewValJson3, key));
+        });
+
+    }
+
+    private NodeSettings prepareNode(final Node n, final ExecutionContext exec) throws InvalidSettingsException {
+        // 1. get node settings object
+        NodeSettings ns = new NodeSettings("");
+        n.saveModelSettingsTo(ns);
+
+        // 2. pre-set (mostly random) config values and 'execute' the node for the first time
+        n.reset();
+        m_viewValuePropertiesExpectedToChange.entrySet().forEach(e -> {
+            addRandomValue(e.getKey(), e.getValue(), ns);
+        });
+        m_independentConfigValues.entrySet().forEach(e -> {
+            addRandomValue(e.getKey(), e.getValue(), ns);
+        });
+        n.loadModelSettingsFrom(ns);
+        performExecute(n, exec, m_spec);
+        return ns;
     }
 
     @SuppressWarnings("javadoc")

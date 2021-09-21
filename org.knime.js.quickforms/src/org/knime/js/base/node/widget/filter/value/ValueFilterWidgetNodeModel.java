@@ -149,6 +149,23 @@ public class ValueFilterWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
+    protected ValueFilterNodeValue copyConfigToViewValue(final ValueFilterNodeValue currentViewValue,
+        final ValueFilterWidgetConfig config, final ValueFilterWidgetConfig previousConfig) {
+        var defaultVal = config.getDefaultValue();
+        var previousDefaultVal = previousConfig.getDefaultValue();
+        if (!defaultVal.getColumn().equals(previousDefaultVal.getColumn())) {
+            currentViewValue.setColumn(defaultVal.getColumn());
+        }
+        if (!Arrays.equals(defaultVal.getValues(), previousDefaultVal.getValues())) {
+            currentViewValue.setValues(defaultVal.getValues());
+        }
+        return currentViewValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void performReset() {
         m_table = null;
         super.performReset();

@@ -87,6 +87,8 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
         }
     };
 
+    private CONF m_previousConfig;
+
     // don't use viewValue from super class to be able check if defaultValue was overwritten @see #getOverwriteMode()
     private VAL m_viewValue;
 
@@ -254,6 +256,53 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
                 default:
                     return getConfig().getDefaultValue();
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void preExecute() {
+        if (m_previousConfig == null) {
+            m_previousConfig = createEmptyConfig();
+        }
+
+        if (m_viewValue != null) {
+            m_viewValue = copyConfigToViewValue(m_viewValue, getConfig(), m_previousConfig);
+        }
+
+        NodeSettings copy = new NodeSettings("copy");
+        getConfig().saveSettings(copy);
+        try {
+            m_previousConfig.loadSettings(copy);
+        } catch (InvalidSettingsException e) {
+            // should never happen - just copying stuff over
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Transfers values from the configuration to the view value, possibly based on whether a certain config value has
+     * been changed compared to the previous configuration. A config value changes (only?) if it is controlled by a flow
+     * variable.
+     *
+     * This implementation replaces the entire view value with {@link WidgetConfig#getDefaultValue()} if at least one
+     * 'sub-value' was changed (in most cases the default value is really just one value). Overwrite this method for a
+     * more fine-grain control.
+     *
+     * @param currentViewValue the current view value
+     * @param config the current configuration
+     * @param previousConfig the previous configuration
+     * @return the possibly adopted or replaced view value
+     */
+    protected VAL copyConfigToViewValue(final VAL currentViewValue, final CONF config, final CONF previousConfig) {
+        // if the config's default value changed, we use the new default value instead
+        // (because it is (most likely) controlled by at least one flow variable)
+        if (!config.getDefaultValue().equals(previousConfig.getDefaultValue())) {
+            return getConfig().getDefaultValue();
+        } else {
+            return currentViewValue;
         }
     }
 

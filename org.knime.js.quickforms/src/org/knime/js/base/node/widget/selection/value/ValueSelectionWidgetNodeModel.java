@@ -108,6 +108,23 @@ public class ValueSelectionWidgetNodeModel
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ValueSelectionNodeValue copyConfigToViewValue(final ValueSelectionNodeValue currentViewValue,
+        final ValueSelectionWidgetConfig config, final ValueSelectionWidgetConfig previousConfig) {
+        var defaultVal = config.getDefaultValue();
+        var previousDefaultVal = previousConfig.getDefaultValue();
+        if (!defaultVal.getColumn().equals(previousDefaultVal.getColumn())) {
+            currentViewValue.setColumn(defaultVal.getColumn());
+        }
+        if (!defaultVal.getValue().equals(previousDefaultVal.getValue())) {
+            currentViewValue.setValue(defaultVal.getValue());
+        }
+        return currentViewValue;
+    }
+
+    /**
      * Updates the values in the config.
      *
      * @param spec The input specs
