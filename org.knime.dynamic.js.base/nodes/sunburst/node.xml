@@ -93,7 +93,7 @@
 				<checkBoxOption name="Display tooltip" id="tooltip"
 					label="Display tooltip" defaultValue="false" saveInView="true" loadDefaults="true">
 					When checked,
-					a tooltip is shown on mouse hover.
+					a tooltip is shown when hovering over a cell.
 				</checkBoxOption>
 				<checkBoxOption name="Enable donut hole" id="donutHole"
 					label="Enable donut hole" defaultValue="true" saveInView="true">
