@@ -472,8 +472,11 @@
 		.classed("knime-selected", function(d) { return d.selected; })
 		.attr("stroke-width", 1)
 		.on("mouseover", mouseover)
-		.on("mousemove", function (d) { toggleTooltip(true, d) })
 		.on("click", click);
+
+		if (options.tooltip) {
+			path.on('mousemove', function (d) { showTooltip(d); });
+		}
 
 		// Basic setup of page elements.
 		if (options.breadcrumb) {
@@ -550,7 +553,7 @@
 			})
 			.on("mouseover", function() {
 				if (_value.options.tooltip) {
-					toggleTooltip(false);
+					hideTooltip();
 				}
 				if (mouseMode == "highlite" && highlitedPath == null) {
 					setPropAllNodes('active', true);
@@ -637,7 +640,7 @@
 		// Handle mouseleave on sunburst segments
 		function mouseleave(d) {
 			if (_value.options.tooltip) {
-				toggleTooltip(false, d);
+				hideTooltip();
 			}
 			if ((mouseMode == "highlite") && highlitedPath == null) {
 				// set sunburst segment properties
@@ -971,32 +974,6 @@
 			}
 		}
 
-		// Show/hide tooltip for sunburst element
-		function toggleTooltip(visible, data) {
-			if (_value.options.tooltip) {
-				if (visible) {
-					var DEFAULT_MARGIN = 20;
-					var tooltip = d3.select('#tooltip')
-					.style('display', 'block')
-					.style('left', d3.event.pageX + DEFAULT_MARGIN +'px')
-					.style('top', d3.event.pageY - DEFAULT_MARGIN + 'px');
-
-					tooltip.select('#color')
-					.select('div')
-					.style('background', _colorMap(data.name));
-					
-					tooltip.select('#key')
-					.html(data.name);
-
-					tooltip.select('#value')
-					.html(data.value);
-				} else {
-					d3.select('#tooltip')
-					.style('display', 'none');
-				}
-			}
-		}
-
 		// Travers through tree and set property of nodes.
 		function setPropsForward(start, prop, val) {
 			var stack = [start];
@@ -1073,31 +1050,33 @@
 			.attr("fill", "#000");
 		}
 
-		function initializeTooltip() {
-			var tableRow = d3.select('body').append("div")
-			.attr('id', 'tooltip')
-			.style('position', 'absolute')
-			.style('display', 'none')
-			.style('background', 'rgba(255,255,255,.8)')
-			.style('border', '1px solid rgba(0,0,0,.5)')
-			.style('border-radius', '4px')
-			.append('table')
-			.append('tbody')
-			.append('tr');
+        function initializeTooltip() {
+			d3.selectAll('#tooltip').remove();
 			
-			tableRow.append('td')
-			.attr('id', 'color')
-			.append('div')
-			.style('width', '12px')
-			.style('height', '12px')
-			.style('border', '1px solid #999');
+            var tableRow = d3.select('body').append("div")
+            .attr('id', 'tooltip')
+            .style('position', 'absolute')
+            .style('display', 'none')
+            .style('background', 'rgba(255,255,255,.8)')
+            .style('border', '1px solid rgba(0,0,0,.5)')
+            .style('border-radius', '4px')
+            .append('table')
+            .append('tbody')
+            .append('tr');
 
-			tableRow.append('td')
-			.attr('id', 'key');
+            tableRow.append('td')
+            .attr('id', 'color')
+            .append('div')
+            .style('width', '12px')
+            .style('height', '12px')
+            .style('border', '1px solid #999');
 
-			tableRow.append('td')
-			.attr('id', 'value');
-		}
+            tableRow.append('td')
+            .attr('id', 'key');
+
+            tableRow.append('td')
+            .attr('id', 'value');
+        }
 
 		function drawLegend(plottingSurface, breadcrumb, breadcrumbHeight) {
 			var entries = uniqueLabels.map(function(label) {
@@ -1156,6 +1135,31 @@
 	function setBreadcrumbCursor() {
 		d3.selectAll("#trail g polygon").style("cursor", mouseMode == 'zoom' ? "pointer" : "default");
 	}
+
+    // Show tooltip for sunburst element
+    function showTooltip(data) {
+        var DEFAULT_MARGIN = 20;
+        var tooltip = d3.select('#tooltip')
+        .style('display', 'block')
+        .style('left', d3.event.pageX + DEFAULT_MARGIN +'px')
+        .style('top', d3.event.pageY - DEFAULT_MARGIN + 'px');
+
+        tooltip.select('#color')
+        .select('div')
+        .style('background', _colorMap(data.name));
+        
+        tooltip.select('#key')
+        .html(data.name);
+
+        tooltip.select('#value')
+        .html(data.value);
+    }
+
+    // Hide tooltip for sunburst element
+    function hideTooltip() {
+        d3.select('#tooltip')
+        .style('display', 'none');
+    }
 
 	var drawControls = function() {
 		if (!knimeService || !_representation.options.enableViewControls) {
@@ -1306,6 +1310,13 @@
 				'tooltipCheckbox', _value.options.tooltip,
 				function() {
 					_value.options.tooltip = this.checked;
+
+                    var path = d3.select('#sunburstGroup').selectAll('path');
+                    if (_value.options.tooltip) {
+                        path.on('mousemove', function (d) { showTooltip(d); });
+                    } else {
+                        path.on('mousemove', null);
+                    }
 				});
 			knimeService.addMenuItem('Tooltip:', 'info-circle', tooltipCheckbox);
 		}
