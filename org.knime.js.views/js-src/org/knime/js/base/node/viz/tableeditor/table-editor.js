@@ -42,35 +42,37 @@ window.table_editor = (function () {
      */
     var StringDropdownEditor = function (allowAddValue, columnValues, cellValue) {
         this.suggestions = columnValues;
-        var autosuggestDropdown = allowAddValue ? '<input list="suggestions" autocomplete="off"/><datalist id="suggestions" class="knime-autosuggest-dropdown">' : '<select class="knime-autosuggest-dropdown">';
+        var autosuggestDropdown = allowAddValue ?
+        '<input list="suggestions" autocomplete="off"/><datalist id="suggestions" class="knime-autosuggest-dropdown">'
+        : '<select class="knime-autosuggest-dropdown">';
 
         if (cellValue) {
-            autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
+            autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue
+            + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
         }
         this.suggestions.forEach(function (value) {
-            if(value !== cellValue && value) {
-                autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
+            if (value !== cellValue && value) {
+                autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value
+                + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
             }
         });
-        autosuggestDropdown = allowAddValue ? autosuggestDropdown.concat('</datalist>') : autosuggestDropdown.concat('</select>');
+        autosuggestDropdown = allowAddValue ? autosuggestDropdown.concat('</datalist>')
+        : autosuggestDropdown.concat('</select>');
         this.component = $(autosuggestDropdown);
     };
     
-        StringDropdownEditor.prototype = Object.create(CellEditor.prototype);
-    
-        StringDropdownEditor.prototype.getValue = function () {
-            var value = this.component.val();
-            if (value == '') {
-                return null;
-            }
-            return value;
-        };
+    StringDropdownEditor.prototype = Object.create(CellEditor.prototype);
 
-        StringDropdownEditor.prototype.updateList = function (newValue) {
-            if (!this.suggestions.includes(newValue)) {
-                this.suggestions.push(newValue);
-            }
-        };
+    StringDropdownEditor.prototype.getValue = function () {
+        var value = this.component.val();
+        return value ? value : null;
+    };
+
+    StringDropdownEditor.prototype.updateList = function (newValue) {
+        if (!this.suggestions.includes(newValue)) {
+            this.suggestions.push(newValue);
+        }
+    };
 
     /**
      * Integer or Long values editor
