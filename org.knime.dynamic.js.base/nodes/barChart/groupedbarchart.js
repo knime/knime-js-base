@@ -237,7 +237,7 @@ window.knimeGroupedBarChart = (function () {
 
             chart.dispatch.on('renderEnd.css', function () {
                 setCssClasses();
-                if (_value.options.showStaticBarValues && _value.options.chartType === 'Grouped') {
+                if (_value.options.showStaticBarValues) {
                     removeStaticBarValues();
                     createStaticBarValues();
                 }
@@ -482,27 +482,37 @@ window.knimeGroupedBarChart = (function () {
         var parentBBox = d3.select('.nv-barsWrap').node().getBBox();
 
         d3.selectAll('.nv-bar.positive').each(function (d) {
+            var DEFAULT_MARGIN = 10;
+            var barBBox = this.getBBox();
+
+            var configObject = {
+                container: document.querySelector('svg'),
+                maxWidth: barBBox.width - DEFAULT_MARGIN,
+                minimalChars: 1
+            };
+            var labelSize = knimeService.measureAndTruncate([d.y], configObject);
+
             var label = d3.select(this.parentNode).append('text')
                 .attr('class', 'knime-static-bar-value')
                 .attr('dominant-baseline', 'middle')
                 .attr('transform', d3.select(this).attr('transform'))
                 .attr('fill', 'black')
                 .attr('stroke', 'none')
-                .text(d.y);
-            
-            var barBBox = this.getBBox();
+                .text(labelSize.values[0].truncated);
+
             var labelBBox = label.node().getBBox();
-            var DEFAULT_MARGIN = 10;
 
             // If the free space is too small, the value does not get displayed
-            if (labelBBox.width >= barBBox.width) {
+            if ((labelBBox.height + DEFAULT_MARGIN >= barBBox.height) || (labelBBox.width >= barBBox.width)) {
                 d3.select(label).node().remove();
             }
 
             // Position text-elements based on orientation and free space
             if (_value.options.orientation) {
                 var y = barBBox.y + barBBox.height / 2;
-                if (barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width) {
+
+                var hasEnoughSpaceAboveBar = barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width;
+                if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
                     label
                         .attr('text-anchor', 'start')
                         .attr({ x: barBBox.width + DEFAULT_MARGIN, y: y });
@@ -515,7 +525,9 @@ window.knimeGroupedBarChart = (function () {
             } else {
                 var x = barBBox.x + barBBox.width / 2;
                 label.attr('text-anchor', 'middle');
-                if (barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height) {
+
+                var hasEnoughSpaceAboveBar = barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height;
+                if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
                     label
                         .attr({ x: x, y: barBBox.y - labelBBox.height });
                 } else {
@@ -1766,7 +1778,7 @@ window.knimeGroupedBarChart = (function () {
                     }
                 }
             }, true);
-            knimeService.addMenuItem('Show static bar values:', '', enableStaticValues);
+            knimeService.addMenuItem('Show static bar values:', 'hashtag', enableStaticValues);
         }
 
         if (enableSelection) {
