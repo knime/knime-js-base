@@ -232,9 +232,11 @@ public class ValueFilterDefinitionWidgetNodeModel
         RangeFilterWidgetValue value = getViewValue();
         String[] possibleValues = getPossibleValuesForColumn(colName, spec);
         FilterModelNominal model;
+        List<DataCell> filterCells;
         if (value != null && value.getFilter() != null) {
             try {
                 model = (FilterModelNominal)value.getFilter().createFilterModel();
+                filterCells = (List<DataCell>)model.getValues();
             } catch (OperationNotSupportedException e) {
                 throw new InvalidSettingsException(e);
             }
@@ -243,14 +245,14 @@ public class ValueFilterDefinitionWidgetNodeModel
                     m_config.getFilterValues().applyTo(possibleValues);
             Stream<DataCell> valStream = Arrays.stream(filterResult.getIncludes())
                     .map(val -> StringCellFactory.create(val));
-            final List<DataCell> filterCells = new ArrayList<DataCell>();
+            filterCells = new ArrayList<DataCell>();
             if (m_config.isUseMultiple()) {
                 valStream.forEachOrdered(val -> filterCells.add(val));
             } else {
                 valStream.findFirst().ifPresent(val -> filterCells.add(val));
             }
-            model = FilterModel.newNominalModel(m_filterId, filterCells);
         }
+        model = FilterModel.newNominalModel(m_filterId, filterCells);
         if (m_filterId == null) {
             m_filterId = model.getFilterUUID();
         }
