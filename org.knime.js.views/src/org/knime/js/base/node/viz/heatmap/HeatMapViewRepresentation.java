@@ -714,9 +714,7 @@ public class HeatMapViewRepresentation extends JSONViewContent {
         m_enableColorModeEdit = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_COLOR_MODE_EDIT);
         m_enableShowToolTips = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_SHOW_TOOLTIPS);
 
-        try {
-            m_enableAxisLabelChange = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_AXIS_LABEL_CHANGE);
-        } catch (InvalidSettingsException e){}
+        m_enableAxisLabelChange = settings.getBoolean(HeatMapViewConfig.CFG_ENABLE_AXIS_LABEL_CHANGE);
 
         m_threeColorGradient = settings.getStringArray(HeatMapViewConfig.CFG_THREE_COLOR_GRADIENT);
         m_discreteGradientColors = settings.getStringArray(HeatMapViewConfig.CFG_DISCRETE_GRADIENT_COLORS);
