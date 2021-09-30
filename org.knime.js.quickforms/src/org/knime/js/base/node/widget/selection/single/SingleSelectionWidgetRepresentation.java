@@ -69,16 +69,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelectionNodeValue>
     extends SingleMultipleSelectionNodeRepresentation<VAL> {
 
+    private final Boolean m_reExecuteDownstreamNodes;
+
     @JsonCreator
     private SingleSelectionWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
-        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+        @JsonProperty("reExecuteDownstreamNodes") final Boolean reExecuteDownstreamNodes) {
 
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
             numberVisOptions);
+        m_reExecuteDownstreamNodes = reExecuteDownstreamNodes;
     }
 
     /**
@@ -90,6 +94,15 @@ public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelec
     public SingleSelectionWidgetRepresentation(final VAL currentValue, final VAL defaultValue,
         final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig) {
         super(currentValue, defaultValue, selectionConfig, labelConfig);
+        m_reExecuteDownstreamNodes = selectionConfig.getReExecuteDownstreamNodes();
+    }
+
+    /**
+     * @return the reExecuteDownstreamNodes
+     */
+    @JsonProperty("reExecuteDownstreamNodes")
+    public Boolean getReExecuteDownstreamNodes() {
+        return m_reExecuteDownstreamNodes;
     }
 
 }

@@ -77,6 +77,7 @@ import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleSelectionNodeConfig;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.core.components.reExecution.ReExecutionPanel;
 import org.knime.js.core.settings.DialogUtil;
 
 /**
@@ -90,6 +91,7 @@ public class SingleSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialo
     private final JTextArea m_possibleChoicesField;
     private final JComboBox<String> m_type;
     private final JCheckBox m_limitNumberVisOptionsBox;
+    private final ReExecutionPanel m_reExecutionPanel;
     private final JSpinner m_numberVisOptionSpinner;
 
     private final SingleSelectionWidgetConfig m_config;
@@ -118,8 +120,10 @@ public class SingleSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialo
         });
         m_type = new JComboBox<String>(SingleSelectionComponentFactory.listSingleSelectionComponents());
         m_limitNumberVisOptionsBox = new JCheckBox();
+        m_reExecutionPanel = new ReExecutionPanel();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
+        addTab("Re-execution", m_reExecutionPanel);
     }
 
     /**
@@ -207,6 +211,7 @@ public class SingleSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialo
         m_possibleChoicesField.setText(StringUtils.join(selectionConfig.getPossibleChoices(), "\n"));
         m_type.setSelectedItem(selectionConfig.getType());
         m_limitNumberVisOptionsBox.setSelected(selectionConfig.getLimitNumberVisOptions());
+        m_reExecutionPanel.setReExecuteDownstreamNodesValue(selectionConfig.getReExecuteDownstreamNodes());
         m_numberVisOptionSpinner.setValue(selectionConfig.getNumberVisOptions());
         String selectedValue = "";
         String[] values = m_config.getDefaultValue().getVariableValue();
@@ -228,6 +233,7 @@ public class SingleSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialo
         selectionConfig.setPossibleChoices(possibleChoices.isEmpty() ? new String[0] : possibleChoices.split("\n"));
         selectionConfig.setType(m_type.getItemAt(m_type.getSelectedIndex()));
         selectionConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
+        selectionConfig.setReExecuteDownstreamNodes(m_reExecutionPanel.getReExecuteDownstreamNodesValue());
         selectionConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
     }
