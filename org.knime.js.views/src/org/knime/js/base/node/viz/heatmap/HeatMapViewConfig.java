@@ -170,18 +170,16 @@ public final class HeatMapViewConfig {
 
     // Columns
     final static String CFG_COLUMNS = "columns";
-    final static DataColumnSpecFilterConfiguration DEFAULT_COLUMNS =
-        new DataColumnSpecFilterConfiguration(CFG_COLUMNS, new InputFilter<DataColumnSpec>() {
-            @Override
-            public boolean include(final DataColumnSpec name) {
-                if (name == null) {
-                    return false;
-                }
-                return name.getType().isCompatible(DoubleValue.class);
+    private DataColumnSpecFilterConfiguration m_columns = new DataColumnSpecFilterConfiguration(CFG_COLUMNS, new InputFilter<DataColumnSpec>() {
+        @Override
+        public boolean include(final DataColumnSpec name) {
+            if (name == null) {
+                return false;
             }
-        });
-    private DataColumnSpecFilterConfiguration m_columns = DEFAULT_COLUMNS;
-
+            return name.getType().isCompatible(DoubleValue.class);
+        }
+    });
+    
     final static String CFG_LABEL_COLUMN = "labelColumn";
     private String m_labelColumn;
 
