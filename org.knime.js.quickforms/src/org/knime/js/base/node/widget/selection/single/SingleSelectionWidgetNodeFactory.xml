@@ -49,9 +49,11 @@
 	            also affect the component's height. The setting is available only for List selection type.
 	        </option>
         </tab>
-        <tab name="Re-executable">
-	        <option name="Re-execution of downstream nodes">
-	            If selected, downstream nodes get re-executed automatically every time the widget value changes.
+        <tab name="Re-execution">
+	        <option name="Enable re-execution">
+	            If selected, widget emits reactivity events that trigger the
+	            re-execution of downstream nodes in a component when
+	            clicked. It allows users to create interactive Data Apps and visualizations.
 	        </option>
         </tab>
 	</fullDescription>

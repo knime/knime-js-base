@@ -77,8 +77,8 @@ import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleSelectionNodeConfig;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
-import org.knime.js.core.components.reExecution.ReExecutionPanel;
 import org.knime.js.core.settings.DialogUtil;
+import org.knime.js.core.settings.ReExecutionPanel;
 
 /**
  * Node dialog for the single selection widget node
