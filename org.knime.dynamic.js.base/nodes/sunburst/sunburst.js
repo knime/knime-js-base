@@ -1,4 +1,4 @@
-(sunburst_namespace = function() {
+(sunburst_namespace = function () {
 
 	var view = {};
 	var _representation, _value;
@@ -25,7 +25,7 @@
 
 	var innerLabelStyles = ['sum', 'percentage'];
 
-	view.init = function(representation, value) {
+	view.init = function (representation, value) {
 		_representation = representation;
 		_value = value;
 
@@ -63,7 +63,7 @@
 
 	// Transform data from first port into a hierarchical structure suitable
 	// for a partition layout.
-	var transformData = function() {
+	var transformData = function () {
 		// Get indices for path columns and frequency column.
 		function indexOf(column) {
 			return knimeTable1.getColumnNames().indexOf(column);
@@ -72,7 +72,7 @@
 		var freqColumn = indexOf(_representation.options.freqColumn);
 
 		// Check which rows are included by the filter/selection.
-		var includedRows = knimeTable1.getRows().filter(function(row) {
+		var includedRows = knimeTable1.getRows().filter(function (row) {
 			var includedInFilter = !currentFilter || knimeTable1.isRowIncludedInFilter(row.rowKey, currentFilter);
 			// var includedInSelection = !_value.options.showSelectedOnly || selectedRows.length == 0 || selectedRows.indexOf(row.rowKey) != -1;
 			var includedInSelection = !_value.options.showSelectedOnly || selectedRows.indexOf(row.rowKey) != -1;
@@ -80,22 +80,22 @@
 		});
 
 		// Get all unique labels from path columns.
-		var notNull = function(value) { return value !== null; };
-		var accumulate = function(accumulator, array) { return accumulator.concat(array); };
-		var onlyUnique = function(value, index, self) { return self.indexOf(value) === index; };
+		var notNull = function (value) { return value !== null; };
+		var accumulate = function (accumulator, array) { return accumulator.concat(array); };
+		var onlyUnique = function (value, index, self) { return self.indexOf(value) === index; };
 
 		uniqueLabels = pathColumns
-		.map(function(columnId) {
-			var uniqueLabelsOfColumn = includedRows.map(function(row) {
-				return row.data[columnId];
-			})
-			.filter(notNull)
-			.filter(onlyUnique);
+			.map(function (columnId) {
+				var uniqueLabelsOfColumn = includedRows.map(function (row) {
+					return row.data[columnId];
+				})
+					.filter(notNull)
+					.filter(onlyUnique);
 
-			return uniqueLabelsOfColumn;
-		})
-		.reduce(accumulate, [])
-		.filter(onlyUnique);
+				return uniqueLabelsOfColumn;
+			})
+			.reduce(accumulate, [])
+			.filter(onlyUnique);
 
 
 		// make sure that reserved names do not collide whith user given classes
@@ -110,12 +110,12 @@
 
 		// Initialize _data object
 		_data = {
-				id: id++,
-				name: rootNodeName,
-				children: [],
-				active: false,
-				highlited: false,
-				selected: false
+			id: id++,
+			name: rootNodeName,
+			children: [],
+			active: false,
+			highlited: false,
+			selected: false
 		};
 
 
@@ -133,9 +133,9 @@
 			size = Math.abs(size);
 
 			// get array of path elements from current row
-			var parts = pathColumns.map(function(col) { return includedRows[i].data[col]; });
+			var parts = pathColumns.map(function (col) { return includedRows[i].data[col]; });
 			// Remove trailing nulls
-			while(parts[parts.length-1] === null) {
+			while (parts[parts.length - 1] === null) {
 				parts.pop();
 			}
 
@@ -168,12 +168,12 @@
 					// If we don't already have a child node for this branch, create it.
 					if (!foundChild) {
 						childNode = {
-								id: id++,
-								name: nodeName,
-								children: [],
-								active: false,
-								highlited: false,
-								selected: false
+							id: id++,
+							name: nodeName,
+							children: [],
+							active: false,
+							highlited: false,
+							selected: false
 						};
 						children.push(childNode);
 					}
@@ -181,14 +181,14 @@
 				} else {
 					// Reached the end of the sequence; create a leaf node.
 					childNode = {
-							id: id++,
-							name: nodeName,
-							size: size,
-							children: [],
-							active: false,
-							highlited: false,
-							selected: false,
-							rowKey: includedRows[i].rowKey
+						id: id++,
+						name: nodeName,
+						size: size,
+						children: [],
+						active: false,
+						highlited: false,
+						selected: false,
+						rowKey: includedRows[i].rowKey
 					};
 					children.push(childNode);
 
@@ -200,12 +200,12 @@
 		if (missingPathCount > 0) {
 			knimeService.setWarningMessage(missingPathCount + " rows are not display because of missing path.", "missingPathCount");
 		}
-		if ((_representation.options.freqColumn != null) && (missingSizeCount > 0) ) {
+		if ((_representation.options.freqColumn != null) && (missingSizeCount > 0)) {
 			knimeService.setWarningMessage(missingSizeCount + " have a missing numeric value. The value defaults to zero.", "missingSizeCount");
 		}
 	};
 
-	var setColors = function() {
+	var setColors = function () {
 		var useCustomColors = (_representation.inObjects[1] != null) && (_representation.inObjects[1].labels != null);
 		var showWarning = (_representation.inObjects[1] != null) && (_representation.inObjects[1].labels == null);
 
@@ -228,10 +228,10 @@
 			}
 
 			var colorMap = {};
-			uniqueLabels.forEach(function(label) { colorMap[label] = scale(label); });
+			uniqueLabels.forEach(function (label) { colorMap[label] = scale(label); });
 		}
 
-		_colorMap = function(label) {
+		_colorMap = function (label) {
 			if (label === rootNodeName || label === nullNodeName) {
 				return "#FFFFFF";
 			} else {
@@ -246,7 +246,7 @@
 		_colorMap.keys = d3.keys(colorMap);
 	};
 
-	var updateTitles = function(updateChart) {
+	var updateTitles = function (updateChart) {
 		d3.select("#title").text(this.value);
 		d3.select("#subtitle").text(_value.options.subtitle);
 
@@ -255,7 +255,7 @@
 		}
 	};
 
-	var drawChart = function() {
+	var drawChart = function () {
 		// Remove earlier chart.
 		d3.select("#layoutContainer").remove();
 
@@ -285,32 +285,32 @@
 		}
 
 		layoutContainer = body.append("div")
-		.attr("id", "layoutContainer")
-		.attr("class", "knime-layout-container")
-		.style({
-			"width": width,
-			"height": height,
-			"min-width": MIN_WIDTH + "px",
-			"min-height": MIN_HEIGHT + "px",
-			"position": "absolute"
-		});
+			.attr("id", "layoutContainer")
+			.attr("class", "knime-layout-container")
+			.style({
+				"width": width,
+				"height": height,
+				"min-width": MIN_WIDTH + "px",
+				"min-height": MIN_HEIGHT + "px",
+				"position": "absolute"
+			});
 
 		// create div container to hold svg
 		var svgContainer = layoutContainer.append("div")
-		.attr("id", "svgContainer")
-		.attr("class", "knime-svg-container")
-		.style({
-			"min-width": MIN_WIDTH + "px",
-			"min-height": MIN_HEIGHT + "px",
-			"width": "100%",
-			"height": "100%"
-		});
+			.attr("id", "svgContainer")
+			.attr("class", "knime-svg-container")
+			.style({
+				"min-width": MIN_WIDTH + "px",
+				"min-height": MIN_HEIGHT + "px",
+				"width": "100%",
+				"height": "100%"
+			});
 
 		// Create the SVG object
 		svg = svgContainer.append("svg")
-		.attr({
-			"id": "svg"
-		});
+			.attr({
+				"id": "svg"
+			});
 
 		// set width / height of svg
 		if (optFullscreen) {
@@ -322,65 +322,65 @@
 			var svgHeight = _representation.options.svg.height;
 		}
 		svg
-		.style("width", svgWidth + "px")
-		.style("height", svgHeight + "px")
-		.attr("width", svgWidth)
-		.attr("height", svgHeight);
+			.style("width", svgWidth + "px")
+			.style("height", svgHeight + "px")
+			.attr("width", svgWidth)
+			.attr("height", svgHeight);
 
 		// Title
 		svg.append("text")
-		.attr("id", "title")
-		.attr("class", "knime-title")
-		.attr("x", 20)
-		.attr("y", 30)
-		.text(_value.options.title);
+			.attr("id", "title")
+			.attr("class", "knime-title")
+			.attr("x", 20)
+			.attr("y", 30)
+			.text(_value.options.title);
 
 		// Subtitle
 		svg.append("text")
-		.attr("id", "subtitle")
-		.attr("class", "knime-subtitle")
-		.attr("x", 20)
-		.attr("y", 46)
-		.text(_value.options.subtitle);
+			.attr("id", "subtitle")
+			.attr("class", "knime-subtitle")
+			.attr("x", 20)
+			.attr("y", 46)
+			.text(_value.options.subtitle);
 
 
 		// Compute plotting options
 		var margin = {
-				top : isTitle ? 60 : 10,
-						left : 10,
-						bottom : 10,
-						right : 10
+			top: isTitle ? 60 : 10,
+			left: 10,
+			bottom: 10,
+			right: 10
 		};
 
 		var plottingSurface = svg.append("g")
-		.attr("id", "plottingSurface")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			.attr("id", "plottingSurface")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		var w = Math.max(50, svgWidth - margin.left - margin.right);
 		var h = Math.max(50, svgHeight - margin.top - margin.bottom);
 
 		var options = {
-				legend: _value.options.legend,
-				breadcrumb: _value.options.breadcrumb,
-				tooltip: _value.options.tooltip,
-				zoomable: _representation.options.zoomable,
-				donutHole: _value.options.donutHole,
-				aggregationType: _value.options.aggregationType,
-				filterSmallNodes: _value.options.filterSmallNodes
+			legend: _value.options.legend,
+			breadcrumb: _value.options.breadcrumb,
+			tooltip: _value.options.tooltip,
+			zoomable: _representation.options.zoomable,
+			donutHole: _value.options.donutHole,
+			aggregationType: _value.options.aggregationType,
+			filterSmallNodes: _value.options.filterSmallNodes
 		};
-		
+
 		// Check if there is data.
 		if (_data.children.length == 0) {
 			if (knimeTable1.getNumRows() == 0) {
 				svg.append("text")
-				.attr("class", "knime-label")
-				.attr("text-anchor", "middle")
-				.attr("alignment-baseline", "central")
-				.attr("x", w/2)
-				.attr("y", h/2)
-				.attr("id", "errorMsg")
-				.text("Error: No data available");
-			} else {   
+					.attr("class", "knime-label")
+					.attr("text-anchor", "middle")
+					.attr("alignment-baseline", "central")
+					.attr("x", w / 2)
+					.attr("y", h / 2)
+					.attr("id", "errorMsg")
+					.text("Error: No data available");
+			} else {
 				knimeService.setWarningMessage("There is no data to display due to a filter or selection.", "filter_warnMessage");
 				drawSunburst(_data, plottingSurface, w, h, options);
 			}
@@ -396,7 +396,7 @@
 		}
 	};
 
-	var drawSunburst = function(data, plottingSurface, width, height, options) {
+	var drawSunburst = function (data, plottingSurface, width, height, options) {
 		var marginTop = options.breadcrumb ? 40 : 0;
 		var marginLeft = options.legend ? 85 : 0;
 
@@ -407,19 +407,19 @@
 		var b = { w: 100, h: 30, s: 3, t: 10 };
 
 		var partition = d3.layout.partition()
-		.value(
+			.value(
 				_representation.options.freqColumn == null
-				? function(d) { return 1; }
-				: function(d) { return d.size; }
-		)
+					? function (d) { return 1; }
+					: function (d) { return d.size; }
+			)
 
 		// Create list of segment objects with cartesian orientation from data.
 		if (options.filterSmallNodes) {
 			// For efficiency, filter nodes to keep only those large enough to see.
 			nodes = partition.nodes(data)
-			.filter(function(d) {
-				return (d.dx > _representation.options.filteringThreshold);
-			});
+				.filter(function (d) {
+					return (d.dx > _representation.options.filteringThreshold);
+				});
 		} else {
 			nodes = partition.nodes(data);
 		}
@@ -431,10 +431,10 @@
 		// x maps the node's x and dx attribute to an angle.
 		// y maps the node's y and dy attribute to vector length.
 		var x = d3.scale.linear()
-		.range([0, 2 * Math.PI]);
+			.range([0, 2 * Math.PI]);
 
 		var y = d3.scale.sqrt()
-		.range([0, radius])
+			.range([0, radius])
 
 		if (options.donutHole) {
 			y.domain([0, 1]);
@@ -445,34 +445,34 @@
 		// Functions to map cartesian orientation of partition layout into radial
 		// orientation of sunburst chart.
 		var arc = d3.svg.arc()
-		.startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-		.endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-		.innerRadius(function(d) { return Math.max(0, y(d.y)); })
-		.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+			.startAngle(function (d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+			.endAngle(function (d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+			.innerRadius(function (d) { return Math.max(0, y(d.y)); })
+			.outerRadius(function (d) { return Math.max(0, y(d.y + d.dy)); });
 
 		// create new group for the sunburst plot (not legend, not breadcrumb)
 		var sunburstGroup = plottingSurface.append("g")
-		.attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")")
-		.attr("id", "sunburstGroup");
+			.attr("transform", "translate(" + ((width - marginLeft) / 2) + "," + ((height + marginTop) / 2) + ")")
+			.attr("id", "sunburstGroup");
 
 		// Bounding circle underneath the sunburst, to make it easier to detect
 		// when the mouse leaves the plottingSurface g.
 		sunburstGroup.append("svg:circle")
-		.attr("r", radius)
-		.attr("opacity", 0);
+			.attr("r", radius)
+			.attr("opacity", 0);
 
 
 		var path = sunburstGroup.selectAll("path")
-		.data(nodes)
-		.enter().append("path")
-		.attr("d", arc)
-		.attr("fill-rule", "evenodd")
-		.attr("fill", function(d) { return _colorMap(d.name); })
-		.attr("stroke",function(d) { return d.selected ? "black" : "white" })
-		.classed("knime-selected", function(d) { return d.selected; })
-		.attr("stroke-width", 1)
-		.on("mouseover", mouseover)
-		.on("click", click);
+			.data(nodes)
+			.enter().append("path")
+			.attr("d", arc)
+			.attr("fill-rule", "evenodd")
+			.attr("fill", function (d) { return _colorMap(d.name); })
+			.attr("stroke", function (d) { return d.selected ? "black" : "white" })
+			.classed("knime-selected", function (d) { return d.selected; })
+			.attr("stroke-width", 1)
+			.on("mouseover", mouseover)
+			.on("click", click);
 
 		if (options.tooltip) {
 			path.on('mousemove', function (d) { showTooltip(d); });
@@ -495,75 +495,75 @@
 
 		// add explanation in the middle of the circle
 		var explanation = sunburstGroup.append("g")
-		.attr("id", "explanation")
-		.attr("width", rootRadius * 2)
-		.style({
-			"position": "absolute",
-			"top": "260px",
-			"left": "0",
-			"text-align": "center",
-			"color": "#666",
-			"z-index": "-1",
-		})
-		.attr("display", (options.donutHole && !options.zoom) ? "inline" : "none");
+			.attr("id", "explanation")
+			.attr("width", rootRadius * 2)
+			.style({
+				"position": "absolute",
+				"top": "260px",
+				"left": "0",
+				"text-align": "center",
+				"color": "#666",
+				"z-index": "-1",
+			})
+			.attr("display", (options.donutHole && !options.zoom) ? "inline" : "none");
 
 		explanation.append("text")
-		.attr("id", "percentage")
-		.attr("class", "knime-label")
-		.attr("text-anchor", "middle")
-		.attr("alignment-baseline", "middle")
-		.attr("width", rootRadius * 2)
-		.attr("font-size", "2.5em")
+			.attr("id", "percentage")
+			.attr("class", "knime-label")
+			.attr("text-anchor", "middle")
+			.attr("alignment-baseline", "middle")
+			.attr("width", rootRadius * 2)
+			.attr("font-size", "2.5em")
 
 		explanation.append("text")
-		.attr("id", "explanationText")
-		.attr("class", "knime-label")
-		.attr("text-anchor", "middle")
-		.attr("alignment-baseline", "middle")
-		.attr("y", 30)
-		.attr("width", rootRadius * 2)
-		.attr("font-size", "1.8em")
-		.attr("font-weight", "lighter");
+			.attr("id", "explanationText")
+			.attr("class", "knime-label")
+			.attr("text-anchor", "middle")
+			.attr("alignment-baseline", "middle")
+			.attr("y", 30)
+			.attr("width", rootRadius * 2)
+			.attr("font-size", "1.8em")
+			.attr("font-weight", "lighter");
 
 
 		// Add transparent circle on top. This is used for clicking / zooming out when donut hole is enabbled.
 		if (options.donutHole) {
 			sunburstGroup.append("svg:circle")
-			.attr("id", "donut_hole_button")
-			.attr("r", rootRadius)
-			.attr("fill", "none")
-			.attr("pointer-events", "all")
-			.on('click', function() {
-				if (mouseMode == "zoom") {
-					if (zoomNode != null && zoomNode.parent != null) {
-						zoom(zoomNode.parent);
+				.attr("id", "donut_hole_button")
+				.attr("r", rootRadius)
+				.attr("fill", "none")
+				.attr("pointer-events", "all")
+				.on('click', function () {
+					if (mouseMode == "zoom") {
+						if (zoomNode != null && zoomNode.parent != null) {
+							zoom(zoomNode.parent);
+						}
 					}
-				}
-				if (mouseMode == "select") {
-					clearSelection();
-					if (_value.options.showSelectedOnly) {
-						highlitedPath = null;
-						transformData();
-						drawChart();
-					} 
-				}
-				if (mouseMode == "highlite") {
-					clearHighliting();
-				}
-			})
-			.on("mouseover", function() {
-				if (_value.options.tooltip) {
-					hideTooltip();
-				}
-				if (mouseMode == "highlite" && highlitedPath == null) {
-					setPropAllNodes('active', true);
-					sunburstGroup.selectAll("path")
-					.attr("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
+					if (mouseMode == "select") {
+						clearSelection();
+						if (_value.options.showSelectedOnly) {
+							highlitedPath = null;
+							transformData();
+							drawChart();
+						}
+					}
+					if (mouseMode == "highlite") {
+						clearHighliting();
+					}
+				})
+				.on("mouseover", function () {
+					if (_value.options.tooltip) {
+						hideTooltip();
+					}
+					if (mouseMode == "highlite" && highlitedPath == null) {
+						setPropAllNodes('active', true);
+						sunburstGroup.selectAll("path")
+							.attr("opacity", function (d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
 
-					toggleBreadCrumb(false);
-					toggleInnerLabel(false);
-				}
-			});
+						toggleBreadCrumb(false);
+						toggleInnerLabel(false);
+					}
+				});
 		}
 
 		// Get total size of the tree = value of root node from partition.
@@ -578,8 +578,8 @@
 		}
 
 		// Set selection
-		if (!_value.options.showSelectedOnly && selectedRows.length > 0 ) {
-			selectedRows.forEach(function(rowKey) { rowKey2leaf[rowKey].selected = true; addNodeToSelectionBackward(rowKey2leaf[rowKey]); });
+		if (!_value.options.showSelectedOnly && selectedRows.length > 0) {
+			selectedRows.forEach(function (rowKey) { rowKey2leaf[rowKey].selected = true; addNodeToSelectionBackward(rowKey2leaf[rowKey]); });
 			renderSelection();
 		}
 
@@ -594,8 +594,8 @@
 
 
 			path.transition()
-			.duration(0)
-			.attrTween("d", arcTweenZoom(zoomNode));
+				.duration(0)
+				.attrTween("d", arcTweenZoom(zoomNode));
 		}
 
 		// Add the mouseleave handler to the bounding circle.
@@ -606,13 +606,13 @@
 			if (mouseMode == "zoom") {
 				clearHighliting();
 				zoom(d);
-			} else if (mouseMode == "select"){
+			} else if (mouseMode == "select") {
 				select(d);
 				if (_value.options.showSelectedOnly) {
 					highlitedPath = null;
 					transformData();
 					drawChart();
-				} 
+				}
 			} else {
 				clearHighliting();
 				setPropAllNodes('active', false);
@@ -623,13 +623,13 @@
 		// Handle mouseover on sunburst segments
 		function mouseover(d) {
 			if ((d.name != rootNodeName) &&
-					(mouseMode == "highlite") && highlitedPath == null) {
+				(mouseMode == "highlite") && highlitedPath == null) {
 
 				// set sunburst segment properties
 				setPropAllNodes('active', false);
 				setPropsBackward(d, 'active', true);
 				sunburstGroup.selectAll("path")
-				.attr("opacity", function(d) { return (d.active || d.highlited) ? 1 : 0.3; });
+					.attr("opacity", function (d) { return (d.active || d.highlited) ? 1 : 0.3; });
 
 				updateStatisticIndicators(d);
 				toggleBreadCrumb(true);
@@ -646,7 +646,7 @@
 				// set sunburst segment properties
 				setPropAllNodes('active', true);
 				sunburstGroup.selectAll("path")
-				.attr("opacity", function(d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
+					.attr("opacity", function (d) { return ((highlitedPath == null) || d.highlited) ? 1 : 0.3; });
 
 				toggleBreadCrumb(false);
 				toggleInnerLabel(false);
@@ -660,7 +660,7 @@
 			setPropAllNodes('highlited', false);
 			setPropsBackward(node, 'highlited', true);
 			sunburstGroup.selectAll("path")
-			.attr("opacity", function(d) { return d.highlited ? 1 : 0.3; });
+				.attr("opacity", function (d) { return d.highlited ? 1 : 0.3; });
 
 			updateStatisticIndicators(node);
 			toggleBreadCrumb(true);
@@ -675,7 +675,7 @@
 					// Remove elements from selection.
 					setPropsBackward(node, "selected", false);
 					var leafs = setPropsForward(node, "selected", false);
-					var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+					var rowKeys = leafs.map(function (leaf) { return leaf.rowKey; });
 					for (var i = 0; i < rowKeys.length; i++) {
 						var index = selectedRows.indexOf(rowKeys[i]);
 						if (index > -1) {
@@ -690,7 +690,7 @@
 					// Add element to selection.
 					var leafs = setPropsForward(node, 'selected', true);
 					addNodeToSelectionBackward(node);
-					var rowKeys = leafs.map(function(leaf) { return leaf.rowKey; });
+					var rowKeys = leafs.map(function (leaf) { return leaf.rowKey; });
 					for (var i = 0; i < rowKeys.length; i++) {
 						var index = selectedRows.indexOf(rowKeys[i]);
 						if (index == -1) {
@@ -707,7 +707,7 @@
 				setPropAllNodes('selected', false);
 				var leafs = setPropsForward(node, 'selected', true);
 				addNodeToSelectionBackward(node);
-				selectedRows =  leafs.map(function(leaf) { return leaf.rowKey; });
+				selectedRows = leafs.map(function (leaf) { return leaf.rowKey; });
 
 				if (_value.options.publishSelection) {
 					knimeService.setSelectedRows(knimeTable1.getTableId(), selectedRows, selectionChanged);
@@ -717,18 +717,18 @@
 		}
 
 		// Restore everything to full opacity when moving off the visualization.
-		clearHighliting = function(d) {
+		clearHighliting = function (d) {
 			highlitedPath = null;
 			setPropAllNodes('highlited', false);
 
 			sunburstGroup.selectAll("path")
-			.attr("opacity", 1);
+				.attr("opacity", 1);
 
 			toggleBreadCrumb(false);
 			toggleInnerLabel(false);
 		}
 
-		clearSelection = function() {
+		clearSelection = function () {
 			selectionChangedFlag = true;
 
 			selectedRows = [];
@@ -738,16 +738,16 @@
 				knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
 			}
 		}
-		
+
 		// Traverse through tree and add nodes to selection.
-		addNodeToSelectionBackward = function(node) {
+		addNodeToSelectionBackward = function (node) {
 			if (!node) {
 				return;
 			}
 			node.selected = true;
 			var parent = node.parent;
 			while (parent != null) {
-				var allChildrenSelected = parent.children.every(function(child) { return child.selected; });
+				var allChildrenSelected = parent.children.every(function (child) { return child.selected; });
 				if (allChildrenSelected) {
 					parent.selected = true;
 				} else {
@@ -756,30 +756,30 @@
 				parent = parent.parent;
 			}
 		}
-		
+
 		// Draw border around all selected segments.
-		renderSelection = function() {
+		renderSelection = function () {
 			//var sunburstGroup = d3.select("g#sunburstGroup");
 			if (_value.options.showSelectedOnly) {
 				sunburstGroup.selectAll("path")
-				.attr("stroke-width", 1)
-				.attr("stroke", "white")
-				.classed("knime-selected", true);
+					.attr("stroke-width", 1)
+					.attr("stroke", "white")
+					.classed("knime-selected", true);
 			} else {
 				sunburstGroup.selectAll("path")
-				.attr("stroke-width", function(d) {
-					return d.selected ? 2 : 1;
-				})
-				.attr("stroke",function(d) {
-					return d.selected ? "#333333" : "white";
-				})
-				.classed("knime-selected", function(d) {
-					return d.selected;
-				});
+					.attr("stroke-width", function (d) {
+						return d.selected ? 2 : 1;
+					})
+					.attr("stroke", function (d) {
+						return d.selected ? "#333333" : "white";
+					})
+					.classed("knime-selected", function (d) {
+						return d.selected;
+					});
 
 				// Resort elements in dom so that selected elements
 				// are drawn last.
-				sunburstGroup.selectAll("path").sort(function(a, b) {
+				sunburstGroup.selectAll("path").sort(function (a, b) {
 					if (a.selected == b.selected) {
 						return 0;
 					}
@@ -791,10 +791,10 @@
 			}
 		}
 
-		var zoom = function(d) {
+		var zoom = function (d) {
 			path.transition()
-			.duration(750)
-			.attrTween("d", arcTweenZoom(d));
+				.duration(750)
+				.attrTween("d", arcTweenZoom(d));
 
 			if (_value.options.breadcrumb) {
 				var parent = d.parent;
@@ -815,31 +815,31 @@
 			}
 		}
 
-		resetZoom = function() {
+		resetZoom = function () {
 			zoom(nodes[0]);
 		}
 
 		// When zooming: interpolate the scales.
 		function arcTweenZoom(d) {
-			var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName); 
+			var zoomToStart = (d.parent == null) || (d.parent.name == rootNodeName);
 
 			if (_value.options.donutHole) {
 				y.clamp(true);
 				var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-				yd = d3.interpolate(y.domain(), [zoomToStart ? 0 : d.y, 1]),
-				yr = d3.interpolate(y.range(), [zoomToStart ? 0 : rootRadius, radius]);
+					yd = d3.interpolate(y.domain(), [zoomToStart ? 0 : d.y, 1]),
+					yr = d3.interpolate(y.range(), [zoomToStart ? 0 : rootRadius, radius]);
 			} else {
 				y.clamp(false);
 				var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-				yd = d3.interpolate(y.domain(), [zoomToStart ? nodes[0].dy : d.y, 1]),
-				yr = d3.interpolate(y.range(), [zoomToStart ? 0 : 20, radius]);
+					yd = d3.interpolate(y.domain(), [zoomToStart ? nodes[0].dy : d.y, 1]),
+					yr = d3.interpolate(y.range(), [zoomToStart ? 0 : 20, radius]);
 			}
 
-			return function(d, i) {
+			return function (d, i) {
 				if (i) {
-					return function(t) { return arc(d); };
+					return function (t) { return arc(d); };
 				} else {
-					return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+					return function (t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
 				}
 			};
 		}
@@ -864,12 +864,12 @@
 
 		function updateInnerLabel(statisticString) {
 			d3.select("#percentage")
-			.text(statisticString)
-			.each(wrap)
+				.text(statisticString)
+				.each(wrap)
 
 			d3.select("#explanationText")
-			.text(_value.options.innerLabelText)
-			.each(wrap);
+				.text(_value.options.innerLabelText)
+				.each(wrap);
 		}
 
 		// Update the breadcrumb trail to show the current sequence and percentage.
@@ -884,51 +884,51 @@
 
 			// Data join; key function combines name and depth (= position in sequence).
 			var g = d3.select("#trail")
-			.selectAll("g")
-			.data(nodeArray, function(d) { return d.name + d.depth; });
+				.selectAll("g")
+				.data(nodeArray, function (d) { return d.name + d.depth; });
 
 			// Add breadcrumb and label for entering nodes.
 			var entering = g.enter().append("svg:g");
 
 			entering.append("svg:polygon")
-			.attr("class", "knime-tooltip-color")
-			.attr("points", breadcrumbPoints)
-			.attr("fill", function(d) { return _colorMap(d.name); })
-			.attr("stroke", function(d) { return d.name === nullNodeName ? "black" : "none"; })
-			.on("click", function(d) {
-				if (mouseMode == "zoom" && zoomNode != null) {
-					zoom(d);
-				}
-			});
+				.attr("class", "knime-tooltip-color")
+				.attr("points", breadcrumbPoints)
+				.attr("fill", function (d) { return _colorMap(d.name); })
+				.attr("stroke", function (d) { return d.name === nullNodeName ? "black" : "none"; })
+				.on("click", function (d) {
+					if (mouseMode == "zoom" && zoomNode != null) {
+						zoom(d);
+					}
+				});
 
 			entering.append("svg:text")
-			.attr("class", "knime-tooltip-key")
-			.attr("x", (b.w + b.t) / 2)
-			.attr("y", b.h / 2)
-			.attr("width", b.w)
-			.attr("dy", "0.35em")
-			.attr("text-anchor", "middle")
-			.attr("pointer-events", "none")
-			.attr("fill", function() {
-				var polygonElement = this.previousElementSibling;
-				var fill = getComputedStyle(polygonElement).fill;
-				var rgb = d3.rgb(fill);
-				// brightness formula taken from: https://www.w3.org/TR/AERT#color-contrast
-				// brightness range: 0-255
-				var brightness = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
-				if (brightness <= 127) {
-					return "white";
-				} else {
-					return "black";
-				}
-			})
-			.text(function(d) { return d.name; })
-			.each(wrap);
+				.attr("class", "knime-tooltip-key")
+				.attr("x", (b.w + b.t) / 2)
+				.attr("y", b.h / 2)
+				.attr("width", b.w)
+				.attr("dy", "0.35em")
+				.attr("text-anchor", "middle")
+				.attr("pointer-events", "none")
+				.attr("fill", function () {
+					var polygonElement = this.previousElementSibling;
+					var fill = getComputedStyle(polygonElement).fill;
+					var rgb = d3.rgb(fill);
+					// brightness formula taken from: https://www.w3.org/TR/AERT#color-contrast
+					// brightness range: 0-255
+					var brightness = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
+					if (brightness <= 127) {
+						return "white";
+					} else {
+						return "black";
+					}
+				})
+				.text(function (d) { return d.name; })
+				.each(wrap);
 
 			setBreadcrumbCursor();
 
 			// Set position for entering and updating nodes.
-			g.attr("transform", function(d, i) {
+			g.attr("transform", function (d, i) {
 				return "translate(" + i * (b.w + b.s) + ", 0)";
 			});
 
@@ -937,11 +937,11 @@
 
 			// Now move and update the percentage at the end.
 			d3.select("#trail").select("#endlabel")
-			.attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
-			.attr("y", b.h / 2)
-			.attr("dy", "0.35em")
-			.attr("text-anchor", "middle")
-			.text(statisticString)
+				.attr("x", (nodeArray.length + 0.5) * (b.w + b.s))
+				.attr("y", b.h / 2)
+				.attr("dy", "0.35em")
+				.attr("text-anchor", "middle")
+				.text(statisticString)
 		}
 
 		// Generate a string that describes the points of a breadcrumb polygon.
@@ -962,15 +962,15 @@
 		function toggleInnerLabel(visible) {
 			if (_value.options.innerLabel && _value.options.donutHole) {
 				d3.select("#explanation")
-				.attr("display", visible ? "inline" : "none");
+					.attr("display", visible ? "inline" : "none");
 			}
 		}
 
 		// Show/hide inner breadcrumb
 		function toggleBreadCrumb(visible) {
-			if (_value.options.breadcrumb)  {
+			if (_value.options.breadcrumb) {
 				d3.select("#trail")
-				.attr("display", visible ? "inline" : "none");
+					.attr("display", visible ? "inline" : "none");
 			}
 		}
 
@@ -1012,25 +1012,25 @@
 		}
 
 		function getUniquePathToNode(d) {
-			var sequence = [] ;
+			var sequence = [];
 			var parent = d;
 			while (parent != null) {
 				sequence.unshift(parent.name);
 				parent = parent.parent;
 			}
-			var path = {sequence: sequence, isLeaf: ((d.children == null) || (d.children.length == 0))};
+			var path = { sequence: sequence, isLeaf: ((d.children == null) || (d.children.length == 0)) };
 			return path;
 		}
 
 		function getNodeFromPath(path) {
 			var current = nodes[0];
-			for (var i = 1; i < path.sequence.length-1; i++) {
+			for (var i = 1; i < path.sequence.length - 1; i++) {
 				current = current.children
-				.filter(function(child) { return child.name == path.sequence[i]; })[0];
+					.filter(function (child) { return child.name == path.sequence[i]; })[0];
 			}
 			var node = current.children
-			.filter(function(child) { return child.name == path.sequence[path.sequence.length-1]; })
-			.filter(function(child) { return ((child.children == null) || (child.children.length == 0)) == path.isLeaf; })[0];
+				.filter(function (child) { return child.name == path.sequence[path.sequence.length - 1]; })
+				.filter(function (child) { return ((child.children == null) || (child.children.length == 0)) == path.isLeaf; })[0];
 
 			return node;
 		}
@@ -1040,19 +1040,19 @@
 			//    .attr("width", width)
 			//    .attr("height", 50)
 			var trail = plottingSurface.append("svg:g")
-			.attr("id", "trail")
-			.attr("class", "knime-tooltip");
+				.attr("id", "trail")
+				.attr("class", "knime-tooltip");
 
 			// Add the label at the end, for the percentage.
 			trail.append("svg:text")
-			.attr("id", "endlabel")
-			.attr("class", "knime-tooltip-value")
-			.attr("fill", "#000");
+				.attr("id", "endlabel")
+				.attr("class", "knime-tooltip-value")
+				.attr("fill", "#000");
 		}
 
 		function initializeTooltip() {
 			d3.selectAll('#tooltip').remove();
-			
+
 			var tableRow = d3.select('body').append("div")
 				.attr('id', 'tooltip')
 				.style('position', 'absolute')
@@ -1079,57 +1079,57 @@
 		}
 
 		function drawLegend(plottingSurface, breadcrumb, breadcrumbHeight) {
-			var entries = uniqueLabels.map(function(label) {
+			var entries = uniqueLabels.map(function (label) {
 				return { key: label, value: _colorMap(label) };
-			}); 
+			});
 
 			// Dimensions of legend item: width, height, spacing.
 			var li = { w: 100, h: 15, s: 6, r: 6 };
 
 			var legend = plottingSurface.append("g")
-			.attr("class", "knime-legend")
-			.attr("width", li.w)
-			.attr("height", entries.length * (li.h + li.s))
-			.attr("transform", "translate(" + (width - li.w) + ", " + (breadcrumb * breadcrumbHeight + 10) + ")");
+				.attr("class", "knime-legend")
+				.attr("width", li.w)
+				.attr("height", entries.length * (li.h + li.s))
+				.attr("transform", "translate(" + (width - li.w) + ", " + (breadcrumb * breadcrumbHeight + 10) + ")");
 
 			var g = legend.selectAll("g")
-			.data(entries)
-			.enter().append("svg:g")
-			.attr("transform", function(d, i) {
-				return "translate(0," + i * (li.h + li.s) + ")";
-			});
+				.data(entries)
+				.enter().append("svg:g")
+				.attr("transform", function (d, i) {
+					return "translate(0," + i * (li.h + li.s) + ")";
+				});
 
 
 			g.append("svg:circle")
-			.attr("class", "knime-legend-symbol")
-			.attr("cx", 0)
-			.attr("cy", 0.5 * (li.h - li.r))
-			.attr("r", li.r)
-			.attr("fill", function(d) { return d.value; });
+				.attr("class", "knime-legend-symbol")
+				.attr("cx", 0)
+				.attr("cy", 0.5 * (li.h - li.r))
+				.attr("r", li.r)
+				.attr("fill", function (d) { return d.value; });
 
 			g.append("svg:text")
-			.attr("class", "knime-legend-label")
-			.attr("x", li.r + 5)
-			.attr("y", li.r)
-			.attr("width", li.w)
-			.attr("font-size", 12)
-			.attr("dy", "0.35em")
-			.text(function(d) { return d.key; })
-			.each(wrap);
+				.attr("class", "knime-legend-label")
+				.attr("x", li.r + 5)
+				.attr("y", li.r)
+				.attr("width", li.w)
+				.attr("font-size", 12)
+				.attr("dy", "0.35em")
+				.text(function (d) { return d.key; })
+				.each(wrap);
 		}
 
 		// Wrap text if too long.
 		function wrap() {
 			var self = d3.select(this),
-			textLength = self.node().getComputedTextLength(),
-			text = self.text(),
-			width = self.attr("width");
-			while (textLength+5 > width && text.length > 0) {
+				textLength = self.node().getComputedTextLength(),
+				text = self.text(),
+				width = self.attr("width");
+			while (textLength + 5 > width && text.length > 0) {
 				text = text.slice(0, -1);
 				self.text(text + '...');
 				textLength = self.node().getComputedTextLength();
 			}
-		} 
+		}
 	}
 
 	function setBreadcrumbCursor() {
@@ -1161,7 +1161,7 @@
 			.style('display', 'none');
 	}
 
-	var drawControls = function() {
+	var drawControls = function () {
 		if (!knimeService || !_representation.options.enableViewControls) {
 			// TODO: error handling?
 			return;
@@ -1176,12 +1176,12 @@
 
 		// Reset controls.
 		if (_representation.options.zoomable) {
-			knimeService.addButton('zoom-reset-button', 'search-minus', 'Reset Zoom', function() {
+			knimeService.addButton('zoom-reset-button', 'search-minus', 'Reset Zoom', function () {
 				resetZoom();
 			});
 		}
 		if (_representation.options.selection) {
-			knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function() {
+			knimeService.addButton('selection-reset-button', 'minus-square-o', 'Reset Selection', function () {
 				clearSelection();
 				if (_value.options.showSelectedOnly) {
 					transformData();
@@ -1190,7 +1190,7 @@
 			});
 		}
 		if (_representation.options.highliting) {
-			knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Focus', function() {
+			knimeService.addButton('highlite-reset-button', 'star-o', 'Reset Focus', function () {
 				clearHighliting();
 			});
 		}
@@ -1204,27 +1204,27 @@
 		function toggleButton() {
 			var targetID = "mouse-mode-" + mouseMode;
 			d3.selectAll("#knime-service-header .service-button")
-			.classed("active", function() {
-				return targetID == this.getAttribute("id");
-			});
+				.classed("active", function () {
+					return targetID == this.getAttribute("id");
+				});
 			setBreadcrumbCursor();
 		}
 
 		// mouse mode controls.
 		if (_representation.options.zoomable) {
-			knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function() {
+			knimeService.addButton('mouse-mode-zoom', 'search', 'Mouse Mode "Zoom"', function () {
 				mouseMode = "zoom";
 				toggleButton();
 			});
 		}
 		if (_representation.options.selection) {
-			knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function() {
+			knimeService.addButton('mouse-mode-select', 'check-square-o', 'Mouse Mode "Select"', function () {
 				mouseMode = "select";
 				toggleButton();
 			});
 		}
 		if (_representation.options.highliting) {
-			knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Focus"', function() {
+			knimeService.addButton('mouse-mode-highlite', 'star', 'Mouse Mode "Focus"', function () {
 				mouseMode = "highlite";
 				toggleButton();
 			});
@@ -1237,23 +1237,23 @@
 		if (titleEdit || subtitleEdit) {
 			if (titleEdit) {
 				var chartTitleText = knimeService.createMenuTextField(
-						'chartTitleText', _value.options.title, function() {
-							if (_value.options.title != this.value) {
-								_value.options.title = this.value;
-								updateTitles(true);
-							}
-						}, true);
+					'chartTitleText', _value.options.title, function () {
+						if (_value.options.title != this.value) {
+							_value.options.title = this.value;
+							updateTitles(true);
+						}
+					}, true);
 				knimeService.addMenuItem('Chart Title:', 'header', chartTitleText);
 			}
 			if (subtitleEdit) {
 				var chartSubtitleText = knimeService.createMenuTextField(
-						'chartSubtitleText', _value.options.subtitle,
-						function() {
-							if (_value.options.subtitle != this.value) {
-								_value.options.subtitle = this.value;
-								updateTitles(true);
-							}
-						}, true);
+					'chartSubtitleText', _value.options.subtitle,
+					function () {
+						if (_value.options.subtitle != this.value) {
+							_value.options.subtitle = this.value;
+							updateTitles(true);
+						}
+					}, true);
 				knimeService.addMenuItem('Chart Subtitle:', 'header', chartSubtitleText, null, knimeService.SMALL_ICON);
 			}
 		}
@@ -1264,10 +1264,10 @@
 			knimeService.addMenuDivider();
 
 			var filterSmallCheckbox = knimeService.createMenuCheckbox(
-					'filterSmallNodesCheckbox', _value.options.filterSmallNodes, function() {
-						_value.options.filterSmallNodes = this.checked;
-						drawChart();
-					});
+				'filterSmallNodesCheckbox', _value.options.filterSmallNodes, function () {
+					_value.options.filterSmallNodes = this.checked;
+					drawChart();
+				});
 			knimeService.addMenuItem('Filter out small nodes:', 'search', filterSmallCheckbox);
 		}
 
@@ -1279,24 +1279,24 @@
 
 			if (legendToggle) {
 				var legendCheckbox = knimeService.createMenuCheckbox(
-						'legendCheckbox', _value.options.legend,
-						function() {
-							_value.options.legend = this.checked;
-							drawChart();
-						});
+					'legendCheckbox', _value.options.legend,
+					function () {
+						_value.options.legend = this.checked;
+						drawChart();
+					});
 				knimeService.addMenuItem('Legend:', 'info-circle', legendCheckbox);
 			}
 
 			if (breadcrumbToggle) {
 				var breadcrumbCheckbox = knimeService.createMenuCheckbox(
-						'breadcrumbCheckbox', _value.options.breadcrumb,
-						function() {
-							_value.options.breadcrumb = this.checked;
-							drawChart();
-							if (this.checked && highlitedPath != null) {
-								toggleBreadCrumb(true);
-							}
-						});
+					'breadcrumbCheckbox', _value.options.breadcrumb,
+					function () {
+						_value.options.breadcrumb = this.checked;
+						drawChart();
+						if (this.checked && highlitedPath != null) {
+							toggleBreadCrumb(true);
+						}
+					});
 
 				knimeService.addMenuItem('Breadcrumb:', 'ellipsis-h', breadcrumbCheckbox);
 			}
@@ -1327,10 +1327,10 @@
 			knimeService.addMenuDivider();
 
 			var donutHoleCheckbox = knimeService.createMenuCheckbox(
-					'donutHoleCheckbox', _value.options.donutHole, function() {
-						_value.options.donutHole = this.checked;
-						drawChart();
-					});
+				'donutHoleCheckbox', _value.options.donutHole, function () {
+					_value.options.donutHole = this.checked;
+					drawChart();
+				});
 			knimeService.addMenuItem('Donut hole:', 'search', donutHoleCheckbox);
 		}
 
@@ -1343,17 +1343,17 @@
 
 			if (innerLabelToggle) {
 				var innerLabelCheckbox = knimeService.createMenuCheckbox(
-						'innerLabelCheckbox', _value.options.innerLabel,
-						function() {
-							_value.options.innerLabel = this.checked;
-							toggleInnerLabel(true);
-						});
+					'innerLabelCheckbox', _value.options.innerLabel,
+					function () {
+						_value.options.innerLabel = this.checked;
+						toggleInnerLabel(true);
+					});
 				knimeService.addMenuItem('Inner Label:', 'dot-circle-o', innerLabelCheckbox);
 			}
 
 			if (innerLabelStyleSelect) {
 				var innerLabelStyleSelector =
-					knimeService.createMenuSelect('innerLabelStyleSelector', _value.options.innerLabelStyle, innerLabelStyles, function() {
+					knimeService.createMenuSelect('innerLabelStyleSelector', _value.options.innerLabelStyle, innerLabelStyles, function () {
 						_value.options.innerLabelStyle = this.options[this.selectedIndex].value;
 						drawChart();
 					});
@@ -1362,10 +1362,10 @@
 
 			if (enableInnerLabelEdit) {
 				var innerLabelText = knimeService.createMenuTextField(
-						'innerLabelText', _value.options.innerLabelText, function() {
-							_value.options.innerLabelText = this.value;
-							drawChart();
-						}, true);
+					'innerLabelText', _value.options.innerLabelText, function () {
+						_value.options.innerLabelText = this.value;
+						drawChart();
+					}, true);
 				knimeService.addMenuItem('Inner Label Text:', 'header', innerLabelText);
 			}
 		}
@@ -1373,7 +1373,7 @@
 		// show selection only
 		if (_representation.options.selection && _representation.options.showSelectedOnlyToggle) {
 			knimeService.addMenuDivider();
-			var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.options.showSelectedOnly, function() {
+			var showSelectedOnlyCheckbox = knimeService.createMenuCheckbox('showSelectedOnlyCheckbox', _value.options.showSelectedOnly, function () {
 				_value.options.showSelectedOnly = this.checked;
 				if (this.checked) {
 					highlitedPath = null;
@@ -1394,7 +1394,7 @@
 
 				if (publishSelectionToggle) {
 					var pubSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-right', 'faded left sm', 'right bold');
-					var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.options.publishSelection, function() {
+					var pubSelCheckbox = knimeService.createMenuCheckbox('publishSelectionCheckbox', _value.options.publishSelection, function () {
 						if (this.checked) {
 							_value.options.publishSelection = true;
 						} else {
@@ -1407,7 +1407,7 @@
 
 				if (subscribeSelectionToggle) {
 					var subSelIcon = knimeService.createStackedIcon('check-square-o', 'angle-double-right', 'faded right sm', 'left bold');
-					var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.options.subscribeSelection, function() {
+					var subSelCheckbox = knimeService.createMenuCheckbox('subscribeSelectionCheckbox', _value.options.subscribeSelection, function () {
 						if (this.checked) {
 							_value.options.subscribeSelection = true;
 							knimeService.subscribeToSelection(knimeTable1.getTableId(), selectionChanged);
@@ -1421,7 +1421,7 @@
 
 				if (subscribeFilterToggle) {
 					var subFilIcon = knimeService.createStackedIcon('filter', 'angle-double-right', 'faded right sm', 'left bold');
-					var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.options.subscribeFilter, function() {
+					var subFilCheckbox = knimeService.createMenuCheckbox('subscribeFilterCheckbox', _value.options.subscribeFilter, function () {
 						_value.options.subscribeSelection = this.checked;
 						toggleFilter();
 					});
@@ -1431,7 +1431,7 @@
 		}
 	}
 
-	var selectionChanged = function(data) {
+	var selectionChanged = function (data) {
 		if (data.changeSet) {
 			if (data.changeSet.removed) {
 				for (var i = 0; i < data.changeSet.removed.length; i++) {
@@ -1444,7 +1444,7 @@
 					var index = selectedRows.indexOf(removedKey);
 					if (index > -1) {
 						selectedRows.splice(index, 1);
-					}           
+					}
 				}
 			}
 			if (data.changeSet.added) {
@@ -1455,7 +1455,7 @@
 					var index = selectedRows.indexOf(addedKey);
 					if (index == -1) {
 						selectedRows.push(addedKey);
-					}           
+					}
 				}
 			}
 		} else if (data.reevaluate) {
@@ -1475,46 +1475,46 @@
 		renderSelection();
 	};
 
-	var toggleFilter = function() {
+	var toggleFilter = function () {
 		if (_value.options.subscribeFilter) {
 			knimeService.subscribeToFilter(
-					knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
+				knimeTable1.getTableId(), filterChanged, knimeTable1.getFilterIds()
 			);
 		} else {
 			knimeService.unsubscribeFilter(knimeTable1.getTableId(), filterChanged);
 		}
 	};
 
-	var filterChanged = function(filter) {
+	var filterChanged = function (filter) {
 		currentFilter = filter;
 		highlitedPath = null;
 		transformData();
 		drawChart();
 	};
 
-	var resize = function(event) {
+	var resize = function (event) {
 		drawChart();
 	};
 
-	var outputSelectionColumn = function() {
+	var outputSelectionColumn = function () {
 		if (_representation.options.selection) {
 			_value.outColumns.selection = {};
 			// set selected = false for every row
-			knimeTable1.getRows().forEach(function(row) {
+			knimeTable1.getRows().forEach(function (row) {
 				_value.outColumns.selection[row.rowKey] = false;
 			});
 			// set selected = true for every selected row
-			selectedRows.forEach(function(rowKey) {
+			selectedRows.forEach(function (rowKey) {
 				_value.outColumns.selection[rowKey] = true;
 			});
 		}
 	};
 
-	view.validate = function() {
+	view.validate = function () {
 		return true;
 	};
 
-	view.getComponentValue = function() {
+	view.getComponentValue = function () {
 		if (selectionChangedFlag) {
 			outputSelectionColumn();
 		}
@@ -1536,7 +1536,7 @@
 		return _value;
 	};
 
-	view.getSVG = function() {
+	view.getSVG = function () {
 		var svgElement = d3.select("svg")[0][0];
 		knimeService.inlineSvgStyles(svgElement);
 		// Return the SVG as a string.
