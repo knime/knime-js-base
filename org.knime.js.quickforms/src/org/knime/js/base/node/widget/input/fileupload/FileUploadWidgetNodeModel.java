@@ -54,15 +54,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -280,8 +277,8 @@ public class FileUploadWidgetNodeModel extends
                     final File tempFile = copyFileToTempLocation(path, url);
                     vector.add(tempFile.getAbsolutePath());
                     vector.add(getConfig().isStoreInWfDir()
-                        ? new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
-                            "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + encodeFileName(tempFile.getName())).toString()
+                        ? new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
+                            "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName(), null).toString()
                         : tempFile.toURI().toString());
                 } else {
                     vector.add(null);
@@ -295,18 +292,18 @@ public class FileUploadWidgetNodeModel extends
                 b.append(f.getAbsolutePath()).append("\"");
                 throw new InvalidSettingsException(b.toString());
             }
-            URL url;
+            URI uri;
             try {
                 if (openStream && getConfig().isStoreInWfDir()) {
                     final File tempFile = copyFileToTempLocation(path, f.toURI().toURL());
-                    url = new URL(KNIME_PROTOCOL, KNIME_WORKFLOW,
-                        "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName());
+                    uri = new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
+                        "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName(), null);
                     path = tempFile.getAbsolutePath();
                 } else {
-                    url = f.toURI().toURL();
+                    uri = f.toURI();
                 }
-            } catch (MalformedURLException e) {
-                StringBuilder b = new StringBuilder("Unable to derive URL from ");
+            } catch (URISyntaxException e) {
+                StringBuilder b = new StringBuilder("Unable to derive URI from ");
                 b.append("file: \"").append(f.getAbsolutePath()).append("\"");
                 b.append(" (file was set as part of quick form remote control)");
                 throw new InvalidSettingsException(b.toString(), e);
@@ -315,7 +312,7 @@ public class FileUploadWidgetNodeModel extends
                     "Could not transfer uploaded file to workflow temp directory: " + e.getMessage(), e);
             }
             vector.add(path);
-            vector.add(url.toString());
+            vector.add(uri.toString());
         } catch (URISyntaxException ex) {
             // shouldn't happen
             LOGGER.debug("Invalid file URI encountered: " + ex.getMessage());
@@ -324,16 +321,6 @@ public class FileUploadWidgetNodeModel extends
                 "Could not download uploaded file to local temp directory: " + ex.getMessage(), ex);
         }
         return vector;
-    }
-
-    /**
-     * Returns an encoded version of the input file name
-     *
-     * @param fileName the name of the file that should be encoded
-     * @return encoded version of the string
-     */
-    private static String encodeFileName (final String fileName) throws UnsupportedEncodingException {
-        return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
     }
 
     private static File writeTempFileFromDataUrl(final DataURL dataUrl, final String fileName)
