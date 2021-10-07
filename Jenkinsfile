@@ -26,7 +26,7 @@ try {
     repositories = [ 'knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep', 'knime-weka',
                      'knime-network', 'knime-xml', 'knime-datageneration', 'knime-chemistry', 'knime-textprocessing',
                      'knime-svm', 'knime-jfreechart', 'knime-js-labs', 'knime-stats', 'knime-r', 'knime-database',
-                     'knime-filehandling', 'knime-kerberos' ]
+                     'knime-filehandling', 'knime-kerberos', 'knime-excel' ]
     if (params.CEF) {
         testConfigs['cef'] = {
             stage('Workflow tests with CEF') {
