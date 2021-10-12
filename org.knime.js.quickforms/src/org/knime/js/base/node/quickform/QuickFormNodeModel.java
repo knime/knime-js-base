@@ -505,7 +505,15 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
         setDialogValue(dialogValue);
     }
 
+    @Override
+    public boolean isInputDataRequired() {
+        return false;
+    }
+
     private VAL validateAndLoadDialogValue(final ExternalNodeData inputData) throws InvalidSettingsException {
+        if (inputData == null) {
+            return null;
+        }
         VAL dialogValue = createEmptyDialogValue();
         try {
             if (inputData.getJSONValue() != null) {

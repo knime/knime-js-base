@@ -366,7 +366,7 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     public ValidationError validateViewValue(final FileUploadQuickFormValue viewValue) {
         // check for a valid file extension
         // no items in file types <=> any file type is valid
-        if (getConfig().getFileTypes().length > 0) {
+        if (viewValue != null && getConfig().getFileTypes().length > 0) {
             String fileName = viewValue.getFileName();
             String nameToTest = StringUtils.isEmpty(fileName) ? viewValue.getPath() : fileName;
             String ext = FilenameUtils.getExtension(nameToTest);
@@ -434,9 +434,13 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      */
     @Override
     public void setInputData(final ExternalNodeData inputData) {
-        FileUploadQuickFormValue val = createEmptyDialogValue();
-        val.setPath(inputData.getResource().toString());
-        setDialogValue(val);
+        if (inputData == null) {
+            setDialogValue(null);
+        } else {
+            FileUploadQuickFormValue val = createEmptyDialogValue();
+            val.setPath(inputData.getResource().toString());
+            setDialogValue(val);
+        }
     }
 
     /**
@@ -444,11 +448,15 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
      */
     @Override
     public void validateInputData(final ExternalNodeData inputData) throws InvalidSettingsException {
-        if (inputData.getResource() == null) {
-            throw new InvalidSettingsException("No external resource URL provided for file upload");
+        if (inputData == null) {
+            validateDialogValue(null);
+        } else {
+            if (inputData.getResource() == null) {
+                throw new InvalidSettingsException("No external resource URL provided for file upload");
+            }
+            FileUploadQuickFormValue val = createEmptyDialogValue();
+            val.setPath(inputData.getResource().getPath());
+            validateDialogValue(val);
         }
-        FileUploadQuickFormValue val = createEmptyDialogValue();
-        val.setPath(inputData.getResource().getPath());
-        validateDialogValue(val);
     }
 }
