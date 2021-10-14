@@ -53,7 +53,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.ReExecutableRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -70,7 +70,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class SingleMultipleSelectionNodeRepresentation<VAL extends SingleMultipleSelectionNodeValue>
-    extends LabeledNodeRepresentation<VAL> {
+    extends ReExecutableRepresentation<VAL> {
 
     private final String[] m_possibleChoices;
     private final String m_type;
@@ -87,7 +87,21 @@ public class SingleMultipleSelectionNodeRepresentation<VAL extends SingleMultipl
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        super(label, description, required, defaultValue, currentValue);
+        this(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions, numberVisOptions, false);
+    }
+
+    @JsonCreator
+    protected SingleMultipleSelectionNodeRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("possibleChoices") final String[] possibleChoices,
+        @JsonProperty("type") final String type,
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_possibleChoices = possibleChoices;
         m_type = type;
         m_limitNumberVisOptions = limitNumberVisOptions;
@@ -102,7 +116,20 @@ public class SingleMultipleSelectionNodeRepresentation<VAL extends SingleMultipl
      */
     public SingleMultipleSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
+        this(currentValue, defaultValue, selectionConfig, labelConfig, false);
+
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param selectionConfig The config of the node
+     * @param labelConfig The label config of the node
+     * @param triggerReExecution
+     */
+    public SingleMultipleSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_possibleChoices = selectionConfig.getPossibleChoices();
         m_type = selectionConfig.getType();
         m_limitNumberVisOptions = selectionConfig.getLimitNumberVisOptions();

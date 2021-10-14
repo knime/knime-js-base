@@ -69,8 +69,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelectionNodeValue>
     extends SingleMultipleSelectionNodeRepresentation<VAL> {
 
-    private final Boolean m_reExecuteDownstreamNodes;
-
     @JsonCreator
     private SingleSelectionWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
@@ -78,11 +76,10 @@ public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelec
         @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions,
-        @JsonProperty("reExecuteDownstreamNodes") final Boolean reExecuteDownstreamNodes) {
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
 
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
-            numberVisOptions);
-        m_reExecuteDownstreamNodes = reExecuteDownstreamNodes;
+            numberVisOptions, triggerReExecution);
     }
 
     /**
@@ -90,19 +87,10 @@ public class SingleSelectionWidgetRepresentation<VAL extends SingleMultipleSelec
      * @param defaultValue The default value of the node
      * @param selectionConfig The config of the node
      * @param labelConfig The label config of the node
+     * @param triggerReExecution
      */
     public SingleSelectionWidgetRepresentation(final VAL currentValue, final VAL defaultValue,
-        final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, selectionConfig, labelConfig);
-        m_reExecuteDownstreamNodes = selectionConfig.getReExecuteDownstreamNodes();
+        final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, selectionConfig, labelConfig, triggerReExecution);
     }
-
-    /**
-     * @return the reExecuteDownstreamNodes
-     */
-    @JsonProperty("reExecuteDownstreamNodes")
-    public Boolean getReExecuteDownstreamNodes() {
-        return m_reExecuteDownstreamNodes;
-    }
-
 }

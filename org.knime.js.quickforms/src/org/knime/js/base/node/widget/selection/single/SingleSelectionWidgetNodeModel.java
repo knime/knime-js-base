@@ -123,7 +123,7 @@ public class SingleSelectionWidgetNodeModel extends
     protected SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
         SingleSelectionWidgetConfig config = getConfig();
         return new SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig());
+            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**

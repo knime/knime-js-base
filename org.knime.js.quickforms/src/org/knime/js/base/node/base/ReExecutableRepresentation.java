@@ -43,95 +43,65 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 6, 2021 (konrad-amtenbrink): created
  */
-package org.knime.js.base.node.widget.reexecution.refresh;
+package org.knime.js.base.node.base;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
- * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
+ * @param <VAL>
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
+public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> extends LabeledNodeRepresentation<VAL> {
 
-    private final RefreshButtonWidgetNodeConfig m_config = new RefreshButtonWidgetNodeConfig();
+    private boolean m_triggerReExecution;
 
     /**
-     * @return the label
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param triggerReExecution
      */
-    @JsonProperty("label")
-    public String getLabel() {
-        return m_config.getLabel();
+    @JsonCreator
+    protected ReExecutableRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue);
+        m_triggerReExecution = triggerReExecution;
     }
 
     /**
-     * @param label the label to set
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
+     * @param triggerReExecution
      */
-    public void setLabel(final String label) {
-        m_config.setLabel(label);
-    }
+    public ReExecutableRepresentation(final VAL currentValue, final VAL defaultValue,
+        final LabeledConfig config, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, config);
+        m_triggerReExecution = triggerReExecution;
 
-    /**
-     * @return the description
-     */
-    @JsonProperty("description")
-    public String getDescription() {
-        return m_config.getDescription();
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(final String description) {
-        m_config.setDescription(description);
-    }
-
-    /**
-     * @return the button text
-     */
-    public String getButtonText() {
-        return m_config.getButtonText();
-    }
-
-    /**
-     * @param buttonText the button text to set
-     */
-    public void setButtonText(final String buttonText) {
-        m_config.setButtonText(buttonText);
     }
 
     /**
      * @return the triggerReExecution
      */
-    public Boolean getTriggerReExecution() {
-        return m_config.getTriggerReExecution();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
+    @JsonProperty("triggerReExecution")
+    public boolean getTriggerReExecution() {
+        return m_triggerReExecution;
     }
 
     /**
@@ -140,8 +110,9 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(RefreshButtonWidgetViewRepresentation.class);
-        sb.append(m_config.toString());
+        sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_triggerReExecution);
         return sb.toString();
     }
 
@@ -151,16 +122,15 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .append(m_config.getLabel())
-            .append(m_config.getDescription())
-            .append(m_config.getButtonText())
-            .append(m_config.getTriggerReExecution())
-            .toHashCode();
+                .appendSuper(super.hashCode())
+                .append(m_triggerReExecution)
+                .toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -172,12 +142,10 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        RefreshButtonWidgetViewRepresentation other = (RefreshButtonWidgetViewRepresentation)obj;
+        ReExecutableRepresentation<VAL> other = (ReExecutableRepresentation<VAL>)obj;
         return new EqualsBuilder()
-            .append(m_config.getLabel(), other.m_config.getLabel())
-            .append(m_config.getDescription(), other.m_config.getDescription())
-            .append(m_config.getButtonText(), other.m_config.getButtonText())
-            .append(m_config.getTriggerReExecution().toString(), other.getTriggerReExecution().toString())
-            .isEquals();
+                .appendSuper(super.equals(other))
+                .append(m_triggerReExecution, other.m_triggerReExecution)
+                .isEquals();
     }
 }

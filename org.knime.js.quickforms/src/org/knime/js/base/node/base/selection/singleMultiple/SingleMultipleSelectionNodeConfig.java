@@ -77,10 +77,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
     private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
-    private static final String CFG_RE_EXECUTE_DOWNSTREAM_NODES = "re_execute_downstream_nodes";
-    private static final Boolean DEFAULT_RE_EXECUTE_DOWNSTREAM_NODES = false;
-    private Boolean m_reExecuteDownstreamNodes = DEFAULT_RE_EXECUTE_DOWNSTREAM_NODES;
-
     /**
      * @return the possibleChoices
      */
@@ -139,20 +135,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
     }
 
     /**
-     * @return the reExecuteDownstreamNodes
-     */
-    public Boolean getReExecuteDownstreamNodes() {
-        return m_reExecuteDownstreamNodes;
-    }
-
-    /**
-     * @param reExecuteDownstreamNodes the reExecuteDownstreamNodes to set
-     */
-    public void setReExecuteDownstreamNodes(final Boolean reExecuteDownstreamNodes) {
-        m_reExecuteDownstreamNodes = reExecuteDownstreamNodes;
-    }
-
-    /**
      * Saves the current settings
      *
      * @param settings the settings to save to
@@ -162,7 +144,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
         settings.addString(CFG_TYPE, getType());
         settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
         settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
-        settings.addBoolean(CFG_RE_EXECUTE_DOWNSTREAM_NODES, m_reExecuteDownstreamNodes);
     }
 
     /**
@@ -176,7 +157,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
         setType(settings.getString(CFG_TYPE));
         m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS);
         m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS);
-        m_reExecuteDownstreamNodes = settings.getBoolean(CFG_RE_EXECUTE_DOWNSTREAM_NODES, DEFAULT_RE_EXECUTE_DOWNSTREAM_NODES);
     }
 
     /**
@@ -189,7 +169,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
         setType(settings.getString(CFG_TYPE, getDefaultType()));
         m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
         m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
-        m_reExecuteDownstreamNodes = settings.getBoolean(CFG_RE_EXECUTE_DOWNSTREAM_NODES, DEFAULT_RE_EXECUTE_DOWNSTREAM_NODES);
     }
 
     /**
@@ -209,9 +188,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
         sb.append(", ");
         sb.append("m_numberVisOptions=");
         sb.append(m_numberVisOptions);
-        sb.append(", ");
-        sb.append("m_reExecuteDownstreamNodes=");
-        sb.append(m_reExecuteDownstreamNodes);
         return sb.toString();
     }
 
@@ -225,7 +201,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
                 .append(getType())
                 .append(m_limitNumberVisOptions)
                 .append(m_numberVisOptions)
-                .append(m_reExecuteDownstreamNodes)
                 .toHashCode();
     }
 
@@ -249,7 +224,6 @@ public abstract class SingleMultipleSelectionNodeConfig {
                 .append(getType(), other.getType())
                 .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
                 .append(m_numberVisOptions, other.m_numberVisOptions)
-                .append(m_reExecuteDownstreamNodes, other.m_reExecuteDownstreamNodes)
                 .isEquals();
     }
 

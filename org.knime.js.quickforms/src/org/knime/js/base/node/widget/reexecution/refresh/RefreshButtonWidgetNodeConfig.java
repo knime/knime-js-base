@@ -80,6 +80,10 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     private static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
 
+    private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
+    private static final Boolean DEFAULT_TRIGGER_REEXECUTION = true;
+    private Boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
+
     /**
      * @return the label
      */
@@ -129,6 +133,13 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     }
 
     /**
+     * @return the triggerReExecution
+     */
+    public Boolean getTriggerReExecution() {
+        return m_triggerReExecution;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -136,6 +147,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         settings.addString(CFG_LABEL, m_label);
         settings.addString(CFG_DESCRIPTION, m_description);
         settings.addString(CFG_BUTTON_TEXT, m_buttonText);
+        settings.addBoolean(CFG_TRIGGER_REEXECUTION, m_triggerReExecution);
     }
 
     /**
@@ -146,6 +158,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
         m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
         m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
+        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
     }
 
     /**
@@ -172,6 +185,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         sb.append(m_label);
         sb.append(", description=");
         sb.append(m_description);
+        sb.append(",triggerReExecution=");
+        sb.append(m_triggerReExecution.toString());
         return sb.toString();
     }
 
@@ -184,6 +199,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
             .append(m_label)
             .append(m_description)
             .append(m_buttonText)
+            .append(m_triggerReExecution)
             .toHashCode();
     }
 
@@ -206,6 +222,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
             .append(m_label, other.m_label)
             .append(m_description, other.m_description)
             .append(m_buttonText, other.m_buttonText)
+            .append(m_triggerReExecution, other.m_triggerReExecution)
             .isEquals();
     }
 }
