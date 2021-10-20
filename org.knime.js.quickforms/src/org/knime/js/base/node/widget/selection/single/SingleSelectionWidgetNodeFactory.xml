@@ -53,7 +53,7 @@
 	        <option name="Enable re-execution">
 	            If selected, widget emits reactivity events that trigger the
 	            re-execution of downstream nodes in a component when
-	            clicked. It allows users to create interactive Data Apps and visualizations.
+	            its value changes. It allows users to create interactive Data Apps and visualizations.
 	        </option>
         </tab>
 	</fullDescription>

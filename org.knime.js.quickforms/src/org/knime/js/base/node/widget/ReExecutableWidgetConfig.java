@@ -101,7 +101,7 @@ public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent> exte
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
-       m_reExecutable.loadSettings(settings);
+        m_reExecutable.loadSettings(settings);
     }
 
     /**

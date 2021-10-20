@@ -52,7 +52,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.core.JSONViewContent;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -72,13 +71,8 @@ public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> ex
      * @param currentValue
      * @param triggerReExecution
      */
-    @JsonCreator
-    protected ReExecutableRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue,
-        @JsonProperty("currentValue") final VAL currentValue,
-        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
+    protected ReExecutableRepresentation(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue);
         m_triggerReExecution = triggerReExecution;
     }
