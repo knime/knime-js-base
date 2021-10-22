@@ -195,3 +195,90 @@ h2 {
 .knime-autosuggest-dropdown option {
     word-wrap: break-word;
 }
+
+/**
+* CSS FOR DATALIST POLYFILL
+* may be removed when datalist is usable with CEF
+*/
+#knime-datalist--container {
+    position: relative;
+}
+
+#knime-datalist--input-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border: 2px solid gray;
+    border-radius: 3px;
+}
+
+#knime-datalist--list {
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 5px;
+    min-width: 200px;
+    border: 1px solid rgb(249, 249, 249);
+    background-color: white;
+    overflow: auto;
+    color: black;
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.3)  ; 
+	-webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.3)  ; 
+	-moz-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.3)  ; 
+}
+
+#knime-datalist--list li {
+    padding: 5px 30px 5px 30px;
+    cursor: pointer;
+}
+
+#knime-datalist--list li:hover {
+    background-color: rgb(2, 136, 204);
+    color: white;
+}
+
+#knime-datalist--selected {
+    background-color: rgb(2, 136, 204);
+    color: white;
+}
+
+#knime-datalist--selected:before {
+    position: absolute;
+    left: 10px;
+    content: '✓';
+}
+
+#knime-datalist--input {
+    width: calc(100% - 6px);
+    height: 18px;
+    display: inline;
+    border: none;
+    outline: none;
+}
+
+#knime-datalist--button{
+    display: inline;
+    background-color: white;
+    border: none;
+    margin: none;
+    text-align: center;
+    height: 18px;
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+}
+
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
