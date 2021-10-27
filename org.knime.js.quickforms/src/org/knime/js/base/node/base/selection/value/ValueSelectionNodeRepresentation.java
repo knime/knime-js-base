@@ -54,7 +54,7 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.ReExecutableRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -71,7 +71,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValue>
-    extends LabeledNodeRepresentation<VAL> {
+    extends ReExecutableRepresentation<VAL> {
 
     private final ColumnType m_columnType;
     private final boolean m_lockColumn;
@@ -107,7 +107,30 @@ public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValu
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        super(label, description, required, defaultValue, currentValue);
+        this(label, description, required, defaultValue, currentValue, columnType, lockColumn, possibleValues, type, limitNumberVisOptions, numberVisOptions, false);
+    }
+
+    /**
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param columnType
+     * @param lockColumn
+     * @param possibleValues
+     * @param type
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     * @param triggerReExecution
+     */
+    protected ValueSelectionNodeRepresentation(final String label, final String description,
+        final boolean required, final VAL defaultValue, final VAL currentValue,
+        final ColumnType columnType, final boolean lockColumn,
+        final Map<String, List<String>> possibleValues, final String type,
+        final boolean limitNumberVisOptions, final Integer numberVisOptions,
+        final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_columnType = columnType;
         m_lockColumn = lockColumn;
         m_possibleValues = possibleValues;
@@ -124,7 +147,19 @@ public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValu
      */
     public ValueSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final ValueSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
+        this(currentValue, defaultValue, selectionConfig, labelConfig, false);
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param selectionConfig The config of the node
+     * @param labelConfig The label config of the node
+     * @param triggerReExecution
+     */
+    public ValueSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final ValueSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_columnType = selectionConfig.getColumnType();
         m_lockColumn = selectionConfig.isLockColumn();
         m_possibleValues = selectionConfig.getPossibleValues();

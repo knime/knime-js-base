@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the value selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionWidgetConfig extends LabeledFlowVariableWidgetConfig<ValueSelectionNodeValue> {
+public class ValueSelectionWidgetConfig extends ReExecutableWidgetConfig<ValueSelectionNodeValue> {
 
     private final ValueSelectionNodeConfig m_config;
 

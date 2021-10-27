@@ -216,7 +216,7 @@ public class ValueSelectionWidgetNodeModel
     protected ValueSelectionNodeRepresentation<ValueSelectionNodeValue> getRepresentation() {
         ValueSelectionWidgetConfig config = getConfig();
         return new ValueSelectionNodeRepresentation<ValueSelectionNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getValueSelectionConfig(), config.getLabelConfig());
+            config.getDefaultValue(), config.getValueSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**

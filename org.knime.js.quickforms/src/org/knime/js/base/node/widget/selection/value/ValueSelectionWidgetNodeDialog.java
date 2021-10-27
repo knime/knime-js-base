@@ -85,14 +85,14 @@ import org.knime.js.base.node.base.selection.value.ColumnType;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 import org.knime.js.base.node.configuration.selection.value.ValueSelectionDialogNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 
 /**
  * Node dialog for the value selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ValueSelectionNodeValue> {
+public class ValueSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ValueSelectionNodeValue> {
 
     private final JComboBox<ColumnType> m_columnType;
     private final JCheckBox m_lockColumn;
