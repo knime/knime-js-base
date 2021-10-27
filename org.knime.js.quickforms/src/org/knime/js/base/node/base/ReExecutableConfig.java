@@ -58,7 +58,7 @@ import org.knime.core.node.NodeSettingsWO;
  *
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  */
-public class ReExecutableConfig extends LabeledConfig {
+public class ReExecutableConfig {
 
     private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
     private static final boolean DEFAULT_TRIGGER_REEXECUTION = false;
@@ -79,29 +79,24 @@ public class ReExecutableConfig extends LabeledConfig {
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to save to
      */
-    @Override
     public void saveSettings(final NodeSettingsWO settings) {
-        super.saveSettings(settings);
         settings.addBoolean(CFG_TRIGGER_REEXECUTION, m_triggerReExecution);
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to load from
+     * @throws InvalidSettingsException If the settings are not valid
      */
-    @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        super.loadSettings(settings);
         m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
     }
 
     /**
-     * {@inheritDoc}
+     * @param settings The settings to load from
      */
-    @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        super.loadSettingsInDialog(settings);
         m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
     }
 
@@ -111,8 +106,6 @@ public class ReExecutableConfig extends LabeledConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
         sb.append(m_triggerReExecution);
         return sb.toString();
     }
@@ -123,7 +116,6 @@ public class ReExecutableConfig extends LabeledConfig {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
                 .append(m_triggerReExecution)
                 .toHashCode();
     }
@@ -144,7 +136,6 @@ public class ReExecutableConfig extends LabeledConfig {
         }
         ReExecutableConfig other = (ReExecutableConfig)obj;
         return new EqualsBuilder()
-                .appendSuper(super.equals(other))
                 .append(m_triggerReExecution, other.m_triggerReExecution)
                 .isEquals();
     }
