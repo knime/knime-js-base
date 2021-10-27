@@ -20,16 +20,25 @@
               and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
             </p>
 		</intro>
-		<option name="Label">A descriptive label that will be shown in the view.</option>
-		<option name="Description">Some lines of description that will be shown in the view, 
-		  for instance by means of a tooltip.</option>
-		<option name="Variable Name">Variable identifier.</option>
-        <option name="Default Value">
-          The value that is selected by default.
-        </option>
-        <option name="Output as Integer">
-          If set, the output variable will be of type integer (as opposed to type boolean).
-        </option>
+		<tab name="Control">
+			<option name="Label">A descriptive label that will be shown in the view.</option>
+			<option name="Description">Some lines of description that will be shown in the view, 
+			  for instance by means of a tooltip.</option>
+			<option name="Variable Name">Variable identifier.</option>
+	        <option name="Default Value">
+	          The value that is selected by default.
+	        </option>
+	        <option name="Output as Integer">
+	          If set, the output variable will be of type integer (as opposed to type boolean).
+	        </option>
+		</tab>
+		<tab name="Re-execution">
+	        <option name="Re-execution on widget value change">
+	            If selected, widget emits reactivity events that trigger the
+	            re-execution of downstream nodes in a component composite view when
+	            its value changes. It allows users to create interactive Data Apps and visualizations.
+	        </option>
+        </tab>
 	</fullDescription>
 	<interactiveView name="Boolean Widget">
         Displays a checkbox which represents the boolean value.

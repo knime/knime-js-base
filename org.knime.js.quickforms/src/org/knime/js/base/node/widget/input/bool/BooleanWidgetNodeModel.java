@@ -114,7 +114,7 @@ public class BooleanWidgetNodeModel extends
     @Override
     protected BooleanNodeRepresentation<BooleanNodeValue> getRepresentation() {
         return new BooleanNodeRepresentation<BooleanNodeValue>(getRelevantValue(), getConfig().getDefaultValue(),
-            getConfig().getLabelConfig());
+            getConfig().getLabelConfig(), getConfig().getTriggerReExecution());
     }
 
     /**

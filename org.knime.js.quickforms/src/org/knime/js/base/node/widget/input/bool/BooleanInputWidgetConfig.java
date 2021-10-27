@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the boolean widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanInputWidgetConfig extends LabeledFlowVariableWidgetConfig<BooleanNodeValue> {
+public class BooleanInputWidgetConfig extends ReExecutableWidgetConfig<BooleanNodeValue> {
 
     private final BooleanNodeConfig m_config;
 

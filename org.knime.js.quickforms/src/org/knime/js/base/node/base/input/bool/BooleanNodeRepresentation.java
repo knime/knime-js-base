@@ -51,7 +51,7 @@ package org.knime.js.base.node.base.input.bool;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.ReExecutableRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -67,14 +67,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends ReExecutableRepresentation<VAL> {
 
     @JsonCreator
     protected BooleanNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue) {
-        super(label, description, required, defaultValue, currentValue);
+        this(label, description, required, defaultValue, currentValue, false);
+    }
+
+    @JsonCreator
+    protected BooleanNodeRepresentation(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
     }
 
     /**
@@ -83,7 +89,17 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends Lab
      * @param config The config of the node
      */
     public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config) {
-        super(currentValue, defaultValue, config);
+        this(currentValue, defaultValue, config, false);
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
+     * @param triggerReExecution
+     */
+    public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, config, triggerReExecution);
     }
 
     /**
