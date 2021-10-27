@@ -53,7 +53,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.ReExecutableRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -69,7 +69,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ColumnSelectionNodeRepresentation<VAL extends ColumnSelectionNodeValue>
-    extends LabeledNodeRepresentation<VAL> {
+    extends ReExecutableRepresentation<VAL> {
 
     private final String[] m_possibleColumns;
     private final String m_type;
@@ -99,7 +99,14 @@ public class ColumnSelectionNodeRepresentation<VAL extends ColumnSelectionNodeVa
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numVisOptions") final Integer numberVisOptions) {
-        super(label, description, required, defaultValue, currentValue);
+        this(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions, numberVisOptions, false);
+    }
+
+    protected ColumnSelectionNodeRepresentation(@JsonProperty("label") final String label,
+        final String description, final boolean required, final VAL defaultValue, final VAL currentValue,
+        final String[] possibleColumns, final String type, final boolean limitNumberVisOptions,
+        final Integer numberVisOptions, final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_possibleColumns = possibleColumns;
         m_type = type;
         m_limitNumberVisOptions = limitNumberVisOptions;
@@ -114,7 +121,20 @@ public class ColumnSelectionNodeRepresentation<VAL extends ColumnSelectionNodeVa
      */
     public ColumnSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final ColumnSelectionNodeConfig filterConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
+        this(currentValue, defaultValue, filterConfig, labelConfig, false);
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param filterConfig The config of the node
+     * @param labelConfig The label config of the node
+     * @param triggerReExecution
+     */
+    public ColumnSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final ColumnSelectionNodeConfig filterConfig, final LabeledConfig labelConfig,
+        final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_possibleColumns = filterConfig.getPossibleColumns();
         m_type = filterConfig.getType();
         m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();

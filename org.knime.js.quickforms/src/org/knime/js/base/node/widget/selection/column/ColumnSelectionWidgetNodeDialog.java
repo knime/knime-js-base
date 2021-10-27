@@ -74,14 +74,14 @@ import org.knime.core.node.util.ColumnSelectionPanel;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 
 /**
  * Node dialog for the column selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ColumnSelectionNodeValue> {
+public class ColumnSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ColumnSelectionNodeValue> {
 
     private final ColumnSelectionPanel m_defaultField;
     private final JComboBox<String> m_type;

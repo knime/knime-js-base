@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the column selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionWidgetConfig extends LabeledFlowVariableWidgetConfig<ColumnSelectionNodeValue> {
+public class ColumnSelectionWidgetConfig extends ReExecutableWidgetConfig<ColumnSelectionNodeValue> {
 
     private final ColumnSelectionNodeConfig m_config;
 

@@ -175,7 +175,7 @@ public class ColumnSelectionWidgetNodeModel extends
     protected ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue> getRepresentation() {
         ColumnSelectionWidgetConfig config = getConfig();
         return new ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getColumnSelectionConfig(), config.getLabelConfig());
+            config.getDefaultValue(), config.getColumnSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**
