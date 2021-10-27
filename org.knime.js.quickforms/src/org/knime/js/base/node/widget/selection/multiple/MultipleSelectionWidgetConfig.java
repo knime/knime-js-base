@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.selection.singleMultiple.MultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the multiple selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionWidgetConfig extends LabeledFlowVariableWidgetConfig<SingleMultipleSelectionNodeValue> {
+public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<SingleMultipleSelectionNodeValue> {
 
     private final MultipleSelectionNodeConfig m_config;
 

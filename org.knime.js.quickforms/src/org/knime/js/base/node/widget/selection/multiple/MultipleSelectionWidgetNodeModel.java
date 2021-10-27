@@ -156,7 +156,7 @@ public class MultipleSelectionWidgetNodeModel extends
     protected MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
         MultipleSelectionWidgetConfig config = getConfig();
         return new MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig());
+            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**

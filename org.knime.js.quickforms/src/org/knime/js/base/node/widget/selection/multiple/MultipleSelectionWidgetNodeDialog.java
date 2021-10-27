@@ -81,7 +81,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.MultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 
 /**
@@ -89,7 +89,7 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionWidgetNodeDialog extends FlowVariableWidgetNodeDialog<SingleMultipleSelectionNodeValue> {
+public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDialog<SingleMultipleSelectionNodeValue> {
 
     private final JList<String> m_defaultField;
     private final JTextArea m_possibleChoicesField;

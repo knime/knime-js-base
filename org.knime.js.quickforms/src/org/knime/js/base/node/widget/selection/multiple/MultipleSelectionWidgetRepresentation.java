@@ -75,10 +75,11 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
         @JsonProperty("defaultValue") final VAL defaultValue, @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
-        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
 
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
-            numberVisOptions);
+            numberVisOptions, triggerReExecution);
     }
 
     /**
@@ -86,11 +87,12 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
      * @param defaultValue The default value of the node
      * @param selectionConfig The config of the node
      * @param labelConfig The label config of the node
+     * @param triggerReExecution
      */
     public MultipleSelectionWidgetRepresentation(final VAL currentValue,
         final VAL defaultValue, final SingleMultipleSelectionNodeConfig selectionConfig,
-        final LabeledConfig labelConfig) {
+        final LabeledConfig labelConfig, final boolean triggerReExecution) {
 
-        super(currentValue, defaultValue, selectionConfig, labelConfig);
+        super(currentValue, defaultValue, selectionConfig, labelConfig, triggerReExecution);
     }
 }
