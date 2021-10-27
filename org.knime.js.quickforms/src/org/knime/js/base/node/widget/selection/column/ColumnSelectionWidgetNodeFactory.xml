@@ -20,29 +20,38 @@
 				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
 			</p>
 		</intro>
-		<option name="Label">
-          A descriptive label that will be shown in the view.
-        </option>
-        <option name="Description">
-          Some lines of description that will be shown in the view, for instance by means of a tooltip.
-        </option>
-        <option name="Variable Name">
-          Variable identifier.
-        </option>
-        <option name="Selection Type">
-          Type of the selection panel.
-        </option>
-        <option name="Default Value">
-          The column that is selected by default.
-        </option>
-        <option name="Limit number of visible options">
-          By default the List component adjusts its height to display all possible choices without a scroll bar. If the
-          setting is enabled, you will be able to limit the number of visible options in case you have too many of them.
-          The setting is available only for List selection type.</option>
-        <option name="Number of visible options">
-            A number of options visible in the List component without a vertical scroll bar. Changing this value will
-            also affect the component's height. The setting is available only for List selection type.
-        </option>
+		<tab name="Control">
+			<option name="Label">
+	          A descriptive label that will be shown in the view.
+	        </option>
+	        <option name="Description">
+	          Some lines of description that will be shown in the view, for instance by means of a tooltip.
+	        </option>
+	        <option name="Variable Name">
+	          Variable identifier.
+	        </option>
+	        <option name="Selection Type">
+	          Type of the selection panel.
+	        </option>
+	        <option name="Default Value">
+	          The column that is selected by default.
+	        </option>
+	        <option name="Limit number of visible options">
+	          By default the List component adjusts its height to display all possible choices without a scroll bar. If the
+	          setting is enabled, you will be able to limit the number of visible options in case you have too many of them.
+	          The setting is available only for List selection type.</option>
+	        <option name="Number of visible options">
+	            A number of options visible in the List component without a vertical scroll bar. Changing this value will
+	            also affect the component's height. The setting is available only for List selection type.
+	        </option>
+		</tab>
+        <tab name="Re-execution">
+	        <option name="Re-execution on widget value change">
+	            If selected, widget emits reactivity events that trigger the
+	            re-execution of downstream nodes in a component composite view when
+	            its value changes. It allows users to create interactive Data Apps and visualizations.
+	        </option>
+        </tab>
 	</fullDescription>
 	<interactiveView name="Column Selection Widget">
 		Displays a column selection panel.

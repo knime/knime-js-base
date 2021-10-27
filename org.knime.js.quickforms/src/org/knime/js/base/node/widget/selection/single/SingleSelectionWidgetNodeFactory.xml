@@ -50,9 +50,9 @@
 	        </option>
         </tab>
         <tab name="Re-execution">
-	        <option name="Enable re-execution">
+	        <option name="Re-execution on widget value change">
 	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component when
+	            re-execution of downstream nodes in a component composite view when
 	            its value changes. It allows users to create interactive Data Apps and visualizations.
 	        </option>
         </tab>
