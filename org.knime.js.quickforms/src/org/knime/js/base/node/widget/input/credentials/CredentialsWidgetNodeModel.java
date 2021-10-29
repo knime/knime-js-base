@@ -51,6 +51,7 @@ package org.knime.js.base.node.widget.input.credentials;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
@@ -147,10 +148,10 @@ public class CredentialsWidgetNodeModel extends
 
         var defaultVal = config.getDefaultValue();
         var previousDefaultVal = previousConfig.getDefaultValue();
-        if (!previousDefaultVal.getPassword().equals(defaultVal.getPassword())) {
+        if (!Objects.toString(previousDefaultVal.getPassword(), "").equals(defaultVal.getPassword())) {
             currentViewValue.setPassword(defaultVal.getPassword());
         }
-        if (!previousDefaultVal.getUsername().equals(defaultVal.getUsername())) {
+        if (!Objects.toString(previousDefaultVal.getUsername(), "").equals(defaultVal.getUsername())) {
             currentViewValue.setUsername(defaultVal.getUsername());
         }
         if (previousDefaultVal.isSavePassword() != defaultVal.isSavePassword()) {
