@@ -214,7 +214,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
     protected ColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
         ColumnFilterWidgetConfig config = getConfig();
         return new ColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getColumnFilterConfig(), config.getLabelConfig());
+            config.getColumnFilterConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     private void updateValuesFromSpec(final DataTableSpec spec) {

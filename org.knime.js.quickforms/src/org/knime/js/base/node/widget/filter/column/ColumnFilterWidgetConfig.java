@@ -55,7 +55,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
@@ -63,7 +63,7 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<ColumnFilterNodeValue> {
+public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFilterNodeValue> {
 
     private final ColumnFilterNodeConfig m_config;
 

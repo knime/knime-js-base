@@ -69,7 +69,7 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterPanel;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
@@ -77,7 +77,7 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ColumnFilterNodeValue> {
+public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ColumnFilterNodeValue> {
 
     private final DataColumnSpecFilterPanel m_defaultField;
     private final JComboBox<String> m_type;
