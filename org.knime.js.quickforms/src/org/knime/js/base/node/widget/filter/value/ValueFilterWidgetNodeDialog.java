@@ -80,14 +80,14 @@ import org.knime.core.node.util.filter.StringFilterPanel;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 
 /**
  * Node dialog for the value filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetNodeDialog extends FlowVariableWidgetNodeDialog<ValueFilterNodeValue> {
+public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ValueFilterNodeValue> {
 
     private final JCheckBox m_lockColumn;
     private final ColumnSelectionPanel m_defaultColumnField;

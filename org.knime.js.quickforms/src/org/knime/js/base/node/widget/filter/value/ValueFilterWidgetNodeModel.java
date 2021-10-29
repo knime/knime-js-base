@@ -278,7 +278,7 @@ public class ValueFilterWidgetNodeModel extends
     protected ValueFilterNodeRepresentation<ValueFilterNodeValue> getRepresentation() {
         ValueFilterWidgetConfig config = getConfig();
         return new ValueFilterNodeRepresentation<ValueFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getValueFilterConfig(), config.getLabelConfig());
+            config.getValueFilterConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**

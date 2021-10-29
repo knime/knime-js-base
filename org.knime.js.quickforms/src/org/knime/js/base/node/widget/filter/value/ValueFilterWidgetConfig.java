@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the value filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetConfig extends LabeledFlowVariableWidgetConfig<ValueFilterNodeValue> {
+public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilterNodeValue> {
 
     private final ValueFilterNodeConfig m_config;
 
