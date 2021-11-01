@@ -77,6 +77,8 @@ public class ColumnFilterDialogNodeModel extends
     DialogNodeModel<ColumnFilterDialogNodeRepresentation, ColumnFilterDialogNodeValue, ColumnFilterDialogNodeConfig>
     implements BufferedDataTableHolder {
 
+    private static final DataTableSpec EMPTY_TABLE_SPEC = new DataTableSpec();
+
     /**
      * The version of the Column Filter Configuration node.
      * The versions correspond to KNIME Analytics Platform versions in which changes were made to the node.
@@ -105,7 +107,7 @@ public class ColumnFilterDialogNodeModel extends
 
     private final Version m_version;
 
-    private DataTableSpec m_spec = new DataTableSpec();
+    private DataTableSpec m_spec = EMPTY_TABLE_SPEC;
 
     private BufferedDataTable m_inTable = null;
 
@@ -266,6 +268,7 @@ public class ColumnFilterDialogNodeModel extends
     @Override
     protected void reset() {
         m_inTable = null;
+        m_spec = EMPTY_TABLE_SPEC;
         super.reset();
     }
 

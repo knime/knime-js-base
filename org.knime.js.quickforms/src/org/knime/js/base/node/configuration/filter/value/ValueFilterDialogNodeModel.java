@@ -66,6 +66,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
 import org.knime.js.base.node.configuration.DialogNodeModel;
@@ -78,6 +79,8 @@ import org.knime.js.base.node.configuration.DialogNodeModel;
 public class ValueFilterDialogNodeModel extends
     DialogNodeModel<ValueFilterDialogNodeRepresentation, ValueFilterDialogNodeValue, ValueFilterDialogNodeConfig>
     implements BufferedDataTableHolder {
+
+    private static final DataTableSpec EMPTY_TABLE_SPEC = new DataTableSpec();
 
     private BufferedDataTable m_table;
 
@@ -104,10 +107,7 @@ public class ValueFilterDialogNodeModel extends
                 break;
             }
         }
-        if (colIndex >= inTable.getNumColumns()) {
-            throw new InvalidSettingsException("The column '" + "' was not found");
-        }
-        // unchanged data table spec
+        CheckUtils.checkSetting(colIndex < inTable.getNumColumns(), "The column '%s' was not found", column);
         return new DataTableSpec[]{(DataTableSpec)inSpecs[0]};
     }
 
@@ -120,9 +120,9 @@ public class ValueFilterDialogNodeModel extends
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         m_table = (BufferedDataTable)inObjects[0];
-        // 
+        //
         updateValues(m_table.getDataTableSpec());
-        // get filter configuration 
+        // get filter configuration
         Map<String, List<String>> value = createAndPushFlowVariable();
         // maps column name to the string representations of the permitted values
         Entry<String, List<String>> entry = value.entrySet().iterator().next();
@@ -155,6 +155,7 @@ public class ValueFilterDialogNodeModel extends
     @Override
     protected void reset() {
         m_table = null;
+        updateValues(EMPTY_TABLE_SPEC);
         super.reset();
     }
 

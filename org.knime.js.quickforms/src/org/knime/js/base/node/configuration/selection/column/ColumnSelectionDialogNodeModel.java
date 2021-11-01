@@ -75,6 +75,8 @@ import org.knime.js.base.node.configuration.DialogNodeModel;
 public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelectionDialogNodeRepresenation,
     ColumnSelectionDialogNodeValue, ColumnSelectionDialogNodeConfig> implements BufferedDataTableHolder {
 
+    private static final DataTableSpec EMPTY_TABLE_SPEC = new DataTableSpec();
+
     private BufferedDataTable m_table;
 
     private final boolean m_autoConfigure;
@@ -180,8 +182,9 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
      */
     @Override
     protected void reset() {
-        m_table = null;
         super.reset();
+        m_table = null;
+        updateColumns(EMPTY_TABLE_SPEC);
     }
 
     /**

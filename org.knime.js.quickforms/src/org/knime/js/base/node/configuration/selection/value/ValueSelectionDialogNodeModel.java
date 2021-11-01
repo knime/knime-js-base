@@ -75,6 +75,8 @@ import org.knime.js.base.node.configuration.DialogNodeModel;
 public class ValueSelectionDialogNodeModel extends DialogNodeModel<ValueSelectionDialogNodeRepresentation,
     ValueSelectionDialogNodeValue, ValueSelectionDialogNodeConfig> {
 
+    private static final DataTableSpec EMPTY_TABLE_SPEC = new DataTableSpec();
+
     /**
      * Creates a new value selection configuration node model
      */
@@ -100,6 +102,12 @@ public class ValueSelectionDialogNodeModel extends DialogNodeModel<ValueSelectio
         updateValues(((DataTable)inObjects[0]).getDataTableSpec());
         createAndPushFlowVariable();
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        updateValues(EMPTY_TABLE_SPEC);
     }
 
     /**
