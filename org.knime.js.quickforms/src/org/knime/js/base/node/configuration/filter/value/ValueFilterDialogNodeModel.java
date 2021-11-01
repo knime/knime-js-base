@@ -193,18 +193,13 @@ public class ValueFilterDialogNodeModel extends
             throw new InvalidSettingsException("No column available for selection in input table.");
         }
         if (!possibleValues.containsKey(column)) {
-            String warning = "";
             if (!StringUtils.isEmpty(column)) {
-                if (valueFilterConfig.isLockColumn()) {
-                    throw new InvalidSettingsException(
-                        "Locked column '" + column + "' is not part of the table spec anymore.");
-                }
-                warning = "Column '" + column + "' is not part of the table spec anymore.\n";
+                throw new InvalidSettingsException(
+                    "Column '" + column + "' is not part of the table spec anymore.");
             }
-            warning += "Auto-guessing default column and value.";
             column = possibleValues.keySet().toArray(new String[0])[0];
             values = new ArrayList<String>();
-            setWarningMessage(warning);
+            setWarningMessage("Auto-guessing default column and value.");
         }
         List<String> columnValues = possibleValues.get(column);
         if (columnValues == null || columnValues.isEmpty()) {
