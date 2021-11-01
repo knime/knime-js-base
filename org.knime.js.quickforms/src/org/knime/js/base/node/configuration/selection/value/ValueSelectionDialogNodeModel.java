@@ -137,18 +137,13 @@ public class ValueSelectionDialogNodeModel extends DialogNodeModel<ValueSelectio
             throw new InvalidSettingsException("The input table does not contain any column with domain information.");
         }
         if (!possibleValues.containsKey(column)) {
-            String warning = "";
             if (!StringUtils.isEmpty(column)) {
-                if (valueSelectionConfig.isLockColumn()) {
-                    throw new InvalidSettingsException(
-                        "Locked column '" + column + "' is not part of the table spec anymore or its domain is empty.");
-                }
-                warning = "Column '" + column + "' is not part of the table spec anymore or its domain is empty.\n";
+                throw new InvalidSettingsException(
+                    "Column '" + column + "' is not part of the table spec anymore or its domain is empty.");
             }
-            warning += "Auto-guessing default column and value.";
             column = possibleValues.keySet().iterator().next();
             value = possibleValues.get(column).get(0);
-            setWarningMessage(warning);
+            setWarningMessage("Auto-guessing default column and value.");
         }
         final List<String> values = possibleValues.get(column);
         if (!values.contains(value)) {
