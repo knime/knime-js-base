@@ -205,22 +205,17 @@ public class ValueFilterDialogNodeModel extends
             throw new InvalidSettingsException("No column available for selection in input table.");
         }
         if (!possibleValues.containsKey(column)) {
-            var warning = "";
             if (!StringUtils.isEmpty(column)) {
-                if (valueFilterConfig.isLockColumn()) {
-                    throw new InvalidSettingsException(
-                        "Locked column '" + column + "' is not part of the table spec anymore.");
-                }
-                warning = "Column '" + column + "' is not part of the table spec anymore.\n";
+                throw new InvalidSettingsException(
+                    "Column '" + column + "' is not part of the table spec anymore.");
             }
-            warning += "Auto-guessing default column and value.";
             // "Guessing" means that we take the first column from the possibleValues set
             var guessedColumn = possibleValues.entrySet().iterator().next();
             column = guessedColumn.getKey();
             // To respect the specified include/exclude option, even if the column is guessed,
             // we update the NodeValue with the domain of the guessed column. See AP-20227
             rValue.updateInclExcl(guessedColumn.getValue());
-            setWarningMessage(warning);
+            setWarningMessage("Auto-guessing default column and value.");
         }
         var columnValues = possibleValues.get(column);
         if (columnValues == null || columnValues.isEmpty()) {
