@@ -82,6 +82,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
@@ -230,20 +231,20 @@ public class FileDialogNodeModel extends
     }
 
 
-    private InputStream openStream(final URL url)
-        throws IOException, URISyntaxException {
+    private InputStream openStream(final URL url) throws IOException, URISyntaxException, CouldNotAuthorizeException {
         if ("file".equalsIgnoreCase(url.getProtocol())) {
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
             WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
             URLConnection conn = url.openConnection();
 
-            if (wfContext.getRemoteRepositoryAddress().isPresent() && wfContext.getServerAuthToken().isPresent()) {
+            final var authenticator = wfContext.getServerAuthenticator();
+            if (wfContext.getRemoteRepositoryAddress().isPresent() && authenticator.isPresent()) {
                 // only pass on the auth token if it's the originating server, we don't want to send it to someone else
                 URI repoUri = wfContext.getRemoteRepositoryAddress().get();
                 if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
-                        && repoUri.getScheme().equals(url.getProtocol())) {
-                    conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get());
+                    && repoUri.getScheme().equals(url.getProtocol())) {
+                    authenticator.get().authorizeClient(conn);
                 }
             }
 

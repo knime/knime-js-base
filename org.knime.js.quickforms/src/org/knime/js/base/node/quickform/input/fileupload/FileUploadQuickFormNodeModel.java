@@ -86,6 +86,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 import org.knime.workbench.explorer.ServerRequestModifier;
 import org.osgi.framework.Bundle;
@@ -313,7 +314,7 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
 
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
         final Optional<URI> repoUri = wfContext.getRemoteRepositoryAddress();
-        final boolean isRunningOnKnimeServer = repoUri.isPresent() && wfContext.getServerAuthToken().isPresent();
+        final boolean isRunningOnKnimeServer = repoUri.isPresent() && wfContext.getServerAuthenticator().isPresent();
         final boolean isUsingDefaultFile = getDefaultValue().equals(getRelevantValue());
         final boolean isExactKnimeServerMatch = isRunningOnKnimeServer && repoUri.get().getHost().equals(url.getHost())
             && (repoUri.get().getPort() == url.getPort()) && repoUri.get().getScheme().equals(url.getProtocol());
@@ -347,7 +348,11 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
 
         final URLConnection conn =
                 new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
-        conn.setRequestProperty("Authorization", "Bearer " + wfContext.getServerAuthToken().get()); // NOSONAR
+        try {
+            wfContext.getServerAuthenticator().get().authorizeClient(conn); // NOSONAR
+        } catch (CouldNotAuthorizeException e) {
+            throw new IOException("Could not authorize client: " + e.getMessage(), e);
+        }
 
         if (conn instanceof HttpsURLConnection) {
             ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
