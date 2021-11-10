@@ -97,7 +97,6 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     private int m_globalNumberFormatDecimals;
     private boolean m_displayMissingValueAsQuestionMark;
 
-    private boolean m_allowAddValue;
     private static final String CFG_DROPDOWN_COLUMNS = "dropdownColumns";
     private String[] m_dropdownColumns;
 
@@ -529,20 +528,6 @@ public class TableEditorViewRepresentation extends JSONViewContent {
     }
 
     /**
-     * @return the allowAddValue
-     */
-    public boolean getAllowAddValue() {
-        return m_allowAddValue;
-    }
-
-    /**
-     * @param allowAddValue the allowAddValue to set
-     */
-    public void setAllowAddValue(final boolean allowAddValue) {
-        m_allowAddValue = allowAddValue;
-    }
-
-    /**
      * @return the dropdownColumns
      */
     public String[] getDropdownColumns() {
@@ -598,7 +583,6 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         settings.addBoolean(TableEditorViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT, m_enableGlobalNumberFormat);
         settings.addInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS, m_globalNumberFormatDecimals);
 
-        settings.addBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES, m_allowAddValue);
         settings.addStringArray(CFG_DROPDOWN_COLUMNS, m_dropdownColumns);
 
         //added with 3.3
@@ -647,7 +631,6 @@ public class TableEditorViewRepresentation extends JSONViewContent {
         m_enableGlobalNumberFormat = settings.getBoolean(TableEditorViewConfig.CFG_ENABLE_GLOBAL_NUMBER_FORMAT);
         m_globalNumberFormatDecimals = settings.getInt(TableEditorViewConfig.CFG_GLOBAL_NUMBER_FORMAT_DECIMALS);
 
-        m_allowAddValue = settings.getBoolean(TableEditorViewConfig.CFG_ALLOW_ADD_VALUES);
         m_dropdownColumns = settings.getStringArray(CFG_DROPDOWN_COLUMNS, (String[])null);
 
         //added with 3.3

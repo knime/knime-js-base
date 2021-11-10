@@ -40,228 +40,29 @@ window.table_editor = (function () {
     /**
      * String values editor with dropdown
      */
-    var StringDropdownEditor = function (allowAddValue, columnValues, cellValue) {
+    var StringDropdownEditor = function (columnValues, cellValue) {
         this.suggestions = columnValues;
+        var autosuggestDropdown = '<select class="knime-autosuggest-dropdown">';
 
-        var content;
-        if(allowAddValue) {
-            content = '<div id="knime-datalist--container"><div id="knime-datalist--input-container" ></div><ul id="knime-datalist--list" style="display: block"></ul></div>';
-        } else {
-            content = '<select class="knime-autosuggest-dropdown">';
-
-            if (cellValue) {
-                content = content.concat('<option value="' + cellValue
-                + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
-            }
-            this.suggestions.forEach(function (value) {
-                if (value !== cellValue && value) {
-                    content = content.concat('<option value="' + value
-                    + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
-                }
-            });
-            content = content.concat('</select>');
+        if (cellValue) {
+            autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue
+            + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
         }
-        this.component = $(content);
+        this.suggestions.forEach(function (value) {
+            if (value !== cellValue && value) {
+                autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value
+                + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
+            }
+        });
+        autosuggestDropdown = autosuggestDropdown.concat('</select>');
+        this.component = $(autosuggestDropdown);
     };
-
+    
     StringDropdownEditor.prototype = Object.create(CellEditor.prototype);
 
     StringDropdownEditor.prototype.getValue = function () {
-        var value = document.getElementById('knime-datalist--input')?.value;
-        value = value ? value : this.component.val();
-        return value === '' ? null : value;
-    };
-
-    StringDropdownEditor.prototype.setValue = function (value) {
-        var value = document.getElementById('knime-datalist--input').value = value;
-    };
-
-    StringDropdownEditor.prototype.updateList = function (newValue) {
-        if (!this.suggestions.includes(newValue) && newValue) {
-            this.suggestions.push(newValue);
-        }
-    };
-
-    /**
-     * Functions for datalist polyfill
-     * may be removed when datalist is usable with CEF
-     */
-
-    /**
-     * Creates all elements needed for the datalist polyfill
-     * 
-     * @param cellValue 
-     */
-    StringDropdownEditor.prototype.initDatalist = function (cellValue) {
-        var self = this;
-        var inputContainer = document.getElementById('knime-datalist--input-container');
-        var dataTableScrollBody = document.getElementsByClassName('dataTables_scrollBody')[0];
-
-        this.createInputElement(cellValue);
-
-        var datalist = document.getElementById('knime-datalist--list');
-        datalist.style.maxHeight = dataTableScrollBody.getBoundingClientRect().y + dataTableScrollBody.getBoundingClientRect().height - inputContainer.getBoundingClientRect().y - 60 + 'px';
-        
-        this.suggestions.forEach(element => {
-            var listItem = document.createElement('li');
-            listItem.innerHTML = element;
-            listItem.addEventListener('mousedown', function (e) { 
-                self.component.focus();
-                self.addSelected(e.target);
-                self.chooseElement();
-            })
-            datalist.appendChild(listItem);
-            if (element === cellValue) {
-                this.addSelected(listItem);
-            }
-        });
-
-        var maxAvailableWidth = dataTableScrollBody.getBoundingClientRect().x + dataTableScrollBody.getBoundingClientRect().width - inputContainer.getBoundingClientRect().x;
-        if (maxAvailableWidth < datalist.getBoundingClientRect().width) {
-            datalist.style.right = 0;
-        } else {
-            datalist.style.left = 0;
-        }
-    };
-
-    StringDropdownEditor.prototype.createInputElement = function (cellValue) {
-        var self = this;
-        var inputContainer = document.getElementById('knime-datalist--input-container');
-
-        var input = document.createElement('input');
-        input.id = 'knime-datalist--input';
-        input.addEventListener('keyup', function(e) {
-            e.preventDefault();
-            self.handleKeyUp.call(self, e); 
-        });
-        input.value = cellValue;
-        inputContainer.appendChild(input);
-        input.focus();
-
-        var button = document.createElement('button');
-        button.id = 'knime-datalist--button';
-        button.addEventListener('mousedown', function (e) {
-            e.preventDefault();
-            self.component.focus();
-            self.toggleList(e);
-        });
-        button.innerHTML = '<i class="arrow up"></i>';
-        inputContainer.appendChild(button);
-    };
-
-    /**
-     * Filters datalist elements based on input
-     * 
-     * @param event 
-     */
-    StringDropdownEditor.prototype.filter = function (event) {
-        this.removeSelected();
-
-        var datalist = document.getElementById('knime-datalist--list');
-        if (datalist.style.display !== 'block') {
-            this.toggleList();
-        }
-        var searchTerm = event.target.value.toLowerCase();
-        var listContent = datalist.querySelectorAll('li');
-        for (var i = 0; i < listContent.length; i++) {
-            var name = listContent[i].innerHTML;
-            if (name.toLowerCase().indexOf(searchTerm) != -1) {
-                listContent[i].style.display = 'list-item'
-            } else {
-                listContent[i].style.display = 'none'
-            }
-        }
-    };
-
-    /**
-     * Toggles suggestions of datalist
-     */
-    StringDropdownEditor.prototype.toggleList = function () {
-        var list = document.getElementById('knime-datalist--list');
-        list.style.display = list.style.display === 'block' ? 'none' : 'block';
-
-        var buttonIcon = document.getElementById('knime-datalist--button').getElementsByTagName('i')[0];
-        buttonIcon.getAttribute('class').includes('up') ? buttonIcon.setAttribute('class', 'arrow down') : buttonIcon.setAttribute('class', 'arrow up');
-    };
-
-    /**
-     * Sets the selected element as input value and finishes editing
-     */
-    StringDropdownEditor.prototype.chooseElement = function () {
-        var selectedElement = document.getElementById('knime-datalist--selected');
-        var input = document.getElementById('knime-datalist--input');
-
-        if(selectedElement) {
-            input.value = selectedElement.innerHTML;
-        }
-        this.component.trigger('editFinish');
-    }
-
-    /**
-     * Sets the given element as selected element
-     * 
-     * @param element 
-     */
-    StringDropdownEditor.prototype.addSelected = function (element) {
-        this.removeSelected();
-        element.setAttribute('id', 'knime-datalist--selected');
-
-        if (this.isScrollable()) {
-            element.scrollIntoView();
-        }
-    };
-
-    /**
-     * Removes the current selected element
-     */
-    StringDropdownEditor.prototype.removeSelected = function () {
-        document.getElementById('knime-datalist--selected')?.setAttribute('id', '');
-    };
-
-    StringDropdownEditor.prototype.isScrollable = function () {
-        var datalist = document.getElementById('knime-datalist--list');
-        return datalist.scrollHeight > datalist.clientHeight;
-    };
-
-    /**
-     * Handles movement and filter functionality based on keyUp event of input
-     * 
-     * @param event
-     */
-    StringDropdownEditor.prototype.handleKeyUp = function(event) {
-        switch (event.key) {
-            case 'ArrowUp':
-            case 'ArrowDown':
-                this.moveSelected(event.key);
-                break;
-            case 'Enter':
-                // no handling is needed here as it is already provided by the editorComponent
-                break;
-            default:
-                this.filter(event);
-        }
-    };
-
-    /**
-     * Changes the selected element (index) inside the datalist
-     * 
-     * @param key
-     */
-    StringDropdownEditor.prototype.moveSelected = function (key) {
-        var datalist = document.getElementById('knime-datalist--list');
-        var listElements = datalist.querySelectorAll('li');
-        for (var i = 0; i < listElements.length; i++) {
-            var element = listElements[i];
-            if (element.getAttribute('id') === 'knime-datalist--selected') {
-                if (key === 'ArrowUp') {
-                    this.addSelected(listElements[(i === 0 ? (listElements.length - 1) : (i - 1))])
-                } else {
-                    this.addSelected(listElements[(i + 1) % listElements.length])
-                }
-                return;
-            }
-        }
-        (key === 'ArrowUp') ? this.addSelected(listElements[listElements.length-1]) : this.addSelected(listElements[0]);
+        var value = this.component.val();
+        return value ? value : null;
     };
 
     /**
@@ -548,9 +349,6 @@ window.table_editor = (function () {
         // need to set up height after adding the editor to the cell, otherwise it won't work in FF
         editorComponent.height(tdHeight);
         editorComponent.focus();
-        if (editor instanceof StringDropdownEditor && this._representation.allowAddValue) {
-            editor.initDatalist(cellValue !== undefined ? cellValue : cell.data());
-        }
 
         $td.off('click', this._cellClickHandler);
         $td.off('dblclick', this._editableCellDoubleClickHandler);
@@ -560,9 +358,6 @@ window.table_editor = (function () {
             var newValue = editor.getValue();
             $td.empty().append(newValue);
             self._setCellValue(cell, newValue);
-            if (editor instanceof StringDropdownEditor) {
-                editor.updateList(newValue);
-            }
         };
 
         var editCancelCallback = function () {
@@ -581,17 +376,9 @@ window.table_editor = (function () {
         };
 
         editorComponent.on('focusout', editFinishCallback);
-        if (editor instanceof StringDropdownEditor && this._representation.allowAddValue) {
-            editorComponent.on('editFinish', editFinishCallback);
-        }
         editorComponent.on('keydown', function (e) {
             switch (e.key) {
                 case 'Enter':
-                    if (editor instanceof StringDropdownEditor && self._representation.allowAddValue) {
-                        editor.chooseElement();
-                        self._selectCell(self._getCellByShift(cell, 1, 0));
-                        break;
-                    }
                     editFinishCallback();
                     self._selectCell(self._getCellByShift(cell, 1, 0));
                     break;
@@ -634,7 +421,7 @@ window.table_editor = (function () {
         var editor;
         if (this._hasDropdown(cell) && colType === 'String') {
             var cellDataValue = cellValue || cell.data();
-            editor = new StringDropdownEditor(this._representation.allowAddValue, this._getPossibleColumnValues(cell), cellDataValue);
+            editor = new StringDropdownEditor(this._getPossibleColumnValues(cell), cellDataValue);
             return editor;
         }  else {
             editor = createEditor(colType);

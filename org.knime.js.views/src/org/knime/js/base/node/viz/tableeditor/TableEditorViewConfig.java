@@ -137,10 +137,6 @@ public class TableEditorViewConfig {
     private DataColumnSpecFilterConfiguration m_columnFilterConfig =
         new DataColumnSpecFilterConfiguration(CFG_COLUMN_FILTER);
 
-    final static String CFG_ALLOW_ADD_VALUES= "allowAddValue";
-    final static boolean DEFAULT_ALLOW_ADD_VALUES = false;
-    private boolean m_allowAddValue = DEFAULT_ALLOW_ADD_VALUES;
-
     final static String CFG_DROPDOWN_COLUMN_FILTER = "dropdownColumnFilter";
     final InputFilter<DataColumnSpec> DROPDOWN_FILTER = new InputFilter<DataColumnSpec>() {
 
@@ -489,20 +485,6 @@ public class TableEditorViewConfig {
     }
 
     /**
-     * @return the allowAddValue
-     */
-    public boolean getAllowAddValue() {
-        return m_allowAddValue;
-    }
-
-    /**
-     * @param allowAddValue the allowAddValue to set
-     */
-    public void setAllowAddValue(final boolean allowAddValue) {
-        m_allowAddValue = allowAddValue;
-    }
-
-    /**
      * @return the columnDropdownFilterConfig
      */
     public DataColumnSpecFilterConfiguration getColumnDropdownFilterConfig() {
@@ -845,7 +827,6 @@ public class TableEditorViewConfig {
         settings.addString(CFG_TITLE, m_title);
         settings.addString(CFG_SUBTITLE, m_subtitle);
         m_columnFilterConfig.saveConfiguration(settings);
-        settings.addBoolean(CFG_ALLOW_ADD_VALUES, m_allowAddValue);
         m_columnDropdownFilterConfig.saveConfiguration(settings);
         settings.addBoolean(CFG_ENABLE_SELECTION, m_enableSelection);
         settings.addString(CFG_SELECTION_COLUMN_NAME, m_selectionColumnName);
@@ -905,7 +886,6 @@ public class TableEditorViewConfig {
         m_subtitle = settings.getString(CFG_SUBTITLE);
         m_columnFilterConfig.loadConfigurationInModel(settings);
 
-        m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         try {
             m_columnDropdownFilterConfig.loadConfigurationInModel(settings);
         } catch (InvalidSettingsException e) {
@@ -978,7 +958,6 @@ public class TableEditorViewConfig {
         loadDefaultsForColDropdownConfig(spec);
         m_columnDropdownFilterConfig.loadConfigurationInDialog(settings, spec);
 
-        m_allowAddValue = settings.getBoolean(CFG_ALLOW_ADD_VALUES, DEFAULT_ALLOW_ADD_VALUES);
         m_enableSelection = settings.getBoolean(CFG_ENABLE_SELECTION, DEFAULT_ENABLE_SELECTION);
         m_selectionColumnName = settings.getString(CFG_SELECTION_COLUMN_NAME, DEFAULT_SELECTION_COLUMN_NAME);
         m_enableSearching = settings.getBoolean(CFG_ENABLE_SEARCHING, DEFAULT_ENABLE_SEARCHING);
