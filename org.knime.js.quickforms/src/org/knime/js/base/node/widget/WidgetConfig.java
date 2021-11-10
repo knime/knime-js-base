@@ -119,6 +119,15 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     protected abstract VAL createEmptyValue();
 
     /**
+     * Override this method if re-execution can be triggered
+     *
+     * @return false by default
+     */
+    protected boolean canTriggerReExecution() {
+        return false;
+    }
+
+    /**
      * @param settings The settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {

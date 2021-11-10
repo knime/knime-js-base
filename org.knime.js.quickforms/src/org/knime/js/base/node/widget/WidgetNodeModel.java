@@ -177,6 +177,14 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
      * {@inheritDoc}
      */
     @Override
+    public boolean canTriggerReExecution() {
+        return getConfig().canTriggerReExecution();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void performReset() {
         m_viewValue = null;
     }

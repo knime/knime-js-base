@@ -86,6 +86,11 @@ public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent> exte
         return m_reExecutable;
     }
 
+    @Override
+    protected boolean canTriggerReExecution() {
+        return getTriggerReExecution();
+    }
+
     /**
      * {@inheritDoc}
      */
