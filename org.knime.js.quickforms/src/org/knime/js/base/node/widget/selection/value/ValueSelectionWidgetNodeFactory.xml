@@ -5,14 +5,14 @@
 	<name>Value Selection Widget</name>
 
 	<shortDescription>
-       Creates a value selection widget for use in components views. 
-       Outputs a string flow variable with the name of the selected value.
-    </shortDescription>
+		Creates a value selection widget for use in components views. 
+		Outputs a string flow variable with the name of the selected value.
+	</shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
 				Creates a value selection widget for use in components views. 
-                Outputs a string flow variable with the name of the selected value.
+				Outputs a string flow variable with the name of the selected value.
 			</p>
 			<p>
 				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
@@ -22,57 +22,57 @@
 		</intro>
 		<tab name="Control">
 			<option name="Label">
-	          A descriptive label that will be shown in the view.
-	        </option>
-	        <option name="Description">
-	          Some lines of description that will be shown in the view, for instance by means of a tooltip.
-	        </option>
-	        <option name="Variable Name">
-	          Variable identifier.
-	        </option>
-	        <option name="Selection Type">
-	          Type of the selection panel.
-	        </option>
-	        <!-- <option name="Column Type">
-	          The type of columns that can be selected.
-	        </option> -->
-	        <option name="Lock Column">
-	          If selected the column is locked and can not be selected from within the view.
-	        </option>
-	        <option name="Default Column">
-	          The column containing the values.
-	        </option>
-	        <option name="Default Value">
-	          The value that is selected by default.
-	        </option>
-	        <option name="Limit number of visible options">
-	          By default the List component adjusts its height to display all possible choices without a scroll bar. If the
-	          setting is enabled, you will be able to limit the number of visible options in case you have too many of them.
-	          The setting is available only for List selection type.
-	        </option>
-	        <option name="Number of visible options">
-	            A number of options visible in the List component without a vertical scroll bar. Changing this value will
-	            also affect the component's height. The setting is available only for List selection type.
-	        </option>
+				A descriptive label that will be shown in the view.
+			</option>
+			<option name="Description">
+				Some lines of description that will be shown in the view, for instance by means of a tooltip.
+			</option>
+			<option name="Variable Name">
+				Variable identifier.
+			</option>
+			<option name="Selection Type">
+				Type of the selection panel.
+			</option>
+			<!-- <option name="Column Type">
+				The type of columns that can be selected.
+			</option> -->
+			<option name="Lock Column">
+				If selected the column is locked and can not be selected from within the view.
+			</option>
+			<option name="Default Column">
+				The column containing the values.
+			</option>
+			<option name="Default Value">
+				The value that is selected by default.
+			</option>
+			<option name="Limit number of visible options">
+				By default the List component adjusts its height to display all possible choices without a scroll bar. If the
+				setting is enabled, you will be able to limit the number of visible options in case you have too many of them.
+				The setting is available only for List selection type.
+			</option>
+			<option name="Number of visible options">
+				A number of options visible in the List component without a vertical scroll bar. Changing this value will
+				also affect the component's height. The setting is available only for List selection type.
+			</option>
 		</tab>
-        <tab name="Re-execution">
-	        <option name="Re-execution on widget value change">
-	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component composite view when
-	            its value changes. It allows users to create interactive Data Apps and visualizations.
-	        </option>
-        </tab>
+		<tab name="Re-execution">
+			<option name="Re-execution on widget value change">
+				If selected, widget emits reactivity events that trigger the
+				re-execution of downstream nodes in a component composite view when
+				its value changes. It allows users to create interactive Data Apps and visualizations.
+			</option>
+		</tab>
 	</fullDescription>
 	<interactiveView name="Value Selection Widget">
 		Displays a column selection panel.
 	</interactiveView>
 	<ports>
-        <inPort index="0" name="Table Input">
-          Table containing the values to be selected.
-        </inPort>
-        <outPort index="0" name="Flow Variable Output">
-         Variable output (string) with the selected value name. Additionally the chosen column name is output as a 
-         separate flow variable.
-        </outPort>
-    </ports>
+		<inPort index="0" name="Table Input">
+			Table containing the values to be selected.
+		</inPort>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output (string) with the selected value name. Additionally the chosen column name is output as a 
+			separate flow variable.
+		</outPort>
+	</ports>
 </knimeNode>

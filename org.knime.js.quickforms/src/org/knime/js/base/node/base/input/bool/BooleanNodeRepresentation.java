@@ -69,6 +69,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends ReExecutableRepresentation<VAL> {
 
+    /**
+     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the node's default value
+     * @param currentValue the node's current value
+     */
     @JsonCreator
     protected BooleanNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
@@ -77,7 +86,15 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends ReE
         this(label, description, required, defaultValue, currentValue, false);
     }
 
-    @JsonCreator
+    /**
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the node's default value
+     * @param currentValue the node's current value
+     * @param triggerReExecution
+     */
     protected BooleanNodeRepresentation(final String label, final String description, final boolean required,
         final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
@@ -98,7 +115,8 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends ReE
      * @param config The config of the node
      * @param triggerReExecution
      */
-    public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config, final boolean triggerReExecution) {
+    public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config,
+        final boolean triggerReExecution) {
         super(currentValue, defaultValue, config, triggerReExecution);
     }
 

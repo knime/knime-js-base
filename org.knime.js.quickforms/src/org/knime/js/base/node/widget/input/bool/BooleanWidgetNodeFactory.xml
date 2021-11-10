@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./widget_boolean.png" type="Widget" xmlns="http://knime.org/node/v3.1" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-    <name>Boolean Widget</name>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Boolean Widget</name>
 
 	<shortDescription>
 	   Creates a boolean widget for use in components views. Outputs an integer flow variable with a given value 
@@ -10,42 +10,42 @@
 	</shortDescription>
 	<fullDescription>
 		<intro>
-            <p>
-			  Creates a boolean widget for use in components views. Outputs an integer flow variable with a given value 
-              (boolean).
+			<p>
+				Creates a boolean widget for use in components views. Outputs an integer flow variable with a given value 
+				(boolean).
 			</p>
 			<p>
-              The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a 
-              flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes 
-              and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
-            </p>
+				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a 
+				flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes 
+				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+			</p>
 		</intro>
 		<tab name="Control">
 			<option name="Label">A descriptive label that will be shown in the view.</option>
 			<option name="Description">Some lines of description that will be shown in the view, 
-			  for instance by means of a tooltip.</option>
+				for instance by means of a tooltip.</option>
 			<option name="Variable Name">Variable identifier.</option>
-	        <option name="Default Value">
-	          The value that is selected by default.
-	        </option>
-	        <option name="Output as Integer">
-	          If set, the output variable will be of type integer (as opposed to type boolean).
-	        </option>
+			<option name="Default Value">
+				The value that is selected by default.
+			</option>
+			<option name="Output as Integer">
+				If set, the output variable will be of type integer (as opposed to type boolean).
+			</option>
 		</tab>
 		<tab name="Re-execution">
-	        <option name="Re-execution on widget value change">
-	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component composite view when
-	            its value changes. It allows users to create interactive Data Apps and visualizations.
-	        </option>
-        </tab>
+			<option name="Re-execution on widget value change">
+				If selected, widget emits reactivity events that trigger the
+				re-execution of downstream nodes in a component composite view when
+				its value changes. It allows users to create interactive Data Apps and visualizations.
+			</option>
+		</tab>
 	</fullDescription>
 	<interactiveView name="Boolean Widget">
-        Displays a checkbox which represents the boolean value.
-    </interactiveView>
+		Displays a checkbox which represents the boolean value.
+	</interactiveView>
 	<ports>
 		<outPort index="0" name="Flow Variable Output">
-		  Variable output with the given variable defined.
+			Variable output with the given variable defined.
 		</outPort>
 	</ports>
 </knimeNode>

@@ -99,13 +99,28 @@ public class ColumnSelectionNodeRepresentation<VAL extends ColumnSelectionNodeVa
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numVisOptions") final Integer numberVisOptions) {
-        this(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions, numberVisOptions, false);
+        this(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions,
+            numberVisOptions, false);
     }
 
-    protected ColumnSelectionNodeRepresentation(@JsonProperty("label") final String label,
-        final String description, final boolean required, final VAL defaultValue, final VAL currentValue,
-        final String[] possibleColumns, final String type, final boolean limitNumberVisOptions,
-        final Integer numberVisOptions, final boolean triggerReExecution) {
+    /**
+     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the node's default value
+     * @param currentValue the node's current value
+     * @param possibleColumns
+     * @param type
+     * @param limitNumberVisOptions
+     * @param numberVisOptions
+     * @param triggerReExecution
+     */
+    protected ColumnSelectionNodeRepresentation(@JsonProperty("label") final String label, final String description,
+        final boolean required, final VAL defaultValue, final VAL currentValue, final String[] possibleColumns,
+        final String type, final boolean limitNumberVisOptions, final Integer numberVisOptions,
+        final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_possibleColumns = possibleColumns;
         m_type = type;

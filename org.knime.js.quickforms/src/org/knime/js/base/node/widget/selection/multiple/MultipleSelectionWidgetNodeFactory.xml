@@ -5,14 +5,14 @@
 	<name>Multiple Selection Widget</name>
 
 	<shortDescription>
-	   Allows selecting multiple values from a list of strings in an encapsulating component's view. 
-       The selected values are returned as a data table and a string flow variable.
-    </shortDescription>
+		Allows selecting multiple values from a list of strings in an encapsulating component's view. 
+		The selected values are returned as a data table and a string flow variable.
+	</shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
-			  Allows selecting multiple values from a list of strings in an encapsulating component's view. 
-              The selected values are returned as a data table and a string flow variable.
+				Allows selecting multiple values from a list of strings in an encapsulating component's view. 
+				The selected values are returned as a data table and a string flow variable.
 			</p>
 			<p>
 				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
@@ -20,51 +20,51 @@
 				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
 			</p>
 		</intro>
-        <tab name="Control">
-	        <option name="Label">
-	          A descriptive label that will be shown in the view.
-	        </option>
-	        <option name="Description">
-	          Some lines of description that will be shown in the view, for instance by means of a tooltip.
-	        </option>
-	        <option name="Variable Name">
-	          Variable identifier.
-	        </option>
-	        <option name="Selection Type">
-	          The type of the selection element. This can be either check boxes with a vertical or horizontal layout, a 
-	          List or a Twinlist.
-	        </option>
-	        <option name="Possible Choices">
-	          The possible choices, each line is one possible value.
-	        </option>
-	        <option name="Default Values">
-	          Values selected by default.
-	        </option>
-	        <option name="Limit number of visible options">
-	          By default the List and Twinlist components adjust their height to display all possible choices without a
-	          scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you
-	          have too many of them. The setting is available only for List or Twinlist selection type.</option>
-	        <option name="Number of visible options">
-	            A number of options visible in the List or Twinlist component without a vertical scroll bar. 
-	            Changing this value will also affect the component's height. Notice that for Twinlist the height cannot 
-	            be less than the overall height of the control buttons in the middle. The setting is available only for 
-	            List or Twinlist selection type.
-	        </option>
-        </tab>
-        <tab name="Re-execution">
-	        <option name="Re-execution on widget value change">
-	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component composite view when
-	            its value changes. It allows users to create interactive Data Apps and visualizations.
-	        </option>
-        </tab>
+		<tab name="Control">
+			<option name="Label">
+				A descriptive label that will be shown in the view.
+			</option>
+			<option name="Description">
+				Some lines of description that will be shown in the view, for instance by means of a tooltip.
+			</option>
+			<option name="Variable Name">
+				Variable identifier.
+			</option>
+			<option name="Selection Type">
+				The type of the selection element. This can be either check boxes with a vertical or horizontal layout, a 
+				List or a Twinlist.
+			</option>
+			<option name="Possible Choices">
+				The possible choices, each line is one possible value.
+			</option>
+			<option name="Default Values">
+				Values selected by default.
+			</option>
+			<option name="Limit number of visible options">
+				By default the List and Twinlist components adjust their height to display all possible choices without a
+				scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you
+				have too many of them. The setting is available only for List or Twinlist selection type.</option>
+			<option name="Number of visible options">
+				A number of options visible in the List or Twinlist component without a vertical scroll bar. 
+				Changing this value will also affect the component's height. Notice that for Twinlist the height cannot 
+				be less than the overall height of the control buttons in the middle. The setting is available only for 
+				List or Twinlist selection type.
+			</option>
+		</tab>
+		<tab name="Re-execution">
+			<option name="Re-execution on widget value change">
+				If selected, widget emits reactivity events that trigger the
+				re-execution of downstream nodes in a component composite view when
+				its value changes. It allows users to create interactive Data Apps and visualizations.
+			</option>
+		</tab>
 	</fullDescription>
 	<interactiveView name="Multiple Selection Widget">
 		Displays a value selection panel.
 	</interactiveView>
 	<ports>
-        <outPort index="0" name="Selected Value Table">
-          Table output holding the selected choices in one column with the given parameter name as column name.
-        </outPort>
-    </ports>
+		<outPort index="0" name="Selected Value Table">
+			Table output holding the selected choices in one column with the given parameter name as column name.
+		</outPort>
+	</ports>
 </knimeNode>

@@ -107,15 +107,16 @@ public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValu
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        this(label, description, required, defaultValue, currentValue, columnType, lockColumn, possibleValues, type, limitNumberVisOptions, numberVisOptions, false);
+        this(label, description, required, defaultValue, currentValue, columnType, lockColumn, possibleValues, type,
+            limitNumberVisOptions, numberVisOptions, false);
     }
 
     /**
-     * @param label
-     * @param description
-     * @param required
-     * @param defaultValue
-     * @param currentValue
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the node's default value
+     * @param currentValue the node's current value
      * @param columnType
      * @param lockColumn
      * @param possibleValues
@@ -124,12 +125,10 @@ public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValu
      * @param numberVisOptions
      * @param triggerReExecution
      */
-    protected ValueSelectionNodeRepresentation(final String label, final String description,
-        final boolean required, final VAL defaultValue, final VAL currentValue,
-        final ColumnType columnType, final boolean lockColumn,
-        final Map<String, List<String>> possibleValues, final String type,
-        final boolean limitNumberVisOptions, final Integer numberVisOptions,
-        final boolean triggerReExecution) {
+    protected ValueSelectionNodeRepresentation(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue, final ColumnType columnType, final boolean lockColumn,
+        final Map<String, List<String>> possibleValues, final String type, final boolean limitNumberVisOptions,
+        final Integer numberVisOptions, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_columnType = columnType;
         m_lockColumn = lockColumn;
@@ -158,7 +157,8 @@ public class ValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValu
      * @param triggerReExecution
      */
     public ValueSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final ValueSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        final ValueSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig,
+        final boolean triggerReExecution) {
         super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_columnType = selectionConfig.getColumnType();
         m_lockColumn = selectionConfig.isLockColumn();

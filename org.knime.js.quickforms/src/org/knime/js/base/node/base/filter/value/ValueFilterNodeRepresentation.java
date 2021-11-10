@@ -103,7 +103,8 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        this(label, description, required, defaultValue, currentValue, lockColumn, possibleValues, type, limitNumberVisOptions, numberVisOptions, false);
+        this(label, description, required, defaultValue, currentValue, lockColumn, possibleValues, type,
+            limitNumberVisOptions, numberVisOptions, false);
     }
 
     /**
@@ -119,11 +120,10 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * @param numberVisOptions
      * @param triggerReExecution
      */
-    protected ValueFilterNodeRepresentation(final String label, final String description,
-        final boolean required, final VAL defaultValue, final VAL currentValue,
-        final boolean lockColumn, final Map<String, List<String>> possibleValues,
-        final String type, final boolean limitNumberVisOptions, final Integer numberVisOptions,
-        final boolean triggerReExecution) {
+    protected ValueFilterNodeRepresentation(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue, final boolean lockColumn,
+        final Map<String, List<String>> possibleValues, final String type, final boolean limitNumberVisOptions,
+        final Integer numberVisOptions, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_lockColumn = lockColumn;
         m_possibleValues = possibleValues;

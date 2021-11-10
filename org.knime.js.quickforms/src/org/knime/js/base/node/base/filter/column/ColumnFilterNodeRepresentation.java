@@ -114,11 +114,9 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
      * @param numberVisOptions
      * @param triggerReExecution
      */
-    protected ColumnFilterNodeRepresentation(final String label,
-        final String description, final boolean required, final VAL defaultValue,
-        final VAL currentValue, final String[] possibleColumns, final String type,
-        final boolean limitNumberVisOptions, final Integer numberVisOptions,
-        final boolean triggerReExecution) {
+    protected ColumnFilterNodeRepresentation(final String label, final String description, final boolean required,
+        final VAL defaultValue, final VAL currentValue, final String[] possibleColumns, final String type,
+        final boolean limitNumberVisOptions, final Integer numberVisOptions, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_possibleColumns = possibleColumns;
         m_type = type;

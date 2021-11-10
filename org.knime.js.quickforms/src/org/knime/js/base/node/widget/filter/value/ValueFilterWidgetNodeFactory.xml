@@ -5,14 +5,14 @@
 	<name>Nominal Row Filter Widget</name>
 
 	<shortDescription>
-       Creates a value filter widget for use in components views. 
-       Takes a data table and returns a filtered data table with only the selected values of a chosen column.
-    </shortDescription>
+		Creates a value filter widget for use in components views. 
+		Takes a data table and returns a filtered data table with only the selected values of a chosen column.
+	</shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
 				Creates a value filter widget for use in components views. 
-                Takes a data table and returns a filtered data table with only the selected values of a chosen column.
+				Takes a data table and returns a filtered data table with only the selected values of a chosen column.
 			</p>
 			<p>
 				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
@@ -27,45 +27,45 @@
 			</option>
 			<option name="Variable Name">Variable identifier.</option>
 			<option name="Selection Type">
-	          Type of the selection panel.
-	        </option>
-	        <option name="Lock Column">
-	          If selected the column is locked and can not be selected from within the view.
-	        </option>
-	        <option name="Default Column">
-	            The column containing the values.
-	        </option>
-	        <option name="Default Values">
-	          The values that are selected by default.
-	        </option>
-	        <option name="Limit number of visible options">
-	          By default the List and Twinlist components adjust their height to display all possible choices without a 
-	          scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you 
-	          have too many of them. The setting is available only for List or Twinlist selection type.</option>
-	        <option name="Number of visible options">
-	            A number of options visible in the List or Twinlist component without a vertical scroll bar. Changing 
-	            this value will also affect the component's height. Notice that for Twinlist the height cannot be less 
-	            than the overall height of the control buttons in the middle. The setting is available only for List or 
-	            Twinlist selection type.
-	        </option>
+				Type of the selection panel.
+			</option>
+			<option name="Lock Column">
+				If selected the column is locked and can not be selected from within the view.
+			</option>
+			<option name="Default Column">
+				The column containing the values.
+			</option>
+			<option name="Default Values">
+				The values that are selected by default.
+			</option>
+			<option name="Limit number of visible options">
+				By default the List and Twinlist components adjust their height to display all possible choices without a 
+				scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you 
+				have too many of them. The setting is available only for List or Twinlist selection type.</option>
+			<option name="Number of visible options">
+				A number of options visible in the List or Twinlist component without a vertical scroll bar. Changing 
+				this value will also affect the component's height. Notice that for Twinlist the height cannot be less 
+				than the overall height of the control buttons in the middle. The setting is available only for List or 
+				Twinlist selection type.
+			</option>
 		</tab>
-        <tab name="Re-execution">
-	        <option name="Re-execution on widget value change">
-	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component composite view when
-	            its value changes. It allows users to create interactive Data Apps and visualizations.
-	        </option>
-        </tab>
+		<tab name="Re-execution">
+			<option name="Re-execution on widget value change">
+				If selected, widget emits reactivity events that trigger the
+				re-execution of downstream nodes in a component composite view when
+				its value changes. It allows users to create interactive Data Apps and visualizations.
+			</option>
+		</tab>
 	</fullDescription>
 	<interactiveView name="Value Filter Widget">
 		Displays a value filter panel.
 	</interactiveView>
 	<ports>
-        <inPort index="0" name="Table Input">
-          Table containing the column(s) with values to be filtered.
-        </inPort>
-        <outPort index="0" name="Filtered Table">
-          Filtered table containing only rows with the selected values.
-        </outPort>
-    </ports>
+		<inPort index="0" name="Table Input">
+			Table containing the column(s) with values to be filtered.
+		</inPort>
+		<outPort index="0" name="Filtered Table">
+			Filtered table containing only rows with the selected values.
+		</outPort>
+	</ports>
 </knimeNode>

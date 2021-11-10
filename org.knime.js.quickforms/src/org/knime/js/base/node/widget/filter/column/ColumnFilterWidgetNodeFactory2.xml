@@ -5,14 +5,14 @@
 	<name>Column Filter Widget</name>
 
 	<shortDescription>
-       Creates a column filter widget for use in components views. 
-       Takes a data table and returns a filtered data table with only the selected columns.
-    </shortDescription>
+		Creates a column filter widget for use in components views. 
+		Takes a data table and returns a filtered data table with only the selected columns.
+	</shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
 				Creates a column filter widget for use in components views. 
-                Takes a data table and returns a filtered data table with only the selected columns.
+				Takes a data table and returns a filtered data table with only the selected columns.
 			</p>
 			<p>
 				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
@@ -27,36 +27,36 @@
 			</option>
 			<option name="Variable Name">Variable identifier.</option>
 			<option name="Default Values">
-	          The columns that are selected by default.
-	        </option>
-	        <option name="Limit number of visible options">
-	          By default the filter component adjusts its height to display all possible choices without a scroll bar. If 
-	          the setting is enabled, you will be able to limit the number of visible options in case you have too many of
-	          them.
-	        </option>
-	        <option name="Number of visible options">
-	            A number of options visible in the filter component without a vertical scroll bar. Changing this value will
-	            also affect the component's height. Notice that the height cannot be less than the overall height of the 
-	            control buttons in the middle.
-	        </option>
+				The columns that are selected by default.
+			</option>
+			<option name="Limit number of visible options">
+				By default the filter component adjusts its height to display all possible choices without a scroll bar. If 
+				the setting is enabled, you will be able to limit the number of visible options in case you have too many of
+				them.
+			</option>
+			<option name="Number of visible options">
+				A number of options visible in the filter component without a vertical scroll bar. Changing this value will
+				also affect the component's height. Notice that the height cannot be less than the overall height of the 
+				control buttons in the middle.
+			</option>
 		</tab>
 		<tab name="Re-execution">
-	        <option name="Re-execution on widget value change">
-	            If selected, widget emits reactivity events that trigger the
-	            re-execution of downstream nodes in a component composite view when
-	            its value changes. It allows users to create interactive Data Apps and visualizations.
-	        </option>
-        </tab>
+			<option name="Re-execution on widget value change">
+				If selected, widget emits reactivity events that trigger the
+				re-execution of downstream nodes in a component composite view when
+				its value changes. It allows users to create interactive Data Apps and visualizations.
+			</option>
+		</tab>
 	</fullDescription>
 	<interactiveView name="Column Filter Widget">
 		Displays a column filter panel.
 	</interactiveView>
 	<ports>
-        <inPort index="0" name="Table Input">
-          Table containing the columns to be filtered.
-        </inPort>
-        <outPort index="0" name="Filtered Table">
-          Filtered table containing only the selected columns.
-        </outPort>
-    </ports>
+		<inPort index="0" name="Table Input">
+			Table containing the columns to be filtered.
+		</inPort>
+		<outPort index="0" name="Filtered Table">
+			Filtered table containing only the selected columns.
+		</outPort>
+	</ports>
 </knimeNode>
