@@ -46,10 +46,12 @@ window.table_editor = (function () {
 
         this.suggestions.forEach(function (value) {
             if (value) {
-                content += '<option value="' + value + '"' + (value === cellValue ? ' selected ' : '') + 'class="knime-autosuggest-dropdown--option">' + value + '</option>';
+                content += '<option value="' + value + '"' + (value === cellValue ? ' selected ' : '') +
+                    'class="knime-autosuggest-dropdown--option">' + value + '</option>';
             }
         });
-        content += '<option value=""' + (cellValue ? '' : ' selected ') + 'class="knime-autosuggest-dropdown--option">Missing value</option></select>';
+        content += '<option value=""' + (cellValue ? '' : ' selected ') +
+            'class="knime-autosuggest-dropdown--option">Missing value</option></select>';
         this.component = $(content);
     };
     
