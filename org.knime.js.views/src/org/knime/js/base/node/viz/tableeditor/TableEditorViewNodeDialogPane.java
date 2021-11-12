@@ -303,16 +303,6 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridwidth = 3;
         displayPanel.add(m_columnFilterPanel, gbcD);
 
-        JPanel dropdownPanel = new JPanel(new GridBagLayout());
-        dropdownPanel.setBorder(new TitledBorder("Nominal Values Options"));
-        GridBagConstraints gbcA = createConfiguredGridBagConstraints();
-        gbcA.gridwidth = 1;
-        gbcA.gridx = 0;
-        dropdownPanel.add(new JLabel("Suggestion dropdown for columns: "), gbcA);
-        gbcA.gridy++;
-        gbcA.gridwidth = 3;
-        dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);
-
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -321,8 +311,6 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         panel.add(titlePanel, gbc);
         gbc.gridy++;
         panel.add(displayPanel, gbc);
-        gbc.gridy++;
-        panel.add(dropdownPanel, gbc);
         return panel;
     }
 
@@ -452,6 +440,16 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcD.gridwidth = 3;
         editorPanel.add(m_editableColumnsFilterPanel, gbcD);
 
+        JPanel dropdownPanel = new JPanel(new GridBagLayout());
+        dropdownPanel.setBorder(new TitledBorder("Nominal Values Options"));
+        GridBagConstraints gbcA = createConfiguredGridBagConstraints();
+        gbcA.gridwidth = 1;
+        gbcA.gridx = 0;
+        dropdownPanel.add(new JLabel("Suggestion dropdown for columns: "), gbcA);
+        gbcA.gridy++;
+        gbcA.gridwidth = 3;
+        dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);
+
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -460,6 +458,8 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(m_resetEditorChangesButton, gbc);
+        gbc.gridy++;
+        panel.add(dropdownPanel, gbc);
 
         return panel;
     }

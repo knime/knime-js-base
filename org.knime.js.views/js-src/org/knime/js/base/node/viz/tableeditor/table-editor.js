@@ -42,20 +42,15 @@ window.table_editor = (function () {
      */
     var StringDropdownEditor = function (columnValues, cellValue) {
         this.suggestions = columnValues;
-        var autosuggestDropdown = '<select class="knime-autosuggest-dropdown">';
+        var content = '<select class="knime-autosuggest-dropdown">';
 
-        if (cellValue) {
-            autosuggestDropdown = autosuggestDropdown.concat('<option value="' + cellValue
-            + '" selected class="knime-autosuggest-dropdown--option">' + cellValue + '</option>');
-        }
         this.suggestions.forEach(function (value) {
-            if (value !== cellValue && value) {
-                autosuggestDropdown = autosuggestDropdown.concat('<option value="' + value
-                + '" class="knime-autosuggest-dropdown--option">' + value + '</option>');
+            if (value) {
+                content += '<option value="' + value + '"' + (value === cellValue ? ' selected ' : '') + 'class="knime-autosuggest-dropdown--option">' + value + '</option>';
             }
         });
-        autosuggestDropdown = autosuggestDropdown.concat('</select>');
-        this.component = $(autosuggestDropdown);
+        content += '<option value=""' + (cellValue ? '' : ' selected ') + 'class="knime-autosuggest-dropdown--option">Missing value</option></select>';
+        this.component = $(content);
     };
     
     StringDropdownEditor.prototype = Object.create(CellEditor.prototype);
