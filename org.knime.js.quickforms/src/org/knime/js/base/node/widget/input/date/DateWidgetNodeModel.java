@@ -75,6 +75,8 @@ import org.knime.time.util.DateTimeUtils;
 public class DateWidgetNodeModel
     extends WidgetFlowVariableNodeModel<DateNodeRepresentation<DateNodeValue>, DateNodeValue, DateInputWidgetConfig> {
 
+    private ZonedDateTime m_previousTime = DateNodeConfig.DEFAULT_ZDT;
+
     /**
      * @param viewName the interactive view name
      */
@@ -90,8 +92,8 @@ public class DateWidgetNodeModel
         final ZonedDateTime value;
         final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
         DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
-        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = dateConfig.isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+        if (getOverwriteMode() == ValueOverwriteMode.NONE && dateConfig.isUseDefaultExecTime()) {
+            value = now;
         } else {
             value = getRelevantValue().getDate();
         }
@@ -117,8 +119,8 @@ public class DateWidgetNodeModel
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         final ZonedDateTime value;
         final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
-        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = getConfig().getDateNodeConfig().isUseDefaultExecTime() ? now : getRelevantValue().getDate();
+        if (getOverwriteMode() == ValueOverwriteMode.NONE && getConfig().getDateNodeConfig().isUseDefaultExecTime()) {
+            value = now;
         } else {
             value = getRelevantValue().getDate();
         }
@@ -127,6 +129,7 @@ public class DateWidgetNodeModel
         if (validationResult.isPresent()) {
             throw new InvalidSettingsException(validationResult.get());
         }
+        m_previousTime = getConfig().getDefaultValue().getDate();
         return super.performExecute(inObjects, exec);
     }
 
@@ -153,9 +156,9 @@ public class DateWidgetNodeModel
     protected void createAndPushFlowVariable() throws InvalidSettingsException {
         final ZonedDateTime value;
         DateNodeConfig dateConfig = getConfig().getDateNodeConfig();
-        if (getOverwriteMode() == ValueOverwriteMode.NONE) {
-            value = dateConfig.isUseDefaultExecTime() ? DateTimeUtils.nowZonedDateTimeMillis()
-                : getRelevantValue().getDate();
+        final ZonedDateTime now = DateTimeUtils.nowZonedDateTimeMillis();
+        if (getOverwriteMode() == ValueOverwriteMode.NONE && dateConfig.isUseDefaultExecTime()) {
+            value = now;
         } else {
             value = getRelevantValue().getDate();
         }
@@ -215,6 +218,23 @@ public class DateWidgetNodeModel
                 return new ValidationError(validationResult.get());
             }
         return super.validateViewValue(value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DateNodeValue copyConfigToViewValue(final DateNodeValue currentViewValue,
+        final DateInputWidgetConfig config, final DateInputWidgetConfig previousConfig) {
+        // We need to check against the last expected execution time which should match against any config
+        // timestamps. If not, we can assume there is an override by a flow-variable. This allows us to avoid
+        // ignoring client-side updates because of timestamp differences but allow upstream variable overrides.
+        ZonedDateTime configDate = config.getDefaultValue().getDate();
+        if (!(configDate.equals(m_previousTime) || configDate.equals(previousConfig.getDefaultValue().getDate()))) {
+            return getConfig().getDefaultValue();
+        } else {
+            return currentViewValue;
+        }
     }
 
 }
