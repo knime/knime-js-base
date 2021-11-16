@@ -53,7 +53,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.ReExecutableRepresentation;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -69,7 +69,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class SingleMultipleSelectionNodeRepresentation<VAL extends SingleMultipleSelectionNodeValue>
-    extends ReExecutableRepresentation<VAL> {
+    extends ReExecutableNodeRepresentation<VAL> {
 
     private final String[] m_possibleChoices;
     private final String m_type;
