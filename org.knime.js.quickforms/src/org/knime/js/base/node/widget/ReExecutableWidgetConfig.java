@@ -53,7 +53,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.base.ReExecutableConfig;
 import org.knime.js.core.JSONViewContent;
 
 /**
@@ -61,7 +60,8 @@ import org.knime.js.core.JSONViewContent;
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @param <VAL>
  */
-public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent> extends LabeledFlowVariableWidgetConfig<VAL> {
+public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent>
+    extends LabeledFlowVariableWidgetConfig<VAL> {
 
     private ReExecutableConfig m_reExecutable = new ReExecutableConfig();
 
@@ -135,10 +135,9 @@ public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent> exte
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_reExecutable)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+            .append(m_reExecutable)
+            .toHashCode();
     }
 
     /**
@@ -157,10 +156,9 @@ public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent> exte
             return false;
         }
         ReExecutableWidgetConfig<VAL> other = (ReExecutableWidgetConfig<VAL>)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(other))
-                .append(m_reExecutable, other.m_reExecutable)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(other))
+            .append(m_reExecutable, other.m_reExecutable)
+            .isEquals();
     }
 
 }

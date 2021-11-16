@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   27 May 2019 (albrecht): created
+ *   Nov 16, 2021 (ben.laney): created
  */
 package org.knime.js.base.node.widget.filter.column;
 
@@ -61,7 +61,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.VariableType;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
@@ -69,33 +68,34 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
 /**
  * The node model for the column filter widget node
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
-        ColumnFilterNodeValue, ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
+public class ColumnFilterWidgetNodeModel2 extends
+    WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue, ColumnFilterWidgetConfig2>
+    implements BufferedDataTableHolder {
 
     /**
-     * The version of the Column Filter Widget node.
-     * The versions correspond to KNIME Analytics Platform versions in which changes were made to the node.
+     * The version of the Column Filter Widget node. The versions correspond to KNIME Analytics Platform versions in
+     * which changes were made to the node.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
     public enum Version {
-        /**
-         * The first version of the Column Filter Widget node.
-         */
-        PRE_4_1,
-        /**
-         * The Column Filter Widget node in KNIME Analytics Platform 4.1.0.
-         * Following changes were made:
-         * - If the node is dragged onto the workbench and the dialog isn't opened before execution,
-         * the node now includes all rows by default (similar to the Column Filter node).
-         * - The node now outputs a string array flow variable instead of a comma separated string
-         */
-        V_4_1;
+            /**
+             * The first version of the Column Filter Widget node.
+             */
+            PRE_4_1,
+            /**
+             * The Column Filter Widget node in KNIME Analytics Platform 4.1.0. Following changes were made: - If the
+             * node is dragged onto the workbench and the dialog isn't opened before execution, the node now includes
+             * all rows by default (similar to the Column Filter node). - The node now outputs a string array flow
+             * variable instead of a comma separated string
+             */
+            V_4_1;
     }
 
     private DataTableSpec m_spec = new DataTableSpec();
+
     private BufferedDataTable m_inTable = null;
 
     private final Version m_version;
@@ -105,10 +105,10 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      *
      * @param viewName the interactive view name
      * @deprecated as of KNIME AP 4.1.0 use
-     *             {@link ColumnFilterWidgetNodeModel#ColumnFilterWidgetNodeModel(String, Version)} instead
+     *             {@link ColumnFilterWidgetNodeModel2#ColumnFilterWidgetNodeModel2(String, Version)} instead
      */
     @Deprecated
-    protected ColumnFilterWidgetNodeModel(final String viewName) {
+    protected ColumnFilterWidgetNodeModel2(final String viewName) {
         this(viewName, Version.PRE_4_1);
     }
 
@@ -118,7 +118,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      * @param viewName the interactive view name
      * @param version the version of the Column Filter Widget
      */
-    protected ColumnFilterWidgetNodeModel(final String viewName, final Version version) {
+    protected ColumnFilterWidgetNodeModel2(final String viewName, final Version version) {
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{BufferedDataTable.TYPE}, viewName);
         m_version = version;
     }
@@ -128,9 +128,9 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        m_spec = (DataTableSpec) inSpecs[0];
-        updateValuesFromSpec((DataTableSpec) inSpecs[0]);
-        updateColumns((DataTableSpec) inSpecs[0]);
+        m_spec = (DataTableSpec)inSpecs[0];
+        updateValuesFromSpec((DataTableSpec)inSpecs[0]);
+        updateColumns((DataTableSpec)inSpecs[0]);
         createAndPushFlowVariable();
         return new DataTableSpec[]{
             ColumnFilterNodeUtil.createSpec((DataTableSpec)inSpecs[0], getRelevantValue().getColumns())};
@@ -141,16 +141,15 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        m_inTable = (BufferedDataTable) inObjects[0];
-        DataTableSpec inSpec = (DataTableSpec) inObjects[0].getSpec();
+        m_inTable = (BufferedDataTable)inObjects[0];
+        DataTableSpec inSpec = (DataTableSpec)inObjects[0].getSpec();
         updateColumns(inSpec);
         createAndPushFlowVariable();
         DataTableSpec outSpec =
             ColumnFilterNodeUtil.createSpec((DataTableSpec)inObjects[0].getSpec(), getRelevantValue().getColumns());
         ColumnRearranger rearranger = new ColumnRearranger(inSpec);
         rearranger.keepOnly(outSpec.getColumnNames());
-        BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0],
-                rearranger, exec);
+        BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0], rearranger, exec);
         return new BufferedDataTable[]{outTable};
     }
 
@@ -159,7 +158,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      */
     @Override
     protected ColumnFilterNodeValue copyConfigToViewValue(final ColumnFilterNodeValue currentViewValue,
-        final ColumnFilterWidgetConfig config, final ColumnFilterWidgetConfig previousConfig) {
+        final ColumnFilterWidgetConfig2 config, final ColumnFilterWidgetConfig2 previousConfig) {
         var defaultVal = config.getDefaultValue();
         var previousDefaultVal = previousConfig.getDefaultValue();
         if (!Arrays.equals(defaultVal.getColumns(), previousDefaultVal.getColumns())) {
@@ -203,18 +202,19 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      * {@inheritDoc}
      */
     @Override
-    public ColumnFilterWidgetConfig createEmptyConfig() {
-        return new ColumnFilterWidgetConfig(m_version);
+    public ColumnFilterWidgetConfig2 createEmptyConfig() {
+        return new ColumnFilterWidgetConfig2();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected ColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
-        ColumnFilterWidgetConfig config = getConfig();
-        return new ColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getColumnFilterConfig(), config.getLabelConfig());
+    protected ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
+        ColumnFilterWidgetConfig2 config = getConfig();
+        return new ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(),
+            config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig(),
+            config.getTriggerReExecution());
     }
 
     private void updateValuesFromSpec(final DataTableSpec spec) {

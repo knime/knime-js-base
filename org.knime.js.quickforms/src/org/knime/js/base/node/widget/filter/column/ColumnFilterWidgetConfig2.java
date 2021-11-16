@@ -44,66 +44,103 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   27 May 2019 (albrecht): created
+ *   Nov 16, 2021 (ben.laney): created
  */
-package org.knime.js.base.node.base.input.bool;
+package org.knime.js.base.node.widget.filter.column;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
+import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
 /**
- * The base representation for the boolean configuration and widget node
+ * The config for the column filter widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <VAL> the value implementation of the node
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
  */
-@JsonAutoDetect
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class ColumnFilterWidgetConfig2 extends ReExecutableWidgetConfig<ColumnFilterNodeValue> {
+
+    private final ColumnFilterNodeConfig m_config;
+
+    private final Version m_version;
 
     /**
-     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
+     * Instantiate a new config object for Column Filter Widgets prior to KNIME AP 4.1.
      *
-     * @param label the widget label
-     * @param description the description
-     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
-     * @param defaultValue the node's default value
-     * @param currentValue the node's current value
+     * @deprecated as of KNIME AP 4.1.0 use the {@link ColumnFilterWidgetConfig2#ColumnFilterWidgetConfig2(Version)}
+     *             instead
      */
-    @JsonCreator
-    protected BooleanNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue,
-        @JsonProperty("currentValue") final VAL currentValue) {
-        super(label, description, required, defaultValue, currentValue);
-
+    @Deprecated
+    public ColumnFilterWidgetConfig2() {
+        this(Version.PRE_4_1);
     }
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param defaultValue The default value of the node
-     * @param config The config of the node
+     * Instantiate a new config object.
+     *
+     * @param version of the Column Filter Widget
      */
-    public BooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config) {
-        super(currentValue, defaultValue, config);
+    public ColumnFilterWidgetConfig2(final Version version) {
+        m_version = version;
+        m_config = new ColumnFilterNodeConfig();
+    }
+
+    /**
+     * @return the config
+     */
+    public ColumnFilterNodeConfig getColumnFilterConfig() {
+        return m_config;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
+    protected ColumnFilterNodeValue createEmptyValue() {
+        return new ColumnFilterNodeValue(m_version == Version.V_4_1);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveSettings(final NodeSettingsWO settings) {
+        super.saveSettings(settings);
+        m_config.saveSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadSettings(settings);
+        m_config.loadSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadSettingsInDialog(final NodeSettingsRO settings) {
+        super.loadSettingsInDialog(settings);
+        m_config.loadSettingsInDialog(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
+        sb.append(", ");
+        sb.append(m_config.toString());
         return sb.toString();
     }
 
@@ -111,10 +148,10 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends Lab
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder()
                 .appendSuper(super.hashCode())
+                .append(m_config)
                 .toHashCode();
     }
 
@@ -122,7 +159,6 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends Lab
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -133,8 +169,10 @@ public class BooleanNodeRepresentation<VAL extends BooleanNodeValue> extends Lab
         if (obj.getClass() != getClass()) {
             return false;
         }
+        ColumnFilterWidgetConfig2 other = (ColumnFilterWidgetConfig2)obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
                 .isEquals();
     }
 

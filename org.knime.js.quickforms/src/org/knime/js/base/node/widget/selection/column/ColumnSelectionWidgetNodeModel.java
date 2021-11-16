@@ -62,7 +62,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
@@ -72,7 +71,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnSelectionWidgetNodeModel extends
-    WidgetNodeModel<ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, ColumnSelectionNodeValue,
+    WidgetNodeModel<ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, ColumnSelectionNodeValue,
     ColumnSelectionWidgetConfig> implements BufferedDataTableHolder {
 
     private BufferedDataTable m_table;
@@ -172,9 +171,9 @@ public class ColumnSelectionWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue> getRepresentation() {
+    protected ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue> getRepresentation() {
         ColumnSelectionWidgetConfig config = getConfig();
-        return new ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>(getRelevantValue(),
+        return new ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>(getRelevantValue(),
             config.getDefaultValue(), config.getColumnSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 

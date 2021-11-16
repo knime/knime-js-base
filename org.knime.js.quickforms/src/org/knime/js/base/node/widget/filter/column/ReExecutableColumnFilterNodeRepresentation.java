@@ -44,38 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   Nov 16, 2021 (ben.laney): created
  */
-package org.knime.js.base.node.base.filter.value;
+package org.knime.js.base.node.widget.filter.column;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The base representation for the value filter configuration and widget node
+ * The re-executable representation for the column filter widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
  * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue>
+    extends ReExecutableNodeRepresentation<VAL> {
 
-    private final boolean m_lockColumn;
-    private final Map<String, List<String>> m_possibleValues;
+    private final String[] m_possibleColumns;
+
     private final String m_type;
+
     private final boolean m_limitNumberVisOptions;
+
     private final Integer m_numberVisOptions;
 
     /**
@@ -84,28 +87,21 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * @param label the widget label
      * @param description the description
      * @param required <code>true</code> if a value is required, <code>false</code> otherwise
-     * @param defaultValue the node's default value
-     * @param currentValue the node's current value
-     * @param lockColumn
-     * @param possibleValues
+     * @param defaultValue the quickform's default value
+     * @param currentValue the quickform's current value
+     * @param possibleColumns
      * @param type
      * @param limitNumberVisOptions
      * @param numberVisOptions
+     * @param triggerReExecution
      */
     @JsonCreator
-    protected ValueFilterNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue,
-        @JsonProperty("currentValue") final VAL currentValue,
-        @JsonProperty("lockColumn") final boolean lockColumn,
-        @JsonProperty("possibleValues") final Map<String, List<String>> possibleValues,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
-        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        super(label, description, required, defaultValue, currentValue);
-        m_lockColumn = lockColumn;
-        m_possibleValues = possibleValues;
+    protected ReExecutableColumnFilterNodeRepresentation(final String label, final String description,
+        final boolean required, final VAL defaultValue, final VAL currentValue, final String[] possibleColumns,
+        final String type, final boolean limitNumberVisOptions, final Integer numberVisOptions,
+        final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
+        m_possibleColumns = possibleColumns;
         m_type = type;
         m_limitNumberVisOptions = limitNumberVisOptions;
         m_numberVisOptions = numberVisOptions;
@@ -116,23 +112,15 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * @param defaultValue The default value of the node
      * @param filterConfig The config of the node
      * @param labelConfig The label config of the node
+     * @param triggerReExecution
      */
-    public ValueFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final ValueFilterNodeConfig filterConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
-        m_lockColumn = filterConfig.isLockColumn();
+    public ReExecutableColumnFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final ColumnFilterNodeConfig filterConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
+        m_possibleColumns = filterConfig.getPossibleColumns();
         m_type = filterConfig.getType();
-        m_possibleValues = filterConfig.getPossibleValues();
         m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();
         m_numberVisOptions = filterConfig.getNumberVisOptions();
-    }
-
-    /**
-     * @return the lockColumn
-     */
-    @JsonProperty("lockColumn")
-    public boolean isLockColumn() {
-        return m_lockColumn;
     }
 
     /**
@@ -140,15 +128,7 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      */
     @JsonProperty("possibleColumns")
     public String[] getPossibleColumns() {
-        return m_possibleValues.keySet().toArray(new String[m_possibleValues.keySet().size()]);
-    }
-
-    /**
-     * @return the possibleValues
-     */
-    @JsonProperty("possibleValues")
-    public Map<String, List<String>> getPossibleValues() {
-        return m_possibleValues;
+        return m_possibleColumns;
     }
 
     /**
@@ -179,18 +159,10 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(", ");
-        sb.append("lockColumn=");
-        sb.append(m_lockColumn);
-        sb.append(", ");
-        sb.append("possibleValues=");
-        sb.append("{");
-        sb.append(m_possibleValues);
-        sb.append("}");
+        sb.append("possibleColumns=");
+        sb.append(Arrays.toString(m_possibleColumns));
         sb.append(", ");
         sb.append("type=");
         sb.append(m_type);
@@ -207,11 +179,9 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_lockColumn)
-                .append(m_possibleValues)
+        return new HashCodeBuilder()
+                .append(m_possibleColumns)
                 .append(m_type)
                 .append(m_limitNumberVisOptions)
                 .append(m_numberVisOptions)
@@ -222,7 +192,6 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
      * {@inheritDoc}
      */
     @Override
-    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -234,14 +203,12 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
             return false;
         }
         @SuppressWarnings("unchecked")
-        ValueFilterNodeRepresentation<VAL> other = (ValueFilterNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_lockColumn, other.m_lockColumn)
-                .append(m_possibleValues, other.m_possibleValues)
+        ReExecutableColumnFilterNodeRepresentation<VAL> other = (ReExecutableColumnFilterNodeRepresentation<VAL>)obj;
+        return new EqualsBuilder()
+                .append(m_possibleColumns, other.m_possibleColumns)
                 .append(m_type, other.m_type)
                 .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
                 .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
-
 }

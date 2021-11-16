@@ -53,7 +53,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.ReExecutableRepresentation;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -68,7 +68,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> extends ReExecutableRepresentation<VAL> {
+public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final String[] m_possibleColumns;
     private final String m_type;
@@ -98,26 +98,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        this(label, description, required, defaultValue, currentValue, possibleColumns, type,
-             limitNumberVisOptions, numberVisOptions, false);
-    }
-
-    /**
-     * @param label the widget label
-     * @param description the description
-     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
-     * @param defaultValue the quickform's default value
-     * @param currentValue the quickform's current value
-     * @param possibleColumns
-     * @param type
-     * @param limitNumberVisOptions
-     * @param numberVisOptions
-     * @param triggerReExecution
-     */
-    protected ColumnFilterNodeRepresentation(final String label, final String description, final boolean required,
-        final VAL defaultValue, final VAL currentValue, final String[] possibleColumns, final String type,
-        final boolean limitNumberVisOptions, final Integer numberVisOptions, final boolean triggerReExecution) {
-        super(label, description, required, defaultValue, currentValue, triggerReExecution);
+        super(label, description, required, defaultValue, currentValue);
         m_possibleColumns = possibleColumns;
         m_type = type;
         m_limitNumberVisOptions = limitNumberVisOptions;
@@ -132,19 +113,7 @@ public class ColumnFilterNodeRepresentation<VAL extends ColumnFilterNodeValue> e
      */
     public ColumnFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final ColumnFilterNodeConfig filterConfig, final LabeledConfig labelConfig) {
-        this(currentValue, defaultValue, filterConfig, labelConfig, false);
-    }
-
-    /**
-     * @param currentValue The value currently used by the node
-     * @param defaultValue The default value of the node
-     * @param filterConfig The config of the node
-     * @param labelConfig The label config of the node
-     * @param triggerReExecution
-     */
-    public ColumnFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final ColumnFilterNodeConfig filterConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
-        super(currentValue, defaultValue, labelConfig, triggerReExecution);
+        super(currentValue, defaultValue, labelConfig);
         m_possibleColumns = filterConfig.getPossibleColumns();
         m_type = filterConfig.getType();
         m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();

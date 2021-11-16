@@ -50,7 +50,6 @@ package org.knime.js.base.node.widget.input.bool;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.VariableType.BooleanType;
-import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
@@ -59,8 +58,8 @@ import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeModel extends
-    WidgetFlowVariableNodeModel<BooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue, BooleanInputWidgetConfig> {
+public class BooleanWidgetNodeModel extends WidgetFlowVariableNodeModel<ReExecutableBooleanNodeRepresentation<BooleanNodeValue>,
+    BooleanNodeValue, BooleanInputWidgetConfig> {
 
     /**
      * @param viewName
@@ -112,8 +111,8 @@ public class BooleanWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected BooleanNodeRepresentation<BooleanNodeValue> getRepresentation() {
-        return new BooleanNodeRepresentation<BooleanNodeValue>(getRelevantValue(), getConfig().getDefaultValue(),
+    protected ReExecutableBooleanNodeRepresentation<BooleanNodeValue> getRepresentation() {
+        return new ReExecutableBooleanNodeRepresentation<BooleanNodeValue>(getRelevantValue(), getConfig().getDefaultValue(),
             getConfig().getLabelConfig(), getConfig().getTriggerReExecution());
     }
 

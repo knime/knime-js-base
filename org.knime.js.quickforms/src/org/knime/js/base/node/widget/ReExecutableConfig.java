@@ -46,7 +46,7 @@
  * History
  *   Oct 6, 2021 (konrad-amtenbrink): created
  */
-package org.knime.js.base.node.base;
+package org.knime.js.base.node.widget;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -61,7 +61,9 @@ import org.knime.core.node.NodeSettingsWO;
 public class ReExecutableConfig {
 
     private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
+
     private static final boolean DEFAULT_TRIGGER_REEXECUTION = false;
+
     private boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
 
     /**
@@ -115,9 +117,7 @@ public class ReExecutableConfig {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_triggerReExecution)
-                .toHashCode();
+        return new HashCodeBuilder().append(m_triggerReExecution).toHashCode();
     }
 
     /**
@@ -135,9 +135,7 @@ public class ReExecutableConfig {
             return false;
         }
         ReExecutableConfig other = (ReExecutableConfig)obj;
-        return new EqualsBuilder()
-                .append(m_triggerReExecution, other.m_triggerReExecution)
-                .isEquals();
+        return new EqualsBuilder().append(m_triggerReExecution, other.m_triggerReExecution).isEquals();
     }
 
 }

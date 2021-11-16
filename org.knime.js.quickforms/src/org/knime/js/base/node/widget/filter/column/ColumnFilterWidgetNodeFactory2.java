@@ -52,7 +52,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
@@ -61,16 +60,16 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
+public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidgetNodeModel2> implements
+    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel2, ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
     ColumnFilterNodeValue> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
+    public ColumnFilterWidgetNodeModel2 createNodeModel() {
+        return new ColumnFilterWidgetNodeModel2(getInteractiveViewName());
     }
 
     /**
@@ -85,7 +84,7 @@ public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidg
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex, final ColumnFilterWidgetNodeModel nodeModel) {
+    public NodeView<ColumnFilterWidgetNodeModel2> createNodeView(final int viewIndex, final ColumnFilterWidgetNodeModel2 nodeModel) {
         return null;
     }
 

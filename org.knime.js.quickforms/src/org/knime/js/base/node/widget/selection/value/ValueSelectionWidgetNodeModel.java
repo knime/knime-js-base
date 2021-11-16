@@ -65,7 +65,6 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.web.ValidationError;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
-import org.knime.js.base.node.base.selection.value.ValueSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
@@ -75,7 +74,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueSelectionWidgetNodeModel
-    extends WidgetNodeModel<ValueSelectionNodeRepresentation<ValueSelectionNodeValue>, ValueSelectionNodeValue,
+    extends WidgetNodeModel<ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>, ValueSelectionNodeValue,
     ValueSelectionWidgetConfig> {
 
     /**
@@ -213,9 +212,9 @@ public class ValueSelectionWidgetNodeModel
      * {@inheritDoc}
      */
     @Override
-    protected ValueSelectionNodeRepresentation<ValueSelectionNodeValue> getRepresentation() {
+    protected ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue> getRepresentation() {
         ValueSelectionWidgetConfig config = getConfig();
-        return new ValueSelectionNodeRepresentation<ValueSelectionNodeValue>(getRelevantValue(),
+        return new ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>(getRelevantValue(),
             config.getDefaultValue(), config.getValueSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 

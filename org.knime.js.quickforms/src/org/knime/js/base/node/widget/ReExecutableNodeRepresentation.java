@@ -44,22 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 6, 2021 (konrad-amtenbrink): created
+ *   Nov 16, 2021 (ben.laney): created
  */
-package org.knime.js.base.node.base;
+package org.knime.js.base.node.widget;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.LabeledNodeRepresentation;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
- * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
- * @param <VAL>
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
-public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> extends LabeledNodeRepresentation<VAL> {
+public abstract class ReExecutableNodeRepresentation<VAL extends JSONViewContent>
+    extends LabeledNodeRepresentation<VAL> {
 
     private boolean m_triggerReExecution;
 
@@ -71,7 +74,7 @@ public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> ex
      * @param currentValue
      * @param triggerReExecution
      */
-    protected ReExecutableRepresentation(final String label, final String description, final boolean required,
+    protected ReExecutableNodeRepresentation(final String label, final String description, final boolean required,
         final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue);
         m_triggerReExecution = triggerReExecution;
@@ -83,8 +86,8 @@ public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> ex
      * @param config The config of the node
      * @param triggerReExecution
      */
-    public ReExecutableRepresentation(final VAL currentValue, final VAL defaultValue,
-        final LabeledConfig config, final boolean triggerReExecution) {
+    public ReExecutableNodeRepresentation(final VAL currentValue, final VAL defaultValue, final LabeledConfig config,
+        final boolean triggerReExecution) {
         super(currentValue, defaultValue, config);
         m_triggerReExecution = triggerReExecution;
 
@@ -115,10 +118,9 @@ public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> ex
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_triggerReExecution)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+            .append(m_triggerReExecution)
+            .toHashCode();
     }
 
     /**
@@ -136,9 +138,8 @@ public abstract class ReExecutableRepresentation<VAL extends JSONViewContent> ex
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ReExecutableRepresentation<VAL> other = (ReExecutableRepresentation<VAL>)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(other))
+        ReExecutableNodeRepresentation<VAL> other = (ReExecutableNodeRepresentation<VAL>)obj;
+        return new EqualsBuilder().appendSuper(super.equals(other))
                 .append(m_triggerReExecution, other.m_triggerReExecution)
                 .isEquals();
     }

@@ -52,7 +52,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.selection.value.ValueSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 
 /**
@@ -61,7 +60,7 @@ import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueSelectionWidgetNodeFactory extends NodeFactory<ValueSelectionWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueSelectionWidgetNodeModel, ValueSelectionNodeRepresentation<ValueSelectionNodeValue>,
+    WizardNodeFactoryExtension<ValueSelectionWidgetNodeModel, ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>,
     ValueSelectionNodeValue> {
 
     /**

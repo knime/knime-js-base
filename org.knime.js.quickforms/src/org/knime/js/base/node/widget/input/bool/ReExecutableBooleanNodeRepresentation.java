@@ -44,64 +44,92 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   Nov 16, 2021 (ben.laney): created
  */
 package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Factory for the boolean widget node
+ * The re-executable representation for the boolean widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
+ * @param <VAL> the value implementation of the node
  */
-public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel> implements
-    WizardNodeFactoryExtension<BooleanWidgetNodeModel, ReExecutableBooleanNodeRepresentation<BooleanNodeValue>,
-    BooleanNodeValue> {
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
+    extends ReExecutableNodeRepresentation<VAL> {
 
     /**
-     * {@inheritDoc}
+     *
+     * @param label the widget label
+     * @param description the description
+     * @param required <code>true</code> if a value is required, <code>false</code> otherwise
+     * @param defaultValue the node's default value
+     * @param currentValue the node's current value
+     * @param triggerReExecution
      */
-    @Override
-    public BooleanWidgetNodeModel createNodeModel() {
-        return new BooleanWidgetNodeModel(getInteractiveViewName());
+    protected ReExecutableBooleanNodeRepresentation(final String label, final String description,
+        final boolean required, final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
+    }
+
+    /**
+     * @param currentValue The value currently used by the node
+     * @param defaultValue The default value of the node
+     * @param config The config of the node
+     * @param triggerReExecution
+     */
+    public ReExecutableBooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final LabeledConfig config, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, config, triggerReExecution);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    @JsonIgnore
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeView<BooleanWidgetNodeModel> createNodeView(final int viewIndex,
-        final BooleanWidgetNodeModel nodeModel) {
-        return null;
+    @JsonIgnore
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode()).toHashCode();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new BooleanWidgetNodeDialog();
+    @JsonIgnore
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder().appendSuper(super.equals(obj)).isEquals();
     }
 
 }

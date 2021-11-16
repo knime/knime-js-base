@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   Nov 16, 2021 (ben.laney): created
  */
-package org.knime.js.base.node.base.filter.value;
+package org.knime.js.base.node.widget.selection.value;
 
 import java.util.List;
 import java.util.Map;
@@ -54,56 +54,59 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.base.node.base.selection.value.ColumnType;
+import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
+import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The base representation for the value filter configuration and widget node
+ * The re-executable representation for the value selection widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author ben.laney, KNIME GmbH, Konstanz, Germany
  * @param <VAL> the value implementation of the node
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class ReExecutableValueSelectionNodeRepresentation<VAL extends ValueSelectionNodeValue>
+    extends ReExecutableNodeRepresentation<VAL> {
+
+    private final ColumnType m_columnType;
 
     private final boolean m_lockColumn;
+
     private final Map<String, List<String>> m_possibleValues;
+
     private final String m_type;
+
     private final boolean m_limitNumberVisOptions;
+
     private final Integer m_numberVisOptions;
 
     /**
-     * For deserialization via Jackson. Subclasses must call this constructor in their deserialization constructor.
-     *
      * @param label the widget label
      * @param description the description
      * @param required <code>true</code> if a value is required, <code>false</code> otherwise
      * @param defaultValue the node's default value
      * @param currentValue the node's current value
+     * @param columnType
      * @param lockColumn
      * @param possibleValues
      * @param type
      * @param limitNumberVisOptions
      * @param numberVisOptions
+     * @param triggerReExecution
      */
-    @JsonCreator
-    protected ValueFilterNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue,
-        @JsonProperty("currentValue") final VAL currentValue,
-        @JsonProperty("lockColumn") final boolean lockColumn,
-        @JsonProperty("possibleValues") final Map<String, List<String>> possibleValues,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
-        @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
-        super(label, description, required, defaultValue, currentValue);
+    protected ReExecutableValueSelectionNodeRepresentation(final String label, final String description,
+        final boolean required, final VAL defaultValue, final VAL currentValue, final ColumnType columnType,
+        final boolean lockColumn, final Map<String, List<String>> possibleValues, final String type,
+        final boolean limitNumberVisOptions, final Integer numberVisOptions, final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
+        m_columnType = columnType;
         m_lockColumn = lockColumn;
         m_possibleValues = possibleValues;
         m_type = type;
@@ -114,17 +117,28 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
     /**
      * @param currentValue The value currently used by the node
      * @param defaultValue The default value of the node
-     * @param filterConfig The config of the node
+     * @param selectionConfig The config of the node
      * @param labelConfig The label config of the node
+     * @param triggerReExecution
      */
-    public ValueFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final ValueFilterNodeConfig filterConfig, final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
-        m_lockColumn = filterConfig.isLockColumn();
-        m_type = filterConfig.getType();
-        m_possibleValues = filterConfig.getPossibleValues();
-        m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();
-        m_numberVisOptions = filterConfig.getNumberVisOptions();
+    public ReExecutableValueSelectionNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final ValueSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig,
+        final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
+        m_columnType = selectionConfig.getColumnType();
+        m_lockColumn = selectionConfig.isLockColumn();
+        m_possibleValues = selectionConfig.getPossibleValues();
+        m_type = selectionConfig.getType();
+        m_limitNumberVisOptions = selectionConfig.isLimitNumberVisOptions();
+        m_numberVisOptions = selectionConfig.getNumberVisOptions();
+    }
+
+    /**
+     * @return the columnType
+     */
+    @JsonProperty("columnType")
+    public ColumnType getColumnType() {
+        return m_columnType;
     }
 
     /**
@@ -184,6 +198,9 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
+        sb.append("columnType=");
+        sb.append(m_columnType);
+        sb.append(", ");
         sb.append("lockColumn=");
         sb.append(m_lockColumn);
         sb.append(", ");
@@ -210,12 +227,13 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
     @JsonIgnore
     public int hashCode() {
         return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_lockColumn)
-                .append(m_possibleValues)
-                .append(m_type)
-                .append(m_limitNumberVisOptions)
-                .append(m_numberVisOptions)
-                .toHashCode();
+            .append(m_columnType)
+            .append(m_lockColumn)
+            .append(m_possibleValues)
+            .append(m_type)
+            .append(m_limitNumberVisOptions)
+            .append(m_numberVisOptions)
+            .toHashCode();
     }
 
     /**
@@ -234,14 +252,16 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
             return false;
         }
         @SuppressWarnings("unchecked")
-        ValueFilterNodeRepresentation<VAL> other = (ValueFilterNodeRepresentation<VAL>)obj;
+        ReExecutableValueSelectionNodeRepresentation<VAL> other =
+            (ReExecutableValueSelectionNodeRepresentation<VAL>)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_lockColumn, other.m_lockColumn)
-                .append(m_possibleValues, other.m_possibleValues)
-                .append(m_type, other.m_type)
-                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
-                .append(m_numberVisOptions, other.m_numberVisOptions)
-                .isEquals();
+            .append(m_columnType, other.m_columnType)
+            .append(m_lockColumn, other.m_lockColumn)
+            .append(m_possibleValues, other.m_possibleValues)
+            .append(m_type, other.m_type)
+            .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+            .append(m_numberVisOptions, other.m_numberVisOptions)
+            .isEquals();
     }
 
 }

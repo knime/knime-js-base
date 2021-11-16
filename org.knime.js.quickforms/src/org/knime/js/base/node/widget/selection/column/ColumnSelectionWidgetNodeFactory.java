@@ -52,7 +52,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeRepresentation;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 
 /**
@@ -62,7 +61,7 @@ import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
  */
 public class ColumnSelectionWidgetNodeFactory extends NodeFactory<ColumnSelectionWidgetNodeModel>
     implements WizardNodeFactoryExtension<ColumnSelectionWidgetNodeModel,
-    ColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, ColumnSelectionNodeValue> {
+    ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, ColumnSelectionNodeValue> {
 
     /**
      * {@inheritDoc}
