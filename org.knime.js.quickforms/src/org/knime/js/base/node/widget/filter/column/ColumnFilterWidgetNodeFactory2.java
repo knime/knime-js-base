@@ -69,7 +69,7 @@ public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidg
      */
     @Override
     public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName());
+        return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
     }
 
     /**
