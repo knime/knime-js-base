@@ -52,7 +52,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 
 /**
@@ -63,7 +62,8 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
  */
 @Deprecated
 public class ColumnFilterWidgetNodeFactory extends NodeFactory<ColumnFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
+    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ReExecutableColumnFilterNodeRepresentation
+    <ColumnFilterNodeValue>, ColumnFilterNodeValue> {
 
     /**
      * {@inheritDoc}

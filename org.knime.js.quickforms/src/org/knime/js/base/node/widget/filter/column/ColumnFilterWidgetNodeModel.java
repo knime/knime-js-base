@@ -61,7 +61,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.VariableType;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeUtil;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
@@ -71,7 +70,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
+public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
         ColumnFilterNodeValue, ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
 
     /**
@@ -211,10 +210,11 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ColumnFilterNod
      * {@inheritDoc}
      */
     @Override
-    protected ColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
+    protected ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
         ColumnFilterWidgetConfig config = getConfig();
-        return new ColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getColumnFilterConfig(), config.getLabelConfig());
+        return new ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(),
+            config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig(),
+            config.getTriggerReExecution());
     }
 
     private void updateValuesFromSpec(final DataTableSpec spec) {
