@@ -266,16 +266,21 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
     protected final void preExecute() {
         if (m_previousConfig == null) {
             m_previousConfig = createEmptyConfig();
+            transferConfig(getConfig(), m_previousConfig);
         }
 
         if (m_viewValue != null) {
             m_viewValue = copyConfigToViewValue(m_viewValue, getConfig(), m_previousConfig);
         }
 
-        NodeSettings copy = new NodeSettings("copy");
-        getConfig().saveSettings(copy);
+        transferConfig(getConfig(), m_previousConfig);
+    }
+
+    private void transferConfig(final CONF from, final CONF to) {
+        var copy = new NodeSettings("copy");
+        from.saveSettings(copy);
         try {
-            m_previousConfig.loadSettings(copy);
+            to.loadSettings(copy);
         } catch (InvalidSettingsException e) {
             // should never happen - just copying stuff over
             throw new IllegalStateException(e);
