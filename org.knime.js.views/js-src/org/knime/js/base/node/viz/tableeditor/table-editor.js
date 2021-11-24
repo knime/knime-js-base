@@ -51,7 +51,7 @@ window.table_editor = (function () {
             }
         });
         content += '<option value=""' + (cellValue ? '' : ' selected ') +
-            'class="knime-autosuggest-dropdown--option">Missing value</option></select>';
+            'class="knime-autosuggest-dropdown--option">?</option></select>';
         this.component = $(content);
     };
     
