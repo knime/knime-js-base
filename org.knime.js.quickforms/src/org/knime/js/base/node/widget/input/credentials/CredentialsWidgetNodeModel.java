@@ -147,20 +147,14 @@ public class CredentialsWidgetNodeModel extends
 
         var defaultVal = config.getDefaultValue();
         var previousDefaultVal = previousConfig.getDefaultValue();
-        if (previousDefaultVal.getPassword() == null) {
-            if (defaultVal.getPassword() != null) {
+        if (previousDefaultVal.getPassword() != null && !previousDefaultVal.getPassword().equals(defaultVal.getPassword())) {
                 currentViewValue.setPassword(defaultVal.getPassword());
-            }
-        } else if (!previousDefaultVal.getPassword().equals(defaultVal.getPassword())) {
-            currentViewValue.setPassword(defaultVal.getPassword());
         }
-        if (previousDefaultVal.getUsername() == null) {
-            if (defaultVal.getUsername() != null) {
+
+        if (previousDefaultVal.getUsername() != null && !previousDefaultVal.getUsername().equals(defaultVal.getUsername())) {
                 currentViewValue.setUsername(defaultVal.getUsername());
-            }
-        } else if (!previousDefaultVal.getUsername().equals(defaultVal.getUsername())) {
-            currentViewValue.setUsername(defaultVal.getUsername());
         }
+
         if (previousDefaultVal.isSavePassword() != defaultVal.isSavePassword()) {
             currentViewValue.setSavePassword(defaultVal.isSavePassword());
         }
