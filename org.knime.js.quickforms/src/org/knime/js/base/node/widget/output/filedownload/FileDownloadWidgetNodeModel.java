@@ -313,12 +313,19 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
      */
     @Override
     public ExternalNodeData getExternalOutput() {
+        final var data = ExternalNodeData.builder(m_config.getResourceName());
         try {
             URI uri = getPathFromVariable().toUri();
-            return ExternalNodeData.builder(m_config.getResourceName()).resource(uri).build();
+            data.resource(uri);
         } catch (InvalidSettingsException ex) {
             getLogger().error("Could not get output resource URL: " + ex.getMessage(), ex);
-            return ExternalNodeData.builder(m_config.getResourceName()).build();
+            try {
+                data.resource(new URI("unknown-filename"));
+            } catch (URISyntaxException e1) {
+                getLogger().error("Error while creating resource URI for unknown file: " + e1.getMessage(), e1);
+            }
         }
+
+        return data.build();
     }
 }
