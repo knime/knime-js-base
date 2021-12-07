@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Dynamically Created JavaScript Nodes
 Bundle-SymbolicName: org.knime.dynamic.js;singleton:=true
-Bundle-Version: 4.5.0.qualifier
+Bundle-Version: 4.6.0.qualifier
 Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
   lib/schemas.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
