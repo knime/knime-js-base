@@ -52,19 +52,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.knime.core.internal.NodeDescriptionUtil;
 import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
 import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
 import org.knime.dynamicnode.v212.DynamicInPort;
+import org.knime.dynamicnode.v212.DynamicOption;
 import org.knime.dynamicnode.v212.DynamicOutPort;
+import org.knime.dynamicnode.v212.DynamicTab;
 import org.knime.node.v212.View;
 import org.knime.node.v212.Views;
 import org.w3c.dom.Document;
@@ -184,7 +188,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
 
         for (DynamicInPort inPort : m_document.getKnimeNode().getPorts().getInPortArray()) {
             if (inPort.getIndex().intValue() == index) {
-                return stripXmlFragment(inPort);
+                return NodeDescriptionUtil.getPrettyXmlText(inPort);
             }
         }
         return null;
@@ -243,7 +247,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
 
         for (DynamicOutPort outPort : m_document.getKnimeNode().getPorts().getOutPortArray()) {
             if (outPort.getIndex().intValue() == index) {
-                return stripXmlFragment(outPort);
+                return NodeDescriptionUtil.getPrettyXmlText(outPort);
             }
         }
         return null;
@@ -300,7 +304,7 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
 
         for (View view : m_document.getKnimeNode().getViews().getViewArray()) {
             if (view.getIndex().intValue() == index) {
-                return stripXmlFragment(view);
+                return NodeDescriptionUtil.getPrettyXmlText(view);
             }
         }
         return null;
@@ -340,4 +344,47 @@ public final class DynamicJSNodeDescription212Proxy extends NodeDescription {
     public Element getXMLDescription() {
         return (Element)m_document.getKnimeNode().getDomNode();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+   @Override
+   public Optional<String> getInteractiveViewDescription() {
+        return Optional.ofNullable(NodeDescriptionUtil.getPrettyXmlText(m_document.getKnimeNode().getInteractiveView()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<String> getIntro() {
+        return Optional.ofNullable(NodeDescriptionUtil.getPrettyXmlText(m_document.getKnimeNode().getFullDescription().getIntro()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DialogOptionGroup> getDialogOptionGroups() {
+        var ungroupedOptions = NodeDescriptionUtil.getDirectChildrenOfType(
+                m_document.getKnimeNode().getFullDescription().getOptions(), DynamicOption.class);
+        return NodeDescriptionUtil.extractDialogOptionGroups(
+                ungroupedOptions,
+                m_document.getKnimeNode().getFullDescription().getTabList(),
+                DynamicTab::getName,
+                DynamicTab::getDescription,
+                t -> NodeDescriptionUtil.getDirectChildrenOfType(t.getOptions(), DynamicOption.class),
+                DynamicOption::getName,
+                DynamicOption::getOptional
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<String> getShortDescription() {
+        return Optional.ofNullable(NodeDescriptionUtil.normalizeWhitespace(m_document.getKnimeNode().getShortDescription()));
+    }
+
 }
