@@ -899,16 +899,10 @@ window.parallelcoords_namespace = (function () {
 
         }
 
-
         // Curved lines
-        if (_representation.options.enableLineChange &&
-            _representation.options.enableViewControls) {
-            if (_value.options.lType == 'Curved') {
-                line.interpolate('monotone');
-            }
-
+        if (_value.options.lType == 'Curved') {
+            line.interpolate('monotone');
         }
-
 
         plotG.selectAll('path.row').each(function (d, i) {
             d3.select(this).datum(mzd[i]);
