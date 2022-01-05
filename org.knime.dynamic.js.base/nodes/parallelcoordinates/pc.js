@@ -902,8 +902,7 @@ window.parallelcoords_namespace = (function () {
 
         // Curved lines
         if (_representation.options.enableLineChange &&
-            _representation.options.enableViewControls &&
-            _representation.runningInView) {
+            _representation.options.enableViewControls) {
             if (_value.options.lType == 'Curved') {
                 line.interpolate('monotone');
             }
