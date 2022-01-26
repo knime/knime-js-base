@@ -33,8 +33,8 @@ try {
                 withEnv(["KNIME_JS_IMAGE_GENARATION_MODE=cef"]) {
                     workflowTests.runTests(
                         dependencies: [
-                            repositories: repositories,
-                            ius: baseIus + 'com.knime.features.workbench.cef.feature.group'
+                            repositories: repositories + 'knime-cef',
+                            ius: baseIus + 'org.knime.features.browser.cef.feature.group'
                         ]
                     )
                 }
@@ -49,7 +49,7 @@ try {
                     workflowTests.runTests(
                         dependencies: [
                             repositories: repositories + 'knime-chromium',
-                            ius: baseIus + 'org.knime.features.ext.chromium.feature.group'
+                            ius: baseIus + 'org.knime.features.browser.chromium.feature.group'
                         ],
                     )
                 }
