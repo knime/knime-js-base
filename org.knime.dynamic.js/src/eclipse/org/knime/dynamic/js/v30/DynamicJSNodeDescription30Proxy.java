@@ -379,7 +379,7 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
      */
     @Override
     public Optional<String> getShortDescription() {
-        return Optional.ofNullable(NodeDescriptionUtil.normalizeWhitespace(m_document.getKnimeNode().getShortDescription()));
+        return Optional.ofNullable(m_document.getKnimeNode().getShortDescription());
     }
 
 
