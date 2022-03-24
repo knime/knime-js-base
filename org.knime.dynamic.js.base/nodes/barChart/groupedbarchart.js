@@ -484,7 +484,7 @@ window.knimeGroupedBarChart = (function () {
         d3.selectAll('.nv-bar.positive').each(function (d) {
             var DEFAULT_MARGIN = 10;
             var barBBox = this.getBBox();
-
+            
             var configObject = {
                 container: document.querySelector('svg'),
                 maxWidth: barBBox.width - DEFAULT_MARGIN,
@@ -502,20 +502,21 @@ window.knimeGroupedBarChart = (function () {
 
             var labelBBox = label.node().getBBox();
 
-            // If the free space is too small, the value does not get displayed
-            if ((labelBBox.height + DEFAULT_MARGIN >= barBBox.height) || (labelBBox.width >= barBBox.width)) {
-                d3.select(label).node().remove();
-            }
-
             // Position text-elements based on orientation and free space
             if (_value.options.orientation) {
                 var y = barBBox.y + barBBox.height / 2;
-
                 var hasEnoughSpaceAboveBar = barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width;
+
+                if (labelBBox.height + DEFAULT_MARGIN >= barBBox.height) {
+                    d3.select(label).node().remove();
+                }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
+                    configObject.maxWidth = parentBBox.width - barBBox.width - DEFAULT_MARGIN;
+                    labelSize = knimeService.measureAndTruncate([d.y], configObject);
                     label
                         .attr('text-anchor', 'start')
-                        .attr({ x: barBBox.width + DEFAULT_MARGIN, y: y });
+                        .attr({ x: barBBox.width + DEFAULT_MARGIN, y: y })
+                        .text(labelSize.values[0].truncated);
                 } else {
                     label
                         .attr('text-anchor', 'end')
@@ -525,8 +526,11 @@ window.knimeGroupedBarChart = (function () {
             } else {
                 var x = barBBox.x + barBBox.width / 2;
                 label.attr('text-anchor', 'middle');
-
                 var hasEnoughSpaceAboveBar = barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height;
+
+                if (labelBBox.width >= barBBox.width) {
+                    d3.select(label).node().remove();
+                }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
                     label
                         .attr({ x: x, y: barBBox.y - labelBBox.height });
