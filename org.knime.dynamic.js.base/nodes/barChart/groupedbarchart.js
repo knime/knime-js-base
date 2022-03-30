@@ -484,7 +484,7 @@ window.knimeGroupedBarChart = (function () {
         d3.selectAll('.nv-bar.positive').each(function (d) {
             var DEFAULT_MARGIN = 10;
             var barBBox = this.getBBox();
-            
+
             var configObject = {
                 container: document.querySelector('svg'),
                 maxWidth: barBBox.width - DEFAULT_MARGIN,
@@ -1549,7 +1549,7 @@ window.knimeGroupedBarChart = (function () {
                 // -spacingCatLabel: reset the label to the position of the axis
                 // + maxSizeAxis: the calculated space needed by the label itself
                 // + additionalEmptySpace: add some empty space
-                xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxWidth  + additionalEmptySpace;
+                xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxWidth;
                 yLabelDistance = -spacingFreqLabel + maxSizeYAxis.max.maxHeight;
             } else {
                 if (optStaggerLabels) {
@@ -1560,7 +1560,7 @@ window.knimeGroupedBarChart = (function () {
                 } else {
                     xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxHeight + additionalEmptySpace;
                 }
-                yLabelDistance = maxSizeYAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace;
+                yLabelDistance = maxSizeYAxis.max.maxWidth - spacingCatLabel;
             }
 
             chart.xAxis.axisLabel(catLabel)
@@ -1590,16 +1590,13 @@ window.knimeGroupedBarChart = (function () {
                 : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + additionalEmptySpace;
             var leftMargin = optOrientation
                 ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + additionalEmptySpace + paddingAmount
-                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
+                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxHeight + additionalEmptySpace + paddingAmount;
 
             if (!_value.options.catLabel) {
                 bottomMargin = optOrientation ? bottomMargin
                     : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
-                leftMargin = optOrientation ? leftMargin
-                    : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
             }
             if (!_value.options.freqLabel) {
-                bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
                 leftMargin = optOrientation ? leftMargin + paddingAmount
                     : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
             }
