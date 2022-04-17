@@ -717,7 +717,7 @@
 		}
 
 		// Restore everything to full opacity when moving off the visualization.
-		clearHighliting = function (d) {
+		function clearHighliting(d) {
 			highlitedPath = null;
 			setPropAllNodes('highlited', false);
 
@@ -728,7 +728,7 @@
 			toggleInnerLabel(false);
 		}
 
-		clearSelection = function () {
+		function clearSelection() {
 			selectionChangedFlag = true;
 
 			selectedRows = [];
@@ -740,7 +740,7 @@
 		}
 
 		// Traverse through tree and add nodes to selection.
-		addNodeToSelectionBackward = function (node) {
+		function addNodeToSelectionBackward(node) {
 			if (!node) {
 				return;
 			}
@@ -758,7 +758,7 @@
 		}
 
 		// Draw border around all selected segments.
-		renderSelection = function () {
+		function renderSelection() {
 			//var sunburstGroup = d3.select("g#sunburstGroup");
 			if (_value.options.showSelectedOnly) {
 				sunburstGroup.selectAll("path")
@@ -791,7 +791,7 @@
 			}
 		}
 
-		var zoom = function (d) {
+		function zoom(d) {
 			path.transition()
 				.duration(750)
 				.attrTween("d", arcTweenZoom(d));
@@ -815,7 +815,7 @@
 			}
 		}
 
-		resetZoom = function () {
+		function resetZoom() {
 			zoom(nodes[0]);
 		}
 
