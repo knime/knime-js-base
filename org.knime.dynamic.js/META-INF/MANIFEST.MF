@@ -24,4 +24,3 @@ Eclipse-BuddyPolicy: dependent
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Automatic-Module-Name: org.knime.dynamic.js
-Import-Package: org.w3c.dom.events;version="3.0.0"
