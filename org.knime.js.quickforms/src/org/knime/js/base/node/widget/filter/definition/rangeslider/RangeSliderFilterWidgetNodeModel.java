@@ -257,7 +257,7 @@ public class RangeSliderFilterWidgetNodeModel extends AbstractWizardNodeModel<Ra
                 throw new InvalidSettingsException(
                     "The filter settings for minimum and maximum are not in a correct format.");
             }
-            minimum = Math.max(filterValues[0], Double.MIN_VALUE);
+            minimum = Math.max(filterValues[0], -Double.MAX_VALUE);
             maximum = Math.min(filterValues[1], Double.MAX_VALUE);
         }
         boolean[] fixSlider = m_config.getSliderSettings().getFix();
