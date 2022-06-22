@@ -315,6 +315,10 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.reexecution.refresh.RefreshButtonWidgetNodeFactory">
       </node>
+      <node
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.image.ImageWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -1320,6 +1324,16 @@
                type="JAVASCRIPT">
          </importResource>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Image Input Widget"
+            usesDefine="false"
+            version="2.0.0"
+            webResourceBundleID="org.knime.js.base.node.widget.input.image.bundle">
+         <webResource
+               relativePathSource="org.knime.js.quickforms.webResource1">
+         </webResource>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -1745,6 +1759,16 @@
             javascriptComponentID="org.knime.js.base.node.widget.reexecution.refresh"
             name="Refresh Button Widget"
             namespace="knimeRefreshButtonWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.js.base.node.widget.input.image.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.js.base.node.widget.input.image"
+            name="Image Input Widget"
+            namespace="knimeImageInputWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_string.png" type="Widget" xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Image Input Widget</name>
+
+	<shortDescription>
+       Creates a text input widget for use in components views. Outputs an string flow variable with a given value.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				Creates a text input widget for use in components views. Outputs an string flow variable with a given
+				value.
+			</p>
+			<p>
+				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
+				flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes
+				and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+			</p>
+		</intro>
+		<option name="Label">A descriptive label that will be shown in the view.</option>
+		<option name="Description">Some lines of description that will be shown in the view,
+			for instance by means of a tooltip.
+		</option>
+		<option name="Variable Name">Variable identifier.</option>
+		<option name="Editor type">
+			<i>Single-line</i>
+			editor supports only one line text data and is represented with a text input component.
+			It also comes with a validation based on regular expressions.
+			<br />
+			<i>Multi-line</i>
+			editor supports many lines of text data and is represented with a text area component.
+			Its sizes can be parameterized (see the options below) and the scroll bar will automatically appear, if the
+			text is too long.
+		</option>
+		<option name="Multi-line editor width">
+			The width of the editor in number of characters per line. Multi-line editor only.
+		</option>
+		<option name="Multi-line editor height">
+			The height of the editor in number of text lines. Multi-line editor only.
+		</option>
+		<option name="Regular Expression">
+			Regular expression defining valid values. Single-line editor only.
+		</option>
+		<option name="Validation Error Message">
+			Message that will be shown if one of the values is not valid. The character ? will be replaced by the
+			invalid value. Single-line editor only.
+		</option>
+		<option name="Common Regular Expressions">
+			A set of regular expression templates for common inputs. With the assign button you assign the
+			regular expression and the corresponding error message to be the current settings. Single-line editor only.
+		</option>
+		<option name="Default Value">
+			The value that is selected by default.
+		</option>
+	</fullDescription>
+	<interactiveView name="String Widget">
+		Displays a text input field which represents the string value.
+	</interactiveView>
+	<ports>
+		<outPort index="0" name="Flow Variable Output">
+			Variable output (string) with the given variable defined.
+		</outPort>
+	</ports>
+</knimeNode>
