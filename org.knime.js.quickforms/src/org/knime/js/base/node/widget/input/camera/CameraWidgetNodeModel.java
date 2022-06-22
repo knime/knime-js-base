@@ -116,7 +116,7 @@ public class CameraWidgetNodeModel
     protected CameraNodeRepresentation<StringNodeValue> getRepresentation() {
         CameraInputWidgetConfig config = getConfig();
         return new CameraNodeRepresentation<StringNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getStringConfig(), config.getLabelConfig());
+            config.getStringConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
     /**

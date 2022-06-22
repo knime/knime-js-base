@@ -51,9 +51,9 @@ package org.knime.js.base.node.widget.input.camera;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
 import org.knime.js.base.node.base.input.string.StringNodeConfig;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -69,7 +69,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class CameraNodeRepresentation<VAL extends StringNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class CameraNodeRepresentation<VAL extends StringNodeValue> extends ReExecutableNodeRepresentation<VAL> {
 
     private final String m_regex;
     private final String m_errorMessage;
@@ -86,8 +86,9 @@ public class CameraNodeRepresentation<VAL extends StringNodeValue> extends Label
         @JsonProperty("errorMessage") final String errorMessage,
         @JsonProperty("editorType") final String editorType,
         @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
-        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
-        super(label, description, required, defaultValue, currentValue);
+        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight,
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_regex = regex;
         m_errorMessage = errorMessage;
         m_editorType = editorType;
@@ -102,8 +103,8 @@ public class CameraNodeRepresentation<VAL extends StringNodeValue> extends Label
      * @param labelConfig The label config of the node
      */
     public CameraNodeRepresentation(final VAL currentValue, final VAL defaultValue, final StringNodeConfig config,
-        final LabeledConfig labelConfig) {
-        super(currentValue, defaultValue, labelConfig);
+        final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_regex = config.getRegex();
         m_errorMessage = config.getErrorMessage();
         m_editorType = config.getEditorType();

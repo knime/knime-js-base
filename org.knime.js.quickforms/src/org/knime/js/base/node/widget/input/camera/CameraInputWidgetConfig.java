@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.input.string.StringNodeConfig;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The config for the string widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class CameraInputWidgetConfig extends LabeledFlowVariableWidgetConfig<StringNodeValue> {
+public class CameraInputWidgetConfig extends ReExecutableWidgetConfig<StringNodeValue> {
 
     private final StringNodeConfig m_stringConfig;
 

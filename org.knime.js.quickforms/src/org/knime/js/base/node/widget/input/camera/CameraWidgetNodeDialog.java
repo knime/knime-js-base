@@ -67,7 +67,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.base.input.string.RegexPanel;
 import org.knime.js.base.node.base.input.string.StringNodeConfig;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 
 /**
@@ -75,7 +75,7 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class CameraWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringNodeValue> {
+public class CameraWidgetNodeDialog extends ReExecutableWidgetNodeDialog<StringNodeValue> {
 
     private final RegexPanel m_regexField;
     private final JTextField m_defaultField;

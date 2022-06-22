@@ -1331,8 +1331,13 @@
             version="2.0.0"
             webResourceBundleID="org.knime.js.base.node.widget.input.camera.bundle">
          <webResource
-               relativePathSource="org.knime.js.quickforms.webResource1">
+               relativePathSource="js-src/org/knime/js/base/node/widget/input/string/stringWidget.js"
+               relativePathTarget="org/knime/js/base/node/widget/input/string/stringWidget.js">
          </webResource>
+         <importResource
+               relativePath="org/knime/js/base/node/widget/input/string/stringWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
       </webResourceBundle>
    </extension>
    <extension
