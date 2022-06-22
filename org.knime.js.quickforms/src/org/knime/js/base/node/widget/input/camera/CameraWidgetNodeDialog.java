@@ -46,7 +46,7 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.image;
+package org.knime.js.base.node.widget.input.camera;
 
 import java.awt.GridBagConstraints;
 
@@ -75,7 +75,7 @@ import org.knime.js.core.settings.DialogUtil;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ImageWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringNodeValue> {
+public class CameraWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringNodeValue> {
 
     private final RegexPanel m_regexField;
     private final JTextField m_defaultField;
@@ -85,13 +85,13 @@ public class ImageWidgetNodeDialog extends FlowVariableWidgetNodeDialog<StringNo
     private final JSpinner m_multilineEditorWidthSpinner;
     private final JSpinner m_multilineEditorHeightSpinner;
 
-    private ImageInputWidgetConfig m_config;
+    private CameraInputWidgetConfig m_config;
 
     /**
      * Constructor, inits fields calls layout routines
      */
-    public ImageWidgetNodeDialog() {
-        m_config = new ImageInputWidgetConfig();
+    public CameraWidgetNodeDialog() {
+        m_config = new CameraInputWidgetConfig();
         m_regexField = new RegexPanel();
         m_defaultField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_singleLineEditorButton = new JRadioButton(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);

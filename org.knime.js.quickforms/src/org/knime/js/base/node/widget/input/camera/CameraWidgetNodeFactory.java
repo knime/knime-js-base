@@ -46,104 +46,60 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.image;
+package org.knime.js.base.node.widget.input.camera;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.web.ValidationError;
-import org.knime.js.base.node.base.input.string.StringNodeConfig;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
- * The node model for the string widget node
+ * Factory for the string widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ImageWidgetNodeModel
-    extends WidgetFlowVariableNodeModel<ImageNodeRepresentation<StringNodeValue>, StringNodeValue, ImageInputWidgetConfig> {
+public class CameraWidgetNodeFactory extends NodeFactory<CameraWidgetNodeModel> implements
+    WizardNodeFactoryExtension<CameraWidgetNodeModel, CameraNodeRepresentation<StringNodeValue>, StringNodeValue> {
 
     /**
-     * @param viewName
+     * {@inheritDoc}
      */
-    public ImageWidgetNodeModel(final String viewName) {
-        super(viewName);
+    @Override
+    public CameraWidgetNodeModel createNodeModel() {
+        return new CameraWidgetNodeModel(getInteractiveViewName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public StringNodeValue createEmptyViewValue() {
-        return new StringNodeValue();
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.image";
+    public NodeView<CameraWidgetNodeModel> createNodeView(final int viewIndex, final CameraWidgetNodeModel nodeModel) {
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        ValidationError error = validateViewValue(getRelevantValue());
-        if (error != null) {
-            throw new InvalidSettingsException(error.getError());
-        }
-        String string = getRelevantValue().getString();
-        if (string == null) {
-            string = "";
-        }
-        pushFlowVariableString(getConfig().getFlowVariableName(), string);
+    protected boolean hasDialog() {
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ImageInputWidgetConfig createEmptyConfig() {
-        return new ImageInputWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ImageNodeRepresentation<StringNodeValue> getRepresentation() {
-        ImageInputWidgetConfig config = getConfig();
-        return new ImageNodeRepresentation<StringNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getStringConfig(), config.getLabelConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setString(getViewValue().getString());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ValidationError validateViewValue(final StringNodeValue value) {
-        if (getConfig().getEditorType().equals(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING)) {
-            // Regex is possible only for single-line editor
-            String string = value.getString();
-            if (string == null) {
-                string = "";
-            }
-            String regex = getConfig().getRegex();
-            if (regex != null && !regex.isEmpty() && !string.matches(regex)) {
-                return new ValidationError(getConfig().getErrorMessage().replaceAll("[?]", string));
-            }
-        }
-        return super.validateViewValue(value);
+    protected NodeDialogPane createNodeDialogPane() {
+        return new CameraWidgetNodeDialog();
     }
 
 }

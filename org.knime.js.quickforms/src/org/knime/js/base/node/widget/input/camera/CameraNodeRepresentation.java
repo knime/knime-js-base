@@ -46,7 +46,7 @@
  * History
  *   27 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.image;
+package org.knime.js.base.node.widget.input.camera;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -69,7 +69,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ImageNodeRepresentation<VAL extends StringNodeValue> extends LabeledNodeRepresentation<VAL> {
+public class CameraNodeRepresentation<VAL extends StringNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final String m_regex;
     private final String m_errorMessage;
@@ -78,7 +78,7 @@ public class ImageNodeRepresentation<VAL extends StringNodeValue> extends Labele
     private final int m_multilineEditorHeight;
 
     @JsonCreator
-    protected ImageNodeRepresentation(@JsonProperty("label") final String label,
+    protected CameraNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,
@@ -101,7 +101,7 @@ public class ImageNodeRepresentation<VAL extends StringNodeValue> extends Labele
      * @param config The config of the node
      * @param labelConfig The label config of the node
      */
-    public ImageNodeRepresentation(final VAL currentValue, final VAL defaultValue, final StringNodeConfig config,
+    public CameraNodeRepresentation(final VAL currentValue, final VAL defaultValue, final StringNodeConfig config,
         final LabeledConfig labelConfig) {
         super(currentValue, defaultValue, labelConfig);
         m_regex = config.getRegex();
@@ -208,7 +208,7 @@ public class ImageNodeRepresentation<VAL extends StringNodeValue> extends Labele
             return false;
         }
         @SuppressWarnings("unchecked")
-        ImageNodeRepresentation<VAL> other = (ImageNodeRepresentation<VAL>)obj;
+        CameraNodeRepresentation<VAL> other = (CameraNodeRepresentation<VAL>)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_regex, other.m_regex)
                 .append(m_errorMessage, other.m_errorMessage)

@@ -2,7 +2,7 @@
 <knimeNode icon="./widget_string.png" type="Widget" xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Image Input Widget</name>
+	<name>Camera Input Widget</name>
 
 	<shortDescription>
        Creates a text input widget for use in components views. Outputs an string flow variable with a given value.

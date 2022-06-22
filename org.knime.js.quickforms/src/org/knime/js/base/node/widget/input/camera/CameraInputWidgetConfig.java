@@ -46,7 +46,7 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.widget.input.image;
+package org.knime.js.base.node.widget.input.camera;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -62,14 +62,14 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ImageInputWidgetConfig extends LabeledFlowVariableWidgetConfig<StringNodeValue> {
+public class CameraInputWidgetConfig extends LabeledFlowVariableWidgetConfig<StringNodeValue> {
 
     private final StringNodeConfig m_stringConfig;
 
     /**
      * Instantiate a new config object
      */
-    public ImageInputWidgetConfig() {
+    public CameraInputWidgetConfig() {
         m_stringConfig = new StringNodeConfig();
     }
 
@@ -221,7 +221,7 @@ public class ImageInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Stri
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ImageInputWidgetConfig other = (ImageInputWidgetConfig)obj;
+        CameraInputWidgetConfig other = (CameraInputWidgetConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj))
                 .append(m_stringConfig, other.m_stringConfig)
                 .isEquals();

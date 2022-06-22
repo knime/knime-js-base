@@ -317,7 +317,7 @@
       </node>
       <node
             deprecated="false"
-            factory-class="org.knime.js.base.node.widget.input.image.ImageWidgetNodeFactory">
+            factory-class="org.knime.js.base.node.widget.input.camera.CameraWidgetNodeFactory">
       </node>
    </extension>
    <extension
@@ -1326,10 +1326,10 @@
       </webResourceBundle>
       <webResourceBundle
             debug="true"
-            name="Image Input Widget"
+            name="Camera Input Widget"
             usesDefine="false"
             version="2.0.0"
-            webResourceBundleID="org.knime.js.base.node.widget.input.image.bundle">
+            webResourceBundleID="org.knime.js.base.node.widget.input.camera.bundle">
          <webResource
                relativePathSource="org.knime.js.quickforms.webResource1">
          </webResource>
@@ -1764,11 +1764,11 @@
       </javascriptComponent>
       <javascriptComponent
             getComponentValue-method-name="value"
-            implementationBundleID="org.knime.js.base.node.widget.input.image.bundle"
+            implementationBundleID="org.knime.js.base.node.widget.input.camera.bundle"
             init-method-name="init"
-            javascriptComponentID="org.knime.js.base.node.widget.input.image"
-            name="Image Input Widget"
-            namespace="knimeImageInputWidget"
+            javascriptComponentID="org.knime.js.base.node.widget.input.camera"
+            name="Camera Input Widget"
+            namespace="knimeCameraInputWidget"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
