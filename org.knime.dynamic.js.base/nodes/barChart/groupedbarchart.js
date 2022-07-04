@@ -1410,17 +1410,18 @@ window.knimeGroupedBarChart = (function () {
                 return;
             }
 
-            var configObject = {
+            var configObjectLabels = {
                 container: document.querySelector('svg'),
-                tempContainerClasses: 'knime-axis',
+                tempContainerClasses: 'knime-axis-label',
                 maxWidth: svgWidth / 2,
                 maxHeight: svgHeight / 2,
                 minimalChars: 1
             };
-            configObject.tempContainerAttributes = optOrientation ? { transform: 'rotate(-90)' } : '';
-            var catLabelSize = knimeService.measureAndTruncate(catLabel ? [catLabel] : [''], configObject);
-            configObject.tempContainerAttributes.transform = optOrientation ? '' : { transform: 'rotate(-90)' };
-            var freqLabelSize = knimeService.measureAndTruncate(freqLabel ? [freqLabel] : [''], configObject);
+
+            configObjectLabels.tempContainerAttributes = optOrientation ? { transform: 'rotate(-90)' } : '';
+            var catLabelSize = knimeService.measureAndTruncate(catLabel ? [catLabel] : [''], configObjectLabels);
+            configObjectLabels.tempContainerAttributes.transform = optOrientation ? '' : { transform: 'rotate(-90)' };
+            var freqLabelSize = knimeService.measureAndTruncate(freqLabel ? [freqLabel] : [''], configObjectLabels);
 
             var maxSizeYAxis = checkMaxSizeYAxis(optShowMaximum);
             var maxSizeXAxis = checkMaxSizeXAxis(wrappedPlotData, optStaggerLabels);
@@ -1454,10 +1455,10 @@ window.knimeGroupedBarChart = (function () {
 
             // nvd3 sets the freq label 20 pixel away from the axis. As with changing font size this
             // is not enough, it is easier to calculate it ourselves
-            var spacingFreqLabel = 20;
+            var spacingFreqLabel = 30;
 
             // add some empty space, so that two labels are not to close together
-            var additionalEmptySpace = 15;
+            var additionalEmptySpace = 10;
 
             // add some empty space when labels are staggered. Normal empty space is too much.
             var staggerLabelsAdditionalSpace = 5;
@@ -1467,22 +1468,26 @@ window.knimeGroupedBarChart = (function () {
 
             var xLabelDistance = 0;
             var yLabelDistance = 0;
+
             if (optOrientation) {
                 // -spacingCatLabel: reset the label to the position of the axis
                 // + maxSizeAxis: the calculated space needed by the label itself
                 // + additionalEmptySpace: add some empty space
-                xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxWidth  + additionalEmptySpace;
-                yLabelDistance = -spacingFreqLabel + maxSizeYAxis.max.maxHeight;
+                // + freqLabelSize: on the x-Axis we have to account for the height of the label
+                xLabelDistance = -spacingFreqLabel + maxSizeXAxis.max.maxWidth + additionalEmptySpace;
+                yLabelDistance = -spacingCatLabel + freqLabelSize.max.maxHeight + additionalEmptySpace;
             } else {
                 if (optStaggerLabels) {
                     // -spacingCatLabel: reset the label to the position of the axis
-                    // maxSizeAxis * 2: the calculated space needed by the label itself. When staggered there are 2
-                    // lines
-                    xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxHeight * 2  + additionalEmptySpace;
+                    // maxSizeAxis: the calculated space needed by the label itself. 2x when staggered as
+                    // there are two lines in that case
+                    xLabelDistance = -spacingCatLabel + 2 * maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight
+                        + additionalEmptySpace;
                 } else {
-                    xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxHeight + additionalEmptySpace;
+                    xLabelDistance = -spacingCatLabel + maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight
+                        + additionalEmptySpace;
                 }
-                yLabelDistance = maxSizeYAxis.max.maxWidth - spacingCatLabel + additionalEmptySpace;
+                yLabelDistance = -spacingFreqLabel + maxSizeYAxis.max.maxWidth + additionalEmptySpace;;
             }
 
             chart.xAxis.axisLabel(catLabel)
@@ -1506,29 +1511,28 @@ window.knimeGroupedBarChart = (function () {
 
             // calculate the space the charts needs below the actual chart
             // its calculated from the height of the text element,
-            // the height of the axis label and some additional space
+            // the height of the axis label and 3 times additional space for the 3 gaps between elements
             var bottomMargin = optOrientation
-                ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + additionalEmptySpace
-                : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + additionalEmptySpace;
+                ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 3 * additionalEmptySpace
+                : maxSizeXAxis.max.maxHeight + + catLabelSize.max.maxHeight + 3 * additionalEmptySpace;
             var leftMargin = optOrientation
-                ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + additionalEmptySpace + paddingAmount
-                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
+                ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + 3 * additionalEmptySpace
+                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxHeight + 3 * additionalEmptySpace;
 
             if (!_value.options.catLabel) {
-                bottomMargin = optOrientation ? bottomMargin
-                    : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
-                leftMargin = optOrientation ? leftMargin
-                    : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxWidth + additionalEmptySpace;
+                bottomMargin = optOrientation ? bottomMargin : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
+                leftMargin = optOrientation ? maxSizeYAxis.max.maxWidth + additionalEmptySpace : leftMargin;
             }
             if (!_value.options.freqLabel) {
                 bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
-                leftMargin = optOrientation ? leftMargin + paddingAmount
-                    : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
+                leftMargin = optOrientation ? leftMargin : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
             }
+
             if (!optOrientation) {
                 chart.staggerLabels(optStaggerLabels);
                 if (optStaggerLabels) {
-                    bottomMargin += _value.options.catLabel ? maxSizeXAxis.max.maxHeight  + staggerLabelsAdditionalSpace
+                    bottomMargin += _value.options.catLabel
+                        ? maxSizeXAxis.max.maxHeight + staggerLabelsAdditionalSpace
                         : maxSizeXAxis.max.maxHeight / 2 + paddingAmount;
                 }
             }
