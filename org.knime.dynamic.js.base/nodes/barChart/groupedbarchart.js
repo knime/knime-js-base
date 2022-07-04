@@ -1488,14 +1488,6 @@ window.knimeGroupedBarChart = (function () {
                 return;
             }
 
-            var configObject = {
-                container: document.querySelector('svg'),
-                tempContainerClasses: 'knime-axis',
-                maxWidth: svgWidth / 2,
-                maxHeight: svgHeight / 2,
-                minimalChars: 1
-            };
-
             var configObjectLabels = {
                 container: document.querySelector('svg'),
                 tempContainerClasses: 'knime-axis-label',
@@ -1598,7 +1590,6 @@ window.knimeGroupedBarChart = (function () {
             // calculate the space the charts needs below the actual chart
             // its calculated from the height of the text element,
             // the height of the axis label and 3 times additional space for the 3 gaps between elements
-            debugger;
             var bottomMargin = optOrientation
                 ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 3 * additionalEmptySpace
                 : maxSizeXAxis.max.maxHeight + + catLabelSize.max.maxHeight + 3 * additionalEmptySpace;
@@ -1608,19 +1599,18 @@ window.knimeGroupedBarChart = (function () {
 
             if (!_value.options.catLabel) {
                 bottomMargin = optOrientation ? bottomMargin : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
-                leftMargin = optOrientation ? maxSizeYAxis.max.maxWidth + additionalEmptySpace
-                    : leftMargin;
+                leftMargin = optOrientation ? maxSizeYAxis.max.maxWidth + additionalEmptySpace : leftMargin;
             }
             if (!_value.options.freqLabel) {
                 bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
-                leftMargin = optOrientation ? leftMargin
-                    : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
+                leftMargin = optOrientation ? leftMargin : maxSizeYAxis.max.maxWidth + additionalEmptySpace;
             }
 
             if (!optOrientation) {
                 chart.staggerLabels(optStaggerLabels);
                 if (optStaggerLabels) {
-                    bottomMargin += _value.options.catLabel ? maxSizeXAxis.max.maxHeight  + staggerLabelsAdditionalSpace
+                    bottomMargin += _value.options.catLabel
+                        ? maxSizeXAxis.max.maxHeight + staggerLabelsAdditionalSpace
                         : maxSizeXAxis.max.maxHeight / 2 + paddingAmount;
                 }
             }
