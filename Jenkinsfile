@@ -25,7 +25,7 @@ try {
                 'org.knime.features.ext.weka.feature.group' ]
     repositories = [ 'knime-js-base', 'knime-js-core', 'knime-timeseries', 'knime-distance', 'knime-jep', 'knime-weka',
                      'knime-network', 'knime-xml', 'knime-datageneration', 'knime-chemistry', 'knime-textprocessing',
-                     'knime-svm', 'knime-jfreechart', 'knime-js-labs', 'knime-stats', 'knime-r', 'knime-python', 'knime-conda', 'knime-database',
+                     'knime-svm', 'knime-jfreechart', 'knime-js-labs', 'knime-stats', 'knime-r', 'knime-python', 'knime-database',
                      'knime-filehandling', 'knime-kerberos', 'knime-excel' ]
     if (params.CEF) {
         testConfigs['cef'] = {
