@@ -1536,7 +1536,7 @@ window.knimeGroupedBarChart = (function () {
             var spacingFreqLabel = 30;
 
             // add some empty space, so that two labels are not to close together
-            var additionalEmptySpace = 10;
+            var additionalEmptySpace = 15;
 
             // add some empty space when labels are staggered. Normal empty space is too much.
             var staggerLabelsAdditionalSpace = 5;
@@ -1589,17 +1589,17 @@ window.knimeGroupedBarChart = (function () {
 
             // calculate the space the charts needs below the actual chart
             // its calculated from the height of the text element,
-            // the height of the axis label and 3 times additional space for the 3 gaps between elements
+            // the height of the axis label and 2 times additional space for the 2 gaps between elements
             var bottomMargin = optOrientation
-                ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 3 * additionalEmptySpace
-                : maxSizeXAxis.max.maxHeight + + catLabelSize.max.maxHeight + 3 * additionalEmptySpace;
+                ? maxSizeYAxis.max.maxHeight + freqLabelSize.max.maxHeight + 2 * additionalEmptySpace
+                : maxSizeXAxis.max.maxHeight + catLabelSize.max.maxHeight + 2 * additionalEmptySpace;
             var leftMargin = optOrientation
-                ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + 3 * additionalEmptySpace
-                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxHeight + 3 * additionalEmptySpace;
+                ? maxSizeXAxis.max.maxWidth + catLabelSize.max.maxWidth + 2 * additionalEmptySpace
+                : maxSizeYAxis.max.maxWidth + freqLabelSize.max.maxHeight + 2 * additionalEmptySpace;
 
             if (!_value.options.catLabel) {
                 bottomMargin = optOrientation ? bottomMargin : maxSizeXAxis.max.maxHeight + additionalEmptySpace;
-                leftMargin = optOrientation ? maxSizeYAxis.max.maxWidth + additionalEmptySpace : leftMargin;
+                leftMargin = optOrientation ? maxSizeXAxis.max.maxWidth + additionalEmptySpace : leftMargin;
             }
             if (!_value.options.freqLabel) {
                 bottomMargin = optOrientation ? maxSizeXAxis.max.maxHeight + additionalEmptySpace : bottomMargin;
