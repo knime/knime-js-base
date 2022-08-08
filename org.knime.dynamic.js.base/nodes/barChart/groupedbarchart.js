@@ -507,7 +507,8 @@ window.knimeGroupedBarChart = (function () {
                 var y = barBBox.y + barBBox.height / 2;
                 var hasEnoughSpaceAboveBar = barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width;
 
-                if (labelBBox.height + DEFAULT_MARGIN >= barBBox.height) {
+                if (labelBBox.height + DEFAULT_MARGIN >= barBBox.height
+                    || labelBBox.width + DEFAULT_MARGIN >= barBBox.width) {
                     d3.select(label).node().remove();
                 }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
@@ -528,7 +529,7 @@ window.knimeGroupedBarChart = (function () {
                 label.attr('text-anchor', 'middle');
                 var hasEnoughSpaceAboveBar = barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height;
 
-                if (labelBBox.width >= barBBox.width) {
+                if (labelBBox.width >= barBBox.width || labelBBox.height + DEFAULT_MARGIN >= barBBox.height) {
                     d3.select(label).node().remove();
                 }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
