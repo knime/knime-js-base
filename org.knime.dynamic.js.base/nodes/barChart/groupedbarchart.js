@@ -83,6 +83,7 @@ window.knimeGroupedBarChart = (function () {
     var FREQ_COLUMN_MISSING_VALUES_ONLY = 'freqColumnMissingValuesOnly';
     var CATEGORY_MISSING_VALUES_ONLY = 'categoryMissingValuesOnly';
     var NO_DATA_AVAILABLE = 'noDataAvailable';
+    var NO_STATIC_BAR_VALUES = 'noStaticBarValues';
 
     barChart.init = function (representation, value) {
         _value = value;
@@ -485,9 +486,11 @@ window.knimeGroupedBarChart = (function () {
             var DEFAULT_MARGIN = 10;
             var barBBox = this.getBBox();
 
+            // calculate the maxWidth with a slightly larger default margin
+            // in order to ensure that the label has enough space
             var configObject = {
                 container: document.querySelector('svg'),
-                maxWidth: barBBox.width - DEFAULT_MARGIN,
+                maxWidth: barBBox.width - 1.1 * DEFAULT_MARGIN,
                 minimalChars: 1
             };
             var labelSize = knimeService.measureAndTruncate([d.y], configObject);
@@ -510,6 +513,7 @@ window.knimeGroupedBarChart = (function () {
                 if (labelBBox.height + DEFAULT_MARGIN >= barBBox.height
                     || labelBBox.width + DEFAULT_MARGIN >= barBBox.width) {
                     d3.select(label).node().remove();
+                    knimeService.setWarningMessage('Some static bar values can not be displayed due to missing space', NO_STATIC_BAR_VALUES);
                 }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
                     configObject.maxWidth = parentBBox.width - barBBox.width - DEFAULT_MARGIN;
@@ -531,6 +535,7 @@ window.knimeGroupedBarChart = (function () {
 
                 if (labelBBox.width >= barBBox.width || labelBBox.height + DEFAULT_MARGIN >= barBBox.height) {
                     d3.select(label).node().remove();
+                    knimeService.setWarningMessage('Some static bar values can not be displayed due to missing space', NO_STATIC_BAR_VALUES);
                 }
                 if (hasEnoughSpaceAboveBar && _value.options.chartType === 'Grouped') {
                     label
@@ -546,6 +551,7 @@ window.knimeGroupedBarChart = (function () {
 
     removeStaticBarValues = function () {
         d3.selectAll('.knime-static-bar-value').remove();
+        knimeService.clearWarningMessage(NO_STATIC_BAR_VALUES);
     };
 
     hasSufficientBackgroundContrast = function (color) {
