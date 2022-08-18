@@ -509,9 +509,8 @@ window.knimeGroupedBarChart = (function () {
             if (_value.options.orientation) {
                 var y = barBBox.y + barBBox.height / 2;
                 var hasEnoughSpaceAboveBar = barBBox.width + labelBBox.width + DEFAULT_MARGIN < parentBBox.width;
-
-                if (labelBBox.height + DEFAULT_MARGIN >= barBBox.height
-                    || labelBBox.width + DEFAULT_MARGIN >= barBBox.width) {
+                if ((labelBBox.height + DEFAULT_MARGIN >= barBBox.height
+                    || labelBBox.width + DEFAULT_MARGIN >= barBBox.width) && !hasEnoughSpaceAboveBar) {
                     d3.select(label).node().remove();
                     knimeService.setWarningMessage('Some static bar values can not be displayed due to missing space', NO_STATIC_BAR_VALUES);
                 }
@@ -533,7 +532,8 @@ window.knimeGroupedBarChart = (function () {
                 label.attr('text-anchor', 'middle');
                 var hasEnoughSpaceAboveBar = barBBox.height + labelBBox.height + DEFAULT_MARGIN < parentBBox.height;
 
-                if (labelBBox.width >= barBBox.width || labelBBox.height + DEFAULT_MARGIN >= barBBox.height) {
+                if ((labelBBox.width >= barBBox.width
+                    || labelBBox.height + DEFAULT_MARGIN >= barBBox.height) && !hasEnoughSpaceAboveBar) {
                     d3.select(label).node().remove();
                     knimeService.setWarningMessage('Some static bar values can not be displayed due to missing space', NO_STATIC_BAR_VALUES);
                 }
