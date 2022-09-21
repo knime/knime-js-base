@@ -78,10 +78,10 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SingleNodeContainer.MemoryPolicy;
-import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.js.core.JSONViewContent;
 
@@ -326,10 +326,8 @@ public abstract class AbstractUpdateViewValuesTest extends RandomNodeSettingsHel
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
         if (workflowFile.createNewFile()) {
-            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
-            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
-            creationHelper.setWorkflowContext(fac.createContext());
-
+            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper(
+                WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null));
             return WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
         } else {
             throw new IllegalStateException("Creating empty workflow failed");
