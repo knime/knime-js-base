@@ -580,6 +580,9 @@
 		// Set selection
 		if (!_value.options.showSelectedOnly && selectedRows.length > 0) {
 			selectedRows.forEach(function (rowKey) { rowKey2leaf[rowKey].selected = true; addNodeToSelectionBackward(rowKey2leaf[rowKey]); });
+			if (_value.options.publishSelection) {
+				knimeService.setSelectedRows(knimeTable1.getTableId(), selectedRows, selectionChanged);
+			}
 			renderSelection();
 		}
 
@@ -736,58 +739,6 @@
 			renderSelection();
 			if (_value.options.publishSelection) {
 				knimeService.setSelectedRows(knimeTable1.getTableId(), [], selectionChanged);
-			}
-		}
-
-		// Traverse through tree and add nodes to selection.
-		function addNodeToSelectionBackward(node) {
-			if (!node) {
-				return;
-			}
-			node.selected = true;
-			var parent = node.parent;
-			while (parent != null) {
-				var allChildrenSelected = parent.children.every(function (child) { return child.selected; });
-				if (allChildrenSelected) {
-					parent.selected = true;
-				} else {
-					break;
-				}
-				parent = parent.parent;
-			}
-		}
-
-		// Draw border around all selected segments.
-		function renderSelection() {
-			//var sunburstGroup = d3.select("g#sunburstGroup");
-			if (_value.options.showSelectedOnly) {
-				sunburstGroup.selectAll("path")
-					.attr("stroke-width", 1)
-					.attr("stroke", "white")
-					.classed("knime-selected", true);
-			} else {
-				sunburstGroup.selectAll("path")
-					.attr("stroke-width", function (d) {
-						return d.selected ? 2 : 1;
-					})
-					.attr("stroke", function (d) {
-						return d.selected ? "#333333" : "white";
-					})
-					.classed("knime-selected", function (d) {
-						return d.selected;
-					});
-
-				// Resort elements in dom so that selected elements
-				// are drawn last.
-				sunburstGroup.selectAll("path").sort(function (a, b) {
-					if (a.selected == b.selected) {
-						return 0;
-					}
-					if (a.selected) {
-						return 1;
-					}
-					return -1;
-				});
 			}
 		}
 
@@ -1002,12 +953,6 @@
 			while (start) {
 				start[prop] = val;
 				start = start.parent;
-			}
-		}
-
-		function setPropAllNodes(prop, val) {
-			for (var i = 0; i < nodes.length; i++) {
-				nodes[i][prop] = val;
 			}
 		}
 
@@ -1462,7 +1407,7 @@
 			selectedRows = knimeService.getAllRowsForSelection(knimeTable1.getTableId());
 			setPropAllNodes("selected", false);
 			for (var i = 0; i < selectedRows.length; i++) {
-				var leaf = rowKey2leaf[rowKey];
+				var leaf = rowKey2leaf[selectedRows[i]];
 				addNodeToSelectionBackward(leaf);
 			}
 		}
@@ -1509,6 +1454,64 @@
 			});
 		}
 	};
+
+	// Traverse through tree and add nodes to selection.
+	function addNodeToSelectionBackward(node) {
+		if (!node) {
+			return;
+		}
+		node.selected = true;
+		var parent = node.parent;
+		while (parent != null) {
+			var allChildrenSelected = parent.children.every(function (child) { return child.selected; });
+			if (allChildrenSelected) {
+				parent.selected = true;
+			} else {
+				break;
+			}
+			parent = parent.parent;
+		}
+	}
+
+	// Draw border around all selected segments.
+	function renderSelection() {
+		var sunburstGroup = d3.select("#sunburstGroup");
+		if (_value.options.showSelectedOnly) {
+			sunburstGroup.selectAll("path")
+				.attr("stroke-width", 1)
+				.attr("stroke", "white")
+				.classed("knime-selected", true);
+		} else {
+			sunburstGroup.selectAll("path")
+				.attr("stroke-width", function (d) {
+					return d.selected ? 2 : 1;
+				})
+				.attr("stroke", function (d) {
+					return d.selected ? "#333333" : "white";
+				})
+				.classed("knime-selected", function (d) {
+					return d.selected;
+				});
+
+			// Resort elements in dom so that selected elements
+			// are drawn last.
+			sunburstGroup.selectAll("path").sort(function (a, b) {
+				if (a.selected == b.selected) {
+					return 0;
+				}
+				if (a.selected) {
+					return 1;
+				}
+				return -1;
+			});
+		}
+	}
+
+	function setPropAllNodes(prop, val) {
+		for (var i = 0; i < nodes.length; i++) {
+			nodes[i][prop] = val;
+		}
+	}
 
 	view.validate = function () {
 		return true;
