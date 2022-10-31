@@ -57,8 +57,11 @@
                 Erase all the editor changes stored in the node.
             </option>
             <option name="Suggestion dropdown for columns">
-	        	Select the columns for which dropdown suggestions should be enabled. Dropdown suggestions are based on the domain values of each column.
-	        </option>
+                Select the columns for which dropdown suggestions should be enabled. Dropdown suggestions are based on the domain values of each column.
+            </option>
+            <option name="Use domain of incoming table">
+                Dropdown suggestions are based on the domain values of each column of the incoming table.
+            </option>
         </tab>
         <tab name="Interactivity">
         	<description>

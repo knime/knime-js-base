@@ -245,6 +245,10 @@ public class TableEditorViewConfig {
     static final String CFG_TABLE_HASH = "tableHash";
     private String m_tableHash = null;
 
+    static final String CFG_USE_INCOMING_NOMINAL_TABLE_DOMAIN = "useIncomingTableDomain";
+    static final boolean DEFAULT_USE_INCOMING_NOMINAL_TABLE_DOMAIN = false;
+    private boolean m_useIncomingNominalTableDomain = DEFAULT_USE_INCOMING_NOMINAL_TABLE_DOMAIN;
+
 
     /**
      * @return the hideInWizard
@@ -806,6 +810,22 @@ public class TableEditorViewConfig {
         m_customCSS = customCSS;
     }
 
+    /**
+     *
+     * @return whether to use the incoming nominal table domain
+     */
+    public boolean isUsingIncomingNominalTableDomain() {
+        return m_useIncomingNominalTableDomain;
+    }
+
+    /**
+     *
+     * @param useIncomingNominalTableDomain the option to set whether to use the incoming nominal table domain
+     */
+    public void setUseIncomingNominalTableDomain(final boolean useIncomingNominalTableDomain) {
+        m_useIncomingNominalTableDomain = useIncomingNominalTableDomain;
+    }
+
 
     /** Saves current parameters to settings object.
      * @param settings To save to.
@@ -856,6 +876,9 @@ public class TableEditorViewConfig {
 
         //added with 3.6
         settings.addString(CFG_CUSTOM_CSS, m_customCSS);
+
+        //added with 4.7
+        settings.addBoolean(CFG_USE_INCOMING_NOMINAL_TABLE_DOMAIN, m_useIncomingNominalTableDomain);
 
         // editor settings
         m_editableColumnsFilterConfig.saveConfiguration(settings);
@@ -927,6 +950,10 @@ public class TableEditorViewConfig {
         //added with 3.6
         m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
 
+        //added with 4.7
+        m_useIncomingNominalTableDomain =
+                settings.getBoolean(CFG_USE_INCOMING_NOMINAL_TABLE_DOMAIN, DEFAULT_USE_INCOMING_NOMINAL_TABLE_DOMAIN);
+
         // editor settings
         m_editableColumnsFilterConfig.loadConfigurationInModel(settings);
         m_editorChanges.loadSettingsFrom(settings);
@@ -997,6 +1024,10 @@ public class TableEditorViewConfig {
 
         //added with 3.6
         m_customCSS = settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS);
+
+        //added with 4.7
+        m_useIncomingNominalTableDomain =
+                settings.getBoolean(CFG_USE_INCOMING_NOMINAL_TABLE_DOMAIN, DEFAULT_USE_INCOMING_NOMINAL_TABLE_DOMAIN);
 
         // editor settings
         m_editableColumnsFilterConfig.loadConfigurationInDialog(settings, spec);

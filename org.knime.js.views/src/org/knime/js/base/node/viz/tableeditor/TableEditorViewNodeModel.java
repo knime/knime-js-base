@@ -390,6 +390,7 @@ public class TableEditorViewNodeModel extends AbstractWizardNodeModel<TableEdito
                 .setExcludeColumns(filter.getExcludes())
                 .keepFilterColumns(true)
                 .calculateDataHash(true)
+                .useIncomingNominalTableDomain(m_config.isUsingIncomingNominalTableDomain())
                 .build(exec);
         if (m_config.getMaxRows() < table.size()) {
             setWarningMessage("Only the first " + m_config.getMaxRows() + " rows are displayed.");
