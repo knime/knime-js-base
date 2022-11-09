@@ -126,7 +126,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
     private final JCheckBox m_enableGlobalNumberFormatCheckbox;
     private final JSpinner m_globalNumberFormatDecimalSpinner;
     private final JCheckBox m_displayMissingValueAsQuestionMark;
-    private final JCheckBox m_useIncomingNominalTableDomainCheckBox;
+    private final JCheckBox m_useIncomingTableDomainCheckBox;
 
     // editor
     private final DataColumnSpecFilterPanel m_editableColumnsFilterPanel;
@@ -252,7 +252,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
                 m_resetEditorChangesButton.setEnabled(false);
             }
         });
-        m_useIncomingNominalTableDomainCheckBox = new JCheckBox("Use domain of incoming table");
+        m_useIncomingTableDomainCheckBox = new JCheckBox("Use domain of incoming table");
 
         addTab("Options", initOptions());
         addTab("Editor", initEditor());
@@ -449,11 +449,10 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         gbcA.gridx = 0;
         dropdownPanel.add(new JLabel("Suggestion dropdown for columns: "), gbcA);
         gbcA.gridy++;
+        dropdownPanel.add(m_useIncomingTableDomainCheckBox, gbcA);
+        gbcA.gridy++;
         gbcA.gridwidth = 3;
         dropdownPanel.add(m_columnDropdownFilterPanel, gbcA);
-        gbcA.gridy++;
-        gbcA.gridx = 0;
-        dropdownPanel.add(m_useIncomingNominalTableDomainCheckBox, gbcA);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = createConfiguredGridBagConstraints();
@@ -547,7 +546,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_editorChanges = m_config.getEditorChanges();
         m_tableHash = m_config.getTableHash();
         m_resetEditorChangesButton.setEnabled(m_editorChanges.getChanges().size() > 0);
-        m_useIncomingNominalTableDomainCheckBox.setSelected(m_config.isUsingIncomingNominalTableDomain());
+        m_useIncomingTableDomainCheckBox.setSelected(m_config.isUsingIncomingTableDomain());
     }
 
     /**
@@ -600,7 +599,7 @@ public class TableEditorViewNodeDialogPane extends NodeDialogPane {
         m_config.setEditableColumnFilterConfig(editableColumnsFilterConfig);
         m_config.setEditorChanges(m_editorChanges);
         m_config.setTableHash(m_tableHash);
-        m_config.setUseIncomingNominalTableDomain(m_useIncomingNominalTableDomainCheckBox.isSelected());
+        m_config.setUseIncomingTableDomain(m_useIncomingTableDomainCheckBox.isSelected());
 
         m_config.saveSettings(settings);
     }
