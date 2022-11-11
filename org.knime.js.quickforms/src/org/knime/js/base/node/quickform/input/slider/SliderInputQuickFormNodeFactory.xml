@@ -2,10 +2,15 @@
 <knimeNode icon="./quickform_slider.png" type="QuickForm"
 	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Slider Input</name>
+	<name>Slider Input (legacy)</name>
 	<shortDescription>Outputs a double-precision floating point variable with a given value.</shortDescription>
 	<fullDescription>
 		<intro>
+	        <p>
+	          This node is part of the legacy Quick Form nodes and will be <a href="https://www.knime.com/blog/reproducibility-and-knime">deprecated</a> soon.
+	          The replacement for this node can be found in the configuration/widget nodes.
+	          For more information on these new nodes see <a href="https://www.knime.com/blog/widget-vs-configuration-nodes-whats-the-difference">this blog post</a>.
+	        </p>
 			<p>Outputs a double-precision floating point flow variable with a
 				given number value. The value can also be controlled by a slider in
 				the view or on the WebPortal.

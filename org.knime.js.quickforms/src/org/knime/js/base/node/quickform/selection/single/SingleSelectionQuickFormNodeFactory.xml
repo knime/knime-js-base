@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./quickform_strsel.png" type="QuickForm" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-	<name>Single Selection</name>
+	<name>Single Selection (legacy)</name>
 	<shortDescription>Allows selecting single value from a list of String which is returned as a String flow variable.</shortDescription>
 	<fullDescription>
 		<intro>
+	        <p>
+	          This node is part of the legacy Quick Form nodes and will be <a href="https://www.knime.com/blog/reproducibility-and-knime">deprecated</a> soon.
+	          The replacement for this node can be found in the configuration/widget nodes.
+	          For more information on these new nodes see <a href="https://www.knime.com/blog/widget-vs-configuration-nodes-whats-the-difference">this blog post</a>.
+	        </p>
 			<p>Allows selecting single value from a list of String which is returned as a String flow variable.
 				The value can also be controlled from a QuickForm (KNIME WebPortal).</p>
 				<p>

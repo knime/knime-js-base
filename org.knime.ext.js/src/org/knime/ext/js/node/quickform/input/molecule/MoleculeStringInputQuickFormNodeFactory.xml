@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./smilesIn.png" type="QuickForm" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-	<name>Molecule String Input</name>
+	<name>Molecule String Input (legacy)</name>
 	<shortDescription>Outputs a molecule string in the specified format.</shortDescription>
 	<fullDescription>
 		<intro>
+	        <p>
+	          This node is part of the legacy Quick Form nodes and will be <a href="https://www.knime.com/blog/reproducibility-and-knime">deprecated</a> soon.
+	          The replacement for this node can be found in the configuration/widget nodes.
+	          For more information on these new nodes see <a href="https://www.knime.com/blog/widget-vs-configuration-nodes-whats-the-difference">this blog post</a>.
+	        </p>
 			<p>Outputs a molecule string in the specified format. The molecule can
 				also be sketched or its string representation be edited in a quick
 				form (KNIME WebPortal).</p>

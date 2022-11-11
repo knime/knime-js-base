@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./quickform_file.png" type="QuickForm" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-	<name>File Chooser</name>
+	<name>File Chooser (legacy)</name>
 	<shortDescription>
 	   Quickform node that allows choosing single or multiple files, workflows or directories from a remote mountpoint.
 	</shortDescription>
 	<fullDescription>
 		<intro>
+	        <p>
+	          This node is part of the legacy Quick Form nodes and will be <a href="https://www.knime.com/blog/reproducibility-and-knime">deprecated</a> soon.
+	          The replacement for this node can be found in the configuration/widget nodes.
+	          For more information on these new nodes see <a href="https://www.knime.com/blog/widget-vs-configuration-nodes-whats-the-difference">this blog post</a>.
+	        </p>
 			<p>
                 Quickform node that allows choosing single or multiple files, workflows or directories from a remote mountpoint and exposing those items in a data table. The first selected item is exposed as a flow variable as well.
             </p>
