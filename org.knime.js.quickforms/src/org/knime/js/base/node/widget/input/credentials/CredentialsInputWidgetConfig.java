@@ -66,12 +66,14 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfig<CredentialsNodeValue> {
 
     private final CredentialsNodeConfig m_credentialsConfig;
+    private String m_overwrittenPasword;
 
     /**
      * Instantiate a new config object
      */
     public CredentialsInputWidgetConfig() {
         m_credentialsConfig = new CredentialsNodeConfig();
+
     }
 
     /**
@@ -126,6 +128,20 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     }
 
     /**
+     * @return the overwrittenPasword
+     */
+    public String getOverwrittenPasword() {
+        return m_overwrittenPasword;
+    }
+
+    /**
+     * @param overwrittenPasword the overwrittenPasword to set
+     */
+    public void setOverwrittenPasword(final String overwrittenPasword) {
+        m_overwrittenPasword = overwrittenPasword;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -149,6 +165,7 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_credentialsConfig.loadSettings(settings);
+        m_overwrittenPasword = getDefaultValue().getPassword();
     }
 
     /**
@@ -201,6 +218,5 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
                 .append(m_credentialsConfig, other.m_credentialsConfig)
                 .isEquals();
     }
-
 
 }
