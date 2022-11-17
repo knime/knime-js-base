@@ -93,7 +93,21 @@ public class CredentialsWidgetNodeModel extends
      */
     @Override
     public CredentialsNodeValue createEmptyViewValue() {
-        return new CredentialsNodeValue();
+        var nodeValue = new CredentialsNodeValue();
+        var overwrittenPassword = getConfig().getOverwrittenPasword();
+        nodeValue.setPassword(overwrittenPassword);
+        return nodeValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadViewValue(final CredentialsNodeValue viewValue, final boolean useAsDefault) {
+        synchronized (getLock()) {
+            getConfig().setOverwrittenPasword(viewValue.getPassword());
+            super.loadViewValue(viewValue, useAsDefault);
+        }
     }
 
     /**
