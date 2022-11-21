@@ -66,7 +66,16 @@ import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
 public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfig<CredentialsNodeValue> {
 
     private final CredentialsNodeConfig m_credentialsConfig;
-    private String m_overwrittenPasword;
+
+    /* 
+    * Due to the nature of the lifecycle of the widget's value during wizard execution it is necessary to save a
+    * previously entered password in the config. 
+    * During re-execution of a previously already executed component containing a credentials widget, the value is 
+    * recreated and since during deserialization we might just receive the magic default password, a previously 
+    * entered password might be lost. 
+    * The value here is not persisted and only exists at runtime.
+    */
+    private String m_overwrittenPassword;
 
     /**
      * Instantiate a new config object
@@ -128,17 +137,17 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     }
 
     /**
-     * @return the overwrittenPasword
+     * @return the overwrittenPassword
      */
-    public String getOverwrittenPasword() {
-        return m_overwrittenPasword;
+    public String getOverwrittenPassword() {
+        return m_overwrittenPassword;
     }
 
     /**
-     * @param overwrittenPasword the overwrittenPasword to set
+     * @param overwrittenPassword the overwrittenPassword to set
      */
-    public void setOverwrittenPasword(final String overwrittenPasword) {
-        m_overwrittenPasword = overwrittenPasword;
+    public void setOverwrittenPassword(final String overwrittenPassword) {
+        m_overwrittenPassword = overwrittenPassword;
     }
 
     /**
@@ -165,7 +174,7 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_credentialsConfig.loadSettings(settings);
-        m_overwrittenPasword = getDefaultValue().getPassword();
+        m_overwrittenPassword = getDefaultValue().getPassword();
     }
 
     /**

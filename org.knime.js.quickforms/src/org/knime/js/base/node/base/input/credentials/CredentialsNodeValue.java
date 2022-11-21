@@ -134,6 +134,8 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private void setMagicPassword(final String magicPassword) {
+        // In case the MAGIC_DEFAULT_PASSWORD is returned, the existing password is not overridden. 
+        // In any other case it is, so an existing password can also be reset.
         if (!StringUtils.equals(magicPassword, CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
             m_password = StringUtils.isEmpty(magicPassword) ? null : magicPassword;
         }
