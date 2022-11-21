@@ -94,7 +94,7 @@ public class CredentialsWidgetNodeModel extends
     @Override
     public CredentialsNodeValue createEmptyViewValue() {
         var nodeValue = new CredentialsNodeValue();
-        var overwrittenPassword = getConfig().getOverwrittenPasword();
+        var overwrittenPassword = getConfig().getOverwrittenPassword();
         nodeValue.setPassword(overwrittenPassword);
         return nodeValue;
     }
@@ -105,7 +105,7 @@ public class CredentialsWidgetNodeModel extends
     @Override
     public void loadViewValue(final CredentialsNodeValue viewValue, final boolean useAsDefault) {
         synchronized (getLock()) {
-            getConfig().setOverwrittenPasword(viewValue.getPassword());
+            getConfig().setOverwrittenPassword(viewValue.getPassword());
             super.loadViewValue(viewValue, useAsDefault);
         }
     }
