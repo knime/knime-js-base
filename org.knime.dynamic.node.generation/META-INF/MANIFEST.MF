@@ -6,7 +6,7 @@ Bundle-Version: 5.0.0.qualifier
 Bundle-ClassPath: knime-dynamic-node-generation.jar,
  lib/schemas.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Require-Bundle: org.knime.core;bundle-version="[4.7.0,5.0.0)"
+Require-Bundle: org.knime.core;bundle-version="[5.0.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BundleShape: dir
 Automatic-Module-Name: org.knime.dynamic.node.generation
