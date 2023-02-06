@@ -64,7 +64,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -90,7 +89,9 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.contextv2.RestLocationInfo;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2.ExecutorType;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
@@ -275,7 +276,7 @@ public class FileUploadWidgetNodeModel extends
                 if (openStream) {
                     // For a remote resource we always copy it locally first, because it may be accessed several times
                     // and if it's an upload from the WebPortal it requires special authentication.
-                    final File tempFile = copyFileToTempLocation(path, url);
+                    final File tempFile = copyFileToTempLocation(url);
                     vector.add(tempFile.getAbsolutePath());
                     vector.add(getConfig().isStoreInWfDir()
                         ? new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
@@ -296,7 +297,7 @@ public class FileUploadWidgetNodeModel extends
             URI uri;
             try {
                 if (openStream && getConfig().isStoreInWfDir()) {
-                    final File tempFile = copyFileToTempLocation(path, f.toURI().toURL());
+                    final File tempFile = copyFileToTempLocation(f.toURI().toURL());
                     uri = new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
                         "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName(), null);
                     path = tempFile.getAbsolutePath();
@@ -342,9 +343,9 @@ public class FileUploadWidgetNodeModel extends
             "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
     }
 
-    private File copyFileToTempLocation(final String path, final URL url) throws IOException, InvalidSettingsException {
-        final String basename = FilenameUtils.getBaseName(path);
-        final String extension = FilenameUtils.getExtension(path);
+    private File copyFileToTempLocation(final URL url) throws IOException, InvalidSettingsException {
+        final String basename = FilenameUtils.getBaseName(url.getPath());
+        final String extension = FilenameUtils.getExtension(url.getPath());
         File tempFile;
         if (getConfig().isStoreInWfDir()) {
             tempFile = computeFileName(m_id);
@@ -375,9 +376,10 @@ public class FileUploadWidgetNodeModel extends
         // get the flow's tmp dir from its context
         final NodeContext nodeContext = NodeContext.getContext();
         if (nodeContext != null) {
-            final WorkflowContext workflowContext = nodeContext.getWorkflowManager().getContext();
+            final WorkflowContextV2 workflowContext = nodeContext.getWorkflowManager().getContextV2();
             if (workflowContext != null) {
-                rootDir = new File(workflowContext.getCurrentLocation(), ResolverUtil.IN_WORKFLOW_TEMP_DIR);
+                rootDir = workflowContext.getExecutorInfo().getLocalWorkflowPath()
+                    .resolve(ResolverUtil.IN_WORKFLOW_TEMP_DIR).toFile();
                 rootDir.mkdir();
             }
         }
@@ -385,7 +387,14 @@ public class FileUploadWidgetNodeModel extends
             // use the standard tmp dir then.
             rootDir = new File(KNIMEConstants.getKNIMETempDir());
         }
-        final String path = getRelevantValue().getPath();
+        String path = getRelevantValue().getPath();
+
+        // remove query parameter from a URL because otherwise the basename and extension computation below will break
+        var index = path.indexOf('?');
+        if (index > 0) {
+            path = path.substring(0, index);
+        }
+
         final String extension = FilenameUtils.getExtension(path);
         final String basename = FilenameUtils.getBaseName(path);
         return new File(rootDir, basename + id + "." + extension);
@@ -458,22 +467,30 @@ public class FileUploadWidgetNodeModel extends
         // Opening a remote stream can either be an arbitrary URL or a connection to a KNIME Server to retrieve
         // an uploaded file via WebPortal
 
-        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-        final Optional<URI> repoUri = wfContext.getRemoteRepositoryAddress();
-        final boolean isRunningOnKnimeServer = repoUri.isPresent() && wfContext.getServerAuthenticator().isPresent();
+        final WorkflowContextV2 wfContext = NodeContext.getContext().getWorkflowManager().getContextV2();
         final boolean isUsingDefaultFile = getRepresentation().getDefaultValue().equals(getRelevantValue());
-        final boolean isExactKnimeServerMatch = isRunningOnKnimeServer && repoUri.get().getHost().equals(url.getHost())
-            && (repoUri.get().getPort() == url.getPort()) && repoUri.get().getScheme().equals(url.getProtocol());
+        final boolean isRunningOnKnimeServer = wfContext.getExecutorType() == ExecutorType.SERVER_EXECUTOR;
+        final boolean isRunningOnKnimeHub = wfContext.getExecutorType() == ExecutorType.HUB_EXECUTOR;
 
         if (isUsingDefaultFile) {
             // For a default file we can not necessarily assume that it is pointing to a KNIME server instance.
             // If the server information matches exactly though, a connection to the KNIME Server is still established
+
+            boolean isExactKnimeServerMatch = false;
+            if (isRunningOnKnimeServer) {
+                var repoUri = ((RestLocationInfo)wfContext.getLocationInfo()).getRepositoryAddress();
+                isExactKnimeServerMatch = repoUri.getHost().equals(url.getHost())
+                    && (repoUri.getPort() == url.getPort()) && repoUri.getScheme().equals(url.getProtocol());
+            }
+
             if (isExactKnimeServerMatch) {
                 return openStreamToKnimeServer(url);
             } else {
                 // Otherwise it is assumed that the URL can be accessed with the simple connection logic.
                 return openSimpleStream(url);
             }
+        } else if (isRunningOnKnimeHub) {
+            return openSimpleStream(url);
         } else if (isRunningOnKnimeServer) {
             // If the value has been changed, assume that a file has been uploaded to the connected KNIME server and
             // open a connection to the known server from this executor.
@@ -489,14 +506,15 @@ public class FileUploadWidgetNodeModel extends
     private InputStream openStreamToKnimeServer(final URL url) throws IOException {
         LOGGER.debug("A server upload has been detected. An attempt will be made"
                 + " to connect. The provided URL is: " + url);
-        final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-        final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
+        final WorkflowContextV2 wfContext = NodeContext.getContext().getWorkflowManager().getContextV2();
+        assert wfContext.getLocationInfo() instanceof RestLocationInfo; // otherwise we would not have ended up here
+        final URI repoUri = ((RestLocationInfo)wfContext.getLocationInfo()).getRepositoryAddress();
 
         final URLConnection conn =
                 new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
 
         try {
-            wfContext.getServerAuthenticator().get().authorizeClient(conn); // NOSONAR
+            ((RestLocationInfo)wfContext.getLocationInfo()).getAuthenticator().authorizeClient(conn);
         } catch (CouldNotAuthorizeException e) {
             throw new IOException("Could not authorize client: " + e.getMessage(), e);
         }
