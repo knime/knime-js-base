@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode type="Manipulator" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd" icon="css_node.png">
-	<name>CSS Editor</name>
+	<name>CSS Editor (legacy)</name>
 	
 	<shortDescription>
 	    Provides CSS Code for other JS nodes.

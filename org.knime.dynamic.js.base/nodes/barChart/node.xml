@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeGroupedBarChart" nodeID="dynamic_grouped_bar_chart"
     categoryPath="/view/js-views" icon="./bar_chart.png" type="Visualizer">
-	<name>Bar Chart</name>
+	<name>Bar Chart (legacy)</name>
 	<shortDescription>A bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>

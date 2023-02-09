@@ -6,7 +6,7 @@
 	jsNamespace="knimeConditionalBoxplot" nodeID="conditionalBoxplotJS" categoryPath="/view/js-views" type="Visualizer"
     icon="./conditional_box_plot.png" afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Box Plot">
 
-	<name>Conditional Box Plot</name>
+	<name>Conditional Box Plot (legacy)</name>
 	<shortDescription>This node provides a view with a Conditional Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>

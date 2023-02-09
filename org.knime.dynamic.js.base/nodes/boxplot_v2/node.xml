@@ -6,7 +6,7 @@
 	jsNamespace="knimeBoxplot" nodeID="boxplotJS" categoryPath="/view/js-views"
     icon="./box_plot.png" type="Visualizer" afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Bar Chart">
 
-	<name>Box Plot</name>
+	<name>Box Plot (legacy)</name>
 	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>
