@@ -15,7 +15,7 @@
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart (legacy)"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory">
@@ -33,19 +33,19 @@
             factory-class="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Histogram"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Histogram (legacy)"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Pie/Donut Chart"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Pie/Donut Chart (legacy)"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Conditional Box Plot"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Conditional Box Plot (legacy)"
             category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">

@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeBoxplot" nodeID="boxplotJS" categoryPath="/view/js-views"
-    icon="./box_plot.png" type="Visualizer" afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Bar Chart">
+    icon="./box_plot.png" type="Visualizer" afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Bar Chart (legacy)">
 
 	<name>Box Plot (legacy)</name>
 	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
