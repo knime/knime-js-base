@@ -3,7 +3,7 @@
 	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
-	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/view/js-views"
+	jsNamespace="boxplot_namespace" nodeID="boxplotJS" categoryPath="/view/legacy/js-views"
     icon="../js.png" type="Visualizer" deprecated="true">
 
 	<name>Box Plot (JavaScript)</name>
