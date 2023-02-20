@@ -2,7 +2,7 @@
 <knimeNode type="Visualizer" icon="./tile4portrait_content.png"
     xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://knime.org/node/v3.1 https://www.knime.org/node/Node_v3.1.xsd">
-    <name>Tile View (legacy)</name>
+    <name>Tile View (JavaScript)</name>
     <shortDescription>This node provides a tile view where each data row is displayed as a tile.</shortDescription>
     <fullDescription>
         <intro>

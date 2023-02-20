@@ -4,8 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeGroupedBarChart" nodeID="dynamic_grouped_bar_chart"
-    categoryPath="/view/legacy/js-views" icon="./bar_chart.png" type="Visualizer">
-	<name>Bar Chart (legacy)</name>
+    categoryPath="/view/js-views" icon="./bar_chart.png" type="Visualizer">
+	<name>Bar Chart (JavaScript)</name>
 	<shortDescription>A bar chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
@@ -257,5 +257,5 @@
 	<js:dependencies>
 		<js:dependency name="nvd3" path="NVD3_1.8.6" type="local" exports="nv" />
 	</js:dependencies>
-	<js:javaProcessor className="org.knime.dynamic.js.base.grouped.GroupedProcessor" hidesLimitRowOption="true"/>
+	<js:javaProcessor className="org.knime.dynamic.js.base.grouped.GroupedProcessor" hidesLimitRowOption="true"></js:javaProcessor>
 </js:knimeNode>

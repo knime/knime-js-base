@@ -4,67 +4,67 @@
    <extension-point id="templaterepository" name="JavaScript template repository" schema="schema/templaterepository.exsd"/>
    <extension point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.generic3.GenericJSViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart (legacy)"
-            category-path="/view/legacy/js-views"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Sunburst Chart (JavaScript)"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tableeditor.TableEditorViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Histogram (legacy)"
-            category-path="/view/legacy/js-views"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Histogram (JavaScript)"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.lift.LiftChartNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Pie/Donut Chart (legacy)"
-            category-path="/view/legacy/js-views"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Pie/Donut Chart (JavaScript)"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.plotter.roc.ROCCurveNodeFactory">
       </node>
       <node
-            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Conditional Box Plot (legacy)"
-            category-path="/view/legacy/js-views"
+            after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Conditional Box Plot (JavaScript)"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
       </node>
       <node
             after="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory"
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="false"
             factory-class="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory">
       </node>
@@ -73,7 +73,7 @@
             factory-class="org.knime.js.base.node.css.editor.CSSEditorNodeFactory">
       </node>
       <node
-            category-path="/view/legacy/js-views"
+            category-path="/view/js-views"
             deprecated="true"
             factory-class="org.knime.js.base.node.viz.table.WebTableViewNodeFactory">
       </node>
