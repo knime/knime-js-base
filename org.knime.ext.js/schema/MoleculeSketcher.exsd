@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.knime.ext.js" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.knime.ext.js" id="MoleculeWidgetSketcher" name="MoleculeWidgetSketcher"/>
+      </appinfo>
+      <documentation>
+         Extension point to register an org.knime.ext.js.node.widget.input.molecule2.MoleculeWidgetSketcher for the
+         Molecule Widget node.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="MoleculeWidgetSketcher"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="MoleculeWidgetSketcher">
+      <complexType>
+         <attribute name="sketcher" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Implementation of org.knime.ext.js.node.widget.input.molecule2.MoleculeWidgetSketcher interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.knime.ext.js.node.widget.input.molecule2.MoleculeWidgetSketcher"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         KNIME AP 5.1
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         KNIME AG, Zurich, Switzerland
+      </documentation>
+   </annotation>
+
+</schema>
