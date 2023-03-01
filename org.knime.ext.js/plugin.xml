@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="MoleculeSketcher" name="MoleculeSketcher"
+         schema="schema/MoleculeSketcher.exsd"/>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.knime.ext.js.molecule.MoleculeSketcherPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.knime.workbench.ui.preferences"
+            class="org.knime.ext.js.molecule.MoleculeSketcherPreferencePage"
+            id="org.knime.ext.js.node.molecule"
+            name="Molecule Sketcher">
+      </page>
+   </extension>
    <extension
          point="org.knime.workbench.repository.nodes">
       <node
