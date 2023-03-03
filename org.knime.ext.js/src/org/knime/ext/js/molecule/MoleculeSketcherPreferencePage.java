@@ -48,12 +48,19 @@ package org.knime.ext.js.molecule;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
+import org.knime.core.ui.util.SWTUtilities;
+
 import static org.knime.ext.js.molecule.MoleculeSketcherPreferenceUtil.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Preference page for the Molecule Sketcher.
@@ -64,6 +71,17 @@ import java.net.URL;
  */
 public final class MoleculeSketcherPreferencePage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage {
+
+    private final String[] m_supportedFormats;
+
+    private boolean m_apply;
+
+    /** Constructor */
+    public MoleculeSketcherPreferencePage() {
+        super(GRID);
+        m_supportedFormats = MoleculeSketcherPreferenceUtil.getInstance().getSelectedSketcher().getSupportedFormats();
+        Arrays.sort(m_supportedFormats);
+    }
 
     @Override
     public void init(IWorkbench workbench) {
@@ -100,6 +118,62 @@ public final class MoleculeSketcherPreferencePage extends FieldEditorPreferenceP
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void performApply() {
+        m_apply = true;
+        // note that super.performApply() entails a call to performOk()
+        super.performApply();
+    }
+
+    @Override
+    public boolean performOk() {
+        final boolean result = super.performOk();
+        checkChanges();
+        return result;
+    }
+
+    @Override
+    public boolean performCancel() {
+        final boolean result = super.performCancel();
+        checkChanges();
+        return result;
+    }
+
+    private void checkChanges() {
+        boolean apply = m_apply;
+        m_apply = false;
+
+        // we have to return here since we do not want to proceed (yet) in case of Apply
+        // we only want to proceed in case of OK or cancel
+        if (apply) {
+            return;
+        }
+
+        final var supportedFormatsUpdated =
+            MoleculeSketcherPreferenceUtil.getInstance().getSelectedSketcher().getSupportedFormats();
+        Arrays.sort(supportedFormatsUpdated);
+
+        if (!Arrays.equals(m_supportedFormats, supportedFormatsUpdated)) {
+            Display.getDefault()
+                .asyncExec(() -> promptRestartWithMessage(
+                    String.format("The supported formats of the configured molecule sketcher have changed.%n"
+                        + "Molecule Widget nodes in open workflows might be in an inconsistent state "
+                        + "until the workbench is restarted.%nDo you want to restart the workbench now?")));
+        }
+
+    }
+
+    private static void promptRestartWithMessage(final String message) {
+        final var messageBox = new MessageBox(SWTUtilities.getActiveShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+        messageBox.setText("Restart workbench...");
+        messageBox.setMessage(message);
+        if (messageBox.open() != SWT.YES) {
+            return;
+        }
+
+        PlatformUI.getWorkbench().restart();
     }
 
 }
