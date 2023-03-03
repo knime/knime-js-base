@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./MoleculeSketcher.png" type="Widget"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Molecule Widget</name>
+	<shortDescription>Emits a molecule string in the specified format.
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			<p>Emits a molecule string in the specified format. The molecule can
+				also be sketched or its string representation be edited in a widget
+				(KNIME WebPortal).
+			</p>
+		</intro>
+		<option name="Label">A descriptive label that will be shown in the
+			view.
+		</option>
+		<option name="Description">Some lines of description that will be shown in
+			the view, for instance by means of a tooltip.
+		</option>
+		<option name="Variable Name">Variable identifier.</option>
+		<option name="Format">The format of the molecule string. The supported
+			formats are determined by the molecule sketcher configured in the
+			respective preference page.
+		</option>
+		<option name="Default Value">
+			The value that is selected by default.
+		</option>
+	</fullDescription>
+	<interactiveView name="Molecule Widget">
+		Sketch a molecule.
+	</interactiveView>
+	<ports>
+	<outPort index="0" name="Flow Variable Output">Variable output comprising string
+		variables for the molecule and its format.
+	</outPort>
+	</ports>
+</knimeNode>

@@ -28,6 +28,10 @@
             category-path="/flowabstraction/widgets/input"
             factory-class="org.knime.ext.js.node.widget.input.molecule.MoleculeWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            factory-class="org.knime.ext.js.node.widget.input.molecule2.MoleculeWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.js.core.webResources">
