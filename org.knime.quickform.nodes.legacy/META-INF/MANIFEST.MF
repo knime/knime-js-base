@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Nodes to create legacy KNIME Quick Forms
 Bundle-SymbolicName: org.knime.quickform.nodes.legacy;singleton:=true
-Bundle-Version: 5.0.0.qualifier
+Bundle-Version: 5.1.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Require-Bundle: org.knime.base;bundle-version="[5.0.0,6.0.0)",
   org.knime.core.util;bundle-version="[5.22.0,6.0.0)",
