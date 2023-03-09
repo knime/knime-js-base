@@ -9,8 +9,7 @@
 	<fullDescription>
 		<intro>
 			<p>Emits a molecule string in the specified format. The molecule can
-				also be sketched or its string representation be edited in a widget
-				(KNIME WebPortal).
+				also be sketched or its string representation be edited.
 			</p>
 		</intro>
 		<option name="Label">A descriptive label that will be shown in the
@@ -32,8 +31,8 @@
 		Sketch a molecule.
 	</interactiveView>
 	<ports>
-	<outPort index="0" name="Flow Variable Output">Variable output comprising string
-		variables for the molecule and its format.
-	</outPort>
+		<outPort index="0" name="Flow Variable Output">Variable output comprising string
+			variables for the molecule and its format.
+		</outPort>
 	</ports>
 </knimeNode>

@@ -45,17 +45,11 @@
  */
 package org.knime.ext.js.node.widget.input.molecule2;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -71,7 +65,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
  */
 @JsonAutoDetect(setterVisibility = Visibility.NON_PRIVATE, getterVisibility = Visibility.NON_PRIVATE)
 @JsonTypeInfo(use = Id.CLASS, include = As.PROPERTY, property = "@class")
-final class MoleculeWidgetValue extends JSONViewContent implements DialogNodeValue {
+final class MoleculeWidgetValue extends JSONViewContent {
 
     private static final String MOLECULE_CFG = "moleculeString";
 
@@ -95,33 +89,6 @@ final class MoleculeWidgetValue extends JSONViewContent implements DialogNodeVal
     @Override
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_moleculeString = settings.getString(MOLECULE_CFG);
-    }
-
-    @Override
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        m_moleculeString = settings.getString(MOLECULE_CFG, MOLECULE_DEF);
-    }
-
-    @Override
-    public void loadFromString(final String fromCmdLine) {
-        m_moleculeString = fromCmdLine;
-    }
-
-    @Override
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            m_moleculeString = ((JsonString)json).getString();
-        } else if (JsonValue.NULL.equals(json)) {
-            m_moleculeString = null;
-        } else {
-            throw new JsonException(
-                String.format("Expected JSON string or JSON null value, but got %s.", json.getValueType().toString()));
-        }
-    }
-
-    @Override
-    public JsonValue toJson() {
-        return m_moleculeString == null ? JsonValue.NULL : Json.createValue(m_moleculeString);
     }
 
     @Override
