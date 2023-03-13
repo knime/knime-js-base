@@ -158,7 +158,8 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
             @Override
             public void itemStateChanged(final ItemEvent e) {
                 boolean enabled = MultipleSelectionsComponentFactory.LIST.equals(m_type.getSelectedItem())
-                    || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem());
+                    || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())
+                    || MultipleSelectionsComponentFactory.COMBOBOX.equals(m_type.getSelectedItem());
                 m_limitNumberVisOptionsBox.setEnabled(enabled);
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }

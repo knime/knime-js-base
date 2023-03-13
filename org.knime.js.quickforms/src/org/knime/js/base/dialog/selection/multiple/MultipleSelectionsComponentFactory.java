@@ -41,49 +41,54 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
- * 
+ *
  * History
  *   Apr 17, 2014 ("Patrick Winter"): created
  */
 package org.knime.js.base.dialog.selection.multiple;
 
 /**
- * 
+ *
  * @author "Patrick Winter", KNIME AG, Zurich, Switzerland
  */
 public final class MultipleSelectionsComponentFactory {
-    
+
     /**
      * Check boxes horizontally aligned.
      */
     public static final String CHECK_BOXES_HORIZONTAL = "Check boxes (horizontal)";
-    
+
     /**
      * Check boxes vertically aligned.
      */
     public static final String CHECK_BOXES_VERTICAL = "Check boxes (vertical)";
-    
+
     /**
      * List.
      */
     public static final String LIST = "List";
-    
+
     /**
      * Include list and exclude list.
      */
     public static final String TWINLIST = "Twinlist";
-    
+
+    /**
+     * Searchable dropdown with a summary in form of tags.
+     */
+    public static final String COMBOBOX = "ComboBox";
+
     private MultipleSelectionsComponentFactory() {
-        
+
     }
-    
+
     /**
      * @return List of available MultipleSelectionsComponents
      */
     public static String[] listMultipleSelectionsComponents() {
-        return new String[]{CHECK_BOXES_HORIZONTAL, CHECK_BOXES_VERTICAL, LIST, TWINLIST};
+        return new String[]{CHECK_BOXES_HORIZONTAL, CHECK_BOXES_VERTICAL, LIST, TWINLIST, COMBOBOX};
     }
-    
+
     /**
      * @param component Name of the component to create
      * @return MultipleSelectionsComponent corresponding to the given component name
