@@ -35,7 +35,7 @@
             factory-class="org.knime.ext.js.node.widget.input.molecule.MoleculeWidgetNodeFactory">
       </node>
       <node
-            category-path="/flowabstraction/widgets/input"
+            category-path="/labs"
             factory-class="org.knime.ext.js.node.widget.input.molecule2.MoleculeWidgetNodeFactory">
       </node>
    </extension>
