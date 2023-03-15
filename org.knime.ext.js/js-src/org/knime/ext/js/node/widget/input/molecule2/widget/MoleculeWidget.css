@@ -1,0 +1,6 @@
+.quickformcontainer {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    outline: none;
+}

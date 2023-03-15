@@ -45,60 +45,29 @@
  */
 package org.knime.ext.js.molecule;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.osgi.framework.FrameworkUtil;
-
 /**
- * Utility class for Molecule Sketcher preferences initialized via the {@link MoleculeSketcherPreferenceInitializer} and
- * configurable via the {@link MoleculeSketcherPreferenceInitializer}.
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  * 
- * @author @author Marc Bux, KNIME GmbH, Berlin, Germany
- *
  * @since 5.1
  */
-public final class MoleculeSketcherPreferenceUtil {
+public final class Ketcher_2_7_2 implements MoleculeSketcher {
 
-    static final String NAME_SELECTION_KEY = "knime.ext.js.molecule.sketcher.name";
+    static final String[] SUPPORTED_FORMATS = {"MOL", "MOL V3000", "RXN", "RXN V3000", "SMILES", "Extended SMILES",
+        "SMARTS", "CML", "InChI", "InChI with AuxInfo", "KET"};
 
-    static final String NAME_SELECTION_DEF = Ketcher_2_7_2.class.getName();
-
-    static final String SERVER_URL_KEY = "knime.ext.js.molecule.server.url";
-
-    static final String SERVER_URL_DEF = "";
-
-    private static final MoleculeSketcherPreferenceUtil INSTANCE = new MoleculeSketcherPreferenceUtil();
-
-    /** @return the instance to use. */
-    public static MoleculeSketcherPreferenceUtil getInstance() {
-        return INSTANCE;
+    @Override
+    public String getName() {
+        return "Ketcher";
     }
 
-    private final String m_bundleSymbolicName;
-
-    private final ScopedPreferenceStore m_store;
-
-    private MoleculeSketcherPreferenceUtil() {
-        m_bundleSymbolicName = FrameworkUtil.getBundle(MoleculeSketcher.class).getSymbolicName();
-        m_store = new ScopedPreferenceStore(InstanceScope.INSTANCE, m_bundleSymbolicName);
+    @Override
+    public String getJavascriptObjectID() {
+        return "org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2";
     }
 
-    ScopedPreferenceStore getStore() {
-        return m_store;
-    }
-
-    /**
-     * @return the currently selection {@link MoleculeSketcher}
-     */
-    public MoleculeSketcher getSelectedSketcher() {
-        return MoleculeSketcherRegistry.getInstance().getMoleculeSketcher(m_store.getString(NAME_SELECTION_KEY));
-    }
-
-    /**
-     * @return the URL of the sketcher server, or an empty String if a local sketcher installation should be used
-     */
-    public String getServerURL() {
-        return m_store.getString(SERVER_URL_KEY);
+    @Override
+    public String[] getSupportedFormats() {
+        return SUPPORTED_FORMATS;
     }
 
 }
