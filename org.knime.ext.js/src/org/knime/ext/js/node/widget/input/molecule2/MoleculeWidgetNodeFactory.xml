@@ -3,7 +3,7 @@
 	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Molecule Widget</name>
+	<name>Molecule Widget (Labs)</name>
 	<shortDescription>Emits a molecule string in the specified format.
 	</shortDescription>
 	<fullDescription>
