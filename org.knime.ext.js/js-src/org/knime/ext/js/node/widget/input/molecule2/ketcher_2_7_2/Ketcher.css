@@ -1,0 +1,4 @@
+.ketcher-frame {
+    height: calc(100% - 20px);
+    width: 100%;
+}

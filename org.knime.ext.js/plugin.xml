@@ -4,6 +4,12 @@
    <extension-point id="MoleculeSketcher" name="MoleculeSketcher"
          schema="schema/MoleculeSketcher.exsd"/>
    <extension
+         point="org.knime.ext.js.MoleculeSketcher">
+      <MoleculeWidgetSketcher
+            sketcher="org.knime.ext.js.molecule.Ketcher_2_7_2">
+      </MoleculeWidgetSketcher>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.knime.ext.js.molecule.MoleculeSketcherPreferenceInitializer">
@@ -257,6 +263,59 @@
                type="CSS">
          </importResource>
       </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Ketcher 2.7.2"
+            version="1.0.0"
+            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule2/ketcher_2_7_2"
+               relativePathTarget="ketcher">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher_2_7_2"
+               relativePathTarget="ketcher/lib">
+         </webResource>
+         <importResource
+               relativePath="ketcher/Ketcher.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="ketcher/Ketcher.css"
+               type="CSS">
+         </importResource>
+         <importResource
+               relativePath="ketcher/lib/static/css/main.6a646761.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Molecule Widget 2"
+            version="1.0.0"
+            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule2/widget"
+               relativePathTarget="widget">
+         </webResource>
+         <importResource
+               relativePath="widget/MoleculeWidget.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="widget/MoleculeWidget.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+         <webDependency
+               webResourceBundleID="RequireJS_2.3.3">
+         </webDependency>
+      </webResourceBundle>
    </extension>
    <extension
          point="org.knime.js.core.javascriptComponents">
@@ -277,6 +336,16 @@
             javascriptComponentID="org.knime.ext.js.node.widget.input.molecule"
             name="Molecule Widget"
             namespace="knimeMoleculeWidget"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2"
+            name="Ketcher 2.7.2"
+            namespace="org_knime_ext_js_molecule"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
       </javascriptComponent>
