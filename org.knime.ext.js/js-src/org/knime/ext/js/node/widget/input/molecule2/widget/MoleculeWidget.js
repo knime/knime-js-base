@@ -45,7 +45,6 @@
 
 const MIN_HEIGHT = 500;
 const LABEL_HEIGHT = 20;
-const TIMEOUT_TRESHOLD = 500;
 
 window.moleculeWidget = (() => {
 

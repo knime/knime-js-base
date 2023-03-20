@@ -43,6 +43,8 @@
  * ------------------------------------------------------------------------
  */
 
+const TIMEOUT_TRESHOLD = 500;
+
 window.org_knime_ext_js_molecule = (() => {
 
     var moleculeWidget = window.moleculeWidget;
@@ -53,6 +55,7 @@ window.org_knime_ext_js_molecule = (() => {
         ketcherFrame.css('min-height', (MIN_HEIGHT + LABEL_HEIGHT) + 'px');
 
         ketcherFrame.on("load", () => {
+            // TODO revisit in UIEXT-820 - drop usage of setTimeout when refactoring this code into a vue component
             setTimeout(() => {
                 const ketcher = ketcherFrame.get(0).contentWindow.ketcher;
                 if (ketcher) {
@@ -107,7 +110,7 @@ window.org_knime_ext_js_molecule = (() => {
                 } else {
                     moleculeWidget.setErrorMessage('Ketcher object not defined.');
                 }
-            }, 500);
+            }, TIMEOUT_TRESHOLD);
         });
         return ketcherFrame;
     }
