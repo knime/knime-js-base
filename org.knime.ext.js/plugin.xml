@@ -312,9 +312,6 @@
          <webDependency
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
          </webDependency>
-         <webDependency
-               webResourceBundleID="RequireJS_2.3.3">
-         </webDependency>
       </webResourceBundle>
    </extension>
    <extension
