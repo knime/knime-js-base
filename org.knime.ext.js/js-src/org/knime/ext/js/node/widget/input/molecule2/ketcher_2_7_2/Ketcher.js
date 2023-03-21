@@ -48,9 +48,12 @@ const TIMEOUT_TRESHOLD = 500;
 window.org_knime_ext_js_molecule = (() => {
 
     var moleculeWidget = window.moleculeWidget;
+    var ketcherBasePath = '/ketcher/lib/index.html';
 
-    moleculeWidget.initSketcher = (molecule, format) => {
-        const ketcherFrame = jQuery('<iframe id="ifKetcher" src="ketcher/lib/index.html" class="ketcher-frame">');
+    moleculeWidget.initSketcher = (resourceBaseUrl, molecule, format) => {
+        const sketcherPath = resourceBaseUrl ? resourceBaseUrl + ketcherBasePath : ketcherBasePath;
+        const ketcherFrame = jQuery('<iframe id="ifKetcher" class="ketcher-frame">');
+        ketcherFrame.attr('src', sketcherPath);
         ketcherFrame.attr('frameborder', '0');
         ketcherFrame.css('min-height', (MIN_HEIGHT + LABEL_HEIGHT) + 'px');
 
