@@ -48,7 +48,7 @@ package org.knime.ext.js.molecule;
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  * 
- * @since 5.1
+ * @since 4.7.2
  */
 public final class Ketcher_2_7_2 implements MoleculeSketcher {
 

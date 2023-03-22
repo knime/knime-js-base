@@ -67,7 +67,7 @@ import java.util.Arrays;
  * 
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  *
- * @since 5.1
+ * @since 4.7.2
  */
 public final class MoleculeSketcherPreferencePage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage {

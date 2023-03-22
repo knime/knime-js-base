@@ -54,7 +54,7 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
  * 
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  *
- * @since 5.1
+ * @since 4.7.2
  */
 public final class MoleculeSketcherPreferenceInitializer extends AbstractPreferenceInitializer {
 

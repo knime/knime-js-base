@@ -51,7 +51,7 @@ package org.knime.ext.js.molecule;
  * 
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  * 
- * @since 5.1
+ * @since 4.7.2
  */
 public interface MoleculeSketcher {
 

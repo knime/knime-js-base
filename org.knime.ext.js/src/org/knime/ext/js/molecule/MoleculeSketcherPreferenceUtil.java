@@ -55,7 +55,7 @@ import org.osgi.framework.FrameworkUtil;
  * 
  * @author @author Marc Bux, KNIME GmbH, Berlin, Germany
  *
- * @since 5.1
+ * @since 4.7.2
  */
 public final class MoleculeSketcherPreferenceUtil {
 
