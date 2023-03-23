@@ -54,7 +54,6 @@ window.org_knime_ext_js_molecule = (() => {
         const sketcherPath = resourceBaseUrl ? resourceBaseUrl + ketcherBasePath : ketcherBasePath;
         const ketcherFrame = jQuery('<iframe id="ifKetcher" class="ketcher-frame">');
         ketcherFrame.attr('src', sketcherPath);
-        ketcherFrame.attr('frameborder', '0');
         ketcherFrame.css('min-height', (MIN_HEIGHT + LABEL_HEIGHT) + 'px');
 
         ketcherFrame.on("load", () => {
