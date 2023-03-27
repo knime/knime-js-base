@@ -43,12 +43,14 @@
  * ------------------------------------------------------------------------
  */
 
+const MIN_HEIGHT = 500;
+const LABEL_HEIGHT = 20;
 const TIMEOUT_TRESHOLD = 500;
 
 window.org_knime_ext_js_molecule = (() => {
 
-    var moleculeWidget = window.moleculeWidget;
-    var ketcherBasePath = '/ketcher/lib/index.html';
+    const moleculeWidget = window.moleculeWidget;
+    const ketcherBasePath = '/ketcher/lib/index.html';
 
     moleculeWidget.initSketcher = (resourceBaseUrl, molecule, format) => {
         const sketcherPath = resourceBaseUrl ? resourceBaseUrl + ketcherBasePath : ketcherBasePath;
@@ -62,7 +64,9 @@ window.org_knime_ext_js_molecule = (() => {
                 const ketcher = ketcherFrame.get(0).contentWindow.ketcher;
                 if (ketcher) {
                     if (molecule) {
-                        ketcher.setMolecule(molecule);
+                        ketcher.setMolecule(molecule).catch((error) => {
+                            moleculeWidget.setErrorMessage(error);
+                        });
                     }
                     ketcher.editor.subscribe("change", () => {
                         var moleculePromise;
@@ -101,7 +105,7 @@ window.org_knime_ext_js_molecule = (() => {
                                 moleculePromise = ketcher.getKet();
                                 break;
                             default:
-                                moleculePromise = new Promise.reject(new Error('Unsupported format: ' + format));
+                                moleculePromise = Promise.reject(new Error('Unsupported format: ' + format));
                         }
                         moleculePromise.then((molecule) => {
                             moleculeWidget.setMolecule(molecule);

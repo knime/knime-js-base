@@ -43,9 +43,6 @@
  * ------------------------------------------------------------------------
  */
 
-const MIN_HEIGHT = 500;
-const LABEL_HEIGHT = 20;
-
 window.moleculeWidget = (() => {
     var viewValid, currentMolecule, errorMessage, errorDiv;
 
