@@ -8,8 +8,8 @@ properties([
         upstream('knime-js-core/' + env.BRANCH_NAME.replaceAll('/', '%2F'))
     ]),
     parameters(workflowTests.getConfigurationsAsParameters() +
-        booleanParam(defaultValue: false, description: 'Test image generation with CEF', name: 'CEF') +
-        booleanParam(defaultValue: true, description: 'Test image generation with Chromium', name: 'CHROMIUM')),
+        booleanParam(defaultValue: true, description: 'Test image generation with CEF', name: 'CEF') +
+        booleanParam(defaultValue: false, description: 'Test image generation with Chromium', name: 'CHROMIUM')),
     buildDiscarder(logRotator(numToKeepStr: '5')),
     disableConcurrentBuilds()
 ])
