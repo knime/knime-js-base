@@ -185,15 +185,23 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         }
     }
 
-
     /**
-     * {@inheritDoc}
+     * Applies the selected enforce include/exclude option but ignores includes/excludes if no column is selected.
+     *
+     * <p>
+     * AP-20227: This used to fall back to the default <code>enforce include</code> if no column is selected (e.g., if
+     * upstream not executed or connected), even if the user <b>already selected</b> enforce exclude.
+     * </p>
      */
     @Override
     protected ValueFilterDialogNodeValue createNodeValue() throws InvalidSettingsException {
         ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
 
+        // If dialog provides no way to select policy, we use the policy of the default value
+        value.setEnforceOption(getSelectedEnforceOption().orElse(getDefaultValue().getEnforceOption()));
+
         String selectedCol = (String) m_column.getSelectedItem();
+        // if no column is available, remove all includes/excludes
         if (selectedCol == null) {
             return value; // Value object with default values for members.
         }
@@ -206,13 +214,12 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         ArrayList<String> excludes = new ArrayList<String>();
         HashSet<String> selectionSet = new HashSet<>(Arrays.asList(selection));
         for (String choice : possibleValuesForCol) {
-            if (!selectionSet.contains(choice)) excludes.add(choice);
+            if (!selectionSet.contains(choice)) {
+                excludes.add(choice);
+            }
         }
         value.setValues(selection);
         value.setExcludes(excludes.toArray(new String[0]));
-
-        // If dialog provides no way to select policy, we use the policy of the default value
-        value.setEnforceOption( getSelectedEnforceOption().orElse(getDefaultValue().getEnforceOption()) );
 
         value.setColumn((String)m_column.getSelectedItem());
         return value;
