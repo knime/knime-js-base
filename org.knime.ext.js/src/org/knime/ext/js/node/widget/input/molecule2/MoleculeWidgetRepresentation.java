@@ -68,31 +68,40 @@ final class MoleculeWidgetRepresentation extends LabeledNodeRepresentation<Molec
 
     private final String m_format;
 
+    private final String m_serverURL;
+
     @JsonCreator
     private MoleculeWidgetRepresentation(final String label, final String description, final boolean required,
-        final MoleculeWidgetValue defaultValue, final MoleculeWidgetValue currentValue, String format) {
+        final MoleculeWidgetValue defaultValue, final MoleculeWidgetValue currentValue, String format,
+        String serverURL) {
         super(label, description, required, defaultValue, currentValue);
         m_format = format;
+        m_serverURL = serverURL;
     }
 
     MoleculeWidgetRepresentation(final MoleculeWidgetValue currentValue, final MoleculeWidgetValue defaultValue,
-        final MoleculeWidgetConfig config, final LabeledConfig labelConfig) {
+        final MoleculeWidgetConfig config, final LabeledConfig labelConfig, final String serverURL) {
         super(currentValue, defaultValue, labelConfig);
         m_format = config.getFormat();
+        m_serverURL = serverURL;
     }
 
     String getFormat() {
         return m_format;
     }
-    
+
+    String getServerURL() {
+        return m_serverURL;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s, format=%s", super.toString(), m_format);
+        return String.format("%s, format=%s, serverURL=%s", super.toString(), m_format, m_serverURL);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_format).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_format).append(m_serverURL).toHashCode();
     }
 
     @Override
@@ -107,7 +116,8 @@ final class MoleculeWidgetRepresentation extends LabeledNodeRepresentation<Molec
             return false;
         }
         final var other = (MoleculeWidgetRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_format, other.m_format).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_format, other.m_format)
+            .append(m_serverURL, other.m_serverURL).isEquals();
     }
 
 }

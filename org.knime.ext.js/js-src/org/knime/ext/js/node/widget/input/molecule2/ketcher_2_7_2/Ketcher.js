@@ -52,7 +52,7 @@ window.org_knime_ext_js_molecule = (() => {
     const moleculeWidget = window.moleculeWidget;
     const ketcherBasePath = '/ketcher/lib/index.html';
 
-    moleculeWidget.initSketcher = (resourceBaseUrl, molecule, format) => {
+    moleculeWidget.initSketcher = (resourceBaseUrl, molecule, format, serverURL) => {
         const sketcherPath = resourceBaseUrl ? resourceBaseUrl + ketcherBasePath : ketcherBasePath;
         const ketcherFrame = jQuery('<iframe id="ifKetcher" class="ketcher-frame">');
         ketcherFrame.attr('src', sketcherPath);

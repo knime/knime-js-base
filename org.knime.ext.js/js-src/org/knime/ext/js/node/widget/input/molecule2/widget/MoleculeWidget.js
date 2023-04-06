@@ -69,7 +69,8 @@ window.moleculeWidget = (() => {
 
         const wgDiv = jQuery('<div class="quickformcontainer" data-iframe-height data-iframe-width>');
         jQuery('body').append(wgDiv);
-        wgDiv.append(moleculeWidget.initSketcher(knimeService.resourceBaseUrl, representation.currentValue.moleculeString, representation.format));
+        wgDiv.append(moleculeWidget.initSketcher(knimeService.resourceBaseUrl,
+            representation.currentValue.moleculeString, representation.format, representation.serverURL));
 
         const titleDiv = jQuery('<div class="label knime-qf-title"></div>');
         titleDiv.css('margin-left', '10px');

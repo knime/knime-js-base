@@ -112,7 +112,7 @@ final class MoleculeWidgetNodeModel
                     selectedSketcher.getName()));
         }
         return new MoleculeWidgetRepresentation(getRelevantValue(), config.getDefaultValue(), config,
-            config.getLabelConfig());
+            config.getLabelConfig(), MoleculeSketcherPreferenceUtil.getInstance().getServerURL());
     }
 
     @Override
