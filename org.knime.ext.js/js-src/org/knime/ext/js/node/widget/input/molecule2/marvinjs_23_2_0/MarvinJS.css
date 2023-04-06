@@ -1,0 +1,14 @@
+.marvin-frame {
+    height: calc(100% - 20px);
+    width: calc(100% - 2px);
+    border: 1px solid darkgray;
+    overflow: hidden;
+}
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+html {
+    background: #ffffff;
+}

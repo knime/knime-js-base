@@ -8,6 +8,9 @@
       <MoleculeWidgetSketcher
             sketcher="org.knime.ext.js.molecule.Ketcher_2_7_2">
       </MoleculeWidgetSketcher>
+      <MoleculeWidgetSketcher
+            sketcher="org.knime.ext.js.molecule.MarvinJS">
+      </MoleculeWidgetSketcher>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -265,35 +268,6 @@
       </webResourceBundle>
       <webResourceBundle
             debug="true"
-            name="Ketcher 2.7.2"
-            version="1.0.0"
-            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2.bundle">
-         <webResource
-               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule2/ketcher_2_7_2"
-               relativePathTarget="ketcher">
-         </webResource>
-         <webResource
-               relativePathSource="js-lib/ketcher_2_7_2"
-               relativePathTarget="ketcher/lib">
-         </webResource>
-         <importResource
-               relativePath="ketcher/Ketcher.js"
-               type="JAVASCRIPT">
-         </importResource>
-         <importResource
-               relativePath="ketcher/Ketcher.css"
-               type="CSS">
-         </importResource>
-         <importResource
-               relativePath="ketcher/lib/static/css/main.6a646761.css"
-               type="CSS">
-         </importResource>
-         <webDependency
-               webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
-         </webDependency>
-      </webResourceBundle>
-      <webResourceBundle
-            debug="true"
             name="Molecule Widget 2"
             version="1.0.0"
             webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
@@ -311,6 +285,68 @@
          </importResource>
          <webDependency
                webResourceBundleID="KnimeQuickformUtils_1.0.0">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="Ketcher 2.7.2"
+            version="1.0.0"
+            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule2/ketcher_2_7_2"
+               relativePathTarget="ketcher">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/ketcher_2_7_2"
+               relativePathTarget="ketcher/lib">
+         </webResource>
+         <importResource
+               relativePath="ketcher/Ketcher.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="ketcher/lib/static/css/main.6a646761.css"
+               type="CSS">
+         </importResource>
+         <importResource
+               relativePath="ketcher/Ketcher.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
+         </webDependency>
+      </webResourceBundle>
+      <webResourceBundle
+            debug="true"
+            name="MarvinJS"
+            version="1.0.0"
+            webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.marvin.bundle">
+         <webResource
+               relativePathSource="js-src/org/knime/ext/js/node/widget/input/molecule2/marvinjs_23_2_0"
+               relativePathTarget="marvin">
+         </webResource>
+         <webResource
+               relativePathSource="js-lib/marvinjs_23_2_0"
+               relativePathTarget="marvin/lib">
+         </webResource>
+         <importResource
+               relativePath="marvin/MarvinJS.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="marvin/lib/js/marvinjslauncher.js"
+               type="JAVASCRIPT">
+         </importResource>
+         <importResource
+               relativePath="marvin/lib/css/index.css"
+               type="CSS">
+         </importResource>
+         <importResource
+               relativePath="marvin/MarvinJS.css"
+               type="CSS">
+         </importResource>
+         <webDependency
+               webResourceBundleID="org.knime.ext.js.node.widget.input.molecule2.widget.bundle">
          </webDependency>
       </webResourceBundle>
    </extension>
@@ -342,6 +378,16 @@
             init-method-name="init"
             javascriptComponentID="org.knime.ext.js.node.widget.input.molecule2.ketcher_2_7_2"
             name="Ketcher 2.7.2"
+            namespace="org_knime_ext_js_molecule"
+            setValidationError-method-name="setValidationErrorMessage"
+            validate-method-name="validate">
+      </javascriptComponent>
+      <javascriptComponent
+            getComponentValue-method-name="value"
+            implementationBundleID="org.knime.ext.js.node.widget.input.molecule2.marvin.bundle"
+            init-method-name="init"
+            javascriptComponentID="org.knime.ext.js.node.widget.input.molecule2.marvin"
+            name="MarvinJS"
             namespace="org_knime_ext_js_molecule"
             setValidationError-method-name="setValidationErrorMessage"
             validate-method-name="validate">
