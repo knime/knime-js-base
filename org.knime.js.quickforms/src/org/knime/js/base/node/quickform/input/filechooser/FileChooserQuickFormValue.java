@@ -48,15 +48,6 @@
  */
 package org.knime.js.base.node.quickform.input.filechooser;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -64,6 +55,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.quickform.input.filechooser.FileChooserQuickFormConfig.SelectionType;
 import org.knime.js.core.JSONViewContent;
 
@@ -72,6 +64,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  *
@@ -248,16 +248,16 @@ public class FileChooserQuickFormValue extends JSONViewContent implements Dialog
      */
     @Override
     public JsonObject toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         if (m_items == null) {
             builder.addNull(CFG_ITEMS);
         } else {
-            JsonArrayBuilder itemsBuilder = Json.createArrayBuilder();
+            JsonArrayBuilder itemsBuilder = JsonUtil.getProvider().createArrayBuilder();
             for (FileItem item : m_items) {
                 if (item == null) {
                     itemsBuilder.addNull();
                 } else {
-                    JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+                    JsonObjectBuilder itemBuilder = JsonUtil.getProvider().createObjectBuilder();
                     String path = item.getPath();
                     if (path == null) {
                         itemBuilder.addNull(FileItem.CFG_PATH);

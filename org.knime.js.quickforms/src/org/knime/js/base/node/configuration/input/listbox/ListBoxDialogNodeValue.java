@@ -48,16 +48,16 @@
  */
 package org.knime.js.base.node.configuration.input.listbox;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
+
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * The value for the list box configuration node
@@ -110,7 +110,7 @@ public class ListBoxDialogNodeValue extends ListBoxNodeValue implements DialogNo
      */
     @Override
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "string");
         builder.add("format", "multiline");
         if (getString() == null) {

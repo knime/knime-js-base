@@ -48,18 +48,11 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 
@@ -67,6 +60,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 
 /**
  * The value for the column filter configuration node
@@ -175,17 +175,17 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "array");
 
         if (getColumns() == null) {
             builder.addNull("default");
         } else {
-            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            JsonArrayBuilder arrayBuilder = JsonUtil.getProvider().createArrayBuilder();
             for (String col : getColumns()) {
                 arrayBuilder.add(col);
             }
-            JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+            JsonObjectBuilder itemBuilder = JsonUtil.getProvider().createObjectBuilder();
             itemBuilder.add("type", "string");
             builder.add("items", itemBuilder);
             builder.add("default", arrayBuilder);

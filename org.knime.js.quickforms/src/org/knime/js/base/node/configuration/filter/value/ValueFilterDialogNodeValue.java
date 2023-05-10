@@ -53,15 +53,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -69,9 +60,18 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * The value for the value filter configuration node
@@ -310,7 +310,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "object");
 
         builder.add(CFG_COLUMN, createStringTypeBuilder(this.getColumn()).build());
@@ -323,7 +323,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     }
 
     private static JsonObjectBuilder createStringTypeBuilder(final String property) {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "string");
         if (property == null) {
             builder.addNull("default");
@@ -342,16 +342,16 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     }
 
     private static JsonValue strArrToJson(final String[] strings) {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "array");
         if (strings == null) {
             builder.addNull("default");
         } else {
-            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            JsonArrayBuilder arrayBuilder = JsonUtil.getProvider().createArrayBuilder();
             for (String value : strings) {
                 arrayBuilder.add(value);
             }
-            JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+            JsonObjectBuilder itemBuilder = JsonUtil.getProvider().createObjectBuilder();
             itemBuilder.add("type", "string");
             builder.add("items", itemBuilder);
             builder.add("default", arrayBuilder);

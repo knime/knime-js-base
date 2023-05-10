@@ -47,19 +47,19 @@
  */
 package org.knime.js.base.node.configuration.input.bool;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
-
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * The value for the boolean configuration node
@@ -120,7 +120,7 @@ public class BooleanDialogNodeValue extends BooleanNodeValue implements DialogNo
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "boolean");
         builder.add("default", getBoolean() ? JsonValue.TRUE : JsonValue.FALSE);
         return builder.build();

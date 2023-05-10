@@ -49,10 +49,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonValue;
-
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -70,7 +66,11 @@ import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.core.JavaScriptViewCreator;
+
+import jakarta.json.JsonException;
+import jakarta.json.JsonValue;
 
 /**
  * Model of a quick form node.
@@ -482,7 +482,7 @@ public abstract class QuickFormNodeModel<REP extends QuickFormRepresentationImpl
 
         JsonValue jsonValue = dialogValue != null ? dialogValue.toJson() : null;
         if (jsonValue == null) {
-            jsonValue = Json.createObjectBuilder().build();
+            jsonValue = JsonUtil.getProvider().createObjectBuilder().build();
         }
 
         return ExternalNodeData.builder(getParameterName())

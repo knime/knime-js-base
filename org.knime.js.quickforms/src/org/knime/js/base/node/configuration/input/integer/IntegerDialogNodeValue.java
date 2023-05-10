@@ -48,18 +48,18 @@
  */
 package org.knime.js.base.node.configuration.input.integer;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.JsonException;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * The value for the integer configuration node
@@ -119,6 +119,6 @@ public class IntegerDialogNodeValue extends IntegerNodeValue implements DialogNo
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        return Json.createObjectBuilder().add("type", "integer").add("default", getInteger()).build();
+        return JsonUtil.getProvider().createObjectBuilder().add("type", "integer").add("default", getInteger()).build();
     }
 }

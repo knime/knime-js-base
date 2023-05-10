@@ -48,21 +48,21 @@
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 /**
  * The value for the file chooser configuration node
@@ -153,8 +153,8 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     @Override
     @JsonIgnore
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
-        final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
+        final JsonArrayBuilder arrayBuilder = JsonUtil.getProvider().createArrayBuilder();
         builder.add("type", "array");
 
         if (getItems() == null) {
@@ -164,7 +164,7 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
                 arrayBuilder.add(createItemJson(item));
             }
         }
-        JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
+        JsonObjectBuilder itemBuilder = JsonUtil.getProvider().createObjectBuilder();
         itemBuilder.add("type", "object");
         builder.add("items", itemBuilder);
         builder.add("default", arrayBuilder);
@@ -173,9 +173,9 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     }
 
     private static JsonObject createItemJson(final FileItem item) {
-        final JsonObjectBuilder itemBuilder = Json.createObjectBuilder();
-        final JsonObjectBuilder pathBuilder = Json.createObjectBuilder();
-        final JsonObjectBuilder typeBuilder = Json.createObjectBuilder();
+        final JsonObjectBuilder itemBuilder = JsonUtil.getProvider().createObjectBuilder();
+        final JsonObjectBuilder pathBuilder = JsonUtil.getProvider().createObjectBuilder();
+        final JsonObjectBuilder typeBuilder = JsonUtil.getProvider().createObjectBuilder();
 
         pathBuilder.add("type", "string");
         typeBuilder.add("type", "string");

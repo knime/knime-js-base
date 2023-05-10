@@ -49,26 +49,26 @@ package org.knime.js.base.node.quickform.filter.value;
 
 import java.util.Arrays;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 
 /**
  * Value for the value filter quick form node.
@@ -249,7 +249,7 @@ public class ValueFilterQuickFormValue extends JSONViewContent implements Dialog
      */
     @Override
     public JsonObject toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
         if (m_column == null) {
             builder.addNull(CFG_COLUMN);
         } else {
@@ -258,7 +258,7 @@ public class ValueFilterQuickFormValue extends JSONViewContent implements Dialog
         if (m_values == null) {
             builder.addNull(CFG_VALUES);
         } else {
-            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            JsonArrayBuilder arrayBuilder = JsonUtil.getProvider().createArrayBuilder();
             for (String value : m_values) {
                 arrayBuilder.add(value);
             }

@@ -48,21 +48,21 @@
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.CoreConstants;
+import org.knime.core.util.JsonUtil;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 
 /**
  * The config for the credentials configuration node.
@@ -165,8 +165,8 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
      */
     @Override
     public JsonValue toJson() {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
-        final JsonObjectBuilder subBuilder = Json.createObjectBuilder();
+        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
+        final JsonObjectBuilder subBuilder = JsonUtil.getProvider().createObjectBuilder();
         builder.add("type", "object");
         subBuilder.add("type", "string");
         if (m_useServerCredentials) {
