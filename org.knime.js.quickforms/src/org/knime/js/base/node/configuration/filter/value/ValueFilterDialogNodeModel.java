@@ -51,7 +51,6 @@ package org.knime.js.base.node.configuration.filter.value;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -184,14 +183,13 @@ public class ValueFilterDialogNodeModel extends
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
         ValueFilterDialogNodeValue rValue = getRelevantValue();
         String column = rValue.getColumn();
-        List<String> values = new ArrayList<String>(Arrays.asList(rValue.getValues()));
         ValueFilterNodeConfig valueFilterConfig = getConfig().getValueFilterConfig();
         Map<String, List<String>> possibleValues = valueFilterConfig.getPossibleValues();
         if (possibleValues.size() < 1) {
             throw new InvalidSettingsException("No column available for selection in input table.");
         }
         if (!possibleValues.containsKey(column)) {
-            String warning = "";
+            var warning = "";
             if (!StringUtils.isEmpty(column)) {
                 if (valueFilterConfig.isLockColumn()) {
                     throw new InvalidSettingsException(
@@ -200,16 +198,21 @@ public class ValueFilterDialogNodeModel extends
                 warning = "Column '" + column + "' is not part of the table spec anymore.\n";
             }
             warning += "Auto-guessing default column and value.";
-            column = possibleValues.keySet().toArray(new String[0])[0];
-            values = new ArrayList<String>();
+            // "Guessing" means that we take the first column from the possibleValues set
+            var guessedColumn = possibleValues.entrySet().iterator().next();
+            column = guessedColumn.getKey();
+            // To respect the specified include/exclude option, even if the column is guessed,
+            // we update the NodeValue with the domain of the guessed column. See AP-20227
+            rValue.updateInclExcl(guessedColumn.getValue());
             setWarningMessage(warning);
         }
-        List<String> columnValues = possibleValues.get(column);
+        var columnValues = possibleValues.get(column);
         if (columnValues == null || columnValues.isEmpty()) {
             throw new InvalidSettingsException("No possible values found for column '" + column + "'");
         }
-        List<String> errorList = new ArrayList<String>();
-        Iterator<String> it = values.iterator();
+        List<String> errorList = new ArrayList<>();
+        var selectedValues = Arrays.asList(rValue.getValues());
+        var it = selectedValues.iterator();
         while (it.hasNext()) {
             String value = it.next();
             if (!columnValues.contains(value)) {
@@ -217,14 +220,14 @@ public class ValueFilterDialogNodeModel extends
                 it.remove();
             }
         }
-        if (errorList.size() > 0) {
+        if (!errorList.isEmpty()) {
             String plural = errorList.size() > 1 ? "s" : "";
             String verb = errorList.size() > 1 ? "' are " : "' is ";
             setWarningMessage("The selected value" + plural + " '" + String.join(", ", errorList) + verb
                 + "not among the possible values in the column '" + column + "'. Omitting value" + plural + ".");
         }
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put(column, values);
+        Map<String, List<String>> result = new HashMap<>();
+        result.put(column, selectedValues);
 
         // The list type might have been changed via the configuration node
         // to a setting under which the enforce policy of the overwriting value should not be considered.

@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -185,6 +186,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         }
     }
 
+
     /**
      * Applies the selected enforce include/exclude option but ignores includes/excludes if no column is selected.
      *
@@ -195,24 +197,25 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
      */
     @Override
     protected ValueFilterDialogNodeValue createNodeValue() throws InvalidSettingsException {
-        ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
+        var value = new ValueFilterDialogNodeValue();
 
-        // If dialog provides no way to select policy, we use the policy of the default value
-        value.setEnforceOption(getSelectedEnforceOption().orElse(getDefaultValue().getEnforceOption()));
+        // the user might have specified the enforce option without specifying any column
+        // occurs e.g. when the table spec is not available yet. See AP-20227
+        getSelectedEnforceOption().ifPresent(value::setEnforceOption);
 
-        String selectedCol = (String) m_column.getSelectedItem();
+        var selectedCol = (String) m_column.getSelectedItem();
         // if no column is available, remove all includes/excludes
         if (selectedCol == null) {
             return value; // Value object with default values for members.
         }
         List<String> possibleValuesForCol = m_possibleValues.get(selectedCol);
 
-        String[] selection = m_values.getSelections();
+        var selection = m_values.getSelections();
         // 'choices' in the context of a MultipleSelectionComponent are all values that can be selected (i.e.
         // that are shown in the UI) and coincide with the possible values for the column.
         // Excludes are all values that could have been selected but were not.
-        ArrayList<String> excludes = new ArrayList<String>();
-        HashSet<String> selectionSet = new HashSet<>(Arrays.asList(selection));
+        List<String> excludes = new ArrayList<>();
+        Set<String> selectionSet = new HashSet<>(Arrays.asList(selection));
         for (String choice : possibleValuesForCol) {
             if (!selectionSet.contains(choice)) {
                 excludes.add(choice);
@@ -220,7 +223,6 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         }
         value.setValues(selection);
         value.setExcludes(excludes.toArray(new String[0]));
-
         value.setColumn((String)m_column.getSelectedItem());
         return value;
     }
