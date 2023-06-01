@@ -74,7 +74,13 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * The value for the value filter configuration node
+ * A filter configuration. Specifies 
+ * <ul>
+ * <li>The name of a column to filter on</li>
+ * <li>The permitted values in the filter column</li>
+ * <li>The excluded values in the filter column</li>
+ * <li>A policy for unseen values (include or exclude by default)</li>
+ * </ul>
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -126,9 +132,11 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     }
 
     /**
-     * Updates include and exclude lists with the given range of possible values.
-     * @param values Values that, if not already contained in one of the lists, will be added to either
-     *  include or exclude list according to the currently set EnforceOption
+     * Extends the include and exclude lists with the given values. This does not remove values from the include or
+     * exclude list.
+     *
+     * @param values to add to the include or exclude list according to the currently set EnforceOption. Values that are
+     *            already in the include or exclude list are ignored (even if they would go to the other list).
      */
     public void updateInclExcl(final List<String> values) {
         Set<String> currentIncludes = new HashSet<String>(Arrays.asList(m_values));

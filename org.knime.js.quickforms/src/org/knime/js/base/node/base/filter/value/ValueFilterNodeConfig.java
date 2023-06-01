@@ -77,7 +77,17 @@ public class ValueFilterNodeConfig {
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
     private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
-    private Map<String, List<String>> m_possibleValues = new TreeMap<String, List<String>>();
+
+    /**
+     * Maps the names of the columns with <b>discrete</b> domains to the string representations of the values in their
+     * domains. <br/>
+     *
+     * For instance, if the column "A" has the domain {"a", "b", "c"} and the column "B" has the domain {true, false},
+     * then this map will contain the entries "A" -> {"a", "b", "c"} and "B" -> {"true", "false"}. <br/>
+     *
+     * Updated in {@link ValueFilterNodeConfig#setFromSpec(DataTableSpec)}.
+     */
+    private Map<String, List<String>> m_possibleValues = new TreeMap<>();
 
     private static final String CFG_TYPE = "type";
     private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
@@ -223,12 +233,12 @@ public class ValueFilterNodeConfig {
     }
 
     /**
-     * Determines the possible values with the current settings from a given table spec
+     * Memorizes all the domains of the columns in the input table that have non-null domains.
      *
      * @param spec the spec to set
      */
     public void setFromSpec(final DataTableSpec spec) {
-        // Only add column specs for columns that have values and are of the selected type
+        // Only add column specs for columns that have non-null domains
         List<DataColumnSpec> specs = new ArrayList<DataColumnSpec>();
         for (DataColumnSpec cspec : spec) {
             if (cspec.getDomain().hasValues()) {

@@ -88,13 +88,14 @@ public class ValueFilterDialogNodeModel extends
         super(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{BufferedDataTable.TYPE});
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** Check that the selected filter column exists in the input table and that the selected values are valid. */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        // extract all domains from the input table's column specs
         updateValues((DataTableSpec)inSpecs[0]);
+        // get filter configuration
         Map<String, List<String>> value = createAndPushFlowVariable();
+        // fail if the filter column does not exist in the input table
         String column = value.entrySet().iterator().next().getKey();
         DataTableSpec inTable = (DataTableSpec)inSpecs[0];
         int colIndex;
@@ -106,17 +107,24 @@ public class ValueFilterDialogNodeModel extends
         if (colIndex >= inTable.getNumColumns()) {
             throw new InvalidSettingsException("The column '" + "' was not found");
         }
+        // unchanged data table spec
         return new DataTableSpec[]{(DataTableSpec)inSpecs[0]};
     }
 
     /**
-     * {@inheritDoc}
+     * Retains all rows of the input table that match one of the permitted values in the filter column. <br/>
+     * A value matches if its string representation matches the string representation of a permitted value.
+     *
+     * @throws InvalidSettingsException If the input table has no column with the selected name.
      */
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         m_table = (BufferedDataTable)inObjects[0];
-        getConfig().getValueFilterConfig().setFromSpec(m_table.getDataTableSpec());
+        // 
+        updateValues(m_table.getDataTableSpec());
+        // get filter configuration 
         Map<String, List<String>> value = createAndPushFlowVariable();
+        // maps column name to the string representations of the permitted values
         Entry<String, List<String>> entry = value.entrySet().iterator().next();
         String column = entry.getKey();
         List<String> values = entry.getValue();
@@ -178,14 +186,21 @@ public class ValueFilterDialogNodeModel extends
      * Validates the selected column. Omits chosen values that are no longer among the possible values. Includes values
      * not mentioned in include or exclude list, based on the currently active policy.
      *
-     * @throws InvalidSettingsException if the chosen column is invalid or no possible values were found.
+     * Auto-guessing: If the selected column is not part of the input table, a random column with a discrete domain is
+     * selected. Adds all values of that column to the include list (enforce exclude is active) or to the exclude list
+     * (enforce include is active).
+     *
+     * @throws InvalidSettingsException If there are no columns with discrete domains.
+     * @throws InvalidSettingsException If the selected column is locked but does not exist in the input table.
+     * @return The selected column and the list of values to include
      */
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
         ValueFilterDialogNodeValue rValue = getRelevantValue();
         String column = rValue.getColumn();
         ValueFilterNodeConfig valueFilterConfig = getConfig().getValueFilterConfig();
         Map<String, List<String>> possibleValues = valueFilterConfig.getPossibleValues();
-        if (possibleValues.size() < 1) {
+        // if there are no columns with discrete domains
+        if (possibleValues.isEmpty()) {
             throw new InvalidSettingsException("No column available for selection in input table.");
         }
         if (!possibleValues.containsKey(column)) {
@@ -211,7 +226,7 @@ public class ValueFilterDialogNodeModel extends
             throw new InvalidSettingsException("No possible values found for column '" + column + "'");
         }
         List<String> errorList = new ArrayList<>();
-        var selectedValues = Arrays.asList(rValue.getValues());
+        var selectedValues = new ArrayList<>(Arrays.asList(rValue.getValues()));
         var it = selectedValues.iterator();
         while (it.hasNext()) {
             String value = it.next();

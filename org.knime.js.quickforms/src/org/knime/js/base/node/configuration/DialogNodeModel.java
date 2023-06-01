@@ -51,12 +51,15 @@ package org.knime.js.base.node.configuration;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JPanel;
+
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNode;
@@ -66,12 +69,17 @@ import org.knime.core.node.port.PortType;
 import org.knime.js.base.node.base.ValueControlledNodeUtil;
 import org.knime.js.base.node.quickform.ValueOverwriteMode;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @param <REP> the type of representation of the node
- * @param <VAL> the type of value of the node
- * @param <CONF> the type of configuration of the node
+ * @param <REP> a type that inherits {@link DialogNodeRepresentation#createDialogPanel()} which provides a
+ *            {@link JPanel} to build the UI for showing and modifying the value.
+ * @param <VAL> holds the data entered by the user. Provides various serialization methods, to and from representations
+ *            as String, {@link JsonValue}, and {@link NodeSettings}.
+ * @param <CONF> defines a parameter name, default value, and whether to hide (the representation?)
+ *
  */
 public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     VAL extends DialogNodeValue, CONF extends DialogNodeConfig<VAL>>

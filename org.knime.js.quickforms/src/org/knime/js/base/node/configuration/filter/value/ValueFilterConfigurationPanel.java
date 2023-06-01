@@ -80,14 +80,16 @@ import org.knime.js.base.node.configuration.AbstractDialogNodeConfigurationPanel
 @SuppressWarnings("serial")
 public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurationPanel<ValueFilterDialogNodeValue> {
 
+    /** The column to filter on. */
     private JComboBox<String> m_column;
-    private MultipleSelectionsComponent m_values;
 
+    /** The permitted values for the filter selected by the user. */
+    private MultipleSelectionsComponent m_values;
 
     private final boolean m_twinlistUsed;
 
     /**
-     * A mapping from column names to a list of all possible values of the resp. column.
+     * A mapping from column names to a list of all possible values of the filter column.
      */
     private Map<String, List<String>> m_possibleValues;
 
@@ -135,22 +137,28 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
 
 
     /**
-     * Considers the given possible values in the column currently selected. Any of
-     * these which are in neither include or exclude list will be added to one of the lists
-     * according to the currently set policy. Modifies both the given Value and the state of the
-     * UI. Does nothing if no column is selected.
-     * @param possibleValues A map from column identifiers to lists of possible values
-     *                       of the resp. column.
+     * Extracts the domain of the currently selected column from the given domains and adds all unseen values to the
+     * given filter configuration.
+     *
+     * Updates the UI's value selection component to reflect the filter modified configuration.
+     *
+     * Does nothing if no column is selected.
+     *
+     * @param columnDomains A map from column name to the string representations of the values in that column.
+     * @param filterConfiguration to modify
      */
-    private void updateValuesWithPossible(final Map<String, List<String>> possibleValues, final ValueFilterDialogNodeValue value) {
-        String selectedCol = (String) m_column.getSelectedItem();
-        if (selectedCol == null) { return; }
-        List<String> possibleValuesForCol = possibleValues.get(selectedCol);
+    private void updateValuesWithPossible(final Map<String, List<String>> columnDomains,
+        final ValueFilterDialogNodeValue filterConfiguration) {
+        String selectedCol = (String)m_column.getSelectedItem();
+        if (selectedCol == null) {
+            return;
+        }
+        List<String> possibleValuesForCol = columnDomains.get(selectedCol);
         // update value
-        value.updateInclExcl(possibleValuesForCol);
+        filterConfiguration.updateInclExcl(possibleValuesForCol);
         // update state of ui
         m_values.setChoices(possibleValuesForCol.toArray(new String[0]));
-        m_values.setSelections(value.getValues());
+        m_values.setSelections(filterConfiguration.getValues());
     }
 
     /**
@@ -167,7 +175,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
      * @return The selected enforce inclusion/exclusion policy of the dialog.
      *         Empty if dialog does not provide means to select a policy.
      */
-    private Optional<EnforceOption> getSelectedEnforceOption() {
+    private Optional<EnforceOption> getTwinListEnforceOption() {
         if (m_twinlistUsed) {
             return ((StringFilterPanel) m_values.getComponent()).getSelectedEnforceOption();
         } else {
@@ -201,7 +209,7 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
 
         // the user might have specified the enforce option without specifying any column
         // occurs e.g. when the table spec is not available yet. See AP-20227
-        getSelectedEnforceOption().ifPresent(value::setEnforceOption);
+        getTwinListEnforceOption().ifPresent(value::setEnforceOption);
 
         var selectedCol = (String) m_column.getSelectedItem();
         // if no column is available, remove all includes/excludes
@@ -228,24 +236,17 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
     }
 
     /**
-     * {@inheritDoc}
+     * @param value to load. This is modified! The enforce option is set to the {@link #getDefaultValue()}'s enforce
+     *            option if no twin list is used.
      */
     @Override
-    public void loadNodeValue(final ValueFilterDialogNodeValue value) {
+    public final void loadNodeValue(final ValueFilterDialogNodeValue value) {
         super.loadNodeValue(value);
         if (value != null) {
-
-            // value might contain an enforce policy that was set while the dialog provided a means to set
-            // it (i.e. twinlist was enabled). If, then, the list type is changed in the configuration node
-            // dialog, this policy should no longer be considered and the policy of the default value be
-            // used instead.
-            if (!m_twinlistUsed) {
-                value.setEnforceOption(getDefaultValue().getEnforceOption());
-            }
-
             updateValuesWithPossible(m_possibleValues, value);
             m_column.setSelectedItem(value.getColumn());
             m_values.setSelections(value.getValues());
+            // only has an effect if twin list is used
             setEnforceOptionSelected(value.getEnforceOption());
         }
     }

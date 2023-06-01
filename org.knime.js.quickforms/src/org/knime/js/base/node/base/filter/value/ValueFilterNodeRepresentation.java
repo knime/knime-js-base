@@ -53,6 +53,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
@@ -152,7 +153,7 @@ public class ValueFilterNodeRepresentation<VAL extends ValueFilterNodeValue> ext
     }
 
     /**
-     * @return the type
+     * @return one of the types declared by {@link MultipleSelectionsComponentFactory}
      */
     @JsonProperty("type")
     public String getType() {
