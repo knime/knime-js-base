@@ -1,6 +1,7 @@
 autoEnabled=true
+bindingSuggestionsDisabled=false
 eclipse.preferences.version=1
 idePrefixKey=
-projectKey=org.knime\:knime-js-base
-serverId=sonar.knime.com
+projectKey=KNIME_knime-js-base
+serverId=SonarCloud
 sqPrefixKey=org.knime.quickform.nodes.legacy
