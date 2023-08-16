@@ -54,8 +54,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.util.LabeledViewConfig;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * The node configuration for the refresh button widget node.
  *
@@ -70,53 +68,20 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
 
     private static final String DEFAULT_LABEL = "";
     private static final String CFG_LABEL = "label";
-    private String m_label = DEFAULT_LABEL;
 
     private static final String DEFAULT_DESCRIPTION = "";
     private static final String CFG_DESCRIPTION = "description";
-    private String m_description = DEFAULT_DESCRIPTION;
 
     private static final String DEFAULT_TEXT = "Refresh";
     private static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
 
+    private static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
+    private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
+
     private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
     private static final Boolean DEFAULT_TRIGGER_REEXECUTION = true;
     private Boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
-
-    /**
-     * @return the label
-     */
-    @Override
-    @JsonProperty("label")
-    public String getLabel() {
-        return m_label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    @Override
-    public void setLabel(final String label) {
-        m_label = label;
-    }
-
-    /**
-     * @return the description
-     */
-    @Override
-    @JsonProperty("description")
-    public String getDescription() {
-        return m_description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    @Override
-    public void setDescription(final String description) {
-        m_description = description;
-    }
 
     /**
      * @return the button text
@@ -144,10 +109,11 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
      */
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_LABEL, m_label);
-        settings.addString(CFG_DESCRIPTION, m_description);
+        settings.addString(CFG_LABEL, getLabel());
+        settings.addString(CFG_DESCRIPTION, getDescription());
         settings.addString(CFG_BUTTON_TEXT, m_buttonText);
         settings.addBoolean(CFG_TRIGGER_REEXECUTION, m_triggerReExecution);
+        settings.addBoolean(CFG_HIDE_IN_WIZARD, getHideInWizard());
     }
 
     /**
@@ -156,9 +122,12 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
-        m_label = settings.getString(CFG_LABEL, DEFAULT_LABEL);
-        m_description = settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION);
+        setLabel(settings.getString(CFG_LABEL, DEFAULT_LABEL));
+        setDescription(settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION));
         m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
+
+        // Needed as super is not called to have different defaults
+        setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD));
     }
 
     /**
@@ -181,11 +150,10 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(RefreshButtonWidgetNodeConfig.class);
-        sb.append(", label=");
-        sb.append(m_label);
-        sb.append(", description=");
-        sb.append(m_description);
-        sb.append(",triggerReExecution=");
+        sb.append(super.toString());
+        sb.append(", buttonText=");
+        sb.append(m_buttonText);
+        sb.append(", triggerReExecution=");
         sb.append(m_triggerReExecution.toString());
         return sb.toString();
     }
@@ -196,8 +164,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .append(m_label)
-            .append(m_description)
+            .appendSuper(super.hashCode())
             .append(m_buttonText)
             .append(m_triggerReExecution)
             .toHashCode();
@@ -219,8 +186,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         }
         RefreshButtonWidgetNodeConfig other = (RefreshButtonWidgetNodeConfig)obj;
         return new EqualsBuilder()
-            .append(m_label, other.m_label)
-            .append(m_description, other.m_description)
+            .appendSuper(super.equals(other))
             .append(m_buttonText, other.m_buttonText)
             .append(m_triggerReExecution, other.m_triggerReExecution)
             .isEquals();
