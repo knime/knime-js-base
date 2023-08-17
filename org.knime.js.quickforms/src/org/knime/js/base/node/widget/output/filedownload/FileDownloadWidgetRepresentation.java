@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.core.BaseUrlSetter;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -65,7 +66,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class FileDownloadWidgetRepresentation extends JSONViewContent {
+public class FileDownloadWidgetRepresentation extends JSONViewContent implements BaseUrlSetter {
 
     private static final String DEFAULT_STRING = "";
     private static final String SETTINGS_LABEL = "label";
@@ -79,6 +80,9 @@ public class FileDownloadWidgetRepresentation extends JSONViewContent {
 
     private static final String SETTINGS_PATH = "path";
     private String m_path = DEFAULT_STRING;
+
+    // not saved into node settings!
+    private String m_baseUrl;
 
     private static final String SETTINGS_RESOURCE_NAME = "resourceName";
     private String m_resourceName = DEFAULT_STRING;
@@ -137,11 +141,27 @@ public class FileDownloadWidgetRepresentation extends JSONViewContent {
     }
 
     /**
+     * @param baseUrl
+     */
+    @Override
+    public void setBaseUrl(final String baseUrl) {
+        m_baseUrl = baseUrl;
+    }
+
+    /**
      * @return the path
      */
     @JsonProperty("path")
     public String getPath() {
         return m_path;
+    }
+
+    /**
+     * @return the base url or {@code null} if not set
+     */
+    @JsonProperty("baseUrl")
+    public String getBaseUrl() {
+        return m_baseUrl;
     }
 
     @JsonProperty("resourceName")
