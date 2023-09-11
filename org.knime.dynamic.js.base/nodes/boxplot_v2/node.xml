@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
-	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns="http://knime.org/dynamicnode/v3.0"
+	xmlns:n="http://knime.org/node/v2.12"
+	xmlns:n4="http://knime.org/node/v4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeBoxplot" nodeID="boxplotJS" categoryPath="/view/js-views"
-    icon="./box_plot.png" type="Visualizer" afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Bar Chart (JavaScript)">
+	icon="./box_plot.png" type="Visualizer"
+	afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Bar Chart (JavaScript)">
 
 	<name>Box Plot (JavaScript)</name>
 	<shortDescription>This node provides a view with a Box Plot implemented with D3.js.</shortDescription>
@@ -158,6 +161,9 @@
 			SVG image of the box plot.
 		</outPort>
 	</ports>
+	<keywords>
+		<n4:keyword>chart</n4:keyword>
+	</keywords>
 	<js:resources>
 		<js:resource type="js" path="boxplot.js" />
 		<js:resource type="css" path="styles.css" />

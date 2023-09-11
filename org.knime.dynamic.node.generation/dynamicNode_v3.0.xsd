@@ -2,40 +2,44 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns="http://knime.org/dynamicnode/v3.0"
 	xmlns:node="http://knime.org/node/v2.12"
+	xmlns:node4="http://knime.org/node/v4.1"
 	targetNamespace="http://knime.org/dynamicnode/v3.0"
-	elementFormDefault="qualified" xmlns:pref="http://knime.org/node/v2.12">
+	elementFormDefault="qualified">
 
-  <xs:import schemaLocation="http://knime.org/node/v2.12.xsd" namespace="http://knime.org/node/v2.12" />
-	
+  <xs:import schemaLocation="http://knime.org/node/v2.12.xsd"
+    namespace="http://knime.org/node/v2.12" />
+  <xs:import schemaLocation="http://knime.org/node/v4.1.xsd" namespace="http://knime.org/node/v4.1" />
+
   <xs:element name="knimeNode" type="DynamicKnimeNode" />
 
   <xs:complexType name="DynamicKnimeNode">
     <xs:sequence>
-	  <xs:element name="name" type="xs:string" />
-	  <xs:element name="shortDescription" type="xs:string" />
-	  <xs:element name="fullDescription" type="DynamicFullDescription" />
-	  <xs:element name="outputOptions" type="OutputOptions" minOccurs="0" maxOccurs="1" />
-	  <xs:element name="interactiveView" minOccurs="0" maxOccurs="1" type="node:AbstractView" />
-	  <xs:element name="ports" type="DynamicPorts">
-		<xs:unique name="uniqueInportIndex">
-		  <xs:selector xpath="inPort" />
-		  <xs:field xpath="@index" />
-		</xs:unique>
-		<xs:unique name="uniqueOutportIndex">
-		  <xs:selector xpath="outPort" />
-		  <xs:field xpath="@index" />
-	  </xs:unique>
-	  </xs:element>
-	  <xs:element minOccurs="0" name="views" type="node:Views">
-	    <xs:unique name="uniqueIndex">
-		  <xs:selector xpath="view" />
-		  <xs:field xpath="@index" />
-		</xs:unique>
-	  </xs:element>
-	</xs:sequence>
-	<xs:attribute name="icon" type="xs:string" />
-	<xs:attribute name="type" type="node:NodeType" default="Unknown" />
-	<xs:attribute name="deprecated" default="false" type="xs:boolean" />
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="shortDescription" type="xs:string" />
+      <xs:element name="fullDescription" type="DynamicFullDescription" />
+      <xs:element name="outputOptions" type="OutputOptions" minOccurs="0" maxOccurs="1" />
+      <xs:element name="interactiveView" minOccurs="0" maxOccurs="1" type="node:AbstractView" />
+      <xs:element name="ports" type="DynamicPorts">
+        <xs:unique name="uniqueInportIndex">
+          <xs:selector xpath="inPort" />
+          <xs:field xpath="@index" />
+        </xs:unique>
+        <xs:unique name="uniqueOutportIndex">
+          <xs:selector xpath="outPort" />
+          <xs:field xpath="@index" />
+        </xs:unique>
+      </xs:element>
+      <xs:element minOccurs="0" name="views" type="node:Views">
+        <xs:unique name="uniqueIndex">
+          <xs:selector xpath="view" />
+          <xs:field xpath="@index" />
+        </xs:unique>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="keywords" type="node4:Keywords" />
+    </xs:sequence>
+    <xs:attribute name="icon" type="xs:string" />
+    <xs:attribute name="type" type="node:NodeType" default="Unknown" />
+    <xs:attribute name="deprecated" default="false" type="xs:boolean" />
   </xs:complexType>
   
   <xs:complexType name="DynamicFullDescription">

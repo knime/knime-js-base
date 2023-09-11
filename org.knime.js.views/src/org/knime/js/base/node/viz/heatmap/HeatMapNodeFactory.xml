@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="./heatmap.png" type="Visualizer"
-	xmlns="http://knime.org/node/v3.1"
+	xmlns="http://knime.org/node/v4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
 
 	<name>Heatmap (JavaScript)</name>
 	<shortDescription>A node which creates a heatmap view using Javascript.</shortDescription>
@@ -233,4 +233,8 @@
 			an appended selection column if selection is enabled.
 		</outPort>
 	</ports>
+	<keywords>
+		<keyword>chart</keyword>
+		<keyword>plot</keyword>
+	</keywords>
 </knimeNode>

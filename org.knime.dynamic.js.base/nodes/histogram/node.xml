@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
-	xmlns="http://knime.org/dynamicnode/v3.0" xmlns:n="http://knime.org/node/v2.12"
+	xmlns="http://knime.org/dynamicnode/v3.0"
+	xmlns:n="http://knime.org/node/v2.12"
+	xmlns:n4="http://knime.org/node/v4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
 	jsNamespace="knimeHistogram" afterID="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory"
-    categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer" nodeID="dynamic_histogram">
+	categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer"
+	nodeID="dynamic_histogram">
 	<name>Histogram (JavaScript)</name>
 	<shortDescription>A histogram based on the NVD3 library.</shortDescription>
 	<fullDescription>
@@ -206,8 +209,8 @@
                     separate value from a column, while in <n:b>Stacked</n:b> chart a bar is a stack of all values in 
                     a column.                  
                 </radioButtonOption>
-                
-                <!-- <integerOption name="Rotate labels" id="rotateLabels" label="Rotate labels" minValue="-90" 
+
+				<!-- <integerOption name="Rotate labels" id="rotateLabels" label="Rotate labels" minValue="-90" 
                 	maxValue="90" defaultValue="0" stepSize="5" loadDefaults="true">
                 </integerOption>-->
 
@@ -340,6 +343,10 @@
 			SVG image of the histogram.
 		</outPort>
 	</ports>
+	<keywords>
+		<n4:keyword>chart</n4:keyword>
+		<n4:keyword>plot</n4:keyword>
+	</keywords>
 	<js:resources>
 		<js:resource type="js" path="histogram.js"/>
 	</js:resources>
