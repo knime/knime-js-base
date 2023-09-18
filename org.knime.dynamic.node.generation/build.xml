@@ -13,7 +13,7 @@
 
 	<target name="build" depends="schemas.check,init" unless="schemas.notRequired">
 		<antcall target="clean" />
-		<xmlbean schema="schemas" destfile="lib/schemas.jar" partialMethods="ALL" optimize="on" debug="on" download="on" classpath="${compile_classpath}">
+		<xmlbean schema="schemas" destfile="lib/schemas.jar" srcgendir="src/xmlbeans" partialMethods="ALL" optimize="on" debug="on" download="on" classpath="${compile_classpath}">
 			<fileset dir=".">
 				<include name="**/*.xsd" />
 				<include name="**/*.xsdconfig" />
