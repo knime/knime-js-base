@@ -56,6 +56,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
@@ -71,6 +72,7 @@ import org.knime.dynamicnode.v30.DynamicOutPort;
 import org.knime.dynamicnode.v30.DynamicTab;
 import org.knime.node.v212.View;
 import org.knime.node.v212.Views;
+import org.knime.node.v41.Keywords;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -175,6 +177,12 @@ public final class DynamicJSNodeDescription30Proxy extends NodeDescription {
             }
         }
         return iconPath;
+    }
+
+    @Override
+    public String[] getKeywords() {
+        return Optional.ofNullable(m_document.getKnimeNode().getKeywords()).map(Keywords::getKeywordArray)
+            .orElse(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 
     /**
