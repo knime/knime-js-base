@@ -214,7 +214,4 @@
             Data table containing the input data appended with a column, that represents the selection made in the table view.
         </outPort>
     </ports>
-	<keywords>
-		<keyword>plot</keyword>
-	</keywords>
 </knimeNode>

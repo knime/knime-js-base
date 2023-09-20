@@ -161,9 +161,6 @@
 			SVG image of the box plot.
 		</outPort>
 	</ports>
-	<keywords>
-		<n4:keyword>chart</n4:keyword>
-	</keywords>
 	<js:resources>
 		<js:resource type="js" path="boxplot.js" />
 		<js:resource type="css" path="styles.css" />
