@@ -49,6 +49,7 @@ package org.knime.js.base.node.widget.reexecution.refresh;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -67,7 +68,9 @@ import org.knime.js.base.util.LabeledViewNodeDialog;
 public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
 
     private final JTextField m_textField;
+    private final JButton m_resetButton;
     private final RefreshButtonWidgetNodeConfig m_config;
+    private boolean m_clicked = false;
 
     /**
      * Create new dialog.
@@ -75,8 +78,18 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
     public RefreshButtonWidgetNodeDialog() {
         m_config = new RefreshButtonWidgetNodeConfig();
         m_textField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_resetButton = new JButton("set to zero");
+        m_resetButton.addActionListener(e ->
+        {
+            // toggle flag if button haven't been pressed to ensure reloading of settings to reset counter
+            if (!m_clicked) {
+                m_config.toggleCountingHelperFlag();
+                m_clicked = true;
+            }
+        });
         createAndAddTab();
     }
+
 
     /**
      * {@inheritDoc}
@@ -88,6 +101,8 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         addPairToPanel("Button text: ", m_textField, panelWithGBLayout, gbc);
+        gbc.fill = GridBagConstraints.NONE;
+        addPairToPanel("Reset Refresh Counter: ", m_resetButton, panelWithGBLayout, gbc);
     }
 
     /**
@@ -111,5 +126,6 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
         String s = m_textField.getText();
         m_config.setButtonText(s);
         m_config.saveSettings(settings);
+        m_clicked = false;
     }
 }

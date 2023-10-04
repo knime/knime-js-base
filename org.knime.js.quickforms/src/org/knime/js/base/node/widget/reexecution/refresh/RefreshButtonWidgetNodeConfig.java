@@ -65,6 +65,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
 
     /** node flow variable output name */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
+    /** */
+    protected static final String CFG_COUNTING_HELPER_FLAG = "helper_flag";
 
     private static final String DEFAULT_LABEL = "";
     private static final String CFG_LABEL = "label";
@@ -82,6 +84,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
     private static final Boolean DEFAULT_TRIGGER_REEXECUTION = true;
     private Boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
+
+    private Boolean m_counting_helper_flag = false;
 
     /**
      * @return the button text
@@ -105,6 +109,22 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     }
 
     /**
+     *
+     * @return random integer
+     */
+    public boolean getCountingHelperFlag() {
+        return m_counting_helper_flag;
+    }
+
+    /**
+     * toggle the helper flag
+     */
+    public void toggleCountingHelperFlag() {
+        m_counting_helper_flag = !m_counting_helper_flag;
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -114,6 +134,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         settings.addString(CFG_BUTTON_TEXT, m_buttonText);
         settings.addBoolean(CFG_TRIGGER_REEXECUTION, m_triggerReExecution);
         settings.addBoolean(CFG_HIDE_IN_WIZARD, getHideInWizard());
+        settings.addBoolean(CFG_COUNTING_HELPER_FLAG, m_counting_helper_flag);
     }
 
     /**
@@ -125,6 +146,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         setLabel(settings.getString(CFG_LABEL, DEFAULT_LABEL));
         setDescription(settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION));
         m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
+        m_counting_helper_flag = settings.getBoolean(CFG_COUNTING_HELPER_FLAG);
 
         // Needed as super is not called to have different defaults
         setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD));
@@ -155,6 +177,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         sb.append(m_buttonText);
         sb.append(", triggerReExecution=");
         sb.append(m_triggerReExecution.toString());
+        sb.append(", random_int");
+        sb.append(m_counting_helper_flag.toString());
         return sb.toString();
     }
 
@@ -189,6 +213,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
             .appendSuper(super.equals(other))
             .append(m_buttonText, other.m_buttonText)
             .append(m_triggerReExecution, other.m_triggerReExecution)
+            .append(m_counting_helper_flag, other.m_counting_helper_flag)
             .isEquals();
     }
 }

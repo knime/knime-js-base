@@ -72,6 +72,8 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
 
     private RefreshButtonWidgetNodeConfig m_config = new RefreshButtonWidgetNodeConfig();
 
+    private int m_count = 0;
+
     /**
      * Creates a new refresh button widget node model.
      * @param viewName the view name
@@ -104,12 +106,15 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
             String flowVarCorrectedText;
             try {
                 // replaces $${S ‘<variable name here>’}$$ with flow variable value for in-line replacement
+                // this determines the value of the flow variable (for now the text of the button
                 flowVarCorrectedText = FlowVariableResolver.parse(m_config.getButtonText(), this);
             } catch (NoSuchElementException nse) {
                 throw new InvalidSettingsException(nse.getMessage(), nse);
             }
             representation.setButtonText(flowVarCorrectedText);
+            // sends flow variable (String)
             pushFlowVariableString(RefreshButtonWidgetNodeConfig.FLOW_VARIABLE_NAME, flowVarCorrectedText);
+            pushFlowVariableInt("refresh_count", m_count++);
         }
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
@@ -184,6 +189,7 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+        m_count = 0;
     }
 
     /**
@@ -191,7 +197,8 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
      */
     @Override
     protected void performReset() {
-        // do nothing
+        //m_config.setCount(0);
+
     }
 
     /**
