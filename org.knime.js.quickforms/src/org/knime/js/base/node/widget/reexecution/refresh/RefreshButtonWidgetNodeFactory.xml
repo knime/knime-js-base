@@ -21,16 +21,15 @@
 		<option name="Label">A descriptive label that will be shown above the button.</option>
 		<option name="Description">Native browser tooltip text to be shown for the button.</option>
 		<option name="Text">The text of the button.</option>
+		<option name="Reset Refresh Button">Button which resets the refresh_count variable to zero </option>
 	</fullDescription>
 	<interactiveView name="Refresh Button Widget">
 		Displays a button with text and an optional label which emits reactivity events to re-execute downstream nodes. 
 	</interactiveView>
 	<ports>
-		<outPort index="0" name="Flow Variable Output">
-			Variable output port to connect to nodes which should be re-executed when the widget is clicked. Downstream nodes of
+		<outPort index="0" name="Flow Variable Output">Variable output port to connect to nodes which should be re-executed when the widget is clicked. Downstream nodes of
 			a node connected to this flow variable output port will also be re-executed, so it's only necessary to connect to the
-			root node in each workflow branch for which re-execution is desired. The flow variable value is trivial and does not
-			contain any information.
-		</outPort>
+			root node in each workflow branch for which re-execution is desired. This node produces two flow variables. 
+			The first one is trivial and does not contain any information. The second, which is called refresh_count, counts the number of refreshes.</outPort>
 	</ports>
 </knimeNode>
