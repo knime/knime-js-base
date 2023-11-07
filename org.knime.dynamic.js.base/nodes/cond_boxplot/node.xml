@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v3.0"
-    xmlns="http://knime.org/dynamicnode/v3.0"
-    xmlns:n="http://knime.org/node/v2.12"
-    xmlns:n4="http://knime.org/node/v4.1"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://knime.org/dynamicjsnode/v3.0 http://www.knime.org/node/dynamicJSNode_v3.0.xsd"
-    jsNamespace="boxplot_namespace" nodeID="conditionalBoxplotJS" categoryPath="/view/js-views"
+<js:knimeNode xmlns:js="http://knime.org/dynamicjsnode/v2.12"
+	xmlns="http://knime.org/dynamicnode/v2.12" xmlns:n="http://knime.org/node/v2.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/dynamicjsnode/v2.12 http://www.knime.org/node/dynamicJSNode_v2.12.xsd"
+	jsNamespace="boxplot_namespace" nodeID="conditionalBoxplotJS" categoryPath="/view/js-views"
     icon="../js.png" type="Visualizer" deprecated="true">
 
 	<name>Conditional Box Plot (JavaScript)</name>
@@ -49,20 +47,20 @@
 		</intro>
 		<tab name="Options">
 			<options>
-                <!-- Not sure this should be StringValue -->
+				<!-- Not sure this should be StringValue -->
 				<columnSelectorOption name="Category Column"
 					id="catCol" inPortIndex="0" label="Category Column" filterClasses="org.knime.core.data.NominalValue">
 					Select the column that contains the category values.
 				</columnSelectorOption>
 
-                <!-- These should be numeric? -->
-                <!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
+				<!-- These should be numeric? -->
+				<!-- but no filterClasses="org.knime.core.data.DoubleValue" option -->
 				<columnFilterOption name="Included columns"
 					id="columns" inPortIndex="0" label="Included columns" filterClasses="org.knime.core.data.DoubleValue">
 					Select the columns for which you wish to plot boxes.
 				</columnFilterOption>
-
-                <!-- Not sure this should be StringValue -->
+				
+				<!-- Not sure this should be StringValue -->
                 <columnSelectorOption name="Selected Column" saveInView="true"
                     id="numCol" inPortIndex="0" label="Selected Column" filterClasses="org.knime.core.data.DoubleValue">
                     Select the column that contains the numeric values.
