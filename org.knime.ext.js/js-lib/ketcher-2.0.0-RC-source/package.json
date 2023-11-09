@@ -35,7 +35,7 @@
     "browserify-babel-istanbul": "0.4.0",
     "browserify-replace": "0.9.0",
     "budo": "10.0.3",
-    "chromedriver": "2.36.0",
+    "chromedriver": "119.0.1",
     "del": "2.2.2",
     "eslint": "4.11.0",
     "eslint-config-airbnb": "16.1.0",
