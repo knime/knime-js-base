@@ -64,6 +64,11 @@
 			<layout>p2</layout>
 			<url>${knime.base.p2}</url>
 		</repository>
+        <repository>
+            <id>knime.filehandling.core.p2</id>
+            <layout>p2</layout>
+            <url>${knime.filehandling.core.p2}</url>
+        </repository>
 		<repository>
 			<id>p2-knime-core-ui</id>
 			<layout>p2</layout>
