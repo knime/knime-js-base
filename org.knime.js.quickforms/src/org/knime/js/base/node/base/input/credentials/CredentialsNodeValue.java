@@ -48,12 +48,16 @@
  */
 package org.knime.js.base.node.base.input.credentials;
 
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_IS_CREDENTIALS_FLAG;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.workflow.VariableType.CredentialsType;
 import org.knime.core.util.CoreConstants;
 import org.knime.js.core.JSONViewContent;
 
@@ -71,6 +75,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CredentialsNodeValue extends JSONViewContent {
+
+    private static final String WEAK_ENCRYPTION_PASSWORD = "SomeWeakEncryption#Password";
+
+    private static final String CFG_CREDENTIALS_VALUE_PARENT = "credentialsValue";
 
     protected static final String CFG_USERNAME = "username";
 
@@ -134,7 +142,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     @JsonProperty("magicDefaultPassword")
     @JsonView(CoreConstants.ArtifactsView.class)
     private void setMagicPassword(final String magicPassword) {
-        // In case the MAGIC_DEFAULT_PASSWORD is returned, the existing password is not overridden. 
+        // In case the MAGIC_DEFAULT_PASSWORD is returned, the existing password is not overridden.
         // In any other case it is, so an existing password can also be reset.
         if (!StringUtils.equals(magicPassword, CoreConstants.MAGIC_DEFAULT_PASSWORD)) {
             m_password = StringUtils.isEmpty(magicPassword) ? null : magicPassword;
@@ -147,28 +155,95 @@ public class CredentialsNodeValue extends JSONViewContent {
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_USERNAME, getUsername());
+        // added in 5.2 (AP-19913): This section in the settings needs to follow a certain schema in order
+        // to be configurable by credentials flow variable. The schema implementation is copied (so needs/has
+        // good test coverage) since we believe this piece of code will eventually be removed when nodes
+        // are converted to Modern UI / org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials)
+        // see also org.knime.core.node.workflow.VariableType.CredentialsType.canOverwrite(Config, String)
+
         settings.addBoolean(CFG_SAVE_PASSWORD, m_isSavePassword);
+        final var cValueSet = settings.addNodeSettings(CFG_CREDENTIALS_VALUE_PARENT);
+        // only to comply to schema for variable type detection (value doesn't matter)
+        cValueSet.addBoolean(CFG_IS_CREDENTIALS_FLAG, true);
+        cValueSet.addString(CredentialsType.CFG_NAME, ""); // not used
+        cValueSet.addString(CredentialsType.CFG_LOGIN, getUsername());
+        cValueSet.addTransientString(CredentialsType.CFG_TRANSIENT_PASSWORD, getPassword());
+        cValueSet.addTransientString(CredentialsType.CFG_TRANSIENT_SECOND_FACTOR, null); // unused
         if (m_isSavePassword) {
-            settings.addPassword(CFG_PASSWORD_ENCRYPTED, "SomeWeakEncryption#Password", getPassword());
-        } else {
-            settings.addTransientString(CFG_PASSWORD, getPassword());
+            cValueSet.addPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD, getPassword());
         }
     }
 
+    /**
+     * Fail save settings loading, called from dialog code.
+     *
+     * @param settings To load from, not null.
+     */
+    @JsonIgnore
+    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
+        // saved with 5.2 or after
+        String username;
+        String password;
+        final var isSavePassword = settings.getBoolean(CFG_SAVE_PASSWORD, false);
+        if (settings.containsKey(CFG_CREDENTIALS_VALUE_PARENT)) {
+            NodeSettingsRO cValueSettings;
+            try {
+                cValueSettings = settings.getNodeSettings(CFG_CREDENTIALS_VALUE_PARENT);
+            } catch (InvalidSettingsException ise) { // NOSONAR
+                cValueSettings = new NodeSettings("empty");
+            }
+            username = cValueSettings.getString(CredentialsType.CFG_LOGIN, System.getProperty("user.name"));
+            // overwritten by variable or used between model and dialog (not persisted)
+            if (cValueSettings.containsKey(CredentialsType.CFG_TRANSIENT_PASSWORD)) {
+                password = cValueSettings.getTransientString(CredentialsType.CFG_TRANSIENT_PASSWORD);
+            } else if (isSavePassword) {
+                password = cValueSettings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD, "");
+            } else {
+                password = null;
+            }
+        } else {
+            username = settings.getString(CFG_USERNAME, System.getProperty("user.name"));
+            password = isSavePassword
+                    ? settings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD, "")
+                    : settings.getTransientString(CFG_PASSWORD);
+        }
+        setSavePassword(isSavePassword);
+        setUsername(username);
+        setPassword(password);
+    }
     /**
      * {@inheritDoc}
      */
     @Override
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setUsername(settings.getString(CFG_USERNAME));
-        setSavePassword(settings.getBoolean(CFG_SAVE_PASSWORD));
-        if (m_isSavePassword) {
-            setPassword(settings.getPassword(CFG_PASSWORD_ENCRYPTED, "SomeWeakEncryption#Password"));
+        // saved with 5.2 or after
+        String username;
+        String password;
+        final var isSavePassword = settings.getBoolean(CFG_SAVE_PASSWORD);
+        if (settings.containsKey(CFG_CREDENTIALS_VALUE_PARENT)) {
+            final var cValueSettings = settings.getNodeSettings(CFG_CREDENTIALS_VALUE_PARENT);
+            username = cValueSettings.getString(CredentialsType.CFG_LOGIN);
+            // overwritten by variable or used between model and dialog (not persisted)
+            if (cValueSettings.containsKey(CredentialsType.CFG_TRANSIENT_PASSWORD)) {
+                password = cValueSettings.getTransientString(CredentialsType.CFG_TRANSIENT_PASSWORD);
+            } else if (isSavePassword) {
+                password =
+                    cValueSettings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD);
+            } else {
+                password = null;
+            }
         } else {
-            setPassword(settings.getTransientString(CFG_PASSWORD));
+            username = settings.getString(CFG_USERNAME);
+            if (isSavePassword) {
+                password = settings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD);
+            } else {
+                password = settings.getTransientString(CFG_PASSWORD);
+            }
         }
+        setSavePassword(isSavePassword);
+        setUsername(username);
+        setPassword(password);
     }
 
     /** {@inheritDoc} */

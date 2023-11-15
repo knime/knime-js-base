@@ -99,14 +99,7 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
     @Override
     @JsonIgnore
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setUsername(settings.getString(CFG_USERNAME, System.getProperty("user.name")));
-        setSavePassword(settings.getBoolean(CFG_SAVE_PASSWORD, true));
-        if (settings.getBoolean(CFG_SAVE_PASSWORD, false)) {
-            setPassword(settings.getPassword(CFG_PASSWORD_ENCRYPTED, "SomeWeakEncryption#Password", ""));
-        } else {
-            setPassword(settings.getTransientString(CFG_PASSWORD));
-        }
-
+        super.loadFromNodeSettingsInDialog(settings);
         m_useServerCredentials = settings.getBoolean(USE_SERVER_CREDENTIALS, false);
     }
 
