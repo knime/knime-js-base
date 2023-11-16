@@ -64,7 +64,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
-import org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormValue;
 import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 import org.knime.js.core.settings.DialogUtil;
 
@@ -107,7 +106,7 @@ public class CredentialsWidgetNodeDialog extends FlowVariableWidgetNodeDialog<Cr
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        CredentialsInputQuickFormValue value = new CredentialsInputQuickFormValue();
+        CredentialsNodeValue value = new CredentialsNodeValue();
         value.loadFromNodeSettings(settings);
         return String.format("user '%s', password %s", value.getUsername(),
             StringUtils.isEmpty(value.getPassword()) ? "&lt;not set>" : "&lt;set>");
