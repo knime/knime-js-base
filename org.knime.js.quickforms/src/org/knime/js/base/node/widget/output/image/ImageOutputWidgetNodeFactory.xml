@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="widget_image_out.png" type="Widget" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-    <name>Image Output Widget</name>
+    <name>Image Output Widget (legacy)</name>
 
    <shortDescription>
       Displays an image.  
@@ -9,7 +9,8 @@
     <fullDescription>
         <intro>
             <p>
-              Displays an image.
+              Displays an image. 
+              Superseded by the <a href="https://hub.knime.com/knime/extensions/org.knime.features.base.views/latest/org.knime.base.views.node.imageview.ImageViewNodeFactory">Image View</a> node.
             </p>
             <p>
             The node supports custom CSS styling. 

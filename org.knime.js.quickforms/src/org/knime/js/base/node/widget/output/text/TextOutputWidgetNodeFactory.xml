@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <knimeNode icon="widget_variable_out.png" type="Widget" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-    <name>Text Output Widget</name>
+    <name>Text Output Widget (legacy)</name>
 
    <shortDescription>
         Displays dynamic text.
@@ -9,7 +9,8 @@
     <fullDescription>
         <intro>
             <p>
-               Displays dynamic text.
+               Displays dynamic text. 
+               Superseded by the <a href="https://hub.knime.com/knime/extensions/org.knime.features.base.views/latest/org.knime.base.views.node.textview.TextViewNodeFactory">Text View</a> node.
             </p>
             <p>
             The node supports custom CSS styling. 
