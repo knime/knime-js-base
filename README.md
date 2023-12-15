@@ -1,6 +1,10 @@
-# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) KNIME® JS Base
+# KNIME® JS Base
+
 [![Jenkins](https://jenkins.knime.com/buildStatus/icon?job=knime-js-base%2Fmaster)](https://jenkins.knime.com/job/knime-js-base/job/master/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KNIME_knime-js-base&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=KNIME_knime-js-base)
+
+This repository is maintained by the [KNIME UI Extensions Development Team](mailto:team-ui-extensions@knime.com).
+
 This repository contains the source code of [KNIME Analytics Platform](http://www.knime.org) JavaScript Nodes. In the this repository all the base nodes containing JavaScript visualizations are located.
 
 ### Overview
