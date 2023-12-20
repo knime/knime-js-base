@@ -417,7 +417,7 @@ window.table_editor = (function () {
 
         var editor;
         if (this._hasDropdown(cell) && colType === 'String') {
-            var cellDataValue = cellValue || cell.data();
+            var cellDataValue = cell.data() || cellValue;
             editor = new StringDropdownEditor(this._getPossibleColumnValues(cell), cellDataValue);
             return editor;
         }  else {
