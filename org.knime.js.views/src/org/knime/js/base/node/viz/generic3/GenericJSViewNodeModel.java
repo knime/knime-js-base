@@ -59,6 +59,7 @@ import org.eclipse.core.runtime.Platform;
 import org.knime.base.data.xml.SvgCell;
 import org.knime.base.util.flowvariable.FlowVariableProvider;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
+import org.knime.base.util.flowvariable.FlowVariableResolver.FlowVariableEscaper;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -78,7 +79,9 @@ import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.js.base.node.viz.generic3.GenericJSViewValue.FlowVariableValue;
+import org.knime.js.core.JSCorePlugin;
 import org.knime.js.core.JSONDataTable;
+import org.knime.js.core.StringSanitizationSerializer;
 import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 
 /**
@@ -88,13 +91,19 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSViewRepresentation, GenericJSViewValue>
         implements FlowVariableProvider, CSSModifiable {
 
+    private final static boolean SHOULD_SANITIZE =
+            Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_CLIENT_HTML)) &&
+            Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_GENERIC_JS_VIEW));
+
     private final GenericJSViewConfig m_config;
+    private final StringSanitizationSerializer m_stringSanitizer;
 
     /**
      */
     GenericJSViewNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{ImagePortObject.TYPE, FlowVariablePortObject.TYPE}, viewName);
         m_config = new GenericJSViewConfig();
+        m_stringSanitizer = SHOULD_SANITIZE ? new StringSanitizationSerializer() : null;
     }
 
     /**
@@ -137,6 +146,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
                         .setId(getTableId(0))
                         .setFirstRow(1)
                         .setMaxRows(m_config.getMaxRows())
+                        .useStringSanitizer(m_stringSanitizer)
                         .build(exec);
                 representation.setTable(jsonTable);
             }
@@ -195,13 +205,34 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         String flowVarCorrectedText = null;
         if (m_config.getJsCode() != null) {
             try {
-                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this);
+                if (SHOULD_SANITIZE) {
+                    FlowVariableEscaper sanitizeFlowVariableEscaper = new SanitizeFlowVariableEscaper(m_stringSanitizer);
+                    flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this, sanitizeFlowVariableEscaper);
+                } else {
+                    flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this);
+                }
             } catch (NoSuchElementException nse) {
                 throw new InvalidSettingsException(nse.getMessage(), nse);
             }
         }
         return flowVarCorrectedText;
     }
+
+    private static class SanitizeFlowVariableEscaper extends FlowVariableEscaper {
+
+        private final StringSanitizationSerializer m_stringSanitizer;
+
+        SanitizeFlowVariableEscaper(final StringSanitizationSerializer sanitizer) {
+            m_stringSanitizer = sanitizer;
+        }
+
+        @Override
+        public String readString(final FlowVariableProvider model, final String var) {
+            return m_stringSanitizer.sanitize(super.readString(model, var));
+        }
+    }
+
+
 
     private static final String ID_WEB_RES = "org.knime.js.core.webResources";
 
@@ -278,7 +309,11 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
                     newVar.setDoubleValue(variableField.getDefaultValueDouble());
                     break;
                 default:
-                    newVar.setStringValue(variableField.getDefaultValueString());
+                    String variableString = variableField.getDefaultValueString();
+                    if (SHOULD_SANITIZE) {
+                        variableString = m_stringSanitizer.sanitize(variableString);
+                    }
+                    newVar.setStringValue(variableString);
             }
             variableMap.put(variableField.getKnimeName(), newVar);
         }
