@@ -122,6 +122,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
     private final JCheckBox m_generateViewCheckBox;
     private final JSpinner m_maxRowsSpinner;
     private final JCheckBox m_sanitizeInputCheckBox;
+    @SuppressWarnings("rawtypes")
     private final JList m_flowVarList;
     private final JTable m_dependenciesTable;
     private final JSSnippetTextArea m_jsTextArea;
@@ -144,6 +145,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
      * @param availableLibraries a pre-compiled map of available libraries that can be chosen as dependencies
      * @param isPreview if the panel is supposed to act as a preview (e.g. in the templates tab)
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected GenericJSNodePanel(final Class<?> templateMetaCategory, final GenericJSViewConfig config,
         final BiMap<String, String> availableLibraries, final boolean isPreview) {
         m_templateMetaCategory = templateMetaCategory;
@@ -203,7 +205,6 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         };
         m_dependenciesTable = new JTable(tableModel);
         m_dependenciesTable.getColumnModel().getColumn(0).setMaxWidth(30);
-        //m_dependenciesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_dependenciesTable.setTableHeader(null);
         m_outFieldsTable = createOutVariableTable();
         m_outFieldsTable.getTable().addMouseListener(new MouseAdapter() {
@@ -262,7 +263,6 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         topGbc.gridx = topGbc.gridy = 0;
         topGbc.ipadx = 0;
         topPanel.setBorder(m_lineBorder);
-        //topPanel.add(Box.createHorizontalStrut(10));
         topPanel.add(new JLabel("Maximum number of rows: "), topGbc);
         topGbc.gridx++;
         m_maxRowsSpinner.setMaximumSize(new Dimension(100, 20));
@@ -286,10 +286,6 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
                             AddTemplateDialog.openUserDialog(parent, config, m_templateMetaCategory);
                     if (null != newTemplate) {
                         TemplateProvider.getDefault().addTemplate(newTemplate);
-                        // update the template UUID of the current snippet
-                        /* m_config.getSettings().setTemplateUUID(newTemplate.getUUID());
-                        final String loc = TemplateProvider.getDefault().getDisplayLocation(newTemplate);
-                        m_templateLocation.setText(loc); */
                         validate();
                     }
                 } catch (InvalidSettingsException e1) {
@@ -435,10 +431,10 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
      * @param flowVariables a map of currently available {@link FlowVariable}s
      * @throws NotConfigurableException if loading the settings fails
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec spec,
         final Map<String, FlowVariable> flowVariables)
         throws NotConfigurableException {
-        @SuppressWarnings("rawtypes")
         DefaultListModel listModel = (DefaultListModel)m_flowVarList.getModel();
         listModel.removeAllElements();
         for (FlowVariable e : flowVariables.values()) {

@@ -91,7 +91,7 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSViewRepresentation, GenericJSViewValue>
         implements FlowVariableProvider, CSSModifiable {
 
-    private final static boolean SHOULD_SANITIZE_GLOBAL =
+    private static final boolean SHOULD_SANITIZE_GLOBAL =
             Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_CLIENT_HTML)) &&
             Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_GENERIC_JS_VIEW));
 
@@ -101,7 +101,8 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     /**
      */
     GenericJSViewNodeModel(final String viewName) {
-        super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{ImagePortObject.TYPE, FlowVariablePortObject.TYPE}, viewName);
+        super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL},
+            new PortType[]{ImagePortObject.TYPE, FlowVariablePortObject.TYPE}, viewName);
         m_config = new GenericJSViewConfig();
         m_stringSanitizer = SHOULD_SANITIZE_GLOBAL ? new StringSanitizationSerializer() : null;
     }
@@ -131,7 +132,8 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      * {@inheritDoc}
      */
     @Override
-    protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+    protected void performExecuteCreateView(final PortObject[] inObjects, final ExecutionContext exec)
+        throws Exception {
         synchronized (getLock()) {
             GenericJSViewRepresentation representation = getViewRepresentation();
             //create JSON table if data available
@@ -164,8 +166,8 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
      * {@inheritDoc}
      */
     @Override
-    protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView, final PortObject[] inObjects,
-        final ExecutionContext exec) throws Exception {
+    protected PortObject[] performExecuteCreatePortObjects(final PortObject svgImageFromView,
+        final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         pushFlowVariables();
         return new PortObject[]{svgImageFromView, FlowVariablePortObject.INSTANCE};
     }
@@ -173,18 +175,22 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     private void pushFlowVariables() {
         for (OutFlowVariableField vF : m_config.getOutVarList()) {
             DefaultOutFlowVariableField variableField = (DefaultOutFlowVariableField)vF;
-            FlowVariableValue varViewValue = getVariableFromValue(variableField.getKnimeName(), variableField.getKnimeType());
+            FlowVariableValue varViewValue =
+                getVariableFromValue(variableField.getKnimeName(), variableField.getKnimeType());
             switch (variableField.getKnimeType()) {
                 case INTEGER:
-                    int defaultInt = varViewValue == null ? variableField.getDefaultValueInt() : varViewValue.getIntValue();
+                    int defaultInt =
+                        varViewValue == null ? variableField.getDefaultValueInt() : varViewValue.getIntValue();
                     pushFlowVariableInt(variableField.getKnimeName(), defaultInt);
                     break;
                 case DOUBLE:
-                    double defaultDouble = varViewValue == null ? variableField.getDefaultValueDouble() : varViewValue.getDoubleValue();
+                    double defaultDouble =
+                        varViewValue == null ? variableField.getDefaultValueDouble() : varViewValue.getDoubleValue();
                     pushFlowVariableDouble(variableField.getKnimeName(), defaultDouble);
                     break;
                 default:
-                    String defaultString = varViewValue == null ? variableField.getDefaultValueString() : varViewValue.getStringValue();
+                    String defaultString =
+                        varViewValue == null ? variableField.getDefaultValueString() : varViewValue.getStringValue();
                     pushFlowVariableString(variableField.getKnimeName(), defaultString);
             }
         }
@@ -206,8 +212,10 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         if (m_config.getJsCode() != null) {
             try {
                 if (SHOULD_SANITIZE_GLOBAL) {
-                    FlowVariableEscaper sanitizeFlowVariableEscaper = new SanitizeFlowVariableEscaper(m_stringSanitizer);
-                    flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this, sanitizeFlowVariableEscaper);
+                    FlowVariableEscaper sanitizeFlowVariableEscaper =
+                        new SanitizeFlowVariableEscaper(m_stringSanitizer);
+                    flowVarCorrectedText =
+                        FlowVariableResolver.parse(m_config.getJsCode(), this, sanitizeFlowVariableEscaper);
                 } else {
                     flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this);
                 }
@@ -227,8 +235,8 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         }
 
         @Override
-        public String readString(final FlowVariableProvider model, final String var) {
-            return m_stringSanitizer.sanitize(super.readString(model, var));
+        public String readString(final FlowVariableProvider model, final String varName) {
+            return m_stringSanitizer.sanitize(super.readString(model, varName));
         }
     }
 
