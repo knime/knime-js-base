@@ -89,6 +89,7 @@ public final class GenericJSViewConfig {
     private static final String WAIT_TIME = "waitTime";
     private static final String OUT_VARS = "outputVariables";
     private static final String CUSTOM_CSS = "customCSS";
+    private static final String SANITIZE_INPUT = "sanitizeInput";
     //private static final String VIEW_NAME = "viewName";
 
     private boolean m_hideInWizard = false;
@@ -101,6 +102,7 @@ public final class GenericJSViewConfig {
     private int m_waitTime;
     private OutFlowVariableList m_outVarList;
     private String m_customCSS;
+    private boolean m_sanitizeInput = false;
 
     //private String m_viewName;
 
@@ -267,6 +269,20 @@ public final class GenericJSViewConfig {
     }
 
     /**
+     * @return the sanitizeInput
+     */
+    public boolean isSanitizeInput() {
+        return m_sanitizeInput;
+    }
+
+    /**
+     * @param sanitizeInput the sanitizeInput to set
+     */
+    public void setSanitizeInput(final boolean sanitizeInput) {
+        m_sanitizeInput = sanitizeInput;
+    }
+
+    /**
      * @return the viewName
      */
     /*public String getViewName() {
@@ -296,6 +312,9 @@ public final class GenericJSViewConfig {
 
         //added with 3.6
         settings.addString(CUSTOM_CSS, m_customCSS);
+
+        //added with 5.2
+        settings.addBoolean(SANITIZE_INPUT, m_sanitizeInput);
     }
 
     /** Loads parameters in NodeModel.
@@ -315,6 +334,9 @@ public final class GenericJSViewConfig {
 
         //added with 3.6
         m_customCSS = settings.getString(CUSTOM_CSS, "");
+
+        //added with 5.2
+        m_sanitizeInput = settings.getBoolean(SANITIZE_INPUT, false);
     }
 
     /** Loads parameters in Dialog.
@@ -355,6 +377,9 @@ public final class GenericJSViewConfig {
 
         //added with 3.6
         m_customCSS = settings.getString(CUSTOM_CSS, "");
+
+        //added with 5.2
+        m_sanitizeInput = settings.getBoolean(SANITIZE_INPUT, false);
     }
 
     /**

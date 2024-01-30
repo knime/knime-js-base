@@ -91,19 +91,19 @@ import org.knime.js.core.node.AbstractSVGWizardNodeModel;
 final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSViewRepresentation, GenericJSViewValue>
         implements FlowVariableProvider, CSSModifiable {
 
-    private final static boolean SHOULD_SANITIZE =
+    private final static boolean SHOULD_SANITIZE_GLOBAL =
             Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_CLIENT_HTML)) &&
             Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_GENERIC_JS_VIEW));
 
     private final GenericJSViewConfig m_config;
-    private final StringSanitizationSerializer m_stringSanitizer;
+    private StringSanitizationSerializer m_stringSanitizer;
 
     /**
      */
     GenericJSViewNodeModel(final String viewName) {
         super(new PortType[]{BufferedDataTable.TYPE_OPTIONAL}, new PortType[]{ImagePortObject.TYPE, FlowVariablePortObject.TYPE}, viewName);
         m_config = new GenericJSViewConfig();
-        m_stringSanitizer = SHOULD_SANITIZE ? new StringSanitizationSerializer() : null;
+        m_stringSanitizer = SHOULD_SANITIZE_GLOBAL ? new StringSanitizationSerializer() : null;
     }
 
     /**
@@ -205,7 +205,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         String flowVarCorrectedText = null;
         if (m_config.getJsCode() != null) {
             try {
-                if (SHOULD_SANITIZE) {
+                if (SHOULD_SANITIZE_GLOBAL) {
                     FlowVariableEscaper sanitizeFlowVariableEscaper = new SanitizeFlowVariableEscaper(m_stringSanitizer);
                     flowVarCorrectedText = FlowVariableResolver.parse(m_config.getJsCode(), this, sanitizeFlowVariableEscaper);
                 } else {
@@ -310,7 +310,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
                     break;
                 default:
                     String variableString = variableField.getDefaultValueString();
-                    if (SHOULD_SANITIZE) {
+                    if (SHOULD_SANITIZE_GLOBAL) {
                         variableString = m_stringSanitizer.sanitize(variableString);
                     }
                     newVar.setStringValue(variableString);
@@ -388,6 +388,8 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+        var shouldSanitize = SHOULD_SANITIZE_GLOBAL || m_config.isSanitizeInput();
+        m_stringSanitizer = shouldSanitize ? new StringSanitizationSerializer() : null;
     }
 
     /**

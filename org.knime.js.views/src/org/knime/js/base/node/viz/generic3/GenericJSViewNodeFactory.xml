@@ -14,8 +14,6 @@
             <p>Within the java script code block you have access to the input table and can use a set of predefined
             libraries to generate the view.</p>
             <p>Additionally you can export a static image to the workflow, if the view is generated as an SVG structure.</p>
-            <p>Note, this node is currently under development. Future versions of the node will have more functionality,
-            including the ability to define and use templates.</p>       
             <p>
 	        The node supports custom CSS styling. 
 	        You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
@@ -25,6 +23,25 @@
 	        </p>     
 		</intro>
 		<tab name="JavaScript View">
+		<option name="Maximum number of rows">
+			<p>
+				If a data table is connected at the input port a <i>knimeDataTable</i> object is automatically created and populated.
+				Use this setting to limit the number of rows extracted. 
+			</p>
+		</option>
+		<option name="Create template">
+			<p>
+				All node settings can be stored as a template, which will be available over the 'Templates' tab. See the tab description for more information.
+			</p>
+		</option>
+		<option name="Sanitize input data">
+			<p>
+				Sanitizes the input table and available flow variables using a default policy defined by <a href="https://github.com/OWASP/java-html-sanitizer">OWASP</a>. 
+			</p>
+			<p>
+				Set this option if the script assumes that the input table and used flow variables should be treated as strings or safe HTML strings.
+			</p>
+		</option>
 		<option name="Flow Variables">
 		    <p>
 		      The list contains the flow variables that are currently available at the node input. Double 
