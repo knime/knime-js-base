@@ -53,6 +53,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
@@ -63,8 +65,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -121,6 +121,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
     private final JCheckBox m_generateViewCheckBox;
     private final JSpinner m_maxRowsSpinner;
+    private final JCheckBox m_sanitizeInputCheckBox;
     private final JList m_flowVarList;
     private final JTable m_dependenciesTable;
     private final JSSnippetTextArea m_jsTextArea;
@@ -152,6 +153,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
         m_generateViewCheckBox = new JCheckBox("Generate image at outport");
         m_maxRowsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+        m_sanitizeInputCheckBox = new JCheckBox("Sanitize input data");
         m_waitTimeSpinner = new JSpinner(new SpinnerNumberModel(0, 0, null, 500));
         m_flowVarList = new JList(new DefaultListModel());
         m_flowVarList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -252,15 +254,25 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         setLayout(new BorderLayout());
         setBorder(m_paddingBorder);
         JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.setLayout(new GridBagLayout());
+        GridBagConstraints topGbc = new GridBagConstraints();
+        topGbc.anchor = GridBagConstraints.EAST;
+        topGbc.fill = GridBagConstraints.HORIZONTAL;
+        topGbc.insets = new Insets(0, 0, 0, 0);
+        topGbc.gridx = topGbc.gridy = 0;
+        topGbc.ipadx = 0;
         topPanel.setBorder(m_lineBorder);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(new JLabel("Maximum number of rows: "));
+        //topPanel.add(Box.createHorizontalStrut(10));
+        topPanel.add(new JLabel("Maximum number of rows: "), topGbc);
+        topGbc.gridx++;
         m_maxRowsSpinner.setMaximumSize(new Dimension(100, 20));
         m_maxRowsSpinner.setMinimumSize(new Dimension(100, 20));
         m_maxRowsSpinner.setPreferredSize(new Dimension(100, 20));
-        topPanel.add(m_maxRowsSpinner);
-        topPanel.add(Box.createHorizontalStrut(10));
+        topPanel.add(m_maxRowsSpinner, topGbc);
+        topGbc.gridx++;
+        topGbc.anchor = GridBagConstraints.CENTER;
+        topGbc.insets = new Insets(0, 10, 0, 0);
+        topPanel.add(m_sanitizeInputCheckBox, topGbc);
         if (!isPreview) {
             final JButton addTemplateButton = new JButton("Create Template...");
             addTemplateButton.addActionListener(e -> {
@@ -284,7 +296,10 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
                     LOGGER.error("Failed to create template: " + e1);
                 }
             });
-            topPanel.add(addTemplateButton);
+            topGbc.gridx++;
+            topGbc.anchor = GridBagConstraints.WEST;
+            topGbc.insets = new Insets(0, 60, 0, 10);
+            topPanel.add(addTemplateButton, topGbc);
         }
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -401,6 +416,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
     public void setEnabled(final boolean enabled) {
         if (m_enabled != enabled) {
             m_maxRowsSpinner.setEnabled(enabled);
+            m_sanitizeInputCheckBox.setEnabled(enabled);
             m_flowVarList.setEnabled(enabled);
             m_dependenciesTable.setEnabled(enabled);
             m_cssTextArea.setEnabled(enabled);
@@ -449,6 +465,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
 
         m_generateViewCheckBox.setSelected(m_config.getGenerateView());
         m_maxRowsSpinner.setValue(m_config.getMaxRows());
+        m_sanitizeInputCheckBox.setSelected(m_config.isSanitizeInput());
         m_jsTextArea.setText(m_config.getJsCode());
         m_jsSVGTextArea.setText(m_config.getJsSVGCode());
         m_cssTextArea.setText(m_config.getCssCode());
@@ -475,6 +492,7 @@ public class GenericJSNodePanel extends JPanel implements TemplateReceiver {
         }
         m_config.setGenerateView(m_generateViewCheckBox.isSelected());
         m_config.setMaxRows((Integer)m_maxRowsSpinner.getValue());
+        m_config.setSanitizeInput(m_sanitizeInputCheckBox.isSelected());
         m_config.setJsCode(m_jsTextArea.getText());
         m_config.setJsSVGCode(m_jsSVGTextArea.getText());
         m_config.setCssCode(m_cssTextArea.getText());
