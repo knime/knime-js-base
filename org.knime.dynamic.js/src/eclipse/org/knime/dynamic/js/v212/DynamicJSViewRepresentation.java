@@ -65,6 +65,7 @@ import org.knime.dynamic.js.DynamicJSDependency;
 import org.knime.dynamic.js.SettingsModelSVGOptions.JSONSVGOptions;
 import org.knime.js.core.JSONDataTable;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -115,6 +116,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
     private boolean m_runningInView = true;
 
     @JsonProperty("jsCode")
+    @JsonSanitizeIgnore
     public String[] getJsCode() {
 		return m_jsCode;
 	}
@@ -125,6 +127,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssCode")
+    @JsonSanitizeIgnore
     public String[] getCssCode() {
 		return m_cssCode;
 	}
@@ -145,6 +148,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("jsNamespace")
+    @JsonSanitizeIgnore
     public String getJsNamespace() {
 		return m_jsNamespace;
 	}
@@ -155,6 +159,7 @@ public class DynamicJSViewRepresentation extends JSONViewContent {
 	}
 
     @JsonProperty("cssDependencies")
+    @JsonSanitizeIgnore
     public String[] getCssDependencies() {
 		return m_cssDependencies.toArray(new String[0]);
 	}
