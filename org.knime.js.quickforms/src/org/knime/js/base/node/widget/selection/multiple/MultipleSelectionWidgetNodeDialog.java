@@ -92,9 +92,15 @@ import org.knime.js.core.settings.DialogUtil;
 public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDialog<SingleMultipleSelectionNodeValue> {
 
     private final JList<String> m_defaultField;
+
     private final JTextArea m_possibleChoicesField;
+
     private final JComboBox<String> m_type;
+
+    private final JCheckBox m_enableSearchCheckBox;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
+
     private final JSpinner m_numberVisOptionSpinner;
 
     private final MultipleSelectionWidgetConfig m_config;
@@ -112,16 +118,19 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
             public void removeUpdate(final DocumentEvent e) {
                 refreshChoices();
             }
+
             @Override
             public void insertUpdate(final DocumentEvent e) {
                 refreshChoices();
             }
+
             @Override
             public void changedUpdate(final DocumentEvent e) {
                 refreshChoices();
             }
         });
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
+        m_enableSearchCheckBox = new JCheckBox();
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
@@ -153,13 +162,16 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         JScrollPane defaultPane = new JScrollPane(m_defaultField);
         defaultPane.setPreferredSize(prefSize);
         addPairToPanel("Default Values: ", defaultPane, panelWithGBLayout, gbc2);
+        addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
 
         m_type.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(final ItemEvent e) {
                 boolean enabled = MultipleSelectionsComponentFactory.LIST.equals(m_type.getSelectedItem())
                     || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())
-                    || MultipleSelectionsComponentFactory.COMBOBOX.equals(m_type.getSelectedItem());
+                    || MultipleSelectionsComponentFactory.COMBOBOX.equals(m_type.getSelectedItem())
+                    || MultipleSelectionsComponentFactory.CHECK_BOXES_HORIZONTAL.equals(m_type.getSelectedItem())
+                    || MultipleSelectionsComponentFactory.CHECK_BOXES_VERTICAL.equals(m_type.getSelectedItem());
                 m_limitNumberVisOptionsBox.setEnabled(enabled);
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }
@@ -175,16 +187,14 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
     }
 
     /**
-     * Refreshes the default and value fields based on changes in the current
-     * choices, while keeping the selection.
+     * Refreshes the default and value fields based on changes in the current choices, while keeping the selection.
      */
     private void refreshChoices() {
         refreshChoices(m_defaultField);
     }
 
     /**
-     * Refreshes the given list based on changes in the current
-     * choices, while keeping the selection.
+     * Refreshes the given list based on changes in the current choices, while keeping the selection.
      *
      * @param list The list that will be refreshed
      */
@@ -222,10 +232,10 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         MultipleSelectionNodeConfig selectionConfig = m_config.getSelectionConfig();
         m_possibleChoicesField.setText(StringUtils.join(selectionConfig.getPossibleChoices(), "\n"));
         m_type.setSelectedItem(selectionConfig.getType());
+        m_enableSearchCheckBox.setSelected(m_config.isEnableSearch());
         setSelections(m_defaultField, Arrays.asList(m_config.getDefaultValue().getVariableValue()));
         m_limitNumberVisOptionsBox.setSelected(selectionConfig.getLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(selectionConfig.getNumberVisOptions());
-
     }
 
     /**
@@ -239,9 +249,11 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         MultipleSelectionNodeConfig selectionConfig = m_config.getSelectionConfig();
         selectionConfig.setPossibleChoices(possibleChoices.isEmpty() ? new String[0] : possibleChoices.split("\n"));
         selectionConfig.setType(m_type.getItemAt(m_type.getSelectedIndex()));
+        m_config.setEnableSearch(m_enableSearchCheckBox.isSelected());
         selectionConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         selectionConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);
+
     }
 
 }

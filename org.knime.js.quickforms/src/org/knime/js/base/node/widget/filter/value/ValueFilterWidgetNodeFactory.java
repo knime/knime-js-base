@@ -60,8 +60,7 @@ import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterWidgetNodeFactory extends NodeFactory<ValueFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterWidgetNodeModel, ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>,
-    ValueFilterNodeValue> {
+    WizardNodeFactoryExtension<ValueFilterWidgetNodeModel, ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, ValueFilterNodeValue> {
 
     /**
      * {@inheritDoc}

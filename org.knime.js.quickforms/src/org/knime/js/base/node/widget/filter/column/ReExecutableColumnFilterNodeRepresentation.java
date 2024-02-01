@@ -77,6 +77,8 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
 
     private final String m_type;
 
+    private final boolean m_enableSearch;
+
     private final boolean m_limitNumberVisOptions;
 
     private final Integer m_numberVisOptions;
@@ -91,6 +93,7 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
      * @param currentValue the quickform's current value
      * @param possibleColumns
      * @param type
+     * @param enableSearch
      * @param limitNumberVisOptions
      * @param numberVisOptions
      * @param triggerReExecution
@@ -98,11 +101,12 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
     @JsonCreator
     protected ReExecutableColumnFilterNodeRepresentation(final String label, final String description,
         final boolean required, final VAL defaultValue, final VAL currentValue, final String[] possibleColumns,
-        final String type, final boolean limitNumberVisOptions, final Integer numberVisOptions,
-        final boolean triggerReExecution) {
+        final String type, final boolean enableSearch, final boolean limitNumberVisOptions,
+        final Integer numberVisOptions, final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_possibleColumns = possibleColumns;
         m_type = type;
+        m_enableSearch = enableSearch;
         m_limitNumberVisOptions = limitNumberVisOptions;
         m_numberVisOptions = numberVisOptions;
     }
@@ -112,13 +116,16 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
      * @param defaultValue The default value of the node
      * @param filterConfig The config of the node
      * @param labelConfig The label config of the node
+     * @param enableSearch True, if the twinlist is supposed to render a search for column names, false otherwise
      * @param triggerReExecution
      */
     public ReExecutableColumnFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final ColumnFilterNodeConfig filterConfig, final LabeledConfig labelConfig, final boolean triggerReExecution) {
+        final ColumnFilterNodeConfig filterConfig, final LabeledConfig labelConfig, final boolean enableSearch,
+        final boolean triggerReExecution) {
         super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_possibleColumns = filterConfig.getPossibleColumns();
         m_type = filterConfig.getType();
+        m_enableSearch = enableSearch;
         m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();
         m_numberVisOptions = filterConfig.getNumberVisOptions();
     }
@@ -137,6 +144,14 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
     @JsonProperty("type")
     public String getType() {
         return m_type;
+    }
+
+    /**
+     * @return the enableSearch
+     */
+    @JsonProperty("enableSearch")
+    public boolean isEnableSearch() {
+        return m_enableSearch;
     }
 
     /**
@@ -167,6 +182,9 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
         sb.append("type=");
         sb.append(m_type);
         sb.append(", ");
+        sb.append("enableSearch=");
+        sb.append(m_enableSearch);
+        sb.append(", ");
         sb.append("limitNumberVisOptions=");
         sb.append(m_limitNumberVisOptions);
         sb.append(", ");
@@ -180,12 +198,8 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_possibleColumns)
-                .append(m_type)
-                .append(m_limitNumberVisOptions)
-                .append(m_numberVisOptions)
-                .toHashCode();
+        return new HashCodeBuilder().append(m_possibleColumns).append(m_type).append(m_enableSearch)
+            .append(m_limitNumberVisOptions).append(m_numberVisOptions).toHashCode();
     }
 
     /**
@@ -204,11 +218,8 @@ public class ReExecutableColumnFilterNodeRepresentation<VAL extends ColumnFilter
         }
         @SuppressWarnings("unchecked")
         ReExecutableColumnFilterNodeRepresentation<VAL> other = (ReExecutableColumnFilterNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder()
-                .append(m_possibleColumns, other.m_possibleColumns)
-                .append(m_type, other.m_type)
-                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
-                .append(m_numberVisOptions, other.m_numberVisOptions)
-                .isEquals();
+        return new EqualsBuilder().append(m_possibleColumns, other.m_possibleColumns).append(m_type, other.m_type)
+            .append(m_enableSearch, other.m_enableSearch).append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+            .append(m_numberVisOptions, other.m_numberVisOptions).isEquals();
     }
 }

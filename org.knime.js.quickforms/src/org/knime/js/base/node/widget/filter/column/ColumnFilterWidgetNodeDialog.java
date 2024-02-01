@@ -80,9 +80,15 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
 public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ColumnFilterNodeValue> {
 
     private final DataColumnSpecFilterPanel m_defaultField;
+
     private final JComboBox<String> m_type;
+
     private String[] m_possibleColumns;
+
+    private final JCheckBox m_enableSearchCheckBox;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
+
     private final JSpinner m_numberVisOptionSpinner;
 
     private final ColumnFilterWidgetConfig m_config;
@@ -103,6 +109,7 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
 
     /**
      * Constructor, inits fields calls layout routines
+     *
      * @param version the version of the Column Filter Widget
      */
     public ColumnFilterWidgetNodeDialog(final Version version) {
@@ -110,6 +117,7 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
         m_config = new ColumnFilterWidgetConfig(version);
         m_type = new JComboBox<>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_defaultField = new DataColumnSpecFilterPanel(false);
+        m_enableSearchCheckBox = new JCheckBox();
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(10, 2, Integer.MAX_VALUE, 1));
         createAndAddTab();
@@ -134,6 +142,7 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
         e.g. if the regex filter from the DataColumnSpecFilterPanel is used we have no equivalent with check boxes */
         // addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
+        addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
         addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
         addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
@@ -158,6 +167,7 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
         m_defaultField.loadConfiguration(filterConfig, (DataTableSpec)specs[0]);
         ColumnFilterNodeConfig config = m_config.getColumnFilterConfig();
         m_type.setSelectedItem(config.getType());
+        m_enableSearchCheckBox.setSelected(m_config.isEnableSearch());
         m_limitNumberVisOptionsBox.setSelected(config.isLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(config.getNumberVisOptions());
     }
@@ -177,6 +187,7 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
         ColumnFilterNodeConfig config = m_config.getColumnFilterConfig();
         config.setType((String)m_type.getSelectedItem());
         config.setPossibleColumns(m_possibleColumns);
+        m_config.setEnableSearch(m_enableSearchCheckBox.isSelected());
         config.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         config.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);

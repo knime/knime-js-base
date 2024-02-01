@@ -90,15 +90,23 @@ import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ValueFilterNodeValue> {
 
     private final JCheckBox m_lockColumn;
+
     private final ColumnSelectionPanel m_defaultColumnField;
+
     private final StringFilterPanel m_defaultField;
+
     private final JComboBox<String> m_type;
+
+    private final JCheckBox m_enableSearchCheckBox;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
+
     private final JSpinner m_numberVisOptionSpinner;
 
     private final ValueFilterWidgetConfig m_config;
 
     private DataTableSpec m_spec;
+
     private String[] m_possibleValues;
 
     /**
@@ -109,8 +117,9 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_config = new ValueFilterWidgetConfig();
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_lockColumn = new JCheckBox();
-        m_defaultColumnField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
+        m_defaultColumnField = new ColumnSelectionPanel((Border)null, new Class[]{DataValue.class});
         m_defaultField = new StringFilterPanel(true);
+        m_enableSearchCheckBox = new JCheckBox();
         m_defaultColumnField.addItemListener(new ItemListener() {
             /** {@inheritDoc} */
             @Override
@@ -175,6 +184,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
     protected void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Lock Column: ", m_lockColumn, panelWithGBLayout, gbc);
+        addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Column: ", m_defaultColumnField, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
 
@@ -182,7 +192,9 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
             @Override
             public void itemStateChanged(final ItemEvent e) {
                 boolean enabled = MultipleSelectionsComponentFactory.LIST.equals(m_type.getSelectedItem())
-                    || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem());
+                    || MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())
+                    || MultipleSelectionsComponentFactory.CHECK_BOXES_HORIZONTAL.equals(m_type.getSelectedItem())
+                    || MultipleSelectionsComponentFactory.CHECK_BOXES_VERTICAL.equals(m_type.getSelectedItem());
                 m_limitNumberVisOptionsBox.setEnabled(enabled);
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }
@@ -205,7 +217,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         super.loadSettingsFrom(m_config);
-        final DataTableSpec spec = (DataTableSpec) specs[0];
+        final DataTableSpec spec = (DataTableSpec)specs[0];
         final List<DataColumnSpec> filteredSpecs = new ArrayList<DataColumnSpec>();
         for (DataColumnSpec cspec : spec) {
             if (cspec.getDomain().hasValues()) {
@@ -227,8 +239,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_defaultColumnField.setSelectedColumn(selectedDefaultColumn);
         List<String> defaultIncludes = Arrays.asList(m_config.getDefaultValue().getValues());
         List<String> defaultExcludes =
-                new ArrayList<String>(Math.max(0, m_possibleValues.length
-                        - defaultIncludes.size()));
+            new ArrayList<String>(Math.max(0, m_possibleValues.length - defaultIncludes.size()));
         for (String string : m_possibleValues) {
             if (!defaultIncludes.contains(string)) {
                 defaultExcludes.add(string);
@@ -238,6 +249,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         ValueFilterNodeConfig valueFilterConfig = m_config.getValueFilterConfig();
         m_lockColumn.setSelected(valueFilterConfig.isLockColumn());
         m_type.setSelectedItem(valueFilterConfig.getType());
+        m_enableSearchCheckBox.setSelected(m_config.isEnableSearch());
         m_limitNumberVisOptionsBox.setSelected(valueFilterConfig.isLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(valueFilterConfig.getNumberVisOptions());
     }
@@ -255,6 +267,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_config.getDefaultValue().setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
         valueFilterConfig.setFromSpec(m_spec);
         valueFilterConfig.setType((String)m_type.getSelectedItem());
+        m_config.setEnableSearch(m_enableSearchCheckBox.isSelected());
         valueFilterConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         valueFilterConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);

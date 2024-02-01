@@ -66,6 +66,10 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
 
     private final ValueFilterNodeConfig m_config;
 
+    private static final String CFG_ENABLE_SEARCH = "enable_search";
+
+    private boolean m_enableSearch;
+
     /**
      * Instantiate a new config object
      */
@@ -78,6 +82,21 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
      */
     public ValueFilterNodeConfig getValueFilterConfig() {
         return m_config;
+    }
+
+    /**
+     * @return the enableSearch
+     */
+    public boolean isEnableSearch() {
+        return m_enableSearch;
+
+    }
+
+    /**
+     * @param enableSearch the enableSearch to set
+     */
+    public void setEnableSearch(final boolean enableSearch) {
+        m_enableSearch = enableSearch;
     }
 
     /**
@@ -95,6 +114,7 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_config.saveSettings(settings);
+        settings.addBoolean(CFG_ENABLE_SEARCH, m_enableSearch);
     }
 
     /**
@@ -104,6 +124,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+        // added with 5.3
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
     }
 
     /**
@@ -113,6 +135,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+        // added with 5.3
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
     }
 
     /**
@@ -124,6 +148,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
         sb.append(super.toString());
         sb.append(", ");
         sb.append(m_config.toString());
+        sb.append(", enable search = ");
+        sb.append(m_enableSearch);
         return sb.toString();
     }
 
@@ -132,10 +158,7 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_config)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_enableSearch).toHashCode();
     }
 
     /**
@@ -153,10 +176,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
             return false;
         }
         ValueFilterWidgetConfig other = (ValueFilterWidgetConfig)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(m_config, other.m_config)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_config, other.m_config)
+            .append(m_enableSearch, other.m_enableSearch).isEquals();
     }
 
 }

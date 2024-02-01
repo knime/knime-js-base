@@ -61,8 +61,7 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
-    ColumnFilterNodeValue> {
+    WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel, ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
 
     /**
      * {@inheritDoc}
@@ -84,7 +83,8 @@ public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidg
      * {@inheritDoc}
      */
     @Override
-    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex, final ColumnFilterWidgetNodeModel nodeModel) {
+    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex,
+        final ColumnFilterWidgetNodeModel nodeModel) {
         return null;
     }
 
