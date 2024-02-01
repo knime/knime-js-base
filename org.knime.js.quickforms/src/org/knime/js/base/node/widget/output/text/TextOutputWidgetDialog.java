@@ -53,6 +53,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -81,6 +82,7 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
 
     private final JList<FlowVariable> m_flowVarList;
     private final JComboBox<?> m_textFormatBox;
+    private final JCheckBox m_sanitizeCheckbox;
     private final JTextArea m_textArea;
     private final TextOutputWidgetConfig m_config;
 
@@ -91,6 +93,7 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
     public TextOutputWidgetDialog() {
         m_config = new TextOutputWidgetConfig();
         m_textFormatBox = new JComboBox(OutputTextFormat.values());
+        m_sanitizeCheckbox = new JCheckBox("Sanitize input data");
         m_textArea = new JTextArea(10, DEF_TEXTFIELD_WIDTH);
         m_flowVarList = new JList(new DefaultListModel());
         m_flowVarList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -118,6 +121,8 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
     @Override
     protected void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Text format: ", m_textFormatBox, panelWithGBLayout, gbc);
+        addPairToPanel("", m_sanitizeCheckbox, panelWithGBLayout, gbc);
+
         JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitter.setRightComponent(new JScrollPane(m_textArea));
         JScrollPane flowScroller = new JScrollPane(m_flowVarList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -151,6 +156,7 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
         }
         m_textArea.setText(s);
         m_textFormatBox.setSelectedItem(m_config.getTextFormat());
+        m_sanitizeCheckbox.setSelected(m_config.isSanitizeInput());
         loadSettingsFrom(m_config);
     }
 
@@ -163,6 +169,7 @@ public class TextOutputWidgetDialog extends LabeledViewNodeDialog {
         String s = m_textArea.getText();
         m_config.setText(s);
         m_config.setTextFormat((OutputTextFormat)m_textFormatBox.getSelectedItem());
+        m_config.setSanitizeInput(m_sanitizeCheckbox.isSelected());
         m_config.saveSettings(settings);
     }
 }

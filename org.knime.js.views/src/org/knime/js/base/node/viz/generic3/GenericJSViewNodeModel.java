@@ -211,7 +211,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
         String flowVarCorrectedText = null;
         if (m_config.getJsCode() != null) {
             try {
-                if (SHOULD_SANITIZE_GLOBAL) {
+                if (m_stringSanitizer != null) {
                     FlowVariableEscaper sanitizeFlowVariableEscaper =
                         new SanitizeFlowVariableEscaper(m_stringSanitizer);
                     flowVarCorrectedText =
@@ -318,7 +318,7 @@ final class GenericJSViewNodeModel extends AbstractSVGWizardNodeModel<GenericJSV
                     break;
                 default:
                     String variableString = variableField.getDefaultValueString();
-                    if (SHOULD_SANITIZE_GLOBAL) {
+                    if (m_stringSanitizer != null) {
                         variableString = m_stringSanitizer.sanitize(variableString);
                     }
                     newVar.setStringValue(variableString);
