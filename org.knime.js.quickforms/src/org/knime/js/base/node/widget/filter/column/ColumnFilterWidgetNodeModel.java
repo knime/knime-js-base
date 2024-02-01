@@ -70,31 +70,32 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>,
-        ColumnFilterNodeValue, ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
+public class ColumnFilterWidgetNodeModel extends
+    WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue, ColumnFilterWidgetConfig>
+    implements BufferedDataTableHolder {
 
     /**
-     * The version of the Column Filter Widget node.
-     * The versions correspond to KNIME Analytics Platform versions in which changes were made to the node.
+     * The version of the Column Filter Widget node. The versions correspond to KNIME Analytics Platform versions in
+     * which changes were made to the node.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
     public enum Version {
-        /**
-         * The first version of the Column Filter Widget node.
-         */
-        PRE_4_1,
-        /**
-         * The Column Filter Widget node in KNIME Analytics Platform 4.1.0.
-         * Following changes were made:
-         * - If the node is dragged onto the workbench and the dialog isn't opened before execution,
-         * the node now includes all rows by default (similar to the Column Filter node).
-         * - The node now outputs a string array flow variable instead of a comma separated string
-         */
-        V_4_1;
+            /**
+             * The first version of the Column Filter Widget node.
+             */
+            PRE_4_1,
+            /**
+             * The Column Filter Widget node in KNIME Analytics Platform 4.1.0. Following changes were made: - If the
+             * node is dragged onto the workbench and the dialog isn't opened before execution, the node now includes
+             * all rows by default (similar to the Column Filter node). - The node now outputs a string array flow
+             * variable instead of a comma separated string
+             */
+            V_4_1;
     }
 
     private DataTableSpec m_spec = new DataTableSpec();
+
     private BufferedDataTable m_inTable = null;
 
     private final Version m_version;
@@ -127,9 +128,9 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableCol
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        m_spec = (DataTableSpec) inSpecs[0];
-        updateValuesFromSpec((DataTableSpec) inSpecs[0]);
-        updateColumns((DataTableSpec) inSpecs[0]);
+        m_spec = (DataTableSpec)inSpecs[0];
+        updateValuesFromSpec((DataTableSpec)inSpecs[0]);
+        updateColumns((DataTableSpec)inSpecs[0]);
         createAndPushFlowVariable();
         return new DataTableSpec[]{
             ColumnFilterNodeUtil.createSpec((DataTableSpec)inSpecs[0], getRelevantValue().getColumns())};
@@ -140,16 +141,15 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableCol
      */
     @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        m_inTable = (BufferedDataTable) inObjects[0];
-        DataTableSpec inSpec = (DataTableSpec) inObjects[0].getSpec();
+        m_inTable = (BufferedDataTable)inObjects[0];
+        DataTableSpec inSpec = (DataTableSpec)inObjects[0].getSpec();
         updateColumns(inSpec);
         createAndPushFlowVariable();
         DataTableSpec outSpec =
             ColumnFilterNodeUtil.createSpec((DataTableSpec)inObjects[0].getSpec(), getRelevantValue().getColumns());
         ColumnRearranger rearranger = new ColumnRearranger(inSpec);
         rearranger.keepOnly(outSpec.getColumnNames());
-        BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0],
-                rearranger, exec);
+        BufferedDataTable outTable = exec.createColumnRearrangeTable((BufferedDataTable)inObjects[0], rearranger, exec);
         return new BufferedDataTable[]{outTable};
     }
 
@@ -213,7 +213,7 @@ public class ColumnFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableCol
     protected ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue> getRepresentation() {
         ColumnFilterWidgetConfig config = getConfig();
         return new ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig(),
+            config.getDefaultValue(), config.getColumnFilterConfig(), config.getLabelConfig(), config.isEnableSearch(),
             config.getTriggerReExecution());
     }
 

@@ -76,8 +76,9 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>,
-    ValueFilterNodeValue, ValueFilterWidgetConfig> implements BufferedDataTableHolder {
+public class ValueFilterWidgetNodeModel extends
+    WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, ValueFilterNodeValue, ValueFilterWidgetConfig>
+    implements BufferedDataTableHolder {
 
     private BufferedDataTable m_table;
 
@@ -275,8 +276,9 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
     @Override
     protected ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue> getRepresentation() {
         ValueFilterWidgetConfig config = getConfig();
-        return new ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getValueFilterConfig(), config.getLabelConfig(), config.getTriggerReExecution());
+        return new ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>(getRelevantValue(),
+            config.getDefaultValue(), config.getValueFilterConfig(), config.getLabelConfig(), config.isEnableSearch(),
+            config.getTriggerReExecution());
     }
 
     /**

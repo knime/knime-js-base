@@ -67,6 +67,10 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
 
     private final ColumnFilterNodeConfig m_config;
 
+    private static final String CFG_ENABLE_SEARCH = "enable_search";
+
+    private boolean m_enableSearch;
+
     private final Version m_version;
 
     /**
@@ -82,6 +86,7 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
 
     /**
      * Instantiate a new config object.
+     *
      * @param version of the Column Filter Widget
      */
     public ColumnFilterWidgetConfig(final Version version) {
@@ -94,6 +99,20 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
      */
     public ColumnFilterNodeConfig getColumnFilterConfig() {
         return m_config;
+    }
+
+    /**
+     * @return the enableSearch
+     */
+    public boolean isEnableSearch() {
+        return m_enableSearch;
+    }
+
+    /**
+     * @param enableSearch the enableSearch to set
+     */
+    public void setEnableSearch(final boolean enableSearch) {
+        m_enableSearch = enableSearch;
     }
 
     /**
@@ -111,6 +130,7 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_config.saveSettings(settings);
+        settings.addBoolean(CFG_ENABLE_SEARCH, m_enableSearch);
     }
 
     /**
@@ -120,6 +140,9 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_config.loadSettings(settings);
+
+        // added with 5.3
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
     }
 
     /**
@@ -129,6 +152,9 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
+
+        // added with 5.3
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
     }
 
     /**
@@ -140,6 +166,8 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
         sb.append(super.toString());
         sb.append(", ");
         sb.append(m_config.toString());
+        sb.append(", enable search = ");
+        sb.append(m_enableSearch);
         return sb.toString();
     }
 
@@ -148,10 +176,7 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_config)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_enableSearch).toHashCode();
     }
 
     /**
@@ -169,10 +194,8 @@ public class ColumnFilterWidgetConfig extends ReExecutableWidgetConfig<ColumnFil
             return false;
         }
         ColumnFilterWidgetConfig other = (ColumnFilterWidgetConfig)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(m_config, other.m_config)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_config, other.m_config)
+            .append(m_enableSearch, other.m_enableSearch).isEquals();
     }
 
 }

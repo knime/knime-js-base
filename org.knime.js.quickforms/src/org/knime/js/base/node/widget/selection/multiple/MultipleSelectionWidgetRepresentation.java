@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
@@ -69,6 +71,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSelectionNodeValue>
     extends SingleMultipleSelectionNodeRepresentation<VAL> {
 
+    private final boolean m_enableSearch;
+
     @JsonCreator
     private MultipleSelectionWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
@@ -76,23 +80,77 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
         @JsonProperty("possibleChoices") final String[] possibleChoices, @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+        @JsonProperty("enableSearch") final boolean enableSearch,
         @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
 
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
             numberVisOptions, triggerReExecution);
+
+        m_enableSearch = enableSearch;
+
     }
 
     /**
      * @param currentValue The value currently used by the node
      * @param defaultValue The default value of the node
      * @param selectionConfig The config of the node
+     * @param enableSearch True, if the twinlist is supposed to render a search for column names, false otherwise
      * @param labelConfig The label config of the node
      * @param triggerReExecution
      */
-    public MultipleSelectionWidgetRepresentation(final VAL currentValue,
-        final VAL defaultValue, final SingleMultipleSelectionNodeConfig selectionConfig,
-        final LabeledConfig labelConfig, final boolean triggerReExecution) {
+    public MultipleSelectionWidgetRepresentation(final VAL currentValue, final VAL defaultValue,
+        final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig,
+        final boolean enableSearch, final boolean triggerReExecution) {
 
         super(currentValue, defaultValue, selectionConfig, labelConfig, triggerReExecution);
+        m_enableSearch = enableSearch;
+    }
+
+    /**
+     * @return the enableSearch
+     */
+    @JsonProperty("enableSearch")
+    public boolean isEnableSearch() {
+        return m_enableSearch;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("enableSearch=");
+        sb.append(m_enableSearch);
+        sb.append(", ");
+
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(m_enableSearch).toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        MultipleSelectionWidgetRepresentation<VAL> other = (MultipleSelectionWidgetRepresentation<VAL>)obj;
+        return new EqualsBuilder().append(m_enableSearch, other.m_enableSearch).isEquals();
     }
 }

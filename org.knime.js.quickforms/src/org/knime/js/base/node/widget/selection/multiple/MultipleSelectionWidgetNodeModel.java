@@ -73,8 +73,7 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class MultipleSelectionWidgetNodeModel extends
-    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>,
-    SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
+    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
 
     /**
      * Creates a new multiple selection widget node model
@@ -156,7 +155,9 @@ public class MultipleSelectionWidgetNodeModel extends
     protected MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue> getRepresentation() {
         MultipleSelectionWidgetConfig config = getConfig();
         return new MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
-            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig(), config.getTriggerReExecution());
+            config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig(), config.isEnableSearch(),
+            config.getTriggerReExecution());
+
     }
 
     /**
