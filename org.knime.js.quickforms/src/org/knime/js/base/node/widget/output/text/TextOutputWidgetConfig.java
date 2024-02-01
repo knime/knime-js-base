@@ -79,6 +79,10 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
     private static final OutputTextFormat DEFAULT_FORMAT = OutputTextFormat.Text;
     private OutputTextFormat m_textFormat = DEFAULT_FORMAT;
 
+    private static final String CFG_SANITIZE_INPUT = "sanitizeInput";
+    private static final boolean DEFAULT_SANITIZE_INPUT = false;
+    private boolean m_sanitizeInput = DEFAULT_SANITIZE_INPUT;
+
     /**
      * @return the text
      */
@@ -108,6 +112,20 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
     }
 
     /**
+     * @return the sanitizeInput
+     */
+    public boolean isSanitizeInput() {
+        return m_sanitizeInput;
+    }
+
+    /**
+     * @param sanitizeInput the sanitizeInput to set
+     */
+    public void setSanitizeInput(final boolean sanitizeInput) {
+        m_sanitizeInput = sanitizeInput;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -115,6 +133,7 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
         super.saveSettings(settings);
         settings.addString(CFG_FORMAT, m_textFormat.toString());
         settings.addString(CFG_TEXT, m_text);
+        settings.addBoolean(CFG_SANITIZE_INPUT, m_sanitizeInput);
     }
 
     /**
@@ -125,6 +144,9 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
         super.loadSettings(settings);
         m_textFormat = OutputTextFormat.valueOf(settings.getString(CFG_FORMAT));
         m_text = settings.getString(CFG_TEXT);
+
+        // added with 5.2
+        m_sanitizeInput = settings.getBoolean(CFG_SANITIZE_INPUT, DEFAULT_SANITIZE_INPUT);
     }
 
     /**
@@ -139,6 +161,9 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
             m_textFormat = DEFAULT_FORMAT;
         }
         m_text = settings.getString(CFG_TEXT, DEFAULT_TEXT);
+
+        // added with 5.2
+        m_sanitizeInput = settings.getBoolean(CFG_SANITIZE_INPUT, DEFAULT_SANITIZE_INPUT);
     }
 
     /**
@@ -162,6 +187,7 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
                 .appendSuper(super.hashCode())
                 .append(m_textFormat)
                 .append(m_text)
+                .append(m_sanitizeInput)
                 .toHashCode();
     }
 
@@ -184,6 +210,7 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
                 .appendSuper(super.equals(obj))
                 .append(m_textFormat, other.m_textFormat)
                 .append(m_text, other.m_text)
+                .append(m_sanitizeInput, other.m_sanitizeInput)
                 .isEquals();
     }
 

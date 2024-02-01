@@ -52,6 +52,7 @@ import java.util.NoSuchElementException;
 
 import org.knime.base.util.flowvariable.FlowVariableProvider;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
+import org.knime.base.util.flowvariable.FlowVariableResolver.FlowVariableEscaper;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -62,6 +63,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.js.core.JSCorePlugin;
+import org.knime.js.core.StringSanitizationSerializer;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 
 /**
@@ -71,7 +74,12 @@ import org.knime.js.core.node.AbstractWizardNodeModel;
 public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutputWidgetRepresentation, TextOutputWidgetValue>
         implements FlowVariableProvider, CSSModifiable {
 
+    private static final boolean SHOULD_SANITIZE_GLOBAL =
+            Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_CLIENT_HTML)) &&
+            Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_GENERIC_JS_VIEW));
+
     private TextOutputWidgetConfig m_config = new TextOutputWidgetConfig();
+    private StringSanitizationSerializer m_stringSanitizer;
 
     /**
      * Creates a new file download node model.
@@ -79,6 +87,7 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
      */
     public TextOutputWidgetNodeModel(final String viewName) {
         super(new PortType[]{FlowVariablePortObject.TYPE_OPTIONAL}, new PortType[0], viewName);
+        m_stringSanitizer = SHOULD_SANITIZE_GLOBAL ? new StringSanitizationSerializer() : null;
     }
 
     /**
@@ -104,7 +113,17 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
             representation.setTextFormat(m_config.getTextFormat().toString());
             String flowVarCorrectedText;
             try {
-                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getText(), this);
+                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getText(), this, new FlowVariableEscaper() {
+
+                    @Override
+                    public String readString(final FlowVariableProvider model, final String varName) {
+                        String flowVarString = super.readString(model, varName);
+                        if (m_stringSanitizer != null) {
+                            flowVarString = m_stringSanitizer.sanitize(flowVarString);
+                        }
+                        return flowVarString;
+                    }
+                });
             } catch (NoSuchElementException nse) {
                 throw new InvalidSettingsException(nse.getMessage(), nse);
             }
@@ -199,6 +218,8 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+        var shouldSanitize = SHOULD_SANITIZE_GLOBAL || m_config.isSanitizeInput();
+        m_stringSanitizer = shouldSanitize ? new StringSanitizationSerializer() : null;
     }
 
     /**

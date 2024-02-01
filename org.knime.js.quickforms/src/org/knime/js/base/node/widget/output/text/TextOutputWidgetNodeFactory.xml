@@ -28,8 +28,16 @@
         </option>
         <option name="Text format">
           The format of the text. Can be plain text, pre-formatted (monospace text, retaining line breaks) or
-          simple html. 
+          simple HTML. 
         </option>
+        <option name="Sanitize input data">
+			<p>
+				Sanitizes the available flow variables using a default policy defined by <a href="https://github.com/OWASP/java-html-sanitizer">OWASP</a>. 
+			</p>
+			<p>
+				Set this option if the text format is set to HTML and the used flow variables should be treated as strings or safe HTML strings.
+			</p>
+		</option>
         <option name="Text">
           The text. Double click the flow variables on the right to insert a placeholder, which
           will be replaced by the actual variable value upon execution. 
