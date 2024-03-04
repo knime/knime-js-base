@@ -94,8 +94,13 @@ public class CredentialsWidgetNodeModel extends
     @Override
     public CredentialsNodeValue createEmptyViewValue() {
         var nodeValue = new CredentialsNodeValue();
+        /* In case we get the magic default password back from the frontend, we don't update the password in
+         * CredentialsNodeValue#setMagicPassword. Instead, we keep the password that was set when the view value
+         * was created here. Therefore, we have to initially set the password to a potential previous (overwritten)
+         * or default value. This is necessary to retain the password also over re-execution cycles. */
         var overwrittenPassword = getConfig().getOverwrittenPassword();
-        nodeValue.setPassword(overwrittenPassword);
+        nodeValue.setPassword(
+            overwrittenPassword != null ? overwrittenPassword : getConfig().getDefaultValue().getPassword());
         return nodeValue;
     }
 
