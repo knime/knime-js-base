@@ -67,12 +67,12 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
 
     private final CredentialsNodeConfig m_credentialsConfig;
 
-    /* 
+    /*
     * Due to the nature of the lifecycle of the widget's value during wizard execution it is necessary to save a
-    * previously entered password in the config. 
-    * During re-execution of a previously already executed component containing a credentials widget, the value is 
-    * recreated and since during deserialization we might just receive the magic default password, a previously 
-    * entered password might be lost. 
+    * previously entered password in the config.
+    * During re-execution of a previously already executed component containing a credentials widget, the value is
+    * recreated and since during deserialization we might just receive the magic default password, a previously
+    * entered password might be lost.
     * The value here is not persisted and only exists at runtime.
     */
     private String m_overwrittenPassword;
@@ -137,16 +137,16 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     }
 
     /**
-     * @return the overwrittenPassword
+     * @return the overwrittenPassword, or null, if it was never set with {@link #setOverwrittenPassword(String)}
      */
-    public String getOverwrittenPassword() {
+    String getOverwrittenPassword() {
         return m_overwrittenPassword;
     }
 
     /**
      * @param overwrittenPassword the overwrittenPassword to set
      */
-    public void setOverwrittenPassword(final String overwrittenPassword) {
+    void setOverwrittenPassword(final String overwrittenPassword) {
         m_overwrittenPassword = overwrittenPassword;
     }
 
@@ -174,7 +174,6 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_credentialsConfig.loadSettings(settings);
-        m_overwrittenPassword = getDefaultValue().getPassword();
     }
 
     /**
