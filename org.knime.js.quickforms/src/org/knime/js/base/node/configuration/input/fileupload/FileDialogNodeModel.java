@@ -83,6 +83,7 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.core.util.proxy.URLConnectionFactory;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
@@ -236,7 +237,7 @@ public class FileDialogNodeModel extends
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
             WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-            URLConnection conn = url.openConnection();
+            URLConnection conn = URLConnectionFactory.getConnection(url);
 
             final var authenticator = wfContext.getServerAuthenticator();
             if (wfContext.getRemoteRepositoryAddress().isPresent() && authenticator.isPresent()) {

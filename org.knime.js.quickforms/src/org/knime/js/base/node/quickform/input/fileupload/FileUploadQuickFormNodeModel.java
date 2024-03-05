@@ -87,6 +87,7 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.core.util.proxy.URLConnectionFactory;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
 import org.knime.workbench.explorer.ServerRequestModifier;
 import org.osgi.framework.Bundle;
@@ -301,7 +302,7 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     }
 
     private InputStream openSimpleStream(final URL url) throws IOException {
-        final URLConnection conn = url.openConnection();
+        final URLConnection conn = URLConnectionFactory.getConnection(url);
         conn.setConnectTimeout(getConfig().getTimeout());
         conn.setReadTimeout(getConfig().getTimeout());
         return conn.getInputStream();
@@ -346,8 +347,8 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
         final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
 
-        final URLConnection conn =
-                new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
+        final URL resolvedUrl = new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(),  url.getPath());
+        final URLConnection conn = URLConnectionFactory.getConnection(resolvedUrl);
         try {
             wfContext.getServerAuthenticator().get().authorizeClient(conn); // NOSONAR
         } catch (CouldNotAuthorizeException e) {

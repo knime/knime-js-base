@@ -96,6 +96,7 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.core.util.pathresolve.ResolverUtil;
+import org.knime.core.util.proxy.URLConnectionFactory;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
@@ -456,7 +457,7 @@ public class FileUploadWidgetNodeModel extends
     }
 
     private InputStream openSimpleStream(final URL url) throws IOException {
-        final URLConnection conn = url.openConnection();
+        final URLConnection conn = URLConnectionFactory.getConnection(url);
         conn.setConnectTimeout(getConfig().getTimeout());
         conn.setReadTimeout(getConfig().getTimeout());
         return conn.getInputStream();
@@ -510,8 +511,8 @@ public class FileUploadWidgetNodeModel extends
         assert wfContext.getLocationInfo() instanceof RestLocationInfo; // otherwise we would not have ended up here
         final URI repoUri = ((RestLocationInfo)wfContext.getLocationInfo()).getRepositoryAddress();
 
-        final URLConnection conn =
-                new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath()).openConnection();
+        final URL resolvedUrl = new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(), url.getPath());
+        final URLConnection conn = URLConnectionFactory.getConnection(resolvedUrl);
 
         try {
             ((RestLocationInfo)wfContext.getLocationInfo()).getAuthenticator().authorizeClient(conn);
