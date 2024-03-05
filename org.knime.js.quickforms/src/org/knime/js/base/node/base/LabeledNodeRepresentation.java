@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -118,8 +119,11 @@ public abstract class LabeledNodeRepresentation<VAL extends JSONViewContent> ext
 
     /**
      * @return the description
+     *
+     * This is ignored from sanitization because it is only ever rendered as a tooltip
      */
     @JsonProperty("description")
+    @JsonSanitizeIgnore
     public String getDescription() {
         return m_description;
     }
