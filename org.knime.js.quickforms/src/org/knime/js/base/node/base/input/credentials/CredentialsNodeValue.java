@@ -60,6 +60,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.workflow.VariableType.CredentialsType;
 import org.knime.core.util.CoreConstants;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -114,6 +115,7 @@ public class CredentialsNodeValue extends JSONViewContent {
 
     /** @return the string */
     @JsonProperty(CFG_USERNAME)
+    @JsonSanitizeIgnore
     public String getUsername() {
         return m_username;
     }

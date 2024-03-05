@@ -52,6 +52,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.LabeledNodeRepresentation;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -113,6 +114,7 @@ public class StringNodeRepresentation<VAL extends StringNodeValue> extends Label
      * @return the regex
      */
     @JsonProperty("regex")
+    @JsonSanitizeIgnore
     public String getRegex() {
         return m_regex;
     }

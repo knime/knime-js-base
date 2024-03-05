@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.StringSanitizationSerializer.JsonSanitizeIgnore;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -84,6 +85,7 @@ public class StringNodeValue extends JSONViewContent {
      * @return the string
      */
     @JsonProperty("string")
+    @JsonSanitizeIgnore
     public String getString() {
         return m_string;
     }
