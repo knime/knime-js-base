@@ -65,23 +65,30 @@ public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresen
 
     @JsonCreator
     private CredentialsDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final CredentialsDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final CredentialsDialogNodeValue currentValue,
         @JsonProperty("promptUsername") final boolean promptUsername,
+        @JsonProperty("usernameLabel") final String usernameLabel,
+        @JsonProperty("passwordLabel") final String passwordLabel,
         @JsonProperty("useServerLoginCredentials") final boolean useServerLoginCredentials,
-        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("noDisplay") final boolean noDisplay) {
+        @JsonProperty("errorMessage") final String errorMessage,
+        @JsonProperty("noDisplay") final boolean noDisplay) {
         super(label, description, required, defaultValue, currentValue, promptUsername, useServerLoginCredentials,
-            errorMessage, noDisplay);
+            usernameLabel, passwordLabel, errorMessage, noDisplay);
     }
 
     /**
      * @param currentValue The value currently used by the node
      * @param config The config of the node
+     * @param usernameLabel The configured label for username
+     * @param passwordLabel The configured label for password
      */
     public CredentialsDialogNodeRepresentation(final CredentialsDialogNodeValue currentValue,
-        final CredentialsDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(), config.getCredentialsConfig(), config.getLabelConfig());
+        final CredentialsDialogNodeConfig config, final String usernameLabel, final String passwordLabel) {
+        super(currentValue, config.getDefaultValue(), config.getCredentialsConfig(), config.getLabelConfig(),
+            usernameLabel, passwordLabel);
     }
 
     /**

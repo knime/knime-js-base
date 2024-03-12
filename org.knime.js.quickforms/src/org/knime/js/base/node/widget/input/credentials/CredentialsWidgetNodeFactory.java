@@ -83,7 +83,8 @@ public class CredentialsWidgetNodeFactory extends NodeFactory<CredentialsWidgetN
      * {@inheritDoc}
      */
     @Override
-    public NodeView<CredentialsWidgetNodeModel> createNodeView(final int viewIndex, final CredentialsWidgetNodeModel nodeModel) {
+    public NodeView<CredentialsWidgetNodeModel> createNodeView(final int viewIndex,
+        final CredentialsWidgetNodeModel nodeModel) {
         return null;
     }
 

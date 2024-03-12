@@ -75,6 +75,8 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
 
     private final JTextField m_usernameField;
     private final JPasswordField m_passwordField;
+    private final JTextField m_usernameLabelField;
+    private final JTextField m_passwordLabelField;
     private final JCheckBox m_promptUsernameChecker;
     private final JCheckBox m_savePasswordChecker;
     private final JCheckBox m_useServerLoginChecker;
@@ -86,6 +88,8 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         m_config = new CredentialsDialogNodeConfig();
         m_usernameField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_passwordField = new JPasswordField(DialogUtil.DEF_TEXTFIELD_WIDTH);
+        m_usernameLabelField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
+        m_passwordLabelField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         m_promptUsernameChecker = new JCheckBox("Prompt user name in component dialog");
         m_savePasswordChecker = new JCheckBox("Save password in configuration (weakly encrypted)");
         m_useServerLoginChecker = new JCheckBox("Use KNIME Server Login (when run on server)");
@@ -117,6 +121,8 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
         addPairToPanel("Username: ", m_usernameField, panelWithGBLayout, gbc);
         addPairToPanel("Password: ", m_passwordField, panelWithGBLayout, gbc);
+        addPairToPanel("Username label: ", m_usernameLabelField, panelWithGBLayout, gbc);
+        addPairToPanel("Password label: ", m_passwordLabelField, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_promptUsernameChecker, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_savePasswordChecker, panelWithGBLayout, gbc);
         addPairToPanel(" ", m_useServerLoginChecker, panelWithGBLayout, gbc);
@@ -128,12 +134,14 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
      */
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-            throws NotConfigurableException {
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         final CredentialsDialogNodeValue defaultValue = m_config.getDefaultValue();
         m_usernameField.setText(defaultValue.getUsername());
         m_passwordField.setText(defaultValue.getPassword());
+        m_usernameLabelField.setText(m_config.getUsernameLabel());
+        m_passwordLabelField.setText(m_config.getPasswordLabel());
         m_savePasswordChecker.setSelected(defaultValue.isSavePassword());
         m_promptUsernameChecker.setSelected(m_config.isPromptUsername());
         m_useServerLoginChecker.setSelected(m_config.isUseServerLoginCredentials());
@@ -150,6 +158,8 @@ public class CredentialsDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         m_config.setPromptUsername(m_promptUsernameChecker.isSelected());
         m_config.setUseServerLoginCredentials(m_useServerLoginChecker.isSelected());
         m_config.setNoDisplay(m_useServerLoginChecker.isSelected() && m_noDisplayChecker.isSelected());
+        m_config.setUsernameLabel(m_usernameLabelField.getText());
+        m_config.setPasswordLabel(m_passwordLabelField.getText());
         final CredentialsDialogNodeValue defaultValue = m_config.getDefaultValue();
         defaultValue.setUsername(m_usernameField.getText());
         defaultValue.setPassword(new String(m_passwordField.getPassword()));

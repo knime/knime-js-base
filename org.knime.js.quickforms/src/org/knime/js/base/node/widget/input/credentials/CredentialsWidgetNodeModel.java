@@ -216,7 +216,8 @@ public class CredentialsWidgetNodeModel extends
     protected CredentialsNodeRepresentation getRepresentation() {
         CredentialsInputWidgetConfig config = getConfig();
         return new CredentialsNodeRepresentation<CredentialsNodeValue>(getRelevantValue(), config.getDefaultValue(),
-            config.getCredentialsConfig(), config.getLabelConfig());
+            config.getCredentialsConfig(), config.getLabelConfig(), config.getUsernameLabel(),
+            config.getPasswordLabel());
     }
 
     /** {@inheritDoc} */
@@ -228,7 +229,6 @@ public class CredentialsWidgetNodeModel extends
         }
         return super.validateViewValue(viewContent);
     }
-
 
     /**
      * {@inheritDoc}
@@ -255,7 +255,7 @@ public class CredentialsWidgetNodeModel extends
             return;
         }
         if (getConfig().isUseServerLoginCredentials()
-                && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
+            && pushCredentialsFlowVariableWithDefaultCredentials(credentialsIdentifier)) {
             return; // exit here -- flow variable is pushed
         } else if (getConfig().isUseServerLoginCredentials() && loadHelper.getSystemDefaultCredentials().isPresent()) {
             final Credentials cred = loadHelper.getSystemDefaultCredentials().get();
@@ -320,7 +320,7 @@ public class CredentialsWidgetNodeModel extends
 
         if (!value.isSavePassword()) {
             Optional<Credentials> wkfCredOptional =
-                    workflowCredentials.stream().filter(c -> credentialsIdentifier.equals(c.getName())).findFirst();
+                workflowCredentials.stream().filter(c -> credentialsIdentifier.equals(c.getName())).findFirst();
             wkfCredOptional.ifPresent(c -> {
                 value.setUsername(c.getLogin());
                 value.setPassword(c.getPassword());
@@ -331,15 +331,18 @@ public class CredentialsWidgetNodeModel extends
     /** Username &amp; password pair ... just a pair. */
     private static final class UserNameAndPasswordPair {
         private final String m_username;
+
         private final String m_password;
 
         UserNameAndPasswordPair(final String username, final String password) {
             m_username = username;
             m_password = password;
         }
+
         String getPassword() {
             return m_password;
         }
+
         public String getUsername() {
             return m_username;
         }

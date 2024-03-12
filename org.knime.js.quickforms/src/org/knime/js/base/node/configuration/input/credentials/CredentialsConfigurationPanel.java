@@ -69,6 +69,8 @@ public class CredentialsConfigurationPanel extends AbstractDialogNodeConfigurati
 
     private JTextField m_usernameField = new JTextField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
     private JPasswordField m_passwordField = new JPasswordField(QuickFormNodeDialog.DEF_TEXTFIELD_WIDTH);
+    private String m_usernameLabel;
+    private String m_passwordLabel;
     private boolean m_isSavePassword;
 
     /**
@@ -80,17 +82,19 @@ public class CredentialsConfigurationPanel extends AbstractDialogNodeConfigurati
         m_usernameField.setText(representation.getDefaultValue().getUsername());
         m_passwordField.setText(representation.getDefaultValue().getPassword());
         m_isSavePassword = representation.getDefaultValue().isSavePassword();
+        m_usernameLabel = representation.getUsernameLabel();
+        m_passwordLabel = representation.getPasswordLabel();
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
         if (representation.isPromptUsername()) {
-            p.add(new JLabel("Username "), gbc);
+            p.add(new JLabel(m_usernameLabel), gbc);
             gbc.gridx += 1;
             p.add(m_usernameField, gbc);
             gbc.gridx = 0;
             gbc.gridy += 1;
         }
-        p.add(new JLabel("Password "), gbc);
+        p.add(new JLabel(m_passwordLabel), gbc);
         gbc.gridx += 1;
         p.add(m_passwordField, gbc);
         setComponent(p);

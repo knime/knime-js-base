@@ -245,8 +245,7 @@ public class CredentialsNodeValue extends JSONViewContent {
             if (cValueSettings.containsKey(CredentialsType.CFG_TRANSIENT_PASSWORD)) {
                 password = cValueSettings.getTransientString(CredentialsType.CFG_TRANSIENT_PASSWORD);
             } else if (isSavePassword) {
-                password =
-                    cValueSettings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD);
+                password = cValueSettings.getPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD);
             } else {
                 password = null;
             }
@@ -277,7 +276,11 @@ public class CredentialsNodeValue extends JSONViewContent {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(m_username).append(m_password).append(m_isSavePassword).toHashCode();
+        return new HashCodeBuilder()
+            .append(m_username)
+            .append(m_password)
+            .append(m_isSavePassword)
+            .toHashCode();
     }
 
     /**
@@ -295,7 +298,10 @@ public class CredentialsNodeValue extends JSONViewContent {
             return false;
         }
         CredentialsNodeValue other = (CredentialsNodeValue)obj;
-        return new EqualsBuilder().append(m_username, other.m_username).append(m_password, other.m_password)
-            .append(m_isSavePassword, other.m_isSavePassword).isEquals();
+        return new EqualsBuilder()
+            .append(m_username, other.m_username)
+            .append(m_password, other.m_password)
+            .append(m_isSavePassword, other.m_isSavePassword)
+            .isEquals();
     }
 }

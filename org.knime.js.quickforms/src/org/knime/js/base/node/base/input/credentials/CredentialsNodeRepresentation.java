@@ -70,22 +70,31 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
 
     private final boolean m_promptUsername;
     private final boolean m_useServerLoginCredentials;
+    private final String m_usernameLabel;
+    private final String m_passwordLabel;
     private final String m_errorMessage;
     private final boolean m_noDisplay;
 
     @JsonCreator
     protected CredentialsNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final VAL defaultValue,
         @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("promptUsername") final boolean promptUsername,
         @JsonProperty("useServerLoginCredentials") final boolean useServerLoginCredentials,
-        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("noDisplay") final boolean noDisplay) {
+        @JsonProperty("usernameLabel") final String usernameLabel,
+        @JsonProperty("passwordLabel") final String passwordLabel,
+        @JsonProperty("errorMessage") final String errorMessage,
+        @JsonProperty("noDisplay") final boolean noDisplay) {
         super(label, description, required, defaultValue, currentValue);
         m_promptUsername = promptUsername;
         m_useServerLoginCredentials = useServerLoginCredentials;
         m_errorMessage = errorMessage;
         m_noDisplay = noDisplay;
+        m_usernameLabel = usernameLabel;
+        m_passwordLabel = passwordLabel;
+
     }
 
     /**
@@ -93,14 +102,36 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
      * @param defaultValue The default value of the node
      * @param config The config of the node
      * @param labelConfig The label config of the node
+     * @param usernameLabel The configured label for username
+     * @param passwordLabel The configured label for password
      */
-    public CredentialsNodeRepresentation(final VAL currentValue, final VAL defaultValue,final CredentialsNodeConfig config,
-        final LabeledConfig labelConfig) {
+    public CredentialsNodeRepresentation(final VAL currentValue, final VAL defaultValue,
+        final CredentialsNodeConfig config, final LabeledConfig labelConfig, final String usernameLabel,
+        final String passwordLabel) {
         super(currentValue, defaultValue, labelConfig);
         m_promptUsername = config.isPromptUsername();
         m_useServerLoginCredentials = config.isUseServerLoginCredentials();
         m_errorMessage = config.getErrorMessage();
         m_noDisplay = config.getNoDisplay();
+
+        m_usernameLabel = usernameLabel;
+        m_passwordLabel = passwordLabel;
+    }
+
+    /**
+     * @return username label
+     */
+    @JsonProperty("usernameLabel")
+    public String getUsernameLabel() {
+        return m_usernameLabel;
+    }
+
+    /**
+     * @return password label
+     */
+    @JsonProperty("passwordLabel")
+    public String getPasswordLabel() {
+        return m_passwordLabel;
     }
 
     /** @return the errorMessage */
@@ -142,6 +173,11 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
         sb.append(m_noDisplay);
         sb.append(", errorMessage=");
         sb.append(m_errorMessage);
+        sb.append(", usernameLabel=");
+        sb.append(m_usernameLabel);
+        sb.append(", passwordLabel=");
+        sb.append(m_passwordLabel);
+
         return sb.toString();
     }
 
@@ -150,12 +186,15 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_promptUsername)
-                .append(m_useServerLoginCredentials)
-                .append(m_noDisplay)
-                .append(m_errorMessage)
-                .toHashCode();
+        return new HashCodeBuilder()
+            .appendSuper(super.hashCode())
+            .append(m_promptUsername)
+            .append(m_useServerLoginCredentials)
+            .append(m_noDisplay)
+            .append(m_errorMessage)
+            .append(m_usernameLabel)
+            .append(m_passwordLabel)
+            .toHashCode();
     }
 
     /**
@@ -174,11 +213,14 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
         }
         @SuppressWarnings("unchecked")
         CredentialsNodeRepresentation<VAL> other = (CredentialsNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_promptUsername, other.m_promptUsername)
-                .append(m_useServerLoginCredentials, other.m_useServerLoginCredentials)
-                .append(m_noDisplay, other.m_noDisplay)
-                .append(m_errorMessage, other.m_errorMessage)
-                .isEquals();
+        return new EqualsBuilder()
+            .appendSuper(super.equals(obj))
+            .append(m_promptUsername, other.m_promptUsername)
+            .append(m_useServerLoginCredentials, other.m_useServerLoginCredentials)
+            .append(m_noDisplay, other.m_noDisplay)
+            .append(m_errorMessage, other.m_errorMessage)
+            .append(m_usernameLabel, other.m_usernameLabel)
+            .append(m_passwordLabel, other.m_passwordLabel)
+            .isEquals();
     }
 }

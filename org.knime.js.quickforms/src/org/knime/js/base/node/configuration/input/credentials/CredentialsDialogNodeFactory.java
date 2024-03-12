@@ -79,7 +79,8 @@ public class CredentialsDialogNodeFactory extends NodeFactory<CredentialsDialogN
      * {@inheritDoc}
      */
     @Override
-    public NodeView<CredentialsDialogNodeModel> createNodeView(final int viewIndex, final CredentialsDialogNodeModel nodeModel) {
+    public NodeView<CredentialsDialogNodeModel> createNodeView(final int viewIndex,
+        final CredentialsDialogNodeModel nodeModel) {
         return null;
     }
 

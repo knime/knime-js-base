@@ -68,7 +68,8 @@ import org.knime.js.base.node.configuration.DialogFlowVariableNodeModel;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class CredentialsDialogNodeModel extends
-    DialogFlowVariableNodeModel<CredentialsDialogNodeRepresentation, CredentialsDialogNodeValue, CredentialsDialogNodeConfig> implements CredentialsNode{
+    DialogFlowVariableNodeModel<CredentialsDialogNodeRepresentation, CredentialsDialogNodeValue, CredentialsDialogNodeConfig>
+    implements CredentialsNode {
 
     /**
      * {@inheritDoc}
@@ -92,8 +93,8 @@ public class CredentialsDialogNodeModel extends
         } else {
             String username = value.getUsername();
             String password = value.getPassword();
-            UserNameAndPasswordPair pair = readFromCredentialsProviderIfBlank(
-                getCredentialsProvider(), credentialsIdentifier, username, password);
+            UserNameAndPasswordPair pair =
+                readFromCredentialsProviderIfBlank(getCredentialsProvider(), credentialsIdentifier, username, password);
             pushCredentialsFlowVariable(credentialsIdentifier, pair.getUsername(), pair.getPassword());
         }
     }
@@ -131,7 +132,9 @@ public class CredentialsDialogNodeModel extends
      */
     @Override
     protected CredentialsDialogNodeRepresentation getRepresentation() {
-        return new CredentialsDialogNodeRepresentation(getRelevantValue(), getConfig());
+        CredentialsDialogNodeConfig config = getConfig();
+        return new CredentialsDialogNodeRepresentation(getRelevantValue(), getConfig(), config.getUsernameLabel(),
+            config.getPasswordLabel());
     }
 
     /** {@inheritDoc} */
@@ -220,7 +223,7 @@ public class CredentialsDialogNodeModel extends
 
         if (!value.isSavePassword()) {
             Optional<Credentials> wkfCredOptional =
-                    workflowCredentials.stream().filter(c -> credentialsIdentifier.equals(c.getName())).findFirst();
+                workflowCredentials.stream().filter(c -> credentialsIdentifier.equals(c.getName())).findFirst();
             wkfCredOptional.ifPresent(c -> {
                 value.setUsername(c.getLogin());
                 value.setPassword(c.getPassword());
@@ -231,15 +234,18 @@ public class CredentialsDialogNodeModel extends
     /** Username &amp; password pair ... just a pair. */
     private static final class UserNameAndPasswordPair {
         private final String m_username;
+
         private final String m_password;
 
         UserNameAndPasswordPair(final String username, final String password) {
             m_username = username;
             m_password = password;
         }
+
         String getPassword() {
             return m_password;
         }
+
         public String getUsername() {
             return m_username;
         }
