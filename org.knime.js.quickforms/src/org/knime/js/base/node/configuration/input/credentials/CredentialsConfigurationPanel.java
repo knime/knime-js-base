@@ -87,14 +87,15 @@ public class CredentialsConfigurationPanel extends AbstractDialogNodeConfigurati
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.LINE_START;
         if (representation.isPromptUsername()) {
-            p.add(new JLabel(m_usernameLabel), gbc);
+            p.add(new JLabel(m_usernameLabel + " "), gbc);
             gbc.gridx += 1;
             p.add(m_usernameField, gbc);
             gbc.gridx = 0;
             gbc.gridy += 1;
         }
-        p.add(new JLabel(m_passwordLabel), gbc);
+        p.add(new JLabel(m_passwordLabel + " "), gbc);
         gbc.gridx += 1;
         p.add(m_passwordField, gbc);
         setComponent(p);

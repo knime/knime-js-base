@@ -66,16 +66,22 @@ public class CredentialsNodeConfig {
     private static final String CFG_PROMPT_USER = "prompt_username";
     private static final String CFG_USE_SERVER_LOGIN = "use_server_login";
     private static final String CFG_NO_DISPLAY = "no_display";
+    private static final String CFG_USERNAME_LABEL = "usernameLabel";
+    private static final String CFG_PASSWORD_LABEL = "passwordLabel";
 
     private static final String DEFAULT_ERROR_MESSAGE = "";
     private static final boolean DEFAULT_PROMPT_USER = true;
     private static final boolean DEFAULT_USE_SERVER_LOGIN_CREDENTIALS = false;
     private static final boolean DEFAULT_NO_DISPLAY = false;
+    static final String DEFAULT_USERNAME_LABEL = "User";
+    static final String DEFAULT_PASSWORD_LABEL = "Password";
 
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
     private boolean m_promptUsername = DEFAULT_PROMPT_USER;
     private boolean m_useServerLoginCredentials = DEFAULT_USE_SERVER_LOGIN_CREDENTIALS;
     private boolean m_noDisplay = DEFAULT_NO_DISPLAY;
+    private String m_usernameLabel = DEFAULT_USERNAME_LABEL;
+    private String m_passwordLabel = DEFAULT_PASSWORD_LABEL;
 
     /** @return the errorMessage */
     public String getErrorMessage() {
@@ -122,6 +128,34 @@ public class CredentialsNodeConfig {
     }
 
     /**
+     * @return the usernameLabel
+     */
+    public String getUsernameLabel() {
+        return m_usernameLabel;
+    }
+
+    /**
+     * @return the passwordLabel
+     */
+    public String getPasswordLabel() {
+        return m_passwordLabel;
+    }
+
+    /**
+     * @param usernameLabel to set
+     */
+    public void setUsernameLabel(final String usernameLabel) {
+        m_usernameLabel = usernameLabel;
+    }
+
+    /**
+     * @param passwordLabel to set
+     */
+    public void setPasswordLabel(final String passwordLabel) {
+        m_passwordLabel = passwordLabel;
+    }
+
+    /**
      * Saves the current settings
      *
      * @param settings the settings to save to
@@ -131,8 +165,12 @@ public class CredentialsNodeConfig {
         settings.addBoolean(CFG_PROMPT_USER, m_promptUsername);
         settings.addBoolean(CFG_USE_SERVER_LOGIN, m_useServerLoginCredentials);
 
-        //added with 3.4
+        // added with 3.4
         settings.addBoolean(CFG_NO_DISPLAY, m_noDisplay);
+
+        // added with 5.3
+        settings.addString(CFG_USERNAME_LABEL, m_usernameLabel);
+        settings.addString(CFG_PASSWORD_LABEL, m_passwordLabel);
     }
 
     /**
@@ -146,8 +184,12 @@ public class CredentialsNodeConfig {
         m_promptUsername = settings.getBoolean(CFG_PROMPT_USER);
         m_useServerLoginCredentials = settings.getBoolean(CFG_USE_SERVER_LOGIN);
 
-        //added with 3.4
+        // added with 3.4
         m_noDisplay = settings.getBoolean(CFG_NO_DISPLAY, DEFAULT_NO_DISPLAY);
+
+        // added with 5.3
+        m_usernameLabel = settings.getString(CFG_USERNAME_LABEL, DEFAULT_USERNAME_LABEL);
+        m_passwordLabel = settings.getString(CFG_PASSWORD_LABEL, DEFAULT_PASSWORD_LABEL);
     }
 
     /**
@@ -160,18 +202,26 @@ public class CredentialsNodeConfig {
         m_promptUsername = settings.getBoolean(CFG_PROMPT_USER, DEFAULT_PROMPT_USER);
         m_useServerLoginCredentials = settings.getBoolean(CFG_USE_SERVER_LOGIN, DEFAULT_USE_SERVER_LOGIN_CREDENTIALS);
 
-        //added with 3.4
+        // added with 3.4
         m_noDisplay = settings.getBoolean(CFG_NO_DISPLAY, DEFAULT_NO_DISPLAY);
+
+        // added with 5.3
+        m_usernameLabel = settings.getString(CFG_USERNAME_LABEL, DEFAULT_USERNAME_LABEL);
+        m_passwordLabel = settings.getString(CFG_PASSWORD_LABEL, DEFAULT_PASSWORD_LABEL);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).appendSuper(super.toString())
+        return new ToStringBuilder(this)
+                .appendSuper(super.toString())
                 .append(CFG_PROMPT_USER, m_promptUsername)
                 .append(CFG_USE_SERVER_LOGIN, m_useServerLoginCredentials)
                 .append(CFG_NO_DISPLAY, m_noDisplay)
-                .append(CFG_ERROR_MESSAGE, m_errorMessage).toString();
+                .append(CFG_ERROR_MESSAGE, m_errorMessage)
+                .append(CFG_USERNAME_LABEL, m_usernameLabel)
+                .append(CFG_PASSWORD_LABEL, m_passwordLabel)
+                .toString();
     }
 
     /** {@inheritDoc} */
@@ -182,6 +232,8 @@ public class CredentialsNodeConfig {
                 .append(m_useServerLoginCredentials)
                 .append(m_errorMessage)
                 .append(m_noDisplay)
+                .append(m_usernameLabel)
+                .append(m_passwordLabel)
                 .toHashCode();
     }
 
@@ -203,6 +255,8 @@ public class CredentialsNodeConfig {
                 .append(m_useServerLoginCredentials, other.m_useServerLoginCredentials)
                 .append(m_errorMessage, other.m_errorMessage)
                 .append(m_noDisplay, other.m_noDisplay)
+                .append(m_usernameLabel, other.m_usernameLabel)
+                .append(m_passwordLabel, other.m_passwordLabel)
                 .isEquals();
     }
 

@@ -50,6 +50,7 @@ package org.knime.js.base.node.base.input.credentials;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.base.LabeledNodeRepresentation;
 
@@ -123,6 +124,10 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
      */
     @JsonProperty("usernameLabel")
     public String getUsernameLabel() {
+        // added with 5.3, so defaults need to be provided
+        if (StringUtils.isEmpty(m_usernameLabel)) {
+            return CredentialsNodeConfig.DEFAULT_USERNAME_LABEL;
+        }
         return m_usernameLabel;
     }
 
@@ -131,6 +136,10 @@ public class CredentialsNodeRepresentation<VAL extends CredentialsNodeValue> ext
      */
     @JsonProperty("passwordLabel")
     public String getPasswordLabel() {
+        // added with 5.3, so defaults need to be provided
+        if (StringUtils.isEmpty(m_passwordLabel)) {
+            return CredentialsNodeConfig.DEFAULT_PASSWORD_LABEL;
+        }
         return m_passwordLabel;
     }
 

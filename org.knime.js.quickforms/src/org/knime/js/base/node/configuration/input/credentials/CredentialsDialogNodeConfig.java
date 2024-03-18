@@ -65,15 +65,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
 
     private final CredentialsNodeConfig m_credentialsConfig;
 
-    private static final String CFG_USERNAME_LABEL = "usernameLabel";
-    private static final String CFG_PASSWORD_LABEL = "passwordLabel";
-
-    private String m_usernameLabel;
-    private String m_passwordLabel;
-
-    private static final String DEFAULT_USERNAME_LABEL = "User";
-    private static final String DEFAULT_PASSWORD_LABEL = "Password";
-
     /**
      * Instantiate a new config object
      */
@@ -86,34 +77,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
      */
     public CredentialsNodeConfig getCredentialsConfig() {
         return m_credentialsConfig;
-    }
-
-    /**
-     * @return the usernameLabel
-     */
-    public String getUsernameLabel() {
-        return m_usernameLabel;
-    }
-
-    /**
-     * @return the passwordLabel
-     */
-    public String getPasswordLabel() {
-        return m_passwordLabel;
-    }
-
-    /**
-     * @param usernameLabel to set
-     */
-    public void setUsernameLabel(final String usernameLabel) {
-        m_usernameLabel = usernameLabel;
-    }
-
-    /**
-     * @param passwordLabel to set
-     */
-    public void setPasswordLabel(final String passwordLabel) {
-        m_passwordLabel = passwordLabel;
     }
 
     /** @return the errorMessage */
@@ -161,6 +124,34 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
     }
 
     /**
+     * @return the usernameLabel
+     */
+    public String getUsernameLabel() {
+        return m_credentialsConfig.getUsernameLabel();
+    }
+
+    /**
+     * @return the passwordLabel
+     */
+    public String getPasswordLabel() {
+        return m_credentialsConfig.getPasswordLabel();
+    }
+
+    /**
+     * @param usernameLabel to set
+     */
+    public void setUsernameLabel(final String usernameLabel) {
+        m_credentialsConfig.setUsernameLabel(usernameLabel);
+    }
+
+    /**
+     * @param passwordLabel to set
+     */
+    public void setPasswordLabel(final String passwordLabel) {
+        m_credentialsConfig.setPasswordLabel(passwordLabel);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -175,8 +166,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
     public void saveSettings(final NodeSettingsWO settings) {
         super.saveSettings(settings);
         m_credentialsConfig.saveSettings(settings);
-        settings.addString(CFG_USERNAME_LABEL, m_usernameLabel);
-        settings.addString(CFG_PASSWORD_LABEL, m_passwordLabel);
     }
 
     /**
@@ -186,10 +175,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_credentialsConfig.loadSettings(settings);
-
-        // added with 5.3
-        m_usernameLabel = settings.getString(CFG_USERNAME_LABEL, DEFAULT_USERNAME_LABEL);
-        m_passwordLabel = settings.getString(CFG_PASSWORD_LABEL, DEFAULT_PASSWORD_LABEL);
     }
 
     /**
@@ -199,10 +184,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_credentialsConfig.loadSettingsInDialog(settings);
-
-        // added with 5.3
-        m_usernameLabel = settings.getString(m_usernameLabel, DEFAULT_USERNAME_LABEL);
-        m_passwordLabel = settings.getString(m_passwordLabel, DEFAULT_PASSWORD_LABEL);
     }
 
     /**
@@ -214,10 +195,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
         sb.append(super.toString());
         sb.append(", ");
         sb.append(m_credentialsConfig.toString());
-        sb.append(", usernameLabel=");
-        sb.append(m_usernameLabel);
-        sb.append(", passwordLabel=");
-        sb.append(m_passwordLabel);
         return sb.toString();
     }
 
@@ -229,8 +206,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
         return new HashCodeBuilder()
             .appendSuper(super.hashCode())
             .append(m_credentialsConfig)
-            .append(m_usernameLabel)
-            .append(m_passwordLabel)
             .toHashCode();
     }
 
@@ -252,8 +227,6 @@ public class CredentialsDialogNodeConfig extends LabeledFlowVariableDialogNodeCo
         return new EqualsBuilder()
             .appendSuper(super.equals(obj))
             .append(m_credentialsConfig, other.m_credentialsConfig)
-            .append(m_usernameLabel, other.m_usernameLabel)
-            .append(m_passwordLabel, other.m_passwordLabel)
             .isEquals();
     }
 
