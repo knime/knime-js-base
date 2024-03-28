@@ -110,6 +110,10 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
             }
             representation.setButtonText(flowVarCorrectedText);
             pushFlowVariableString(RefreshButtonWidgetNodeConfig.FLOW_VARIABLE_NAME, flowVarCorrectedText);
+
+            m_config.setCounter();
+            pushFlowVariableInt("refresh_count",m_config.getCounter());
+
         }
         return new PortObject[]{FlowVariablePortObject.INSTANCE};
     }
@@ -183,7 +187,9 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
      */
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_config.resetCounter();
         m_config.loadSettings(settings);
+
     }
 
     /**

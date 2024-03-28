@@ -76,6 +76,8 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     private static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
 
+    private int refreshCounter = 0;
+
     private static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
     private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
 
@@ -95,6 +97,27 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
      */
     public void setButtonText(final String buttonText) {
         m_buttonText = buttonText;
+    }
+
+    /**
+     * @return the counter
+     */
+    public int getCounter() {
+        return refreshCounter;
+    }
+
+    /**
+     * @param refreshCounter the refreshCounter to set
+     */
+    public void setCounter() {
+        refreshCounter++;
+    }
+
+    /**
+     * @param refreshCounter the refreshCounter to reset
+     */
+    public void resetCounter() {
+        refreshCounter = 0;
     }
 
     /**
@@ -125,7 +148,6 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         setLabel(settings.getString(CFG_LABEL, DEFAULT_LABEL));
         setDescription(settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION));
         m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
-
         // Needed as super is not called to have different defaults
         setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD));
     }
