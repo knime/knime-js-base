@@ -48,7 +48,10 @@
  */
 package org.knime.js.base.node.widget.output.text;
 
+import static org.knime.core.node.workflow.NodeContext.getContext;
+
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.knime.base.util.flowvariable.FlowVariableProvider;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
@@ -63,6 +66,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.js.base.node.widget.output.text.TextOutputWidgetConfig.OutputTextFormat;
 import org.knime.js.core.JSCorePlugin;
 import org.knime.js.core.StringSanitizationSerializer;
 import org.knime.js.core.node.AbstractWizardNodeModel;
@@ -79,6 +84,7 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
             Boolean.parseBoolean(System.getProperty(JSCorePlugin.SYS_PROPERTY_SANITIZE_GENERIC_JS_VIEW));
 
     private TextOutputWidgetConfig m_config = new TextOutputWidgetConfig();
+    private boolean m_isTextOverwrittenByFlowVariable;
     private StringSanitizationSerializer m_stringSanitizer;
 
     /**
@@ -111,19 +117,24 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
             representation.setLabel(m_config.getLabel());
             representation.setDescription(m_config.getDescription());
             representation.setTextFormat(m_config.getTextFormat().toString());
-            String flowVarCorrectedText;
+            var sanitize = m_stringSanitizer != null;
+            String flowVarCorrectedText = m_config.getText();
+            if (sanitize && m_config.getTextFormat() == OutputTextFormat.Html && m_isTextOverwrittenByFlowVariable) {
+                flowVarCorrectedText = m_stringSanitizer.sanitize(m_config.getText());
+            }
             try {
-                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getText(), this, new FlowVariableEscaper() {
+                flowVarCorrectedText =
+                    FlowVariableResolver.parse(flowVarCorrectedText, this, new FlowVariableEscaper() {
 
-                    @Override
-                    public String readString(final FlowVariableProvider model, final String varName) {
-                        String flowVarString = super.readString(model, varName);
-                        if (m_stringSanitizer != null) {
-                            flowVarString = m_stringSanitizer.sanitize(flowVarString);
+                        @Override
+                        public String readString(final FlowVariableProvider model, final String varName) {
+                            String flowVarString = super.readString(model, varName);
+                            if (sanitize) {
+                                flowVarString = m_stringSanitizer.sanitize(flowVarString);
+                            }
+                            return flowVarString;
                         }
-                        return flowVarString;
-                    }
-                });
+                    });
             } catch (NoSuchElementException nse) {
                 throw new InvalidSettingsException(nse.getMessage(), nse);
             }
@@ -218,8 +229,21 @@ public class TextOutputWidgetNodeModel extends AbstractWizardNodeModel<TextOutpu
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_config.loadSettings(settings);
+        setTextOverwrittenByFlowVariable();
         var shouldSanitize = SHOULD_SANITIZE_GLOBAL || m_config.isSanitizeInput();
         m_stringSanitizer = shouldSanitize ? new StringSanitizationSerializer() : null;
+
+    }
+
+    private void setTextOverwrittenByFlowVariable() throws InvalidSettingsException {
+        m_isTextOverwrittenByFlowVariable = false;
+        var context = getContext();
+        if (context != null && context.getNodeContainer() instanceof NativeNodeContainer nodeContainer) {
+            Set<String> overwritten = nodeContainer.getVariableControlledModelSettings();
+            if (overwritten.contains(TextOutputWidgetConfig.CFG_TEXT)) {
+                m_isTextOverwrittenByFlowVariable = true;
+            }
+        }
     }
 
     /**
