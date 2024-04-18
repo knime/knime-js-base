@@ -71,7 +71,7 @@ public class TextOutputWidgetConfig extends LabeledViewConfig {
         Html;
     }
 
-    private static final String CFG_TEXT = "text";
+    static final String CFG_TEXT = "text";
     private static final String DEFAULT_TEXT = "";
     private String m_text = DEFAULT_TEXT;
 
