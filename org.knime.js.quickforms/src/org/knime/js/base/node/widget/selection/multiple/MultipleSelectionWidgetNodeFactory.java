@@ -60,7 +60,8 @@ import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelect
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class MultipleSelectionWidgetNodeFactory extends NodeFactory<MultipleSelectionWidgetNodeModel> implements
-    WizardNodeFactoryExtension<MultipleSelectionWidgetNodeModel, MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+    WizardNodeFactoryExtension<MultipleSelectionWidgetNodeModel,
+    MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
 
     /**
      * {@inheritDoc}

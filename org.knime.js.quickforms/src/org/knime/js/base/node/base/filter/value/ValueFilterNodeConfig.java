@@ -100,7 +100,7 @@ public class ValueFilterNodeConfig {
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
     private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
+    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**

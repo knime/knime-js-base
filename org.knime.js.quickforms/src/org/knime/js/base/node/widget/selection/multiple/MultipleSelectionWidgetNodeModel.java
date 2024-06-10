@@ -73,7 +73,8 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class MultipleSelectionWidgetNodeModel extends
-    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
+    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>,
+    SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
 
     /**
      * Creates a new multiple selection widget node model

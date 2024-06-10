@@ -95,7 +95,8 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
      * @param required <code>true</code> if a value is required, <code>false</code> otherwise
      * @param defaultValue the node's default value
      * @param currentValue the node's current value
-     * @param lockColumn * @param enableSearch
+     * @param lockColumn
+     * @param enableSearch
      * @param possibleValues
      * @param type
      * @param limitNumberVisOptions

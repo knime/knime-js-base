@@ -71,8 +71,8 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnFilterWidgetNodeModel extends
-    WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue, ColumnFilterWidgetConfig>
-    implements BufferedDataTableHolder {
+    WidgetNodeModel<ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue,
+    ColumnFilterWidgetConfig> implements BufferedDataTableHolder {
 
     /**
      * The version of the Column Filter Widget node. The versions correspond to KNIME Analytics Platform versions in
