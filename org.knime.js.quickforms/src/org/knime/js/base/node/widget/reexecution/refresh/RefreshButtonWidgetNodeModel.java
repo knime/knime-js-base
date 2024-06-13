@@ -50,84 +50,85 @@ import java.util.NoSuchElementException;
 
 import org.knime.base.util.flowvariable.FlowVariableProvider;
 import org.knime.base.util.flowvariable.FlowVariableResolver;
-import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.web.ValidationError;
-import org.knime.js.core.node.AbstractWizardNodeModel;
+import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
 
 /**
  * The node model for the refresh button node.
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<RefreshButtonWidgetViewRepresentation,
-    RefreshButtonWidgetViewValue> implements FlowVariableProvider {
-
-    private RefreshButtonWidgetNodeConfig m_config = new RefreshButtonWidgetNodeConfig();
+public class RefreshButtonWidgetNodeModel extends
+    WidgetFlowVariableNodeModel<RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>,
+    RefreshButtonWidgetViewValue, RefreshButtonWidgetNodeConfig> implements FlowVariableProvider {
 
     /**
      * Creates a new refresh button widget node model.
      * @param viewName the view name
      */
     public RefreshButtonWidgetNodeModel(final String viewName) {
-        super(new PortType[0], new PortType[]{FlowVariablePortObject.TYPE}, viewName);
+        super(viewName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec)
-        throws Exception {
-        synchronized (getLock()) {
-            RefreshButtonWidgetViewRepresentation representation = getViewRepresentation();
-            if (representation == null) {
-                representation = createEmptyViewRepresentation();
-            }
-            representation.setLabel(m_config.getLabel());
-            representation.setDescription(m_config.getDescription());
-            String flowVarCorrectedText;
-            try {
-                // replaces $${S ‘<variable name here>’}$$ with flow variable value for in-line replacement
-                flowVarCorrectedText = FlowVariableResolver.parse(m_config.getButtonText(), this);
-            } catch (NoSuchElementException nse) {
-                throw new InvalidSettingsException(nse.getMessage(), nse);
-            }
-            representation.setButtonText(flowVarCorrectedText);
-            pushFlowVariableString(RefreshButtonWidgetNodeConfig.FLOW_VARIABLE_NAME, flowVarCorrectedText);
+    protected void createAndPushFlowVariable() throws InvalidSettingsException {
+        var value = getRelevantValue();
+        int refreshCounter = value.getRefreshCounter();
+        String refreshTimestamp = value.getRefreshTimestamp();
+        if (refreshTimestamp == null) {
+            refreshTimestamp = "";
         }
-        return new PortObject[]{FlowVariablePortObject.INSTANCE};
+        String flowVariableName = getConfig().getFlowVariableName();
+        String counterVariable = flowVariableName + "-counter";
+        String timestampVariable = flowVariableName + "-timestamp";
+        pushFlowVariableInt(counterVariable, refreshCounter);
+        pushFlowVariableString(timestampVariable, refreshTimestamp);
+
+        // legacy flow variable exposes variable escaped button text as well
+        String flowVarCorrectedText = flowVariableEscapeButtonText();
+        pushFlowVariableString(RefreshButtonWidgetNodeConfig.FLOW_VARIABLE_NAME, flowVarCorrectedText);
+    }
+
+    /**
+     * @return
+     * @throws InvalidSettingsException
+     */
+    private String flowVariableEscapeButtonText() throws InvalidSettingsException {
+        String flowVarCorrectedText;
+        try {
+            // replaces $${S ‘<variable name here>’}$$ with flow variable value for in-line replacement
+            flowVarCorrectedText = FlowVariableResolver.parse(getConfig().getButtonText(), this);
+        } catch (NoSuchElementException nse) {
+            throw new InvalidSettingsException(nse.getMessage(), nse);
+        }
+        return flowVarCorrectedText;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final RefreshButtonWidgetViewValue viewContent) {
-        return null;
+    public RefreshButtonWidgetNodeConfig createEmptyConfig() {
+        return new RefreshButtonWidgetNodeConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public RefreshButtonWidgetViewRepresentation createEmptyViewRepresentation() {
-        return new RefreshButtonWidgetViewRepresentation();
+    protected RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue> getRepresentation() {
+        var config = getConfig();
+        String buttonText = config.getButtonText();
+        try {
+            buttonText = flowVariableEscapeButtonText();
+        } catch (InvalidSettingsException e) { /* handled in createAndPushFlowVariable */ }
+
+        return new RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>(getRelevantValue(),
+            config.getDefaultValue(), config.getLabelConfig(), config.getTriggerReExecution(), buttonText);
     }
 
     /**
@@ -144,62 +145,6 @@ public class RefreshButtonWidgetNodeModel extends AbstractWizardNodeModel<Refres
     @Override
     public String getJavascriptObjectID() {
         return "org.knime.js.base.node.widget.reexecution.refresh";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isHideInWizard() {
-        return m_config.getHideInWizard();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setHideInWizard(final boolean hide) {
-        m_config.setHideInWizard(hide);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        new RefreshButtonWidgetNodeConfig().loadSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void performReset() {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveCurrentValue(final NodeSettingsWO content) {
-        // do nothing
     }
 
     /**

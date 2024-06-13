@@ -55,10 +55,11 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
  * Factory for the refresh button widget node.
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class RefreshButtonWidgetNodeFactory extends NodeFactory<RefreshButtonWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RefreshButtonWidgetNodeModel, RefreshButtonWidgetViewRepresentation,
-    RefreshButtonWidgetViewValue> {
+    WizardNodeFactoryExtension<RefreshButtonWidgetNodeModel,
+    RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>, RefreshButtonWidgetViewValue> {
 
     /**
      * {@inheritDoc}

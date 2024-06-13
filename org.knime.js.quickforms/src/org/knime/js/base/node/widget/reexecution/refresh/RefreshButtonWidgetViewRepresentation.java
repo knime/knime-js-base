@@ -48,90 +48,57 @@ package org.knime.js.base.node.widget.reexecution.refresh;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.core.JSONViewContent;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *
- * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @param <VAL>
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
+public class RefreshButtonWidgetViewRepresentation<VAL extends RefreshButtonWidgetViewValue>
+    extends ReExecutableNodeRepresentation<VAL> {
 
-    private final RefreshButtonWidgetNodeConfig m_config = new RefreshButtonWidgetNodeConfig();
+    private String m_buttonText;
 
-    /**
-     * @return the label
-     */
-    @JsonProperty("label")
-    public String getLabel() {
-        return m_config.getLabel();
+    @SuppressWarnings("javadoc")
+    @JsonCreator
+    protected RefreshButtonWidgetViewRepresentation(@JsonProperty("label") final String label,
+        @JsonProperty("description") final String description,
+        @JsonProperty("required") final boolean required,
+        @JsonProperty("defaultValue") final VAL defaultValue,
+        @JsonProperty("currentValue") final VAL currentValue,
+        @JsonProperty("triggerReExecution") final boolean triggerReExecution,
+        @JsonProperty("buttonText") final String buttonText) {
+        super(label, description, required, defaultValue, currentValue, triggerReExecution);
+        m_buttonText = buttonText;
     }
 
     /**
-     * @param label the label to set
+     * @param currentValue
+     * @param defaultValue
+     * @param labelConfig
+     * @param triggerReExecution
+     * @param buttonText
      */
-    public void setLabel(final String label) {
-        m_config.setLabel(label);
-    }
-
-    /**
-     * @return the description
-     */
-    @JsonProperty("description")
-    public String getDescription() {
-        return m_config.getDescription();
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(final String description) {
-        m_config.setDescription(description);
+    public RefreshButtonWidgetViewRepresentation(final VAL currentValue, final VAL defaultValue,
+        final LabeledConfig labelConfig, final boolean triggerReExecution, final String buttonText) {
+        super(currentValue, defaultValue, labelConfig, triggerReExecution);
+        m_buttonText = buttonText;
     }
 
     /**
      * @return the button text
      */
     public String getButtonText() {
-        return m_config.getButtonText();
-    }
-
-    /**
-     * @param buttonText the button text to set
-     */
-    public void setButtonText(final String buttonText) {
-        m_config.setButtonText(buttonText);
-    }
-
-    /**
-     * @return the triggerReExecution
-     */
-    public Boolean getTriggerReExecution() {
-        return m_config.getTriggerReExecution();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        m_config.saveSettings(settings);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_config.loadSettings(settings);
+        return m_buttonText;
     }
 
     /**
@@ -140,8 +107,8 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(RefreshButtonWidgetViewRepresentation.class);
-        sb.append(m_config.toString());
+        sb.append("buttonText=");
+        sb.append(m_buttonText);
         return sb.toString();
     }
 
@@ -151,10 +118,8 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-            .append(m_config.getLabel())
-            .append(m_config.getDescription())
-            .append(m_config.getButtonText())
-            .append(m_config.getTriggerReExecution())
+            .appendSuper(super.hashCode())
+            .append(m_buttonText)
             .toHashCode();
     }
 
@@ -172,12 +137,11 @@ public class RefreshButtonWidgetViewRepresentation extends JSONViewContent  {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        RefreshButtonWidgetViewRepresentation other = (RefreshButtonWidgetViewRepresentation)obj;
+        @SuppressWarnings("unchecked")
+        RefreshButtonWidgetViewRepresentation<VAL> other = (RefreshButtonWidgetViewRepresentation<VAL>)obj;
         return new EqualsBuilder()
-            .append(m_config.getLabel(), other.m_config.getLabel())
-            .append(m_config.getDescription(), other.m_config.getDescription())
-            .append(m_config.getButtonText(), other.m_config.getButtonText())
-            .append(m_config.getTriggerReExecution().toString(), other.getTriggerReExecution().toString())
+            .appendSuper(super.equals(obj))
+            .append(m_buttonText, other.m_buttonText)
             .isEquals();
     }
 }

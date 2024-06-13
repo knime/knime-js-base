@@ -49,39 +49,24 @@ package org.knime.js.base.node.widget.reexecution.refresh;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.util.LabeledViewConfig;
+import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
  * The node configuration for the refresh button widget node.
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
+public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<RefreshButtonWidgetViewValue> {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(RefreshButtonWidgetNodeConfig.class);
-
-    /** node flow variable output name */
+    /** legacy node flow variable output name - outputs the button text */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
-
-    private static final String DEFAULT_LABEL = "";
-    private static final String CFG_LABEL = "label";
-
-    private static final String DEFAULT_DESCRIPTION = "";
-    private static final String CFG_DESCRIPTION = "description";
 
     private static final String DEFAULT_TEXT = "Refresh";
     private static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
-
-    private static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
-    private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
-
-    private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
-    private static final Boolean DEFAULT_TRIGGER_REEXECUTION = true;
-    private Boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
 
     /**
      * @return the button text
@@ -98,22 +83,12 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     }
 
     /**
-     * @return the triggerReExecution
-     */
-    public Boolean getTriggerReExecution() {
-        return m_triggerReExecution;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void saveSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_LABEL, getLabel());
-        settings.addString(CFG_DESCRIPTION, getDescription());
+        super.saveSettings(settings);
         settings.addString(CFG_BUTTON_TEXT, m_buttonText);
-        settings.addBoolean(CFG_TRIGGER_REEXECUTION, m_triggerReExecution);
-        settings.addBoolean(CFG_HIDE_IN_WIZARD, getHideInWizard());
     }
 
     /**
@@ -121,13 +96,20 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
      */
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
-        setLabel(settings.getString(CFG_LABEL, DEFAULT_LABEL));
-        setDescription(settings.getString(CFG_DESCRIPTION, DEFAULT_DESCRIPTION));
-        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
+        // Can not call super.loadSettings here. Some configs were added later and need to be loaded with defaults.
+        NodeSettingsRO defaultValueSettings = settings.getNodeSettings(CFG_DEFAULT_VALUE);
+        m_defaultValue = createEmptyValue();
+        m_defaultValue.loadFromNodeSettings(defaultValueSettings);
+        setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD));
 
-        // Needed as super is not called to have different defaults
-        setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD));
+        // added with 5.3
+        setCustomCSS(settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS));
+        getLabelConfig().loadSettings(settings);
+
+        // added with 5.3
+        getFlowVariableConfig().loadSettingsInDialog(settings);
+        getReExecutableConfig().loadSettings(settings);
+        m_buttonText = settings.getString(CFG_BUTTON_TEXT);
     }
 
     /**
@@ -136,11 +118,7 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        try {
-            loadSettings(settings);
-        } catch (InvalidSettingsException e) {
-            LOGGER.error("Refresh Button Widget node settings could not be loaded in configuration dialog.", e);
-        }
+        m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
     }
 
     /**
@@ -149,12 +127,9 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(RefreshButtonWidgetNodeConfig.class);
         sb.append(super.toString());
         sb.append(", buttonText=");
         sb.append(m_buttonText);
-        sb.append(", triggerReExecution=");
-        sb.append(m_triggerReExecution.toString());
         return sb.toString();
     }
 
@@ -166,7 +141,6 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         return new HashCodeBuilder()
             .appendSuper(super.hashCode())
             .append(m_buttonText)
-            .append(m_triggerReExecution)
             .toHashCode();
     }
 
@@ -188,7 +162,14 @@ public class RefreshButtonWidgetNodeConfig extends LabeledViewConfig {
         return new EqualsBuilder()
             .appendSuper(super.equals(other))
             .append(m_buttonText, other.m_buttonText)
-            .append(m_triggerReExecution, other.m_triggerReExecution)
             .isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected RefreshButtonWidgetViewValue createEmptyValue() {
+        return new RefreshButtonWidgetViewValue();
     }
 }

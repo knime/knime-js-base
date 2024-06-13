@@ -62,16 +62,16 @@ import org.knime.js.core.JSONViewContent;
  */
 public abstract class WidgetConfig<VAL extends JSONViewContent> {
 
-    private static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
+    protected static final String CFG_HIDE_IN_WIZARD = "hideInWizard";
     private static final boolean DEFAULT_HIDE_IN_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_IN_WIZARD;
 
-    private static final String CFG_CUSTOM_CSS = "customCSS";
-    private static final String DEFAULT_CUSTOM_CSS = "";
+    protected static final String CFG_CUSTOM_CSS = "customCSS";
+    protected static final String DEFAULT_CUSTOM_CSS = "";
     private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
-    private static final String CFG_DEFAULT_VALUE = "defaultValue";
-    private VAL m_defaultValue;
+    protected static final String CFG_DEFAULT_VALUE = "defaultValue";
+    protected VAL m_defaultValue;
 
     /**
      * @return the hideInWizard

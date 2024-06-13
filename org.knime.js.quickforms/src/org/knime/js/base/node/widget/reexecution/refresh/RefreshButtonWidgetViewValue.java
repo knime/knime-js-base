@@ -53,34 +53,100 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.core.JSONViewContent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Shayan Heidary, KNIME GmbH, Konstanz, Germany
  */
+@JsonAutoDetect
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class RefreshButtonWidgetViewValue extends JSONViewContent {
 
-    //empty value implementation
+    private static final String CFG_REFRESH_COUNTER = "refreshCounter";
+    private static final int DEFAULT_REFRESH_COUNTER = 0;
+    private int m_refreshCounter = DEFAULT_REFRESH_COUNTER;
+
+    private static final String CFG_REFRESH_TIMESTAMP = "refreshTimestamp";
+    private static final String DEFAULT_REFRESH_TIMESTAMP = "";
+    private String m_refreshTimestamp = DEFAULT_REFRESH_TIMESTAMP;
+
+    /**
+     * @return the refreshCounter
+     */
+    @JsonProperty("refreshCounter")
+    public int getRefreshCounter() {
+        return m_refreshCounter;
+    }
+
+    /**
+     * @param refreshCounter the refreshCounter to set
+     */
+    @JsonProperty("refreshCounter")
+    public void setRefreshCounter(final int refreshCounter) {
+        m_refreshCounter = refreshCounter;
+    }
+
+    /**
+     * @return the refreshTimestamp
+     */
+    @JsonProperty("refreshTimestamp")
+    public String getRefreshTimestamp() {
+        return m_refreshTimestamp;
+    }
+
+    /**
+     * @param refreshTimestamp the refreshTimestamp to set
+     */
+    @JsonProperty("refreshTimestamp")
+    public void setRefreshTimestamp(final String refreshTimestamp) {
+        m_refreshTimestamp = refreshTimestamp;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        // do nothing
+        settings.addInt(CFG_REFRESH_COUNTER, getRefreshCounter());
+        settings.addString(CFG_REFRESH_TIMESTAMP, getRefreshTimestamp());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        // do nothing
+        // added with 5.3
+        setRefreshCounter(settings.getInt(CFG_REFRESH_COUNTER, DEFAULT_REFRESH_COUNTER));
+        setRefreshTimestamp(settings.getString(CFG_REFRESH_TIMESTAMP, DEFAULT_REFRESH_TIMESTAMP));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("refresh-counter=");
+        sb.append(getRefreshCounter());
+        sb.append(", ");
+        sb.append("refresh-timestamp=");
+        sb.append(getRefreshTimestamp());
+        return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonIgnore
     public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
@@ -91,14 +157,22 @@ public class RefreshButtonWidgetViewValue extends JSONViewContent {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        return new EqualsBuilder().isEquals();
+        var other = (RefreshButtonWidgetViewValue)obj;
+        return new EqualsBuilder()
+                .append(m_refreshCounter, other.m_refreshCounter)
+                .append(m_refreshTimestamp, other.m_refreshTimestamp)
+                .isEquals();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().toHashCode();
+        return new HashCodeBuilder()
+                .append(m_refreshCounter)
+                .append(m_refreshTimestamp)
+                .toHashCode();
     }
 }

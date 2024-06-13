@@ -57,24 +57,26 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.js.base.util.LabeledViewNodeDialog;
+import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
+import org.knime.js.core.settings.DialogUtil;
 
 /**
  * Node dialog for the refresh button widget node.
  *
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
+public class RefreshButtonWidgetNodeDialog extends FlowVariableWidgetNodeDialog<RefreshButtonWidgetViewValue> {
 
-    private final JTextField m_textField;
     private final RefreshButtonWidgetNodeConfig m_config;
+    private final JTextField m_textField;
 
     /**
      * Create new dialog.
      */
     public RefreshButtonWidgetNodeDialog() {
         m_config = new RefreshButtonWidgetNodeConfig();
-        m_textField = new JTextField(DEF_TEXTFIELD_WIDTH);
+        m_textField = new JTextField(DialogUtil.DEF_TEXTFIELD_WIDTH);
         createAndAddTab();
     }
 
@@ -94,12 +96,22 @@ public class RefreshButtonWidgetNodeDialog extends LabeledViewNodeDialog {
      * {@inheritDoc}
      */
     @Override
+    protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
+        var value = new RefreshButtonWidgetViewValue();
+        value.loadFromNodeSettings(settings);
+        return "Refresh counter: " + value.getRefreshCounter() + ", last refresh at " + value.getRefreshTimestamp();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
+        loadSettingsFrom(m_config);
         String s = m_config.getButtonText();
         m_textField.setText(s);
-        loadSettingsFrom(m_config);
     }
 
     /**
