@@ -54,10 +54,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,6 +80,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.core.util.proxy.URLConnectionFactory;
 import org.knime.filehandling.core.connections.FSCategory;
@@ -237,25 +236,29 @@ public class FileDialogNodeModel extends
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
             WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-            URLConnection conn = URLConnectionFactory.getConnection(url);
+            try (final var c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups()) {
+                final var conn = URLConnectionFactory.getConnection(url);
 
-            final var authenticator = wfContext.getServerAuthenticator();
-            if (wfContext.getRemoteRepositoryAddress().isPresent() && authenticator.isPresent()) {
-                // only pass on the auth token if it's the originating server, we don't want to send it to someone else
-                URI repoUri = wfContext.getRemoteRepositoryAddress().get();
-                if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort())
-                    && repoUri.getScheme().equals(url.getProtocol())) {
-                    authenticator.get().authorizeClient(conn);
+                final var authenticator = wfContext.getServerAuthenticator();
+                final var repoAddress = wfContext.getRemoteRepositoryAddress();
+                if (repoAddress.isPresent() && authenticator.isPresent()) {
+                    // only pass on the auth token if it's the originating server,
+                    // we don't want to send it to someone else
+                    var repoUri = repoAddress.get();
+                    if (repoUri.getHost().equals(url.getHost()) && (repoUri.getPort() == url.getPort()) //NOSONAR
+                        && repoUri.getScheme().equals(url.getProtocol())) {
+                        authenticator.get().authorizeClient(conn);
+                    }
                 }
-            }
 
-            if (conn instanceof HttpsURLConnection) {
-                ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-            }
-            conn.setConnectTimeout(getConfig().getTimeout());
-            conn.setReadTimeout(getConfig().getTimeout());
+                if (conn instanceof HttpsURLConnection hconn) {
+                    hconn.setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+                }
+                conn.setConnectTimeout(getConfig().getTimeout());
+                conn.setReadTimeout(getConfig().getTimeout());
 
-            return conn.getInputStream();
+                return conn.getInputStream();
+            }
         }
     }
 

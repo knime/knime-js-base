@@ -57,7 +57,6 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -86,6 +85,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.core.util.proxy.URLConnectionFactory;
 import org.knime.js.base.node.quickform.QuickFormFlowVariableNodeModel;
@@ -302,10 +302,12 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
     }
 
     private InputStream openSimpleStream(final URL url) throws IOException {
-        final URLConnection conn = URLConnectionFactory.getConnection(url);
-        conn.setConnectTimeout(getConfig().getTimeout());
-        conn.setReadTimeout(getConfig().getTimeout());
-        return conn.getInputStream();
+        try (final var c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups()) {
+            final var conn = URLConnectionFactory.getConnection(url);
+            conn.setConnectTimeout(getConfig().getTimeout());
+            conn.setReadTimeout(getConfig().getTimeout());
+            return conn.getInputStream();
+        }
     }
 
     private InputStream openRemoteStream(final URL url) throws IOException, URISyntaxException {
@@ -345,24 +347,26 @@ public class FileUploadQuickFormNodeModel extends QuickFormFlowVariableNodeModel
         LOGGER.debug("A server upload has been detected. An attempt will be made"
                 + " to connect. The provided URL is: " + url);
         final WorkflowContext wfContext = NodeContext.getContext().getWorkflowManager().getContext();
-        final URI repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
+        final var repoUri = wfContext.getRemoteRepositoryAddress().get(); // NOSONAR
 
-        final URL resolvedUrl = new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(),  url.getPath());
-        final URLConnection conn = URLConnectionFactory.getConnection(resolvedUrl);
-        try {
-            wfContext.getServerAuthenticator().get().authorizeClient(conn); // NOSONAR
-        } catch (CouldNotAuthorizeException e) {
-            throw new IOException("Could not authorize client: " + e.getMessage(), e);
+        final var resolvedUrl = new URL(repoUri.getScheme(), repoUri.getHost(), repoUri.getPort(),  url.getPath());
+        try (final var c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups()) {
+            final var conn = URLConnectionFactory.getConnection(resolvedUrl);
+            try {
+                wfContext.getServerAuthenticator().get().authorizeClient(conn); // NOSONAR
+            } catch (CouldNotAuthorizeException e) {
+                throw new IOException("Could not authorize client: " + e.getMessage(), e);
+            }
+
+            if (conn instanceof HttpsURLConnection hconn) {
+                hconn.setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
+            }
+            conn.setConnectTimeout(getConfig().getTimeout());
+            conn.setReadTimeout(getConfig().getTimeout());
+            m_requestModifier.modifyRequest(repoUri, conn);
+
+            return conn.getInputStream();
         }
-
-        if (conn instanceof HttpsURLConnection) {
-            ((HttpsURLConnection)conn).setHostnameVerifier(KNIMEServerHostnameVerifier.getInstance());
-        }
-        conn.setConnectTimeout(getConfig().getTimeout());
-        conn.setReadTimeout(getConfig().getTimeout());
-        m_requestModifier.modifyRequest(repoUri, conn);
-
-        return conn.getInputStream();
     }
 
     /**
