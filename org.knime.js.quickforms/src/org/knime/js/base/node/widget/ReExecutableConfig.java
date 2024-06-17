@@ -60,7 +60,7 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class ReExecutableConfig {
 
-    private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
+    public static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
 
     private static final boolean DEFAULT_TRIGGER_REEXECUTION = false;
 

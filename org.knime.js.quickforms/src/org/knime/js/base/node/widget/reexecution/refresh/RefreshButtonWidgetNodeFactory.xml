@@ -21,6 +21,13 @@
 		<option name="Label">A descriptive label that will be shown above the button.</option>
 		<option name="Description">Native browser tooltip text to be shown for the button.</option>
 		<option name="Text">The text of the button.</option>
+		<option name="Variable Name">
+			Variable identifier. Two variables are created with the suffix
+			<ul>
+				<li>-counter: Number of refreshes the button has triggered</li>
+				<li>-timestamp: An ISO formatted timestamp from the last refresh triggered by the button</li>
+			</ul>
+		</option>
 	</fullDescription>
 	<interactiveView name="Refresh Button Widget">
 		Displays a button with text and an optional label which emits reactivity events to re-execute downstream nodes. 

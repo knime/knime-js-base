@@ -51,6 +51,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.widget.ReExecutableConfig;
 import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
@@ -60,6 +61,8 @@ import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<RefreshButtonWidgetViewValue> {
+
+    private static final boolean DEFAULT_TRIGGER_REEXECUTE = true;
 
     /** legacy node flow variable output name - outputs the button text */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
@@ -97,18 +100,22 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
     @Override
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         // Can not call super.loadSettings here. Some configs were added later and need to be loaded with defaults.
-        NodeSettingsRO defaultValueSettings = settings.getNodeSettings(CFG_DEFAULT_VALUE);
         m_defaultValue = createEmptyValue();
-        m_defaultValue.loadFromNodeSettings(defaultValueSettings);
+        try {
+            NodeSettingsRO defaultValueSettings = settings.getNodeSettings(CFG_DEFAULT_VALUE);
+            m_defaultValue.loadFromNodeSettings(defaultValueSettings);
+        } catch (InvalidSettingsException e) { /* use newly created value */ }
         setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD));
 
         // added with 5.3
         setCustomCSS(settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS));
-        getLabelConfig().loadSettings(settings);
+        // adds required flag
+        getLabelConfig().loadSettingsInDialog(settings);
 
         // added with 5.3
         getFlowVariableConfig().loadSettingsInDialog(settings);
-        getReExecutableConfig().loadSettings(settings);
+        setTriggerReExecution(
+            settings.getBoolean(ReExecutableConfig.CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTE));
         m_buttonText = settings.getString(CFG_BUTTON_TEXT);
     }
 
@@ -118,6 +125,8 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
+        setTriggerReExecution(
+            settings.getBoolean(ReExecutableConfig.CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTE));
         m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
     }
 
