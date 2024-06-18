@@ -176,14 +176,14 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        addPairToPanel("Limit height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
         m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Number of visible rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**

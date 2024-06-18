@@ -143,8 +143,8 @@ public class ColumnFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<C
         // addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
         addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
-        addPairToPanel("Limit number of visible options: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
-        addPairToPanel("Number of visible options: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Limit height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        addPairToPanel("Number of visible rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**
