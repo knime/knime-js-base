@@ -51,7 +51,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.widget.ReExecutableConfig;
 import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
@@ -70,6 +69,13 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
     private static final String DEFAULT_TEXT = "Refresh";
     private static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
+
+    /**
+     *
+     */
+    public RefreshButtonWidgetNodeConfig() {
+        super(DEFAULT_TRIGGER_REEXECUTE);
+    }
 
     /**
      * @return the button text
@@ -114,8 +120,6 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
 
         // added with 5.3
         getFlowVariableConfig().loadSettingsInDialog(settings);
-        setTriggerReExecution(
-            settings.getBoolean(ReExecutableConfig.CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTE));
         m_buttonText = settings.getString(CFG_BUTTON_TEXT);
     }
 
@@ -125,8 +129,6 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
     @Override
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
-        setTriggerReExecution(
-            settings.getBoolean(ReExecutableConfig.CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTE));
         m_buttonText = settings.getString(CFG_BUTTON_TEXT, DEFAULT_TEXT);
     }
 

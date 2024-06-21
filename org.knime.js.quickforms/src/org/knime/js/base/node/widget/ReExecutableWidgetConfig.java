@@ -63,8 +63,21 @@ import org.knime.js.core.JSONViewContent;
 public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent>
     extends LabeledFlowVariableWidgetConfig<VAL> {
 
-    private ReExecutableConfig m_reExecutable = new ReExecutableConfig();
+    private ReExecutableConfig m_reExecutable;
 
+    /**
+     * @param defaultTriggerReexecution
+     */
+    public ReExecutableWidgetConfig(final boolean defaultTriggerReexecution) {
+        m_reExecutable = new ReExecutableConfig(defaultTriggerReexecution);
+    }
+
+    /**
+     *
+     */
+    public ReExecutableWidgetConfig() {
+        this(false);
+    }
     /**
      * @return the triggerReExecution
      */
@@ -126,6 +139,7 @@ public abstract class ReExecutableWidgetConfig<VAL extends JSONViewContent>
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(", ");
+        sb.append("Re-execute: ");
         sb.append(m_reExecutable.toString());
         return sb.toString();
     }

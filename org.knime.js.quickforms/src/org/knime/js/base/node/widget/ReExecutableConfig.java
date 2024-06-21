@@ -60,11 +60,17 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class ReExecutableConfig {
 
-    public static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
+    private static final String CFG_TRIGGER_REEXECUTION = "trigger_reexecution";
+    private boolean m_defaultTriggerReexecution = false;
+    private boolean m_triggerReExecution;
 
-    private static final boolean DEFAULT_TRIGGER_REEXECUTION = false;
-
-    private boolean m_triggerReExecution = DEFAULT_TRIGGER_REEXECUTION;
+    /**
+     * @param defaultTriggerReexecution
+     */
+    public ReExecutableConfig(final boolean defaultTriggerReexecution) {
+        m_defaultTriggerReexecution = defaultTriggerReexecution;
+        m_triggerReExecution = m_defaultTriggerReexecution;
+    }
 
     /**
      * @return the triggerReExecution
@@ -92,14 +98,14 @@ public class ReExecutableConfig {
      * @throws InvalidSettingsException If the settings are not valid
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
+        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, m_defaultTriggerReexecution);
     }
 
     /**
      * @param settings The settings to load from
      */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
-        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, DEFAULT_TRIGGER_REEXECUTION);
+        m_triggerReExecution = settings.getBoolean(CFG_TRIGGER_REEXECUTION, m_defaultTriggerReexecution);
     }
 
     /**
