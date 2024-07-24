@@ -111,7 +111,7 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
             NodeSettingsRO defaultValueSettings = settings.getNodeSettings(CFG_DEFAULT_VALUE);
             m_defaultValue.loadFromNodeSettings(defaultValueSettings);
         } catch (InvalidSettingsException e) { /* use newly created value */ }
-        setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD));
+        setHideInWizard(settings.getBoolean(CFG_HIDE_IN_WIZARD, DEFAULT_HIDE_IN_WIZARD));
 
         // added with 5.3
         setCustomCSS(settings.getString(CFG_CUSTOM_CSS, DEFAULT_CUSTOM_CSS));
