@@ -52,7 +52,7 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeValue;
 
 /**
  * Factory for the value filter widget node
@@ -60,8 +60,8 @@ import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterWidgetNodeFactory extends NodeFactory<ValueFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterWidgetNodeModel, ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>,
-    ValueFilterNodeValue> {
+    WizardNodeFactoryExtension<ValueFilterWidgetNodeModel, ReExecutableValueFilterNodeRepresentation<ValueFilterDialogNodeValue>,
+    ValueFilterDialogNodeValue> {
 
     /**
      * {@inheritDoc}

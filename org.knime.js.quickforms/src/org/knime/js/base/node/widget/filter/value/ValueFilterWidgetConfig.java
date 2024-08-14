@@ -54,7 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeValue;
 import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
 
 /**
@@ -62,7 +62,7 @@ import org.knime.js.base.node.widget.ReExecutableWidgetConfig;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilterNodeValue> {
+public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilterDialogNodeValue> {
 
     private final ValueFilterNodeConfig m_config;
 
@@ -84,8 +84,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
      * {@inheritDoc}
      */
     @Override
-    protected ValueFilterNodeValue createEmptyValue() {
-        return new ValueFilterNodeValue();
+    protected ValueFilterDialogNodeValue createEmptyValue() {
+        return new ValueFilterDialogNodeValue();
     }
 
     /**

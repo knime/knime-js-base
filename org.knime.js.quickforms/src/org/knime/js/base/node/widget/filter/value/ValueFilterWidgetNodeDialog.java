@@ -76,10 +76,11 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.ColumnSelectionPanel;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.StringFilterPanel;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeValue;
 import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 
 /**
@@ -87,7 +88,7 @@ import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ValueFilterNodeValue> {
+public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<ValueFilterDialogNodeValue> {
 
     private final JCheckBox m_lockColumn;
     private final ColumnSelectionPanel m_defaultColumnField;
@@ -110,7 +111,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_lockColumn = new JCheckBox();
         m_defaultColumnField = new ColumnSelectionPanel((Border) null, new Class[]{DataValue.class});
-        m_defaultField = new StringFilterPanel(true);
+        m_defaultField = new StringFilterPanel(false);
         m_defaultColumnField.addItemListener(new ItemListener() {
             /** {@inheritDoc} */
             @Override
@@ -155,7 +156,6 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         }
         List<String> excludes = Arrays.asList(m_possibleValues);
         panel.update(new ArrayList<String>(0), excludes, m_possibleValues);
-        panel.update(new ArrayList<String>(0), excludes, m_possibleValues);
     }
 
     /**
@@ -163,9 +163,25 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
      */
     @Override
     protected String getValueString(final NodeSettingsRO settings) throws InvalidSettingsException {
-        ValueFilterNodeValue value = new ValueFilterNodeValue();
+        ValueFilterDialogNodeValue value = new ValueFilterDialogNodeValue();
         value.loadFromNodeSettings(settings);
-        return "Column: " + value.getColumn() + "\nValues: " + StringUtils.join(value.getValues(), ", ");
+        value.updateInclExcl(Arrays.asList(m_possibleValues));
+
+        String valueString = "Column: " + value.getColumn()
+                + "\nIncludes: " + StringUtils.join(value.getValues(), ", ")
+                + "\nExcludes: " + StringUtils.join(value.getExcludes(), ", ");
+
+        if (MultipleSelectionsComponentFactory.TWINLIST.equals(m_type.getSelectedItem())) {
+            EnforceOption activeEnforceOption = value.getEnforceOption();
+            String activeEnforceReadable = "";
+            switch (activeEnforceOption) {
+                case EnforceInclusion: activeEnforceReadable = "Enforce inclusion"; break;
+                case EnforceExclusion: activeEnforceReadable = "Enforce exclusion"; break;
+            }
+            valueString += "\n" + activeEnforceReadable;
+        }
+
+        return valueString;
     }
 
     /**
@@ -225,16 +241,16 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
             }
         }
         m_defaultColumnField.setSelectedColumn(selectedDefaultColumn);
-        List<String> defaultIncludes = Arrays.asList(m_config.getDefaultValue().getValues());
-        List<String> defaultExcludes =
-                new ArrayList<String>(Math.max(0, m_possibleValues.length
-                        - defaultIncludes.size()));
-        for (String string : m_possibleValues) {
-            if (!defaultIncludes.contains(string)) {
-                defaultExcludes.add(string);
-            }
-        }
+
+        // update default include and exclude lists with previously unseen values
+        m_config.getDefaultValue().updateInclExcl(Arrays.asList(m_possibleValues));
+        // update UI model and display with previously unseen values
+        ArrayList<String> defaultIncludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getValues()));
+        ArrayList<String> defaultExcludes = new ArrayList<String>(Arrays.asList(m_config.getDefaultValue().getExcludes()));
         m_defaultField.update(defaultIncludes, defaultExcludes, m_possibleValues);
+        m_defaultField.setSelectedEnforceOption( m_config.getDefaultValue().getEnforceOption() );
+
+
         ValueFilterNodeConfig valueFilterConfig = m_config.getValueFilterConfig();
         m_lockColumn.setSelected(valueFilterConfig.isLockColumn());
         m_type.setSelectedItem(valueFilterConfig.getType());
@@ -252,7 +268,13 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         valueFilterConfig.setLockColumn(m_lockColumn.isSelected());
         m_config.getDefaultValue().setColumn(m_defaultColumnField.getSelectedColumn());
         Set<String> defaultIncludes = m_defaultField.getIncludeList();
-        m_config.getDefaultValue().setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
+        Set<String> defaultExcludes = m_defaultField.getExcludeList();
+        ValueFilterDialogNodeValue defaultValue = m_config.getDefaultValue();
+        defaultValue.setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
+        defaultValue.setExcludes(defaultExcludes.toArray(new String[defaultExcludes.size()]));
+        defaultValue.setEnforceOption(
+            m_defaultField.getSelectedEnforceOption().orElse(ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT)
+        );
         valueFilterConfig.setFromSpec(m_spec);
         valueFilterConfig.setType((String)m_type.getSelectedItem());
         valueFilterConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());

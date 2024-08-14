@@ -67,8 +67,10 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeModel;
 
 /**
@@ -76,8 +78,8 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>,
-    ValueFilterNodeValue, ValueFilterWidgetConfig> implements BufferedDataTableHolder {
+public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterDialogNodeValue>,
+ValueFilterDialogNodeValue, ValueFilterWidgetConfig> implements BufferedDataTableHolder {
 
     private BufferedDataTable m_table;
 
@@ -147,7 +149,7 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
      * {@inheritDoc}
      */
     @Override
-    protected ValueFilterNodeValue copyConfigToViewValue(final ValueFilterNodeValue currentViewValue,
+    protected ValueFilterDialogNodeValue copyConfigToViewValue(final ValueFilterDialogNodeValue currentViewValue,
         final ValueFilterWidgetConfig config, final ValueFilterWidgetConfig previousConfig) {
         var defaultVal = config.getDefaultValue();
         var previousDefaultVal = previousConfig.getDefaultValue();
@@ -155,7 +157,25 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
             currentViewValue.setColumn(defaultVal.getColumn());
         }
         if (!Arrays.equals(defaultVal.getValues(), previousDefaultVal.getValues())) {
-            currentViewValue.setValues(defaultVal.getValues());
+            List<String> defaultIncludes = Arrays.asList(config.getDefaultValue().getValues());
+            List<String> defaultExcludes =
+                    new ArrayList<String>(Math.max(0, config.getValueFilterConfig().getPossibleValues().get(currentViewValue.getColumn()).size()
+                            - defaultIncludes.size()));
+
+            for (String string : config.getValueFilterConfig().getPossibleValues().get(currentViewValue.getColumn())) {
+                if (!defaultIncludes.contains(string)) {
+                    defaultExcludes.add(string);
+                }
+            }
+
+            var enforceOption = currentViewValue.getEnforceOption();
+            if (enforceOption.equals(EnforceOption.EnforceInclusion)) {
+                currentViewValue.setValues(defaultVal.getValues());
+                config.getDefaultValue().setValues(defaultIncludes.toArray(new String[defaultIncludes.size()]));
+            } else {
+                config.getDefaultValue().setValues(defaultExcludes.toArray(new String[defaultExcludes.size()]));
+            }
+
         }
         return currentViewValue;
     }
@@ -199,7 +219,7 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
      * @throws InvalidSettingsException If the value is not among the possible values
      */
     private Map<String, List<String>> checkSelectedValues() throws InvalidSettingsException {
-        ValueFilterNodeValue rValue = getRelevantValue();
+        ValueFilterDialogNodeValue rValue = getRelevantValue();
         String column = rValue.getColumn();
         List<String> values = new ArrayList<String>(Arrays.asList(rValue.getValues()));
         ValueFilterNodeConfig valueFilterConfig = getConfig().getValueFilterConfig();
@@ -222,7 +242,7 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
             setWarningMessage(warning);
         }
         List<String> columnValues = possibleValues.get(column);
-        if (columnValues == null || columnValues.isEmpty()) {
+        if (columnValues == null) {
             throw new InvalidSettingsException("No possible values found for column '" + column + "'");
         }
         List<String> errorList = new ArrayList<String>();
@@ -242,6 +262,15 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
         }
         Map<String, List<String>> result = new HashMap<String, List<String>>();
         result.put(column, values);
+
+        // The list type might have been changed via the configuration node
+        // to a setting under which the enforce policy of the overwriting value should not be considered.
+        if (!valueFilterConfig.getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+            rValue.setEnforceOption(getConfig().getDefaultValue().getEnforceOption());
+        }
+
+        rValue.updateInclExcl(columnValues);
+
         return result;
     }
 
@@ -249,8 +278,8 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
      * {@inheritDoc}
      */
     @Override
-    public ValueFilterNodeValue createEmptyViewValue() {
-        return new ValueFilterNodeValue();
+    public ValueFilterDialogNodeValue createEmptyViewValue() {
+        return new ValueFilterDialogNodeValue();
     }
 
     /**
@@ -273,9 +302,9 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
      * {@inheritDoc}
      */
     @Override
-    protected ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue> getRepresentation() {
+    protected ReExecutableValueFilterNodeRepresentation<ValueFilterDialogNodeValue> getRepresentation() {
         ValueFilterWidgetConfig config = getConfig();
-        return new ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>(getRelevantValue(), config.getDefaultValue(),
+        return new ReExecutableValueFilterNodeRepresentation<ValueFilterDialogNodeValue>(getRelevantValue(), config.getDefaultValue(),
             config.getValueFilterConfig(), config.getLabelConfig(), config.getTriggerReExecution());
     }
 
@@ -284,7 +313,7 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel<ReExecutableValu
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        final ValueFilterNodeValue value = getConfig().getDefaultValue();
+        final ValueFilterDialogNodeValue value = getConfig().getDefaultValue();
         value.setColumn(getViewValue().getColumn());
         value.setValues(getViewValue().getValues());
     }
