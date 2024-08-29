@@ -81,6 +81,8 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
 
     private final boolean m_enableSearch;
 
+    private final boolean m_ignoreInvalidValues;
+
     private final String m_type;
 
     private final boolean m_limitNumberVisOptions;
@@ -107,7 +109,8 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
     protected ReExecutableValueFilterNodeRepresentation(final String label, final String description,
         final boolean required, final VAL defaultValue, final VAL currentValue, final boolean lockColumn,
         final Map<String, List<String>> possibleValues, final String type, final boolean enableSearch,
-        final boolean limitNumberVisOptions, final Integer numberVisOptions, final boolean triggerReExecution) {
+        final boolean ignoreInvalidValues, final boolean limitNumberVisOptions, final Integer numberVisOptions,
+        final boolean triggerReExecution) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
         m_lockColumn = lockColumn;
         m_possibleValues = possibleValues;
@@ -115,6 +118,7 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
         m_enableSearch = enableSearch;
         m_limitNumberVisOptions = limitNumberVisOptions;
         m_numberVisOptions = numberVisOptions;
+        m_ignoreInvalidValues = ignoreInvalidValues;
     }
 
     /**
@@ -127,7 +131,7 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
      */
     public ReExecutableValueFilterNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final ValueFilterNodeConfig filterConfig, final LabeledConfig labelConfig, final boolean enableSearch,
-        final boolean triggerReExecution) {
+        final boolean ignoreInvalidValues, final boolean triggerReExecution) {
         super(currentValue, defaultValue, labelConfig, triggerReExecution);
         m_lockColumn = filterConfig.isLockColumn();
         m_type = filterConfig.getType();
@@ -135,6 +139,7 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
         m_enableSearch = enableSearch;
         m_limitNumberVisOptions = filterConfig.isLimitNumberVisOptions();
         m_numberVisOptions = filterConfig.getNumberVisOptions();
+        m_ignoreInvalidValues = ignoreInvalidValues;
     }
 
     /**
@@ -175,6 +180,14 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
     @JsonProperty("enableSearch")
     public boolean isEnableSearch() {
         return m_enableSearch;
+    }
+
+    /**
+     * @return the ignoreInvalidValues
+     */
+    @JsonProperty("ignoreInvalidValues")
+    public boolean isIgnoreInvalidValues() {
+        return m_ignoreInvalidValues;
     }
 
     /**
@@ -221,6 +234,9 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
         sb.append(", ");
         sb.append("numberVisOptions=");
         sb.append(m_numberVisOptions);
+        sb.append(", ");
+        sb.append("ignoreInvalidValues=");
+        sb.append(m_ignoreInvalidValues);
         return sb.toString();
     }
 
@@ -230,9 +246,14 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
     @Override
     @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_lockColumn).append(m_possibleValues)
-            .append(m_type).append(m_enableSearch).append(m_limitNumberVisOptions).append(m_numberVisOptions)
-            .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode())
+                .append(m_lockColumn)
+                .append(m_possibleValues)
+                .append(m_type)
+                .append(m_enableSearch)
+                .append(m_limitNumberVisOptions)
+                .append(m_numberVisOptions)
+                .append(m_ignoreInvalidValues).toHashCode();
     }
 
     /**
@@ -252,9 +273,14 @@ public class ReExecutableValueFilterNodeRepresentation<VAL extends ValueFilterNo
         }
         @SuppressWarnings("unchecked")
         ReExecutableValueFilterNodeRepresentation<VAL> other = (ReExecutableValueFilterNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_lockColumn, other.m_lockColumn)
-            .append(m_possibleValues, other.m_possibleValues).append(m_type, other.m_type)
-            .append(m_enableSearch, other.m_enableSearch).append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
-            .append(m_numberVisOptions, other.m_numberVisOptions).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+            .append(m_lockColumn, other.m_lockColumn)
+            .append(m_possibleValues, other.m_possibleValues)
+            .append(m_type, other.m_type)
+            .append(m_enableSearch, other.m_enableSearch)
+            .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+            .append(m_numberVisOptions, other.m_numberVisOptions)
+            .append(m_ignoreInvalidValues, other.m_ignoreInvalidValues)
+            .isEquals();
     }
 }

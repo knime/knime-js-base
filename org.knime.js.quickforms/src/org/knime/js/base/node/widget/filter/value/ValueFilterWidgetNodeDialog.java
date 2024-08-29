@@ -99,6 +99,8 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
 
     private final JCheckBox m_enableSearchCheckBox;
 
+    private final JCheckBox m_ignoreInvalidValuesCheckBox;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
 
     private final JSpinner m_numberVisOptionSpinner;
@@ -120,6 +122,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_defaultColumnField = new ColumnSelectionPanel((Border)null, new Class[]{DataValue.class});
         m_defaultField = new StringFilterPanel(true);
         m_enableSearchCheckBox = new JCheckBox();
+        m_ignoreInvalidValuesCheckBox = new JCheckBox();
         m_defaultColumnField.addItemListener(new ItemListener() {
             /** {@inheritDoc} */
             @Override
@@ -185,6 +188,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Lock Column: ", m_lockColumn, panelWithGBLayout, gbc);
         addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
+        addPairToPanel("Ignore Invalid Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Column: ", m_defaultColumnField, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
 
@@ -250,6 +254,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         m_lockColumn.setSelected(valueFilterConfig.isLockColumn());
         m_type.setSelectedItem(valueFilterConfig.getType());
         m_enableSearchCheckBox.setSelected(m_config.isEnableSearch());
+        m_ignoreInvalidValuesCheckBox.setSelected(m_config.isIgnoreInvalidValues());
         m_limitNumberVisOptionsBox.setSelected(valueFilterConfig.isLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(valueFilterConfig.getNumberVisOptions());
     }
@@ -268,6 +273,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         valueFilterConfig.setFromSpec(m_spec);
         valueFilterConfig.setType((String)m_type.getSelectedItem());
         m_config.setEnableSearch(m_enableSearchCheckBox.isSelected());
+        m_config.setIgnoreInvalidValues(m_ignoreInvalidValuesCheckBox.isSelected());
         valueFilterConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         valueFilterConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);

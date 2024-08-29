@@ -73,6 +73,8 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
 
     private final boolean m_enableSearch;
 
+    private final boolean m_ignoreInvalidValues;
+
     @JsonCreator
     private MultipleSelectionWidgetRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
@@ -81,12 +83,14 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
         @JsonProperty("numberVisOptions") final Integer numberVisOptions,
         @JsonProperty("enableSearch") final boolean enableSearch,
+        @JsonProperty("ignoreInvalidValues")final boolean ignoreInvalidValues,
         @JsonProperty("triggerReExecution") final boolean triggerReExecution) {
 
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
             numberVisOptions, triggerReExecution);
 
         m_enableSearch = enableSearch;
+        m_ignoreInvalidValues = ignoreInvalidValues;
 
     }
 
@@ -96,14 +100,16 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
      * @param selectionConfig The config of the node
      * @param enableSearch True, if the twinlist is supposed to render a search for column names, false otherwise
      * @param labelConfig The label config of the node
+     * @param ignoreInvalidValues
      * @param triggerReExecution
      */
     public MultipleSelectionWidgetRepresentation(final VAL currentValue, final VAL defaultValue,
         final SingleMultipleSelectionNodeConfig selectionConfig, final LabeledConfig labelConfig,
-        final boolean enableSearch, final boolean triggerReExecution) {
+        final boolean enableSearch, final boolean ignoreInvalidValues, final boolean triggerReExecution) {
 
         super(currentValue, defaultValue, selectionConfig, labelConfig, triggerReExecution);
         m_enableSearch = enableSearch;
+        m_ignoreInvalidValues = ignoreInvalidValues;
     }
 
     /**
@@ -115,6 +121,14 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
     }
 
     /**
+     * @return the ignoreInvalidValues
+     */
+    @JsonProperty("ignoreInvalidValues")
+    public boolean isIgnoreInvalidValues() {
+        return m_ignoreInvalidValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -122,6 +136,9 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
         StringBuilder sb = new StringBuilder();
         sb.append("enableSearch=");
         sb.append(m_enableSearch);
+        sb.append(", ");
+        sb.append("ignoreInvalidValues=");
+        sb.append(m_ignoreInvalidValues);
         sb.append(", ");
 
         return sb.toString();
@@ -132,7 +149,7 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(m_enableSearch).toHashCode();
+        return new HashCodeBuilder().append(m_enableSearch).append(m_ignoreInvalidValues).toHashCode();
     }
 
     /**
@@ -151,6 +168,7 @@ public class MultipleSelectionWidgetRepresentation<VAL extends SingleMultipleSel
         }
         @SuppressWarnings("unchecked")
         MultipleSelectionWidgetRepresentation<VAL> other = (MultipleSelectionWidgetRepresentation<VAL>)obj;
-        return new EqualsBuilder().append(m_enableSearch, other.m_enableSearch).isEquals();
+        return new EqualsBuilder().append(m_enableSearch, other.m_enableSearch)
+            .append(m_ignoreInvalidValues, other.m_ignoreInvalidValues).isEquals();
     }
 }
