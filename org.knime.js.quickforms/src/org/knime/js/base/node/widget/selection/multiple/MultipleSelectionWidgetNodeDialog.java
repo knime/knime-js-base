@@ -99,6 +99,8 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
 
     private final JCheckBox m_enableSearchCheckBox;
 
+    private final JCheckBox m_ignoreInvalidValuesCheckBox;
+
     private final JCheckBox m_limitNumberVisOptionsBox;
 
     private final JSpinner m_numberVisOptionSpinner;
@@ -131,6 +133,7 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         });
         m_type = new JComboBox<String>(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         m_enableSearchCheckBox = new JCheckBox();
+        m_ignoreInvalidValuesCheckBox = new JCheckBox();
         m_limitNumberVisOptionsBox = new JCheckBox();
         m_numberVisOptionSpinner = new JSpinner(new SpinnerNumberModel(5, 5, Integer.MAX_VALUE, 1));
         createAndAddTab();
@@ -163,6 +166,7 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         defaultPane.setPreferredSize(prefSize);
         addPairToPanel("Default Values: ", defaultPane, panelWithGBLayout, gbc2);
         addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
+        addPairToPanel("Ignore Invalid Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
 
         m_type.addItemListener(new ItemListener() {
             @Override
@@ -233,6 +237,7 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         m_possibleChoicesField.setText(StringUtils.join(selectionConfig.getPossibleChoices(), "\n"));
         m_type.setSelectedItem(selectionConfig.getType());
         m_enableSearchCheckBox.setSelected(m_config.isEnableSearch());
+        m_ignoreInvalidValuesCheckBox.setSelected(m_config.isIgnoreInvalidValues());
         setSelections(m_defaultField, Arrays.asList(m_config.getDefaultValue().getVariableValue()));
         m_limitNumberVisOptionsBox.setSelected(selectionConfig.getLimitNumberVisOptions());
         m_numberVisOptionSpinner.setValue(selectionConfig.getNumberVisOptions());
@@ -250,6 +255,7 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         selectionConfig.setPossibleChoices(possibleChoices.isEmpty() ? new String[0] : possibleChoices.split("\n"));
         selectionConfig.setType(m_type.getItemAt(m_type.getSelectedIndex()));
         m_config.setEnableSearch(m_enableSearchCheckBox.isSelected());
+        m_config.setIgnoreInvalidValues(m_ignoreInvalidValuesCheckBox.isSelected());
         selectionConfig.setLimitNumberVisOptions(m_limitNumberVisOptionsBox.isSelected());
         selectionConfig.setNumberVisOptions((Integer)m_numberVisOptionSpinner.getValue());
         m_config.saveSettings(settings);

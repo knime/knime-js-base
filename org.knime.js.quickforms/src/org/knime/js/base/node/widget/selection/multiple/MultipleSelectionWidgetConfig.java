@@ -70,6 +70,10 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
 
     private boolean m_enableSearch;
 
+    private static final String CFG_IGNORE_INVALID_VALUES = "ignore_invalid_values";
+
+    private boolean m_ignoreInvalidValues = false;
+
     /**
      * Instantiate a new config object
      */
@@ -99,6 +103,20 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
     }
 
     /**
+     * @return the ignoreInvalidvalues
+     */
+    public boolean isIgnoreInvalidValues() {
+        return m_ignoreInvalidValues;
+    }
+
+    /**
+     * @param ignoreInvalidValues the ignoreInvalidValues to set
+     */
+    public void setIgnoreInvalidValues(final boolean ignoreInvalidValues) {
+        m_ignoreInvalidValues = ignoreInvalidValues;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -114,6 +132,7 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
         super.saveSettings(settings);
         m_config.saveSettings(settings);
         settings.addBoolean(CFG_ENABLE_SEARCH, m_enableSearch);
+        settings.addBoolean(CFG_IGNORE_INVALID_VALUES, m_ignoreInvalidValues);
     }
 
     /**
@@ -125,6 +144,8 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
         m_config.loadSettings(settings);
         // added with 5.3
         m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
+        // added with 5.3.2
+        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, false);
     }
 
     /**
@@ -136,6 +157,8 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
         m_config.loadSettingsInDialog(settings);
         // added with 5.3
         m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
+        // added with 5.3.2
+        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, false);
     }
 
     /**
@@ -149,6 +172,8 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
         sb.append(m_config.toString());
         sb.append(", enable search = ");
         sb.append(m_enableSearch);
+        sb.append(", ignore_missing_values = ");
+        sb.append(m_ignoreInvalidValues);
         return sb.toString();
     }
 
@@ -157,7 +182,7 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_enableSearch).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_enableSearch).append(m_ignoreInvalidValues).toHashCode();
     }
 
     /**
@@ -175,8 +200,13 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
             return false;
         }
         MultipleSelectionWidgetConfig other = (MultipleSelectionWidgetConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_config, other.m_config)
-            .append(m_enableSearch, other.m_enableSearch).isEquals();
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(m_config, other.m_config)
+                .append(m_enableSearch, other.m_enableSearch)
+                .append(m_ignoreInvalidValues, other.m_ignoreInvalidValues)
+                .isEquals();
+
     }
 
 }

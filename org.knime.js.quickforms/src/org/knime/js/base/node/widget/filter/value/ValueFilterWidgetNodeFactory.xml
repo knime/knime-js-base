@@ -46,6 +46,9 @@
 				If selected a search field to filter the available columns will be rendered above the nominal row
 				filter.
 			</option>
+			<option name="Ignore invalid values">
+				If this option is checked, invalid values will not be shown in the widget and they will be removed as selected if the settings are applied. 
+			</option>
 			<option name="Limit height">
 				By default the List, Twinlist and Checkboxes selection components adjust their height
 				to display all possible choices. If this setting is enabled, the number of visible rows or items

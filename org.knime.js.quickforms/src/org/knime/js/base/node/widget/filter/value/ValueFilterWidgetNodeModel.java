@@ -99,6 +99,9 @@ public class ValueFilterWidgetNodeModel extends
         updateValues((DataTableSpec)inSpecs[0]);
         Map<String, List<String>> value = createAndPushFlowVariable();
         String column = value.entrySet().iterator().next().getKey();
+        if (getConfig().isIgnoreInvalidValues()) {
+            filterInvalidValues();
+        }
         DataTableSpec inTable = (DataTableSpec)inSpecs[0];
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getNumColumns(); colIndex++) {
@@ -110,6 +113,30 @@ public class ValueFilterWidgetNodeModel extends
             throw new InvalidSettingsException("The column '" + "' was not found");
         }
         return new DataTableSpec[]{(DataTableSpec)inSpecs[0]};
+    }
+
+    /**
+     * Filter out missing values if the selected column exists
+     */
+    private void filterInvalidValues() {
+        var selectedValues = getRelevantValue().getValues();
+        var possibleValues = getRepresentation().getPossibleValues();
+        var selectedColumn = getRelevantValue().getColumn();
+        if (possibleValues.get(selectedColumn) != null) {
+            var filteredValues = Arrays.stream(selectedValues)
+                .filter(selectedValue -> possibleValues.get(selectedColumn).contains(selectedValue))
+                .toArray(String[]::new);
+            getRelevantValue().setValues(filteredValues);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadViewValue(final ValueFilterNodeValue viewValue, final boolean useAsDefault) {
+        super.loadViewValue(viewValue, useAsDefault);
+        filterInvalidValues();
     }
 
     /**
@@ -278,7 +305,7 @@ public class ValueFilterWidgetNodeModel extends
         ValueFilterWidgetConfig config = getConfig();
         return new ReExecutableValueFilterNodeRepresentation<>(getRelevantValue(),
             config.getDefaultValue(), config.getValueFilterConfig(), config.getLabelConfig(), config.isEnableSearch(),
-            config.getTriggerReExecution());
+            config.isIgnoreInvalidValues(),config.getTriggerReExecution());
     }
 
     /**

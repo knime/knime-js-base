@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.StringUtils;
 import org.knime.base.node.io.filereader.DataCellFactory;
 import org.knime.core.data.DataCell;
@@ -92,7 +94,21 @@ public class MultipleSelectionWidgetNodeModel extends
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         pushFlowVariableString(getConfig().getFlowVariableName(),
             StringUtils.join(getRelevantValue().getVariableValue(), ","));
+        if (getConfig().isIgnoreInvalidValues()) {
+            filterInvalidValues();
+        }
         return new PortObjectSpec[]{createSpec()};
+    }
+
+    /**
+     * Filter out missing values
+     */
+    private void filterInvalidValues() {
+        var selectedValues = getRelevantValue().getVariableValue();
+        var possibleValues = getRepresentation().getPossibleChoices();
+        var filteredValues = Arrays.stream(selectedValues)
+            .filter(selectedValue -> Arrays.asList(possibleValues).contains(selectedValue)).toArray(String[]::new);
+        getRelevantValue().setVariableValue(filteredValues);
     }
 
     /**
@@ -157,7 +173,7 @@ public class MultipleSelectionWidgetNodeModel extends
         MultipleSelectionWidgetConfig config = getConfig();
         return new MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>(getRelevantValue(),
             config.getDefaultValue(), config.getSelectionConfig(), config.getLabelConfig(), config.isEnableSearch(),
-            config.getTriggerReExecution());
+            config.isIgnoreInvalidValues(), config.getTriggerReExecution());
 
     }
 
@@ -168,5 +184,17 @@ public class MultipleSelectionWidgetNodeModel extends
     protected void useCurrentValueAsDefault() {
         getConfig().getDefaultValue().setVariableValue(getViewValue().getVariableValue());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadViewValue(final SingleMultipleSelectionNodeValue viewValue, final boolean useAsDefault) {
+        super.loadViewValue(viewValue, useAsDefault);
+        if (getConfig().isIgnoreInvalidValues()) {
+            filterInvalidValues();
+        }
+    }
+
 
 }
