@@ -166,7 +166,7 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
         defaultPane.setPreferredSize(prefSize);
         addPairToPanel("Default Values: ", defaultPane, panelWithGBLayout, gbc2);
         addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
-        addPairToPanel("Ignore Invalid Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
+        addPairToPanel("Ignore Missing Selected Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
 
         m_type.addItemListener(new ItemListener() {
             @Override
@@ -180,14 +180,14 @@ public class MultipleSelectionWidgetNodeDialog extends ReExecutableWidgetNodeDia
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Limit height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        addPairToPanel("Limit Height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
         m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Number of visible rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Number Of Visible Rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**

@@ -67,12 +67,12 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
     private final ValueFilterNodeConfig m_config;
 
     private static final String CFG_ENABLE_SEARCH = "enable_search";
-
-    private boolean m_enableSearch;
+    private static final boolean DEFAULT_ENABLE_SEARCH = false;
+    private boolean m_enableSearch = DEFAULT_ENABLE_SEARCH;
 
     private static final String CFG_IGNORE_INVALID_VALUES = "ignore_invalid_values";
-
-    private boolean m_ignoreInvalidValues = false;
+    private static final boolean DEFAULT_IGNORE_INVALID_VALUES = true;
+    private boolean m_ignoreInvalidValues = DEFAULT_IGNORE_INVALID_VALUES;
 
     /**
      * Instantiate a new config object
@@ -143,9 +143,9 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
         super.loadSettings(settings);
         m_config.loadSettings(settings);
         // added with 5.3
-        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, DEFAULT_ENABLE_SEARCH);
         // added with 5.3.2
-        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, false);
+        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, DEFAULT_IGNORE_INVALID_VALUES);
     }
 
     /**
@@ -155,10 +155,8 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         super.loadSettingsInDialog(settings);
         m_config.loadSettingsInDialog(settings);
-        // added with 5.3
-        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, false);
-        // added with 5.3.2
-        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, false);
+        m_enableSearch = settings.getBoolean(CFG_ENABLE_SEARCH, DEFAULT_ENABLE_SEARCH);
+        m_ignoreInvalidValues = settings.getBoolean(CFG_IGNORE_INVALID_VALUES, DEFAULT_IGNORE_INVALID_VALUES);
     }
 
     /**
@@ -182,7 +180,12 @@ public class ValueFilterWidgetConfig extends ReExecutableWidgetConfig<ValueFilte
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_enableSearch).append(m_ignoreInvalidValues).toHashCode();
+        return new HashCodeBuilder() //
+            .appendSuper(super.hashCode()) //
+            .append(m_config) //
+            .append(m_enableSearch) //
+            .append(m_ignoreInvalidValues) //
+            .toHashCode();
     }
 
     /**

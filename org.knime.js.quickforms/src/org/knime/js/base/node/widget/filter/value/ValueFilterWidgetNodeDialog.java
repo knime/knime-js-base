@@ -188,7 +188,7 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
         addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Lock Column: ", m_lockColumn, panelWithGBLayout, gbc);
         addPairToPanel("Enable Search:", m_enableSearchCheckBox, panelWithGBLayout, gbc);
-        addPairToPanel("Ignore Invalid Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
+        addPairToPanel("Ignore Missing Selected Values:", m_ignoreInvalidValuesCheckBox, panelWithGBLayout, gbc);
         addPairToPanel("Default Column: ", m_defaultColumnField, panelWithGBLayout, gbc);
         addPairToPanel("Default Values: ", m_defaultField, panelWithGBLayout, gbc);
 
@@ -203,14 +203,14 @@ public class ValueFilterWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Va
                 m_numberVisOptionSpinner.setEnabled(enabled && m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Limit height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
+        addPairToPanel("Limit Height: ", m_limitNumberVisOptionsBox, panelWithGBLayout, gbc);
         m_limitNumberVisOptionsBox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 m_numberVisOptionSpinner.setEnabled(m_limitNumberVisOptionsBox.isSelected());
             }
         });
-        addPairToPanel("Number of visible rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
+        addPairToPanel("Number Of Visible Rows: ", m_numberVisOptionSpinner, panelWithGBLayout, gbc);
     }
 
     /**

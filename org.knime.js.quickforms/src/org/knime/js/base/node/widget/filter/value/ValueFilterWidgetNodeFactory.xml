@@ -42,19 +42,22 @@
 			<option name="Default Values">
 				The values that are selected by default.
 			</option>
-			<option name="Enable search">
+			<option name="Enable Search">
 				If selected a search field to filter the available columns will be rendered above the nominal row
 				filter.
 			</option>
-			<option name="Ignore invalid values">
-				If this option is checked, invalid values will not be shown in the widget and they will be removed as selected if the settings are applied. 
+			<option name="Ignore Missing Selected Values">
+				If this option is checked, selected values that are missing from the input data will not be shown in 
+				the widget and they will be removed from the list of selected values once settings are applied.
+				If this option is not checked missing values will be shown in the widget and need to be removed
+				manually to pass input validation.  
 			</option>
-			<option name="Limit height">
+			<option name="Limit Height">
 				By default the List, Twinlist and Checkboxes selection components adjust their height
 				to display all possible choices. If this setting is enabled, the number of visible rows or items
 				can be reduced to always be the amount set in 'Number of visible rows'.
 			</option>
-			<option name="Number of visible rows">
+			<option name="Number Of Visible Rows">
 				The number of rows or items visible in selection component without a vertical scroll bar.
 				Changing this value will also affect the component's height. Notice that for Twinlist the height cannot 
 				be less than the overall height of the control buttons in the middle.
