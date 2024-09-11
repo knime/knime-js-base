@@ -99,9 +99,6 @@ public class ValueFilterWidgetNodeModel extends
         updateValues((DataTableSpec)inSpecs[0]);
         Map<String, List<String>> value = createAndPushFlowVariable();
         String column = value.entrySet().iterator().next().getKey();
-        if (getConfig().isIgnoreInvalidValues()) {
-            filterInvalidValues();
-        }
         DataTableSpec inTable = (DataTableSpec)inSpecs[0];
         int colIndex;
         for (colIndex = 0; colIndex < inTable.getNumColumns(); colIndex++) {
@@ -134,18 +131,12 @@ public class ValueFilterWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public void loadViewValue(final ValueFilterNodeValue viewValue, final boolean useAsDefault) {
-        super.loadViewValue(viewValue, useAsDefault);
-        filterInvalidValues();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         m_table = (BufferedDataTable)inObjects[0];
         getConfig().getValueFilterConfig().setFromSpec(m_table.getDataTableSpec());
+        if (getConfig().isIgnoreInvalidValues()) {
+            filterInvalidValues();
+        }
         Map<String, List<String>> value = createAndPushFlowVariable();
         Entry<String, List<String>> entry = value.entrySet().iterator().next();
         String column = entry.getKey();

@@ -94,9 +94,6 @@ public class MultipleSelectionWidgetNodeModel extends
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
         pushFlowVariableString(getConfig().getFlowVariableName(),
             StringUtils.join(getRelevantValue().getVariableValue(), ","));
-        if (getConfig().isIgnoreInvalidValues()) {
-            filterInvalidValues();
-        }
         return new PortObjectSpec[]{createSpec()};
     }
 
@@ -118,6 +115,9 @@ public class MultipleSelectionWidgetNodeModel extends
     protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         pushFlowVariableString(getConfig().getFlowVariableName(),
             StringUtils.join(getRelevantValue().getVariableValue(), ","));
+        if (getConfig().isIgnoreInvalidValues()) {
+            filterInvalidValues();
+        }
         final DataTableSpec outSpec = createSpec();
         BufferedDataContainer container = exec.createDataContainer(outSpec, false);
         String[] values = getRelevantValue().getVariableValue();
@@ -184,17 +184,5 @@ public class MultipleSelectionWidgetNodeModel extends
     protected void useCurrentValueAsDefault() {
         getConfig().getDefaultValue().setVariableValue(getViewValue().getVariableValue());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadViewValue(final SingleMultipleSelectionNodeValue viewValue, final boolean useAsDefault) {
-        super.loadViewValue(viewValue, useAsDefault);
-        if (getConfig().isIgnoreInvalidValues()) {
-            filterInvalidValues();
-        }
-    }
-
 
 }
