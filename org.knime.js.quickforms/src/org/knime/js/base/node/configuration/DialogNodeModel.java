@@ -126,6 +126,12 @@ public abstract class DialogNodeModel<REP extends DialogNodeRepresentation<VAL>,
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
         getConfig().loadSettings(settings);
+        // added as part of AP-13536:
+        // data-dependent nodes (column selection, nominal value filter, etc) derive and remember some information from
+        // the input table. They reset this information when the node is reset (side note: only those nodes have their
+        // reset() method overwritten) but copy-n-paste'd nodes don't have reset() called and thus would keep that info
+        reset();
+
     }
 
     /**
