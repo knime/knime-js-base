@@ -202,7 +202,6 @@ public class CredentialsInputWidgetConfig extends LabeledFlowVariableWidgetConfi
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadSettings(settings);
         m_credentialsConfig.loadSettings(settings);
-        m_overwrittenPassword = getDefaultValue().getPassword();
     }
 
     /**
