@@ -277,7 +277,7 @@
       </node>
       <node
             category-path="/flowabstraction/widgets/input"
-            deprecated="false"
+            deprecated="true"
             factory-class="org.knime.js.base.node.widget.input.fileupload.FileUploadWidgetNodeFactory">
       </node>
       <node
@@ -314,6 +314,11 @@
             category-path="/flowabstraction/widgets/reexecution"
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.reexecution.refresh.RefreshButtonWidgetNodeFactory">
+      </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeFactory">
       </node>
    </extension>
    <extension
