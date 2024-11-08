@@ -103,7 +103,7 @@ public class MultipleFileUploadWidgetNodeFactory extends NodeFactory<MultipleFil
      */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new FileUploadWidgetNodeDialog();
+        return new MultipleFileUploadWidgetNodeDialog();
     }
 
 }

@@ -70,10 +70,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUploadNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final String[] m_fileTypes;
-    // private final boolean m_required;
-    // private final boolean m_multiple;
+    private final boolean m_required;
     private final String m_errorMessage;
     private final boolean m_disableOutput;
+    private final boolean m_allowMultipleFiles;
 
     @JsonCreator
     protected MultipleFileUploadNodeRepresentation(@JsonProperty("label") final String label,
@@ -83,11 +83,14 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
         @JsonProperty("currentValue") final VAL currentValue,
         @JsonProperty("fileTypes") final String[] fileTypes,
         @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("disableOutput") final boolean disableOutput) {
+        @JsonProperty("disableOutput") final boolean disableOutput,
+        @JsonProperty("multiple") final boolean multiple) {
         super(label, description, required, defaultValue, currentValue);
         m_fileTypes = fileTypes;
         m_errorMessage = errorMessage;
         m_disableOutput = disableOutput;
+        m_allowMultipleFiles = multiple;
+        m_required = required;
     }
 
     /**
@@ -102,6 +105,8 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
         m_fileTypes = fileUploadConfig.getFileTypes();
         m_errorMessage = fileUploadConfig.getErrorMessage();
         m_disableOutput = fileUploadConfig.getDisableOutput();
+        m_allowMultipleFiles = fileUploadConfig.isMultipleFiles();
+        m_required = fileUploadConfig.isRequired();
     }
 
     /**
@@ -129,6 +134,23 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
     }
 
     /**
+     * @return singleFile
+     */
+    @JsonProperty("multiple")
+    public boolean isMultiple() {
+        return m_allowMultipleFiles;
+    }
+
+    /**
+     * @return required
+     */
+    @Override
+    @JsonProperty("requiredFile")
+    public boolean isRequired() {
+        return m_required;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -144,6 +166,12 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
         sb.append(", ");
         sb.append("disableOutput=");
         sb.append(m_disableOutput);
+        sb.append(", ");
+        sb.append("multiple=");
+        sb.append(m_allowMultipleFiles);
+        sb.append(", ");
+        sb.append("required=");
+        sb.append(m_required);
         return sb.toString();
     }
 
@@ -156,6 +184,8 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
                 .append(m_fileTypes)
                 .append(m_errorMessage)
                 .append(m_disableOutput)
+                .append(m_allowMultipleFiles)
+                .append(m_required)
                 .toHashCode();
     }
 
@@ -179,6 +209,8 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
                 .append(m_fileTypes, other.m_fileTypes)
                 .append(m_errorMessage, other.m_errorMessage)
                 .append(m_disableOutput, other.m_disableOutput)
+                .append(m_allowMultipleFiles, other.m_allowMultipleFiles)
+                .append(m_required, other.m_required)
                 .isEquals();
     }
 }

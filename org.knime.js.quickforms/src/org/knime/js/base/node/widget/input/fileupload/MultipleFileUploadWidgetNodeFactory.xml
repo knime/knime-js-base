@@ -6,23 +6,12 @@
 	<name>Multiple File Upload Widget</name>
 
 	<shortDescription>
-       Creates a file upload widget for use in components views. Variable output representing the file path as variable.
-       In case an absolute file path is selected the node will populate three variables: one representing the path, one
-       representing the URL and one representing the URL as a path variable. If a URL is selected as default file only
-       the URL variable and the URL(path) variable are defined.
+       Creates a file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file.
     </shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
-				Creates a file upload widget for use in components views. Variable output representing the file path as 
-				variable. In case an absolute file path is selected the node will populate three variables: one
-				representing the path, one representing the URL and one representing the URL as a path variable. If a
-				URL is selected as default file only the URL variable and the URL(path) variable are defined.
-			</p>
-			<p>
-				The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
-				flow variable 'customCSS' in the node configuration dialog. You will find the list of available
-				classes and their description on our <a href="https://knime.com/css-styling">documentation page</a>.
+				Creates a file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file. 
 			</p>
 		</intro>
 		<option name="Label">
@@ -60,18 +49,26 @@
 			KNIME Server or due to swapping a job between systems in a server/executor environment. Note that the 
 			uploaded file will be deleted from the workflow when the workflow is discarded or reset.
 		</option>
+		<option
+			name="Allow multiple file uploads">
+			Check this box to allow the upload of multiple files at once.
+			Each file will be represented as an individual row in the output table.
+			It is only possible to set one default file.
+		</option>
+		<option
+			name="File upload is required">
+			Check this box to require the user to upload at least one file.
+			If this box is checked and no file is provided the node will not execute.
+		</option>
 	</fullDescription>
 	<interactiveView name="File Upload">
-		View containing the file upload component. Please note that only small files should be uploaded when using
+		View containing the multiple file upload component. Please note that only small files should be uploaded when using
 		the view inside the KNIME Analytics Platform (not on the WebPortal). If a large file is supposed to be selected 
 		consider setting it as the default file or use the <i>Local File Browser</i> node. 
 	</interactiveView>
 	<ports>
-		<outPort index="0" name="Flow Variable Output">
-			Variable output representing the file path as variable. In case an absolute file path is selected the node
-			will populate three variables: one representing the path, one representing the URL and one representing the
-			URL as a path variable. If a URL is selected as default file only the URL variable and the URL(path) variable
-			are defined. Additionally the original file name is retained as a flow variable.
+		<outPort index="0" name="Uploaded files">
+			Table output representing the uploaded files. Each files consists of a path, a filename and a size.
 		</outPort>
 	</ports>
 </knimeNode>

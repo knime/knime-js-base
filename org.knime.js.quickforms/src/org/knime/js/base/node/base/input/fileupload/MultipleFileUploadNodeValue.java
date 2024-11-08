@@ -70,69 +70,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class MultipleFileUploadNodeValue extends JSONViewContent {
 
-    protected static final String CFG_PATH = "path";
-    protected static final String DEFAULT_PATH = "";
-    protected String m_path = DEFAULT_PATH;
-
-    protected static final String CFG_PATH_VALID = "pathValid";
-    protected static final boolean DEFAULT_PATH_VALID = true;
-    protected boolean m_pathValid = DEFAULT_PATH_VALID;
-
-    protected static final String CFG_FILE_NAME = "fileName";
-    protected static final String DEFAULT_FILE_NAME = "";
-    protected String m_fileName = DEFAULT_FILE_NAME;
-
     private static final String CFG_LOCAL_UPLOAD = "localUpload";
+
     private static final boolean DEFAULT_LOCAL_UPLOAD = false;
+
     private boolean m_localUpload = DEFAULT_LOCAL_UPLOAD;
 
-    /**
-     * @return the path
-     */
-    @JsonProperty("path")
-    public String getPath() {
-        return m_path;
-    }
+    private static final String CFG_AMOUNT_FILES = "amountFiles";
 
-    /**
-     * @param path the path to set
-     */
-    @JsonProperty("path")
-    public void setPath(final String path) {
-        m_path = path;
-    }
+    @JsonProperty("files")
+    private FileUploadObject[] m_files;
 
-    /**
-     * @return the pathValid
-     */
-    @JsonProperty("pathValid")
-    public boolean isPathValid() {
-        return m_pathValid;
-    }
-
-    /**
-     * @param pathValid the pathValid to set
-     */
-    @JsonProperty("pathValid")
-    public void setPathValid(final boolean pathValid) {
-        m_pathValid = pathValid;
-    }
-
-    /**
-     * @return the fileName
-     */
-    @JsonProperty("fileName")
-    public String getFileName() {
-        return m_fileName;
-    }
-
-    /**
-     * @param fileName the fileName to set
-     */
-    @JsonProperty("fileName")
-    public void setFileName(final String fileName) {
-        m_fileName = fileName;
-    }
+    private static final String DEFAULT_ID = "baseFileID";
 
     /**
      * @return the localUpload
@@ -151,15 +100,38 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
     }
 
     /**
+     * @return the files
+     */
+    @JsonProperty("files")
+    public FileUploadObject[] getFiles() {
+        return m_files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    @JsonProperty("files")
+    public void setFiles(final FileUploadObject[] files) {
+        m_files = files;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addString(CFG_PATH, getPath());
-        settings.addBoolean(CFG_PATH_VALID, m_pathValid);
-        settings.addString(CFG_FILE_NAME, m_fileName);
-        settings.addBoolean(CFG_LOCAL_UPLOAD, m_localUpload);
+        if (m_files != null) {
+            for (var i = 0; i < m_files.length; i++) {
+                var fileSettings = settings.addNodeSettings(DEFAULT_ID + i);
+                fileSettings.addString(FileUploadObject.CFG_PATH, m_files[i].getPath());
+                fileSettings.addBoolean(FileUploadObject.CFG_PATH_VALID, m_files[i].isPathValid());
+                fileSettings.addString(FileUploadObject.CFG_FILE_NAME, m_files[i].m_fileName);
+                fileSettings.addLong(FileUploadObject.CFG_FILE_SIZE, m_files[i].m_fileSize);
+            }
+            settings.addInt(CFG_AMOUNT_FILES, m_files.length);
+            settings.addBoolean(CFG_LOCAL_UPLOAD, m_localUpload);
+        }
     }
 
     /**
@@ -168,15 +140,20 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
     @Override
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        setPath(settings.getString(CFG_PATH));
+        var fileAmount = settings.getInt(CFG_AMOUNT_FILES, 0);
+        FileUploadObject[] files = new FileUploadObject[fileAmount];
+        for (int i = 0; i < fileAmount; i++) {
+            var fileUploadSettings = settings.getNodeSettings(DEFAULT_ID + i);
+            var path = fileUploadSettings.getString(FileUploadObject.CFG_PATH);
+            var pathValid = fileUploadSettings.getBoolean(FileUploadObject.CFG_PATH_VALID);
+            var fileName = fileUploadSettings.getString(FileUploadObject.CFG_FILE_NAME);
+            var fileSize = fileUploadSettings.getLong(FileUploadObject.CFG_FILE_SIZE, 0L);
 
-        // added with 3.2
-        setPathValid(settings.getBoolean(CFG_PATH_VALID, DEFAULT_PATH_VALID));
+            var fileUploadObject = new FileUploadObject(path, pathValid, fileName, DEFAULT_ID + i, fileSize);
+            files[i] = fileUploadObject;
+        }
+        m_files = files;
 
-        // added with 4.2.2
-        setFileName(settings.getString(CFG_FILE_NAME, DEFAULT_FILE_NAME));
-
-        // added with 4.3
         setLocalUpload(settings.getBoolean(CFG_LOCAL_UPLOAD, DEFAULT_LOCAL_UPLOAD));
     }
 
@@ -186,10 +163,17 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("name=");
-        sb.append(m_fileName);
-        sb.append(", path=");
-        sb.append(m_path);
+        for (FileUploadObject file : m_files) {
+            sb.append("name=");
+            sb.append(file.getFileName());
+            sb.append(", path=");
+            sb.append(file.getPath());
+            sb.append(", size=");
+            sb.append(file.getFileSize());
+            sb.append(", id=");
+            sb.append(file.getId());
+        }
+
         return sb.toString();
     }
 
@@ -198,12 +182,16 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_path)
-                .append(m_pathValid)
-                .append(m_fileName)
-                .append(m_localUpload)
-                .toHashCode();
+        HashCodeBuilder hcb = new HashCodeBuilder();
+        for (FileUploadObject file : m_files) {
+            hcb.append(file.getPath());
+            hcb.append(file.isPathValid());
+            hcb.append(file.getFileName());
+            hcb.append(file.getFileSize());
+            hcb.append(file.getId());
+        }
+        hcb.append(m_localUpload);
+        return hcb.toHashCode();
     }
 
     /**
@@ -221,11 +209,9 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
             return false;
         }
         MultipleFileUploadNodeValue other = (MultipleFileUploadNodeValue)obj;
-        return new EqualsBuilder()
-                .append(m_path, other.m_path)
-                .append(m_pathValid, other.m_pathValid)
-                .append(m_fileName, other.m_fileName)
-                .append(m_localUpload, other.m_localUpload)
-                .isEquals();
+        if (FileUploadNodeUtil.checkUploadFilesEquality(m_files, other.m_files)) {
+            return true;
+        }
+        return new EqualsBuilder().append(m_files, other.m_files).append(m_localUpload, other.m_localUpload).isEquals();
     }
 }

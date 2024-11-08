@@ -223,7 +223,6 @@ public class FileUploadWidgetNodeModel extends
         String varIdentifier = getConfig().getFlowVariableName();
         if (fileValues.get(0) != null) {
             pushFlowVariableString(varIdentifier, fileValues.get(0));
-            // since 4.3
             FSLocation location = new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()),
                 fileValues.get(1));
             pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);

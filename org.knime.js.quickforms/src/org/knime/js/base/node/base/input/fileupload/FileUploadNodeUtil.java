@@ -109,4 +109,25 @@ public final class FileUploadNodeUtil {
         }
         return index < 0 ? path : path.substring(index + 1);
     }
+
+    /**
+     * @param files
+     * @param otherFiles
+     * @return
+     */
+    public static boolean checkUploadFilesEquality(final FileUploadObject[] files,
+        final FileUploadObject[] otherFiles) {
+        if (files.length != otherFiles.length) {
+            return false;
+        } else {
+            for (var i = 0; i < files.length; i++) {
+
+                var isEqual = files[i].equals(otherFiles[i]);
+                if (isEqual == false) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
