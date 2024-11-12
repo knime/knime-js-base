@@ -15,7 +15,7 @@
 <entry key="cssCode" type="xstring" value="#knime-scatter {%%00010%%00009width: 100%;%%00010%%00009height: 100vh;%%00010}"/>
 <config key="dependencies">
 <entry key="array-size" type="xint" value="1"/>
-<entry key="0" type="xstring" value="plotly.js-2.26.0"/>
+<entry key="0" type="xstring" value="plotly.js-2.35.2"/>
 </config>
 <entry key="waitTime" type="xint" value="0"/>
 <config key="outputVariables">
