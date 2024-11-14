@@ -315,6 +315,11 @@
             deprecated="false"
             factory-class="org.knime.js.base.node.widget.reexecution.refresh.RefreshButtonWidgetNodeFactory">
       </node>
+      <node
+            category-path="/flowabstraction/widgets/input"
+            deprecated="false"
+            factory-class="org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

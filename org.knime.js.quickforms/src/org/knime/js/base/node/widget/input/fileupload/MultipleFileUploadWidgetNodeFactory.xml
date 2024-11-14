@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./widget_fileUpload.png" type="Widget"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Multiple File Upload Widget (Labs)</name>
+
+	<shortDescription>
+       Creates a multiple file upload widget for use in components views. The resulting table outputs the path, the file name and the size of the file.
+    </shortDescription>
+	<fullDescription>
+		<intro>
+			<p>
+				Creates a multiple file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file. 
+			</p>
+		</intro>
+		<option name="Label">
+			A descriptive label that will be shown in the view.
+		</option>
+		<option name="Description">
+			Some lines of description that will be shown in the view, for instance by means of a tooltip.
+		</option>
+		<option name="Valid File Extensions">
+			A list of file extensions that is used as filter in the file browser (not only the one in the "Default File"
+			option but also in a remote file browser), e.g. ".csv,.csv.gz" will filter for files ending with ".csv" or
+			".csv.gz". Leave empty to accept any file.
+		</option>
+		<option name="Default File">
+			The file that will be used during design time, i.e. when no file is uploaded by means of the, e.g. 
+			KNIME WebPortal.<br />
+			It is possible to enter a URL here. This can be useful if a default file is to be addressed with
+			the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on
+			a remote server.
+		</option>
+		<option name="Timeout">
+			The time in seconds after which the connection times out. The timeout is used when testing the existence of
+			default files. The default is set to 1 second and should be sufficient in most cases.
+		</option>
+		<option name="Disable output, if file does not exist">
+			If enabled, output port will be disabled, if the provided file does not exist or cannot be accessed.<br />
+			This option is helpful in the wizard (WebPortal) execution to keep this and subsequent nodes from failing 
+			during execution.
+		</option>
+		<option
+			name="Store uploaded file in workflow directory">
+			Check this box to store the file in a temp directory in the workflow directory (e.g.
+			/path/to/workflow/tmp/file_name). Otherwise, it will be created in the temp directory of the system, which 
+			can lead to unwanted behaviour, i.e. reader nodes do not allow direct access to the file system on 
+			KNIME Server or due to swapping a job between systems in a server/executor environment. Note that the 
+			uploaded file will be deleted from the workflow when the workflow is discarded or reset.
+		</option>
+		<option
+			name="Allow multiple file uploads">
+			Check this box to allow the upload of multiple files at once.
+			Each file will be represented as an individual row in the output table.
+			It is only possible to set one default file.
+		</option>
+		<option
+			name="File upload is required">
+			Check this box to require the user to upload at least one file.
+			If this box is checked and no file is provided the node will not execute.
+		</option>
+	</fullDescription>
+	<interactiveView name="File Upload">
+		View containing the multiple file upload component. Please note that only small files should be uploaded when using
+		the view inside the KNIME Analytics Platform (not on the WebPortal). If a large file is supposed to be selected 
+		consider setting it as the default file or use the <i>Local File Browser</i> node. 
+	</interactiveView>
+	<ports>
+		<outPort index="0" name="Uploaded files">
+			Table output representing the uploaded files. Each files consists of a path, a filename and a size.
+		</outPort>
+	</ports>
+</knimeNode>

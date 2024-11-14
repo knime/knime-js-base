@@ -46,88 +46,64 @@
  * History
  *   Jun 3, 2019 (Daniel Bogenrieder): created
  */
-package org.knime.js.base.node.base.input.fileupload;
+package org.knime.js.base.node.widget.input.fileupload;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JTextField;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeRepresentation;
+import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeValue;
 
 /**
- * Utility methods for the file upload Configuration and Widget nodes
+ * Factory for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public final class FileUploadNodeUtil {
-
-    private FileUploadNodeUtil() { /* utility class */ }
+public class MultipleFileUploadWidgetNodeFactory extends NodeFactory<MultipleFileUploadWidgetNodeModel> implements
+    WizardNodeFactoryExtension<MultipleFileUploadWidgetNodeModel,
+    MultipleFileUploadNodeRepresentation<MultipleFileUploadNodeValue>, MultipleFileUploadNodeValue> {
 
     /**
-     * @param m_validExtensionsField the text field with valid extension string
-     * @return String[] file types
+     * {@inheritDoc}
      */
-    public static String[] getFileTypes(final JTextField m_validExtensionsField) {
-        String s = m_validExtensionsField.getText().trim();
-        if (s.isEmpty()) {
-            return new String[0];
-        }
-        String[] fileTypes = s.split(",");
-        List<String> filteredFileTypes = new ArrayList<String>();
-        for (String type : fileTypes) {
-            s = type.trim();
-            if (s.isEmpty()) {
-                continue;
-            }
-            if (s.startsWith(".")) {
-                filteredFileTypes.add(s);
-            } else {
-                filteredFileTypes.add("." + s);
-            }
-        }
-        if (filteredFileTypes.size() == 0) {
-            return new String[0];
-        } else if (filteredFileTypes.size() > 1) {
-            // first all the file types, then all of them separately
-            // use | because of FilesHistoryPanel behaviour
-            filteredFileTypes.add(0, String.join("|", filteredFileTypes));
-        }
-        return filteredFileTypes.toArray(new String[filteredFileTypes.size()]);
+    @Override
+    public MultipleFileUploadWidgetNodeModel createNodeModel() {
+        return new MultipleFileUploadWidgetNodeModel(getInteractiveViewName());
     }
 
     /**
-     * Tries to determine the file name of an arbitrary path
-     * @param path The path including the file name as last component, can be file system path or a url string
-     * @return the file name or the path itself if the file name can not be deduced from it
+     * {@inheritDoc}
      */
-    public static String getFileNameFromPath(final String path) {
-        int index = path.lastIndexOf('/');
-        if (index < 0) {
-            index = path.lastIndexOf('\\');
-        }
-        if (index + 1 >= path.length()) {
-            index = -1;
-        }
-        return index < 0 ? path : path.substring(index + 1);
+    @Override
+    protected int getNrNodeViews() {
+        return 0;
     }
 
     /**
-     * @param files
-     * @param otherFiles
-     * @return
+     * {@inheritDoc}
      */
-    public static boolean checkUploadFilesEquality(final FileUploadObject[] files,
-        final FileUploadObject[] otherFiles) {
-        if (files.length != otherFiles.length) {
-            return false;
-        } else {
-            for (var i = 0; i < files.length; i++) {
+    @Override
+    public NodeView<MultipleFileUploadWidgetNodeModel> createNodeView(final int viewIndex,
+        final MultipleFileUploadWidgetNodeModel nodeModel) {
+        return null;
+    }
 
-                var isEqual = files[i].equals(otherFiles[i]);
-                if (isEqual == false) {
-                    return false;
-                }
-            }
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean hasDialog() {
         return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected NodeDialogPane createNodeDialogPane() {
+        return new MultipleFileUploadWidgetNodeDialog();
+    }
+
 }

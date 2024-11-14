@@ -69,8 +69,17 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.RowKey;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.LongCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -81,9 +90,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.web.ValidationError;
@@ -97,12 +104,17 @@ import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.core.util.proxy.URLConnectionFactory;
+import org.knime.filehandling.core.connections.DefaultFSLocationSpec;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.data.location.cell.SimpleFSLocationCell;
+import org.knime.filehandling.core.data.location.cell.SimpleFSLocationCellFactory;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
-import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
-import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
+import org.knime.js.base.node.base.input.fileupload.FileUploadObject;
+import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeRepresentation;
+import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeModel;
 import org.knime.workbench.explorer.ServerRequestModifier;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -113,16 +125,17 @@ import org.osgi.framework.ServiceReference;
  * The node model for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadWidgetNodeModel extends
-    WidgetFlowVariableNodeModel<FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue,
-    FileUploadInputWidgetConfig> {
+public class MultipleFileUploadWidgetNodeModel extends
+    WidgetNodeModel<MultipleFileUploadNodeRepresentation<MultipleFileUploadNodeValue>, MultipleFileUploadNodeValue, MultipleFileUploadInputWidgetConfig> {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(FileUploadWidgetNodeModel.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(MultipleFileUploadWidgetNodeModel.class);
+
     private static final String KNIME_PROTOCOL = "knime";
+
     private static final String KNIME_WORKFLOW = "knime.workflow";
 
-    private String m_id;
     private final ServerRequestModifier m_requestModifier;
 
     /**
@@ -130,8 +143,8 @@ public class FileUploadWidgetNodeModel extends
      *
      * @param viewName the interactive view name
      */
-    protected FileUploadWidgetNodeModel(final String viewName) {
-        super(viewName);
+    protected MultipleFileUploadWidgetNodeModel(final String viewName) {
+        super(new PortType[0], new PortType[]{BufferedDataTable.TYPE}, viewName);
         Bundle myself = FrameworkUtil.getBundle(getClass());
         if (myself != null) {
             BundleContext ctx = myself.getBundleContext();
@@ -143,10 +156,12 @@ public class FileUploadWidgetNodeModel extends
                     ctx.ungetService(ser);
                 }
             } else {
-                m_requestModifier = (p, c) -> {};
+                m_requestModifier = (p, c) -> {
+                };
             }
         } else {
-            m_requestModifier = (p, c) -> {};
+            m_requestModifier = (p, c) -> {
+            };
         }
     }
 
@@ -154,8 +169,8 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public FileUploadNodeValue createEmptyViewValue() {
-        return new FileUploadNodeValue();
+    public MultipleFileUploadNodeValue createEmptyViewValue() {
+        return new MultipleFileUploadNodeValue();
     }
 
     /**
@@ -171,10 +186,8 @@ public class FileUploadWidgetNodeModel extends
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+
         try {
-            do {
-                m_id = RandomStringUtils.randomAlphanumeric(12).toLowerCase();
-            } while (computeFileName(m_id).exists());
             createAndPushFlowVariable(false);
         } catch (InvalidSettingsException e) {
             if (getConfig().getDisableOutput()) {
@@ -184,34 +197,16 @@ public class FileUploadWidgetNodeModel extends
                 throw e;
             }
         }
-        return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+        return new PortObjectSpec[]{createTableSpec()};
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-        try {
-            createAndPushFlowVariable();
-        } catch (InvalidSettingsException e) {
-            getRelevantValue().setPathValid(false);
-            if (getConfig().getDisableOutput()) {
-                setWarningMessage(e.getMessage());
-                return new PortObject[]{InactiveBranchPortObject.INSTANCE};
-            } else {
-                throw e;
-            }
-        }
-        return new PortObject[]{FlowVariablePortObject.INSTANCE};
-    }
+    private static DataTableSpec createTableSpec() {
+        final DataColumnSpec pathSpec =
+            new DataColumnSpecCreator("Path", DataType.getType(SimpleFSLocationCell.class)).createSpec();
+        final DataColumnSpec nameSpec = new DataColumnSpecCreator("File name", StringCell.TYPE).createSpec();
+        final DataColumnSpec sizeSpec = new DataColumnSpecCreator("File size", LongCell.TYPE).createSpec();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        createAndPushFlowVariable(true);
+        return new DataTableSpec(pathSpec, nameSpec, sizeSpec);
     }
 
     private void createAndPushFlowVariable(final boolean openStream) throws InvalidSettingsException {
@@ -219,17 +214,22 @@ public class FileUploadWidgetNodeModel extends
         if (error != null) {
             throw new InvalidSettingsException(error.getError());
         }
-        Vector<String> fileValues = getFileAndURL(openStream);
-        String varIdentifier = getConfig().getFlowVariableName();
-        if (fileValues.get(0) != null) {
-            pushFlowVariableString(varIdentifier, fileValues.get(0));
-            FSLocation location = new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()),
-                fileValues.get(1));
-            pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);
-        }
-        pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
-        if (StringUtils.isNoneEmpty(getRelevantValue().getFileName())) {
-            pushFlowVariableString(varIdentifier + " (file name)", getRelevantValue().getFileName());
+        var files = getRelevantValue().getFiles();
+        FileUploadObject file;
+        if (files != null && files.length > 0) {
+            file = files[0];
+            Vector<String> fileValues = getFileAndURL(openStream, file);
+            String varIdentifier = getConfig().getFlowVariableName();
+            if (fileValues.get(0) != null) {
+                pushFlowVariableString(varIdentifier, fileValues.get(0));
+                FSLocation location =
+                    new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()), fileValues.get(1));
+                pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);
+            }
+            pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
+            if (StringUtils.isNoneEmpty(file.getFileName())) {
+                pushFlowVariableString(varIdentifier + " (file name)", file.getFileName());
+            }
         }
     }
 
@@ -237,18 +237,45 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    protected FileUploadNodeValue copyConfigToViewValue(final FileUploadNodeValue currentViewValue,
-        final FileUploadInputWidgetConfig config, final FileUploadInputWidgetConfig previousConfig) {
+    protected PortObject[] performExecute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        DataTableSpec outSpec = createTableSpec();
+        BufferedDataContainer cont = exec.createDataContainer(outSpec, true);
+        var files = getRelevantValue().getFiles();
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                var paths = getFileAndURL(true, files[i]);
+                FSLocation location =
+                    new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()), paths.get(1));
+                cont.addRowToTable(new DefaultRow(RowKey.createRowKey(Long.valueOf(i)),
+                    new SimpleFSLocationCellFactory(new DefaultFSLocationSpec(FSCategory.CUSTOM_URL, "1000"))
+                        .createCell(location),
+                    new StringCell(files[i].getFileName()), new LongCell(files[i].getFileSize())));
+            }
+        }
+        cont.close();
+
+        try {
+            createAndPushFlowVariable(true);
+        } catch (InvalidSettingsException e) {
+            if (getConfig().getDisableOutput()) {
+                setWarningMessage(e.getMessage());
+            } else {
+                throw e;
+            }
+        }
+        return new PortObject[]{cont.getTable()};
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected MultipleFileUploadNodeValue copyConfigToViewValue(final MultipleFileUploadNodeValue currentViewValue,
+        final MultipleFileUploadInputWidgetConfig config, final MultipleFileUploadInputWidgetConfig previousConfig) {
         var defaultVal = config.getDefaultValue();
         var previousDefaultVal = previousConfig.getDefaultValue();
-        if (!defaultVal.getPath().equals(previousDefaultVal.getPath())) {
-            currentViewValue.setPath(defaultVal.getPath());
-        }
-        if (defaultVal.isPathValid() != previousDefaultVal.isPathValid()) {
-            currentViewValue.setPathValid(defaultVal.isPathValid());
-        }
-        if (!defaultVal.getFileName().equals(previousDefaultVal.getFileName())) {
-            currentViewValue.setFileName(defaultVal.getFileName());
+        if (!FileUploadNodeUtil.checkUploadFilesEquality(defaultVal.getFiles(), previousDefaultVal.getFiles())) {
+            currentViewValue.setFiles(defaultVal.getFiles());
         }
         if (defaultVal.isLocalUpload() != previousDefaultVal.isLocalUpload()) {
             currentViewValue.setLocalUpload(defaultVal.isLocalUpload());
@@ -256,8 +283,9 @@ public class FileUploadWidgetNodeModel extends
         return currentViewValue;
     }
 
-    private Vector<String> getFileAndURL(final boolean openStream) throws InvalidSettingsException {
-        String path = getRelevantValue().getPath();
+    private Vector<String> getFileAndURL(final boolean openStream, final FileUploadObject file)
+        throws InvalidSettingsException {
+        String path = file.getPath();
         if (path == null || path.isEmpty()) {
             throw new InvalidSettingsException("No file or URL provided");
         }
@@ -276,7 +304,7 @@ public class FileUploadWidgetNodeModel extends
                 if (openStream) {
                     // For a remote resource we always copy it locally first, because it may be accessed several times
                     // and if it's an upload from the WebPortal it requires special authentication.
-                    final File tempFile = copyFileToTempLocation(url);
+                    final File tempFile = copyFileToTempLocation(url, file);
                     vector.add(tempFile.getAbsolutePath());
                     vector.add(getConfig().isStoreInWfDir()
                         ? new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
@@ -297,7 +325,7 @@ public class FileUploadWidgetNodeModel extends
             URI uri;
             try {
                 if (openStream && getConfig().isStoreInWfDir()) {
-                    final File tempFile = copyFileToTempLocation(f.toURI().toURL());
+                    final File tempFile = copyFileToTempLocation(f.toURI().toURL(), file);
                     uri = new URI(KNIME_PROTOCOL, KNIME_WORKFLOW,
                         "/" + ResolverUtil.IN_WORKFLOW_TEMP_DIR + "/" + tempFile.getName(), null);
                     path = tempFile.getAbsolutePath();
@@ -326,7 +354,7 @@ public class FileUploadWidgetNodeModel extends
     }
 
     private static File writeTempFileFromDataUrl(final DataURL dataUrl, final String fileName)
-            throws IOException, InvalidSettingsException {
+        throws IOException, InvalidSettingsException {
         final String basename = FilenameUtils.getBaseName(fileName);
         final String extension = FilenameUtils.getExtension(fileName);
         File tempFile = getTempFile(basename, extension);
@@ -343,12 +371,13 @@ public class FileUploadWidgetNodeModel extends
             "." + (StringUtils.isEmpty(extension) ? "bin" : extension));
     }
 
-    private File copyFileToTempLocation(final URL url) throws IOException, InvalidSettingsException {
+    private File copyFileToTempLocation(final URL url, final FileUploadObject file)
+        throws IOException, InvalidSettingsException {
         final String basename = FilenameUtils.getBaseName(url.getPath());
         final String extension = FilenameUtils.getExtension(url.getPath());
         File tempFile;
         if (getConfig().isStoreInWfDir()) {
-            tempFile = computeFileName(m_id);
+            tempFile = computeFileName(file);
             tempFile.getParentFile().mkdir();
         } else {
             tempFile = getTempFile(basename, extension);
@@ -371,7 +400,7 @@ public class FileUploadWidgetNodeModel extends
         return tempFile;
     }
 
-    private File computeFileName(final String id) {
+    private static File computeFileName(final FileUploadObject file) {
         File rootDir = null;
         // get the flow's tmp dir from its context
         final NodeContext nodeContext = NodeContext.getContext();
@@ -387,7 +416,7 @@ public class FileUploadWidgetNodeModel extends
             // use the standard tmp dir then.
             rootDir = new File(KNIMEConstants.getKNIMETempDir());
         }
-        String path = getRelevantValue().getPath();
+        String path = file.getPath();
 
         // remove query parameter from a URL because otherwise the basename and extension computation below will break
         var index = path.indexOf('?');
@@ -397,14 +426,14 @@ public class FileUploadWidgetNodeModel extends
 
         final String extension = FilenameUtils.getExtension(path);
         final String basename = FilenameUtils.getBaseName(path);
-        return new File(rootDir, basename + id + "." + extension);
+        return new File(rootDir, basename + file.getId() + "." + extension);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onDispose() {
         if (getConfig().isStoreInWfDir()) {
-            deleteTmpFile();
+            deleteTmpFiles();
         }
         super.onDispose();
     }
@@ -412,22 +441,22 @@ public class FileUploadWidgetNodeModel extends
     /** {@inheritDoc} */
     @Override
     protected void performReset() {
-        super.performReset();
         if (getConfig().isStoreInWfDir()) {
-            deleteTmpFile();
+            deleteTmpFiles();
         }
+        super.performReset();
     }
 
-    private void deleteTmpFile() {
-        if (m_id == null) {
-            return;
-        }
-        final File file = computeFileName(m_id);
-        final StringBuilder debug = new StringBuilder();
-        if (FileUtil.deleteRecursively(file)) {
-            debug.append(getConfig().isStoreInWfDir() && file.getParentFile().delete()
-                ? ("Deleted temp directory " + file.getParentFile().getAbsolutePath())
-                : ("Deleted temp directory " + file.getAbsolutePath()));
+    private void deleteTmpFiles() {
+        for (FileUploadObject fileUploadObject : getRelevantValue().getFiles()) {
+
+            final File file = computeFileName(fileUploadObject);
+            final StringBuilder debug = new StringBuilder();
+            if (FileUtil.deleteRecursively(file)) {
+                debug.append(getConfig().isStoreInWfDir() && file.getParentFile().delete()
+                    ? ("Deleted temp directory " + file.getParentFile().getAbsolutePath())
+                    : ("Deleted temp directory " + file.getAbsolutePath()));
+            }
         }
     }
 
@@ -445,9 +474,12 @@ public class FileUploadWidgetNodeModel extends
     private InputStream openFileStream(final URL url) throws IOException, URISyntaxException {
         // a file system path should only be provided when a default file is used or a file was uploaded from a
         // local view instance, otherwise access should be blocked due to security reasons
-        String defaultPath = getRepresentation().getDefaultValue().getPath();
-        FileUploadNodeValue currentValue = getRelevantValue();
-        if (currentValue.isLocalUpload() || (defaultPath != null && defaultPath.equals(currentValue.getPath()))) {
+        String defaultPath = getRepresentation().getDefaultValue().getFiles()[0].getPath();
+        MultipleFileUploadNodeValue currentValue = getRelevantValue();
+
+        // TODO check for all files that if it is a local file check that they live in the workflow area or the temp area
+        if (currentValue.isLocalUpload()
+            || (defaultPath != null)) {
             LOGGER.debug("A file system path has been provided: " + url);
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
@@ -506,8 +538,8 @@ public class FileUploadWidgetNodeModel extends
     }
 
     private InputStream openStreamToKnimeServer(final URL url) throws IOException {
-        LOGGER.debug("A server upload has been detected. An attempt will be made"
-                + " to connect. The provided URL is: " + url);
+        LOGGER.debug(
+            "A server upload has been detected. An attempt will be made" + " to connect. The provided URL is: " + url);
         final WorkflowContextV2 wfContext = NodeContext.getContext().getWorkflowManager().getContextV2();
         assert wfContext.getLocationInfo() instanceof RestLocationInfo; // otherwise we would not have ended up here
         final var repoUri = ((RestLocationInfo)wfContext.getLocationInfo()).getRepositoryAddress();
@@ -537,20 +569,23 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public ValidationError validateViewValue(final FileUploadNodeValue value) {
+    public ValidationError validateViewValue(final MultipleFileUploadNodeValue value) {
         // check for a valid file extension
         // no items in file types <=> any file type is valid
         if (getConfig().getFileTypes().length > 0) {
-            String fileName = value.getFileName();
-            String nameToTest = StringUtils.isEmpty(fileName) ? value.getPath() : fileName;
-            String check_ext = FilenameUtils.getExtension(nameToTest);
-            if (StringUtils.isEmpty(check_ext)) {
-                return new ValidationError("File with no extension is not valid");
-            }
-            final String ext = "." + check_ext.toLowerCase();
-            if (!Arrays.asList(getConfig().getFileTypes()).stream()
+            for (FileUploadObject file : value.getFiles()) {
+
+                String fileName = file.getFileName();
+                String nameToTest = StringUtils.isEmpty(fileName) ? file.getPath() : fileName;
+                String check_ext = FilenameUtils.getExtension(nameToTest);
+                if (StringUtils.isEmpty(check_ext)) {
+                    return new ValidationError("File with no extension is not valid");
+                }
+                final String ext = "." + check_ext.toLowerCase();
+                if (!Arrays.asList(getConfig().getFileTypes()).stream()
                     .anyMatch(type -> StringUtils.equalsIgnoreCase(type, ext))) {
-                return new ValidationError("File extension " + ext + " is not valid");
+                    return new ValidationError("File extension " + ext + " is not valid");
+                }
             }
         }
         return super.validateViewValue(value);
@@ -560,17 +595,17 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public FileUploadInputWidgetConfig createEmptyConfig() {
-        return new FileUploadInputWidgetConfig();
+    public MultipleFileUploadInputWidgetConfig createEmptyConfig() {
+        return new MultipleFileUploadInputWidgetConfig();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected FileUploadNodeRepresentation<FileUploadNodeValue> getRepresentation() {
-        FileUploadInputWidgetConfig config = getConfig();
-        return new FileUploadNodeRepresentation<>(getRelevantValue(), config.getDefaultValue(),
+    protected MultipleFileUploadNodeRepresentation<MultipleFileUploadNodeValue> getRepresentation() {
+        MultipleFileUploadInputWidgetConfig config = getConfig();
+        return new MultipleFileUploadNodeRepresentation<>(getRelevantValue(), config.getDefaultValue(),
             config.getFileUploadConfig(), config.getLabelConfig());
     }
 
@@ -578,24 +613,28 @@ public class FileUploadWidgetNodeModel extends
      * {@inheritDoc}
      */
     @Override
-    public void loadViewValue(final FileUploadNodeValue viewValue, final boolean useAsDefault) {
+    public void loadViewValue(final MultipleFileUploadNodeValue viewValue, final boolean useAsDefault) {
         synchronized (getLock()) {
-            String path = viewValue.getPath();
-            viewValue.setLocalUpload(false);
-            if (path.startsWith(DataURL.SCHEME)) {
-                try {
-                    // local uploads utilize data protocol URLs, which need to be further processed
-                    DataURL dataUrl = new DataURL(path);
-                    String fileName = viewValue.getFileName();
-                    File tempFile = writeTempFileFromDataUrl(dataUrl, fileName);
-                    path = tempFile.getAbsolutePath();
-                    viewValue.setPath(path);
-                    viewValue.setLocalUpload(true);
-                } catch (IOException | InvalidSettingsException e) {
-                    LOGGER.error("Local file upload could not be processed. " + e.getMessage(), e);
-                    // avoid having invalid paths in the output
-                    viewValue.setPath(null);
-                    viewValue.setPathValid(false);
+            var files = viewValue.getFiles();
+            for (FileUploadObject file : files) {
+                var path = file.getPath();
+                viewValue.setLocalUpload(false);
+                // FIXME this setLocalUpload logic is not working in the case that I upload files. Apply the files and delete the default file after and apply.
+                if (path.startsWith(DataURL.SCHEME)) {
+                    try {
+                        // local uploads utilize data protocol URLs, which need to be further processed
+                        DataURL dataUrl = new DataURL(path);
+                        String fileName = file.getFileName();
+                        File tempFile = writeTempFileFromDataUrl(dataUrl, fileName);
+                        path = tempFile.getAbsolutePath();
+                        file.setPath(path);
+                        viewValue.setLocalUpload(true);
+                    } catch (IOException | InvalidSettingsException e) {
+                        LOGGER.error("Local file upload could not be processed. " + e.getMessage(), e);
+                        // avoid having invalid paths in the output
+                        file.setPath(null);
+                        file.setPathValid(false);
+                    }
                 }
             }
         }
@@ -607,11 +646,10 @@ public class FileUploadWidgetNodeModel extends
      */
     @Override
     protected void useCurrentValueAsDefault() {
-        FileUploadNodeValue defaultValue = getConfig().getDefaultValue();
-        FileUploadNodeValue currentValue = getViewValue();
-        defaultValue.setPath(currentValue.getPath());
-        defaultValue.setPathValid(currentValue.isPathValid());
-        defaultValue.setFileName(currentValue.getFileName());
+        MultipleFileUploadNodeValue defaultValue = getConfig().getDefaultValue();
+        MultipleFileUploadNodeValue currentValue = getViewValue();
+
+        defaultValue.setFiles(currentValue.getFiles());
         defaultValue.setLocalUpload(currentValue.isLocalUpload());
     }
 
@@ -623,14 +661,21 @@ public class FileUploadWidgetNodeModel extends
         throws IOException, CanceledExecutionException {
         super.loadInternals(nodeInternDir, exec);
         final File internalFile = new File(nodeInternDir, INTERNAL_FILE_NAME);
-        boolean issueWarning;
+        boolean issueWarning = false;
         if (internalFile.exists()) {
             // in most standard cases this isn't reasonable as the folder gets deleted when the flow is closed.
             // however, it's useful if the node is run in a temporary workflow that is part of the streaming executor
             try (InputStream in = new FileInputStream(internalFile)) {
                 final NodeSettingsRO s = NodeSettings.loadFromXML(in);
-                m_id = CheckUtils.checkSettingNotNull(s.getString("upload-file-id"), "id must not be null");
-                issueWarning = !computeFileName(m_id).exists();
+                var amount = s.getInt("amount-files", 0);
+
+                for (var i = 0; i < amount; i++) {
+                    CheckUtils.checkSettingNotNull(s.getString("upload-file-id" + i), "id must not be null");
+                    issueWarning = !computeFileName(getRelevantValue().getFiles()[i]).exists();
+                    if (issueWarning) {
+                        break;
+                    }
+                }
             } catch (final InvalidSettingsException e) {
                 throw new IOException(e.getMessage(), e);
             }
@@ -647,12 +692,14 @@ public class FileUploadWidgetNodeModel extends
     protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
         super.saveInternals(nodeInternDir, exec);
-        if (m_id != null) {
-            try (OutputStream w = new FileOutputStream(new File(nodeInternDir, INTERNAL_FILE_NAME))) {
-                final NodeSettings s = new NodeSettings("file-upload-widget-node");
-                s.addString("upload-file-id", m_id);
-                s.saveToXML(w);
+        try (OutputStream w = new FileOutputStream(new File(nodeInternDir, INTERNAL_FILE_NAME))) {
+            final NodeSettings s = new NodeSettings("file-upload-widget-node");
+            var files = getRelevantValue().getFiles();
+            for (var i = 0; i < files.length; i++) {
+                s.addString("upload-file-id" + i, files[i].getId());
             }
+            s.addInt("amount-files", getRelevantValue().getFiles().length);
+            s.saveToXML(w);
         }
     }
 }
