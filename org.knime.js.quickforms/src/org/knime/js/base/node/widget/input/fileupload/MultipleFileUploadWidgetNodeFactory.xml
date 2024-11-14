@@ -3,15 +3,15 @@
 	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Multiple File Upload Widget</name>
+	<name>Multiple File Upload Widget (Labs)</name>
 
 	<shortDescription>
-       Creates a file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file.
+       Creates a multiple file upload widget for use in components views. The resulting table outputs the path, the file name and the size of the file.
     </shortDescription>
 	<fullDescription>
 		<intro>
 			<p>
-				Creates a file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file. 
+				Creates a multiple file upload widget for use in components views. The resulting table outputs the Path, the file name and the size of the file. 
 			</p>
 		</intro>
 		<option name="Label">

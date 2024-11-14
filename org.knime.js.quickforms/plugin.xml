@@ -277,7 +277,7 @@
       </node>
       <node
             category-path="/flowabstraction/widgets/input"
-            deprecated="true"
+            deprecated="false"
             factory-class="org.knime.js.base.node.widget.input.fileupload.FileUploadWidgetNodeFactory">
       </node>
       <node

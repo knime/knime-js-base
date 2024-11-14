@@ -194,7 +194,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
         m_storeInWfDirBox.setSelected(m_config.isStoreInWfDir());
         m_allowMultipleFiles.setSelected(m_config.getFileUploadConfig().isMultipleFiles());
-        m_required.setSelected(m_config.getFileUploadConfig().isRequired());
+        m_required.setSelected(m_config.getLabelConfig().isRequired());
     }
 
     /**
@@ -221,7 +221,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
         m_config.getDefaultValue().setFiles(files);
         m_config.setStoreInWfDir(m_storeInWfDirBox.isSelected());
         m_config.getFileUploadConfig().setMultipleFileMode(m_allowMultipleFiles.isSelected());
-        m_config.getFileUploadConfig().setRequired(m_required.isSelected());
+        m_config.getLabelConfig().setRequired(m_required.isSelected());
         m_config.saveSettings(settings);
     }
 

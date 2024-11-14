@@ -92,12 +92,6 @@ public class MultipleFileUploadNodeConfig {
 
     private boolean m_allowMultipleFiles = DEFAULT_ALLOW_MULTIPLE_FILES;
 
-    private final String CFG_REQUIRED = "required";
-
-    private final boolean DEFAULT_REQUIRED = false;
-
-    private boolean m_required = DEFAULT_REQUIRED;
-
     /**
      * @return the fileTypes
      */
@@ -155,20 +149,6 @@ public class MultipleFileUploadNodeConfig {
     }
 
     /**
-     * @return if required a file must be provided
-     */
-    public boolean isRequired() {
-        return m_required;
-    }
-
-    /**
-     * @param required – true at least one file needs to be provided
-     */
-    public void setRequired(final boolean required) {
-        m_required = required;
-    }
-
-    /**
      * @return the disableOutput
      */
     public boolean getDisableOutput() {
@@ -193,7 +173,6 @@ public class MultipleFileUploadNodeConfig {
         settings.addInt(CFG_TIMEOUT, m_timeout);
         settings.addBoolean(CFG_DISABLE_OUTPUT, m_disableOutput);
         settings.addBoolean(CFG_ALLOW_MULTIPLE_FILES, m_allowMultipleFiles);
-        settings.addBoolean(CFG_REQUIRED, m_required);
     }
 
     /**
@@ -208,7 +187,6 @@ public class MultipleFileUploadNodeConfig {
         m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
         m_timeout = settings.getInt(CFG_TIMEOUT, DEFAULT_TIMEOUT);
         m_allowMultipleFiles = settings.getBoolean(CFG_ALLOW_MULTIPLE_FILES, DEFAULT_ALLOW_MULTIPLE_FILES);
-        m_required = settings.getBoolean(CFG_REQUIRED, DEFAULT_REQUIRED);
     }
 
     /**
@@ -222,7 +200,6 @@ public class MultipleFileUploadNodeConfig {
         m_disableOutput = settings.getBoolean(CFG_DISABLE_OUTPUT, DEFAULT_DISABLE_OUTPUT);
         m_timeout = settings.getInt(CFG_TIMEOUT, DEFAULT_TIMEOUT);
         m_allowMultipleFiles = settings.getBoolean(CFG_ALLOW_MULTIPLE_FILES, DEFAULT_ALLOW_MULTIPLE_FILES);
-        m_required = settings.getBoolean(CFG_REQUIRED, DEFAULT_REQUIRED);
     }
 
     /**
@@ -247,9 +224,6 @@ public class MultipleFileUploadNodeConfig {
         sb.append(", ");
         sb.append("multiple=");
         sb.append(m_allowMultipleFiles);
-        sb.append(", ");
-        sb.append("required=");
-        sb.append(m_required);
         return sb.toString();
     }
 
@@ -265,7 +239,6 @@ public class MultipleFileUploadNodeConfig {
                 .append(m_timeout)
                 .append(m_disableOutput)
                 .append(m_allowMultipleFiles)
-                .append(m_required)
                 .toHashCode();
     }
 
@@ -291,7 +264,6 @@ public class MultipleFileUploadNodeConfig {
                 .append(m_timeout, other.m_timeout)
                 .append(m_disableOutput, other.m_disableOutput)
                 .append(m_allowMultipleFiles, other.m_allowMultipleFiles)
-                .append(m_required, other.m_required)
                 .isEquals();
     }
 }
