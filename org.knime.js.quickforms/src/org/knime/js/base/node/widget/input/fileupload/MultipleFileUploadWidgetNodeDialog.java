@@ -53,6 +53,7 @@ import static org.knime.js.core.settings.DialogUtil.DEF_TEXTFIELD_WIDTH;
 import java.awt.GridBagConstraints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -99,8 +100,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
     /** Constructors, inits fields calls layout routines. */
     MultipleFileUploadWidgetNodeDialog() {
         m_config = new MultipleFileUploadInputWidgetConfig();
-        m_fileHistoryPanel =
-                new FilesHistoryPanel("file_upload_widget", LocationValidation.FileInput);
+        m_fileHistoryPanel = new FilesHistoryPanel("file_upload_widget", LocationValidation.FileInput);
         m_validExtensionsField = new JTextField(DEF_TEXTFIELD_WIDTH);
         m_validExtensionsField.addFocusListener(new FocusListener() {
             @Override
@@ -108,9 +108,8 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
                 try {
                     m_fileHistoryPanel.setSuffixes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
                 } catch (Exception exc) {
-                    NodeLogger.getLogger(
-                        FileUploadQuickFormNodeDialog.class).debug(
-                                    "Unable to update file suffixes", exc);
+                    NodeLogger.getLogger(FileUploadQuickFormNodeDialog.class).debug("Unable to update file suffixes",
+                        exc);
                 }
             }
 
@@ -142,18 +141,13 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
-        addPairToPanel("Valid File Extensions:",
-            m_validExtensionsField, panelWithGBLayout, gbc);
-        addPairToPanel("Default File:",
-            m_fileHistoryPanel, panelWithGBLayout, gbc);
+        addPairToPanel("Valid File Extensions:", m_validExtensionsField, panelWithGBLayout, gbc);
+        addPairToPanel("Default File:", m_fileHistoryPanel, panelWithGBLayout, gbc);
         addPairToPanel("Timeout (s): ", m_timeoutSpinner, panelWithGBLayout, gbc);
         addPairToPanel("Disable output, if file does not exist: ", m_disableOutputBox, panelWithGBLayout, gbc);
-        addPairToPanel("Store uploaded file in workflow directory: ",
-            m_storeInWfDirBox, panelWithGBLayout, gbc);
-        addPairToPanel("Allow multiple file uploads: ",
-            m_allowMultipleFiles, panelWithGBLayout, gbc);
-        addPairToPanel("File upload is required: ",
-            m_required, panelWithGBLayout, gbc);
+        addPairToPanel("Store uploaded file in workflow directory: ", m_storeInWfDirBox, panelWithGBLayout, gbc);
+        addPairToPanel("Allow multiple file uploads: ", m_allowMultipleFiles, panelWithGBLayout, gbc);
+        addPairToPanel("File upload is required: ", m_required, panelWithGBLayout, gbc);
     }
 
     /**
@@ -161,7 +155,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
      */
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-            throws NotConfigurableException {
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         String[] fileExtensions = m_config.getFileTypes();
@@ -190,7 +184,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
             m_fileHistoryPanel.setSelectedFile("");
         }
         m_fileHistoryPanel.setSuffixes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
-        m_timeoutSpinner.setValue((double) m_config.getTimeout() / 1000);
+        m_timeoutSpinner.setValue((double)m_config.getTimeout() / 1000);
         m_disableOutputBox.setSelected(m_config.getDisableOutput());
         m_storeInWfDirBox.setSelected(m_config.isStoreInWfDir());
         m_allowMultipleFiles.setSelected(m_config.getFileUploadConfig().isMultipleFiles());
@@ -205,19 +199,23 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
         saveSettingsTo(m_config);
         MultipleFileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         fileUploadConfig.setFileTypes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
-        fileUploadConfig.setTimeout((int)((double) m_timeoutSpinner.getValue() * 1000));
+        fileUploadConfig.setTimeout((int)((double)m_timeoutSpinner.getValue() * 1000));
         fileUploadConfig.setDisableOutput(m_disableOutputBox.isSelected());
         String selectedFile = m_fileHistoryPanel.getSelectedFile();
         var files = new FileUploadObject[1];
         java.nio.file.Path path = Paths.get(selectedFile);
-        long size = 0L;
         try {
-            size = Files.size(path);
+            var file = new File(selectedFile);
+            if (file.exists()) {
+                var size = Files.size(path);
+                files[0] = new FileUploadObject(selectedFile, true,
+                    FileUploadNodeUtil.getFileNameFromPath(selectedFile), "", size);
+            } else {
+                files = new FileUploadObject[0];
+            }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            files = new FileUploadObject[0];
         }
-        files[0] =
-            new FileUploadObject(selectedFile, true, FileUploadNodeUtil.getFileNameFromPath(selectedFile), "", size);
         m_config.getDefaultValue().setFiles(files);
         m_config.setStoreInWfDir(m_storeInWfDirBox.isSelected());
         m_config.getFileUploadConfig().setMultipleFileMode(m_allowMultipleFiles.isSelected());

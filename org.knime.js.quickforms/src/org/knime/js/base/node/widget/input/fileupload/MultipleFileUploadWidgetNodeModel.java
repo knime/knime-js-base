@@ -244,12 +244,20 @@ public class MultipleFileUploadWidgetNodeModel extends
         if (files != null) {
             for (var i = 0; i < files.length; i++) {
                 var paths = getFileAndURL(true, files[i]);
+                File f = new File(files[i].getPath());
+                Long fileSize;
+                if (f.exists()) {
+                    fileSize = files[i].getFileSize();
+                } else {
+                    fileSize = 0L;
+                }
                 FSLocation location =
                     new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()), paths.get(1));
                 cont.addRowToTable(new DefaultRow(RowKey.createRowKey(Long.valueOf(i)),
-                    new SimpleFSLocationCellFactory(new DefaultFSLocationSpec(FSCategory.CUSTOM_URL, "1000"))
-                        .createCell(location),
-                    new StringCell(files[i].getFileName()), new LongCell(files[i].getFileSize())));
+                    new SimpleFSLocationCellFactory(
+                        new DefaultFSLocationSpec(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout())))
+                            .createCell(location),
+                    new StringCell(files[i].getFileName()), new LongCell(fileSize)));
             }
         }
         cont.close();
@@ -286,9 +294,6 @@ public class MultipleFileUploadWidgetNodeModel extends
     private Vector<String> getFileAndURL(final boolean openStream, final FileUploadObject file)
         throws InvalidSettingsException {
         String path = file.getPath();
-        if (path == null || path.isEmpty()) {
-            throw new InvalidSettingsException("No file or URL provided");
-        }
 
         Vector<String> vector = new Vector<>();
         try {
@@ -318,9 +323,8 @@ public class MultipleFileUploadWidgetNodeModel extends
         } catch (MalformedURLException ex) {
             File f = new File(path);
             if (!f.exists()) {
-                StringBuilder b = new StringBuilder("No such file: \"");
-                b.append(f.getAbsolutePath()).append("\"");
-                throw new InvalidSettingsException(b.toString());
+                vector.add("");
+                vector.add("");
             }
             URI uri;
             try {
@@ -372,7 +376,7 @@ public class MultipleFileUploadWidgetNodeModel extends
     }
 
     private File copyFileToTempLocation(final URL url, final FileUploadObject file)
-        throws IOException, InvalidSettingsException {
+        throws IOException {
         final String basename = FilenameUtils.getBaseName(url.getPath());
         final String extension = FilenameUtils.getExtension(url.getPath());
         File tempFile;
@@ -395,7 +399,6 @@ public class MultipleFileUploadWidgetNodeModel extends
                 b.append("\" could not be achieved. ");
                 b.append(e.getMessage());
             }
-            throw new InvalidSettingsException(b.toString(), e);
         }
         return tempFile;
     }
@@ -478,8 +481,7 @@ public class MultipleFileUploadWidgetNodeModel extends
         MultipleFileUploadNodeValue currentValue = getRelevantValue();
 
         // TODO check for all files that if it is a local file check that they live in the workflow area or the temp area
-        if (currentValue.isLocalUpload()
-            || (defaultPath != null)) {
+        if (currentValue.isLocalUpload() || (defaultPath != null)) {
             LOGGER.debug("A file system path has been provided: " + url);
             return Files.newInputStream(Paths.get(url.toURI()));
         } else {
