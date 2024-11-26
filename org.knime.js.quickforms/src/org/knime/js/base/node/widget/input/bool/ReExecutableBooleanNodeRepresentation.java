@@ -51,11 +51,13 @@ package org.knime.js.base.node.widget.input.bool;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.ReExecutableNodeRepresentation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -69,6 +71,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
     extends ReExecutableNodeRepresentation<VAL> {
 
+    private final String m_type;
+
     /**
      *
      * @param label the widget label
@@ -79,8 +83,9 @@ public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
      * @param triggerReExecution
      */
     protected ReExecutableBooleanNodeRepresentation(final String label, final String description,
-        final boolean required, final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution) {
+        final boolean required, final VAL defaultValue, final VAL currentValue, final boolean triggerReExecution, final BooleanNodeConfig booleanNodeConfig) {
         super(label, description, required, defaultValue, currentValue, triggerReExecution);
+        m_type = booleanNodeConfig.getType();
     }
 
     /**
@@ -90,8 +95,17 @@ public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
      * @param triggerReExecution
      */
     public ReExecutableBooleanNodeRepresentation(final VAL currentValue, final VAL defaultValue,
-        final LabeledConfig config, final boolean triggerReExecution) {
+        final LabeledConfig config, final boolean triggerReExecution, final BooleanNodeConfig booleanConfig) {
         super(currentValue, defaultValue, config, triggerReExecution);
+        m_type = booleanConfig.getType();
+    }
+
+    /**
+     * @return the type
+     */
+    @JsonProperty("type")
+    public String getType() {
+        return m_type;
     }
 
     /**
@@ -102,6 +116,9 @@ public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
+        sb.append(", ");
+        sb.append("type=");
+        sb.append(m_type);
         return sb.toString();
     }
 
@@ -111,7 +128,7 @@ public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
     @Override
     @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_type).toHashCode();
     }
 
     /**
@@ -129,7 +146,9 @@ public class ReExecutableBooleanNodeRepresentation<VAL extends BooleanNodeValue>
         if (obj.getClass() != getClass()) {
             return false;
         }
-        return new EqualsBuilder().appendSuper(super.equals(obj)).isEquals();
+        @SuppressWarnings("unchecked")
+        ReExecutableBooleanNodeRepresentation<VAL> other = (ReExecutableBooleanNodeRepresentation<VAL>)obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_type, other.m_type).isEquals();
     }
 
 }

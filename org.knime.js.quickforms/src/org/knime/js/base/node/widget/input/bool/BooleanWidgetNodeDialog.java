@@ -51,6 +51,7 @@ package org.knime.js.base.node.widget.input.bool;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -58,6 +59,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.js.base.dialog.input.bool.BooleanInputComponentFactory;
 import org.knime.js.base.node.base.input.bool.BooleanNodeConfig;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
@@ -70,8 +72,12 @@ import org.knime.js.base.node.widget.ReExecutableWidgetNodeDialog;
 public class BooleanWidgetNodeDialog extends ReExecutableWidgetNodeDialog<BooleanNodeValue> {
 
     private final BooleanInputWidgetConfig m_config;
+
     private final JCheckBox m_defaultField;
+
     private final JCheckBox m_pushIntVar;
+
+    private final JComboBox<String> m_type;
 
     /**
      * Constructor, inits fields calls layout routines
@@ -81,6 +87,7 @@ public class BooleanWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Boolea
         m_defaultField = new JCheckBox();
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
         m_pushIntVar = new JCheckBox();
+        m_type = new JComboBox<String>(BooleanInputComponentFactory.listBooleanInputComponents());
         createAndAddTab();
     }
 
@@ -99,6 +106,7 @@ public class BooleanWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Boolea
      */
     @Override
     protected final void fillPanel(final JPanel panelWithGBLayout, final GridBagConstraints gbc) {
+        addPairToPanel("Selection Type: ", m_type, panelWithGBLayout, gbc);
         addPairToPanel("Default Value: ", m_defaultField, panelWithGBLayout, gbc);
         addPairToPanel("Output as Integer: ", m_pushIntVar, panelWithGBLayout, gbc);
     }
@@ -114,6 +122,7 @@ public class BooleanWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Boolea
         m_defaultField.setSelected(m_config.getDefaultValue().getBoolean());
         final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
         m_pushIntVar.setSelected(booleanConfig.isPushIntVar());
+        m_type.setSelectedItem(booleanConfig.getType());
     }
 
     /**
@@ -125,6 +134,7 @@ public class BooleanWidgetNodeDialog extends ReExecutableWidgetNodeDialog<Boolea
         saveSettingsTo(m_config);
         final BooleanNodeConfig booleanConfig = m_config.getBooleanConfig();
         booleanConfig.setPushIntVar(m_pushIntVar.isSelected());
+        booleanConfig.setType(m_type.getItemAt(m_type.getSelectedIndex()));
         m_config.saveSettings(settings);
     }
 

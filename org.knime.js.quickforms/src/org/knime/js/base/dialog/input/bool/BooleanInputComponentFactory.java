@@ -44,84 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   19 Nov 2024 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.input.bool;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.workflow.VariableType.BooleanType;
-import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
+package org.knime.js.base.dialog.input.bool;
 
 /**
- * The node model for the boolean widget node
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class BooleanWidgetNodeModel extends WidgetFlowVariableNodeModel<ReExecutableBooleanNodeRepresentation<BooleanNodeValue>,
-    BooleanNodeValue, BooleanInputWidgetConfig> {
+public class BooleanInputComponentFactory {
 
-    /**
-     * @param viewName
-     */
-    protected BooleanWidgetNodeModel(final String viewName) {
-        super(viewName);
+    public static final String CHECKBOX = "Checkbox";
+
+    private BooleanInputComponentFactory() {
+
     }
 
     /**
-     * {@inheritDoc}
+     * @return List of available BooleanInputComponents
      */
-    @Override
-    public BooleanNodeValue createEmptyViewValue() {
-        return new BooleanNodeValue();
+    public static String[] listBooleanInputComponents() {
+        return new String[]{CHECKBOX};
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getJavascriptObjectID() {
-        return "org.knime.js.base.node.widget.input.bool";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void createAndPushFlowVariable() throws InvalidSettingsException {
-        boolean value = getRelevantValue().getBoolean();
-        final BooleanInputWidgetConfig config = getConfig();
-        final String name = config.getFlowVariableName();
-        if (config.getBooleanConfig().isPushIntVar()) {
-            pushFlowVariableInt(name, value ? 1 : 0);
-        } else {
-            pushFlowVariable(name, BooleanType.INSTANCE, value);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanInputWidgetConfig createEmptyConfig() {
-        return new BooleanInputWidgetConfig();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected ReExecutableBooleanNodeRepresentation<BooleanNodeValue> getRepresentation() {
-        return new ReExecutableBooleanNodeRepresentation<BooleanNodeValue>(getRelevantValue(), getConfig().getDefaultValue(),
-            getConfig().getLabelConfig(), getConfig().getTriggerReExecution(), getConfig().getBooleanConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void useCurrentValueAsDefault() {
-        getConfig().getDefaultValue().setBoolean(getViewValue().getBoolean());
-    }
-
 }

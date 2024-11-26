@@ -52,6 +52,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.dialog.input.bool.BooleanInputComponentFactory;
 
 /**
  * Base config file for the boolean configuration and widget nodes
@@ -62,9 +63,15 @@ public class BooleanNodeConfig {
 
     private static final String CFG_PUSH_INT_VAR = "pushIntVar";
 
+    private static final String CFG_TYPE = "type";
+
     private static final boolean DEFAULT_PUSH_INT_VAR = false;
 
     private boolean m_pushIntVar = DEFAULT_PUSH_INT_VAR;
+
+    private static final String DEFAULT_TYPE = BooleanInputComponentFactory.CHECKBOX;
+
+    private String m_type = DEFAULT_TYPE;
 
     /**
      * @return the pushIntVar
@@ -81,12 +88,29 @@ public class BooleanNodeConfig {
     }
 
     /**
+     * @since 5.5
+     * @return the type of the
+     */
+    public String getType() {
+        return m_type;
+    }
+
+    /**
+     * @since 5.5
+     * @param type the type to set
+     */
+    public void setType(final String type) {
+        m_type = type;
+    }
+
+    /**
      * Saves the current settings.
      *
      * @param settings the settings to save to
      */
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addBoolean(CFG_PUSH_INT_VAR, m_pushIntVar);
+        settings.addString(CFG_TYPE, m_type);
     }
 
     /**
@@ -98,6 +122,7 @@ public class BooleanNodeConfig {
         // default is true for reasons of backwards compatibility:
         // prior to KNIME 4.1, Boolean Widget and Configuration nodes would always push integer flow variables
         m_pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, true);
+        m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
     }
 
     /**
@@ -107,6 +132,7 @@ public class BooleanNodeConfig {
      */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, DEFAULT_PUSH_INT_VAR);
+        m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
     }
 
     @Override
@@ -114,12 +140,14 @@ public class BooleanNodeConfig {
         final StringBuilder sb = new StringBuilder();
         sb.append("pushIntVar=");
         sb.append(m_pushIntVar);
+        sb.append("type=");
+        sb.append(m_type);
         return sb.toString();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_pushIntVar).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_pushIntVar).append(m_type).toHashCode();
     }
 
     @Override
@@ -134,7 +162,8 @@ public class BooleanNodeConfig {
             return false;
         }
         final BooleanNodeConfig other = (BooleanNodeConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_pushIntVar, other.m_pushIntVar).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_pushIntVar, other.m_pushIntVar)
+            .append(m_type, other.m_type).isEquals();
     }
 
 }
