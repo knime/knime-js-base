@@ -74,6 +74,17 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
     private final boolean m_disableOutput;
     private final boolean m_allowMultipleFiles;
 
+    /**
+     * @param label
+     * @param description
+     * @param required
+     * @param defaultValue
+     * @param currentValue
+     * @param fileTypes
+     * @param errorMessage
+     * @param disableOutput
+     * @param multiple
+     */
     @JsonCreator
     protected MultipleFileUploadNodeRepresentation(@JsonProperty("label") final String label,
         @JsonProperty("description") final String description,
@@ -85,7 +96,7 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
         @JsonProperty("disableOutput") final boolean disableOutput,
         @JsonProperty("multiple") final boolean multiple) {
         super(label, description, required, defaultValue, currentValue);
-        m_fileTypes = fileTypes;
+        m_fileTypes = filterFileTypes(fileTypes);
         m_errorMessage = errorMessage;
         m_disableOutput = disableOutput;
         m_allowMultipleFiles = multiple;
@@ -100,10 +111,17 @@ public class MultipleFileUploadNodeRepresentation<VAL extends MultipleFileUpload
     public MultipleFileUploadNodeRepresentation(final VAL currentValue, final VAL defaultValue,
         final MultipleFileUploadNodeConfig fileUploadConfig, final LabeledConfig labelConfig) {
         super(currentValue, defaultValue, labelConfig);
-        m_fileTypes = fileUploadConfig.getFileTypes();
+        m_fileTypes = filterFileTypes(fileUploadConfig.getFileTypes());
         m_errorMessage = fileUploadConfig.getErrorMessage();
         m_disableOutput = fileUploadConfig.getDisableOutput();
         m_allowMultipleFiles = fileUploadConfig.isMultipleFiles();
+    }
+
+    private static String[] filterFileTypes(final String[] fileTypes) {
+        if (fileTypes.length > 1 && fileTypes[0].contains("|")) {
+            return fileTypes[0].split("\\|");
+        }
+        return fileTypes;
     }
 
     /**

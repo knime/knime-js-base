@@ -55,14 +55,14 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeConfig;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeValue;
-import org.knime.js.base.node.widget.LabeledFlowVariableWidgetConfig;
+import org.knime.js.base.node.widget.LabeledWidgetConfig;
 
 /**
  * The config for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleFileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig<MultipleFileUploadNodeValue> {
+public class MultipleFileUploadInputWidgetConfig extends LabeledWidgetConfig<MultipleFileUploadNodeValue> {
 
     private final MultipleFileUploadNodeConfig m_config;
 

@@ -226,9 +226,8 @@ public class FileUploadObject {
             return false;
         }
         FileUploadObject other = (FileUploadObject)obj;
+        // Leaving out the path as otherwise for local files we compare the base64 encoded file which explodes and crashes.
         return new EqualsBuilder()
-                .append(m_path, other.m_path)
-                .append(m_pathValid, other.m_pathValid)
                 .append(m_fileName, other.m_fileName)
                 .append(m_fileSize, other.m_fileSize)
                 .append(m_id, other.m_id)

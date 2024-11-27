@@ -72,20 +72,19 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.FilesHistoryPanel;
 import org.knime.core.node.util.FilesHistoryPanel.LocationValidation;
+import org.knime.js.base.node.base.LabeledValueControlledNodeDialog;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
 import org.knime.js.base.node.base.input.fileupload.FileUploadObject;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeConfig;
-import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeValue;
 import org.knime.js.base.node.configuration.input.fileupload.FileUploadDialogNodeValue;
 import org.knime.js.base.node.quickform.input.fileupload.FileUploadQuickFormNodeDialog;
-import org.knime.js.base.node.widget.FlowVariableWidgetNodeDialog;
 
 /**
  * Node dialog for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDialog<MultipleFileUploadNodeValue> {
+public class MultipleFileUploadWidgetNodeDialog extends LabeledValueControlledNodeDialog {
 
     private final FilesHistoryPanel m_fileHistoryPanel;
     private final JTextField m_validExtensionsField;
@@ -157,20 +156,16 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
     protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
         throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
-        loadSettingsFrom(m_config);
+        loadSettingsFrom(m_config.getLabelConfig());
         String[] fileExtensions = m_config.getFileTypes();
         String text;
         if (fileExtensions == null || fileExtensions.length == 0) {
             text = "";
         } else {
             if (fileExtensions.length > 1) {
-                // since 3.1 the first element should have a pattern "ext1|ext2|ext3..."
-                // need to support backward compatibility
                 if (fileExtensions[0].contains("|")) {
-                    // 3.1
                     text = fileExtensions[0].replace('|', ',');
                 } else {
-                    // older version
                     text = String.join(",", fileExtensions);
                 }
             } else {
@@ -196,7 +191,7 @@ public class MultipleFileUploadWidgetNodeDialog extends FlowVariableWidgetNodeDi
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        saveSettingsTo(m_config);
+        saveSettingsTo(m_config.getLabelConfig());
         MultipleFileUploadNodeConfig fileUploadConfig = m_config.getFileUploadConfig();
         fileUploadConfig.setFileTypes(FileUploadNodeUtil.getFileTypes(m_validExtensionsField));
         fileUploadConfig.setTimeout((int)((double)m_timeoutSpinner.getValue() * 1000));

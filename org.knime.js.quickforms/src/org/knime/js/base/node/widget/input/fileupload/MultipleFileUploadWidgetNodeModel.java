@@ -91,7 +91,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.workflow.NodeContext;
@@ -109,7 +108,6 @@ import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.data.location.cell.SimpleFSLocationCell;
 import org.knime.filehandling.core.data.location.cell.SimpleFSLocationCellFactory;
-import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
 import org.knime.js.base.node.base.input.fileupload.FileUploadObject;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeRepresentation;
@@ -186,17 +184,6 @@ public class MultipleFileUploadWidgetNodeModel extends
      */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-
-        try {
-            createAndPushFlowVariable(false);
-        } catch (InvalidSettingsException e) {
-            if (getConfig().getDisableOutput()) {
-                setWarningMessage(e.getMessage());
-                return new PortObjectSpec[]{InactiveBranchPortObjectSpec.INSTANCE};
-            } else {
-                throw e;
-            }
-        }
         return new PortObjectSpec[]{createTableSpec()};
     }
 
@@ -207,30 +194,6 @@ public class MultipleFileUploadWidgetNodeModel extends
         final DataColumnSpec sizeSpec = new DataColumnSpecCreator("File size", LongCell.TYPE).createSpec();
 
         return new DataTableSpec(pathSpec, nameSpec, sizeSpec);
-    }
-
-    private void createAndPushFlowVariable(final boolean openStream) throws InvalidSettingsException {
-        ValidationError error = validateViewValue(getRelevantValue());
-        if (error != null) {
-            throw new InvalidSettingsException(error.getError());
-        }
-        var files = getRelevantValue().getFiles();
-        FileUploadObject file;
-        if (files != null && files.length > 0) {
-            file = files[0];
-            Vector<String> fileValues = getFileAndURL(openStream, file);
-            String varIdentifier = getConfig().getFlowVariableName();
-            if (fileValues.get(0) != null) {
-                pushFlowVariableString(varIdentifier, fileValues.get(0));
-                FSLocation location =
-                    new FSLocation(FSCategory.CUSTOM_URL, String.valueOf(getConfig().getTimeout()), fileValues.get(1));
-                pushFlowVariable(varIdentifier + " (Path)", FSLocationVariableType.INSTANCE, location);
-            }
-            pushFlowVariableString(varIdentifier + " (URL)", fileValues.get(1));
-            if (StringUtils.isNoneEmpty(file.getFileName())) {
-                pushFlowVariableString(varIdentifier + " (file name)", file.getFileName());
-            }
-        }
     }
 
     /**
@@ -261,16 +224,6 @@ public class MultipleFileUploadWidgetNodeModel extends
             }
         }
         cont.close();
-
-        try {
-            createAndPushFlowVariable(true);
-        } catch (InvalidSettingsException e) {
-            if (getConfig().getDisableOutput()) {
-                setWarningMessage(e.getMessage());
-            } else {
-                throw e;
-            }
-        }
         return new PortObject[]{cont.getTable()};
     }
 
