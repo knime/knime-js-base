@@ -329,7 +329,7 @@ public class MultipleFileUploadWidgetNodeModel extends
     }
 
     private File copyFileToTempLocation(final URL url, final FileUploadObject file)
-        throws IOException {
+        throws IOException, InvalidSettingsException {
         final String basename = FilenameUtils.getBaseName(url.getPath());
         final String extension = FilenameUtils.getExtension(url.getPath());
         File tempFile;
@@ -352,6 +352,7 @@ public class MultipleFileUploadWidgetNodeModel extends
                 b.append("\" could not be achieved. ");
                 b.append(e.getMessage());
             }
+            throw new InvalidSettingsException(b.toString(), e);
         }
         return tempFile;
     }
@@ -430,7 +431,11 @@ public class MultipleFileUploadWidgetNodeModel extends
     private InputStream openFileStream(final URL url) throws IOException, URISyntaxException {
         // a file system path should only be provided when a default file is used or a file was uploaded from a
         // local view instance, otherwise access should be blocked due to security reasons
-        String defaultPath = getRepresentation().getDefaultValue().getFiles()[0].getPath();
+        String defaultPath = null;
+        var defaultFiles = getRepresentation().getDefaultValue().getFiles();
+        if (defaultFiles != null && defaultFiles.length > 0) {
+            defaultPath = defaultFiles[0].getPath();
+        }
         MultipleFileUploadNodeValue currentValue = getRelevantValue();
 
         // TODO check for all files that if it is a local file check that they live in the workflow area or the temp area
