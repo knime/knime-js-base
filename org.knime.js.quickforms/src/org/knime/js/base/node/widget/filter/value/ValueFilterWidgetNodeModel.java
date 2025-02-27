@@ -77,8 +77,8 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterWidgetNodeModel extends
-    WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, ValueFilterNodeValue,
-    ValueFilterWidgetConfig> implements BufferedDataTableHolder {
+    WidgetNodeModel<ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, ValueFilterNodeValue, ValueFilterWidgetConfig>
+    implements BufferedDataTableHolder {
 
     private BufferedDataTable m_table;
 
@@ -174,7 +174,11 @@ public class ValueFilterWidgetNodeModel extends
             currentViewValue.setColumn(defaultVal.getColumn());
         }
         if (!Arrays.equals(defaultVal.getValues(), previousDefaultVal.getValues())) {
-            currentViewValue.setValues(defaultVal.getValues());
+            if (!config.isIgnoreInvalidValues() && currentViewValue.getValues().length != 0) {
+                currentViewValue.setValues(currentViewValue.getValues());
+            } else {
+                currentViewValue.setValues(defaultVal.getValues());
+            }
         }
         return currentViewValue;
     }
@@ -294,9 +298,9 @@ public class ValueFilterWidgetNodeModel extends
     @Override
     protected ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue> getRepresentation() {
         ValueFilterWidgetConfig config = getConfig();
-        return new ReExecutableValueFilterNodeRepresentation<>(getRelevantValue(),
-            config.getDefaultValue(), config.getValueFilterConfig(), config.getLabelConfig(), config.isEnableSearch(),
-            config.isIgnoreInvalidValues(),config.getTriggerReExecution());
+        return new ReExecutableValueFilterNodeRepresentation<>(getRelevantValue(), config.getDefaultValue(),
+            config.getValueFilterConfig(), config.getLabelConfig(), config.isEnableSearch(),
+            config.isIgnoreInvalidValues(), config.getTriggerReExecution());
     }
 
     /**
