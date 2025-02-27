@@ -74,9 +74,9 @@ import org.knime.js.base.node.widget.WidgetNodeModel;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionWidgetNodeModel extends
-    WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>,
-    SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
+public class MultipleSelectionWidgetNodeModel
+    extends WidgetNodeModel<MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, //
+            SingleMultipleSelectionNodeValue, MultipleSelectionWidgetConfig> {
 
     /**
      * Creates a new multiple selection widget node model
@@ -139,6 +139,16 @@ public class MultipleSelectionWidgetNodeModel extends
         } else {
             throw new InvalidSettingsException("Invalid column name specified for user selections.");
         }
+    }
+
+    @Override
+    protected SingleMultipleSelectionNodeValue copyConfigToViewValue(
+        final SingleMultipleSelectionNodeValue currentViewValue, final MultipleSelectionWidgetConfig config,
+        final MultipleSelectionWidgetConfig previousConfig) {
+        final var prevAndCurrValueAreEqual = config.getDefaultValue().equals(previousConfig.getDefaultValue());
+        return (!prevAndCurrValueAreEqual
+            && (config.isIgnoreInvalidValues() || currentViewValue.getVariableValue().length == 0))
+                ? config.getDefaultValue() : currentViewValue;
     }
 
     /**
