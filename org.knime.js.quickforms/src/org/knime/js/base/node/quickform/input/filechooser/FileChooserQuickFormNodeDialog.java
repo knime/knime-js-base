@@ -236,8 +236,7 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
                     public void run() {
                         // collect all non-local mount ids
                         List<String> mountIDs = new ArrayList<String>();
-                        for (Map.Entry<String, AbstractContentProvider> entry
-                                : ExplorerMountTable
+                        for (Map.Entry<String, AbstractContentProvider> entry : ExplorerMountTable
                                 .getMountedContent().entrySet()) {
                             String mountID = entry.getKey();
                             AbstractContentProvider acp = entry.getValue();
