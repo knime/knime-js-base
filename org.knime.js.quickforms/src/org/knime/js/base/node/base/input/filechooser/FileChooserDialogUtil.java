@@ -108,8 +108,8 @@ public class FileChooserDialogUtil {
                     public void run() {
                         // collect all non-local mount ids
                         List<String> mountIDs = new ArrayList<String>();
-                        for (Map.Entry<String, AbstractContentProvider> entry : ExplorerMountTable.getMountedContent()
-                            .entrySet()) {
+                        for (Map.Entry<String, AbstractContentProvider> entry : //
+                        ExplorerMountTable.getMountedContent().entrySet()) {
                             String mountID = entry.getKey();
                             AbstractContentProvider acp = entry.getValue();
                             if (remoteOnly ? acp.isRemote() && acp.canHostDataFiles() : acp.canHostDataFiles()) {
