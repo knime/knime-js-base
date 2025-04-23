@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.IntegerRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,19 +64,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<IntegerDialogNodeValue>
-    implements SubNodeDescriptionProvider<IntegerDialogNodeValue> {
+    implements SubNodeDescriptionProvider<IntegerDialogNodeValue>, WebDialogNodeRepresentation<IntegerDialogNodeValue> {
 
     @JsonCreator
-    private IntegerDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final IntegerDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final IntegerDialogNodeValue currentValue,
-        @JsonProperty("usemin") final boolean useMin,
-        @JsonProperty("usemax") final boolean useMax,
-        @JsonProperty("min") final int min,
-        @JsonProperty("max") final int max) {
-        super(label, description, required, defaultValue, currentValue, useMin, useMax,  min, max);
+    private IntegerDialogNodeRepresentation( //
+        @JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final IntegerDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final IntegerDialogNodeValue currentValue, //
+        @JsonProperty("usemin") final boolean useMin, //
+        @JsonProperty("usemax") final boolean useMax, //
+        @JsonProperty("min") final int min, //
+        @JsonProperty("max") final int max //
+    ) {
+        super(label, description, required, defaultValue, currentValue, useMin, useMax, min, max);
     }
 
     /**
@@ -91,6 +96,11 @@ public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<I
     @Override
     public DialogNodePanel<IntegerDialogNodeValue> createDialogPanel() {
         return new IntegerConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new IntegerRenderer(this).at("integer");
     }
 
 }

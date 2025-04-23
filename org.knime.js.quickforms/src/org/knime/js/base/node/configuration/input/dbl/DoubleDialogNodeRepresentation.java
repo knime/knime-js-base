@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.NumberRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,18 +64,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue>
-    implements SubNodeDescriptionProvider<DoubleDialogNodeValue> {
+    implements SubNodeDescriptionProvider<DoubleDialogNodeValue>, WebDialogNodeRepresentation<DoubleDialogNodeValue> {
 
     @JsonCreator
-    private DoubleDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final DoubleDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final DoubleDialogNodeValue currentValue,
-        @JsonProperty("usemin") final boolean useMin,
-        @JsonProperty("usemax") final boolean useMax,
-        @JsonProperty("min") final double min,
-        @JsonProperty("max") final double max) {
+    private DoubleDialogNodeRepresentation( //
+        @JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final DoubleDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final DoubleDialogNodeValue currentValue, //
+        @JsonProperty("usemin") final boolean useMin, //
+        @JsonProperty("usemax") final boolean useMax, //
+        @JsonProperty("min") final double min, //
+        @JsonProperty("max") final double max //
+    ) {
         super(label, description, required, defaultValue, currentValue, useMin, useMax, min, max);
     }
 
@@ -92,4 +97,10 @@ public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<Dou
     public DialogNodePanel<DoubleDialogNodeValue> createDialogPanel() {
         return new DoubleConfigurationPanel(this);
     }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new NumberRenderer(this).at("double");
+    }
+
 }

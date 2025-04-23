@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.TextRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,18 +64,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue>
-    implements SubNodeDescriptionProvider<StringDialogNodeValue> {
+    implements SubNodeDescriptionProvider<StringDialogNodeValue>, WebDialogNodeRepresentation<StringDialogNodeValue> {
 
     @JsonCreator
-    private StringDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final StringDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final StringDialogNodeValue currentValue,
-        @JsonProperty("regex") final String regex,
-        @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("editorType") final String editorType,
-        @JsonProperty("multilineEditorWidth") final int multilineEditorWidth,
-        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight) {
+    private StringDialogNodeRepresentation( //
+        @JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final StringDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final StringDialogNodeValue currentValue, //
+        @JsonProperty("regex") final String regex, //
+        @JsonProperty("errorMessage") final String errorMessage, //
+        @JsonProperty("editorType") final String editorType, //
+        @JsonProperty("multilineEditorWidth") final int multilineEditorWidth, //
+        @JsonProperty("multilineEditorHeight") final int multilineEditorHeight //
+    ) {
         super(label, description, required, defaultValue, currentValue, regex, errorMessage, editorType,
             multilineEditorWidth, multilineEditorHeight);
     }
@@ -93,4 +99,11 @@ public class StringDialogNodeRepresentation extends StringNodeRepresentation<Str
     public DialogNodePanel<StringDialogNodeValue> createDialogPanel() {
         return new StringConfigurationPanel(this);
     }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new TextRenderer(this).at("string");
+
+    }
+
 }

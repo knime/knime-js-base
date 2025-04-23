@@ -49,8 +49,8 @@
 package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 
 import jakarta.json.JsonException;
@@ -64,7 +64,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleDialogNodeValue extends DoubleNodeValue implements DialogNodeValue {
+public class DoubleDialogNodeValue extends DoubleNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}

@@ -44,88 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   Apr 14, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.input.string.StringNodeValue;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.TextInputWidgetValidation;
+import org.knime.js.base.node.configuration.input.string.StringDialogNodeRepresentation;
 
 /**
- * The value for the string configuration node
+ * A non-localized text renderer for {@link StringDialogNodeRepresentation}s.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-public class StringDialogNodeValue extends StringNodeValue implements WebDialogContent {
+public class TextRenderer extends SubNodeDescriptionProviderRenderer implements TextRendererSpec {
+
+    private final StringDialogNodeRepresentation m_stringDialogRep;
 
     /**
-     * {@inheritDoc}
+     * Creates a new text renderer.
+     *
+     * @param stringDialogRep the representation of the node
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setString(settings.getString(CFG_STRING, DEFAULT_STRING));
+    public TextRenderer(final StringDialogNodeRepresentation stringDialogRep) {
+        super(stringDialogRep);
+        m_stringDialogRep = stringDialogRep;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setString(fromCmdLine);
-    }
+    public Optional<TextRendererOptions> getOptions() {
+        final var regex = m_stringDialogRep.getRegex();
+        if (regex == null || regex.isEmpty()) {
+            return Optional.empty();
+        }
+        final var errorMessage = Optional.ofNullable(m_stringDialogRep.getErrorMessage()).filter(s -> !s.isEmpty());
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_STRING);
-                if (JsonValue.NULL.equals(val)) {
-                    setString(null);
-                } else {
-                    setString(((JsonObject) json).getString(CFG_STRING));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected string value for key '" + CFG_STRING + ".", e);
+        return Optional.of(new TextRendererOptions() {
+
+            @Override
+            public Optional<TextInputWidgetValidation[]> getValidations() {
+                return Optional.of(new TextInputWidgetValidation[]{new TextInputWidgetValidation.PatternValidation() {
+
+                    @Override
+                    protected String getPattern() {
+                        return regex;
+                    }
+
+                    @Override
+                    public String getErrorMessage() {
+                        return errorMessage.orElseGet(super::getErrorMessage);
+                    }
+
+                }});
             }
-        } else if (json instanceof JsonNumber) {
-            loadFromString(json.toString());
-        } else {
-            throw new JsonException("Expected JSON object, JSON string or JSON number, but got " + json.getValueType());
-        }
+
+        });
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JsonValue toJson() {
-        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
-        builder.add("type", "string");
-
-        if (getString() == null) {
-            builder.addNull("default");
-        } else {
-            builder.add("default", getString());
-        }
-        return builder.build();
-    }
 }

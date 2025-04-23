@@ -48,8 +48,8 @@
 package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -66,7 +66,7 @@ import jakarta.json.JsonValue.ValueType;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeValue extends BooleanNodeValue implements DialogNodeValue {
+public class BooleanDialogNodeValue extends BooleanNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}

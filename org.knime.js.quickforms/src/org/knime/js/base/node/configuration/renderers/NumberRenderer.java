@@ -44,88 +44,82 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   Apr 14, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.input.string.StringNodeValue;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.NumberRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation;
+import org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeRepresentation;
 
 /**
- * The value for the string configuration node
+ * A non-localized number renderer for {@link DoubleDialogNodeRepresentation}s.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-public class StringDialogNodeValue extends StringNodeValue implements WebDialogContent {
+public class NumberRenderer extends SubNodeDescriptionProviderRenderer implements NumberRendererSpec {
+
+    private final DoubleDialogNodeRepresentation m_doubleDialogRep;
 
     /**
-     * {@inheritDoc}
+     * Creates a new number renderer.
+     *
+     * @param doubleDialogRep the representation of the node
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setString(settings.getString(CFG_STRING, DEFAULT_STRING));
+    public NumberRenderer(final DoubleDialogNodeRepresentation doubleDialogRep) {
+        super(doubleDialogRep);
+        this.m_doubleDialogRep = doubleDialogRep;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setString(fromCmdLine);
-    }
+    public Optional<NumberRendererOptions> getOptions() {
+        final var builtinValidations =
+            Stream.of(getMinValidation(), getMaxValidation()).flatMap(Optional::stream).toList();
+        if (builtinValidations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new NumberRendererOptions() {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_STRING);
-                if (JsonValue.NULL.equals(val)) {
-                    setString(null);
-                } else {
-                    setString(((JsonObject) json).getString(CFG_STRING));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected string value for key '" + CFG_STRING + ".", e);
+            @Override
+            public Optional<NumberInputWidgetValidation[]> getValidations() {
+                return Optional.of(builtinValidations.toArray(NumberInputWidgetValidation[]::new));
             }
-        } else if (json instanceof JsonNumber) {
-            loadFromString(json.toString());
+
+        });
+
+    }
+
+    Optional<NumberInputWidgetValidation> getMinValidation() {
+        if (m_doubleDialogRep.isUseMin()) {
+            return Optional.of(new NumberInputWidgetValidation.MinValidation() {
+
+                @Override
+                protected double getMin() {
+                    return m_doubleDialogRep.getMin();
+                }
+
+            });
         } else {
-            throw new JsonException("Expected JSON object, JSON string or JSON number, but got " + json.getValueType());
+            return Optional.empty();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JsonValue toJson() {
-        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
-        builder.add("type", "string");
+    Optional<NumberInputWidgetValidation> getMaxValidation() {
+        if (m_doubleDialogRep.isUseMax()) {
+            return Optional.of(new NumberInputWidgetValidation.MaxValidation() {
 
-        if (getString() == null) {
-            builder.addNull("default");
+                @Override
+                protected double getMax() {
+                    return m_doubleDialogRep.getMax();
+                }
+
+            });
         } else {
-            builder.add("default", getString());
+            return Optional.empty();
         }
-        return builder.build();
     }
+
 }

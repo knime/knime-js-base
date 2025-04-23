@@ -44,81 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   Apr 14, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.input.integer;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ControlRendererSpec;
 
-import jakarta.json.JsonException;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+abstract class SubNodeDescriptionProviderRenderer implements ControlRendererSpec {
 
-/**
- * The value for the integer configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class IntegerDialogNodeValue extends IntegerNodeValue implements WebDialogContent {
+    SubNodeDescriptionProvider<?> m_rep;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setInteger(settings.getInt(CFG_INTEGER, DEFAULT_INTEGER));
+    SubNodeDescriptionProviderRenderer(final SubNodeDescriptionProvider<?> rep) {
+        m_rep = rep;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        Integer number = null;
-        try {
-            number = Integer.parseInt(fromCmdLine);
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Could not parse '" + fromCmdLine + "' as integer type.");
-        }
-        setInteger(number);
+    public String getTitle() {
+        return m_rep.getLabel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonNumber) {
-            setInteger(((JsonNumber)json).intValue());
-        } else if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                setInteger(((JsonObject) json).getInt(CFG_INTEGER));
-            } catch (Exception e) {
-                throw new JsonException("Expected int value for key '" + CFG_INTEGER + "'."  , e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON number, but got " + json.getValueType());
-        }
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(m_rep.getDescription()).filter(String::isBlank);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        return JsonUtil.getProvider().createObjectBuilder().add("type", "integer").add("default", getInteger()).build();
-    }
 }

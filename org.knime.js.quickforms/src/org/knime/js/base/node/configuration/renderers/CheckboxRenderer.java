@@ -44,81 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   Apr 14, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.input.integer;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.CheckboxRendererSpec;
+import org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeRepresentation;
 
 /**
- * The value for the integer configuration node
+ * A non-localized checkbox renderer for {@link BooleanDialogNodeRepresentation}s.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-public class IntegerDialogNodeValue extends IntegerNodeValue implements WebDialogContent {
+public class CheckboxRenderer extends SubNodeDescriptionProviderRenderer implements CheckboxRendererSpec {
 
     /**
-     * {@inheritDoc}
+     * Creates a new checkbox renderer for the given {@link BooleanDialogNodeRepresentation}.
+     *
+     * @param boolDialogRep the representation of the node
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setInteger(settings.getInt(CFG_INTEGER, DEFAULT_INTEGER));
+    public CheckboxRenderer(final BooleanDialogNodeRepresentation boolDialogRep) {
+        super(boolDialogRep);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        Integer number = null;
-        try {
-            number = Integer.parseInt(fromCmdLine);
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Could not parse '" + fromCmdLine + "' as integer type.");
-        }
-        setInteger(number);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonNumber) {
-            setInteger(((JsonNumber)json).intValue());
-        } else if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                setInteger(((JsonObject) json).getInt(CFG_INTEGER));
-            } catch (Exception e) {
-                throw new JsonException("Expected int value for key '" + CFG_INTEGER + "'."  , e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON number, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        return JsonUtil.getProvider().createObjectBuilder().add("type", "integer").add("default", getInteger()).build();
-    }
 }
