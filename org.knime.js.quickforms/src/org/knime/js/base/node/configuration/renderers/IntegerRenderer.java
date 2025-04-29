@@ -75,7 +75,7 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
     }
 
     @Override
-    public Optional<NumberRendererOptions> getOptions() {
+    public Optional<NumberRendererOptions> getCustomOptions() {
         final var builtinValidations =
             Stream.of(getMinValidation(), getMaxValidation()).flatMap(Optional::stream).toList();
         if (builtinValidations.isEmpty()) {
@@ -92,7 +92,12 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
 
     }
 
-    Optional<NumberInputWidgetValidation> getMinValidation() {
+    @Override
+    public TypeBounds getTypeBounds() {
+        return TypeBounds.INTEGER;
+    }
+
+    private Optional<NumberInputWidgetValidation> getMinValidation() {
         if (m_intDialogRep.isUseMin()) {
             return Optional.of(new NumberInputWidgetValidation.MinValidation() {
 
@@ -107,7 +112,7 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
         }
     }
 
-    Optional<NumberInputWidgetValidation> getMaxValidation() {
+    private Optional<NumberInputWidgetValidation> getMaxValidation() {
         if (m_intDialogRep.isUseMax()) {
             return Optional.of(new NumberInputWidgetValidation.MaxValidation() {
 
