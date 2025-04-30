@@ -50,55 +50,38 @@ package org.knime.js.base.node.configuration.renderers;
 
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.TextInputWidgetValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextAreaRendererSpec;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeRepresentation;
 
 /**
- * A non-localized text renderer for {@link StringDialogNodeRepresentation}s.
+ * A non-localized multi-line text renderer for {@link StringDialogNodeRepresentation}s.
  *
  * @author Paul Bärnreuther
  */
-public class TextRenderer extends SubNodeDescriptionProviderRenderer implements TextRendererSpec {
+public class TextAreaRenderer extends SubNodeDescriptionProviderRenderer implements TextAreaRendererSpec {
 
     private final StringDialogNodeRepresentation m_stringDialogRep;
 
     /**
-     * Creates a new text renderer.
+     * Creates a new text area renderer.
      *
      * @param stringDialogRep the representation of the node
      */
-    public TextRenderer(final StringDialogNodeRepresentation stringDialogRep) {
+    public TextAreaRenderer(final StringDialogNodeRepresentation stringDialogRep) {
         super(stringDialogRep);
         m_stringDialogRep = stringDialogRep;
     }
 
     @Override
-    public Optional<TextRendererOptions> getOptions() {
-        final var regex = m_stringDialogRep.getRegex();
-        if (regex == null || regex.isEmpty()) {
-            return Optional.empty();
-        }
-        final var errorMessage =
-            Optional.ofNullable(m_stringDialogRep.getErrorMessage()).filter(s -> !s.isEmpty());
+    public Optional<TextAreaRendererOptions> getOptions() {
 
-        return Optional.of(new TextRendererOptions() {
+        final var numRows = m_stringDialogRep.getMultilineEditorHeight();
+
+        return Optional.of(new TextAreaRendererOptions() {
 
             @Override
-            public Optional<TextInputWidgetValidation[]> getValidations() {
-                return Optional.of(new TextInputWidgetValidation[]{new TextInputWidgetValidation.PatternValidation() {
-
-                    @Override
-                    protected String getPattern() {
-                        return regex;
-                    }
-
-                    @Override
-                    public String getErrorMessage() {
-                        return errorMessage.orElseGet(super::getErrorMessage);
-                    }
-
-                }});
+            public int getRows() {
+                return numRows;
             }
 
         });
