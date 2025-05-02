@@ -44,63 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   30 Apr 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.integer;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
-import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
-import org.knime.js.base.node.configuration.renderers.IntegerRenderer;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalDateTimeRendererSpec;
+import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
+import org.knime.time.util.DateTimeType;
 
 /**
- * The dialog representation of the integer configuration node
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * A local date&time renderer for {@link DateDialogNodeRepresentation}s when the type is
+ * {@link DateTimeType#LOCAL_DATE_TIME}.
+ *
+ * @author Robin Gerling
  */
-public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<IntegerDialogNodeValue> implements
-    SubNodeDescriptionProvider<IntegerDialogNodeValue>, DefaultWebDialogNodeRepresentation<IntegerDialogNodeValue> {
+public class LocalDateTimeRenderer extends SubNodeDescriptionProviderRenderer implements LocalDateTimeRendererSpec {
 
-    @JsonCreator
-    private IntegerDialogNodeRepresentation( //
-        @JsonProperty("label") final String label, //
-        @JsonProperty("description") final String description, //
-        @JsonProperty("required") final boolean required, //
-        @JsonProperty("defaultValue") final IntegerDialogNodeValue defaultValue, //
-        @JsonProperty("currentValue") final IntegerDialogNodeValue currentValue, //
-        @JsonProperty("usemin") final boolean useMin, //
-        @JsonProperty("usemax") final boolean useMax, //
-        @JsonProperty("min") final int min, //
-        @JsonProperty("max") final int max //
-    ) {
-        super(label, description, required, defaultValue, currentValue, useMin, useMax, min, max);
-    }
+    private final DateDialogNodeRepresentation m_dateDialogRep;
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * Creates a new local date&time renderer for the given {@link DateDialogNodeRepresentation}.
+     *
+     * @param dateDialogRep the representation of the node
      */
-    public IntegerDialogNodeRepresentation(final IntegerDialogNodeValue currentValue,
-        final IntegerInputDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(), config.getIntegerConfig(), config.getLabelConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogNodePanel<IntegerDialogNodeValue> createDialogPanel() {
-        return new IntegerConfigurationPanel(this);
+    public LocalDateTimeRenderer(final DateDialogNodeRepresentation dateDialogRep) {
+        super(dateDialogRep);
+        m_dateDialogRep = dateDialogRep;
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
-        return new IntegerRenderer(this).at("integer");
+    public Optional<LocalDateTimeRendererOptions> getOptions() {
+        return Optional.of(new LocalDateTimeRendererOptions() {
+
+            @Override
+            public Optional<Boolean> getShowSeconds() {
+                return Optional.of(m_dateDialogRep.isShowSeconds());
+            }
+
+            @Override
+            public Optional<Boolean> getShowMilliseconds() {
+                return Optional.of(m_dateDialogRep.isShowMilliseconds());
+            }
+
+        });
     }
 
 }

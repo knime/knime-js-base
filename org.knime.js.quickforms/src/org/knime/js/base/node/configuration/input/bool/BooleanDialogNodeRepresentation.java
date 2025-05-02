@@ -46,7 +46,7 @@ package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.CheckboxRenderer;
@@ -59,8 +59,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<BooleanDialogNodeValue>
-    implements SubNodeDescriptionProvider<BooleanDialogNodeValue>, WebDialogNodeRepresentation<BooleanDialogNodeValue> {
+public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<BooleanDialogNodeValue> implements
+    SubNodeDescriptionProvider<BooleanDialogNodeValue>, DefaultWebDialogNodeRepresentation<BooleanDialogNodeValue> {
 
     @JsonCreator
     private BooleanDialogNodeRepresentation(@JsonProperty("label") final String label,

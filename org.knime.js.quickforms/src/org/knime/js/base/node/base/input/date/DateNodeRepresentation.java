@@ -63,7 +63,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * The base representation for the double configuration and widget node
+ * The base representation for the date&time configuration and widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @param <VAL> the value implementation of the node
@@ -73,31 +73,40 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNodeRepresentation<VAL> {
 
     private final boolean m_showNowButton;
+
     private final GranularityTime m_granularity;
+
     private final boolean m_useMin;
+
     private final boolean m_useMax;
+
     private final boolean m_useMinExecTime;
+
     private final boolean m_useMaxExecTime;
+
     private final boolean m_useDefaultExecTime;
+
     private final ZonedDateTime m_min;
+
     private final ZonedDateTime m_max;
+
     private final DateTimeType m_type;
 
     @JsonCreator
-    protected DateNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final VAL defaultValue,
-        @JsonProperty("currentValue") final VAL currentValue,
-        @JsonProperty("shownowbutton") final boolean showNowButton,
-        @JsonProperty("granularity") final String granularity,
-        @JsonProperty("usemin") final boolean useMin,
-        @JsonProperty("usemax") final boolean useMax,
-        @JsonProperty("useminexectime") final boolean useMinExecTime,
-        @JsonProperty("usemaxexectime") final boolean useMaxExecTime,
-        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime,
-        @JsonProperty("min") final String min,
-        @JsonProperty("max") final String max,
+    protected DateNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final VAL defaultValue, //
+        @JsonProperty("currentValue") final VAL currentValue, //
+        @JsonProperty("shownowbutton") final boolean showNowButton, //
+        @JsonProperty("granularity") final String granularity, //
+        @JsonProperty("usemin") final boolean useMin, //
+        @JsonProperty("usemax") final boolean useMax, //
+        @JsonProperty("useminexectime") final boolean useMinExecTime, //
+        @JsonProperty("usemaxexectime") final boolean useMaxExecTime, //
+        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime, //
+        @JsonProperty("min") final String min, //
+        @JsonProperty("max") final String max, //
         @JsonProperty("type") final String type) {
         super(label, description, required, defaultValue, currentValue);
         m_showNowButton = showNowButton;
@@ -153,6 +162,24 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
         } else {
             return "show_millis";
         }
+    }
+
+    /**
+     *
+     * @return whether to show seconds
+     */
+    @JsonIgnore
+    public boolean isShowSeconds() {
+        return m_granularity == GranularityTime.SHOW_SECONDS || m_granularity == GranularityTime.SHOW_MILLIS;
+    }
+
+    /**
+     *
+     * @return whether to show milliseconds
+     */
+    @JsonIgnore
+    public boolean isShowMilliseconds() {
+        return m_granularity == GranularityTime.SHOW_MILLIS;
     }
 
     private static GranularityTime getGranularityFromString(final String g) {
@@ -326,18 +353,18 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .appendSuper(super.hashCode())
-            .append(m_showNowButton)
-            .append(m_granularity)
-            .append(m_useMin)
-            .append(m_useMax)
-            .append(m_useMinExecTime)
-            .append(m_useMaxExecTime)
-            .append(m_useDefaultExecTime)
-            .append(m_min)
-            .append(m_max)
-            .append(m_type)
+        return new HashCodeBuilder() //
+            .appendSuper(super.hashCode()) //
+            .append(m_showNowButton) //
+            .append(m_granularity) //
+            .append(m_useMin) //
+            .append(m_useMax) //
+            .append(m_useMinExecTime) //
+            .append(m_useMaxExecTime) //
+            .append(m_useDefaultExecTime) //
+            .append(m_min) //
+            .append(m_max) //
+            .append(m_type) //
             .toHashCode();
     }
 
@@ -357,18 +384,18 @@ public class DateNodeRepresentation<VAL extends DateNodeValue> extends LabeledNo
         }
         @SuppressWarnings("unchecked")
         DateNodeRepresentation<VAL> other = (DateNodeRepresentation<VAL>)obj;
-        return new EqualsBuilder()
-            .appendSuper(super.equals(obj))
-            .append(m_showNowButton, other.m_showNowButton)
-            .append(m_granularity, other.m_granularity)
-            .append(m_useMin, other.m_useMin)
-            .append(m_useMax, other.m_useMax)
-            .append(m_useMinExecTime, other.m_useMinExecTime)
-            .append(m_useMaxExecTime, other.m_useMaxExecTime)
-            .append(m_useDefaultExecTime, other.m_useDefaultExecTime)
-            .append(m_min, other.m_min)
-            .append(m_max, other.m_max)
-            .append(m_type, other.m_type)
+        return new EqualsBuilder() //
+            .appendSuper(super.equals(obj)) //
+            .append(m_showNowButton, other.m_showNowButton) //
+            .append(m_granularity, other.m_granularity) //
+            .append(m_useMin, other.m_useMin) //
+            .append(m_useMax, other.m_useMax) //
+            .append(m_useMinExecTime, other.m_useMinExecTime) //
+            .append(m_useMaxExecTime, other.m_useMaxExecTime) //
+            .append(m_useDefaultExecTime, other.m_useDefaultExecTime) //
+            .append(m_min, other.m_min) //
+            .append(m_max, other.m_max) //
+            .append(m_type, other.m_type) //
             .isEquals();
     }
 

@@ -48,12 +48,27 @@
  */
 package org.knime.js.base.node.configuration.input.date;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.DateRenderer;
+import org.knime.js.base.node.configuration.renderers.LocalDateTimeRenderer;
+import org.knime.js.base.node.configuration.renderers.TimeRenderer;
+import org.knime.js.base.node.configuration.renderers.ZonedDateTimeRenderer;
+import org.knime.time.util.DateTimeType;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The dialog representation of the date configuration node
@@ -61,23 +76,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDialogNodeValue>
-    implements SubNodeDescriptionProvider<DateDialogNodeValue> {
+    implements SubNodeDescriptionProvider<DateDialogNodeValue>, WebDialogNodeRepresentation<DateDialogNodeValue> {
 
     @JsonCreator
-    private DateDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final DateDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final DateDialogNodeValue currentValue,
-        @JsonProperty("shownowbutton") final boolean showNowButton,
-        @JsonProperty("granularity") final String granularity,
-        @JsonProperty("usemin") final boolean useMin,
-        @JsonProperty("usemax") final boolean useMax,
-        @JsonProperty("useminexectime") final boolean useMinExecTime,
-        @JsonProperty("usemaxexectime") final boolean useMaxExecTime,
-        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime,
-        @JsonProperty("min") final String min,
-        @JsonProperty("max") final String max,
+    private DateDialogNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final DateDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final DateDialogNodeValue currentValue, //
+        @JsonProperty("shownowbutton") final boolean showNowButton, //
+        @JsonProperty("granularity") final String granularity, //
+        @JsonProperty("usemin") final boolean useMin, //
+        @JsonProperty("usemax") final boolean useMax, //
+        @JsonProperty("useminexectime") final boolean useMinExecTime, //
+        @JsonProperty("usemaxexectime") final boolean useMaxExecTime, //
+        @JsonProperty("usedefaultexectime") final boolean useDefaultExecTime, //
+        @JsonProperty("min") final String min, //
+        @JsonProperty("max") final String max, //
         @JsonProperty("type") final String type) {
         super(label, description, required, defaultValue, currentValue, showNowButton, granularity, useMin, useMax,
             useMinExecTime, useMaxExecTime, useDefaultExecTime, min, max, type);
@@ -98,5 +113,58 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
     @Override
     public DialogNodePanel<DateDialogNodeValue> createDialogPanel() {
         return new DateConfigurationPanel(this);
+    }
+
+
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return switch (getType()) {
+            case LOCAL_DATE -> new DateRenderer(this);
+            case LOCAL_TIME -> new TimeRenderer(this);
+            case LOCAL_DATE_TIME -> new LocalDateTimeRenderer(this);
+            case ZONED_DATE_TIME -> new ZonedDateTimeRenderer(this);
+        };
+    }
+
+    @Override
+    public JsonNode transformValueToDialogJson(final DateDialogNodeValue dialogValue) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+
+        final var date = dialogValue.getDate();
+        final var value = switch (getType()) {
+            case LOCAL_DATE -> date.toLocalDate();
+            case LOCAL_TIME -> date.toLocalTime();
+            case LOCAL_DATE_TIME -> date.toLocalDateTime();
+            case ZONED_DATE_TIME -> date;
+        };
+
+        return mapper.valueToTree(value);
+    }
+
+    @Override
+    public void setValueFromDialogJson(final JsonNode json, final DateDialogNodeValue value) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var type = getType();
+
+        final var currDate = value.getDate();
+        final ZonedDateTime newDate;
+        if (type == DateTimeType.LOCAL_DATE) {
+            final var localDate = mapper.convertValue(json, LocalDate.class);
+            newDate = ZonedDateTime.of(LocalDateTime.of(localDate, currDate.toLocalTime()), currDate.getZone());
+        } else if (type == DateTimeType.LOCAL_TIME) {
+            final var localTime = mapper.convertValue(json, LocalTime.class);
+            newDate = ZonedDateTime.of(LocalDateTime.of(currDate.toLocalDate(), localTime), currDate.getZone());
+        } else if (type == DateTimeType.LOCAL_DATE_TIME) {
+            final var localDateTime = mapper.convertValue(json, LocalDateTime.class);
+            newDate = ZonedDateTime.of(localDateTime, currDate.getZone());
+        } else if (type == DateTimeType.ZONED_DATE_TIME) {
+            newDate = mapper.convertValue(json, ZonedDateTime.class);
+        } else {
+            throw new IllegalArgumentException(
+                String.format("Invalid value '%s'. Possible values: %s", type, DateTimeType.values()));
+        }
+
+        value.setDate(newDate);
     }
 }

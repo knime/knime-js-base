@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ControlRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.string.StringNodeConfig;
@@ -66,8 +66,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue>
-    implements SubNodeDescriptionProvider<StringDialogNodeValue>, WebDialogNodeRepresentation<StringDialogNodeValue> {
+public class StringDialogNodeRepresentation extends StringNodeRepresentation<StringDialogNodeValue> implements
+    SubNodeDescriptionProvider<StringDialogNodeValue>, DefaultWebDialogNodeRepresentation<StringDialogNodeValue> {
 
     @JsonCreator
     private StringDialogNodeRepresentation( //

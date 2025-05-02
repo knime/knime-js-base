@@ -50,7 +50,7 @@ package org.knime.js.base.node.configuration.input.dbl;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.NumberRenderer;
@@ -63,8 +63,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue>
-    implements SubNodeDescriptionProvider<DoubleDialogNodeValue>, WebDialogNodeRepresentation<DoubleDialogNodeValue> {
+public class DoubleDialogNodeRepresentation extends DoubleNodeRepresentation<DoubleDialogNodeValue> implements
+    SubNodeDescriptionProvider<DoubleDialogNodeValue>, DefaultWebDialogNodeRepresentation<DoubleDialogNodeValue> {
 
     @JsonCreator
     private DoubleDialogNodeRepresentation( //
