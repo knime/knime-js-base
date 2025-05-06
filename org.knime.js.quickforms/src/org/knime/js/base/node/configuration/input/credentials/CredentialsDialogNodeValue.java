@@ -48,16 +48,24 @@
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
+import static org.knime.js.base.node.configuration.input.credentials.CredentialsDialogValueWebUICredentialsTransformerUtil.getWebUICredentials;
+import static org.knime.js.base.node.configuration.input.credentials.CredentialsDialogValueWebUICredentialsTransformerUtil.setWebUICredentials;
+
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.CoreConstants;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -69,7 +77,8 @@ import jakarta.json.JsonValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class CredentialsDialogNodeValue extends CredentialsNodeValue implements DialogNodeValue {
+@SuppressWarnings("restriction")
+public class CredentialsDialogNodeValue extends CredentialsNodeValue implements WebDialogValue {
 
     private static final String USE_SERVER_CREDENTIALS = "useServerLoginCredentials";
 
@@ -180,6 +189,20 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
 
         builder.add(CFG_PASSWORD, subBuilder.build());
         return builder.build();
+    }
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var credentials = getWebUICredentials(this);
+        return mapper.valueToTree(credentials);
+    }
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var credentials = mapper.treeToValue(json, Credentials.class);
+        setWebUICredentials(this, credentials);
     }
 
 }

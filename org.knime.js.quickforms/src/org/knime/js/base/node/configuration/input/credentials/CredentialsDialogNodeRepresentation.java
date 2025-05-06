@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.input.credentials;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.CredentialsRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,7 +64,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresentation<CredentialsDialogNodeValue>
-    implements SubNodeDescriptionProvider<CredentialsDialogNodeValue> {
+    implements SubNodeDescriptionProvider<CredentialsDialogNodeValue>,
+    WebDialogNodeRepresentation<CredentialsDialogNodeValue> {
 
     @JsonCreator
     private CredentialsDialogNodeRepresentation(@JsonProperty("label") final String label,
@@ -97,5 +101,10 @@ public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresen
     @Override
     public DialogNodePanel<CredentialsDialogNodeValue> createDialogPanel() {
         return new CredentialsConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new CredentialsRenderer(this);
     }
 }
