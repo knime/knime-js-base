@@ -1220,16 +1220,16 @@ window.knimeScatterPlotSelectionAppender = (function () {
         case 'Date and Time':
             format = _representation.dateTimeFormats.globalDateTimeFormat;
             break;
-        case 'Local Date':
+        case 'Date':
             format = _representation.dateTimeFormats.globalLocalDateFormat;
             break;
-        case 'Local Date Time':
+        case 'Date&time (Local)':
             format = _representation.dateTimeFormats.globalLocalDateTimeFormat;
             break;
-        case 'Local Time':
+        case 'Time':
             format = _representation.dateTimeFormats.globalLocalTimeFormat;
             break;
-        case 'Zoned Date Time':
+        case 'Date&time (Zoned)':
             format = _representation.dateTimeFormats.globalZonedDateTimeFormat;
             break;
         default:
@@ -1247,10 +1247,10 @@ window.knimeScatterPlotSelectionAppender = (function () {
     };
 
     DateFormat.prototype.format = function (n) {
-        if (this._knimeColType === 'Date and Time' || this._knimeColType === 'Local Date' ||
-            this._knimeColType === 'Local Date Time' || this._knimeColType === 'Local Time') {
+        if (this._knimeColType === 'Date and Time' || this._knimeColType === 'Date' ||
+            this._knimeColType === 'Date&time (Local)' || this._knimeColType === 'Time') {
             return moment(n).utc().format(this._format);
-        } else if (this._knimeColType === 'Zoned Date Time') {
+        } else if (this._knimeColType === 'Date&time (Zoned)') {
             return moment(n).tz(_representation.dateTimeFormats.timezone).format(this._format);
         }
     };

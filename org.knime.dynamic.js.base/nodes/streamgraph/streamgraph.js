@@ -305,21 +305,21 @@ window.knimeStreamgraph = (function () {
                     return moment(xAxisData[i]).utc().format(
                         _representation.options.dateTimeFormats.globalDateTimeFormat);
                 };
-            case 'Local Date':
+            case 'Date':
                 return function (i) {
                     return moment(xAxisData[i]).format(_representation.options.dateTimeFormats.globalLocalDateFormat);
                 };
-            case 'Local Date Time':
+            case 'Date&time (Local)':
                 return function (i) {
                     return moment(xAxisData[i]).format(
                         _representation.options.dateTimeFormats.globalLocalDateTimeFormat);
                 };
-            case 'Local Time':
+            case 'Time':
                 return function (i) {
                     return moment(xAxisData[i], 'hh:mm:ss.SSSSSSSSS').format(
                         _representation.options.dateTimeFormats.globalLocalTimeFormat);
                 };
-            case 'Zoned Date Time':
+            case 'Date&time (Zoned)':
                 return function (i) {
                     var data = xAxisData[i];
                     var regex = /(.*)\[(.*)\]$/;

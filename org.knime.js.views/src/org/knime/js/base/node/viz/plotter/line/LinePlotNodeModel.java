@@ -383,13 +383,13 @@ final class LinePlotNodeModel extends AbstractSVGWizardNodeModel<LinePlotViewRep
                     rowData[colID] = ((Long)tableData[colID]).doubleValue();
                 } else if (tableData[colID] instanceof String) {
                     String data = (String) tableData[colID];
-                    if (tableSpec.getKnimeTypes()[colID].equals("Local Date Time")) {
+                    if (tableSpec.getKnimeTypes()[colID].equals("Date&time (Local)")) {
                         rowData[colID] = ((Long)LocalDateTime.parse(data).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
-                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Date")) {
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Date")) {
                         rowData[colID] = ((Long)LocalDate.parse(data).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()).doubleValue();
-                    } else if (tableSpec.getKnimeTypes()[colID].equals("Local Time")) {
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Time")) {
                         rowData[colID] = ((Long)LocalTime.parse(data).atDate(LocalDate.now()).toInstant(ZoneOffset.UTC).toEpochMilli()).doubleValue();
-                    } else if (tableSpec.getKnimeTypes()[colID].equals("Zoned Date Time")) {
+                    } else if (tableSpec.getKnimeTypes()[colID].equals("Date&time (Zoned)")) {
                         rowData[colID] = ((Long)ZonedDateTime.parse(data).toInstant().toEpochMilli()).doubleValue();
                     } else {
                         // String

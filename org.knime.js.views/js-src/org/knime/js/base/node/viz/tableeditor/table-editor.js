@@ -125,14 +125,14 @@ window.table_editor = (function () {
             case 'String':
                 editor = new StringEditor();
                 break;
-            case 'Number (integer)':
-            case 'Number (long)':
+            case 'Number (Integer)':
+            case 'Number (Long Integer)':
                 editor = new IntEditor();
                 break;
-            case 'Number (double)':
+            case "Number (Floating Decimal)":
                 editor = new DoubleEditor();
                 break;
-            case 'Boolean value':
+            case 'Boolean':
                 editor = new BooleanEditor();
                 break;
         }
