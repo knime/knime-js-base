@@ -44,87 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   8 May 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.RadioButtonRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
 
 /**
- * The value for the column selection configuration node
+ * A radio button renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements WebDialogContent {
+public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+
+    private final String[] m_possibleValues;
+
+    private final String m_alignment;
 
     /**
-     * {@inheritDoc}
+     * Creates a new radio button renderer from the given node representation and config.
+     *
+     * @param nodeRep the representation of the node
+     * @param possibleValues the possible values to choose from
+     * @param alignment the alignment of the radio buttons
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public RadioButtonRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
+        final String alignment) {
+        super(nodeRep);
+        m_possibleValues = possibleValues;
+        m_alignment = alignment;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
-    }
+    public Optional<RadioButtonRendererOptions> getOptions() {
+        return Optional.of(new RadioButtonRendererOptions() {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
+            @Override
+            public Optional<StringChoice[]> getPossibleValues() {
+                return Optional.of(Stream.of(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
             }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
-        }
+
+            @Override
+            public Optional<String> getRadioLayout() {
+                return Optional.of(m_alignment);
+            }
+        });
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
-        builder.add("type", "string");
-
-        if (getColumn() == null) {
-            builder.addNull("default");
-        } else {
-            builder.add("default", getColumn());
-        }
-        return builder.build();
-    }
-
 }

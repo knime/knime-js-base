@@ -44,87 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   7 May 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
+import java.util.Arrays;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DropdownRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
 
 /**
- * The value for the column selection configuration node
+ * A dropdown renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements WebDialogContent {
+public final class DropdownRenderer extends SubNodeDescriptionProviderRenderer implements DropdownRendererSpec {
+
+    private final String[] m_possibleValues;
 
     /**
-     * {@inheritDoc}
+     * Creates a new dropdown renderer from the given node representation and config.
+     *
+     * @param nodeRep the representation of the node
+     * @param possibleValues the possible values to choose from
      */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    public DropdownRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues) {
+        super(nodeRep);
+        m_possibleValues = possibleValues;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
+    public Optional<DropdownRendererOptions> getOptions() {
+        return Optional.of(new DropdownRendererOptions() {
+            @Override
+            public Optional<StringChoice[]> getPossibleValues() {
+                return Optional
+                    .of(Arrays.stream(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
             }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
-        builder.add("type", "string");
-
-        if (getColumn() == null) {
-            builder.addNull("default");
-        } else {
-            builder.add("default", getColumn());
-        }
-        return builder.build();
+        });
     }
 
 }
