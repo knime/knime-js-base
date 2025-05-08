@@ -44,87 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   8 May 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.selection;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
+import org.knime.js.base.node.configuration.renderers.DropdownRenderer;
+import org.knime.js.base.node.configuration.renderers.RadioButtonRenderer;
+import org.knime.js.base.node.configuration.renderers.SingleSelectListBoxRenderer;
 
 /**
- * The value for the column selection configuration node
+ * Utility method to combine common logic of single selection configuration nodes.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class ColumnSelectionDialogNodeValue extends ColumnSelectionNodeValue implements WebDialogContent {
+public final class SingleEntrySelectionRendererUtil {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
-        setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
+    private SingleEntrySelectionRendererUtil() {
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieve the single selection renderer spec by the given type
+     *
+     * @param nodeRep the node representation
+     * @param type the component type to render
+     * @param possibleValues the possible values to choose from
+     * @param hasSizeLimit whether the component should limit its size
+     * @param sizeLimit the size limit of possible values to display simultaneously
+     * @return the renderer spec based on the single selection component type
      */
-    @Override
-    @JsonIgnore
-    public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setColumn(fromCmdLine);
+    public static LocalizedControlRendererSpec getWebUIDialogControlSpecByType(
+        final SubNodeDescriptionProvider<?> nodeRep, final String type, final String[] possibleValues,
+        final boolean hasSizeLimit, final int sizeLimit) {
+        return switch (type) {
+            case SingleSelectionComponentFactory.DROPDOWN -> //
+                    new DropdownRenderer(nodeRep, possibleValues);
+            case SingleSelectionComponentFactory.LIST -> //
+                    new SingleSelectListBoxRenderer(nodeRep, possibleValues, hasSizeLimit, sizeLimit);
+            case SingleSelectionComponentFactory.RADIO_BUTTONS_HORIZONTAL -> //
+                    new RadioButtonRenderer(nodeRep, possibleValues, "horizontal");
+            case SingleSelectionComponentFactory.RADIO_BUTTONS_VERTICAL -> //
+                    new RadioButtonRenderer(nodeRep, possibleValues, "vertical");
+            default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
+        };
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public void loadFromJson(final JsonValue json) throws JsonException {
-        if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
-        } else if (json instanceof JsonObject) {
-            try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
-                if (JsonValue.NULL.equals(val)) {
-                    setColumn(null);
-                } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
-                }
-            } catch (Exception e) {
-                throw new JsonException("Expected column name for key '" + CFG_COLUMN + ".", e);
-            }
-        } else {
-            throw new JsonException("Expected JSON object or JSON string, but got " + json.getValueType());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonIgnore
-    public JsonValue toJson() {
-        final JsonObjectBuilder builder = JsonUtil.getProvider().createObjectBuilder();
-        builder.add("type", "string");
-
-        if (getColumn() == null) {
-            builder.addNull("default");
-        } else {
-            builder.add("default", getColumn());
-        }
-        return builder.build();
-    }
-
 }

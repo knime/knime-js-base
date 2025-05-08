@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.selection.column;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeRepresentation;
+import org.knime.js.base.node.configuration.selection.SingleEntrySelectionRendererUtil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,17 +65,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ColumnSelectionDialogNodeRepresenation
     extends ColumnSelectionNodeRepresentation<ColumnSelectionDialogNodeValue>
-    implements SubNodeDescriptionProvider<ColumnSelectionDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ColumnSelectionDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<ColumnSelectionDialogNodeValue> {
 
     @JsonCreator
-    private ColumnSelectionDialogNodeRepresenation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final ColumnSelectionDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final ColumnSelectionDialogNodeValue currentValue,
-        @JsonProperty("possibleColumns") final String[] possibleColumns,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+    private ColumnSelectionDialogNodeRepresenation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final ColumnSelectionDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final ColumnSelectionDialogNodeValue currentValue, //
+        @JsonProperty("possibleColumns") final String[] possibleColumns, //
+        @JsonProperty("type") final String type, //
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions, //
         @JsonProperty("numVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue, possibleColumns, type, limitNumberVisOptions,
             numberVisOptions);
@@ -93,6 +97,12 @@ public class ColumnSelectionDialogNodeRepresenation
     @Override
     public DialogNodePanel<ColumnSelectionDialogNodeValue> createDialogPanel() {
         return new ColumnSelectionConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), getPossibleColumns(),
+            isLimitNumberVisOptions(), getNumberVisOptions()).at("column");
     }
 
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack">
+        <config key="Variable_0">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="dropdown"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="Column 5"/>
+        </config>
+    </config>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="defaultValue">
+            <entry key="column" type="xstring" value="Column 1"/>
+        </config>
+        <entry key="hideInDialog" type="xboolean" value="false"/>
+        <entry key="parameterName" type="xstring" value="dropdown"/>
+        <entry key="label" type="xstring" value="Label"/>
+        <entry key="description" type="xstring" value="Enter Description"/>
+        <entry key="required" type="xboolean" value="true"/>
+        <entry key="flowVariableName" type="xstring" value="dropdown"/>
+        <config key="possibleColumns">
+            <entry key="array-size" type="xint" value="10"/>
+            <entry key="0" type="xstring" value="Column 1"/>
+            <entry key="1" type="xstring" value="Column 2"/>
+            <entry key="2" type="xstring" value="Column 3"/>
+            <entry key="3" type="xstring" value="Column 4"/>
+            <entry key="4" type="xstring" value="Column 5"/>
+            <entry key="5" type="xstring" value="Column 6"/>
+            <entry key="6" type="xstring" value="Column 7"/>
+            <entry key="7" type="xstring" value="Column 8"/>
+            <entry key="8" type="xstring" value="Column 9"/>
+            <entry key="9" type="xstring" value="Column 10"/>
+        </config>
+        <entry key="type" type="xstring" value="Dropdown"/>
+        <entry key="limit_number_visible_options" type="xboolean" value="false"/>
+        <entry key="number_visible_options" type="xint" value="5"/>
+        <config key="input_filter">
+            <config key="type_filter">
+                <entry key="org.knime.core.data.StringValue" type="xboolean" value="false"/>
+                <entry key="org.knime.core.data.BooleanValue" type="xboolean" value="false"/>
+                <entry key="org.knime.core.data.IntValue" type="xboolean" value="false"/>
+                <entry key="org.knime.core.data.DoubleValue" type="xboolean" value="false"/>
+                <entry key="org.knime.core.data.LongValue" type="xboolean" value="false"/>
+                <entry key="org.knime.core.data.time.localdatetime.LocalDateTimeValue" type="xboolean" value="false"/>
+            </config>
+            <entry key="allow_all_types" type="xboolean" value="true"/>
+            <entry key="filter_columns_without_domain" type="xboolean" value="false"/>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.configuration.selection.column.ColumnSelectionDialogNodeFactory2"/>
+    <entry key="node-name" type="xstring" value="Column Selection Configuration"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.5.0.qualifier"/>
+    <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Column Selection Configuration"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>

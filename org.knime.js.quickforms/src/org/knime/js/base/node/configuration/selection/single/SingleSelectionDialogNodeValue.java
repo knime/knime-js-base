@@ -48,10 +48,14 @@
  */
 package org.knime.js.base.node.configuration.selection.single;
 
+import java.io.IOException;
+
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -64,7 +68,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements DialogNodeValue {
+public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}
@@ -79,7 +83,7 @@ public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeV
      */
     @Override
     public void loadFromString(final String fromCmdLine) throws UnsupportedOperationException {
-        setVariableValue(new String[] {fromCmdLine});
+        setVariableValue(new String[]{fromCmdLine});
     }
 
     /**
@@ -88,14 +92,14 @@ public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeV
     @Override
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
+            loadFromString(((JsonString)json).getString());
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_VARIABLE_VALUE);
+                JsonValue val = ((JsonObject)json).get(CFG_VARIABLE_VALUE);
                 if (JsonValue.NULL.equals(val)) {
                     setVariableValue(null);
                 } else {
-                    setVariableValue(new String[] {((JsonObject) json).getString(CFG_VARIABLE_VALUE)});
+                    setVariableValue(new String[]{((JsonObject)json).getString(CFG_VARIABLE_VALUE)});
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected string value for key '" + CFG_VARIABLE_VALUE + ".", e);
@@ -120,6 +124,19 @@ public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeV
             builder.add("default", getVariableValue()[0]);
         }
         return builder.build();
+    }
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        final var selectedValue = json.isNull() ? null : new String[]{json.asText()};
+        setVariableValue(selectedValue);
+    }
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        final var value = getVariableValue();
+        final var selectedValue = value == null || value.length == 0 ? null : value[0];
+        return MAPPER.valueToTree(selectedValue);
     }
 
 }

@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.selection.single;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
+import org.knime.js.base.node.configuration.selection.SingleEntrySelectionRendererUtil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,17 +65,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class SingleSelectionDialogNodeRepresentation
     extends SingleMultipleSelectionNodeRepresentation<SingleSelectionDialogNodeValue>
-    implements SubNodeDescriptionProvider<SingleSelectionDialogNodeValue> {
+    implements SubNodeDescriptionProvider<SingleSelectionDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<SingleSelectionDialogNodeValue> {
 
     @JsonCreator
-    private SingleSelectionDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final SingleSelectionDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final SingleSelectionDialogNodeValue currentValue,
-        @JsonProperty("possibleChoices") final String[] possibleChoices,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+    private SingleSelectionDialogNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final SingleSelectionDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final SingleSelectionDialogNodeValue currentValue, //
+        @JsonProperty("possibleChoices") final String[] possibleChoices, //
+        @JsonProperty("type") final String type, //
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions, //
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
             numberVisOptions);
@@ -93,6 +97,12 @@ public class SingleSelectionDialogNodeRepresentation
     @Override
     public DialogNodePanel<SingleSelectionDialogNodeValue> createDialogPanel() {
         return new SingleSelectionConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), getPossibleChoices(),
+            getLimitNumberVisOptions(), getNumberVisOptions());
     }
 
 }
