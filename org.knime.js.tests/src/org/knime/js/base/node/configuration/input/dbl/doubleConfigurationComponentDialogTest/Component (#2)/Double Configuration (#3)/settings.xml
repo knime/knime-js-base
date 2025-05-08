@@ -24,8 +24,8 @@
         </config>
         <entry key="hideInDialog" type="xboolean" value="false"/>
         <entry key="parameterName" type="xstring" value="double-input"/>
-        <entry key="label" type="xstring" value="Label"/>
-        <entry key="description" type="xstring" value="Enter Description"/>
+        <entry key="label" type="xstring" value="Default"/>
+        <entry key="description" type="xstring" value="Default double"/>
         <entry key="required" type="xboolean" value="true"/>
         <entry key="flowVariableName" type="xstring" value="double-input"/>
         <entry key="useMin" type="xboolean" value="false"/>

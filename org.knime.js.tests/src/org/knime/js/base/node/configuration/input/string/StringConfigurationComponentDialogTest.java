@@ -62,8 +62,10 @@ class StringConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "string-input-3";
         assertThatJson(dialogData.getDataFor(paramName)).inPath("$.string").isString().isEmpty();
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.string.type").isString()
-            .isEqualTo("string");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.string.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.string.title").isString().isEqualTo("Default");
+        assertThatJson(schema).inPath("$.properties.string.description").isString().isEqualTo("Default string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()

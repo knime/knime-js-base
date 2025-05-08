@@ -19,7 +19,7 @@
         <entry key="hideInDialog" type="xboolean" value="false"/>
         <entry key="parameterName" type="xstring" value="date-input"/>
         <entry key="label" type="xstring" value="Date"/>
-        <entry key="description" type="xstring" value="Enter Description"/>
+        <entry key="description" type="xstring" value="Date"/>
         <entry key="required" type="xboolean" value="true"/>
         <entry key="flowVariableName" type="xstring" value="date-input"/>
         <entry key="show_now" type="xboolean" value="true"/>

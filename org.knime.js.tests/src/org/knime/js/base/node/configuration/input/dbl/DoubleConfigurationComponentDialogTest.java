@@ -62,8 +62,10 @@ class DoubleConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "double-input-3";
         assertThatJson(dialogData.getDataFor(paramName)).inPath("$.double").isNumber().isZero();
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.double.type").isString()
-            .isEqualTo("number");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.double.type").isString().isEqualTo("number");
+        assertThatJson(schema).inPath("$.properties.double.title").isString().isEqualTo("Default");
+        assertThatJson(schema).inPath("$.properties.double.description").isString().isEqualTo("Default double");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()

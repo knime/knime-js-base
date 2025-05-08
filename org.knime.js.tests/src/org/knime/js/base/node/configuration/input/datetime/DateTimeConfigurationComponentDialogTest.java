@@ -62,7 +62,10 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "date-input-7";
         assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("2025-01-01");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Date");
+        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Date");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()

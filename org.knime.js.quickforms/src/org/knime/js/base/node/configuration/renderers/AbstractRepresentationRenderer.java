@@ -68,7 +68,7 @@ abstract class SubNodeDescriptionProviderRenderer implements ControlRendererSpec
 
     @Override
     public Optional<String> getDescription() {
-        return Optional.ofNullable(m_rep.getDescription()).filter(String::isBlank);
+        return Optional.ofNullable(m_rep.getDescription()).filter(description -> !description.isBlank());
     }
 
 }

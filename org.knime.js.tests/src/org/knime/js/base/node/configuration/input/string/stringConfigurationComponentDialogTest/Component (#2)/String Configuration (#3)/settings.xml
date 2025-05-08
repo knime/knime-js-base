@@ -19,7 +19,7 @@
         <entry key="hideInDialog" type="xboolean" value="false"/>
         <entry key="parameterName" type="xstring" value="string-input"/>
         <entry key="label" type="xstring" value="Default"/>
-        <entry key="description" type="xstring" value=""/>
+        <entry key="description" type="xstring" value="Default string"/>
         <entry key="required" type="xboolean" value="true"/>
         <entry key="flowVariableName" type="xstring" value="string-input"/>
         <entry key="regex" type="xstring" value=""/>

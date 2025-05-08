@@ -65,6 +65,10 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(data).inPath("$.isHiddenPassword").isBoolean().isTrue();
         assertThatJson(data).inPath("$.username").isString().isEqualTo("Hello");
         assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("object");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.type").isString().isEqualTo("object");
+        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Default");
+        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Default credentials");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()

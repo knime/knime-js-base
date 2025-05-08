@@ -62,8 +62,10 @@ class BooleanConfigurationComponentDialogTest extends IntegratedComponentDialogT
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "boolean-input-3";
         assertThatJson(dialogData.getDataFor(paramName)).inPath("$.boolean").isBoolean().isFalse();
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.boolean.type").isString()
-            .isEqualTo("boolean");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.boolean.type").isString().isEqualTo("boolean");
+        assertThatJson(schema).inPath("$.properties.boolean.title").isString().isEqualTo("I am a boolean");
+        assertThatJson(schema).inPath("$.properties.boolean.description").isString().isEqualTo("I am the description");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
