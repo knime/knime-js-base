@@ -53,11 +53,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigDeserializer;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigSerializer;
 import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
+import org.knime.js.base.node.configuration.renderers.ColumnFilterRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,7 +73,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepresentation<ColumnFilterDialogNodeValue>
-    implements SubNodeDescriptionProvider<ColumnFilterDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ColumnFilterDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<ColumnFilterDialogNodeValue> {
 
     private final DataTableSpec m_spec;
 
@@ -79,15 +83,15 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
     private final ModularValidatorConfig m_validatorConfig;
 
     @JsonCreator
-    private ColumnFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final ColumnFilterDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final ColumnFilterDialogNodeValue currentValue,
-        @JsonProperty("possibleColumns") final String[] possibleColumns,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
-        @JsonProperty("numberVisOptions") final Integer numberVisOptions,
+    private ColumnFilterDialogNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final ColumnFilterDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final ColumnFilterDialogNodeValue currentValue, //
+        @JsonProperty("possibleColumns") final String[] possibleColumns, //
+        @JsonProperty("type") final String type, //
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions, //
+        @JsonProperty("numberVisOptions") final Integer numberVisOptions, //
         @JsonProperty("spec") @JsonDeserialize(using = DataTableSpecDeserializer.class) final DataTableSpec spec,
         // Jackson simply sets validatorConfig to null if old JSON is parsed that doesn't contain the property yet
         @JsonProperty("validatorConfig") @JsonDeserialize(
@@ -181,12 +185,8 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_spec)
-                .append(m_validatorConfig)
-                .append(m_version)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_spec).append(m_validatorConfig)
+            .append(m_version).toHashCode();
     }
 
     /**
@@ -204,11 +204,12 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
             return false;
         }
         ColumnFilterDialogNodeRepresentation other = (ColumnFilterDialogNodeRepresentation)obj;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(m_spec, other.m_spec)
-                .append(m_validatorConfig, other.m_validatorConfig)
-                .append(m_version, other.m_version)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_spec, other.m_spec)
+            .append(m_validatorConfig, other.m_validatorConfig).append(m_version, other.m_version).isEquals();
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new ColumnFilterRenderer(this, isLimitNumberVisOptions(), getNumberVisOptions());
     }
 }

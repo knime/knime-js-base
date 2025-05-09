@@ -48,16 +48,21 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
+import java.io.IOException;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.column.ColumnFilter;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -73,7 +78,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements DialogNodeValue {
+public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements WebDialogValue {
 
     /**
      * Constructs a new ColumnFilterDialogNodeValue.
@@ -191,5 +196,23 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
             builder.add("default", arrayBuilder);
         }
         return builder.build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        final var dialogValue = new ColumnFilter();
+        return JsonFormsDataUtil.getMapper().valueToTree(dialogValue);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        // TODO Auto-generated method stub
+
     }
 }

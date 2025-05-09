@@ -50,7 +50,14 @@ package org.knime.js.base.node.configuration.selection.multiple;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.CheckboxesRenderer;
+import org.knime.js.base.node.configuration.renderers.ComboboxRenderer;
+import org.knime.js.base.node.configuration.renderers.MultiSelectListBoxRenderer;
+import org.knime.js.base.node.configuration.renderers.SimpleTwinlistRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,17 +69,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class MultipleSelectionDialogNodeRepresentation
     extends SingleMultipleSelectionNodeRepresentation<MultipleSelectionDialogNodeValue>
-    implements SubNodeDescriptionProvider<MultipleSelectionDialogNodeValue> {
+    implements SubNodeDescriptionProvider<MultipleSelectionDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<MultipleSelectionDialogNodeValue> {
 
     @JsonCreator
-    private MultipleSelectionDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final MultipleSelectionDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final MultipleSelectionDialogNodeValue currentValue,
-        @JsonProperty("possibleChoices") final String[] possibleChoices,
-        @JsonProperty("type") final String type,
-        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
+    private MultipleSelectionDialogNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final MultipleSelectionDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final MultipleSelectionDialogNodeValue currentValue, //
+        @JsonProperty("possibleChoices") final String[] possibleChoices, //
+        @JsonProperty("type") final String type, //
+        @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions, //
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue, possibleChoices, type, limitNumberVisOptions,
             numberVisOptions);
@@ -93,6 +101,29 @@ public class MultipleSelectionDialogNodeRepresentation
     @Override
     public DialogNodePanel<MultipleSelectionDialogNodeValue> createDialogPanel() {
         return new MultipleSelectionConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        final var type = getType();
+        if (type.equals(MultipleSelectionsComponentFactory.CHECK_BOXES_HORIZONTAL)) {
+            return new CheckboxesRenderer(this, getPossibleChoices(), "horizontal").at("value");
+        }
+        if (type.equals(MultipleSelectionsComponentFactory.CHECK_BOXES_VERTICAL)) {
+            return new CheckboxesRenderer(this, getPossibleChoices(), "vertical").at("value");
+        }
+        if (type.equals(MultipleSelectionsComponentFactory.LIST)) {
+            return new MultiSelectListBoxRenderer(this, getPossibleChoices(), getLimitNumberVisOptions(),
+                getNumberVisOptions()).at("value");
+        }
+        if (type.equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+            return new SimpleTwinlistRenderer(this, getPossibleChoices(), getLimitNumberVisOptions(),
+                getNumberVisOptions()).at("value");
+        }
+        if (type.equals(MultipleSelectionsComponentFactory.COMBOBOX)) {
+            return new ComboboxRenderer(this, getPossibleChoices()).at("value");
+        }
+        throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
     }
 
 }

@@ -49,8 +49,8 @@
 package org.knime.js.base.node.configuration.selection.multiple;
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -67,7 +67,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements DialogNodeValue {
+public class MultipleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}
