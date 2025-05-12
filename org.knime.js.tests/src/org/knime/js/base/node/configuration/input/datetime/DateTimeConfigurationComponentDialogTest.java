@@ -77,7 +77,7 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
     void testDateTimeConfigurationComponentDialogTypeTime() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "time-input-8";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("12:12:12");
+        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("12:12:00");
         assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].type").isString().isEqualTo("Control");

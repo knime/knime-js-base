@@ -63,6 +63,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.js.base.node.base.input.date.GranularityTime;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeFactory;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeValue;
@@ -84,8 +85,10 @@ class DateDialogNodeValueToAndFromJsonTest {
     }
 
     private static DateDialogNodeRepresentation createDateDialogNodeRepresentation(
-        final DateDialogNodeValue dateDialogNodeValue, final DateTimeType dateTimeType) {
+        final DateDialogNodeValue dateDialogNodeValue, final DateTimeType dateTimeType,
+        final GranularityTime granularityTime) {
         final var dateInputDialogNodeConfig = new DateInputDialogNodeConfig();
+        dateInputDialogNodeConfig.getDateConfig().setGranularity(granularityTime);
         dateInputDialogNodeConfig.getDateConfig().setType(dateTimeType);
         return new DateDialogNodeRepresentation(dateDialogNodeValue, dateInputDialogNodeConfig);
     }
@@ -122,7 +125,8 @@ class DateDialogNodeValueToAndFromJsonTest {
         final Temporal expectedToDialogDateTime, final Temporal fromDialogDateTime,
         final ZonedDateTime expectedFromDialogDateTime) throws IOException {
         final var dateDialogNodeValue = createDateDialogValue(toDialogDateTime);
-        final var dateDialogNodeRep = createDateDialogNodeRepresentation(dateDialogNodeValue, dateTimeType);
+        final var dateDialogNodeRep =
+            createDateDialogNodeRepresentation(dateDialogNodeValue, dateTimeType, GranularityTime.SHOW_SECONDS);
 
         final var dialogJSON = dateDialogNodeRep.transformValueToDialogJson(dateDialogNodeValue);
         assertEquals(dialogJSON, JsonFormsDataUtil.getMapper().valueToTree(expectedToDialogDateTime),
@@ -132,6 +136,28 @@ class DateDialogNodeValueToAndFromJsonTest {
             dateDialogNodeValue);
         assertEquals(expectedFromDialogDateTime, dateDialogNodeValue.getDate(),
             "Unexpected value during deserialization");
+    }
+
+    static Stream<Arguments> getToDialogJSONTruncateTimeTestCases() {
+        return Stream.of( //
+            Arguments.of(GranularityTime.SHOW_MINUTES, LocalTime.of(12, 12)),
+            Arguments.of(GranularityTime.SHOW_SECONDS, LocalTime.of(12, 12, 12)),
+            Arguments.of(GranularityTime.SHOW_MILLIS, LocalTime.of(12, 12, 12, 123000000)));
+    }
+
+    @ParameterizedTest(name = "Truncate to: ''{0}''")
+    @MethodSource("getToDialogJSONTruncateTimeTestCases")
+    void testToDialogJSONTruncateTime(final GranularityTime granularity, final LocalTime expectedTime)
+        throws IOException {
+        final var testTime = LocalTime.of(12, 12, 12, 123456789);
+        final var testDateTime = ZonedDateTime.of(LocalDateTime.of(DATE_DFLT, testTime), ZONE_DFLT);
+        final var dateDialogNodeValue = createDateDialogValue(testDateTime);
+        final var dateDialogNodeRep =
+            createDateDialogNodeRepresentation(dateDialogNodeValue, DateTimeType.LOCAL_TIME, granularity);
+
+        final var dialogJSON = dateDialogNodeRep.transformValueToDialogJson(dateDialogNodeValue);
+        assertEquals(dialogJSON, JsonFormsDataUtil.getMapper().valueToTree(expectedTime),
+            "Unexpected value during serialization");
     }
 
 }

@@ -53,6 +53,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
@@ -115,8 +116,6 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
         return new DateConfigurationPanel(this);
     }
 
-
-
     @Override
     public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
         return switch (getType()) {
@@ -131,7 +130,17 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
     public JsonNode transformValueToDialogJson(final DateDialogNodeValue dialogValue) throws IOException {
         final var mapper = JsonFormsDataUtil.getMapper();
 
-        final var date = dialogValue.getDate();
+        var date = dialogValue.equals(getDefaultValue()) && isUseDefaultExecTime() ? ZonedDateTime.now()
+            : dialogValue.getDate();
+
+        if (isShowMilliseconds()) {
+            date = date.truncatedTo(ChronoUnit.MILLIS);
+        } else if (isShowSeconds()) {
+            date = date.truncatedTo(ChronoUnit.SECONDS);
+        } else {
+            date = date.truncatedTo(ChronoUnit.MINUTES);
+        }
+
         final var value = switch (getType()) {
             case LOCAL_DATE -> date.toLocalDate();
             case LOCAL_TIME -> date.toLocalTime();
