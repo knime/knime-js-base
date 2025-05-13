@@ -48,53 +48,69 @@
  */
 package org.knime.js.base.node.configuration.renderers;
 
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.RadioButtonRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TypedStringFilterRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.TypedStringChoice;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeRepresentation;
 
 /**
- * A radio button renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
+ * A column filter renderer for the {@link ColumnFilterDialogNodeRepresentation}.
  *
  * @author Robin Gerling
  */
-public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+public class TypedStringFilterRenderer extends SubNodeDescriptionProviderRenderer
+    implements TypedStringFilterRendererSpec {
 
-    private final String[] m_possibleValues;
+    private final DataColumnSpec[] m_possibleSpecs;
 
-    private final Alignment m_alignment;
+    private final boolean m_hasSizeLimit;
+
+    private final int m_sizeLimit;
 
     /**
-     * Creates a new radio button renderer from the given node representation and config.
+     * Creates a new column filter renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
-     * @param possibleValues the possible values to choose from
-     * @param alignment the alignment of the radio buttons
+     * @param possibleSpecs the possible column specs to choose columns from
+     * @param hasSizeLimit whether the component should limit its size
+     * @param sizeLimit the size limit of possible values to display simultaneously
      */
-    public RadioButtonRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
-        final Alignment alignment) {
+    public TypedStringFilterRenderer(final SubNodeDescriptionProvider<?> nodeRep, final DataColumnSpec[] possibleSpecs,
+        final boolean hasSizeLimit, final int sizeLimit) {
         super(nodeRep);
-        m_possibleValues = possibleValues;
-        m_alignment = alignment;
+        m_possibleSpecs = possibleSpecs;
+        m_hasSizeLimit = hasSizeLimit;
+        m_sizeLimit = sizeLimit;
     }
 
     @Override
-    public Optional<RadioButtonRendererOptions> getOptions() {
-        return Optional.of(new RadioButtonRendererOptions() {
-
+    public Optional<TypedStringFilterRendererOptions> getOptions() {
+        return Optional.of(new TypedStringFilterRendererOptions() {
             @Override
-            public Optional<StringChoice[]> getPossibleValues() {
-                return Optional.of(Stream.of(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
+            public Optional<TypedStringChoice[]> getPossibleValues() {
+                return Optional.of(Arrays.stream(m_possibleSpecs).map(TypedStringChoice::fromColSpec)
+                    .toArray(TypedStringChoice[]::new));
             }
 
             @Override
-            public Optional<Alignment> getRadioLayout() {
-                return Optional.of(m_alignment);
+            public Optional<Integer> getTwinlistSize() {
+                return m_hasSizeLimit ? Optional.of(m_sizeLimit) : Optional.empty();
+            }
+
+            @Override
+            public Optional<String> getUnknownValuesText() {
+                return Optional.of("Any unknown column");
+            }
+
+            @Override
+            public Optional<String> getEmptyStateLabel() {
+                return Optional.of("No columns in this list.");
             }
         });
     }
+
 }

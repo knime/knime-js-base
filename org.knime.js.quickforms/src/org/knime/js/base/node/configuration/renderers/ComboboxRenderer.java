@@ -48,53 +48,44 @@
  */
 package org.knime.js.base.node.configuration.renderers;
 
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.RadioButtonRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ComboboxRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
+import org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeRepresentation;
 
 /**
- * A radio button renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
+ * A combobox renderer for multiple selection configurations, e.g.,
+ * {@link MultipleSelectionDialogNodeRepresentation}.
  *
  * @author Robin Gerling
  */
-public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+public class ComboboxRenderer extends SubNodeDescriptionProviderRenderer implements ComboboxRendererSpec {
 
     private final String[] m_possibleValues;
 
-    private final Alignment m_alignment;
-
     /**
-     * Creates a new radio button renderer from the given node representation and config.
+     * Creates a new combobox renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
      * @param possibleValues the possible values to choose from
-     * @param alignment the alignment of the radio buttons
      */
-    public RadioButtonRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
-        final Alignment alignment) {
+    public ComboboxRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues) {
         super(nodeRep);
         m_possibleValues = possibleValues;
-        m_alignment = alignment;
     }
 
     @Override
-    public Optional<RadioButtonRendererOptions> getOptions() {
-        return Optional.of(new RadioButtonRendererOptions() {
-
+    public Optional<ComboboxRendererOptions> getOptions() {
+        return Optional.of(new ComboboxRendererOptions() {
             @Override
             public Optional<StringChoice[]> getPossibleValues() {
-                return Optional.of(Stream.of(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
-            }
-
-            @Override
-            public Optional<Alignment> getRadioLayout() {
-                return Optional.of(m_alignment);
+                return Optional
+                    .of(Arrays.stream(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
             }
         });
     }
+
 }

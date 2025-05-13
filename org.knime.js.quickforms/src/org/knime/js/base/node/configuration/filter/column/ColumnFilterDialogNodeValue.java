@@ -48,16 +48,23 @@
  */
 package org.knime.js.base.node.configuration.filter.column;
 
+import java.io.IOException;
+
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.column.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.column.LegacyColumnFilterPersistor;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -73,7 +80,9 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements DialogNodeValue {
+public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implements WebDialogValue {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(ColumnFilterDialogNodeValue.class);
 
     /**
      * Constructs a new ColumnFilterDialogNodeValue.
@@ -123,7 +132,7 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     public void loadFromNodeSettingsInDialog(final NodeSettingsRO settings) {
         m_columns = settings.getStringArray(CFG_COLUMNS, DEFAULT_COLUMNS);
         try {
-            setSettings((NodeSettings) settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER));
+            setSettings((NodeSettings)settings.getNodeSettings(ColumnFilterNodeConfig.CFG_COLUMN_FILTER));
         } catch (InvalidSettingsException e) {
             setSettings(null);
         }
@@ -144,18 +153,18 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
     @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonArray) {
-            JsonArray array = (JsonArray) json;
+            JsonArray array = (JsonArray)json;
             m_columns = new String[array.size()];
             for (int i = 0; i < array.size(); i++) {
                 m_columns[i] = array.getString(i);
             }
         } else if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMNS);
+                JsonValue val = ((JsonObject)json).get(CFG_COLUMNS);
                 if (JsonValue.NULL.equals(val)) {
                     m_columns = null;
                 } else {
-                    JsonArray array = ((JsonObject) json).getJsonArray(CFG_COLUMNS);
+                    JsonArray array = ((JsonObject)json).getJsonArray(CFG_COLUMNS);
                     m_columns = new String[array.size()];
                     for (int i = 0; i < array.size(); i++) {
                         m_columns[i] = array.getString(i);
@@ -191,5 +200,35 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
             builder.add("default", arrayBuilder);
         }
         return builder.build();
+    }
+
+    static final class LegacyColumnFilterConfigurationPersistor extends LegacyColumnFilterPersistor {
+
+        protected LegacyColumnFilterConfigurationPersistor() {
+            super(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
+        }
+
+    }
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        final var columnFilterPersistor = new LegacyColumnFilterConfigurationPersistor();
+
+        ColumnFilter columnFilter;
+        try {
+            columnFilter = columnFilterPersistor.load(getSettings());
+        } catch (InvalidSettingsException e) {
+            LOGGER.error(e);
+            columnFilter = new ColumnFilter();
+        }
+
+        return JsonFormsDataUtil.getMapper().valueToTree(columnFilter);
+    }
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        final var columnFilter = JsonFormsDataUtil.getMapper().convertValue(json, ColumnFilter.class);
+        final var columnFilterPersistor = new LegacyColumnFilterConfigurationPersistor();
+        columnFilterPersistor.save(columnFilter, getSettings());
     }
 }

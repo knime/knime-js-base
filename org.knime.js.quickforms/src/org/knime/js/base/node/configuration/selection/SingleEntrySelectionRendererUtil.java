@@ -50,6 +50,7 @@ package org.knime.js.base.node.configuration.selection;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.configuration.renderers.DropdownRenderer;
 import org.knime.js.base.node.configuration.renderers.RadioButtonRenderer;
@@ -84,9 +85,9 @@ public final class SingleEntrySelectionRendererUtil {
             case SingleSelectionComponentFactory.LIST -> //
                     new SingleSelectListBoxRenderer(nodeRep, possibleValues, hasSizeLimit, sizeLimit);
             case SingleSelectionComponentFactory.RADIO_BUTTONS_HORIZONTAL -> //
-                    new RadioButtonRenderer(nodeRep, possibleValues, "horizontal");
+                    new RadioButtonRenderer(nodeRep, possibleValues, Alignment.HORIZONTAL);
             case SingleSelectionComponentFactory.RADIO_BUTTONS_VERTICAL -> //
-                    new RadioButtonRenderer(nodeRep, possibleValues, "vertical");
+                    new RadioButtonRenderer(nodeRep, possibleValues, Alignment.VERTICAL);
             default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
         };
     }

@@ -91,7 +91,7 @@ class ColumnSelectionConfigurationComponentDialogTest extends IntegratedComponen
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/column", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.format").isString().isEqualTo("radio");
         assertThatJson(uiSchema).inPath("$.elements[1].options.radioLayout").isString().isEqualTo("vertical");
-        assertThatJson(uiSchema).inPath("$.elements[0].options.possibleValues").isArray().hasSize(10);
+        assertThatJson(uiSchema).inPath("$.elements[1].options.possibleValues").isArray().hasSize(10);
     }
 
     @Test

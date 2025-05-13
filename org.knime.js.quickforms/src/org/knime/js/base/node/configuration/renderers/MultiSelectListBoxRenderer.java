@@ -48,53 +48,59 @@
  */
 package org.knime.js.base.node.configuration.renderers;
 
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.RadioButtonRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.MultiSelectListBoxRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
+import org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeRepresentation;
 
 /**
- * A radio button renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
+ * A multi select list box renderer for single selection configurations, e.g.,
+ * {@link MultipleSelectionDialogNodeRepresentation}.
  *
  * @author Robin Gerling
  */
-public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+public class MultiSelectListBoxRenderer extends SubNodeDescriptionProviderRenderer
+    implements MultiSelectListBoxRendererSpec {
 
     private final String[] m_possibleValues;
 
-    private final Alignment m_alignment;
+    private final boolean m_hasSizeLimit;
+
+    private final int m_sizeLimit;
 
     /**
-     * Creates a new radio button renderer from the given node representation and config.
+     * Creates a new multi select list box renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
      * @param possibleValues the possible values to choose from
-     * @param alignment the alignment of the radio buttons
+     * @param hasSizeLimit whether the component should limit its size
+     * @param sizeLimit the size limit of possible values to display simultaneously
      */
-    public RadioButtonRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
-        final Alignment alignment) {
+    public MultiSelectListBoxRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
+        final boolean hasSizeLimit, final int sizeLimit) {
         super(nodeRep);
         m_possibleValues = possibleValues;
-        m_alignment = alignment;
+        m_hasSizeLimit = hasSizeLimit;
+        m_sizeLimit = sizeLimit;
     }
 
     @Override
-    public Optional<RadioButtonRendererOptions> getOptions() {
-        return Optional.of(new RadioButtonRendererOptions() {
-
+    public Optional<MultiSelectListBoxRendererOptions> getOptions() {
+        return Optional.of(new MultiSelectListBoxRendererOptions() {
             @Override
             public Optional<StringChoice[]> getPossibleValues() {
-                return Optional.of(Stream.of(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
+                return Optional
+                    .of(Arrays.stream(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
             }
 
             @Override
-            public Optional<Alignment> getRadioLayout() {
-                return Optional.of(m_alignment);
+            public Optional<Integer> getSize() {
+                return m_hasSizeLimit ? Optional.of(m_sizeLimit) : Optional.empty();
             }
         });
     }
+
 }

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   8 May 2025 (Robin Gerling): created
+ *   9 May 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.renderers;
 
@@ -52,30 +52,30 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.RadioButtonRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.CheckboxesRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
+import org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeRepresentation;
 
 /**
- * A radio button renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.
+ * A checkboxes renderer for multiple selection configurations, e.g., {@link MultipleSelectionDialogNodeRepresentation}.
  *
  * @author Robin Gerling
  */
-public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+public final class CheckboxesRenderer extends SubNodeDescriptionProviderRenderer implements CheckboxesRendererSpec {
 
     private final String[] m_possibleValues;
 
     private final Alignment m_alignment;
 
     /**
-     * Creates a new radio button renderer from the given node representation and config.
+     * Creates a new checkboxes renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
      * @param possibleValues the possible values to choose from
-     * @param alignment the alignment of the radio buttons
+     * @param alignment the alignment of the checkboxes
      */
-    public RadioButtonRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
+    public CheckboxesRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
         final Alignment alignment) {
         super(nodeRep);
         m_possibleValues = possibleValues;
@@ -83,8 +83,8 @@ public final class RadioButtonRenderer extends SubNodeDescriptionProviderRendere
     }
 
     @Override
-    public Optional<RadioButtonRendererOptions> getOptions() {
-        return Optional.of(new RadioButtonRendererOptions() {
+    public Optional<CheckboxesRendererOptions> getOptions() {
+        return Optional.of(new CheckboxesRendererOptions() {
 
             @Override
             public Optional<StringChoice[]> getPossibleValues() {
@@ -92,9 +92,10 @@ public final class RadioButtonRenderer extends SubNodeDescriptionProviderRendere
             }
 
             @Override
-            public Optional<Alignment> getRadioLayout() {
+            public Optional<Alignment> getCheckboxLayout() {
                 return Optional.of(m_alignment);
             }
         });
     }
+
 }
