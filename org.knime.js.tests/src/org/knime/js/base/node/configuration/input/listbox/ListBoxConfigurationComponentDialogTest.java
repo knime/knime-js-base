@@ -44,47 +44,36 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 14, 2025 (Paul Bärnreuther): created
+ *   Apr 30, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.renderers;
+package org.knime.js.base.node.configuration.input.listbox;
 
-import java.util.Optional;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextAreaRendererSpec;
-import org.knime.js.base.node.configuration.input.string.StringDialogNodeRepresentation;
+import java.math.BigDecimal;
 
-/**
- * A non-localized multi-line text renderer for {@link StringDialogNodeRepresentation}s.
- *
- * @author Paul Bärnreuther
- */
-public class TextAreaRenderer extends SubNodeDescriptionProviderRenderer implements TextAreaRendererSpec {
+import org.junit.jupiter.api.Test;
+import org.knime.js.base.node.configuration.IntegratedComponentDialogTestBase;
 
-    private final int m_numRows;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-    /**
-     * Creates a new text area renderer.
-     *
-     * @param nodeRep the representation of the node
-     * @param numRows the number of rows to show in the text area
-     */
-    public TextAreaRenderer(final SubNodeDescriptionProvider<?> nodeRep, final int numRows) {
-        super(nodeRep);
-        m_numRows = numRows;
-    }
+class ListBoxConfigurationComponentDialogTest extends IntegratedComponentDialogTestBase {
 
-    @Override
-    public Optional<TextAreaRendererOptions> getOptions() {
-
-        return Optional.of(new TextAreaRendererOptions() {
-
-            @Override
-            public int getRows() {
-                return m_numRows;
-            }
-
-        });
+    @Test
+    void testListBoxConfigurationComponentDialog() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(2));
+        final var paramName = "list-box-input-3";
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.string").isString().isEqualTo("a\nb\nc");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.string.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.string.title").isString().isEqualTo("ListBox Label");
+        assertThatJson(schema).inPath("$.properties.string.description").isString().isEqualTo("ListBox Description");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/string", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("textArea");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.rows").isNumber().isEqualTo(BigDecimal.valueOf(8));
     }
 
 }
