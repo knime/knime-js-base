@@ -106,7 +106,8 @@ public class StringDialogNodeRepresentation extends StringNodeRepresentation<Str
     @Override
     public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
         final var isSingleLine = getEditorType().equals(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
-        final ControlRendererSpec textRenderer = isSingleLine ? new TextRenderer(this) : new TextAreaRenderer(this);
+        final ControlRendererSpec textRenderer =
+            isSingleLine ? new TextRenderer(this) : new TextAreaRenderer(this, getMultilineEditorHeight());
         return textRenderer.at("string");
     }
 

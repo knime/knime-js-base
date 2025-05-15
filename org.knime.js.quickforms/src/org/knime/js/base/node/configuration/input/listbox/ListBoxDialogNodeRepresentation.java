@@ -50,7 +50,10 @@ package org.knime.js.base.node.configuration.input.listbox;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.TextAreaRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,21 +63,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<ListBoxDialogNodeValue>
-    implements SubNodeDescriptionProvider<ListBoxDialogNodeValue> {
+public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<ListBoxDialogNodeValue> implements
+    SubNodeDescriptionProvider<ListBoxDialogNodeValue>, DefaultWebDialogNodeRepresentation<ListBoxDialogNodeValue> {
 
     @JsonCreator
-    private ListBoxDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final ListBoxDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final ListBoxDialogNodeValue currentValue,
-        @JsonProperty("regex") final String regex,
-        @JsonProperty("errormessage") final String errorMessage,
-        @JsonProperty("separator") final String separator,
-        @JsonProperty("separateeachcharacter") final boolean separateEachCharacter,
-        @JsonProperty("omitempty") final boolean omitEmpty,
-        @JsonProperty("separatorregex") final String separatorRegex,
+    private ListBoxDialogNodeRepresentation(@JsonProperty("label") final String label, //
+        @JsonProperty("description") final String description, //
+        @JsonProperty("required") final boolean required, //
+        @JsonProperty("defaultValue") final ListBoxDialogNodeValue defaultValue, //
+        @JsonProperty("currentValue") final ListBoxDialogNodeValue currentValue, //
+        @JsonProperty("regex") final String regex, //
+        @JsonProperty("errormessage") final String errorMessage, //
+        @JsonProperty("separator") final String separator, //
+        @JsonProperty("separateeachcharacter") final boolean separateEachCharacter, //
+        @JsonProperty("omitempty") final boolean omitEmpty, //
+        @JsonProperty("separatorregex") final String separatorRegex, //
         @JsonProperty("numberVisOptions") final Integer numberVisOptions) {
         super(label, description, required, defaultValue, currentValue, regex, errorMessage, separator,
             separateEachCharacter, omitEmpty, separatorRegex, numberVisOptions);
@@ -95,6 +98,11 @@ public class ListBoxDialogNodeRepresentation extends ListBoxNodeRepresentation<L
     @Override
     public DialogNodePanel<ListBoxDialogNodeValue> createDialogPanel() {
         return new ListBoxConfigurationPanel(this);
+    }
+
+    @Override
+    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+        return new TextAreaRenderer(this, getNumberVisOptions()).at("string");
     }
 
 }

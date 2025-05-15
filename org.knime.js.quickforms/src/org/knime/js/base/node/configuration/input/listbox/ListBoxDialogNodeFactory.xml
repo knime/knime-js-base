@@ -2,7 +2,7 @@
 <knimeNode icon="./configuration_listbox.png" type="Configuration" xmlns="http://knime.org/node/v3.6" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://knime.org/node/v3.6 http://knime.org/node/v3.6.xsd">
-    <name>List Box Configuration</name>
+    <name>List Box Configuration (legacy)</name>
 
 	<shortDescription>
 	   Provides a text area configuration option to an encapsulating component's dialog. 
