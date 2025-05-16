@@ -2,7 +2,7 @@
 <knimeNode icon="./configuration_file.png" type="Configuration" xmlns="http://knime.org/node/v3.6" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://knime.org/node/v3.6 http://knime.org/node/v3.6.xsd">
-    <name>Repository File Chooser Configuration</name>
+    <name>Repository File Chooser Configuration (legacy)</name>
 
 	<shortDescription>
 	   Allows choosing single or multiple files, workflows or directories from a remote mountpoint. 

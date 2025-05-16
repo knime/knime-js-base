@@ -44,58 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 3, 2019 (Daniel Bogenrieder): created
+ *   16 May 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.fileupload;
+package org.knime.js.base.node.configuration.renderers;
 
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
-import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
-import org.knime.js.base.node.configuration.renderers.LocalFileChooserRenderer;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalFileChooserRendererSpec;
+import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
+import org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeRepresentation;
 
 /**
- * The dialog representation of the file upload configuration node
+ * A local file chooser renderer for the {@link FileDialogNodeRepresentation}.
  *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class FileDialogNodeRepresentation extends FileUploadNodeRepresentation<FileUploadDialogNodeValue>
-    implements SubNodeDescriptionProvider<FileUploadDialogNodeValue>,
-    DefaultWebDialogNodeRepresentation<FileUploadDialogNodeValue> {
+public final class LocalFileChooserRenderer extends SubNodeDescriptionProviderRenderer
+    implements LocalFileChooserRendererSpec {
 
-    @JsonCreator
-    private FileDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final FileUploadDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final FileUploadDialogNodeValue currentValue,
-        @JsonProperty("fileTypes") final String[] fileTypes, @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("disableOutput") final boolean disableOutput) {
-        super(label, description, required, defaultValue, currentValue, fileTypes, errorMessage, disableOutput);
-    }
+    private final FileDialogNodeRepresentation m_localFileChooserDialogRep;
 
     /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
+     * Creates a new local file chooser renderer for the given {@link DateDialogNodeRepresentation}.
+     *
+     * @param localFileChooserDialogRep the representation of the node
      */
-    public FileDialogNodeRepresentation(final FileUploadDialogNodeValue currentValue,
-        final FileInputDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(), config.getFileUploadConfig(), config.getLabelConfig());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogNodePanel<FileUploadDialogNodeValue> createDialogPanel() {
-        return new FileConfigurationPanel(this);
+    public LocalFileChooserRenderer(final FileDialogNodeRepresentation localFileChooserDialogRep) {
+        super(localFileChooserDialogRep);
+        m_localFileChooserDialogRep = localFileChooserDialogRep;
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
-        return new LocalFileChooserRenderer(this);
+    public Optional<LocalFileChooserRendererOptions> getOptions() {
+        return Optional.of(new LocalFileChooserRendererOptions() {
+
+            @Override
+            public Optional<String[]> getFileExtensions() {
+                final var fileTypes = m_localFileChooserDialogRep.getFileTypes();
+                return fileTypes.length == 0 ? Optional.empty() : Optional.of(fileTypes);
+            }
+
+        });
     }
+
 }
