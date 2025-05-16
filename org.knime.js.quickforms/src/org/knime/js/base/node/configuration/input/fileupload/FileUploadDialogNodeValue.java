@@ -48,12 +48,17 @@
  */
 package org.knime.js.base.node.configuration.input.fileupload;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -66,7 +71,7 @@ import jakarta.json.JsonValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadDialogNodeValue extends FileUploadNodeValue implements DialogNodeValue {
+public class FileUploadDialogNodeValue extends FileUploadNodeValue implements WebDialogValue {
 
     /**
      * {@inheritDoc}
@@ -135,6 +140,19 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements Di
             builder.add(CFG_FILE_NAME, m_fileName);
         }
         return builder.build();
+    }
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        return TextNode.valueOf(getPath());
+    }
+
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        final var filePath = json.asText();
+        setPath(filePath);
+        setFileName(Paths.get(filePath).getFileName().toString());
     }
 
 }

@@ -44,58 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 3, 2019 (Daniel Bogenrieder): created
+ *   May 16, 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.input.fileupload;
 
-import org.knime.core.node.dialog.DialogNodePanel;
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
-import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
-import org.knime.js.base.node.configuration.renderers.LocalFileChooserRenderer;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.junit.jupiter.api.Test;
+import org.knime.js.base.node.configuration.IntegratedComponentDialogTestBase;
 
-/**
- * The dialog representation of the file upload configuration node
- *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- */
-public class FileDialogNodeRepresentation extends FileUploadNodeRepresentation<FileUploadDialogNodeValue>
-    implements SubNodeDescriptionProvider<FileUploadDialogNodeValue>,
-    DefaultWebDialogNodeRepresentation<FileUploadDialogNodeValue> {
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-    @JsonCreator
-    private FileDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
-        @JsonProperty("defaultValue") final FileUploadDialogNodeValue defaultValue,
-        @JsonProperty("currentValue") final FileUploadDialogNodeValue currentValue,
-        @JsonProperty("fileTypes") final String[] fileTypes, @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("disableOutput") final boolean disableOutput) {
-        super(label, description, required, defaultValue, currentValue, fileTypes, errorMessage, disableOutput);
+class LocalFileBrowserConfigurationComponentDialogTest extends IntegratedComponentDialogTestBase {
+
+    @Test
+    void testLocalFileBrowserConfigurationComponentDialog() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(2));
+        final var paramName = "file-input-3";
+        assertThatJson(dialogData.getDataFor(paramName)).isString().isEmpty();
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Local file browser title");
+        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Local file browser description");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[0].options").isObject().doesNotContainKey("fileExtensions");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
     }
 
-    /**
-     * @param currentValue The value currently used by the node
-     * @param config The config of the node
-     */
-    public FileDialogNodeRepresentation(final FileUploadDialogNodeValue currentValue,
-        final FileInputDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(), config.getFileUploadConfig(), config.getLabelConfig());
+    @Test
+    void testLocalFileBrowserConfigurationComponentDialogWithDefaultValueAndExtensions()
+        throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(2));
+        final var paramName = "file-input-with-default-value-and-extensions-4";
+        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("/text.txt");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[1].options.fileExtensions").isArray()
+            .isEqualTo(new String[]{".txt|.csv|.csv.gz", ".txt", ".csv", ".csv.gz"});
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogNodePanel<FileUploadDialogNodeValue> createDialogPanel() {
-        return new FileConfigurationPanel(this);
-    }
-
-    @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
-        return new LocalFileChooserRenderer(this);
-    }
 }
