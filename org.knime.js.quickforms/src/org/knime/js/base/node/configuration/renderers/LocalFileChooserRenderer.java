@@ -59,7 +59,7 @@ import org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeRepre
  *
  * @author Robin Gerling
  */
-public final class LocalFileChooserRenderer extends SubNodeDescriptionProviderRenderer
+public final class LocalFileChooserRenderer extends AbstractRepresentationRenderer
     implements LocalFileChooserRendererSpec {
 
     private final FileDialogNodeRepresentation m_localFileChooserDialogRep;

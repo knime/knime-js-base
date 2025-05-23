@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.single.SingleSelectionDial
  *
  * @author Robin Gerling
  */
-public final class RadioButtonRenderer extends SubNodeDescriptionProviderRenderer implements RadioButtonRendererSpec {
+public final class RadioButtonRenderer extends AbstractRepresentationRenderer implements RadioButtonRendererSpec {
 
     private final String[] m_possibleValues;
 

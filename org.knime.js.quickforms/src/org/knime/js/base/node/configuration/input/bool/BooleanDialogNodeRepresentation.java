@@ -47,7 +47,7 @@ package org.knime.js.base.node.configuration.input.bool;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.bool.BooleanNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.CheckboxRenderer;
 
@@ -88,7 +88,7 @@ public class BooleanDialogNodeRepresentation extends BooleanNodeRepresentation<B
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         return new CheckboxRenderer(this).at("boolean");
     }
 }

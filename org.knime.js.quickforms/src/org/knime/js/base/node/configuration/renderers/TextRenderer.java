@@ -59,7 +59,7 @@ import org.knime.js.base.node.configuration.input.string.StringDialogNodeReprese
  *
  * @author Paul Bärnreuther
  */
-public class TextRenderer extends SubNodeDescriptionProviderRenderer implements TextRendererSpec {
+public class TextRenderer extends AbstractRepresentationRenderer implements TextRendererSpec {
 
     private final StringDialogNodeRepresentation m_stringDialogRep;
 

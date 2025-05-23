@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.selection.column;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeRepresentation;
 import org.knime.js.base.node.configuration.selection.SingleEntrySelectionRendererUtil;
 
@@ -100,7 +100,7 @@ public class ColumnSelectionDialogNodeRepresenation
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
         return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), getPossibleColumns(),
             isLimitNumberVisOptions(), getNumberVisOptions()).at("column");
     }

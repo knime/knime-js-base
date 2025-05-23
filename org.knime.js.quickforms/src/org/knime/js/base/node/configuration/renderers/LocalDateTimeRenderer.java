@@ -61,7 +61,7 @@ import org.knime.time.util.DateTimeType;
  *
  * @author Robin Gerling
  */
-public class LocalDateTimeRenderer extends SubNodeDescriptionProviderRenderer implements LocalDateTimeRendererSpec {
+public class LocalDateTimeRenderer extends AbstractRepresentationRenderer implements LocalDateTimeRendererSpec {
 
     private final DateDialogNodeRepresentation m_dateDialogRep;
 

@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNode
  *
  * @author Robin Gerling
  */
-public class TypedStringFilterRenderer extends SubNodeDescriptionProviderRenderer
+public class TypedStringFilterRenderer extends AbstractRepresentationRenderer
     implements TypedStringFilterRendererSpec {
 
     private final DataColumnSpec[] m_possibleSpecs;

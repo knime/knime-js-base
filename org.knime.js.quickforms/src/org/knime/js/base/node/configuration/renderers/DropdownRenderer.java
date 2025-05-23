@@ -61,7 +61,7 @@ import org.knime.js.base.node.configuration.selection.single.SingleSelectionDial
  *
  * @author Robin Gerling
  */
-public final class DropdownRenderer extends SubNodeDescriptionProviderRenderer implements DropdownRendererSpec {
+public final class DropdownRenderer extends AbstractRepresentationRenderer implements DropdownRendererSpec {
 
     private final String[] m_possibleValues;
 

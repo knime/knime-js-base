@@ -49,8 +49,8 @@
 package org.knime.js.base.node.configuration.selection.value;
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -65,7 +65,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionDialogNodeValue extends ValueSelectionNodeValue implements DialogNodeValue {
+public class ValueSelectionDialogNodeValue extends ValueSelectionNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}

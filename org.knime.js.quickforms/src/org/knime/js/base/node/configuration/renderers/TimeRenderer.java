@@ -60,7 +60,7 @@ import org.knime.time.util.DateTimeType;
  *
  * @author Robin Gerling
  */
-public class TimeRenderer extends SubNodeDescriptionProviderRenderer implements TimeRendererSpec {
+public class TimeRenderer extends AbstractRepresentationRenderer implements TimeRendererSpec {
 
     private final DateDialogNodeRepresentation m_dateDialogRep;
 

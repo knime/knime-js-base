@@ -53,7 +53,14 @@ import java.util.Map;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
+import org.knime.js.base.node.configuration.renderers.ManualFilterRenderer;
+import org.knime.js.base.node.configuration.renderers.ProvidedChoicesManualFilterRenderer;
+import org.knime.js.base.node.configuration.renderers.StaticChoicesDropdownRenderer;
+import org.knime.js.base.node.configuration.selection.value.DomainFromColumnDropdownProvider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,12 +71,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresentation<ValueFilterDialogNodeValue>
-    implements SubNodeDescriptionProvider<ValueFilterDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ValueFilterDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<ValueFilterDialogNodeValue> {
 
     @JsonCreator
     private ValueFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final ValueFilterDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final ValueFilterDialogNodeValue currentValue,
         @JsonProperty("lockColumn") final boolean lockColumn,
@@ -96,6 +103,21 @@ public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresen
     @Override
     public DialogNodePanel<ValueFilterDialogNodeValue> createDialogPanel() {
         return new ValueFilterConfigurationPanel(this);
+    }
+
+    @Override
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        final var columnToDomainPossibleValues = getPossibleValues();
+        if (isLockColumn()) {
+            return new ManualFilterRenderer(this, columnToDomainPossibleValues.get(getCurrentValue().getColumn()),
+                isLimitNumberVisOptions(), getNumberVisOptions()).at("values");
+        }
+        final var columnDropdown = new StaticChoicesDropdownRenderer("Column", getPossibleColumns());
+        final var domainStateProvider =
+            new DomainFromColumnDropdownProvider(columnToDomainPossibleValues, columnDropdown);
+        final var valueDropdown = new ProvidedChoicesManualFilterRenderer("Values", domainStateProvider,
+            isLimitNumberVisOptions(), getNumberVisOptions());
+        return new LabeledGroupRenderer(this, List.of(columnDropdown.at("column"), valueDropdown.at("values")));
     }
 
 }

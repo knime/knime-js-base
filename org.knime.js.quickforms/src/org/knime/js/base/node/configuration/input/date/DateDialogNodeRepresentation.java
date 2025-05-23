@@ -59,7 +59,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.DateRenderer;
 import org.knime.js.base.node.configuration.renderers.LocalDateTimeRenderer;
@@ -117,7 +117,7 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         return switch (getType()) {
             case LOCAL_DATE -> new DateRenderer(this);
             case LOCAL_TIME -> new TimeRenderer(this);

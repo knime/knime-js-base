@@ -134,6 +134,11 @@ public class IntegratedComponentDialogTestBase extends WorkflowTestBase {
             }
 
             @Override
+            public JsonNode getInitialUpdates() {
+                return initialDataJson.get("initialUpdates");
+            }
+
+            @Override
             public JsonNode getSchemaFor(final String paramName) {
                 return initialDataJson.get("schema").get("properties").get("model").get("properties").get(paramName);
             }
@@ -158,6 +163,11 @@ public class IntegratedComponentDialogTestBase extends WorkflowTestBase {
          * @return the complete ui schema of the component dialog
          */
         JsonNode getUiSchema();
+
+        /**
+         * @return the initial updates of provided states
+         */
+        JsonNode getInitialUpdates();
 
         /**
          *

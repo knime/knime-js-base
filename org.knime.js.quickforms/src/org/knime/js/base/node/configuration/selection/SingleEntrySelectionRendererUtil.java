@@ -48,11 +48,18 @@
  */
 package org.knime.js.base.node.configuration.selection;
 
+import java.util.List;
+
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.configuration.renderers.DropdownRenderer;
+import org.knime.js.base.node.configuration.renderers.ProvidedChoicesDropdownRenderer;
+import org.knime.js.base.node.configuration.renderers.ProvidedChoicesRadioButtonRenderer;
+import org.knime.js.base.node.configuration.renderers.ProvidedChoicesSingleSelectListBoxRenderer;
 import org.knime.js.base.node.configuration.renderers.RadioButtonRenderer;
 import org.knime.js.base.node.configuration.renderers.SingleSelectListBoxRenderer;
 
@@ -76,7 +83,7 @@ public final class SingleEntrySelectionRendererUtil {
      * @param sizeLimit the size limit of possible values to display simultaneously
      * @return the renderer spec based on the single selection component type
      */
-    public static LocalizedControlRendererSpec getWebUIDialogControlSpecByType(
+    public static DialogElementRendererSpec<?> getWebUIDialogControlSpecByType(
         final SubNodeDescriptionProvider<?> nodeRep, final String type, final String[] possibleValues,
         final boolean hasSizeLimit, final int sizeLimit) {
         return switch (type) {
@@ -89,6 +96,36 @@ public final class SingleEntrySelectionRendererUtil {
             case SingleSelectionComponentFactory.RADIO_BUTTONS_VERTICAL -> //
                     new RadioButtonRenderer(nodeRep, possibleValues, Alignment.VERTICAL);
             default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
+        };
+    }
+
+    /**
+     * Similar to {@link #getWebUIDialogControlSpecByType} but the name does not come from a node representation and the
+     * possible values are provided by a state provider.
+     *
+     * @param name the name of the dialog element, e.g. the label above the control
+     * @param type the component type to render
+     * @param possibleValuesProvider the state provider for the possible values to choose from
+     * @param limitNumberVisOptions whether the component should limit its size
+     * @param numberVisOptions the size limit of possible values to display simultaneously
+     * @return the renderer spec based on the single selection component type
+     */
+    public static DialogElementRendererSpec getWebUIDialogControlSpecByType(final String name, final String type,
+        final StateProvider<List<StringChoice>> possibleValuesProvider, final boolean limitNumberVisOptions,
+        final Integer numberVisOptions) {
+
+        return switch (type) {
+            case SingleSelectionComponentFactory.DROPDOWN -> //
+                    new ProvidedChoicesDropdownRenderer(name, possibleValuesProvider);
+            case SingleSelectionComponentFactory.LIST -> //
+                    new ProvidedChoicesSingleSelectListBoxRenderer(name, possibleValuesProvider, limitNumberVisOptions,
+                        numberVisOptions);
+            case SingleSelectionComponentFactory.RADIO_BUTTONS_HORIZONTAL -> //
+                    new ProvidedChoicesRadioButtonRenderer(name, possibleValuesProvider, Alignment.HORIZONTAL);
+            case SingleSelectionComponentFactory.RADIO_BUTTONS_VERTICAL -> //
+                    new ProvidedChoicesRadioButtonRenderer(name, possibleValuesProvider, Alignment.VERTICAL);
+            default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
+
         };
     }
 }

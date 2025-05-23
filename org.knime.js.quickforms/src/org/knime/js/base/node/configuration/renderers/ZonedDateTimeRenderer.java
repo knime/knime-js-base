@@ -62,7 +62,7 @@ import org.knime.time.util.DateTimeType;
  *
  * @author Robin Gerling
  */
-public class ZonedDateTimeRenderer extends SubNodeDescriptionProviderRenderer implements ZonedDateTimeRendererSpec {
+public class ZonedDateTimeRenderer extends AbstractRepresentationRenderer implements ZonedDateTimeRendererSpec {
 
     private final DateDialogNodeRepresentation m_dateDialogRep;
 

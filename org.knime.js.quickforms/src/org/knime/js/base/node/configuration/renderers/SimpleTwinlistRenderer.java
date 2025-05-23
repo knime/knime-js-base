@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.multiple.MultipleSelection
  *
  * @author Robin Gerling
  */
-public class SimpleTwinlistRenderer extends SubNodeDescriptionProviderRenderer
+public class SimpleTwinlistRenderer extends AbstractRepresentationRenderer
     implements SimpleTwinlistRendererSpec {
 
     private final String[] m_possibleValues;

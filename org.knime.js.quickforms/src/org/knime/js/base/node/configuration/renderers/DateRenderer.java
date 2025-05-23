@@ -57,7 +57,7 @@ import org.knime.time.util.DateTimeType;
  *
  * @author Robin Gerling
  */
-public class DateRenderer extends SubNodeDescriptionProviderRenderer implements DateRendererSpec {
+public class DateRenderer extends AbstractRepresentationRenderer implements DateRendererSpec {
 
     /**
      * Creates a new date renderer for the given {@link DateDialogNodeRepresentation}.

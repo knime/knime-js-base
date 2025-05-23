@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.configuration.filter.value;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -56,14 +57,18 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.util.ManualFilter;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -74,7 +79,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 /**
- * A filter configuration. Specifies 
+ * A filter configuration. Specifies
  * <ul>
  * <li>The name of a column to filter on</li>
  * <li>The permitted values in the filter column</li>
@@ -84,10 +89,14 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements DialogNodeValue {
+public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements WebDialogValue {
+
+    static final NodeLogger LOGGER = NodeLogger.getLogger(ValueFilterDialogNodeValue.class);
 
     protected static final String CFG_ENFORCE_OPT = "enforce-option";
+
     public static final EnforceOption DEFAULT_ENFORCE_OPT = EnforceOption.EnforceInclusion;
+
     private EnforceOption m_enforceOption = DEFAULT_ENFORCE_OPT;
 
     /**
@@ -141,17 +150,15 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     public void updateInclExcl(final List<String> values) {
         Set<String> currentIncludes = new HashSet<String>(Arrays.asList(m_values));
         Set<String> currentExcludes = new HashSet<String>(Arrays.asList(m_excludes));
-        values.stream()
-                .filter((val) -> !currentIncludes.contains(val))
-                .filter((val) -> !currentExcludes.contains(val))
-                .forEach((newValue) -> {
-                    if (m_enforceOption == EnforceOption.EnforceInclusion) {
-                        currentExcludes.add(newValue);
-                    }
-                    if (m_enforceOption == EnforceOption.EnforceExclusion) {
-                        currentIncludes.add(newValue);
-                    }
-                });
+        values.stream().filter(val -> !currentIncludes.contains(val)).filter(val -> !currentExcludes.contains(val))
+            .forEach((newValue) -> {
+                if (m_enforceOption == EnforceOption.EnforceInclusion) {
+                    currentExcludes.add(newValue);
+                }
+                if (m_enforceOption == EnforceOption.EnforceExclusion) {
+                    currentIncludes.add(newValue);
+                }
+            });
         m_values = currentIncludes.toArray(new String[0]);
         m_excludes = currentExcludes.toArray(new String[0]);
     }
@@ -176,19 +183,14 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
         setEnforceOption(EnforceOption.parse(settings.getString(CFG_ENFORCE_OPT, DEFAULT_ENFORCE_OPT.toString())));
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
-        return "column=" + super.getColumn() + ", "
-                + "includes=" + Arrays.toString(this.getValues())
-                + ", "
-                + "excludes=" + Arrays.toString(this.getExcludes())
-                + ", "
-                + "enforce="
-                + (this.getEnforceOption()==EnforceOption.EnforceInclusion ? "inclusion" : "exclusion");
+        return "column=" + super.getColumn() + ", " + "includes=" + Arrays.toString(this.getValues()) + ", "
+            + "excludes=" + Arrays.toString(this.getExcludes()) + ", " + "enforce="
+            + (this.getEnforceOption() == EnforceOption.EnforceInclusion ? "inclusion" : "exclusion");
     }
 
     /**
@@ -210,10 +212,8 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             return false;
         }
         ValueFilterDialogNodeValue other = (ValueFilterDialogNodeValue)obj;
-        return new EqualsBuilder()
-                .append(this.getExcludes(), other.getExcludes())
-                .append(this.getEnforceOption(), other.getEnforceOption())
-                .isEquals();
+        return new EqualsBuilder().append(this.getExcludes(), other.getExcludes())
+            .append(this.getEnforceOption(), other.getEnforceOption()).isEquals();
     }
 
     /**
@@ -221,12 +221,8 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(super.getColumn())
-                .append(super.getValues())
-                .append(this.getExcludes())
-                .append(this.getEnforceOption().toString())
-                .toHashCode();
+        return new HashCodeBuilder().append(super.getColumn()).append(super.getValues()).append(this.getExcludes())
+            .append(this.getEnforceOption().toString()).toHashCode();
     }
 
     /**
@@ -238,12 +234,11 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
         setColumn(settings.getString(CFG_COLUMN, DEFAULT_COLUMN));
         setValues(settings.getStringArray(CFG_VALUES, DEFAULT_VALUES));
         setExcludes(settings.getStringArray(CFG_EXCLUDES, DEFAULT_EXCLUDES));
-        setEnforceOption( EnforceOption.parse(
+        setEnforceOption(EnforceOption.parse(
             // default fallback in case setting cannot be read
             settings.getString(CFG_ENFORCE_OPT, DEFAULT_ENFORCE_OPT.toString()),
             // default fallback in case read setting cannot be parsed
-            DEFAULT_ENFORCE_OPT)
-            );
+            DEFAULT_ENFORCE_OPT));
     }
 
     /**
@@ -263,20 +258,20 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonObject) {
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_COLUMN);
+                JsonValue val = ((JsonObject)json).get(CFG_COLUMN);
                 if (JsonValue.NULL.equals(val)) {
                     setColumn(null);
                 } else {
-                    setColumn(((JsonObject) json).getString(CFG_COLUMN));
+                    setColumn(((JsonObject)json).getString(CFG_COLUMN));
                 }
             } catch (Exception e) {
                 throw new JsonException("Expected string value for key '" + CFG_COLUMN + ".", e);
             }
 
             try {
-                JsonValue val = ((JsonObject) json).get(CFG_VALUES);
+                JsonValue val = ((JsonObject)json).get(CFG_VALUES);
                 if (!JsonValue.NULL.equals(val)) {
-                    JsonArray values = ((JsonObject) json).getJsonArray(CFG_VALUES);
+                    JsonArray values = ((JsonObject)json).getJsonArray(CFG_VALUES);
                     setValues(jsonToStrArr(values));
                 } else {
                     setValues(null);
@@ -286,7 +281,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             }
 
             try {
-                JsonArray excludes = ((JsonObject) json).getJsonArray(CFG_EXCLUDES);
+                JsonArray excludes = ((JsonObject)json).getJsonArray(CFG_EXCLUDES);
                 if (excludes != null && !JsonValue.NULL.equals(excludes)) {
                     setExcludes(jsonToStrArr(excludes));
                 } else {
@@ -297,7 +292,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             }
 
             try {
-                JsonString enforceOption = ((JsonObject) json).getJsonString(CFG_ENFORCE_OPT);
+                JsonString enforceOption = ((JsonObject)json).getJsonString(CFG_ENFORCE_OPT);
                 if (enforceOption != null && !JsonValue.NULL.equals(enforceOption)) {
                     setEnforceOption(EnforceOption.parse(enforceOption.getString(), DEFAULT_ENFORCE_OPT));
                 } else {
@@ -343,7 +338,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
 
     private static String[] jsonToStrArr(final JsonArray array) {
         String[] strings = new String[array.size()];
-        for (int i=0; i < array.size(); i++) {
+        for (int i = 0; i < array.size(); i++) {
             strings[i] = array.getString(i);
         }
         return strings;
@@ -365,6 +360,31 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
             builder.add("default", arrayBuilder);
         }
         return builder.build();
+    }
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var root = mapper.createObjectNode();
+
+        final var manualFilter =
+            new ManualFilter(getValues(), getExcludes(), getEnforceOption() == EnforceOption.EnforceExclusion);
+
+        root.set("values", mapper.valueToTree(manualFilter));
+        root.put("column", getColumn());
+        return root;
+    }
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        final var manualFilter = JsonFormsDataUtil.getMapper().treeToValue(json.get("values"), ManualFilter.class);
+        final var column = json.get("column").asText(null);
+        setColumn(column);
+        setEnforceOption(
+            manualFilter.m_includeUnknownColumns ? EnforceOption.EnforceExclusion : EnforceOption.EnforceInclusion);
+        setExcludes(manualFilter.m_manuallyDeselected);
+        setValues(manualFilter.m_manuallySelected);
     }
 
 }

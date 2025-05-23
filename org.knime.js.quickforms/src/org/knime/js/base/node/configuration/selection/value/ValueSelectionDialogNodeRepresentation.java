@@ -53,8 +53,15 @@ import java.util.Map;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.js.base.node.base.selection.value.ColumnType;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeRepresentation;
+import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
+import org.knime.js.base.node.configuration.renderers.StaticChoicesDropdownRenderer;
+import org.knime.js.base.node.configuration.selection.SingleEntrySelectionRendererUtil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,16 +73,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ValueSelectionDialogNodeRepresentation
     extends ValueSelectionNodeRepresentation<ValueSelectionDialogNodeValue>
-    implements SubNodeDescriptionProvider<ValueSelectionDialogNodeValue> {
+    implements SubNodeDescriptionProvider<ValueSelectionDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<ValueSelectionDialogNodeValue> {
 
     @JsonCreator
     private ValueSelectionDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final ValueSelectionDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final ValueSelectionDialogNodeValue currentValue,
-        @JsonProperty("columnType") final ColumnType columnType,
-        @JsonProperty("lockColumn") final boolean lockColumn,
+        @JsonProperty("columnType") final ColumnType columnType, @JsonProperty("lockColumn") final boolean lockColumn,
         @JsonProperty("possibleValues") final Map<String, List<String>> possibleValues,
         @JsonProperty("type") final String type,
         @JsonProperty("limitNumberVisOptions") final boolean limitNumberVisOptions,
@@ -99,6 +105,35 @@ public class ValueSelectionDialogNodeRepresentation
     @Override
     public DialogNodePanel<ValueSelectionDialogNodeValue> createDialogPanel() {
         return new ValueSelectionConfigurationPanel(this);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        final var columnToDomainPossibleValues = getPossibleValues();
+        if (isLockColumn()) {
+            final var lockedColumnValues =
+                columnToDomainPossibleValues.get(getCurrentValue().getColumn()).toArray(String[]::new);
+            return getStaticValueRenderer(lockedColumnValues).at("value");
+        }
+        final var columnDropdown = new StaticChoicesDropdownRenderer("Column", getPossibleColumns());
+        final var domainStateProvider =
+            new DomainFromColumnDropdownProvider(columnToDomainPossibleValues, columnDropdown);
+        final var valueRenderer = getDynamicValueRenderer("Value", domainStateProvider);
+        return new LabeledGroupRenderer(this, List.of(columnDropdown.at("column"), valueRenderer.at("value")));
+    }
+
+    @SuppressWarnings("rawtypes")
+    private DialogElementRendererSpec getStaticValueRenderer(final String[] possibleValues) {
+        return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), possibleValues,
+            isLimitNumberVisOptions(), getNumberVisOptions());
+    }
+
+    @SuppressWarnings("rawtypes")
+    private DialogElementRendererSpec getDynamicValueRenderer(final String name,
+        final StateProvider<List<StringChoice>> possibleValuesProvider) {
+        return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(name, getType(), possibleValuesProvider,
+            isLimitNumberVisOptions(), getNumberVisOptions());
     }
 
 }

@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.selection.multiple;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
@@ -107,7 +107,7 @@ public class MultipleSelectionDialogNodeRepresentation
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
         return switch (getType()) {
             case MultipleSelectionsComponentFactory.CHECK_BOXES_HORIZONTAL -> //
                     new CheckboxesRenderer(this, getPossibleChoices(), Alignment.HORIZONTAL).at(WEB_UI_DATA_PATH);

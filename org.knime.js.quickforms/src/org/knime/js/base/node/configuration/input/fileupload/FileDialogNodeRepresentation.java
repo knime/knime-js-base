@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.input.fileupload;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.LocalFileChooserRenderer;
 
@@ -95,7 +95,7 @@ public class FileDialogNodeRepresentation extends FileUploadNodeRepresentation<F
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
         return new LocalFileChooserRenderer(this);
     }
 }

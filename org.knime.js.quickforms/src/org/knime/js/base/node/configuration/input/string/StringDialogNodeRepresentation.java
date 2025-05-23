@@ -52,7 +52,7 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ControlRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.string.StringNodeConfig;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.TextAreaRenderer;
@@ -104,7 +104,7 @@ public class StringDialogNodeRepresentation extends StringNodeRepresentation<Str
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         final var isSingleLine = getEditorType().equals(StringNodeConfig.EDITOR_TYPE_SINGLE_LINE_STRING);
         final ControlRendererSpec textRenderer =
             isSingleLine ? new TextRenderer(this) : new TextAreaRenderer(this, getMultilineEditorHeight());
