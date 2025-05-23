@@ -59,7 +59,7 @@ import org.knime.js.base.node.configuration.input.string.StringDialogNodeReprese
  *
  * @author Paul Bärnreuther
  */
-public class CredentialsRenderer extends SubNodeDescriptionProviderRenderer implements CredentialsRendererSpec {
+public class CredentialsRenderer extends AbstractRepresentationRenderer implements CredentialsRendererSpec {
 
     private final CredentialsDialogNodeRepresentation m_credentialsDialogRep;
 

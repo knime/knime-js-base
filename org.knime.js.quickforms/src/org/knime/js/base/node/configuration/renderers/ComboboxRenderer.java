@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.multiple.MultipleSelection
  *
  * @author Robin Gerling
  */
-public class ComboboxRenderer extends SubNodeDescriptionProviderRenderer implements ComboboxRendererSpec {
+public class ComboboxRenderer extends AbstractRepresentationRenderer implements ComboboxRendererSpec {
 
     private final String[] m_possibleValues;
 

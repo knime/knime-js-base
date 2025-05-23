@@ -53,11 +53,11 @@ import java.util.Optional;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ControlRendererSpec;
 
-abstract class SubNodeDescriptionProviderRenderer implements ControlRendererSpec {
+abstract class AbstractRepresentationRenderer implements ControlRendererSpec {
 
     SubNodeDescriptionProvider<?> m_rep;
 
-    SubNodeDescriptionProviderRenderer(final SubNodeDescriptionProvider<?> rep) {
+    AbstractRepresentationRenderer(final SubNodeDescriptionProvider<?> rep) {
         m_rep = rep;
     }
 

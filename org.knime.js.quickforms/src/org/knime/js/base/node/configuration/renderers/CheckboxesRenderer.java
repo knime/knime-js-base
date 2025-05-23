@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.multiple.MultipleSelection
  *
  * @author Robin Gerling
  */
-public final class CheckboxesRenderer extends SubNodeDescriptionProviderRenderer implements CheckboxesRendererSpec {
+public final class CheckboxesRenderer extends AbstractRepresentationRenderer implements CheckboxesRendererSpec {
 
     private final String[] m_possibleValues;
 

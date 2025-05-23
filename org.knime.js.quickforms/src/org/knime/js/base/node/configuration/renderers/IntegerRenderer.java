@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.input.integer.IntegerDialogNodeRepre
  *
  * @author Paul Bärnreuther
  */
-public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implements IntegerRendererSpec {
+public class IntegerRenderer extends AbstractRepresentationRenderer implements IntegerRendererSpec {
 
     private final IntegerDialogNodeRepresentation m_intDialogRep;
 

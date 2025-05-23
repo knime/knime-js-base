@@ -56,7 +56,7 @@ import org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeRepresen
  *
  * @author Paul Bärnreuther
  */
-public class CheckboxRenderer extends SubNodeDescriptionProviderRenderer implements CheckboxRendererSpec {
+public class CheckboxRenderer extends AbstractRepresentationRenderer implements CheckboxRendererSpec {
 
     /**
      * Creates a new checkbox renderer for the given {@link BooleanDialogNodeRepresentation}.

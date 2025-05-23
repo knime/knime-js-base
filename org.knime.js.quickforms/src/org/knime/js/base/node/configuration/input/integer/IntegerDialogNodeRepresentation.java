@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.input.integer;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
 import org.knime.js.base.node.configuration.renderers.IntegerRenderer;
 
@@ -99,7 +99,7 @@ public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<I
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         return new IntegerRenderer(this).at("integer");
     }
 

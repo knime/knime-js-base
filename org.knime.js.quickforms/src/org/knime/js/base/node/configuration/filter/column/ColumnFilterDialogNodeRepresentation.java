@@ -58,7 +58,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalizedControlRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigDeserializer;
@@ -221,7 +221,7 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
     }
 
     @Override
-    public LocalizedControlRendererSpec getWebUIDialogControlSpec() {
+    public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
         final var possibleColumns = new HashSet<>(Arrays.asList(getPossibleColumns()));
         final var possibleSpecs =
             m_spec.stream().filter(spec -> possibleColumns.contains(spec.getName())).toArray(DataColumnSpec[]::new);

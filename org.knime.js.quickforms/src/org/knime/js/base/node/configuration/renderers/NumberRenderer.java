@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeRepresenta
  *
  * @author Paul Bärnreuther
  */
-public class NumberRenderer extends SubNodeDescriptionProviderRenderer implements NumberRendererSpec {
+public class NumberRenderer extends AbstractRepresentationRenderer implements NumberRendererSpec {
 
     private final DoubleDialogNodeRepresentation m_doubleDialogRep;
 

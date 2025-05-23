@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.multiple.MultipleSelection
  *
  * @author Robin Gerling
  */
-public class MultiSelectListBoxRenderer extends SubNodeDescriptionProviderRenderer
+public class MultiSelectListBoxRenderer extends AbstractRepresentationRenderer
     implements MultiSelectListBoxRendererSpec {
 
     private final String[] m_possibleValues;

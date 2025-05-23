@@ -62,7 +62,7 @@ import org.knime.js.base.node.configuration.selection.single.SingleSelectionDial
  *
  * @author Robin Gerling
  */
-public class SingleSelectListBoxRenderer extends SubNodeDescriptionProviderRenderer
+public class SingleSelectListBoxRenderer extends AbstractRepresentationRenderer
     implements SingleSelectListBoxRendererSpec {
 
     private final String[] m_possibleValues;
