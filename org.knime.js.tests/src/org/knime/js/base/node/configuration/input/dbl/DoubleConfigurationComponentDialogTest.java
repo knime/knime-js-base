@@ -70,7 +70,7 @@ class DoubleConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/double", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[0]").isObject().doesNotContainKey("validations");
+        assertThatJson(uiSchema).inPath("$.elements[0]").isObject().doesNotContainKey("validation");
     }
 
     @Test
@@ -80,11 +80,10 @@ class DoubleConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/double", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations").isArray().hasSize(2);
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[0]").isObject().containsEntry("id", "min")
-            .containsEntry("errorMessage", "The value must be at least 0.1.");
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[1]").isObject().containsEntry("id", "max")
-            .containsEntry("errorMessage", "The value must not exceed 0.9.");
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.min").isObject().containsEntry("errorMessage",
+            "The value must be at least 0.1.");
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.max").isObject().containsEntry("errorMessage",
+            "The value must not exceed 0.9.");
     }
 
 }

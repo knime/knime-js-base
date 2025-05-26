@@ -80,11 +80,9 @@ class StringConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/string", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations").isArray().hasSize(1);
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[0].id").isString().isEqualTo("pattern");
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[0].parameters.pattern").isString()
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.pattern.parameters.pattern").isString()
             .isEqualTo(".+");
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[0].errorMessage").isString()
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.pattern.errorMessage").isString()
             .isEqualTo("The string must match the pattern: .+");
     }
 
@@ -95,11 +93,9 @@ class StringConfigurationComponentDialogTest extends IntegratedComponentDialogTe
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[2].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/string", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[2].options.validations").isArray().hasSize(1);
-        assertThatJson(uiSchema).inPath("$.elements[2].options.validations[0].id").isString().isEqualTo("pattern");
-        assertThatJson(uiSchema).inPath("$.elements[2].options.validations[0].parameters.pattern").isString()
+        assertThatJson(uiSchema).inPath("$.elements[2].options.validation.pattern.parameters.pattern").isString()
             .isEqualTo(".+");
-        assertThatJson(uiSchema).inPath("$.elements[2].options.validations[0].errorMessage").isString()
+        assertThatJson(uiSchema).inPath("$.elements[2].options.validation.pattern.errorMessage").isString()
             .isEqualTo("This is the message (might contain ?-placeholders)");
     }
 

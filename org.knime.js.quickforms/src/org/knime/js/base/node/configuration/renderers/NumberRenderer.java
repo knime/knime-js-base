@@ -53,6 +53,8 @@ import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.NumberRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MaxValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation;
 import org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeRepresentation;
 
 /**
@@ -84,15 +86,26 @@ public class NumberRenderer extends SubNodeDescriptionProviderRenderer implement
         return Optional.of(new NumberRendererOptions() {
 
             @Override
-            public Optional<NumberInputWidgetValidation[]> getValidations() {
-                return Optional.of(builtinValidations.toArray(NumberInputWidgetValidation[]::new));
+            public Optional<NumberRendererValidationOptions> getValidation() {
+                return Optional.of(new NumberRendererValidationOptions() {
+
+                    @Override
+                    public Optional<MinValidation> getMin() {
+                        return getMinValidation();
+                    }
+
+                    @Override
+                    public Optional<MaxValidation> getMax() {
+                        return getMaxValidation();
+                    }
+                });
             }
 
         });
 
     }
 
-    Optional<NumberInputWidgetValidation> getMinValidation() {
+    Optional<MinValidation> getMinValidation() {
         if (m_doubleDialogRep.isUseMin()) {
             return Optional.of(new NumberInputWidgetValidation.MinValidation() {
 
@@ -107,7 +120,7 @@ public class NumberRenderer extends SubNodeDescriptionProviderRenderer implement
         }
     }
 
-    Optional<NumberInputWidgetValidation> getMaxValidation() {
+    Optional<MaxValidation> getMaxValidation() {
         if (m_doubleDialogRep.isUseMax()) {
             return Optional.of(new NumberInputWidgetValidation.MaxValidation() {
 

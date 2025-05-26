@@ -70,10 +70,10 @@ class IntegerConfigurationComponentDialogTest extends IntegratedComponentDialogT
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/integer", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[0].options.validations[0]").isObject().containsEntry("id", "min")
-            .containsEntry("errorMessage", "The value must be at least -2147483648.");
-        assertThatJson(uiSchema).inPath("$.elements[0].options.validations[1]").isObject().containsEntry("id", "max")
-            .containsEntry("errorMessage", "The value must not exceed 2147483647.");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.validation.min").isObject().containsEntry("errorMessage",
+            "The value must be at least -2147483648.");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.validation.max").isObject().containsEntry("errorMessage",
+            "The value must not exceed 2147483647.");
     }
 
     @Test
@@ -83,11 +83,10 @@ class IntegerConfigurationComponentDialogTest extends IntegratedComponentDialogT
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/integer", paramName));
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations").isArray().hasSize(2);
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[0]").isObject().containsEntry("id", "min")
-            .containsEntry("errorMessage", "The value must be at least 0.");
-        assertThatJson(uiSchema).inPath("$.elements[1].options.validations[1]").isObject().containsEntry("id", "max")
-            .containsEntry("errorMessage", "The value must not exceed 100.");
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.min").isObject().containsEntry("errorMessage",
+            "The value must be at least 0.");
+        assertThatJson(uiSchema).inPath("$.elements[1].options.validation.max").isObject().containsEntry("errorMessage",
+            "The value must not exceed 100.");
     }
 
 }

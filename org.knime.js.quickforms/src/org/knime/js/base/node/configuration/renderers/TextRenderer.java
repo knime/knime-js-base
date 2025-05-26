@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.renderers;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.TextInputWidgetValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.TextInputWidgetValidation.PatternValidation;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeRepresentation;
 
 /**
@@ -79,26 +79,31 @@ public class TextRenderer extends SubNodeDescriptionProviderRenderer implements 
         if (regex == null || regex.isEmpty()) {
             return Optional.empty();
         }
-        final var errorMessage =
-            Optional.ofNullable(m_stringDialogRep.getErrorMessage()).filter(s -> !s.isEmpty());
+        final var errorMessage = Optional.ofNullable(m_stringDialogRep.getErrorMessage()).filter(s -> !s.isEmpty());
 
         return Optional.of(new TextRendererOptions() {
 
             @Override
-            public Optional<TextInputWidgetValidation[]> getValidations() {
-                return Optional.of(new TextInputWidgetValidation[]{new TextInputWidgetValidation.PatternValidation() {
+            public Optional<TextRendererValidationOptions> getValidation() {
+                return Optional.of(new TextRendererValidationOptions() {
 
                     @Override
-                    protected String getPattern() {
-                        return regex;
-                    }
+                    public Optional<PatternValidation> getPattern() {
+                        return Optional.of(new PatternValidation() {
 
-                    @Override
-                    public String getErrorMessage() {
-                        return errorMessage.orElseGet(super::getErrorMessage);
-                    }
+                            @Override
+                            protected String getPattern() {
+                                return regex;
+                            }
 
-                }});
+                            @Override
+                            public String getErrorMessage() {
+                                return errorMessage.orElseGet(super::getErrorMessage);
+                            }
+
+                        });
+                    }
+                });
             }
 
         });

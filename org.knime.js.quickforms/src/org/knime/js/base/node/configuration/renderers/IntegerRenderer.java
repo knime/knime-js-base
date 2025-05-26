@@ -53,6 +53,8 @@ import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.IntegerRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MaxValidation;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation;
 import org.knime.js.base.node.configuration.input.integer.IntegerDialogNodeRepresentation;
 
 /**
@@ -84,8 +86,21 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
         return Optional.of(new NumberRendererOptions() {
 
             @Override
-            public Optional<NumberInputWidgetValidation[]> getValidations() {
-                return Optional.of(builtinValidations.toArray(NumberInputWidgetValidation[]::new));
+            public Optional<NumberRendererValidationOptions> getValidation() {
+                return Optional.of(new NumberRendererValidationOptions() {
+
+                    @Override
+                    public Optional<MaxValidation> getMax() {
+                        return getMaxValidation();
+                    }
+
+                    @Override
+                    public Optional<MinValidation> getMin() {
+                        return getMinValidation();
+                    }
+
+
+                });
             }
 
         });
@@ -97,7 +112,7 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
         return TypeBounds.INTEGER;
     }
 
-    private Optional<NumberInputWidgetValidation> getMinValidation() {
+    private Optional<MinValidation> getMinValidation() {
         if (m_intDialogRep.isUseMin()) {
             return Optional.of(new NumberInputWidgetValidation.MinValidation() {
 
@@ -112,7 +127,7 @@ public class IntegerRenderer extends SubNodeDescriptionProviderRenderer implemen
         }
     }
 
-    private Optional<NumberInputWidgetValidation> getMaxValidation() {
+    private Optional<MaxValidation> getMaxValidation() {
         if (m_intDialogRep.isUseMax()) {
             return Optional.of(new NumberInputWidgetValidation.MaxValidation() {
 
