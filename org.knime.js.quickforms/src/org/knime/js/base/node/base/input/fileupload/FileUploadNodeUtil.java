@@ -95,6 +95,36 @@ public final class FileUploadNodeUtil {
     }
 
     /**
+     * This method is to be used on a result of the {@link #getFileTypes(JTextField)} method to extract only the file extensions without the leading dot and without the entry combined by |.
+     * E.g. if the input is:
+     * <pre>
+     *  ".txt", ".csv", ".tsv", ".xlsx", ".txt|.csv|.tsv|.xlsx"
+     *  </pre>
+     *  the output will be:
+     *  <pre>
+     *  "txt", "csv", "tsv", "xlsx"
+     *  </pre>
+     * @param fileTypes the file types as returned by {@link #getFileTypes(JTextField)}
+     * @return the file extensions without the leading dot and without the entry combined by |
+     */
+    public static String[] extractExtensions(final String[] fileTypes) {
+        if (fileTypes.length == 0) {
+            return fileTypes;
+        }
+        List<String> extensions = new ArrayList<>(fileTypes.length);
+        for (String type : fileTypes) {
+            if (type.contains("|")) {
+                // skip the combined entry
+                continue;
+            }
+            String extension = type.startsWith(".") ? type.substring(1) : type;
+            extensions.add(extension);
+        }
+        return extensions.toArray(new String[0]);
+
+    }
+
+    /**
      * Tries to determine the file name of an arbitrary path
      * @param path The path including the file name as last component, can be file system path or a url string
      * @return the file name or the path itself if the file name can not be deduced from it

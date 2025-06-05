@@ -84,7 +84,7 @@ class LocalFileBrowserConfigurationComponentDialogTest extends IntegratedCompone
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.fileExtensions").isArray()
-            .isEqualTo(new String[]{".txt|.csv|.csv.gz", ".txt", ".csv", ".csv.gz"});
+            .isEqualTo(new String[]{"txt", "csv", "csv.gz"});
     }
 
 }

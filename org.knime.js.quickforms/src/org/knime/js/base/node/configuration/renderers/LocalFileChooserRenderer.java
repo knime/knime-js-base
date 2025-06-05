@@ -51,6 +51,7 @@ package org.knime.js.base.node.configuration.renderers;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalFileChooserRendererSpec;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
 import org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeRepresentation;
 
@@ -81,7 +82,8 @@ public final class LocalFileChooserRenderer extends AbstractRepresentationRender
             @Override
             public Optional<String[]> getFileExtensions() {
                 final var fileTypes = m_localFileChooserDialogRep.getFileTypes();
-                return fileTypes.length == 0 ? Optional.empty() : Optional.of(fileTypes);
+                final var fileExtensions = FileUploadNodeUtil.extractExtensions(fileTypes);
+                return fileExtensions.length == 0 ? Optional.empty() : Optional.of(fileExtensions);
             }
 
         });
