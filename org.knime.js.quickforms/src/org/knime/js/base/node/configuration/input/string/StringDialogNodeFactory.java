@@ -48,55 +48,43 @@
  */
 package org.knime.js.base.node.configuration.input.string;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
 /**
  * Factory for the string configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class StringDialogNodeFactory extends NodeFactory<StringDialogNodeModel> {
+@SuppressWarnings("restriction")
+public final class StringDialogNodeFactory extends WebUINodeFactory<StringDialogNodeModel> {
+
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("String Configuration") //
+        .icon("./configuration_string.png") //
+        .shortDescription("""
+                Provides a string configuration option to an encapsulating component's dialog.
+                Outputs a string flow variable with the set value.
+                    """) //
+        .fullDescription("Outputs a string flow variable with a set value from a component's dialog.") //
+        .modelSettingsClass(StringDialogNodeSettings.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("text", "box") //
+        .build();
 
     /**
-     * {@inheritDoc}
+     * Default constructor.
      */
+    public StringDialogNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public StringDialogNodeModel createNodeModel() {
         return new StringDialogNodeModel();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<StringDialogNodeModel> createNodeView(final int viewIndex, final StringDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
-    }
-
 }

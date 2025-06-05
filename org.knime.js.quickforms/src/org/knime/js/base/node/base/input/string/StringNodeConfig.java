@@ -67,15 +67,15 @@ public class StringNodeConfig {
     public static final String EDITOR_TYPE_MULTI_LINE_STRING = "Multi-line";
 
     private static final String CFG_REGEX = "regex";
-    private static final String DEFAULT_REGEX = "";
+    public static final String DEFAULT_REGEX = "";
     private String m_regex = DEFAULT_REGEX;
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
-    private static final String DEFAULT_ERROR_MESSAGE = "";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
-    private static final String CFG_EDITOR_TYPE = "editorType";
-    private static final String DEFAULT_EDITOR_TYPE = EDITOR_TYPE_SINGLE_LINE_STRING;
+    public static final String CFG_EDITOR_TYPE = "editorType";
+    public static final String DEFAULT_EDITOR_TYPE = EDITOR_TYPE_SINGLE_LINE_STRING;
     private String m_editorType = DEFAULT_EDITOR_TYPE;
 
     private static final String CFG_MULTI_LINE_EDITOR_WIDTH = "multilineEditorWidth";
@@ -83,7 +83,7 @@ public class StringNodeConfig {
     private int m_multilineEditorWidth = DEFAULT_MULTI_LINE_EDITOR_WIDTH;
 
     private static final String CFG_MULTI_LINE_EDITOR_HEIGHT = "multilineEditorHeight";
-    private static final int DEFAULT_MULTI_LINE_EDITOR_HEIGHT = 5;
+    public static final int DEFAULT_MULTI_LINE_EDITOR_HEIGHT = 5;
     private int m_multilineEditorHeight = DEFAULT_MULTI_LINE_EDITOR_HEIGHT;
 
     /**
