@@ -61,15 +61,15 @@ import org.knime.core.node.NodeSettingsWO;
 public class LabeledConfig {
 
     private static final String CFG_LABEL = "label";
-    private static final String DEFAULT_LABEL = "Label";
+    public static final String DEFAULT_LABEL = "Label";
     private String m_label = DEFAULT_LABEL;
 
     private static final String CFG_DESCRIPTION = "description";
-    private static final String DEFAULT_DESCRIPTION = "Enter Description";
+    public static final String DEFAULT_DESCRIPTION = "Enter Description";
     private String m_description = DEFAULT_DESCRIPTION;
 
     private static final String CFG_REQUIRED = "required";
-    private static final boolean DEFAULT_REQUIRED = true;
+    public static final boolean DEFAULT_REQUIRED = true;
     private boolean m_required = DEFAULT_REQUIRED;
 
     /**

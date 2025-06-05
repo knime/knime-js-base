@@ -48,55 +48,96 @@
  */
 package org.knime.js.base.node.configuration.input.string;
 
+import java.io.IOException;
+
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialogFactory;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.xml.sax.SAXException;
 
 /**
- * Factory for the string configuration node
+ * Factory for the string configuration node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class StringDialogNodeFactory extends NodeFactory<StringDialogNodeModel> {
+@SuppressWarnings("restriction")
+public class StringDialogNodeFactory extends NodeFactory<StringDialogNodeModel> implements NodeDialogFactory {
 
     /**
-     * {@inheritDoc}
+     * Feature flag for webUI configuration dialogs in local AP.
      */
+    private static final boolean SYSPROP_WEBUI_DIALOG_AP =
+        "js".equals(System.getProperty("org.knime.configuration.ui.mode"));
+
+    /**
+     * If we are headless and a dialog is required (i.e. remote workflow editing), we enforce webUI dialogs.
+     */
+    private static final boolean SYSPROP_HEADLESS = Boolean.getBoolean("java.awt.headless");
+
+    private static final boolean HAS_WEBUI_DIALOG = SYSPROP_HEADLESS || SYSPROP_WEBUI_DIALOG_AP;
+
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("String Configuration") //
+        .icon("./configuration_string.png") //
+        .shortDescription("""
+                Provides a string configuration option to an encapsulating component's dialog.
+                Outputs a string flow variable with the set value.
+                    """) //
+        .fullDescription("Outputs a string flow variable with a set value from a component's dialog.") //
+        .modelSettingsClass(StringDialogNodeSettings.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("text", "box") //
+        .build();
+
     @Override
-    public StringDialogNodeModel createNodeModel() {
-        return new StringDialogNodeModel();
+    protected NodeDescription createNodeDescription() throws SAXException, IOException, XmlException {
+        return HAS_WEBUI_DIALOG ? WebUINodeFactory.createNodeDescription(CONFIG) : super.createNodeDescription();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<StringDialogNodeModel> createNodeView(final int viewIndex, final StringDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean hasDialog() {
-        return true;
+        return !HAS_WEBUI_DIALOG;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new StringDialogNodeNodeDialog();
     }
 
+    @Override
+    public boolean hasNodeDialog() {
+        return HAS_WEBUI_DIALOG;
+    }
+
+    @Override
+    public NodeDialog createNodeDialog() {
+        return new DefaultNodeDialog(SettingsType.MODEL, StringDialogNodeSettings.class);
+    }
+
+    @Override
+    public StringDialogNodeModel createNodeModel() {
+        return new StringDialogNodeModel();
+    }
+
+    @Override
+    protected int getNrNodeViews() {
+        return 0;
+    }
+
+    @Override
+    public NodeView<StringDialogNodeModel> createNodeView(final int viewIndex, final StringDialogNodeModel nodeModel) {
+        return null;
+    }
 }

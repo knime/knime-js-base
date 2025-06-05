@@ -69,6 +69,32 @@ import org.knime.core.node.util.StringHistoryPanel;
 @SuppressWarnings({"rawtypes", "unchecked" })
 public class RegexPanel {
 
+    public static final String EMAIL_LABEL = "Email address";
+    public static final String EMAIL_REGEX = "^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+"
+        + "([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$";
+    public static final String EMAIL_ERROR = "The given input '?' is not a valid email address";
+
+    public static final String URL_LABEL = "URL";
+    public static final String URL_REGEX = "^((f|ht)tps?://(.*@)?|www\\.)" // protocol,username(opt.) or "www."
+        + "[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?" // domain
+        + "(:[0-9]+)?" // port
+        + "(/[^#?\\s]*)?" // path
+        + "(\\?[^#?\\s]*)?" // query
+        + "(#.*)?" // hash
+        + "$";
+    public static final String URL_ERROR = "The given input '?' is not a valid URL";
+
+    public static final String IPV4_LABEL = "IPv4";
+    public static final String IPV4_REGEX =
+        "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+    public static final String IPV4_ERROR = "The given input '?' is not a valid IPv4 address";
+
+    public static final String WIN_FILE_PATH_LABEL = "Windows file path";
+    private static final String WIN_FILE_PATH_REGEX =
+        "^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&(){}'._-]+)*)"
+            + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?\"\"<>|]+([ ]+[^ \\\\/:*?\"\"<>|]+)*)*\\\\?$";
+    public static final String WIN_FILE_PATH_ERROR = "The given input '?' is not a valid Windows path";
+
     private StringHistoryPanel m_regex = new StringHistoryPanel("string_input_regex");
 
     private JTextField m_errorMessage = new JTextField();
@@ -201,29 +227,10 @@ public class RegexPanel {
 
     private void createCommonRegexes() {
         addRegex("", "", "");
-        addRegex(
-                "Email address",
-                "^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+"
-                + "([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$",
-                "The given input '?' is not a valid email address");
-        addRegex("URL",
-                "^((f|ht)tps?://(.*@)?|www\\.)" // protocol,username(opt.) or "www."
-                    + "[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?" // domain
-                    + "(:[0-9]+)?" // port
-                    + "(/[^#?\\s]*)?" // path
-                    + "(\\?[^#?\\s]*)?" // query
-                    + "(#.*)?" // hash
-                    + "$",
-            "The given input '?' is not a valid URL");
-        addRegex(
-                "IPv4",
-                "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-                "The given input '?' is not a valid IPv4 address");
-        addRegex(
-                "Windows file path",
-                "^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&(){}'._-]+)*)"
-                + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?\"\"<>|]+([ ]+[^ \\\\/:*?\"\"<>|]+)*)*\\\\?$",
-                "The given input '?' is not a valid Windows path");
+        addRegex(EMAIL_LABEL, EMAIL_REGEX, EMAIL_ERROR);
+        addRegex(URL_LABEL, URL_REGEX, URL_ERROR);
+        addRegex(IPV4_LABEL, IPV4_REGEX, IPV4_ERROR);
+        addRegex(WIN_FILE_PATH_LABEL, WIN_FILE_PATH_REGEX, WIN_FILE_PATH_ERROR);
     }
 
     private void addRegex(final String name, final String regex, final String errorMessage) {

@@ -1,0 +1,277 @@
+{
+  "data" : {
+    "model" : {
+      "defaultValue" : {
+        "string" : ""
+      },
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "string-input",
+      "parameterName" : "string-input",
+      "hideInDialog" : false,
+      "required" : true,
+      "editorType" : "SINGLE_LINE",
+      "multilineEditorWidth" : 40,
+      "multilineEditorHeight" : 5,
+      "regex" : "",
+      "errorMessage" : ""
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "string" : {
+                "type" : "string",
+                "title" : "Default value",
+                "description" : "Default value for the field. If empty, no default value will be set.",
+                "default" : ""
+              }
+            },
+            "default" : {
+              "string" : ""
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Description shown in the dialog and node description.",
+            "default" : "Enter Description"
+          },
+          "editorType" : {
+            "oneOf" : [ {
+              "const" : "SINGLE_LINE",
+              "title" : "Single-line"
+            }, {
+              "const" : "MULTI_LINE",
+              "title" : "Multi-line"
+            } ],
+            "title" : "Field type",
+            "description" : "Choose between single-line or multi-line text input.",
+            "default" : "SINGLE_LINE"
+          },
+          "errorMessage" : {
+            "type" : "string",
+            "title" : "Failure message",
+            "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
+            "default" : ""
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "string-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "Some lines of description that will be shown for instance in the node description of\nthe component exposing a dialog.\n",
+            "default" : "Label"
+          },
+          "multilineEditorHeight" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Field height",
+            "description" : "Height of the editor in number of text lines. Multi-line editor only.",
+            "default" : 5
+          },
+          "multilineEditorWidth" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Field width (legacy)",
+            "description" : "The width of the editor in number of characters per line.",
+            "default" : 40
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "A simple name that is associated with this node for external parameterization. This is for instance used in command line control or when parameters are set via a web service invocation (that is, the workflow itself is the web service implementation). The returned value must not be null. An empty string is discouraged and only used for backward compatibility reasons (workflows saved prior 2.12 do not have this property) ",
+            "default" : "string-input"
+          },
+          "regex" : {
+            "type" : "string",
+            "title" : "Regex pattern",
+            "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
+            "default" : ""
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/editorType",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multilineEditorWidth",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "parameters" : {
+                "max" : 2.147483647E9,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must not exceed 2147483647."
+            },
+            "min" : {
+              "parameters" : {
+                "min" : 1.0,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must be at least 1."
+            }
+          },
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multilineEditorHeight",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "parameters" : {
+                "max" : 2.147483647E9,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must not exceed 2147483647."
+            },
+            "min" : {
+              "parameters" : {
+                "min" : 1.0,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must be at least 1."
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/editorType",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "MULTI_LINE"
+              } ]
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Validation",
+      "type" : "Section",
+      "rule" : {
+        "effect" : "SHOW",
+        "condition" : {
+          "scope" : "#/properties/model/properties/editorType",
+          "schema" : {
+            "oneOf" : [ {
+              "const" : "SINGLE_LINE"
+            } ]
+          }
+        }
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/regex"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/errorMessage"
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/string"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "string" : { }
+            }
+          },
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "editorType" : {
+            "configPaths" : [ [ "editorType" ] ]
+          },
+          "multilineEditorWidth" : { },
+          "multilineEditorHeight" : { },
+          "regex" : { },
+          "errorMessage" : {
+            "configKey" : "error_message"
+          }
+        }
+      }
+    }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}
