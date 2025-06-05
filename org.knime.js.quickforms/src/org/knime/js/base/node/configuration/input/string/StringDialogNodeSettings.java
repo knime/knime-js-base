@@ -51,6 +51,17 @@ package org.knime.js.base.node.configuration.input.string;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_DESCRIPTION;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_LABEL;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
+import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_ERROR;
+import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_LABEL;
+import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_REGEX;
+import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_ERROR;
+import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_LABEL;
+import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_REGEX;
+import static org.knime.js.base.node.base.input.string.RegexPanel.URL_ERROR;
+import static org.knime.js.base.node.base.input.string.RegexPanel.URL_LABEL;
+import static org.knime.js.base.node.base.input.string.RegexPanel.URL_REGEX;
+import static org.knime.js.base.node.base.input.string.RegexPanel.WIN_FILE_PATH_ERROR;
+import static org.knime.js.base.node.base.input.string.RegexPanel.WIN_FILE_PATH_LABEL;
 import static org.knime.js.base.node.base.input.string.StringNodeConfig.CFG_EDITOR_TYPE;
 import static org.knime.js.base.node.base.input.string.StringNodeConfig.CFG_ERROR_MESSAGE;
 import static org.knime.js.base.node.base.input.string.StringNodeConfig.DEFAULT_EDITOR_TYPE;
@@ -163,7 +174,22 @@ final class StringDialogNodeSettings implements DefaultNodeSettings {
     @Effect(predicate = EditorType.IsMultiLine.class, type = EffectType.SHOW)
     int m_multilineEditorHeight = DEFAULT_MULTI_LINE_EDITOR_HEIGHT;
 
-    @Widget(title = "Regex pattern", description = "Regular expression defining valid values. Single-line editor only.")
+    // HTML-escaped version of RegexPanel.WIN_FILE_PATH_REGEX
+    private static final String WIN_FILE_PATH_REGEX =
+        "^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)"
+        + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$";
+
+    @Widget(title = "Regex pattern", description = """
+            Regular expression defining valid values.
+            Single-line editor only.
+            Common regex patterns are as follows:
+            """ //
+        + "<ul>" //
+        + "<li><b>" + EMAIL_LABEL + "</b>: " + EMAIL_REGEX + "</li>" //
+        + "<li><b>" + URL_LABEL + "</b>: " + URL_REGEX + "</li>" //
+        + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_REGEX + "</li>" //
+        + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_REGEX + "</li>" //
+        + "</ul>")
     @Effect(predicate = EditorType.IsSingleLine.class, type = EffectType.SHOW)
     String m_regex = DEFAULT_REGEX;
 
@@ -171,7 +197,14 @@ final class StringDialogNodeSettings implements DefaultNodeSettings {
             Message shown if the value is not valid.
             '?' will be replaced by the invalid value.
             Single-line editor only.
-            """)
+            Failure messages corresponding to common regex patterns are as follows:
+            """ //
+        + "<ul>" //
+        + "<li><b>" + EMAIL_LABEL + "</b>: " + EMAIL_ERROR + "</li>" //
+        + "<li><b>" + URL_LABEL + "</b>: " + URL_ERROR + "</li>" //
+        + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_ERROR + "</li>" //
+        + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_ERROR + "</li>" //
+        + "</ul>")
     @Persist(configKey = CFG_ERROR_MESSAGE)
     @Effect(predicate = EditorType.IsSingleLine.class, type = EffectType.SHOW)
     String m_errorMessage = DEFAULT_ERROR_MESSAGE;
