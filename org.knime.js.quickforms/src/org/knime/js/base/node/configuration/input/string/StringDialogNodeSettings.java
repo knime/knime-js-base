@@ -73,12 +73,19 @@ import static org.knime.js.base.node.base.input.string.StringNodeConfig.EDITOR_T
 import static org.knime.js.base.node.configuration.input.string.StringDialogNodeSettings.EditorType.SINGLE_LINE;
 import static org.knime.js.base.node.configuration.input.string.StringInputDialogNodeConfig.DEFAULT_EDITOR_WIDTH;
 
+import java.util.function.Supplier;
+
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
@@ -88,8 +95,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.Effe
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsPositiveIntegerValidation;
+import org.knime.js.base.node.configuration.DialogNodeConfig;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeSettings.EditorType.EditorTypePersistor;
 
 /**
@@ -98,19 +108,80 @@ import org.knime.js.base.node.configuration.input.string.StringDialogNodeSetting
 @SuppressWarnings("restriction")
 final class StringDialogNodeSettings implements DefaultNodeSettings {
 
+    @Section(title = "Form Field")
+    interface FormFieldSection {
+    }
+
+    @Section(title = "Validation")
+    @After(FormFieldSection.class)
+    interface ValidationSection {
+    }
+
+    @Section(title = "Output")
+    @After(ValidationSection.class)
+    interface OutputSection {
+    }
+
+    // the default value whose type is specific to the node
+
+    static final class DefaultValue implements DefaultNodeSettings {
+        @Widget(title = "Default value",
+            description = "Default value for the field. If empty, no default value will be set.")
+        @Layout(OutputSection.class)
+        String m_string = "";
+    }
+
+    DefaultValue m_defaultValue = new DefaultValue();
+
     // settings common to all configuration nodes
 
-    @Widget(title = "Label", description = "A descriptive label that will be shown in the dialog.")
+    @Widget(title = "Label", description = """
+            Some lines of description that will be shown for instance in the node description of
+            the component exposing a dialog.
+            """)
+    @Layout(FormFieldSection.class)
     String m_label = DEFAULT_LABEL;
 
     @Widget(title = "Description", description = "Description shown in the dialog and node description.")
+    @Layout(FormFieldSection.class)
     String m_description = DEFAULT_DESCRIPTION;
 
     boolean m_required = DEFAULT_REQUIRED;
 
-    @Widget(title = "Output variable name",
-        description = "Name of the flow variable to be created. If empty, no flow variable will be created.")
-    String m_flowVariableName;
+    boolean m_hideInDialog = DialogNodeConfig.DEFAULT_HIDE_IN_DIALOG;
+
+    interface FlowVariableNameRef extends Reference<String> {
+    }
+
+    static final class FlowVariableNameStateProvider implements StateProvider<String> {
+
+        private Supplier<String> m_flowVariableNameSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDialog();
+            m_flowVariableNameSupplier = initializer.computeFromValueSupplier(FlowVariableNameRef.class);
+
+        }
+
+        @Override
+        public String computeState(final DefaultNodeSettingsContext context) throws StateComputationFailureException {
+            return m_flowVariableNameSupplier.get();
+        }
+    }
+
+    @Widget(title = "Output variable name", description = """
+            Parameter identifier for external parameterization (e.g. batch execution).
+            This will also be the name of the exported flow variable.
+            """)
+    @Layout(OutputSection.class)
+    @ValueReference(FlowVariableNameRef.class)
+    String m_flowVariableName =
+        // see DialogNodeConfig.m_parameterName
+        SubNodeContainer.getDialogNodeParameterNameDefault(StringInputDialogNodeConfig.class);
+
+    @ValueProvider(FlowVariableNameStateProvider.class)
+    String m_parameterName;
 
     // settings specific to the StringDialogNode
 
@@ -162,22 +233,28 @@ final class StringDialogNodeSettings implements DefaultNodeSettings {
 
     @Widget(title = "Field type", description = "Choose between single-line or multi-line text input.")
     @ValueSwitchWidget
+    @Layout(FormFieldSection.class)
     @Persistor(EditorTypePersistor.class)
     @ValueReference(EditorType.Ref.class)
     EditorType m_editorType = SINGLE_LINE;
 
+    @Widget(title = "Field width (legacy)", description = "The width of the editor in number of characters per line.",
+        advanced = true)
+    @NumberInputWidget(minValidation = IsPositiveIntegerValidation.class)
+    @Layout(FormFieldSection.class)
     int m_multilineEditorWidth = DEFAULT_EDITOR_WIDTH;
 
     @Widget(title = "Field height",
         description = "Height of the editor in number of text lines. Multi-line editor only.")
     @NumberInputWidget(minValidation = IsPositiveIntegerValidation.class)
+    @Layout(FormFieldSection.class)
     @Effect(predicate = EditorType.IsMultiLine.class, type = EffectType.SHOW)
     int m_multilineEditorHeight = DEFAULT_MULTI_LINE_EDITOR_HEIGHT;
 
     // HTML-escaped version of RegexPanel.WIN_FILE_PATH_REGEX
     private static final String WIN_FILE_PATH_REGEX =
         "^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)"
-        + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$";
+            + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$";
 
     @Widget(title = "Regex pattern", description = """
             Regular expression defining valid values.
@@ -190,6 +267,7 @@ final class StringDialogNodeSettings implements DefaultNodeSettings {
         + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_REGEX + "</li>" //
         + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_REGEX + "</li>" //
         + "</ul>")
+    @Layout(ValidationSection.class)
     @Effect(predicate = EditorType.IsSingleLine.class, type = EffectType.SHOW)
     String m_regex = DEFAULT_REGEX;
 
@@ -205,17 +283,8 @@ final class StringDialogNodeSettings implements DefaultNodeSettings {
         + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_ERROR + "</li>" //
         + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_ERROR + "</li>" //
         + "</ul>")
+    @Layout(ValidationSection.class)
     @Persist(configKey = CFG_ERROR_MESSAGE)
     @Effect(predicate = EditorType.IsSingleLine.class, type = EffectType.SHOW)
     String m_errorMessage = DEFAULT_ERROR_MESSAGE;
-
-    // the default value whose type is specific to the node
-
-    static final class DefaultValue implements DefaultNodeSettings {
-        String m_string = "";
-    }
-
-    @Widget(title = "Default value",
-        description = "Default value for the field. If empty, no default value will be set.")
-    DefaultValue m_defaultValue = new DefaultValue();
 }

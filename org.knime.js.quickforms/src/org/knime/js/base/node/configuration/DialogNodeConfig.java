@@ -68,7 +68,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
 
     private static final String CFG_HIDE_IN_DIALOG = "hideInDialog";
-    private static final boolean DEFAULT_HIDE_IN_DIALOG = false;
+    public static final boolean DEFAULT_HIDE_IN_DIALOG = false;
     private boolean m_hideInDialog = DEFAULT_HIDE_IN_DIALOG;
 
     private static final String CFG_DEFAULT_VALUE = "defaultValue";

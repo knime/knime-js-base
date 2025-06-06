@@ -1,17 +1,19 @@
 {
   "data" : {
     "model" : {
+      "defaultValue" : {
+        "string" : ""
+      },
       "label" : "Label",
       "description" : "Enter Description",
       "required" : true,
+      "hideInDialog" : false,
+      "flowVariableName" : "string-input",
       "editorType" : "SINGLE_LINE",
       "multilineEditorWidth" : 40,
       "multilineEditorHeight" : 5,
       "regex" : "",
-      "errorMessage" : "",
-      "defaultValue" : {
-        "string" : ""
-      }
+      "errorMessage" : ""
     }
   },
   "schema" : {
@@ -25,6 +27,8 @@
             "properties" : {
               "string" : {
                 "type" : "string",
+                "title" : "Default value",
+                "description" : "Default value for the field. If empty, no default value will be set.",
                 "default" : ""
               }
             },
@@ -59,12 +63,17 @@
           "flowVariableName" : {
             "type" : "string",
             "title" : "Output variable name",
-            "description" : "Name of the flow variable to be created. If empty, no flow variable will be created."
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "string-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown in the dialog.",
+            "description" : "Some lines of description that will be shown for instance in the node description of\nthe component exposing a dialog.\n",
             "default" : "Label"
           },
           "multilineEditorHeight" : {
@@ -77,7 +86,12 @@
           "multilineEditorWidth" : {
             "type" : "integer",
             "format" : "int32",
+            "title" : "Field width (legacy)",
+            "description" : "The width of the editor in number of characters per line.",
             "default" : 40
+          },
+          "parameterName" : {
+            "type" : "string"
           },
           "regex" : {
             "type" : "string",
@@ -95,80 +109,117 @@
   },
   "ui_schema" : {
     "elements" : [ {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/label"
-    }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/description"
-    }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/flowVariableName"
-    }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/editorType",
-      "options" : {
-        "format" : "valueSwitch"
-      }
-    }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/multilineEditorHeight",
-      "options" : {
-        "validation" : {
-          "min" : {
-            "errorMessage" : "The value must be at least 1.",
-            "parameters" : {
-              "min" : 1.0,
-              "isExclusive" : false
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/editorType",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multilineEditorWidth",
+        "options" : {
+          "validation" : {
+            "min" : {
+              "parameters" : {
+                "min" : 1.0,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must be at least 1."
+            },
+            "max" : {
+              "parameters" : {
+                "max" : 2.147483647E9,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must not exceed 2147483647."
             }
           },
-          "max" : {
-            "errorMessage" : "The value must not exceed 2147483647.",
-            "parameters" : {
-              "max" : 2.147483647E9,
-              "isExclusive" : false
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multilineEditorHeight",
+        "options" : {
+          "validation" : {
+            "min" : {
+              "parameters" : {
+                "min" : 1.0,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must be at least 1."
+            },
+            "max" : {
+              "parameters" : {
+                "max" : 2.147483647E9,
+                "isExclusive" : false
+              },
+              "errorMessage" : "The value must not exceed 2147483647."
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/editorType",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "MULTI_LINE"
+              } ]
             }
           }
         }
-      },
-      "rule" : {
-        "effect" : "SHOW",
-        "condition" : {
-          "scope" : "#/properties/model/properties/editorType",
-          "schema" : {
-            "oneOf" : [ {
-              "const" : "MULTI_LINE"
-            } ]
-          }
-        }
-      }
+      } ]
     }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/regex",
-      "rule" : {
-        "effect" : "SHOW",
-        "condition" : {
-          "scope" : "#/properties/model/properties/editorType",
-          "schema" : {
-            "oneOf" : [ {
-              "const" : "SINGLE_LINE"
-            } ]
+      "label" : "Validation",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/regex",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/editorType",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "SINGLE_LINE"
+              } ]
+            }
           }
         }
-      }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/errorMessage",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/editorType",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "SINGLE_LINE"
+              } ]
+            }
+          }
+        }
+      } ]
     }, {
-      "type" : "Control",
-      "scope" : "#/properties/model/properties/errorMessage",
-      "rule" : {
-        "effect" : "SHOW",
-        "condition" : {
-          "scope" : "#/properties/model/properties/editorType",
-          "schema" : {
-            "oneOf" : [ {
-              "const" : "SINGLE_LINE"
-            } ]
-          }
-        }
-      }
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/string"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
     } ]
   },
   "persist" : {
@@ -177,10 +228,18 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "string" : { }
+            }
+          },
           "label" : { },
           "description" : { },
           "required" : { },
+          "hideInDialog" : { },
           "flowVariableName" : { },
+          "parameterName" : { },
           "editorType" : {
             "configPaths" : [ [ "editorType" ] ]
           },
@@ -189,15 +248,22 @@
           "regex" : { },
           "errorMessage" : {
             "configKey" : "error_message"
-          },
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "string" : { }
-            }
           }
         }
       }
     }
-  }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/parameterName",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : "string-input"
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
 }
