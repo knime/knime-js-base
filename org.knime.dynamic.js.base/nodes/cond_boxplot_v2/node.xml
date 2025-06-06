@@ -10,7 +10,7 @@
     icon="./conditional_box_plot.png"
     afterID="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Box Plot (JavaScript)">
 
-	<name>Conditional Box Plot (JavaScript)</name>
+	<name>Conditional Box Plot (JavaScript) (legacy)</name>
 	<shortDescription>This node provides a view with a Conditional Box Plot implemented with D3.js.</shortDescription>
 	<fullDescription>
 		<intro>
