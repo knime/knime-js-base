@@ -7,7 +7,7 @@
 	icon="./stacked_area_chart.png" type="Visualizer"
 	afterID="org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory">
 
-	<name>Stacked Area Chart (JavaScript)</name>
+	<name>Stacked Area Chart (JavaScript) (legacy)</name>
 	<shortDescription>A Stacked Area Chart based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>

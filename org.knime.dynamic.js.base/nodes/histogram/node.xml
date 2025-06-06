@@ -8,7 +8,7 @@
 	jsNamespace="knimeHistogram" afterID="org.knime.js.base.node.viz.heatmap.HeatMapNodeFactory"
 	categoryPath="/view/js-views" icon="./interactiveHistogram.png" type="Visualizer"
 	nodeID="dynamic_histogram">
-	<name>Histogram (JavaScript)</name>
+	<name>Histogram (JavaScript) (legacy)</name>
 	<shortDescription>A histogram based on the NVD3 library.</shortDescription>
 	<fullDescription>
 		<intro>
