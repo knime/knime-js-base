@@ -62,19 +62,27 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "credentials-3";
         final var data = dialogData.getDataFor(paramName);
-        assertThatJson(data).inPath("$.isHiddenPassword").isBoolean().isTrue();
-        assertThatJson(data).inPath("$.username").isString().isEqualTo("Hello");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("object");
+        assertThatJson(data).inPath("$.credentials.isHiddenPassword").isBoolean().isTrue();
+        assertThatJson(data).inPath("$.credentials.username").isString().isEqualTo("Hello");
         final var schema = dialogData.getSchemaFor(paramName);
-        assertThatJson(schema).inPath("$.type").isString().isEqualTo("object");
-        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Default");
-        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Default credentials");
+        assertThatJson(schema).inPath("$.properties.credentials.type").isString().isEqualTo("object");
+        assertThatJson(schema).inPath("$.properties.credentials.title").isString().isEqualTo("Default");
+        assertThatJson(schema).inPath("$.properties.credentials.description").isString()
+            .isEqualTo("Default credentials");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/credentials", paramName));
         assertThatJson(uiSchema).inPath("$.elements[0].options.usernameLabel").isString().isEqualTo("User");
         assertThatJson(uiSchema).inPath("$.elements[0].options.passwordLabel").isString().isEqualTo("Password");
+        final var persistSchema = dialogData.getPersistSchema();
+        assertThatJson(persistSchema)
+            .inPath(String.format("$.properties.model.properties.%s.properties.credentials.type", paramName)).isString()
+            .isEqualTo("leaf");
+        assertThatJson(persistSchema)
+            .inPath(String.format("$.properties.model.properties.%s.properties.credentials.configKey", paramName))
+            .isString().isEqualTo("credentialsValue");
+
     }
 
     @Test
@@ -83,7 +91,7 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         final var paramName = "credentials-with-empty-labels-4";
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/credentials", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.usernameLabel").isString().isEqualTo("User");
         assertThatJson(uiSchema).inPath("$.elements[1].options.passwordLabel").isString().isEqualTo("Password");
     }

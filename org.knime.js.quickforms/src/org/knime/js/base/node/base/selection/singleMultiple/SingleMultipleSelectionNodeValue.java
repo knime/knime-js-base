@@ -74,7 +74,7 @@ public class SingleMultipleSelectionNodeValue extends JSONViewContent {
     /**
      * Config setting for the variable value
      */
-    protected static final String CFG_VARIABLE_VALUE = "variable_value";
+    public static final String CFG_VARIABLE_VALUE = "variable_value";
 
     /**
      * Default variable value

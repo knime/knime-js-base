@@ -61,15 +61,15 @@ class LocalFileBrowserConfigurationComponentDialogTest extends IntegratedCompone
     void testLocalFileBrowserConfigurationComponentDialog() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "file-input-3";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEmpty();
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.localFile").isString().isEmpty();
         final var schema = dialogData.getSchemaFor(paramName);
-        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
-        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Local file browser title");
-        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Local file browser description");
+        assertThatJson(schema).inPath("$.properties.localFile.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.localFile.title").isString().isEqualTo("Local file browser title");
+        assertThatJson(schema).inPath("$.properties.localFile.description").isString().isEqualTo("Local file browser description");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/localFile", paramName));
         assertThatJson(uiSchema).inPath("$.elements[0].options").isObject().doesNotContainKey("fileExtensions");
         assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
     }
@@ -79,10 +79,10 @@ class LocalFileBrowserConfigurationComponentDialogTest extends IntegratedCompone
         throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
         final var paramName = "file-input-with-default-value-and-extensions-4";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("/text.txt");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.localFile").isString().isEqualTo("/text.txt");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/localFile", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.fileExtensions").isArray()
             .isEqualTo(new String[]{"txt", "csv", "csv.gz"});
     }

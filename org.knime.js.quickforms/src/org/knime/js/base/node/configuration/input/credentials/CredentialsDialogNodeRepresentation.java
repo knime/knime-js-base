@@ -48,11 +48,16 @@
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
+import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 import org.knime.js.base.node.configuration.renderers.CredentialsRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -69,16 +74,14 @@ public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresen
 
     @JsonCreator
     private CredentialsDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final CredentialsDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final CredentialsDialogNodeValue currentValue,
         @JsonProperty("promptUsername") final boolean promptUsername,
         @JsonProperty("usernameLabel") final String usernameLabel,
         @JsonProperty("passwordLabel") final String passwordLabel,
         @JsonProperty("useServerLoginCredentials") final boolean useServerLoginCredentials,
-        @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("noDisplay") final boolean noDisplay) {
+        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("noDisplay") final boolean noDisplay) {
         super(label, description, required, defaultValue, currentValue, promptUsername, useServerLoginCredentials,
             usernameLabel, passwordLabel, errorMessage, noDisplay);
     }
@@ -105,6 +108,19 @@ public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresen
 
     @Override
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
-        return new CredentialsRenderer(this);
+        return new CredentialsRenderer(this).at(CredentialsDialogNodeValue.DIALOG_JSON_CREDENTIALS_PARENT);
     }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(CredentialsDialogNodeValue.DIALOG_JSON_CREDENTIALS_PARENT, new PersistSchema.PersistLeafSchema() {
+                @Override
+                public Optional<String> getConfigKey() {
+                    return Optional.of(CredentialsNodeValue.CFG_CREDENTIALS_VALUE_PARENT);
+                }
+
+            })));
+    }
+
 }

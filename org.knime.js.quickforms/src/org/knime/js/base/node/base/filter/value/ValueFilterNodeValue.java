@@ -85,7 +85,7 @@ public class ValueFilterNodeValue extends JSONViewContent {
     /**
      * Config setting for the values
      */
-    protected static final String CFG_VALUES = "values";
+    public static final String CFG_VALUES = "values";
 
     /**
      * Default values

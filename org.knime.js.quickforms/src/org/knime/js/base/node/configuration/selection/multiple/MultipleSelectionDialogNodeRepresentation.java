@@ -48,13 +48,18 @@
  */
 package org.knime.js.base.node.configuration.selection.multiple;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.configuration.renderers.CheckboxesRenderer;
 import org.knime.js.base.node.configuration.renderers.ComboboxRenderer;
 import org.knime.js.base.node.configuration.renderers.MultiSelectListBoxRenderer;
@@ -108,21 +113,38 @@ public class MultipleSelectionDialogNodeRepresentation
 
     @Override
     public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
+        return getRenderer().at(WEB_UI_DATA_PATH);
+    }
+
+    private DialogElementRendererSpec<?> getRenderer() {
         return switch (getType()) {
             case MultipleSelectionsComponentFactory.CHECK_BOXES_HORIZONTAL -> //
-                    new CheckboxesRenderer(this, getPossibleChoices(), Alignment.HORIZONTAL).at(WEB_UI_DATA_PATH);
+                    new CheckboxesRenderer(this, getPossibleChoices(), Alignment.HORIZONTAL);
             case MultipleSelectionsComponentFactory.CHECK_BOXES_VERTICAL -> //
-                    new CheckboxesRenderer(this, getPossibleChoices(), Alignment.VERTICAL).at(WEB_UI_DATA_PATH);
+                    new CheckboxesRenderer(this, getPossibleChoices(), Alignment.VERTICAL);
             case MultipleSelectionsComponentFactory.LIST -> //
                     new MultiSelectListBoxRenderer(this, getPossibleChoices(), getLimitNumberVisOptions(),
-                        getNumberVisOptions()).at(WEB_UI_DATA_PATH);
+                        getNumberVisOptions());
             case MultipleSelectionsComponentFactory.TWINLIST -> //
                     new SimpleTwinlistRenderer(this, getPossibleChoices(), getLimitNumberVisOptions(),
-                        getNumberVisOptions()).at(WEB_UI_DATA_PATH);
+                        getNumberVisOptions());
             case MultipleSelectionsComponentFactory.COMBOBOX -> //
-                    new ComboboxRenderer(this, getPossibleChoices()).at(WEB_UI_DATA_PATH);
+                    new ComboboxRenderer(this, getPossibleChoices());
             default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", getType()));
         };
+    }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(WEB_UI_DATA_PATH, new PersistSchema.PersistLeafSchema() {
+
+                @Override
+                public Optional<String> getConfigKey() {
+                    return Optional.of(SingleMultipleSelectionNodeValue.CFG_VARIABLE_VALUE);
+                }
+
+            })));
     }
 
 }

@@ -48,11 +48,16 @@
  */
 package org.knime.js.base.node.configuration.input.fileupload;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
+import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 import org.knime.js.base.node.configuration.renderers.LocalFileChooserRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -96,6 +101,24 @@ public class FileDialogNodeRepresentation extends FileUploadNodeRepresentation<F
 
     @Override
     public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
-        return new LocalFileChooserRenderer(this);
+        return new LocalFileChooserRenderer(this).at(FileUploadDialogNodeValue.DIALOG_JSON_KEY);
     }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(FileUploadDialogNodeValue.DIALOG_JSON_KEY, new PersistSchema.PersistLeafSchema() {
+
+                @Override
+                public Optional<String[][]> getConfigPaths() {
+                    return Optional.of(new String[][]{//
+                        {FileUploadNodeValue.CFG_PATH}, //
+                        {FileUploadNodeValue.CFG_FILE_NAME}, //
+                        {FileUploadNodeValue.CFG_PATH_VALID}, //
+                        {FileUploadNodeValue.CFG_LOCAL_UPLOAD}//
+                    });
+                }
+            })));
+    }
+
 }

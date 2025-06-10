@@ -210,6 +210,8 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
 
     }
 
+    static final String DIALOG_JSON_KEY = "columnFilter";
+
     @Override
     public JsonNode toDialogJson() throws IOException {
         final var columnFilterPersistor = new LegacyColumnFilterConfigurationPersistor();
@@ -222,12 +224,16 @@ public class ColumnFilterDialogNodeValue extends ColumnFilterNodeValue implement
             columnFilter = new ColumnFilter();
         }
 
-        return JsonFormsDataUtil.getMapper().valueToTree(columnFilter);
+        final var mapper = JsonFormsDataUtil.getMapper();
+
+        return mapper.createObjectNode().set(DIALOG_JSON_KEY,mapper .valueToTree(columnFilter));
     }
 
     @Override
-    public void fromDialogJson(final JsonNode json) throws IOException {
-        final var columnFilter = JsonFormsDataUtil.getMapper().convertValue(json, ColumnFilter.class);
+    public void fromDialogJson(final JsonNode jsonObject) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var json = jsonObject.get(DIALOG_JSON_KEY);
+        final var columnFilter =mapper.convertValue(json, ColumnFilter.class);
         final var columnFilterPersistor = new LegacyColumnFilterConfigurationPersistor();
         columnFilterPersistor.save(columnFilter, getSettings());
     }

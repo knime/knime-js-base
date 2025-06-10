@@ -48,11 +48,16 @@
  */
 package org.knime.js.base.node.configuration.selection.single;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeRepresentation;
+import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.configuration.selection.SingleEntrySelectionRendererUtil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -102,7 +107,21 @@ public class SingleSelectionDialogNodeRepresentation
     @Override
     public DialogElementRendererSpec<?> getWebUIDialogElementRendererSpec() {
         return SingleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), getPossibleChoices(),
-            getLimitNumberVisOptions(), getNumberVisOptions());
+            getLimitNumberVisOptions(), getNumberVisOptions()).at(SingleSelectionDialogNodeValue.DIALOG_JSON_KEY);
+    }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(SingleSelectionDialogNodeValue.DIALOG_JSON_KEY, new PersistSchema.PersistLeafSchema() {
+
+                @Override
+                public Optional<String> getConfigKey() {
+                    return Optional.of(SingleMultipleSelectionNodeValue.CFG_VARIABLE_VALUE);
+                }
+
+            })));
+
     }
 
 }

@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
+import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.js.base.node.configuration.renderers.DateRenderer;
 import org.knime.js.base.node.configuration.renderers.LocalDateTimeRenderer;
 import org.knime.js.base.node.configuration.renderers.TimeRenderer;
@@ -118,6 +119,10 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
 
     @Override
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        return getRenderer().at(DateNodeValue.CFG_DATE);
+    }
+
+    private DialogElementRendererSpec getRenderer() {
         return switch (getType()) {
             case LOCAL_DATE -> new DateRenderer(this);
             case LOCAL_TIME -> new TimeRenderer(this);
@@ -148,11 +153,12 @@ public class DateDialogNodeRepresentation extends DateNodeRepresentation<DateDia
             case ZONED_DATE_TIME -> date;
         };
 
-        return mapper.valueToTree(value);
+        return mapper.createObjectNode().set(DateNodeValue.CFG_DATE, mapper.valueToTree(value));
     }
 
     @Override
-    public void setValueFromDialogJson(final JsonNode json, final DateDialogNodeValue value) throws IOException {
+    public void setValueFromDialogJson(final JsonNode jsonObject, final DateDialogNodeValue value) throws IOException {
+        final var json = jsonObject.get(DateNodeValue.CFG_DATE);
         final var mapper = JsonFormsDataUtil.getMapper();
         final var type = getType();
 

@@ -61,15 +61,15 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
     void testDateTimeConfigurationComponentDialogTypeDate() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "date-input-7";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("2025-01-01");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.date&time").isString().isEqualTo("2025-01-01");
         final var schema = dialogData.getSchemaFor(paramName);
-        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
-        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Date");
-        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Date");
+        assertThatJson(schema).inPath("$.properties.date&time.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.date&time.title").isString().isEqualTo("Date");
+        assertThatJson(schema).inPath("$.properties.date&time.description").isString().isEqualTo("Date");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/date&time", paramName));
         assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("localDate");
     }
 
@@ -77,12 +77,12 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
     void testDateTimeConfigurationComponentDialogTypeTime() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "time-input-8";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("12:12:00");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.date&time").isString().isEqualTo("12:12:00");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.date&time.type").isString().isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/date&time", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.format").isString().isEqualTo("localTime");
         assertThatJson(uiSchema).inPath("$.elements[1].options.showSeconds").isBoolean().isFalse();
         assertThatJson(uiSchema).inPath("$.elements[1].options.showMilliseconds").isBoolean().isFalse();
@@ -92,12 +92,12 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
     void testDateTimeConfigurationComponentDialogTypeLocalDateTime() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "local-date-time-input-9";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("2025-12-31T23:59:59");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.date&time").isString().isEqualTo("2025-12-31T23:59:59");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.date&time.type").isString().isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[2].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[2].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/date&time", paramName));
         assertThatJson(uiSchema).inPath("$.elements[2].options.format").isString().isEqualTo("dateTime");
         assertThatJson(uiSchema).inPath("$.elements[2].options.showSeconds").isBoolean().isTrue();
         assertThatJson(uiSchema).inPath("$.elements[2].options.showMilliseconds").isBoolean().isFalse();
@@ -108,13 +108,13 @@ class DateTimeConfigurationComponentDialogTest extends IntegratedComponentDialog
         final var dialogData = getComponentDialog(getTopLevelNodeId(11));
         final var paramName = "zoned-date-time-input-10";
         final var data = dialogData.getDataFor(paramName);
-        assertThatJson(data).inPath("dateTime").isString().isEqualTo("2025-01-01T00:00:01");
-        assertThatJson(data).inPath("timeZone").isString().isEqualTo("Europe/Zurich");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(data).inPath("$.date&time.dateTime").isString().isEqualTo("2025-01-01T00:00:01");
+        assertThatJson(data).inPath("$.date&time.timeZone").isString().isEqualTo("Europe/Zurich");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.date&time.type").isString().isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[3].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[3].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/date&time", paramName));
         assertThatJson(uiSchema).inPath("$.elements[3].options.format").isString().isEqualTo("zonedDateTime");
         assertThatJson(uiSchema).inPath("$.elements[3].options.showSeconds").isBoolean().isTrue();
         assertThatJson(uiSchema).inPath("$.elements[3].options.showMilliseconds").isBoolean().isTrue();

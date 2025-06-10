@@ -77,7 +77,7 @@ public class DateNodeValue extends JSONViewContent {
     /**
      * Config setting for the double value
      */
-    protected static final String CFG_DATE = "date&time";
+    public static final String CFG_DATE = "date&time";
     private ZonedDateTime m_date = DateNodeConfig.DEFAULT_ZDT;
 
     /**

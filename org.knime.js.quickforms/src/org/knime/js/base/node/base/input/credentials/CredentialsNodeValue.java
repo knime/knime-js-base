@@ -79,7 +79,10 @@ public class CredentialsNodeValue extends JSONViewContent {
 
     private static final String WEAK_ENCRYPTION_PASSWORD = "SomeWeakEncryption#Password";
 
-    private static final String CFG_CREDENTIALS_VALUE_PARENT = "credentialsValue";
+    /**
+     * Key used since 5.2 as parent key for credentials settings.
+     */
+    public static final String CFG_CREDENTIALS_VALUE_PARENT = "credentialsValue";
 
     protected static final String CFG_USERNAME = "username";
 

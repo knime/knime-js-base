@@ -58,7 +58,7 @@ import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -98,14 +98,14 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements We
     @Override
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
-            m_path = ((JsonString) json).getString();
+            m_path = ((JsonString)json).getString();
         } else if (json instanceof JsonObject) {
             try {
                 JsonValue jsonPath = ((JsonObject)json).get(CFG_PATH);
                 if (JsonValue.NULL.equals(jsonPath)) {
                     m_path = null;
                 } else {
-                    m_path = ((JsonObject) json).getString(CFG_PATH);
+                    m_path = ((JsonObject)json).getString(CFG_PATH);
                 }
                 JsonValue jsonFileName = ((JsonObject)json).get(CFG_FILE_NAME);
                 if (JsonValue.NULL.equals(jsonFileName)) {
@@ -142,14 +142,19 @@ public class FileUploadDialogNodeValue extends FileUploadNodeValue implements We
         return builder.build();
     }
 
+    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
+
+    static final String DIALOG_JSON_KEY = "localFile";
+
     @Override
     public JsonNode toDialogJson() throws IOException {
-        return TextNode.valueOf(getPath());
+        return FACTORY.objectNode().put(DIALOG_JSON_KEY, getPath());
     }
 
-
     @Override
-    public void fromDialogJson(final JsonNode json) throws IOException {
+    public void fromDialogJson(final JsonNode jsonObject) throws IOException {
+        final var json = jsonObject.get(DIALOG_JSON_KEY);
+
         final var filePath = json.asText();
         setPath(filePath);
         setFileName(Paths.get(filePath).getFileName().toString());

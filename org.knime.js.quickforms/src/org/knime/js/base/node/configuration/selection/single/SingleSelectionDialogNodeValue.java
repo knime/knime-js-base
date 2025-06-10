@@ -52,10 +52,11 @@ import java.io.IOException;
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
+import org.knime.core.webui.node.dialog.WebDialogValue;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -68,7 +69,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements WebDialogContent {
+public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeValue implements WebDialogValue {
 
     /**
      * {@inheritDoc}
@@ -126,17 +127,21 @@ public class SingleSelectionDialogNodeValue extends SingleMultipleSelectionNodeV
         return builder.build();
     }
 
+    static final String DIALOG_JSON_KEY = "singleSelectionValue";
+
     @Override
-    public void fromDialogJson(final JsonNode json) throws IOException {
+    public void fromDialogJson(final JsonNode jsonObject) throws IOException {
+        final var json = jsonObject.get(DIALOG_JSON_KEY);
         final var selectedValue = json.isNull() ? null : new String[]{json.asText()};
         setVariableValue(selectedValue);
     }
 
     @Override
     public JsonNode toDialogJson() throws IOException {
+        final var mapper = new ObjectMapper();
         final var value = getVariableValue();
         final var selectedValue = value == null || value.length == 0 ? null : value[0];
-        return MAPPER.valueToTree(selectedValue);
+        return mapper.createObjectNode().put(DIALOG_JSON_KEY, selectedValue);
     }
 
 }

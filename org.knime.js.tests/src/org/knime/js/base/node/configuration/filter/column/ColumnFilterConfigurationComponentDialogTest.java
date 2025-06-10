@@ -63,7 +63,7 @@ import net.javacrumbs.jsonunit.assertj.JsonAssert;
 class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDialogTestBase {
 
     private static JsonAssert assertSchemaProps(final JsonNode schema, final String prop) {
-        return assertThatJson(schema).inPath(String.format("$.%s", prop));
+        return assertThatJson(schema).inPath(String.format("$.properties.columnFilter.%s", prop));
     }
 
     private static JsonAssert assertUiSchemaElements(final JsonNode uiSchema, final int index, final String element) {
@@ -78,7 +78,7 @@ class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDi
     void testColumnFilterConfigurationComponentDialogTest() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(7));
         final var paramName = "column-filter-5";
-        assertThatJson(dialogData.getDataFor(paramName)).isObject();
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.columnFilter").isObject();
         final var schema = dialogData.getSchemaFor(paramName);
         assertSchemaProps(schema, "type").isString().isEqualTo("object");
         assertSchemaProps(schema, "title").isString().isEqualTo("Column filter");
@@ -87,7 +87,7 @@ class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDi
         final var ind = 0;
         assertUiSchemaElements(uiSchema, ind, "type").isString().isEqualTo("Control");
         assertUiSchemaElements(uiSchema, ind, "scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/columnFilter", paramName));
         assertUiSchemaOptions(uiSchema, ind, "unknownValuesText").isString().isEqualTo("Any unknown column");
         assertUiSchemaOptions(uiSchema, ind, "emptyStateLabel").isString().isEqualTo("No columns in this list.");
         assertUiSchemaOptions(uiSchema, ind, "format").isString().isEqualTo("typedStringFilter");
@@ -100,7 +100,7 @@ class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDi
         final var paramName = "column-filter-with-type-filter-6";
         final var ind = 1;
         assertUiSchemaElements(uiSchema, ind, "scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/columnFilter", paramName));
         assertUiSchemaOptions(uiSchema, ind, "possibleValues").isArray().hasSize(2);
     }
 
@@ -110,7 +110,7 @@ class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDi
         final var paramName = "column-filter-with-limit-7";
         final var ind = 2;
         assertUiSchemaElements(uiSchema, ind, "scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/columnFilter", paramName));
         assertUiSchemaOptions(uiSchema, ind, "twinlistSize").isNumber().isEqualTo(BigDecimal.valueOf(5));
     }
 

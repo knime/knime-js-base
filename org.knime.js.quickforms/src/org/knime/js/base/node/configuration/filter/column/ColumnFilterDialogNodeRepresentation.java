@@ -50,6 +50,9 @@ package org.knime.js.base.node.configuration.filter.column;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -57,13 +60,16 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeRepresentation;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfig;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigDeserializer;
 import org.knime.js.base.node.base.validation.modular.ModularValidatorConfigSerializer;
 import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
+import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeValue.LegacyColumnFilterConfigurationPersistor;
 import org.knime.js.base.node.configuration.renderers.TypedStringFilterRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -225,6 +231,28 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         final var possibleColumns = new HashSet<>(Arrays.asList(getPossibleColumns()));
         final var possibleSpecs =
             m_spec.stream().filter(spec -> possibleColumns.contains(spec.getName())).toArray(DataColumnSpec[]::new);
-        return new TypedStringFilterRenderer(this, possibleSpecs, isLimitNumberVisOptions(), getNumberVisOptions());
+        return new TypedStringFilterRenderer(this, possibleSpecs, isLimitNumberVisOptions(), getNumberVisOptions())
+            .at(ColumnFilterDialogNodeValue.DIALOG_JSON_KEY);
     }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        final var configPaths = new LegacyColumnFilterConfigurationPersistor().getConfigPaths();
+        /**
+         * Since the ColumnFilterDialogNodeValue saves the settings in a nested config, we need to further nest the
+         * paths here, too.
+         */
+        final var nestedConfigPaths = Arrays.stream(configPaths).map(Arrays::stream)
+            .map(s -> Stream.concat(Stream.of(ColumnFilterNodeConfig.CFG_COLUMN_FILTER), s).toArray(String[]::new))
+            .toArray(String[][]::new);
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(ColumnFilterDialogNodeValue.DIALOG_JSON_KEY, new PersistSchema.PersistLeafSchema() {
+
+                @Override
+                public Optional<String[][]> getConfigPaths() {
+                    return Optional.of(nestedConfigPaths);
+                }
+            })));
+    }
+
 }

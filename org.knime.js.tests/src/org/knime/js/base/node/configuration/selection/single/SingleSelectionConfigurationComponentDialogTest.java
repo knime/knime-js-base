@@ -63,15 +63,18 @@ class SingleSelectionConfigurationComponentDialogTest extends IntegratedComponen
     void testSingleSelectionConfigurationComponentDialogTestTypeRadioHorizontal() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(6));
         final var paramName = "radio-horizontal-3";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("Axolotl");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.singleSelectionValue").isString()
+            .isEqualTo("Axolotl");
         final var schema = dialogData.getSchemaFor(paramName);
-        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
-        assertThatJson(schema).inPath("$.title").isString().isEqualTo("Label radio horizontal");
-        assertThatJson(schema).inPath("$.description").isString().isEqualTo("Description radio horizontal");
+        assertThatJson(schema).inPath("$.properties.singleSelectionValue.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.singleSelectionValue.title").isString()
+            .isEqualTo("Label radio horizontal");
+        assertThatJson(schema).inPath("$.properties.singleSelectionValue.description").isString()
+            .isEqualTo("Description radio horizontal");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/singleSelectionValue", paramName));
         assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("radio");
         assertThatJson(uiSchema).inPath("$.elements[0].options.radioLayout").isString().isEqualTo("horizontal");
         assertThatJson(uiSchema).inPath("$.elements[0].options.possibleValues").isArray().hasSize(5);
@@ -81,13 +84,14 @@ class SingleSelectionConfigurationComponentDialogTest extends IntegratedComponen
     void testSingleSelectionConfigurationComponentDialogTestTypeRadioVertical() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(6));
         final var paramName = "radio-vertical-4";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("Aardvark");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.singleSelectionValue").isString()
+            .isEqualTo("Aardvark");
         final var schema = dialogData.getSchemaFor(paramName);
-        assertThatJson(schema).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.singleSelectionValue.type").isString().isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[1].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[1].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/singleSelectionValue", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.format").isString().isEqualTo("radio");
         assertThatJson(uiSchema).inPath("$.elements[1].options.radioLayout").isString().isEqualTo("vertical");
         assertThatJson(uiSchema).inPath("$.elements[1].options.possibleValues").isArray().hasSize(5);
@@ -97,12 +101,14 @@ class SingleSelectionConfigurationComponentDialogTest extends IntegratedComponen
     void testSingleSelectionConfigurationComponentDialogTestTypeList() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(6));
         final var paramName = "list-5";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("Octopus");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.singleSelectionValue").isString()
+            .isEqualTo("Octopus");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.singleSelectionValue.type").isString()
+            .isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[2].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[2].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/singleSelectionValue", paramName));
         assertThatJson(uiSchema).inPath("$.elements[2].options.format").isString().isEqualTo("singleSelectListBox");
         assertThatJson(uiSchema).inPath("$.elements[2].options.possibleValues").isArray().hasSize(5);
     }
@@ -111,12 +117,14 @@ class SingleSelectionConfigurationComponentDialogTest extends IntegratedComponen
     void testSingleSelectionConfigurationComponentDialogTestTypeListWithLimit() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(6));
         final var paramName = "list-with-limit-6";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("Pangolin");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.singleSelectionValue").isString()
+            .isEqualTo("Pangolin");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.singleSelectionValue.type").isString()
+            .isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[3].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[3].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/singleSelectionValue", paramName));
         assertThatJson(uiSchema).inPath("$.elements[3].options.format").isString().isEqualTo("singleSelectListBox");
         assertThatJson(uiSchema).inPath("$.elements[3].options.possibleValues").isArray().hasSize(5);
         assertThatJson(uiSchema).inPath("$.elements[3].options.size").isNumber().isEqualTo(BigDecimal.valueOf(3));
@@ -126,12 +134,14 @@ class SingleSelectionConfigurationComponentDialogTest extends IntegratedComponen
     void testSingleSelectionConfigurationComponentDialogTestTypeDropdown() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(6));
         final var paramName = "dropdown-7";
-        assertThatJson(dialogData.getDataFor(paramName)).isString().isEqualTo("Platypus");
-        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.type").isString().isEqualTo("string");
+        assertThatJson(dialogData.getDataFor(paramName)).inPath("$.singleSelectionValue").isString()
+            .isEqualTo("Platypus");
+        assertThatJson(dialogData.getSchemaFor(paramName)).inPath("$.properties.singleSelectionValue.type").isString()
+            .isEqualTo("string");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[4].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[4].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s", paramName));
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/singleSelectionValue", paramName));
         assertThatJson(uiSchema).inPath("$.elements[4].options.format").isString().isEqualTo("dropDown");
         assertThatJson(uiSchema).inPath("$.elements[4].options.possibleValues").isArray().hasSize(5);
     }

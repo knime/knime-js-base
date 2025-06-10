@@ -50,12 +50,15 @@ package org.knime.js.base.node.configuration.filter.value;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeRepresentation;
+import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
 import org.knime.js.base.node.configuration.renderers.ManualFilterRenderer;
 import org.knime.js.base.node.configuration.renderers.ProvidedChoicesManualFilterRenderer;
@@ -118,6 +121,23 @@ public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresen
         final var valueDropdown = new ProvidedChoicesManualFilterRenderer("Values", domainStateProvider,
             isLimitNumberVisOptions(), getNumberVisOptions());
         return new LabeledGroupRenderer(this, List.of(columnDropdown.at("column"), valueDropdown.at("values")));
+    }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of("values", new PersistSchema.PersistLeafSchema() {
+
+                @Override
+                public Optional<String[][]> getConfigPaths() {
+                    return Optional.of(new String[][]{//
+                        {ValueFilterNodeValue.CFG_VALUES}, //
+                        {ValueFilterDialogNodeValue.CFG_EXCLUDES}, //
+                        {ValueFilterDialogNodeValue.CFG_ENFORCE_OPT}, //
+                    });
+                }
+
+            })));
     }
 
 }

@@ -128,12 +128,14 @@ class DateDialogNodeValueToAndFromJsonTest {
         final var dateDialogNodeRep =
             createDateDialogNodeRepresentation(dateDialogNodeValue, dateTimeType, GranularityTime.SHOW_SECONDS);
 
+        final var mapper = JsonFormsDataUtil.getMapper();
+
         final var dialogJSON = dateDialogNodeRep.transformValueToDialogJson(dateDialogNodeValue);
-        assertEquals(dialogJSON, JsonFormsDataUtil.getMapper().valueToTree(expectedToDialogDateTime),
+        assertEquals(dialogJSON.get("date&time"), mapper.valueToTree(expectedToDialogDateTime),
             "Unexpected value during serialization");
 
-        dateDialogNodeRep.setValueFromDialogJson(JsonFormsDataUtil.getMapper().valueToTree(fromDialogDateTime),
-            dateDialogNodeValue);
+        dateDialogNodeRep.setValueFromDialogJson(
+            mapper.createObjectNode().set("date&time", mapper.valueToTree(fromDialogDateTime)), dateDialogNodeValue);
         assertEquals(expectedFromDialogDateTime, dateDialogNodeValue.getDate(),
             "Unexpected value during deserialization");
     }
@@ -156,7 +158,7 @@ class DateDialogNodeValueToAndFromJsonTest {
             createDateDialogNodeRepresentation(dateDialogNodeValue, DateTimeType.LOCAL_TIME, granularity);
 
         final var dialogJSON = dateDialogNodeRep.transformValueToDialogJson(dateDialogNodeValue);
-        assertEquals(dialogJSON, JsonFormsDataUtil.getMapper().valueToTree(expectedTime),
+        assertEquals(dialogJSON.get("date&time"), JsonFormsDataUtil.getMapper().valueToTree(expectedTime),
             "Unexpected value during serialization");
     }
 

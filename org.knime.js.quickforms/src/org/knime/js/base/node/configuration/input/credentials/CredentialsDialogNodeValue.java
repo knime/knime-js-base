@@ -66,6 +66,7 @@ import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -191,17 +192,20 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
         return builder.build();
     }
 
+    static final String DIALOG_JSON_CREDENTIALS_PARENT = "credentials";
+
     @Override
     public JsonNode toDialogJson() throws IOException {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var credentials = getWebUICredentials(this);
-        return mapper.valueToTree(credentials);
+        return mapper.createObjectNode().set(DIALOG_JSON_CREDENTIALS_PARENT, mapper.valueToTree(credentials));
     }
 
     @Override
     public void fromDialogJson(final JsonNode json) throws IOException {
+        final var credentialsJson = ((ObjectNode)json).get(DIALOG_JSON_CREDENTIALS_PARENT);
         final var mapper = JsonFormsDataUtil.getMapper();
-        final var credentials = mapper.treeToValue(json, Credentials.class);
+        final var credentials = mapper.treeToValue(credentialsJson, Credentials.class);
         setWebUICredentials(this, credentials);
     }
 

@@ -148,6 +148,11 @@ public class IntegratedComponentDialogTestBase extends WorkflowTestBase {
                 return initialDataJson.get("data").get("model").get(paramName);
             }
 
+            @Override
+            public JsonNode getPersistSchema() {
+                return initialDataJson.get("persist");
+            }
+
         };
     }
 
@@ -163,6 +168,12 @@ public class IntegratedComponentDialogTestBase extends WorkflowTestBase {
          * @return the complete ui schema of the component dialog
          */
         JsonNode getUiSchema();
+
+        /**
+         * Returns the persist schema of the component dialog.
+         * @return the persist schema of the component dialog
+         */
+        JsonNode getPersistSchema();
 
         /**
          * @return the initial updates of provided states

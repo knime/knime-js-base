@@ -93,7 +93,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
 
     static final NodeLogger LOGGER = NodeLogger.getLogger(ValueFilterDialogNodeValue.class);
 
-    protected static final String CFG_ENFORCE_OPT = "enforce-option";
+    public static final String CFG_ENFORCE_OPT = "enforce-option";
 
     public static final EnforceOption DEFAULT_ENFORCE_OPT = EnforceOption.EnforceInclusion;
 
@@ -122,7 +122,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
     /**
      * Config key for the excluded values
      */
-    protected static final String CFG_EXCLUDES = "excludes";
+    public static final String CFG_EXCLUDES = "excludes";
 
     private static final String[] DEFAULT_EXCLUDES = new String[0];
 
