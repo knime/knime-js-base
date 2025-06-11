@@ -46,58 +46,97 @@
  * History
  *   22 May 2019 (albrecht): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.configuration;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import java.io.IOException;
+
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeView;
 import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialogFactory;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.xml.sax.SAXException;
 
 /**
- * Factory for the string configuration node.
+ * Factory for a configuration node. Until we release the new webUI dialogs, this node will use the old dialog
+ * implementation unless the system property <code>org.knime.configuration.ui.mode</code> is set to <code>js</code> or
+ * the executor is running in headless mode (remote workflow editing).
+ *
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @param <T> the type of the node model this factory creates
  */
 @SuppressWarnings("restriction")
-public class StringDialogNodeFactory extends ConfigurationNodeFactory<StringDialogNodeModel> {
+public abstract class ConfigurationNodeFactory<T extends NodeModel> extends NodeFactory<T>
+    implements NodeDialogFactory {
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("String Configuration") //
-        .icon("./configuration_string.png") //
-        .shortDescription("""
-                Provides a string configuration option to an encapsulating component's dialog.
-                Outputs a string flow variable with the set value.
-                    """) //
-        .fullDescription("Outputs a string flow variable with a set value from a component's dialog.") //
-        .modelSettingsClass(StringDialogNodeSettings.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (string) with the given variable defined.") //
-        .nodeType(NodeType.Configuration) //
-        .keywords("text", "box") //
-        .build();
+    private final WebUINodeConfiguration m_config;
 
-    @SuppressWarnings("javadoc")
-    public StringDialogNodeFactory() {
-        super(CONFIG, StringDialogNodeSettings.class);
+    private final Class<? extends ConfigurationNodeSettings> m_settingsClass;
+
+    /**
+     * Constructor for the configuration node factory.
+     *
+     * @param config the configuration for the webUI node used to create the node description in case the webUI dialog
+     *            is used.
+     * @param settingsClass
+     */
+    protected ConfigurationNodeFactory(final WebUINodeConfiguration config,
+        final Class<? extends ConfigurationNodeSettings> settingsClass) {
+        super(true);
+        m_config = config;
+        m_settingsClass = settingsClass;
+        init();
+    }
+
+    /**
+     * Feature flag for webUI configuration dialogs in local AP.
+     */
+    private static final boolean SYSPROP_WEBUI_DIALOG_AP =
+        "js".equals(System.getProperty("org.knime.configuration.ui.mode"));
+
+    /**
+     * If we are headless and a dialog is required (i.e. remote workflow editing), we enforce webUI dialogs.
+     */
+    private static final boolean SYSPROP_HEADLESS = Boolean.getBoolean("java.awt.headless");
+
+    private static final boolean HAS_WEBUI_DIALOG = SYSPROP_HEADLESS || SYSPROP_WEBUI_DIALOG_AP;
+
+    @Override
+    protected NodeDescription createNodeDescription() throws SAXException, IOException, XmlException {
+        return HAS_WEBUI_DIALOG ? WebUINodeFactory.createNodeDescription(m_config) : super.createNodeDescription();
     }
 
     @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
+    protected boolean hasDialog() {
+        return !HAS_WEBUI_DIALOG;
+    }
+
+    @Override
+    public boolean hasNodeDialog() {
+        return HAS_WEBUI_DIALOG;
     }
 
     @Override
     public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, StringDialogNodeSettings.class);
+        return new DefaultNodeDialog(SettingsType.MODEL, m_settingsClass);
     }
 
     @Override
-    public StringDialogNodeModel createNodeModel() {
-        return new StringDialogNodeModel();
+    protected int getNrNodeViews() {
+        return 0;
+    }
+
+    @Override
+    public NodeView<T> createNodeView(final int viewIndex, final T nodeModel) {
+        return null;
     }
 
 }

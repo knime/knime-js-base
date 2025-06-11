@@ -44,60 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   7 Jun 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.configuration.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-/**
- * Factory for the string configuration node.
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
- */
 @SuppressWarnings("restriction")
-public class StringDialogNodeFactory extends ConfigurationNodeFactory<StringDialogNodeModel> {
+public class BooleanDialogNodeSettingsTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("String Configuration") //
-        .icon("./configuration_string.png") //
-        .shortDescription("""
-                Provides a string configuration option to an encapsulating component's dialog.
-                Outputs a string flow variable with the set value.
-                    """) //
-        .fullDescription("Outputs a string flow variable with a set value from a component's dialog.") //
-        .modelSettingsClass(StringDialogNodeSettings.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (string) with the given variable defined.") //
-        .nodeType(NodeType.Configuration) //
-        .keywords("text", "box") //
+    protected BooleanDialogNodeSettingsTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(BooleanDialogNodeSettings.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public StringDialogNodeFactory() {
-        super(CONFIG, StringDialogNodeSettings.class);
+    private static BooleanDialogNodeSettings readSettings() {
+        try {
+            var path = getSnapshotPath(BooleanDialogNodeSettingsTest.class).getParent().resolve("node_settings")
+                .resolve("BooleanDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return DefaultNodeSettings.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    BooleanDialogNodeSettings.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, StringDialogNodeSettings.class);
-    }
-
-    @Override
-    public StringDialogNodeModel createNodeModel() {
-        return new StringDialogNodeModel();
-    }
-
 }

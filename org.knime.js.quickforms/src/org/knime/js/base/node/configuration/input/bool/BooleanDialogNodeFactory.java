@@ -45,52 +45,43 @@
 package org.knime.js.base.node.configuration.input.bool;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the boolean configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanDialogNodeFactory extends NodeFactory<BooleanDialogNodeModel> {
+@SuppressWarnings("restriction")
+public final class BooleanDialogNodeFactory extends ConfigurationNodeFactory<BooleanDialogNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Boolean Configuration") //
+        .icon("./configuration_boolean.png") //
+        .shortDescription("""
+                  Provides a boolean configuration option to an encapsulating component's dialog.
+                  Outputs a boolean or an integer flow variable with the set value.
+                """) //
+        .fullDescription("Outputs a boolean or an integer flow variable with a given value.") //
+        .modelSettingsClass(BooleanDialogNodeSettings.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (boolean/number) with the given variable defined.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("check box") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public BooleanDialogNodeFactory() {
+        super(CONFIG, BooleanDialogNodeSettings.class);
+    }
+
     @Override
     public BooleanDialogNodeModel createNodeModel() {
         return new BooleanDialogNodeModel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<BooleanDialogNodeModel> createNodeView(final int viewIndex,
-            final BooleanDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new BooleanDialogNodeNodeDialog();

@@ -60,9 +60,9 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class BooleanNodeConfig {
 
-    private static final String CFG_PUSH_INT_VAR = "pushIntVar";
+    public static final String CFG_PUSH_INT_VAR = "pushIntVar";
 
-    private static final boolean DEFAULT_PUSH_INT_VAR = false;
+    public static final boolean DEFAULT_PUSH_INT_VAR = false;
 
     private boolean m_pushIntVar = DEFAULT_PUSH_INT_VAR;
 

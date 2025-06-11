@@ -48,9 +48,6 @@
  */
 package org.knime.js.base.node.configuration.input.string;
 
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_DESCRIPTION;
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_LABEL;
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
 import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_ERROR;
 import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_LABEL;
 import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_REGEX;
@@ -73,20 +70,16 @@ import static org.knime.js.base.node.base.input.string.StringNodeConfig.EDITOR_T
 import static org.knime.js.base.node.configuration.input.string.StringDialogNodeSettings.EditorType.SINGLE_LINE;
 import static org.knime.js.base.node.configuration.input.string.StringInputDialogNodeConfig.DEFAULT_EDITOR_WIDTH;
 
-import java.util.function.Supplier;
-
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.dialog.DialogNode;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
@@ -97,12 +90,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.Effe
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsPositiveIntegerValidation;
-import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.configuration.DialogNodeConfig;
+import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeSettings.EditorType.EditorTypePersistor;
 
@@ -112,38 +102,26 @@ import org.knime.js.base.node.configuration.input.string.StringDialogNodeSetting
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 @SuppressWarnings("restriction")
-public final class StringDialogNodeSettings implements DefaultNodeSettings {
+public final class StringDialogNodeSettings extends ConfigurationNodeSettings {
 
-    @Section(title = "Form Field")
-    interface FormFieldSection {
+    /**
+     * Default constructor
+     */
+    public StringDialogNodeSettings() {
+        super(StringInputDialogNodeConfig.class);
     }
 
     @Section(title = "Validation")
     @After(FormFieldSection.class)
+    @Before(OutputSection.class)
     @Effect(predicate = EditorType.IsSingleLine.class, type = EffectType.SHOW)
     interface ValidationSection {
     }
 
-    @Section(title = "Output")
-    @After(ValidationSection.class)
-    interface OutputSection {
-    }
-
-    @Section(title = "Advanced Settings", advanced = true)
-    @After(OutputSection.class)
-    interface AdvancedSettingsSection {
-    }
-
     // the default value whose type is specific to the node
 
-    static final class DefaultValue implements DefaultNodeSettings {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If empty, no default value will be set.")
-        String m_string = "";
-    }
-
     @TextMessage(StringOverwrittenByValueMessage.class)
-    @Layout(OutputSection.class)
+    @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
     static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringDialogNodeValue> {
@@ -155,82 +133,14 @@ public final class StringDialogNodeSettings implements DefaultNodeSettings {
 
     }
 
-    @Layout(OutputSection.class)
+    static final class DefaultValue implements DefaultNodeSettings {
+        @Widget(title = "Default value",
+            description = "Default value for the field. If empty, no default value will be set.")
+        String m_string = "";
+    }
+
+    @Layout(OutputSection.Top.class)
     DefaultValue m_defaultValue = new DefaultValue();
-
-    // settings common to all configuration nodes
-
-    @Widget(title = "Label", description = """
-            Some lines of description that will be shown for instance in the node description of
-            the component exposing a dialog.
-            """)
-    @Layout(FormFieldSection.class)
-    String m_label = DEFAULT_LABEL;
-
-    @Widget(title = "Description", description = "Description shown in the dialog and node description.")
-    @Layout(FormFieldSection.class)
-    String m_description = DEFAULT_DESCRIPTION;
-
-    interface FlowVariableNameRef extends Reference<String> {
-    }
-
-    static final class FlowVariableNameStateProvider implements StateProvider<String> {
-
-        private Supplier<String> m_flowVariableNameSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_flowVariableNameSupplier = initializer.computeFromValueSupplier(FlowVariableNameRef.class);
-        }
-
-        @Override
-        public String computeState(final DefaultNodeSettingsContext context) throws StateComputationFailureException {
-            return m_flowVariableNameSupplier.get();
-        }
-    }
-
-    @Widget(title = "Output variable name", description = """
-            Parameter identifier for external parameterization (e.g. batch execution).
-            This will also be the name of the exported flow variable.
-            """)
-    @Layout(OutputSection.class)
-    @ValueReference(FlowVariableNameRef.class)
-    String m_flowVariableName =
-        // see DialogNodeConfig.m_parameterName
-        SubNodeContainer.getDialogNodeParameterNameDefault(StringInputDialogNodeConfig.class);
-
-    /**
-     * See {@link DialogNode#getParameterName()} .
-     */
-    @Widget(title = "Parameter name", description = """
-            A simple name that is associated with this node for external parameterization. This is for instance \
-            used in command line control or when parameters are set via a web service invocation (that is, the \
-            workflow itself is the web service implementation). The returned value must not be null. An empty \
-            string is discouraged and only used for backward compatibility reasons (workflows saved prior 2.12 do \
-            not have this property) \
-                    """, advanced = true)
-    @Layout(AdvancedSettingsSection.class)
-    @ValueProvider(FlowVariableNameStateProvider.class)
-    String m_parameterName =
-        // see DialogNodeConfig.m_parameterName
-        SubNodeContainer.getDialogNodeParameterNameDefault(StringInputDialogNodeConfig.class);
-
-    /**
-     * A left-over setting from the old nodes that appeared in data apps and in component dialog. See
-     * {@link DialogNode#isHideInDialog()} .
-     */
-    @Widget(title = "Hide in dialog", description = """
-            Set this to true to hide this field in a component dialog.
-                     """, advanced = true)
-    @Layout(AdvancedSettingsSection.class)
-    boolean m_hideInDialog = DialogNodeConfig.DEFAULT_HIDE_IN_DIALOG;
-
-    /**
-     * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was never
-     * implemented in any client. We probably want to remove it in the future, but if we do so now, the node model will
-     * not be able to load the settings.
-     */
-    boolean m_required = DEFAULT_REQUIRED;
 
     // settings specific to the StringDialogNode
 
