@@ -89,6 +89,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
@@ -102,6 +103,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation.IsPositiveIntegerValidation;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.configuration.DialogNodeConfig;
+import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeSettings.EditorType.EditorTypePersistor;
 
 /**
@@ -138,6 +140,19 @@ public final class StringDialogNodeSettings implements DefaultNodeSettings {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
         String m_string = "";
+    }
+
+    @TextMessage(StringOverwrittenByValueMessage.class)
+    @Layout(OutputSection.class)
+    Void m_overwrittenByValueMessage;
+
+    static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringDialogNodeValue> {
+
+        @Override
+        protected String valueToString(final StringDialogNodeValue value) {
+            return value.getString();
+        }
+
     }
 
     @Layout(OutputSection.class)

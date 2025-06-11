@@ -93,6 +93,9 @@
             "description" : "The width of the editor in number of characters per line.",
             "default" : 40
           },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
@@ -210,6 +213,13 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
         "scope" : "#/properties/model/properties/defaultValue/properties/string"
       }, {
         "type" : "Control",
@@ -243,6 +253,7 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "overwrittenByValueMessage" : { },
           "defaultValue" : {
             "type" : "object",
             "properties" : {
@@ -269,6 +280,12 @@
     }
   },
   "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ ]
+  }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
     },
