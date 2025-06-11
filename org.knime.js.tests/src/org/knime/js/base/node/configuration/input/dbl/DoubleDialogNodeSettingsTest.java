@@ -44,58 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   Jun 11, 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.input.dbl;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
-import org.knime.js.base.node.configuration.input.string.StringDialogNodeNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-/**
- * Factory for the double configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class DoubleDialogNodeFactory extends ConfigurationNodeFactory<DoubleDialogNodeModel> {
+@SuppressWarnings("restriction")
+final class DoubleDialogNodeSettingsTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Double Configuration") //
-        .icon("./configuration_double.png") //
-        .shortDescription("""
-                Provides a double configuration option to an encapsulating component's dialog.
-                Outputs a double flow variable with the set value.
-                             """) //
-        .fullDescription("Outputs a double flow variable with a set value from a component's dialog.") //
-        .modelSettingsClass(DoubleDialogNodeSettings.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (double) with the given variable defined.") //
-        .nodeType(NodeType.Configuration) //
-        .keywords("number") //
+    protected DoubleDialogNodeSettingsTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(DoubleDialogNodeSettings.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public DoubleDialogNodeFactory() {
-        super(CONFIG, DoubleDialogNodeSettings.class);
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, DoubleDialogNodeSettings.class);
-    }
-
-    @Override
-    public DoubleDialogNodeModel createNodeModel() {
-        return new DoubleDialogNodeModel();
+    private static DoubleDialogNodeSettings readSettings() {
+        try {
+            var path = getSnapshotPath(DoubleDialogNodeSettingsTest.class).getParent().resolve("node_settings")
+                .resolve("DoubleDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return DefaultNodeSettings.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    DoubleDialogNodeSettings.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

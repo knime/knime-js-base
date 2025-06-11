@@ -1,0 +1,193 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "double-input",
+      "parameterName" : "double-input",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "double" : 0.0
+      },
+      "minimumValue" : null,
+      "maximumValue" : null
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "double" : {
+                "type" : "number",
+                "format" : "double",
+                "title" : "Default value",
+                "description" : "Default value for the field. If empty, no default value will be set.",
+                "default" : 0.0
+              }
+            },
+            "default" : {
+              "double" : 0.0
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Description shown in the dialog and node description.",
+            "default" : "Enter Description"
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "double-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "Some lines of description that will be shown for instance in the node description of\nthe component exposing a dialog.\n",
+            "default" : "Label"
+          },
+          "maximumValue" : {
+            "type" : [ "number", "null" ],
+            "format" : "double",
+            "title" : "Maximum value",
+            "description" : "An optional maximum value.",
+            "default" : null
+          },
+          "minimumValue" : {
+            "type" : [ "number", "null" ],
+            "format" : "double",
+            "title" : "Minimum value",
+            "description" : "An optional minimum value.",
+            "default" : null
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "A simple name that is associated with this node for external parameterization. This is for instance used in command line control or when parameters are set via a web service invocation (that is, the workflow itself is the web service implementation). The returned value must not be null. An empty string is discouraged and only used for backward compatibility reasons (workflows saved prior 2.12 do not have this property) ",
+            "default" : "double-input"
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      } ]
+    }, {
+      "label" : "Validation",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/minimumValue",
+        "options" : {
+          "hideOnNull" : true,
+          "default" : 0
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/maximumValue",
+        "options" : {
+          "hideOnNull" : true
+        },
+        "providedOptions" : [ "default" ]
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/double"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "double" : { }
+            }
+          },
+          "minimumValue" : {
+            "configPaths" : [ [ "useMin" ], [ "min" ] ]
+          },
+          "maximumValue" : {
+            "configPaths" : [ [ "useMax" ], [ "max" ] ]
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/maximumValue",
+    "providedOptionName" : "default",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : 1.0
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}
