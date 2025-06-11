@@ -44,60 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 10, 2025 (Martin Sillye, TNG Technology Consulting GmbH): created
+ *   Apr 30, 2025 (Paul Bärnreuther): created
  */
 package org.knime.js.base.node.configuration.input.integer;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
-import org.knime.js.base.node.configuration.input.string.StringDialogNodeNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-/**
- * WebUI Node Factory for the Integer Configuration.
- *
- * @author Martin Sillye, TNG Technology Consulting GmbH
- */
 @SuppressWarnings("restriction")
-public class IntegerDialogNodeFactory extends ConfigurationNodeFactory<IntegerDialogNodeModel> {
+final class IntegerDialogNodeSettingsTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Integer Configuration") //
-        .icon("./configuration_integer.png") //
-        .shortDescription("""
-                Provides an integer configuration option to an encapsulating component's dialog.
-                Outputs a string flow variable with the set value.
-                    """) //
-        .fullDescription("Outputs an integer flow variable with a set value from a component's dialog.") //
-        .modelSettingsClass(IntegerDialogNodeSettings.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (integer) with the given variable defined.") //
-        .nodeType(NodeType.Configuration) //
-        .keywords("number") //
+    protected IntegerDialogNodeSettingsTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(IntegerDialogNodeSettings.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public IntegerDialogNodeFactory() {
-        super(CONFIG, IntegerDialogNodeSettings.class);
-    }
-
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, IntegerDialogNodeSettings.class);
-    }
-
-    @Override
-    public IntegerDialogNodeModel createNodeModel() {
-        return new IntegerDialogNodeModel();
+    private static IntegerDialogNodeSettings readSettings() {
+        try {
+            var path = getSnapshotPath(IntegerDialogNodeSettingsTest.class).getParent().resolve("node_settings")
+                .resolve("IntegerDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return DefaultNodeSettings.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    IntegerDialogNodeSettings.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

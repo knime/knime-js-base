@@ -61,20 +61,20 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class IntegerNodeConfig {
 
-    private static final String CFG_USE_MIN = "useMin";
+    public static final String CFG_USE_MIN = "useMin";
     private static final boolean DEFAULT_USE_MIN = false;
     private boolean m_useMin = DEFAULT_USE_MIN;
 
-    private static final String CFG_USE_MAX = "useMax";
+    public static final String CFG_USE_MAX = "useMax";
     private static final boolean DEFAULT_USE_MAX = false;
     private boolean m_useMax = DEFAULT_USE_MAX;
 
-    private static final String CFG_MIN = "min";
+    public static final String CFG_MIN = "min";
     private static final int DEFAULT_MIN = 0;
     private int m_min = DEFAULT_MIN;
 
-    private static final String CFG_MAX = "max";
-    private static final int DEFAULT_MAX = 100;
+    public static final String CFG_MAX = "max";
+    public static final int DEFAULT_MAX = 100;
     private int m_max = DEFAULT_MAX;
 
     /**
