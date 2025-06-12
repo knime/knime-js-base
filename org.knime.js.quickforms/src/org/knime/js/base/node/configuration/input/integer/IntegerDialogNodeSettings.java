@@ -63,9 +63,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DefaultValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.OptionalWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.js.base.node.base.input.integer.IntegerNodeConfig;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
+import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 
 /**
  * WebUI Node Settings for the Integer Configuration.
@@ -90,10 +92,23 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
 
     // the default value whose type is specific to the node
 
+    @TextMessage(IntegerOverwrittenByValueMessage.class)
+    @Layout(OutputSection.Top.class)
+    Void m_overwrittenByValueMessage;
+
+    static final class IntegerOverwrittenByValueMessage extends OverwrittenByValueMessage<IntegerDialogNodeValue> {
+
+        @Override
+        protected String valueToString(final IntegerDialogNodeValue value) {
+            return String.valueOf(value.getInteger());
+        }
+
+    }
+
     static final class DefaultValue implements DefaultNodeSettings {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
-        @Layout(OutputSection.class)
+        @Layout(OutputSection.Top.class)
         int m_integer;
     }
 
