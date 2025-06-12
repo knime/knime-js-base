@@ -124,13 +124,16 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
     }
 
     @Widget(title = "Label", description = """
-            Some lines of description that will be shown for instance in the node description of
-            the component exposing a dialog.
+            A descriptive label that will be shown for instance in \
+            the node description of the component exposing a dialog.\
             """)
     @Layout(FormFieldSection.class)
     String m_label = DEFAULT_LABEL;
 
-    @Widget(title = "Description", description = "Description shown in the dialog and node description.")
+    @Widget(title = "Description", description = """
+            Some lines of description that will be shown for instance in \
+            the node description of the component exposing a dialog.\
+            """)
     @Layout(FormFieldSection.class)
     String m_description = DEFAULT_DESCRIPTION;
 
@@ -146,11 +149,9 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
      * See {@link DialogNode#getParameterName()} .
      */
     @Widget(title = "Parameter name", description = """
-            A simple name that is associated with this node for external parameterization. This is for instance \
-            used in command line control or when parameters are set via a web service invocation (that is, the \
-            workflow itself is the web service implementation). The returned value must not be null. An empty \
-            string is discouraged and only used for backward compatibility reasons (workflows saved prior 2.12 do \
-            not have this property) \
+            Parameter identifier for external parameterization (e.g. batch execution). \
+            Whenever the output variable name is adjusted, the current value of the parameter \
+            name is set to the same value.\
                     """, advanced = true)
     @Layout(AdvancedSettingsSection.class)
     @ValueProvider(FlowVariableNameStateProvider.class)

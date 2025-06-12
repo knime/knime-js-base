@@ -38,7 +38,7 @@
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Description shown in the dialog and node description.",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
@@ -56,7 +56,7 @@
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "Some lines of description that will be shown for instance in the node description of\nthe component exposing a dialog.\n",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
           "maximumValue" : {
@@ -79,7 +79,7 @@
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
-            "description" : "A simple name that is associated with this node for external parameterization. This is for instance used in command line control or when parameters are set via a web service invocation (that is, the workflow itself is the web service implementation). The returned value must not be null. An empty string is discouraged and only used for backward compatibility reasons (workflows saved prior 2.12 do not have this property) ",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "integer-input"
           },
           "required" : {
