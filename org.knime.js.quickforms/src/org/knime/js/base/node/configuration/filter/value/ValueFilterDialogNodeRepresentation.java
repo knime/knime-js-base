@@ -112,8 +112,11 @@ public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresen
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         final var columnToDomainPossibleValues = getPossibleValues();
         if (isLockColumn()) {
-            return new ManualFilterRenderer(this, columnToDomainPossibleValues.get(getCurrentValue().getColumn()),
-                isLimitNumberVisOptions(), getNumberVisOptions()).at("values");
+            final var lockedColumn = getCurrentValue().getColumn();
+            final List<String> lockedColumnValues = columnToDomainPossibleValues.containsKey(lockedColumn)
+                ? columnToDomainPossibleValues.get(lockedColumn) : List.of();
+            return new ManualFilterRenderer(this, lockedColumnValues, isLimitNumberVisOptions(), getNumberVisOptions())
+                .at("values");
         }
         final var columnDropdown = new StaticChoicesDropdownRenderer("Column", getPossibleColumns());
         final var domainStateProvider =

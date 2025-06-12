@@ -112,9 +112,10 @@ public class ValueSelectionDialogNodeRepresentation
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         final var columnToDomainPossibleValues = getPossibleValues();
         if (isLockColumn()) {
-            final var lockedColumnValues =
-                columnToDomainPossibleValues.get(getCurrentValue().getColumn()).toArray(String[]::new);
-            return getStaticValueRenderer(lockedColumnValues).at("value");
+            final var lockedColumn = getCurrentValue().getColumn();
+            final var lockedColumnValues = columnToDomainPossibleValues.containsKey(lockedColumn)
+                ? columnToDomainPossibleValues.get(lockedColumn) : List.of();
+            return getStaticValueRenderer(lockedColumnValues.toArray(String[]::new)).at("value");
         }
         final var columnDropdown = new StaticChoicesDropdownRenderer("Column", getPossibleColumns());
         final var domainStateProvider =
