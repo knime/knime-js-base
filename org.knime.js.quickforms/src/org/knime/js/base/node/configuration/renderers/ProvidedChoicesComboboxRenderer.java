@@ -48,59 +48,28 @@
  */
 package org.knime.js.base.node.configuration.renderers;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ManualFilterRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ComboboxRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
- * Manual filter widget from node description provider with static choices.
+ * Combo box with a title and provided possible values.
  *
  * @author Paul Bärnreuther
  */
-public final class ManualFilterRenderer extends AbstractRepresentationRenderer implements ManualFilterRendererSpec {
-
-    private final boolean m_isLimitNumberOfVizOptions;
-
-    private final int m_numberOfVizOptions;
-
-    private final List<String> m_possibleValues;
+public final class ProvidedChoicesComboboxRenderer extends AbstractProvidedChoicesRenderer
+    implements ComboboxRendererSpec {
 
     /**
-     * Creates a new string filter widget renderer with the possible values.
+     * Creates a new radio button renderer with the given title and possible values.
      *
-     * @param rep providing title and description
-     * @param possibleValues the possible values of the dropdown
-     * @param isLimitNumberOfVizOptions whether the number of options is limited
-     * @param numberOfVizOptions the number of options to visualize
+     * @param title the title
+     * @param possibleValues the possible values
      */
-    public ManualFilterRenderer(final SubNodeDescriptionProvider<?> rep, final String[] possibleValues,
-        final boolean isLimitNumberOfVizOptions, final int numberOfVizOptions) {
-        super(rep);
-        m_possibleValues = Arrays.asList(possibleValues);
-        m_isLimitNumberOfVizOptions = isLimitNumberOfVizOptions;
-        m_numberOfVizOptions = numberOfVizOptions;
-
-    }
-
-    @Override
-    public Optional<ManualFilterRendererOptions> getOptions() {
-        return Optional.of(new ManualFilterRendererOptions() {
-
-            @Override
-            public Optional<StringChoice[]> getPossibleValues() {
-                return Optional.of(m_possibleValues.stream().map(StringChoice::fromId).toArray(StringChoice[]::new));
-            }
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return Optional.of(m_numberOfVizOptions).filter(size -> m_isLimitNumberOfVizOptions);
-            }
-
-        });
+    public ProvidedChoicesComboboxRenderer(final String title, final StateProvider<List<StringChoice>> possibleValues) {
+        super(title, possibleValues);
     }
 
 }

@@ -89,6 +89,7 @@ import org.knime.js.core.selections.json.RangeSelection;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+
 public class ValueFilterDefinitionNodeModel
     extends AbstractWizardNodeModel<ValueFilterDefinitionRepresentation, RangeFilterValue>
     implements CSSModifiable {

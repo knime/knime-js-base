@@ -53,13 +53,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -135,7 +131,6 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         m_column.setVisible(!representation.isLockColumn());
     }
 
-
     /**
      * Extracts the domain of the currently selected column from the given domains and adds all unseen values to the
      * given filter configuration.
@@ -172,28 +167,27 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
     }
 
     /**
-     * @return The selected enforce inclusion/exclusion policy of the dialog.
-     *         Empty if dialog does not provide means to select a policy.
+     * @return The selected enforce inclusion/exclusion policy of the dialog. Empty if dialog does not provide means to
+     *         select a policy.
      */
     private Optional<EnforceOption> getTwinListEnforceOption() {
         if (m_twinlistUsed) {
-            return ((StringFilterPanel) m_values.getComponent()).getSelectedEnforceOption();
+            return ((StringFilterPanel)m_values.getComponent()).getSelectedEnforceOption();
         } else {
             return Optional.empty();
         }
     }
 
-
     /**
      * Set the selected enforce option in the dialog if such controls are provided, else do nothing.
+     *
      * @param enforceOption
      */
-    private void setEnforceOptionSelected(final EnforceOption enforceOption){
+    private void setEnforceOptionSelected(final EnforceOption enforceOption) {
         if (m_twinlistUsed) {
-            ((StringFilterPanel) m_values.getComponent()).setSelectedEnforceOption(enforceOption);
+            ((StringFilterPanel)m_values.getComponent()).setSelectedEnforceOption(enforceOption);
         }
     }
-
 
     /**
      * Applies the selected enforce include/exclude option but ignores includes/excludes if no column is selected.
@@ -211,27 +205,14 @@ public class ValueFilterConfigurationPanel extends AbstractDialogNodeConfigurati
         // occurs e.g. when the table spec is not available yet. See AP-20227
         getTwinListEnforceOption().ifPresent(value::setEnforceOption);
 
-        var selectedCol = (String) m_column.getSelectedItem();
-        // if no column is available, remove all includes/excludes
-        if (selectedCol == null) {
-            return value; // Value object with default values for members.
+        var selectedCol = (String)m_column.getSelectedItem();
+        final var possibleValuesForCol = ValueFilterDialogUtils.getPossibleValuedForCol(selectedCol, m_possibleValues);
+        if (possibleValuesForCol.isEmpty()) {
+            return value; // no column selected or no possible values for the columnQ
         }
-        List<String> possibleValuesForCol = m_possibleValues.get(selectedCol);
-
+        value.setColumn(selectedCol);
         var selection = m_values.getSelections();
-        // 'choices' in the context of a MultipleSelectionComponent are all values that can be selected (i.e.
-        // that are shown in the UI) and coincide with the possible values for the column.
-        // Excludes are all values that could have been selected but were not.
-        List<String> excludes = new ArrayList<>();
-        Set<String> selectionSet = new HashSet<>(Arrays.asList(selection));
-        for (String choice : possibleValuesForCol) {
-            if (!selectionSet.contains(choice)) {
-                excludes.add(choice);
-            }
-        }
-        value.setValues(selection);
-        value.setExcludes(excludes.toArray(new String[0]));
-        value.setColumn((String)m_column.getSelectedItem());
+        ValueFilterDialogUtils.setIncludesAndExcludes(value, selection, possibleValuesForCol.get());
         return value;
     }
 

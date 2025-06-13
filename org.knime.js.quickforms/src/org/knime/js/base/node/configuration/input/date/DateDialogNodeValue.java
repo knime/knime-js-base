@@ -55,8 +55,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.input.date.DateNodeConfig;
 import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.time.util.DateTimeUtils;
@@ -72,7 +72,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateDialogNodeValue extends DateNodeValue implements WebDialogContent {
+public class DateDialogNodeValue extends DateNodeValue implements DialogNodeValue {
 
     /**
      * {@inheritDoc}

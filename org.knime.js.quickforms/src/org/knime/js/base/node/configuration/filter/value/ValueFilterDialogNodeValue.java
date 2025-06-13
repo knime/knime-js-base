@@ -48,7 +48,6 @@
  */
 package org.knime.js.base.node.configuration.filter.value;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -60,15 +59,12 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.util.JsonUtil;
-import org.knime.core.webui.node.dialog.WebDialogValue;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.util.ManualFilter;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -89,7 +85,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements WebDialogValue {
+public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements DialogNodeValue {
 
     static final NodeLogger LOGGER = NodeLogger.getLogger(ValueFilterDialogNodeValue.class);
 
@@ -362,29 +358,6 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
         return builder.build();
     }
 
-    @Override
-    public JsonNode toDialogJson() throws IOException {
 
-        final var mapper = JsonFormsDataUtil.getMapper();
-        final var root = mapper.createObjectNode();
-
-        final var manualFilter =
-            new ManualFilter(getValues(), getExcludes(), getEnforceOption() == EnforceOption.EnforceExclusion);
-
-        root.set("values", mapper.valueToTree(manualFilter));
-        root.put("column", getColumn());
-        return root;
-    }
-
-    @Override
-    public void fromDialogJson(final JsonNode json) throws IOException {
-        final var manualFilter = JsonFormsDataUtil.getMapper().treeToValue(json.get("values"), ManualFilter.class);
-        final var column = json.get("column").asText(null);
-        setColumn(column);
-        setEnforceOption(
-            manualFilter.m_includeUnknownColumns ? EnforceOption.EnforceExclusion : EnforceOption.EnforceInclusion);
-        setExcludes(manualFilter.m_manuallyDeselected);
-        setValues(manualFilter.m_manuallySelected);
-    }
 
 }
