@@ -55,7 +55,6 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
-import org.knime.js.base.node.configuration.input.string.StringDialogNodeNodeDialog;
 
 /**
  * WebUI Node Factory for the Integer Configuration.
@@ -88,7 +87,7 @@ public class IntegerDialogNodeFactory extends ConfigurationNodeFactory<IntegerDi
 
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
+        return new IntegerDialogNodeNodeDialog();
     }
 
     @Override

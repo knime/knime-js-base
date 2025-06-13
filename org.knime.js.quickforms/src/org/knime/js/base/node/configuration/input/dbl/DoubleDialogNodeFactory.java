@@ -55,7 +55,6 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
-import org.knime.js.base.node.configuration.input.string.StringDialogNodeNodeDialog;
 
 /**
  * Factory for the double configuration node
@@ -86,7 +85,7 @@ public class DoubleDialogNodeFactory extends ConfigurationNodeFactory<DoubleDial
 
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return new StringDialogNodeNodeDialog();
+        return new DoubleDialogNodeNodeDialog();
     }
 
     @Override
