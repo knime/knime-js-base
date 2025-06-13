@@ -48,25 +48,34 @@
  */
 package org.knime.js.base.node.configuration.filter.value;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.PersistSchema;
-import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.util.ManualFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.configuration.filter.MultipleEntrySelectionRendererUtil;
 import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
-import org.knime.js.base.node.configuration.renderers.ManualFilterRenderer;
-import org.knime.js.base.node.configuration.renderers.ProvidedChoicesManualFilterRenderer;
 import org.knime.js.base.node.configuration.renderers.StaticChoicesDropdownRenderer;
 import org.knime.js.base.node.configuration.selection.value.DomainFromColumnDropdownProvider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The dialog representation of the value filter configuration node
@@ -75,7 +84,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresentation<ValueFilterDialogNodeValue>
     implements SubNodeDescriptionProvider<ValueFilterDialogNodeValue>,
-    DefaultWebDialogNodeRepresentation<ValueFilterDialogNodeValue> {
+    WebDialogNodeRepresentation<ValueFilterDialogNodeValue> {
 
     @JsonCreator
     private ValueFilterDialogNodeRepresentation(@JsonProperty("label") final String label,
@@ -115,19 +124,33 @@ public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresen
             final var lockedColumn = getCurrentValue().getColumn();
             final List<String> lockedColumnValues = columnToDomainPossibleValues.containsKey(lockedColumn)
                 ? columnToDomainPossibleValues.get(lockedColumn) : List.of();
-            return new ManualFilterRenderer(this, lockedColumnValues, isLimitNumberVisOptions(), getNumberVisOptions())
-                .at("values");
+            return getStaticValueRenderer(lockedColumnValues.toArray(String[]::new)).at("values");
         }
         final var columnDropdown = new StaticChoicesDropdownRenderer("Column", getPossibleColumns());
         final var domainStateProvider =
             new DomainFromColumnDropdownProvider(columnToDomainPossibleValues, columnDropdown);
-        final var valueDropdown = new ProvidedChoicesManualFilterRenderer("Values", domainStateProvider,
-            isLimitNumberVisOptions(), getNumberVisOptions());
-        return new LabeledGroupRenderer(this, List.of(columnDropdown.at("column"), valueDropdown.at("values")));
+        final var valueControl = getDynamicValueRenderer("Values", domainStateProvider);
+        return new LabeledGroupRenderer(this, List.of(columnDropdown.at("column"), valueControl.at("values")));
+    }
+
+    @SuppressWarnings("rawtypes")
+    private DialogElementRendererSpec getStaticValueRenderer(final String[] possibleValues) {
+        return MultipleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(this, getType(), possibleValues,
+            isLimitNumberVisOptions(), getNumberVisOptions(), true);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private DialogElementRendererSpec getDynamicValueRenderer(final String name,
+        final StateProvider<List<StringChoice>> possibleValuesProvider) {
+        return MultipleEntrySelectionRendererUtil.getWebUIDialogControlSpecByType(name, getType(),
+            possibleValuesProvider, isLimitNumberVisOptions(), getNumberVisOptions(), true);
     }
 
     @Override
     public Optional<PersistSchema> getPersistSchema() {
+        if (!getType().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+            return Optional.empty();
+        }
         return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
             Map.of("values", new PersistSchema.PersistLeafSchema() {
 
@@ -141,6 +164,58 @@ public class ValueFilterDialogNodeRepresentation extends ValueFilterNodeRepresen
                 }
 
             })));
+    }
+
+    @Override
+    public JsonNode transformValueToDialogJson(final ValueFilterDialogNodeValue value) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var root = mapper.createObjectNode();
+        final var values = createValuesJsonNode(value, mapper);
+        root.set("values", values);
+        root.put("column", value.getColumn());
+        return root;
+    }
+
+    private JsonNode createValuesJsonNode(final ValueFilterDialogNodeValue value, final ObjectMapper mapper) {
+        return MultipleSelectionsComponentFactory.TWINLIST.equals(getType()) ? createManualFilterJsonNode(value, mapper)
+            : mapper.valueToTree(value.getValues());
+    }
+
+    private static JsonNode createManualFilterJsonNode(final ValueFilterDialogNodeValue value,
+        final ObjectMapper mapper) {
+        final var manualFilter = new ManualFilter(value.getValues(), value.getExcludes(),
+            value.getEnforceOption() == EnforceOption.EnforceExclusion);
+        return mapper.valueToTree(manualFilter);
+    }
+
+    @Override
+    public void setValueFromDialogJson(final JsonNode json, final ValueFilterDialogNodeValue value) throws IOException {
+
+        final var column = json.get("column").asText(null);
+        value.setColumn(column);
+        setValuesFromJson(column, json.get("values"), value);
+
+    }
+
+    private void setValuesFromJson(final String selectedCol, final JsonNode json,
+        final ValueFilterDialogNodeValue value) throws JsonProcessingException {
+        if (MultipleSelectionsComponentFactory.TWINLIST.equals(getType())) {
+            setManualFilterValue(json, value);
+        } else {
+            final var selectedValues = JsonFormsDataUtil.getMapper().treeToValue(json, String[].class);
+            ValueFilterDialogUtils.getPossibleValuedForCol(selectedCol, getPossibleValues())
+                .ifPresent(possibleValuedForCol -> ValueFilterDialogUtils.setIncludesAndExcludes(value, selectedValues,
+                    possibleValuedForCol));
+        }
+    }
+
+    private static void setManualFilterValue(final JsonNode json, final ValueFilterDialogNodeValue value)
+        throws JsonProcessingException {
+        final var manualFilter = JsonFormsDataUtil.getMapper().treeToValue(json, ManualFilter.class);
+        value.setEnforceOption(
+            manualFilter.m_includeUnknownColumns ? EnforceOption.EnforceExclusion : EnforceOption.EnforceInclusion);
+        value.setExcludes(manualFilter.m_manuallyDeselected);
+        value.setValues(manualFilter.m_manuallySelected);
     }
 
 }

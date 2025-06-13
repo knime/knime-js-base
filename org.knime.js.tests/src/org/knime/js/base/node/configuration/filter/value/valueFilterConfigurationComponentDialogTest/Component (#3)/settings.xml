@@ -5,7 +5,177 @@
     <config key="internal_node_subsettings">
         <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
     </config>
-    <config key="model"/>
+    <config key="model">
+        <config key="value-filter-3">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceExclusion"/>
+        </config>
+        <config key="value-filter-with-locked-column-4">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceExclusion"/>
+        </config>
+        <config key="value-filter-with-limited-options-5">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceExclusion"/>
+        </config>
+        <config key="value-filter-with-locked-column-and-limited-options-6">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceExclusion"/>
+        </config>
+        <config key="list-7">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="3"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+                <entry key="2" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="list-locked-11">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="3"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+                <entry key="2" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="checkboxes-horizontal-8">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="2"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="2"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+                <entry key="1" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="checkboxes-horizontal-locked-13">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="3"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+                <entry key="2" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="checkboxes-vertical-9">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="3"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+                <entry key="2" type="xstring" value="Cluster_3"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="checkboxes-vertical-locked-14">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="2"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_3"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="2"/>
+                <entry key="0" type="xstring" value="Cluster_1"/>
+                <entry key="1" type="xstring" value="Cluster_2"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="combobox-10">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+        <config key="combobox-locked-15">
+            <entry key="column" type="xstring" value="Cluster Membership"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="0"/>
+            </config>
+            <config key="excludes">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
+        </config>
+    </config>
+    <config key="variables"/>
     <config key="nodeAnnotation">
         <entry key="text" type="xstring" value=""/>
         <entry key="contentType" type="xstring" value="text/plain"/>
@@ -23,11 +193,6 @@
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="CONFIGURED"/>
-    <config key="nodecontainer_message">
-        <entry key="type" type="xstring" value="WARNING"/>
-        <entry key="message" type="xstring" value="One node with warning (Nominal Row Filter Configuration #3)"/>
-        <entry key="issue" type="xstring" value="Nominal Row Filter Configuration #3: Node created an empty data table."/>
-    </config>
     <entry key="workflow-file" type="xstring" value="workflow.knime"/>
     <entry key="virtual-in-ID" type="xint" value="1"/>
     <config key="inports">
@@ -41,7 +206,7 @@
     <entry key="virtual-out-ID" type="xint" value="2"/>
     <config key="outports"/>
     <entry key="layoutJSON" type="xstring" value="{&quot;parentLayoutLegacyMode&quot;:false}"/>
-    <entry key="configurationLayoutJSON" type="xstring" value="{}"/>
+    <entry key="configurationLayoutJSON" type="xstring" value="{&quot;parentLayoutLegacyMode&quot;:false,&quot;rows&quot;:[{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;3&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;4&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;5&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;6&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;7&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;11&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;8&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;13&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;9&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;14&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;10&quot;}],&quot;widthXS&quot;:12}]},{&quot;type&quot;:&quot;row&quot;,&quot;columns&quot;:[{&quot;content&quot;:[{&quot;type&quot;:&quot;configuration&quot;,&quot;nodeID&quot;:&quot;15&quot;}],&quot;widthXS&quot;:12}]}]}"/>
     <entry key="hideInWizard" type="xboolean" value="false"/>
     <entry key="customCSS" type="xstring" value=""/>
 </config>

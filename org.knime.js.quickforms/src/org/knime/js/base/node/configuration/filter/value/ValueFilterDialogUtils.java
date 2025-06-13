@@ -44,63 +44,64 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 26, 2025 (Paul Bärnreuther): created
+ *   Jun 13, 2025 (Paul Bärnreuther): created
  */
-package org.knime.js.base.node.configuration.renderers;
+package org.knime.js.base.node.configuration.filter.value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import org.knime.core.node.dialog.SubNodeDescriptionProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ManualFilterRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import java.util.Set;
 
 /**
- * Manual filter widget from node description provider with static choices.
+ * Utility for deduplication between modern and legacy implementation of the value filter configuration.
  *
  * @author Paul Bärnreuther
  */
-public final class ManualFilterRenderer extends AbstractRepresentationRenderer implements ManualFilterRendererSpec {
+final class ValueFilterDialogUtils {
 
-    private final boolean m_isLimitNumberOfVizOptions;
-
-    private final int m_numberOfVizOptions;
-
-    private final List<String> m_possibleValues;
-
-    /**
-     * Creates a new string filter widget renderer with the possible values.
-     *
-     * @param rep providing title and description
-     * @param possibleValues the possible values of the dropdown
-     * @param isLimitNumberOfVizOptions whether the number of options is limited
-     * @param numberOfVizOptions the number of options to visualize
-     */
-    public ManualFilterRenderer(final SubNodeDescriptionProvider<?> rep, final String[] possibleValues,
-        final boolean isLimitNumberOfVizOptions, final int numberOfVizOptions) {
-        super(rep);
-        m_possibleValues = Arrays.asList(possibleValues);
-        m_isLimitNumberOfVizOptions = isLimitNumberOfVizOptions;
-        m_numberOfVizOptions = numberOfVizOptions;
-
+    private ValueFilterDialogUtils() {
+        // Utility class.
     }
 
-    @Override
-    public Optional<ManualFilterRendererOptions> getOptions() {
-        return Optional.of(new ManualFilterRendererOptions() {
+    static Optional<List<String>> getPossibleValuedForCol(final String selectedCol,
+        final Map<String, List<String>> possibleValues) {
+        if (selectedCol == null) {
+            return Optional.empty();
+        }
+        List<String> possibleValuesForCol = possibleValues.get(selectedCol);
+        if (possibleValuesForCol == null) {
+            return Optional.empty();
+        }
+        return Optional.of(possibleValuesForCol);
+    }
 
-            @Override
-            public Optional<StringChoice[]> getPossibleValues() {
-                return Optional.of(m_possibleValues.stream().map(StringChoice::fromId).toArray(StringChoice[]::new));
+    /**
+     * This is the custom logic that needs to be executed when saving the value
+     *
+     * @param value the value filter dialog node value to be updated
+     * @param selectedCol the possibly missing or null selected column
+     * @param selectedValues the selected values for the column
+     * @param possibleValuesForCol the possible values for the available column
+     */
+    static void setIncludesAndExcludes(final ValueFilterDialogNodeValue value, final String[] selectedValues,
+        final List<String> possibleValuesForCol) {
+
+        // 'choices' in the context of a MultipleSelectionComponent are all values that can be selected (i.e.
+        // that are shown in the UI) and coincide with the possible values for the column.
+        // Excludes are all values that could have been selected but were not.
+        List<String> excludes = new ArrayList<>();
+        Set<String> selectionSet = new HashSet<>(Arrays.asList(selectedValues));
+        for (String choice : possibleValuesForCol) {
+            if (!selectionSet.contains(choice)) {
+                excludes.add(choice);
             }
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return Optional.of(m_numberOfVizOptions).filter(size -> m_isLimitNumberOfVizOptions);
-            }
-
-        });
+        }
+        value.setValues(selectedValues);
+        value.setExcludes(excludes.toArray(String[]::new));
     }
 
 }
