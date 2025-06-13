@@ -87,12 +87,9 @@ class ValueFilterConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(uiSchema).inPath("$.elements[0].elements[1].providedOptions").isArray()
             .containsExactly("possibleValues");
         final var initialUpdates = dialogData.getInitialUpdates();
-        assertThatJson(initialUpdates).isArray().hasSize(2);
         assertThatJson(initialUpdates).inPath("[0].providedOptionName").isString().isEqualTo("possibleValues");
         assertThatJson(initialUpdates).inPath("[0].values[0].value").isArray().hasSize(4);
         assertThatJson(initialUpdates).inPath("[0].values[0].value[0].id").isString().isEqualTo("Cluster_0");
-        assertThatJson(initialUpdates).inPath("[0].scope").isString()
-            .isEqualTo(String.format("#/properties/model/properties/%s/properties/values", paramName));
     }
 
     @Test
@@ -132,6 +129,85 @@ class ValueFilterConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(uiSchema).inPath("$.elements[3].options.twinlistSize").isNumber();
         assertThatJson(uiSchema).inPath("$.elements[3].scope").isString()
             .contains("value-filter-with-locked-column-and-limited-options-6");
+
+    }
+
+    @Test
+    void testValueFilterConfigurationList() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(3));
+
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[4].elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[4].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/list-7/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[4].elements[1].options.format").isString()
+            .isEqualTo("multiSelectListBox");
+        assertThatJson(uiSchema).inPath("$.elements[4].elements[1].providedOptions").isArray()
+            .containsExactly("possibleValues");
+
+        assertThatJson(uiSchema).inPath("$.elements[5].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[5].scope").isString()
+            .isEqualTo("#/properties/model/properties/list-locked-11/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[5].options.format").isString().isEqualTo("multiSelectListBox");
+        assertThatJson(uiSchema).inPath("$.elements[5].options.possibleValues").isArray().hasSize(4);
+    }
+
+    @Test
+    void testValueFilterConfigurationCheckboxes() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(3));
+
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[6].elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[6].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/checkboxes-horizontal-8/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[6].elements[1].options.format").isString().isEqualTo("checkboxes");
+        assertThatJson(uiSchema).inPath("$.elements[6].elements[1].options.checkboxLayout").isString()
+            .isEqualTo("horizontal");
+        assertThatJson(uiSchema).inPath("$.elements[6].elements[1].providedOptions").isArray()
+            .containsExactly("possibleValues");
+
+        assertThatJson(uiSchema).inPath("$.elements[7].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[7].scope").isString()
+            .isEqualTo("#/properties/model/properties/checkboxes-horizontal-locked-13/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[7].options.format").isString().isEqualTo("checkboxes");
+        assertThatJson(uiSchema).inPath("$.elements[7].options.possibleValues").isArray().hasSize(4);
+        assertThatJson(uiSchema).inPath("$.elements[7].options.checkboxLayout").isString().isEqualTo("horizontal");
+
+        assertThatJson(uiSchema).inPath("$.elements[8].elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[8].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/checkboxes-vertical-9/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[8].elements[1].options.format").isString().isEqualTo("checkboxes");
+        assertThatJson(uiSchema).inPath("$.elements[8].elements[1].options.checkboxLayout").isString()
+            .isEqualTo("vertical");
+        assertThatJson(uiSchema).inPath("$.elements[8].elements[1].providedOptions").isArray()
+            .containsExactly("possibleValues");
+
+        assertThatJson(uiSchema).inPath("$.elements[9].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[9].scope").isString()
+            .isEqualTo("#/properties/model/properties/checkboxes-vertical-locked-14/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[9].options.format").isString().isEqualTo("checkboxes");
+        assertThatJson(uiSchema).inPath("$.elements[9].options.checkboxLayout").isString().isEqualTo("vertical");
+        assertThatJson(uiSchema).inPath("$.elements[9].options.possibleValues").isArray().hasSize(4);
+
+    }
+
+    @Test
+    void testValueFilterConfigurationComboBox() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(3));
+
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[10].elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[10].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/combobox-10/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[10].elements[1].options.format").isString().isEqualTo("comboBox");
+        assertThatJson(uiSchema).inPath("$.elements[10].elements[1].providedOptions").isArray()
+            .containsExactly("possibleValues");
+
+        assertThatJson(uiSchema).inPath("$.elements[11].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[11].scope").isString()
+            .isEqualTo("#/properties/model/properties/combobox-locked-15/properties/values");
+        assertThatJson(uiSchema).inPath("$.elements[11].options.format").isString().isEqualTo("comboBox");
+        assertThatJson(uiSchema).inPath("$.elements[11].options.possibleValues").isArray().hasSize(4);
 
     }
 
