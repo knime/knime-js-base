@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Advanced;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
@@ -118,7 +119,8 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
     /**
      * The advanced settings section of a configuration node
      */
-    @Section(title = "Advanced Settings", advanced = true)
+    @Section(title = "Advanced Settings")
+    @Advanced
     @After(OutputSection.class)
     public interface AdvancedSettingsSection {
     }
