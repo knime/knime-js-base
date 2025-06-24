@@ -129,7 +129,7 @@ window.table_editor = (function () {
             case 'Number (Long Integer)':
                 editor = new IntEditor();
                 break;
-            case "Number (Floating Decimal)":
+            case "Number (Float)":
                 editor = new DoubleEditor();
                 break;
             case 'Boolean':
