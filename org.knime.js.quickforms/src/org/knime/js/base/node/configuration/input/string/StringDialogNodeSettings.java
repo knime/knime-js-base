@@ -111,6 +111,16 @@ public final class StringDialogNodeSettings extends ConfigurationNodeSettings {
         super(StringInputDialogNodeConfig.class);
     }
 
+    public StringDialogNodeSettings(final String name, final String label, final String description,
+        final String defaultValue) {
+        this();
+        m_flowVariableName = name;
+        m_parameterName = name;
+        m_label = label;
+        m_description = description;
+        m_defaultValue.m_string = defaultValue;
+    }
+
     @Section(title = "Validation")
     @After(FormFieldSection.class)
     @Before(OutputSection.class)

@@ -130,14 +130,14 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
             the node description of the component exposing a dialog.\
             """)
     @Layout(FormFieldSection.class)
-    String m_label = DEFAULT_LABEL;
+    protected String m_label = DEFAULT_LABEL;
 
     @Widget(title = "Description", description = """
             Some lines of description that will be shown for instance in \
             the node description of the component exposing a dialog.\
             """)
     @Layout(FormFieldSection.class)
-    String m_description = DEFAULT_DESCRIPTION;
+    protected String m_description = DEFAULT_DESCRIPTION;
 
     @Widget(title = "Output variable name", description = """
             Parameter identifier for external parameterization (e.g. batch execution).
@@ -145,7 +145,7 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
             """)
     @Layout(OutputSection.Bottom.class)
     @ValueReference(FlowVariableNameRef.class)
-    String m_flowVariableName; // see DialogNodeConfig.m_parameterName
+    protected String m_flowVariableName; // see DialogNodeConfig.m_parameterName
 
     /**
      * See {@link DialogNode#getParameterName()} .
@@ -157,7 +157,7 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
                     """, advanced = true)
     @Layout(AdvancedSettingsSection.class)
     @ValueProvider(FlowVariableNameStateProvider.class)
-    String m_parameterName;
+    protected String m_parameterName;
 
     /**
      * A left-over setting from the old nodes that appeared in data apps and in component dialog. See
