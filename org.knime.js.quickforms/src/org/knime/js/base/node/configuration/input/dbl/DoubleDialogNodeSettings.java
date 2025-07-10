@@ -84,6 +84,16 @@ public class DoubleDialogNodeSettings extends ConfigurationNodeSettings {
         super(DoubleInputDialogNodeConfig.class);
     }
 
+    public DoubleDialogNodeSettings(final String name, final String label, final String description,
+        final double defaultValue) {
+        this();
+        m_flowVariableName = name;
+        m_parameterName = name;
+        m_label = label;
+        m_description = description;
+        m_defaultValue.m_double = defaultValue;
+    }
+
     @Section(title = "Validation")
     @After(FormFieldSection.class)
     @Before(OutputSection.class)
