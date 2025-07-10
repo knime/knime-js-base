@@ -84,6 +84,16 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
         super(IntegerInputDialogNodeConfig.class);
     }
 
+    public IntegerDialogNodeSettings(final String name, final String label, final String description,
+        final Integer defaultValue) {
+        this();
+        m_flowVariableName = name;
+        m_parameterName = name;
+        m_label = label;
+        m_description = description;
+        m_defaultValue.m_integer = defaultValue;
+    }
+
     @Section(title = "Validation")
     @After(FormFieldSection.class)
     @Before(OutputSection.class)

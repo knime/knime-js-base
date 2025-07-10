@@ -80,6 +80,16 @@ public final class BooleanDialogNodeSettings extends ConfigurationNodeSettings {
         super(BooleanInputDialogNodeConfig.class);
     }
 
+    public BooleanDialogNodeSettings(final String name, final String label, final String description,
+        final Boolean defaultValue) {
+        this();
+        m_flowVariableName = name;
+        m_parameterName = name;
+        m_label = label;
+        m_description = description;
+        m_defaultValue.m_boolean = defaultValue;
+    }
+
     // the default value whose type is specific to the node
 
     @TextMessage(BooleanOverwrittenByValueMessage.class)
