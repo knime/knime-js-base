@@ -87,6 +87,11 @@ public class CredentialsRenderer extends AbstractRepresentationRenderer implemen
                 return Optional.ofNullable(m_credentialsDialogRep.getPasswordLabel());
             }
 
+            @Override
+            public Optional<Boolean> getHasUsername() {
+                return Optional.ofNullable(m_credentialsDialogRep.isPromptUsername());
+            }
+
         });
     }
 

@@ -66,7 +66,7 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(data).inPath("$.credentials.username").isString().isEqualTo("Hello");
         final var schema = dialogData.getSchemaFor(paramName);
         assertThatJson(schema).inPath("$.properties.credentials.type").isString().isEqualTo("object");
-        assertThatJson(schema).inPath("$.properties.credentials.title").isString().isEqualTo("Default");
+        assertThatJson(schema).inPath("$.properties.credentials.title").isString().isEqualTo("With labels");
         assertThatJson(schema).inPath("$.properties.credentials.description").isString()
             .isEqualTo("Default credentials");
         final var uiSchema = dialogData.getUiSchema();
@@ -94,6 +94,17 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/credentials", paramName));
         assertThatJson(uiSchema).inPath("$.elements[1].options.usernameLabel").isString().isEqualTo("User");
         assertThatJson(uiSchema).inPath("$.elements[1].options.passwordLabel").isString().isEqualTo("Password");
+    }
+
+
+    @Test
+    void testCredentialsConfigurationComponentDialogWithHiddenUsername() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(2));
+        final var paramName = "credentials-with-hidden-username-5";
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[2].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/credentials", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[2].options.hasUsername").isBoolean().isFalse();
     }
 
 }
