@@ -53,8 +53,6 @@ import java.util.List;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.configuration.renderers.DropdownRenderer;
 import org.knime.js.base.node.configuration.renderers.ProvidedChoicesDropdownRenderer;
@@ -62,6 +60,8 @@ import org.knime.js.base.node.configuration.renderers.ProvidedChoicesRadioButton
 import org.knime.js.base.node.configuration.renderers.ProvidedChoicesSingleSelectListBoxRenderer;
 import org.knime.js.base.node.configuration.renderers.RadioButtonRenderer;
 import org.knime.js.base.node.configuration.renderers.SingleSelectListBoxRenderer;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * Utility method to combine common logic of single selection configuration nodes.

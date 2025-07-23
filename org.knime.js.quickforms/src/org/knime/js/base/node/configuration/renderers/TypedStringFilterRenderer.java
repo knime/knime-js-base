@@ -54,8 +54,8 @@ import java.util.Optional;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TypedStringFilterRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.TypedStringChoice;
 import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeRepresentation;
+import org.knime.node.parameters.widget.choices.TypedStringChoice;
 
 /**
  * A column filter renderer for the {@link ColumnFilterDialogNodeRepresentation}.

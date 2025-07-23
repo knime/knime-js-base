@@ -61,8 +61,6 @@ import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.util.ManualFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeRepresentation;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
@@ -70,6 +68,8 @@ import org.knime.js.base.node.configuration.filter.MultipleEntrySelectionRendere
 import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
 import org.knime.js.base.node.configuration.renderers.StaticChoicesDropdownRenderer;
 import org.knime.js.base.node.configuration.selection.value.DomainFromColumnDropdownProvider;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

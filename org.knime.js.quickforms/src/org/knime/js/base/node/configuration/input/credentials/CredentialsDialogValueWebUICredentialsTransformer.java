@@ -48,7 +48,7 @@
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.node.parameters.widget.credentials.Credentials;
 
 @SuppressWarnings("restriction")
 final class CredentialsDialogValueWebUICredentialsTransformerUtil {

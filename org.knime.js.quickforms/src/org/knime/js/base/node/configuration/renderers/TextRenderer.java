@@ -51,8 +51,8 @@ package org.knime.js.base.node.configuration.renderers;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.TextInputWidgetValidation.PatternValidation;
 import org.knime.js.base.node.configuration.input.string.StringDialogNodeRepresentation;
+import org.knime.node.parameters.widget.text.TextInputWidgetValidation.PatternValidation;
 
 /**
  * A non-localized text renderer for {@link StringDialogNodeRepresentation}s.

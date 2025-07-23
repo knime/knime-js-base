@@ -52,10 +52,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.NumberRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MaxValidation;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.validation.NumberInputWidgetValidation.MinValidation;
 import org.knime.js.base.node.configuration.input.dbl.DoubleDialogNodeRepresentation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * A non-localized number renderer for {@link DoubleDialogNodeRepresentation}s.

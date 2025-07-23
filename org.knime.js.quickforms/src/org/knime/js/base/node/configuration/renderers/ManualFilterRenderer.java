@@ -54,7 +54,7 @@ import java.util.Optional;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ManualFilterRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * Manual filter widget from node description provider with static choices.

@@ -52,10 +52,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.node.parameters.NodeParametersInput;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DropdownRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.imperative.WithImperativeInitializer;
+import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 
 /**
  * Used within the value selection and value filter configuration to provide the possible values of a selected column.
@@ -90,7 +90,7 @@ public final class DomainFromColumnDropdownProvider implements StringChoicesProv
     }
 
     @Override
-    public List<String> choices(final DefaultNodeSettingsContext context) {
+    public List<String> choices(final NodeParametersInput context) {
         final var column = m_columnProvider.get();
         if (column == null) {
             return List.of();

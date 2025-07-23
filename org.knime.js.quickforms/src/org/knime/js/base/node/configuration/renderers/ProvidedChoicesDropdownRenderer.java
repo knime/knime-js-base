@@ -51,8 +51,8 @@ package org.knime.js.base.node.configuration.renderers;
 import java.util.List;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DropdownRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * Dropdown with a title and provided possible values.

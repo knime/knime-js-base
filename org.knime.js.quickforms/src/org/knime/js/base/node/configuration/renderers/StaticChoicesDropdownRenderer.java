@@ -52,7 +52,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DropdownRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * Dropdown with a title and possible values.

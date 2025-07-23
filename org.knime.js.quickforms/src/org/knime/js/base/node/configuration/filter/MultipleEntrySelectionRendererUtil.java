@@ -53,8 +53,6 @@ import java.util.List;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ControlRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.Alignment;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.configuration.renderers.CheckboxesRenderer;
 import org.knime.js.base.node.configuration.renderers.ComboboxRenderer;
@@ -66,6 +64,8 @@ import org.knime.js.base.node.configuration.renderers.ProvidedChoicesManualFilte
 import org.knime.js.base.node.configuration.renderers.ProvidedChoicesMultiSelectListBoxRenderer;
 import org.knime.js.base.node.configuration.renderers.ProvidedChoicesSimpleTwinlistRenderer;
 import org.knime.js.base.node.configuration.renderers.SimpleTwinlistRenderer;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * Utility method to combine common logic of single selection configuration nodes.

@@ -50,12 +50,13 @@ package org.knime.js.base.node.configuration;
 
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersInputImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage.Message;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage.MessageType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.node.parameters.widget.message.TextMessage.Message;
+import org.knime.node.parameters.widget.message.TextMessage.MessageType;
 
 /**
  * A message shown in configuration dialogs whenever the current value of the configuration comes from saved settings of
@@ -74,9 +75,8 @@ public abstract class OverwrittenByValueMessage<VAL> implements StateProvider<Op
 
     @SuppressWarnings("unchecked")
     @Override
-    public Optional<Message> computeState(final DefaultNodeSettingsContext context)
-        throws StateComputationFailureException {
-        final var currentValue = context.getDialogNode().getDialogValue();
+    public Optional<Message> computeState(final NodeParametersInput context) throws StateComputationFailureException {
+        final var currentValue = ((NodeParametersInputImpl)context).getDialogNode().getDialogValue();
         if (currentValue == null) {
             return Optional.empty();
         } else {

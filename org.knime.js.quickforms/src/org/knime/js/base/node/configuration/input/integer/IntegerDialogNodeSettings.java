@@ -53,21 +53,22 @@ import java.util.Optional;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.DefaultValueProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.OptionalWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.js.base.node.base.input.integer.IntegerNodeConfig;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Before;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.widget.OptionalWidget;
+import org.knime.node.parameters.widget.OptionalWidget.DefaultValueProvider;
+import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
  * WebUI Node Settings for the Integer Configuration.
@@ -105,7 +106,7 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
 
     }
 
-    static final class DefaultValue implements DefaultNodeSettings {
+    static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
         @Layout(OutputSection.Top.class)
@@ -135,7 +136,7 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
         }
 
         @Override
-        public Integer computeState(final DefaultNodeSettingsContext context) throws StateComputationFailureException {
+        public Integer computeState(final NodeParametersInput context) throws StateComputationFailureException {
             return IntegerNodeConfig.DEFAULT_MAX;
         }
 
@@ -157,7 +158,7 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
 
     }
 
-    abstract static class ValidationValuePersistor implements NodeSettingsPersistor<Optional<Integer>> {
+    abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Integer>> {
 
         private final String m_useKey;
 

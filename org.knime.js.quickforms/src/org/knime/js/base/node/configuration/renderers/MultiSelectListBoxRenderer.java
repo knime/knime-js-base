@@ -53,8 +53,8 @@ import java.util.Optional;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.MultiSelectListBoxRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
 import org.knime.js.base.node.configuration.selection.multiple.MultipleSelectionDialogNodeRepresentation;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * A multi select list box renderer for single selection configurations, e.g.,

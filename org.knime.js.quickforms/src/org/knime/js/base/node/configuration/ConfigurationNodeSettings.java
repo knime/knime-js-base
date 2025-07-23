@@ -56,18 +56,19 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Advanced;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.node.parameters.Advanced;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.updates.ValueProvider;
+import org.knime.node.parameters.updates.ValueReference;
 
 /**
  * This class specifies the common settings of configuration nodes.
@@ -75,7 +76,7 @@ import org.knime.js.base.node.base.LabeledConfig;
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
+public abstract class ConfigurationNodeSettings implements NodeParameters {
 
     /**
      * Default constructor
@@ -179,7 +180,7 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
     /**
      * The reference to the string input containing the flow variable name
      */
-    interface FlowVariableNameRef extends Reference<String> {
+    interface FlowVariableNameRef extends ParameterReference<String> {
     }
 
     static final class FlowVariableNameStateProvider implements StateProvider<String> {
@@ -191,7 +192,7 @@ public abstract class ConfigurationNodeSettings implements DefaultNodeSettings {
         }
 
         @Override
-        public String computeState(final DefaultNodeSettingsContext context) throws StateComputationFailureException {
+        public String computeState(final NodeParametersInput context) throws StateComputationFailureException {
             return m_flowVariableNameSupplier.get();
         }
     }

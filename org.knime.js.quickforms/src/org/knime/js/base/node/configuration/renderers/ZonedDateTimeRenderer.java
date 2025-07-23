@@ -52,8 +52,8 @@ import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.DateTimeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ZonedDateTimeRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
+import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.time.util.DateTimeType;
 
 /**

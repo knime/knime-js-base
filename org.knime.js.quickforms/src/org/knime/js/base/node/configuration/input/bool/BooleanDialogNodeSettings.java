@@ -53,17 +53,17 @@ import static org.knime.js.base.node.base.input.bool.BooleanNodeConfig.DEFAULT_P
 
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.api.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeSettings.OutputType.OutputTypePersistor;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.widget.choices.Label;
+import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
+import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
  * Settings for the boolean configuration node.
@@ -95,7 +95,7 @@ public final class BooleanDialogNodeSettings extends ConfigurationNodeSettings {
 
     }
 
-    static final class DefaultValue implements DefaultNodeSettings {
+    static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
         @Layout(OutputSection.Top.class)
@@ -114,7 +114,7 @@ public final class BooleanDialogNodeSettings extends ConfigurationNodeSettings {
             @Label("Number (Integer)")
             INTEGER;
 
-        static final class OutputTypePersistor implements NodeSettingsPersistor<OutputType> {
+        static final class OutputTypePersistor implements NodeParametersPersistor<OutputType> {
             @Override
             public OutputType load(final NodeSettingsRO settings) {
                 final var pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, DEFAULT_PUSH_INT_VAR);

@@ -53,8 +53,8 @@ import java.util.Optional;
 
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DropdownRendererSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.StringChoice;
 import org.knime.js.base.node.configuration.selection.single.SingleSelectionDialogNodeRepresentation;
+import org.knime.node.parameters.widget.choices.StringChoice;
 
 /**
  * A dropdown renderer for single selection configurations, e.g., {@link SingleSelectionDialogNodeRepresentation}.

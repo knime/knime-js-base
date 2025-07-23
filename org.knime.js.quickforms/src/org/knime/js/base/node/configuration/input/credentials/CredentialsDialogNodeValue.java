@@ -61,8 +61,8 @@ import org.knime.core.util.CoreConstants;
 import org.knime.core.util.JsonUtil;
 import org.knime.core.webui.node.dialog.WebDialogValue;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
+import org.knime.node.parameters.widget.credentials.Credentials;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
