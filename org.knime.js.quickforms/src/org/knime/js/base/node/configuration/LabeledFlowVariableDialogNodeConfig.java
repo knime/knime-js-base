@@ -50,10 +50,12 @@ package org.knime.js.base.node.configuration;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.js.base.node.base.FlowVariableConfig;
 
@@ -79,7 +81,8 @@ public abstract class LabeledFlowVariableDialogNodeConfig<VAL extends DialogNode
         return m_variable.getFlowVariableName();
     }
 
-    public void setFlowVariableName(final String flowVariableName) {
+    public void setFlowVariableName(final String flowVariableName) throws InvalidSettingsException {
+        CheckUtils.checkSetting(StringUtils.isNotEmpty(flowVariableName), "Flow variable name cannot be empty");
         m_variable.setFlowVariableName(flowVariableName);
     }
 
