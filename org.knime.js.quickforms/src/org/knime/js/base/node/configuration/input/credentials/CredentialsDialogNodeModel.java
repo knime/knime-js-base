@@ -198,7 +198,12 @@ public class CredentialsDialogNodeModel extends
                         // if a new credentials id and/or login name has been entered, the old value(s) should be replaced
                         // (since this is what the user would expect)
                         credentialsIdentifier = tempCredentials.getName();
-                        getConfig().setFlowVariableName(credentialsIdentifier);
+                        try {
+                            getConfig().setFlowVariableName(credentialsIdentifier);
+                        } catch (final InvalidSettingsException e) {
+                            // flow variable name should never be empty here
+                            throw new IllegalStateException(e.getMessage(), e);
+                        }
                         username = tempCredentials.getLogin();
                         value.setUsername(username);
                     }
