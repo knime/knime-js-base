@@ -93,6 +93,7 @@ import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2.ExecutorType;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.KNIMEServerHostnameVerifier;
+import org.knime.core.util.ServerRequestModifier;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.core.util.pathresolve.ResolverUtil;
@@ -103,7 +104,6 @@ import org.knime.filehandling.core.data.location.variable.FSLocationVariableType
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 import org.knime.js.base.node.widget.WidgetFlowVariableNodeModel;
-import org.knime.workbench.explorer.ServerRequestModifier;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
