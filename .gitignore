@@ -4,3 +4,5 @@ target/
 org.knime.dynamic.js/src/xmlbeans
 **/.flattened-pom.xml
 **/CHANGELOG.md
+.idea
+.polyglot.META-INF
