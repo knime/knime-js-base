@@ -68,6 +68,7 @@ import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue.FileIt
 import org.knime.workbench.explorer.ExplorerMountTable;
 import org.knime.workbench.explorer.dialogs.SpaceResourceSelectionDialog;
 import org.knime.workbench.explorer.filesystem.AbstractExplorerFileStore;
+import org.knime.workbench.explorer.filesystem.ExplorerRemoteContentRefresher;
 import org.knime.workbench.explorer.view.AbstractContentProvider;
 import org.knime.workbench.explorer.view.ContentObject;
 
@@ -103,19 +104,21 @@ public class FileChooserDialogUtil {
                 if (display == null) {
                     display = Display.getDefault();
                 }
+
                 display.asyncExec(ThreadUtils.runnableWithContext(new Runnable() {
                     @Override
                     public void run() {
-                        // collect all non-local mount ids
+                        // Collect all non-local mount ids
                         List<String> mountIDs = new ArrayList<String>();
                         for (Map.Entry<String, AbstractContentProvider> entry : //
-                        ExplorerMountTable.getMountedContent().entrySet()) {
+                            ExplorerMountTable.getMountedContent().entrySet()) {
                             String mountID = entry.getKey();
                             AbstractContentProvider acp = entry.getValue();
                             if (remoteOnly ? acp.isRemote() && acp.canHostDataFiles() : acp.canHostDataFiles()) {
                                 mountIDs.add(mountID);
                             }
                         }
+
                         if (mountIDs.isEmpty()) {
                             MessageBox box =
                                 new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
@@ -126,6 +129,11 @@ public class FileChooserDialogUtil {
                             box.open();
                             return;
                         }
+
+                        // When the fetchers are not used it's necessary to refresh the remote content providers
+                        final var mountIDArray = ExplorerRemoteContentRefresher.refreshContentProvidersWithProgress(
+                                Display.getDefault().getActiveShell(), mountIDs).toArray(String[]::new);
+                        // refresh before using file stores
                         ContentObject initialSelection = null;
                         AbstractExplorerFileStore selectedFileStore = null;
                         if (fileStoreContainer != null) {
@@ -136,7 +144,7 @@ public class FileChooserDialogUtil {
                         }
 
                         SpaceResourceSelectionDialog dialog = new SpaceResourceSelectionDialog(
-                            Display.getDefault().getActiveShell(), mountIDs.toArray(new String[0]), initialSelection);
+                            Display.getDefault().getActiveShell(), mountIDArray, initialSelection);
                         dialog.setTitle(title);
                         dialog.setDescription(description);
                         dialog.setValidator(validator);
