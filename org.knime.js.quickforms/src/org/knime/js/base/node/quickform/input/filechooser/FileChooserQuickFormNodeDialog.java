@@ -82,6 +82,7 @@ import org.knime.workbench.explorer.ExplorerMountTable;
 import org.knime.workbench.explorer.dialogs.SpaceResourceSelectionDialog;
 import org.knime.workbench.explorer.dialogs.Validator;
 import org.knime.workbench.explorer.filesystem.AbstractExplorerFileStore;
+import org.knime.workbench.explorer.filesystem.ExplorerRemoteContentRefresher;
 import org.knime.workbench.explorer.view.AbstractContentProvider;
 import org.knime.workbench.explorer.view.ContentObject;
 
@@ -260,10 +261,12 @@ public class FileChooserQuickFormNodeDialog extends QuickFormNodeDialog implemen
                             initialSelection = ContentObject.forFile(selectedFileStore);
                         }
 
-                        SpaceResourceSelectionDialog dialog =
-                                new SpaceResourceSelectionDialog(Display
-                                        .getDefault().getActiveShell(),
-                                        mountIDs.toArray(new String[0]), initialSelection);
+                        // When the fetchers are not used it's necessary to refresh the remote content providers
+                        final var dialog =
+                            new SpaceResourceSelectionDialog(Display.getDefault().getActiveShell(),
+                                ExplorerRemoteContentRefresher.refreshContentProvidersWithProgress(
+                                    Display.getDefault().getActiveShell(), mountIDs).toArray(String[]::new),
+                                initialSelection);
                         dialog.setTitle(title);
                         dialog.setDescription(description);
                         dialog.setValidator(validator);
