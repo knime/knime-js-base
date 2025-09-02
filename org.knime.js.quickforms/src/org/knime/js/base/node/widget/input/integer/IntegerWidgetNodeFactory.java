@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.integer;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
 import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
 
@@ -60,8 +60,30 @@ import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerWidgetNodeFactory extends NodeFactory<IntegerWidgetNodeModel> implements
+public class IntegerWidgetNodeFactory extends WebUINodeFactory<IntegerWidgetNodeModel> implements
     WizardNodeFactoryExtension<IntegerWidgetNodeModel, IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Integer Widget")
+        .icon("./widget_integer.png")
+        .shortDescription("Outputs an integer flow variable with a given value.")
+        .fullDescription("""
+                Outputs an integer flow variable with a given value.
+                The value can be controlled with an integer widget in the WebPortal.
+                """)
+        .modelSettingsClass(IntegerWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
+    /**
+     * Constructor.
+     */
+    public IntegerWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -69,38 +91,6 @@ public class IntegerWidgetNodeFactory extends NodeFactory<IntegerWidgetNodeModel
     @Override
     public IntegerWidgetNodeModel createNodeModel() {
         return new IntegerWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<IntegerWidgetNodeModel> createNodeView(final int viewIndex, final IntegerWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new IntegerWidgetNodeDialog();
     }
 
 }

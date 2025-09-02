@@ -48,10 +48,11 @@
  */
 package org.knime.js.base.node.widget.selection.value;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 
 /**
@@ -59,49 +60,32 @@ import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionWidgetNodeFactory extends NodeFactory<ValueSelectionWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueSelectionWidgetNodeModel, ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>,
-    ValueSelectionNodeValue> {
+@SuppressWarnings("restriction")
+public class ValueSelectionWidgetNodeFactory
+        extends WebUINodeFactory<ValueSelectionWidgetNodeModel>
+implements WizardNodeFactoryExtension<ValueSelectionWidgetNodeModel, ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>, ValueSelectionNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+            .name("Value Selection Widget")
+            .icon("./widget_value_select.png")
+            .shortDescription("Displays a selection input field widget in the component dialog.")
+            .fullDescription("Displays a selection input field widget in the component dialog allowing the user to select one value from a list. The selected value is exposed as a flow variable.")
+            .modelSettingsClass(ValueSelectionWidgetNodeSettings.class)
+            .addInputPort("Input Table", BufferedDataTable.TYPE, "Input table.")
+            .addOutputPort("FlowVariable Port", FlowVariablePortObject.TYPE, "Variable output with the selected value.")
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public ValueSelectionWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
+
     @Override
     public ValueSelectionWidgetNodeModel createNodeModel() {
         return new ValueSelectionWidgetNodeModel(getInteractiveViewName());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final ValueSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ValueSelectionWidgetNodeDialog();
-    }
-
 }

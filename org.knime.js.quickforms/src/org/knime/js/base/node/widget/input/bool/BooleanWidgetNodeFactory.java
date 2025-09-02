@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
 
 /**
@@ -59,49 +59,35 @@ import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class BooleanWidgetNodeFactory extends NodeFactory<BooleanWidgetNodeModel> implements
+public class BooleanWidgetNodeFactory extends WebUINodeFactory<BooleanWidgetNodeModel> implements
     WizardNodeFactoryExtension<BooleanWidgetNodeModel, ReExecutableBooleanNodeRepresentation<BooleanNodeValue>,
     BooleanNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Boolean Widget")
+        .icon("./widget_boolean.png")
+        .shortDescription("Outputs a boolean flow variable with a given value.")
+        .fullDescription("""
+                Outputs a boolean flow variable with a given value.
+                The value can be controlled with a checkbox widget in the WebPortal.
+                """)
+        .modelSettingsClass(BooleanWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public BooleanWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
+
     @Override
     public BooleanWidgetNodeModel createNodeModel() {
         return new BooleanWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<BooleanWidgetNodeModel> createNodeView(final int viewIndex,
-        final BooleanWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new BooleanWidgetNodeDialog();
     }
 
 }

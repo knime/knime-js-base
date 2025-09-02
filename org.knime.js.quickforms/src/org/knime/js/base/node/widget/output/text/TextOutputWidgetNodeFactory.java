@@ -48,56 +48,37 @@
  */
 package org.knime.js.base.node.widget.output.text;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
 /**
 *
 * @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
 */
-public class TextOutputWidgetNodeFactory extends NodeFactory<TextOutputWidgetNodeModel>
+@SuppressWarnings("restriction")
+public class TextOutputWidgetNodeFactory extends WebUINodeFactory<TextOutputWidgetNodeModel>
     implements WizardNodeFactoryExtension<TextOutputWidgetNodeModel, TextOutputWidgetRepresentation, TextOutputWidgetValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Text Output Widget")
+            .icon("widget_variable_out.png")
+            .shortDescription("Displays text output in a widget")
+            .fullDescription("Allows displaying text output in various formats (plain text, preformatted, HTML) with flow variable support.")
+            .modelSettingsClass(TextOutputWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public TextOutputWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public TextOutputWidgetNodeModel createNodeModel() {
         return new TextOutputWidgetNodeModel(getInteractiveViewName());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<TextOutputWidgetNodeModel> createNodeView(final int viewIndex, final TextOutputWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new TextOutputWidgetDialog();
-    }
-
 }

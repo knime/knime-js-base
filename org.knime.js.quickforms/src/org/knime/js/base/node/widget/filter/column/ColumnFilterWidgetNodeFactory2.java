@@ -48,10 +48,11 @@
  */
 package org.knime.js.base.node.widget.filter.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
 
@@ -60,49 +61,33 @@ import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.V
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnFilterWidgetNodeFactory2 extends NodeFactory<ColumnFilterWidgetNodeModel> implements
+@SuppressWarnings("restriction")
+public class ColumnFilterWidgetNodeFactory2 extends WebUINodeFactory<ColumnFilterWidgetNodeModel> implements
     WizardNodeFactoryExtension<ColumnFilterWidgetNodeModel,
     ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Column Filter Widget")
+            .icon("./widget_column_filter.png")
+            .shortDescription("Allows column filtering in a widget")
+            .fullDescription("Provides a widget for filtering columns from the input table with various selection options.")
+            .modelSettingsClass(ColumnFilterWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addInputPort("Input data", BufferedDataTable.TYPE, "Input data table for column filtering")
+            .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output with the selected column names.")
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public ColumnFilterWidgetNodeFactory2() {
+        super(CONFIG);
+    }
+
     @Override
     public ColumnFilterWidgetNodeModel createNodeModel() {
         return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ColumnFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final ColumnFilterWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterWidgetNodeDialog(Version.V_4_1);
     }
 
 }

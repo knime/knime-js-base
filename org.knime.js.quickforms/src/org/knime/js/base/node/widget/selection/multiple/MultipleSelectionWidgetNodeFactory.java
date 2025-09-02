@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 /**
@@ -59,49 +59,32 @@ import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelect
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionWidgetNodeFactory extends NodeFactory<MultipleSelectionWidgetNodeModel> implements
+@SuppressWarnings("restriction")
+public class MultipleSelectionWidgetNodeFactory extends WebUINodeFactory<MultipleSelectionWidgetNodeModel> implements
     WizardNodeFactoryExtension<MultipleSelectionWidgetNodeModel,
     MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Multiple Selection Widget")
+            .icon("./widget_multiple_select.png")
+            .shortDescription("Allows multiple value selection in a widget")
+            .fullDescription("Provides a widget for selecting multiple values from a predefined list with configurable UI components (list, twinlist, combobox, checkboxes).")
+            .modelSettingsClass(MultipleSelectionWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output (string array) with the selected values.")
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public MultipleSelectionWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public MultipleSelectionWidgetNodeModel createNodeModel() {
         return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<MultipleSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final MultipleSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
     }
 
 }

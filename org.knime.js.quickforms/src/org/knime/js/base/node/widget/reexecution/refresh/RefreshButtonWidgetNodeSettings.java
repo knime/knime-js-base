@@ -43,48 +43,67 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   AI Migration
  */
 package org.knime.js.base.node.widget.reexecution.refresh;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.core.webui.node.impl.WebUINodeFactory;
+import org.knime.js.base.node.widget.util.WidgetNodeSettingsBase;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.persistence.Persist;
+import org.knime.node.parameters.widget.text.TextAreaWidget;
+import org.knime.node.parameters.widget.text.TextInputWidget;
 
 /**
- * Factory for the refresh button widget node.
+ * Settings for the Refresh Button Widget node.
  *
- * @author Ben Laney, KNIME GmbH, Konstanz, Germany
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author AI Migration
  */
 @SuppressWarnings("restriction")
-public class RefreshButtonWidgetNodeFactory
-        extends WebUINodeFactory<RefreshButtonWidgetNodeModel>
-implements WizardNodeFactoryExtension<RefreshButtonWidgetNodeModel, RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>, RefreshButtonWidgetViewValue> {
+public final class RefreshButtonWidgetNodeSettings implements NodeParameters {
 
-    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
-            .name("Refresh Button Widget")
-            .icon("./widget_refresh.png")
-            .shortDescription("Displays a refresh button widget in the component dialog.")
-            .fullDescription("Displays a refresh button widget in the component dialog that can trigger re-execution of the workflow.")
-            .modelSettingsClass(RefreshButtonWidgetNodeSettings.class)
-            .addInputPort("Input Table", BufferedDataTable.TYPE, "Input table.")
-            .addOutputPort("FlowVariable Port", FlowVariablePortObject.TYPE, "Variable output with button state.")
-            .nodeType(NodeType.Widget)
-            .sinceVersion(5, 8, 0)
-            .build();
-
-    /**
-     * Constructor.
-     */
-    public RefreshButtonWidgetNodeFactory() {
-        super(CONFIGURATION);
+    @Section(title = "Button Configuration")
+    @After(WidgetNodeSettingsBase.CommonSections.ValidationSection.class)
+    interface ButtonSection {
     }
 
-    @Override
-    public RefreshButtonWidgetNodeModel createNodeModel() {
-        return new RefreshButtonWidgetNodeModel(getInteractiveViewName());
-    }
+    @Widget(title = "Label", description = "A descriptive label that will be shown in the dialog")
+    @Layout(WidgetNodeSettingsBase.CommonSections.LabelSection.class)
+    @TextInputWidget
+    @Persist(configKey = "label")
+    String m_label = "Refresh Button";
 
+    @Widget(title = "Description", description = "Some lines of description that will be shown for instance in the node description of the component exposing a dialog")
+    @Layout(WidgetNodeSettingsBase.CommonSections.LabelSection.class)
+    @TextAreaWidget
+    @Persist(configKey = "description")
+    String m_description = "Enter Description";
+
+    @Widget(title = "Parameter Name", description = "Parameter identifier for external parameterization (e.g. batch execution).")
+    @Layout(WidgetNodeSettingsBase.CommonSections.ParameterSection.class)
+    @TextInputWidget
+    @Persist(configKey = "flowVariableName")
+    String m_parameter = "refresh-button";
+
+    @Widget(title = "Hide in Dialog", description = "If the widget is hidden, it cannot be shown in the dialog, and becomes unreachable.")
+    @Layout(WidgetNodeSettingsBase.CommonSections.ParameterSection.class)
+    @Persist(configKey = "hideInWizard")
+    boolean m_hideInWizard = false;
+
+    @Widget(title = "Custom CSS", description = "Enter custom CSS styling for this widget")
+    @Layout(WidgetNodeSettingsBase.CommonSections.InputSection.class)
+    @TextAreaWidget
+    @Persist(configKey = "customCSS")
+    String m_customCSS = "";
+
+    // Button specific settings
+    @Widget(title = "Button Text", description = "Text displayed on the refresh button")
+    @Layout(ButtonSection.class)
+    @TextInputWidget
+    @Persist(configKey = "buttonText")
+    String m_buttonText = "Refresh";
 }

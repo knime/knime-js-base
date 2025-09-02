@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.fileupload;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
 
@@ -60,47 +60,31 @@ import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadWidgetNodeFactory extends NodeFactory<FileUploadWidgetNodeModel> implements
+@SuppressWarnings("restriction")
+public class FileUploadWidgetNodeFactory extends WebUINodeFactory<FileUploadWidgetNodeModel> implements
     WizardNodeFactoryExtension<FileUploadWidgetNodeModel, FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("File Upload Widget")
+            .icon("./widget_fileUpload.png")
+            .shortDescription("Allows file upload in a widget")
+            .fullDescription("Provides a widget for uploading files with configurable file type restrictions, timeout settings, and storage options.")
+            .modelSettingsClass(FileUploadWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output with the uploaded file path.")
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public FileUploadWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public FileUploadWidgetNodeModel createNodeModel() {
         return new FileUploadWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileUploadWidgetNodeModel> createNodeView(final int viewIndex, final FileUploadWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileUploadWidgetNodeDialog();
     }
 
 }

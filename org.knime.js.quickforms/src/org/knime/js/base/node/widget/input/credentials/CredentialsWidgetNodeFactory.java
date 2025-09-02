@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.credentials;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 
@@ -60,48 +60,31 @@ import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class CredentialsWidgetNodeFactory extends NodeFactory<CredentialsWidgetNodeModel> implements
+@SuppressWarnings("restriction")
+public class CredentialsWidgetNodeFactory extends WebUINodeFactory<CredentialsWidgetNodeModel> implements
     WizardNodeFactoryExtension<CredentialsWidgetNodeModel, CredentialsNodeRepresentation<CredentialsNodeValue>, CredentialsNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Credentials Widget")
+            .icon("./widget_credentials.png")
+            .shortDescription("Allows credentials input in a widget")
+            .fullDescription("Provides a widget for entering username and password credentials with configurable security options and server integration.")
+            .modelSettingsClass(CredentialsWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output with username and password credentials.")
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public CredentialsWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public CredentialsWidgetNodeModel createNodeModel() {
         return new CredentialsWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<CredentialsWidgetNodeModel> createNodeView(final int viewIndex,
-        final CredentialsWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new CredentialsWidgetNodeDialog();
     }
 
 }

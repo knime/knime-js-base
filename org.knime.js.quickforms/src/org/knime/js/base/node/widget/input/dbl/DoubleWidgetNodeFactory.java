@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.dbl;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
 
@@ -60,8 +60,30 @@ import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleWidgetNodeFactory extends NodeFactory<DoubleWidgetNodeModel> implements
+public class DoubleWidgetNodeFactory extends WebUINodeFactory<DoubleWidgetNodeModel> implements
     WizardNodeFactoryExtension<DoubleWidgetNodeModel, DoubleNodeRepresentation<DoubleNodeValue>, DoubleNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Double Widget")
+        .icon("./widget_double.png")
+        .shortDescription("Outputs a double/decimal flow variable with a given value.")
+        .fullDescription("""
+                Outputs a double/decimal flow variable with a given value.
+                The value can be controlled with a double/decimal widget in the WebPortal.
+                """)
+        .modelSettingsClass(DoubleWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
+    /**
+     * Constructor.
+     */
+    public DoubleWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -69,38 +91,6 @@ public class DoubleWidgetNodeFactory extends NodeFactory<DoubleWidgetNodeModel> 
     @Override
     public DoubleWidgetNodeModel createNodeModel() {
         return new DoubleWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<DoubleWidgetNodeModel> createNodeView(final int viewIndex, final DoubleWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new DoubleWidgetNodeDialog();
     }
 
 }

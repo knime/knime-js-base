@@ -48,56 +48,40 @@
  */
 package org.knime.js.base.node.widget.output.image;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
 /**
 *
 * @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
 */
-public class ImageOutputWidgetNodeFactory extends NodeFactory<ImageOutputWidgetNodeModel>
+@SuppressWarnings("restriction")
+public class ImageOutputWidgetNodeFactory extends WebUINodeFactory<ImageOutputWidgetNodeModel>
     implements WizardNodeFactoryExtension<ImageOutputWidgetNodeModel, ImageOutputWidgetRepresentation, ImageOutputWidgetValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Image Output Widget")
+            .icon("widget_image_out.png")
+            .shortDescription("Displays image output in a widget")
+            .fullDescription("Allows displaying image output with configurable maximum width and height limits.")
+            .modelSettingsClass(ImageOutputWidgetNodeSettings.class)
+            .addInputPort("Image", ImagePortObject.TYPE, "Image input to be displayed in the widget.")
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public ImageOutputWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public ImageOutputWidgetNodeModel createNodeModel() {
         return new ImageOutputWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ImageOutputWidgetNodeModel> createNodeView(final int viewIndex, final ImageOutputWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ImageOutputWidgetDialog();
     }
 
 }

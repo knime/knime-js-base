@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.selection.single;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 
 /**
@@ -59,9 +59,31 @@ import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelect
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class SingleSelectionWidgetNodeFactory extends NodeFactory<SingleSelectionWidgetNodeModel>
+public class SingleSelectionWidgetNodeFactory extends WebUINodeFactory<SingleSelectionWidgetNodeModel>
     implements WizardNodeFactoryExtension<SingleSelectionWidgetNodeModel,
     SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Single Selection Widget")
+        .icon("./widget_single_select.png")
+        .shortDescription("Outputs a string flow variable with a single selected value.")
+        .fullDescription("""
+                Outputs a string flow variable with a single selected value.
+                The value can be selected from a list, dropdown, or radio buttons in the WebPortal.
+                """)
+        .modelSettingsClass(SingleSelectionWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
+    /**
+     * Constructor.
+     */
+    public SingleSelectionWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -69,39 +91,6 @@ public class SingleSelectionWidgetNodeFactory extends NodeFactory<SingleSelectio
     @Override
     public SingleSelectionWidgetNodeModel createNodeModel() {
         return new SingleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SingleSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final SingleSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new SingleSelectionWidgetNodeDialog();
     }
 
 }

@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.listbox;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
 
@@ -60,48 +60,30 @@ import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetNodeFactory extends NodeFactory<ListBoxWidgetNodeModel> implements
+@SuppressWarnings("restriction")
+public class ListBoxWidgetNodeFactory extends WebUINodeFactory<ListBoxWidgetNodeModel> implements
     WizardNodeFactoryExtension<ListBoxWidgetNodeModel, ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("List Box Widget")
+            .icon("./widget_listbox.png")
+            .shortDescription("Allows list box input in a widget")
+            .fullDescription("Provides a widget for entering multiple values in a list box format with configurable separators and validation.")
+            .modelSettingsClass(ListBoxWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output with the list box values.")
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public ListBoxWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public ListBoxWidgetNodeModel createNodeModel() {
         return new ListBoxWidgetNodeModel(getInteractiveViewName());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ListBoxWidgetNodeModel> createNodeView(final int viewIndex,
-        final ListBoxWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ListBoxWidgetNodeDialog();
-    }
-
 }

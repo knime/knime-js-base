@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.string;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
 
@@ -60,47 +60,38 @@ import org.knime.js.base.node.base.input.string.StringNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetNodeFactory extends NodeFactory<StringWidgetNodeModel> implements
-    WizardNodeFactoryExtension<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
+@SuppressWarnings("restriction") // New Node UI is not yet API
+public class StringWidgetNodeFactory extends WebUINodeFactory<StringWidgetNodeModel> implements
+WizardNodeFactoryExtension<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("String Widget")//
+        .icon("./widget_string.png")//
+        .shortDescription("Creates a text input widget for use in components views. Outputs a string flow variable with a given value.")//
+        .fullDescription("""
+                Creates a text input widget for use in components views. Outputs a string flow variable with a given
+                value.
+
+                The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a
+                flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes
+                and their description on our documentation page.
+                """)//
+        .modelSettingsClass(StringWidgetNodeSettings.class)//
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, "Variable output (string) with the given variable defined.")//
+        .sinceVersion(5, 8, 0)//
+        .nodeType(NodeType.Widget)
+        .build();
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public StringWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public StringWidgetNodeModel createNodeModel() {
         return new StringWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<StringWidgetNodeModel> createNodeView(final int viewIndex, final StringWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new StringWidgetNodeDialog();
     }
 
 }

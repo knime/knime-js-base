@@ -48,56 +48,38 @@
  */
 package org.knime.js.base.node.widget.output.filedownload;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
 /**
 *
 * @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
 */
-public class FileDownloadWidgetNodeFactory extends NodeFactory<FileDownloadWidgetNodeModel>
+@SuppressWarnings("restriction")
+public class FileDownloadWidgetNodeFactory extends WebUINodeFactory<FileDownloadWidgetNodeModel>
     implements WizardNodeFactoryExtension<FileDownloadWidgetNodeModel, FileDownloadWidgetRepresentation, FileDownloadWidgetValue> {
 
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("File Download Widget")
+            .icon("./widget_download_file.png")
+            .shortDescription("Provides file download functionality in a widget")
+            .fullDescription("Allows users to download files through a widget interface with configurable link titles and resource names.")
+            .modelSettingsClass(FileDownloadWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
+
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public FileDownloadWidgetNodeFactory() {
+        super(CONFIG);
+    }
+
     @Override
     public FileDownloadWidgetNodeModel createNodeModel() {
         return new FileDownloadWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileDownloadWidgetNodeModel> createNodeView(final int viewIndex, final FileDownloadWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileDownloadWidgetDialog();
     }
 
 }

@@ -44,58 +44,43 @@
  */
 package org.knime.js.base.node.widget.filter.definition.rangeslider;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
 
 /**
- * Factory for the range slider filter appender node.
+ * Factory for the range slider filter widget node.
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RangeSliderFilterNodeFactory extends NodeFactory<RangeSliderFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
+@SuppressWarnings("restriction")
+public class RangeSliderFilterNodeFactory
+        extends WebUINodeFactory<RangeSliderFilterWidgetNodeModel>
+implements WizardNodeFactoryExtension<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+            .name("Range Slider Filter Widget")
+            .icon("./range_slider.png")
+            .shortDescription("Displays a range slider filter widget in the component dialog.")
+            .fullDescription("Displays a range slider filter widget in the component dialog allowing the user to filter numeric columns by selecting a range.")
+            .modelSettingsClass(RangeSliderFilterNodeSettings.class)
+            .addInputPort("Input Table", BufferedDataTable.TYPE, "Input table.")
+            .addOutputPort("Filtered Table", BufferedDataTable.TYPE, "Table with applied range filter.")
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
+    public RangeSliderFilterNodeFactory() {
+        super(CONFIGURATION);
+    }
+
     @Override
     public RangeSliderFilterWidgetNodeModel createNodeModel() {
         return new RangeSliderFilterWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<RangeSliderFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final RangeSliderFilterWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new RangeSliderFilterWidgetDialog();
     }
 }

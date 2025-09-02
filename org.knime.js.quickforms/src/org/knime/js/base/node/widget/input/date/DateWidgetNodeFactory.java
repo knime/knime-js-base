@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.date;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.date.DateNodeRepresentation;
 import org.knime.js.base.node.base.input.date.DateNodeValue;
 
@@ -60,8 +60,30 @@ import org.knime.js.base.node.base.input.date.DateNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateWidgetNodeFactory extends NodeFactory<DateWidgetNodeModel>
+public class DateWidgetNodeFactory extends WebUINodeFactory<DateWidgetNodeModel>
     implements WizardNodeFactoryExtension<DateWidgetNodeModel, DateNodeRepresentation<DateNodeValue>, DateNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Date Widget")
+        .icon("./widget_date.png")
+        .shortDescription("Outputs a date/time flow variable with a given value.")
+        .fullDescription("""
+                Outputs a date/time flow variable with a given value.
+                The value can be controlled with a date picker widget in the WebPortal.
+                """)
+        .modelSettingsClass(DateWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
+    /**
+     * Constructor.
+     */
+    public DateWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -69,38 +91,6 @@ public class DateWidgetNodeFactory extends NodeFactory<DateWidgetNodeModel>
     @Override
     public DateWidgetNodeModel createNodeModel() {
         return new DateWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<DateWidgetNodeModel> createNodeView(final int viewIndex, final DateWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new DateWidgetNodeDialog();
     }
 
 }

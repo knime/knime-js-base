@@ -48,10 +48,11 @@
  */
 package org.knime.js.base.node.widget.input.filechooser;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeRepresentation;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
 
@@ -60,9 +61,29 @@ import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class FileChooserWidgetNodeFactory extends NodeFactory<FileChooserWidgetNodeModel> implements
-    WizardNodeFactoryExtension<FileChooserWidgetNodeModel, FileChooserNodeRepresentation<FileChooserNodeValue>,
-    FileChooserNodeValue> {
+@SuppressWarnings("restriction")
+public class FileChooserWidgetNodeFactory
+        extends WebUINodeFactory<FileChooserWidgetNodeModel>
+implements WizardNodeFactoryExtension<FileChooserWidgetNodeModel, FileChooserNodeRepresentation<FileChooserNodeValue>, FileChooserNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+            .name("File Chooser Widget")
+            .icon("./widget_file.png")
+            .shortDescription("Displays a file chooser widget in the component dialog.")
+            .fullDescription("Displays a file chooser widget in the component dialog allowing the user to select files or directories. The selected path is exposed as a flow variable.")
+            .modelSettingsClass(FileChooserWidgetNodeSettings.class)
+            .addInputPort("Input Table", BufferedDataTable.TYPE, "Input table.")
+            .addOutputPort("FlowVariable Port", FlowVariablePortObject.TYPE, "Variable output with the selected file path.")
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
+
+    /**
+     * Constructor.
+     */
+    public FileChooserWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -71,37 +92,4 @@ public class FileChooserWidgetNodeFactory extends NodeFactory<FileChooserWidgetN
     public FileChooserWidgetNodeModel createNodeModel() {
         return new FileChooserWidgetNodeModel(getInteractiveViewName());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileChooserWidgetNodeModel> createNodeView(final int viewIndex, final FileChooserWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileChooserWidgetNodeDialog();
-    }
-
 }

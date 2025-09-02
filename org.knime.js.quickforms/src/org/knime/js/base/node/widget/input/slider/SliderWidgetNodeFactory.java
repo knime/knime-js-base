@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.input.slider;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
 
@@ -60,8 +60,30 @@ import org.knime.js.base.node.base.input.slider.SliderNodeValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderWidgetNodeFactory extends NodeFactory<SliderWidgetNodeModel> implements
+public class SliderWidgetNodeFactory extends WebUINodeFactory<SliderWidgetNodeModel> implements
     WizardNodeFactoryExtension<SliderWidgetNodeModel, SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+        .name("Slider Widget")
+        .icon("./widget_slider.png")
+        .shortDescription("Outputs a double flow variable with a value controlled by a slider.")
+        .fullDescription("""
+                Outputs a double flow variable with a value controlled by a slider widget in the WebPortal.
+                The slider can be configured with custom ranges, step sizes, and appearance options.
+                """)
+        .modelSettingsClass(SliderWidgetNodeSettings.class)
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output with the given variable defined.")
+        .nodeType(NodeType.Widget)
+        .sinceVersion(5, 8, 0)
+        .build();
+
+    /**
+     * Constructor.
+     */
+    public SliderWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -69,38 +91,6 @@ public class SliderWidgetNodeFactory extends NodeFactory<SliderWidgetNodeModel> 
     @Override
     public SliderWidgetNodeModel createNodeModel() {
         return new SliderWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SliderWidgetNodeModel> createNodeView(final int viewIndex, final SliderWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new SliderWidgetNodeDialog();
     }
 
 }

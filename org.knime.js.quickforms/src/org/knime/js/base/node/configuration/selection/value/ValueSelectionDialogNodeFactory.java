@@ -48,56 +48,47 @@
  */
 package org.knime.js.base.node.configuration.selection.value;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.dialog.NodeDialogFactory;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 
 /**
  * Factory for the value selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionDialogNodeFactory extends NodeFactory<ValueSelectionDialogNodeModel> {
+public class ValueSelectionDialogNodeFactory extends WebUINodeFactory<ValueSelectionDialogNodeModel>
+        implements NodeDialogFactory {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ValueSelectionDialogNodeModel createNodeModel() {
-        return new ValueSelectionDialogNodeModel();
-    }
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+            .name("Value Selection Configuration") //
+            .icon("./configuration_value_select.png") //
+            .shortDescription("Allows selecting a value from a list of predefined values.") //
+            .fullDescription("""
+                    Allows selecting a value from a list of predefined values. The value can be selected
+                    via a dropdown or list widget in the component dialog.
+                    """
+            )//
+            .modelSettingsClass(ValueSelectionDialogNodeSettings.class) //
+            .addInputPort("Data table", BufferedDataTable.TYPE, "Data table from which to select values") //
+            .addOutputPort("Data table", BufferedDataTable.TYPE, "Data table with the selected value.") //
+            .nodeType(NodeType.Configuration) //
+            .build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
+        /**
+        *
+        */
+        public ValueSelectionDialogNodeFactory() {
+            super(CONFIG);
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueSelectionDialogNodeModel> createNodeView(final int viewIndex,
-        final ValueSelectionDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ValueSelectionDialogNodeNodeDialog();
-    }
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ValueSelectionDialogNodeModel createNodeModel() {
+            return new ValueSelectionDialogNodeModel();
+        }
 
 }

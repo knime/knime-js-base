@@ -48,22 +48,40 @@
  */
 package org.knime.js.base.node.widget.input.fileupload;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeValue;
 
 /**
- * Factory for the file upload widget node
+ * Factory for the multiple file upload widget node.
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleFileUploadWidgetNodeFactory extends NodeFactory<MultipleFileUploadWidgetNodeModel> implements
-    WizardNodeFactoryExtension<MultipleFileUploadWidgetNodeModel,
-    MultipleFileUploadNodeRepresentation<MultipleFileUploadNodeValue>, MultipleFileUploadNodeValue> {
+@SuppressWarnings("restriction")
+public class MultipleFileUploadWidgetNodeFactory
+        extends WebUINodeFactory<MultipleFileUploadWidgetNodeModel>
+implements WizardNodeFactoryExtension<MultipleFileUploadWidgetNodeModel, MultipleFileUploadNodeRepresentation<MultipleFileUploadNodeValue>, MultipleFileUploadNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()
+            .name("Multiple File Upload Widget")
+            .icon("./widget_fileUpload.png")
+            .shortDescription("Displays a multiple file upload widget in the component dialog.")
+            .fullDescription("Displays a multiple file upload widget in the component dialog allowing the user to upload multiple files. The uploaded files are made available in the output table.")
+            .modelSettingsClass(MultipleFileUploadWidgetNodeSettings.class)
+            .addOutputPort("Uploaded Files", BufferedDataTable.TYPE, "Table with information about uploaded files.")
+            .nodeType(NodeType.Widget)
+            .sinceVersion(5, 8, 0)
+            .build();
+
+    /**
+     * Constructor.
+     */
+    public MultipleFileUploadWidgetNodeFactory() {
+        super(CONFIGURATION);
+    }
 
     /**
      * {@inheritDoc}
@@ -71,39 +89,6 @@ public class MultipleFileUploadWidgetNodeFactory extends NodeFactory<MultipleFil
     @Override
     public MultipleFileUploadWidgetNodeModel createNodeModel() {
         return new MultipleFileUploadWidgetNodeModel(getInteractiveViewName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<MultipleFileUploadWidgetNodeModel> createNodeView(final int viewIndex,
-        final MultipleFileUploadWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleFileUploadWidgetNodeDialog();
     }
 
 }

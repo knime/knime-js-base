@@ -48,10 +48,10 @@
  */
 package org.knime.js.base.node.widget.selection.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 
 /**
@@ -59,9 +59,28 @@ import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionWidgetNodeFactory extends NodeFactory<ColumnSelectionWidgetNodeModel>
+@SuppressWarnings("restriction")
+public class ColumnSelectionWidgetNodeFactory extends WebUINodeFactory<ColumnSelectionWidgetNodeModel>
     implements WizardNodeFactoryExtension<ColumnSelectionWidgetNodeModel,
     ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, ColumnSelectionNodeValue> {
+
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()
+            .name("Column Selection Widget")
+            .icon("./widget_column_select.png")
+            .shortDescription("Allows column selection in a widget")
+            .fullDescription("Provides a widget for selecting a single column from the input table with configurable UI components (dropdown, list, radio buttons).")
+            .modelSettingsClass(ColumnSelectionWidgetNodeSettings.class)
+            .nodeType(NodeType.Widget)
+            .addInputPort("Input data", BufferedDataTable.TYPE, "Input data table for column selection")
+            .sinceVersion(5, 8, 0)
+            .build();
+
+    /**
+     * Constructor.
+     */
+    public ColumnSelectionWidgetNodeFactory() {
+        super(CONFIG);
+    }
 
     /**
      * {@inheritDoc}
@@ -71,37 +90,5 @@ public class ColumnSelectionWidgetNodeFactory extends NodeFactory<ColumnSelectio
         return new ColumnSelectionWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ColumnSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final ColumnSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnSelectionWidgetNodeDialog();
-    }
 
 }
