@@ -63,18 +63,18 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public abstract class SingleMultipleSelectionNodeConfig {
 
-    private static final String CFG_POSSIBLE_CHOICES = "possible_choices";
+    public static final String CFG_POSSIBLE_CHOICES = "possible_choices";
     private static final String[] DEFAULT_POSSIBLE_CHOICES = new String[0];
     private String[] m_possibleChoices = DEFAULT_POSSIBLE_CHOICES;
 
-    private static final String CFG_TYPE = "type";
+    public static final String CFG_TYPE = "type";
 
-    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**

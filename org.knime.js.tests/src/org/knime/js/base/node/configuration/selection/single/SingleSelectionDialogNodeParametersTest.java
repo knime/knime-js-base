@@ -44,44 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   Jun 11, 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.base.selection.singleMultiple;
+package org.knime.js.base.node.configuration.selection.single;
 
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Base config file for the single selection configuration and widget nodes
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class SingleSelectionNodeConfig extends SingleMultipleSelectionNodeConfig {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
-    private String m_type = DEFAULT_TYPE;
+@SuppressWarnings("restriction")
+final class SingleSelectionDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getType() {
-        return m_type;
+    protected SingleSelectionDialogNodeParametersTest() {
+        super(CONFIG);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setType(final String type) {
-        m_type = type;
-    }
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(SingleSelectionDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultType() {
-        return DEFAULT_TYPE;
+    private static SingleSelectionDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(SingleSelectionDialogNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("SingleSelectionDialogNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    SingleSelectionDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
 }

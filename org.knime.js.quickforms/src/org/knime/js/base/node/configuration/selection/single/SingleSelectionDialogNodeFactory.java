@@ -49,15 +49,43 @@
 package org.knime.js.base.node.configuration.selection.single;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the single selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class SingleSelectionDialogNodeFactory extends NodeFactory<SingleSelectionDialogNodeModel> {
+public class SingleSelectionDialogNodeFactory extends ConfigurationNodeFactory<SingleSelectionDialogNodeModel> {
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Single Selection Configuration") //
+        .icon("./configuration_single_select.png") //
+        .shortDescription("""
+                Allows selecting a single value from a list of strings in an encapsulating component's dialog.
+                The selected value is returned as a string flow variable.""") //
+        .fullDescription("""
+                Allows selecting a single value from a list of strings in an encapsulating component's
+                dialog. The selected value is returned as a string flow variable.""") //
+        .modelSettingsClass(SingleSelectionDialogNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined from "
+                + "the selected value and the selected option as index.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("drop down", "radio button") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public SingleSelectionDialogNodeFactory() {
+        super(CONFIG, SingleSelectionDialogNodeParameters.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -98,6 +126,11 @@ public class SingleSelectionDialogNodeFactory extends NodeFactory<SingleSelectio
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new SingleSelectionDialogNodeNodeDialog();
+    }
+
+    @Override
+    public NodeDialog createNodeDialog() {
+        return new DefaultNodeDialog(SettingsType.MODEL, SingleSelectionDialogNodeParameters.class);
     }
 
 }

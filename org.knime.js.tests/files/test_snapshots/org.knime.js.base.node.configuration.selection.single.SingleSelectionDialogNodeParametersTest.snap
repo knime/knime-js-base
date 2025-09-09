@@ -1,0 +1,300 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "single-selection",
+      "parameterName" : "single-selection",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : { },
+      "selectionType" : "Dropdown",
+      "limitNumberOfVisibleOptions" : false,
+      "numberOfVisibleOptions" : 5
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "variableValue" : {
+                "type" : "string",
+                "title" : "Default value",
+                "description" : "Default value for the field. If you want to use a value that is not among the possible choices as the default, override the field using a flow variable."
+              }
+            },
+            "default" : { }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "single-selection"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "limitNumberOfVisibleOptions" : {
+            "type" : "boolean",
+            "title" : "Limit number of visible options",
+            "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them. The setting is available only for List selection type.\n",
+            "default" : false
+          },
+          "numberOfVisibleOptions" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Number of visible options",
+            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value\nwill also affect the component's height. The setting is available only for List selection type.\n",
+            "default" : 5
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "single-selection"
+          },
+          "possibleChoices" : {
+            "type" : "string",
+            "title" : "Possible Choices",
+            "description" : "The possible choices, each line is one possible value."
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "selectionType" : {
+            "type" : "string",
+            "title" : "Selection Type",
+            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal\nlayout, a list or a dropdown selection.\n",
+            "default" : "Dropdown"
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/selectionType",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/selectionType",
+            "schema" : {
+              "const" : "List"
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 2.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 2.0
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/selectionType",
+              "schema" : {
+                "const" : "List"
+              }
+            }, {
+              "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/possibleChoices",
+        "options" : {
+          "rows" : 4,
+          "format" : "textArea"
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/variableValue",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "variableValue" : {
+                "configPaths" : [ [ "variable_value" ] ]
+              }
+            }
+          },
+          "selectionType" : {
+            "configKey" : "type"
+          },
+          "limitNumberOfVisibleOptions" : {
+            "configKey" : "limit_number_visible_options"
+          },
+          "numberOfVisibleOptions" : {
+            "configKey" : "number_visible_options"
+          },
+          "possibleChoices" : {
+            "configPaths" : [ [ "possible_choices" ] ]
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/defaultValue/properties/variableValue",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/selectionType",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "Radio buttons (horizontal)",
+        "text" : "Radio buttons (horizontal)"
+      }, {
+        "id" : "Radio buttons (vertical)",
+        "text" : "Radio buttons (vertical)"
+      }, {
+        "id" : "List",
+        "text" : "List"
+      }, {
+        "id" : "Dropdown",
+        "text" : "Dropdown"
+      } ]
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/variableValue", "#/properties/model/properties/possibleChoices" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/possibleChoices"
+    },
+    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/variableValue", "#/properties/model/properties/possibleChoices" ]
+  } ]
+}

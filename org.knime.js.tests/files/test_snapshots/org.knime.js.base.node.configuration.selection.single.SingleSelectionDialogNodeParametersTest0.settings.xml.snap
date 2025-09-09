@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="label" type="xstring" value="Label"/>
+    <entry key="description" type="xstring" value="Enter Description"/>
+    <entry key="flowVariableName" type="xstring" value="single-selection"/>
+    <entry key="parameterName" type="xstring" value="single-selection"/>
+    <entry key="hideInDialog" type="xboolean" value="false"/>
+    <entry key="required" type="xboolean" value="true"/>
+    <config key="defaultValue">
+        <config key="variable_value">
+            <entry key="array-size" type="xint" value="1"/>
+            <entry key="0" type="xstring" value=""/>
+        </config>
+    </config>
+    <entry key="type" type="xstring" value="List"/>
+    <entry key="limit_number_visible_options" type="xboolean" value="true"/>
+    <entry key="number_visible_options" type="xint" value="2"/>
+    <config key="possible_choices">
+        <entry key="array-size" type="xint" value="0"/>
+    </config>
+</config>
