@@ -48,16 +48,43 @@
  */
 package org.knime.js.base.node.configuration.selection.multiple;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the multiple selection configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class MultipleSelectionDialogNodeFactory extends NodeFactory<MultipleSelectionDailogNodeModel> {
+public class MultipleSelectionDialogNodeFactory extends ConfigurationNodeFactory<MultipleSelectionDailogNodeModel> {
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Multiple Selection Configuration") //
+        .icon("./configuration_multiple_select.png") //
+        .shortDescription("""
+                Allows selecting multiple values from a list of strings in an encapsulating component's dialog.
+                The selected values are returned as a data table and a string flow variable.""") //
+        .fullDescription("""
+                Allows selecting multiple values from a list of strings in an encapsulating component's
+                dialog. The selected values are returned as a data table and a string flow variable.""") //
+        .modelSettingsClass(MultipleSelectionDialogNodeParameters.class) //
+        .addOutputPort("Selected Value Table", BufferedDataTable.TYPE,
+            "Table output holding the selected choices in one column with the given parameter name as column name.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("list box") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public MultipleSelectionDialogNodeFactory() {
+        super(CONFIG, MultipleSelectionDialogNodeParameters.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -98,6 +125,11 @@ public class MultipleSelectionDialogNodeFactory extends NodeFactory<MultipleSele
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new MultipleSelectionDialogNodeNodeDialog();
+    }
+
+    @Override
+    public NodeDialog createNodeDialog() {
+        return new DefaultNodeDialog(SettingsType.MODEL, MultipleSelectionDialogNodeParameters.class);
     }
 
 }
