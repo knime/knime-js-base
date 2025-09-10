@@ -49,8 +49,13 @@
 package org.knime.js.base.node.configuration.selection.column;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the column selection configuration node
@@ -58,7 +63,31 @@ import org.knime.core.node.NodeView;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class ColumnSelectionDialogNodeFactory2 extends NodeFactory<ColumnSelectionDialogNodeModel> {
+public class ColumnSelectionDialogNodeFactory2 extends ConfigurationNodeFactory<ColumnSelectionDialogNodeModel> {
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Column Selection Configuration") //
+        .icon("./configuration_column_select.png") //
+        .shortDescription("""
+                Allows selecting a column from the input table in an encapsulating component's dialog.
+                The selected column name is returned as a string flow variable.""") //
+        .fullDescription("""
+                Allows selecting a column from the input table in an encapsulating component's
+                dialog. The selected column name is returned as a string flow variable.
+                The available columns can be filtered by data type if needed.""") //
+        .modelSettingsClass(ColumnSelectionDialogNodeParameters.class) //
+        .addInputTable("Table Input", "Table containing the columns to be selected.") //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the selected column name.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("column", "selection", "drop down", "radio button") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public ColumnSelectionDialogNodeFactory2() {
+        super(CONFIG, ColumnSelectionDialogNodeParameters.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -99,6 +128,11 @@ public class ColumnSelectionDialogNodeFactory2 extends NodeFactory<ColumnSelecti
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ColumnSelectionDialogNodeNodeDialog();
+    }
+
+    @Override
+    public NodeDialog createNodeDialog() {
+        return new DefaultNodeDialog(SettingsType.MODEL, ColumnSelectionDialogNodeParameters.class);
     }
 
 }

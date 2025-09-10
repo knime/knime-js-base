@@ -65,7 +65,7 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 public class ColumnSelectionDialogNodeConfig
     extends LabeledFlowVariableDialogNodeConfig<ColumnSelectionDialogNodeValue> {
 
-    private static final String CFG_INPUT_FILTER = "input_filter";
+    static final String CFG_INPUT_FILTER = "input_filter";
 
     private final ColumnSelectionNodeConfig m_config;
 

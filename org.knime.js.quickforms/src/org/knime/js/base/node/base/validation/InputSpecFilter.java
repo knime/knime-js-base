@@ -107,7 +107,13 @@ public final class InputSpecFilter {
         return spec.stream().filter(InputSpecFilter::hasNoDomain).map(DataColumnSpec::getName).toArray(String[]::new);
     }
 
-    private static boolean hasNoDomain(final DataColumnSpec spec) {
+    /**
+     * Check whether the given column has a domain.
+     *
+     * @param spec the data column spec
+     * @return whether it has a domain or not
+     */
+    public static boolean hasNoDomain(final DataColumnSpec spec) {
         final DataColumnDomain domain = spec.getDomain();
         final DataType type = spec.getType();
         if (type.isCompatible(NominalValue.class)) {
@@ -154,15 +160,15 @@ public final class InputSpecFilter {
      */
     public static class Config {
 
-        private static final String CFG_ALLOW_ALL_TYPES = "allow_all_types";
+        public static final String CFG_ALLOW_ALL_TYPES = "allow_all_types";
 
-        private static final String CFG_TYPE_FILTER = "type_filter";
+        public static final String CFG_TYPE_FILTER = "type_filter";
 
-        private static final String CFG_FILTER_COLUMNS_WITHOUT_DOMAIN = "filter_columns_without_domain";
+        public static final String CFG_FILTER_COLUMNS_WITHOUT_DOMAIN = "filter_columns_without_domain";
 
-        private static final boolean DEFAULT_ALLOW_ALL_TYPES = true;
+        public static final boolean DEFAULT_ALLOW_ALL_TYPES = true;
 
-        private static final boolean DEFAULT_FILTER_COLUMNS_WITHOUT_DOMAIN = false;
+        public static final boolean DEFAULT_FILTER_COLUMNS_WITHOUT_DOMAIN = false;
 
         private final TypeFilterConfig m_typeFilterConfig;
 

@@ -88,7 +88,7 @@ import org.knime.core.data.time.localdatetime.LocalDateTimeValue;
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-final class TypeFilterDialog {
+public final class TypeFilterDialog {
 
     private static final List<Class<? extends DataValue>> DEFAULT_TYPES = Arrays.asList(BooleanValue.class,
         IntValue.class, DoubleValue.class, LongValue.class, StringValue.class, LocalDateTimeValue.class);
@@ -102,6 +102,14 @@ final class TypeFilterDialog {
     private Map<String, Boolean> m_selectionValues = new LinkedHashMap<>();
 
     private final JPanel m_panel = new JPanel(new GridBagLayout());
+
+    /**
+     *
+     * @return the default data types available in the filter
+     */
+    public static List<Class<? extends DataValue>> getDefaultTypes() {
+        return DEFAULT_TYPES;
+    }
 
     /**
      * Creates a DataValue filter panel.
