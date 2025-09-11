@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 Sept 2025 (Robin Gerling): created
+ *   11 Sept 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.column;
+package org.knime.js.base.node.configuration.filter.column;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,14 +54,12 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
+import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.base.validation.AbstractValidatorConfig;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
+import org.knime.js.base.node.base.validation.min.column.MinNumColumnsValidatorConfig;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
@@ -72,11 +70,14 @@ import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterVal
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Before;
 import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
 import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.persistence.legacy.LegacyColumnFilterPersistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.EffectPredicate;
@@ -87,120 +88,172 @@ import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
-import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
+import org.knime.node.parameters.widget.choices.filter.ColumnFilter;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 
 /**
- * WebUI Node Parameters for the Column Selection Configuration.
+ * WebUI Node Parameters for the Column Filter Configuration.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
+@SuppressWarnings("restriction")
 @LoadDefaultsForAbsentFields
-public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettings {
+public class ColumnFilterDialogNodeParameters extends ConfigurationNodeSettings {
+
+    @Section(title = "Validation")
+    @After(FormFieldSection.class)
+    @Before(TypeFilterSection.class)
+    public interface ValidationSection {
+    }
 
     /**
      * Default constructor
      */
-    protected ColumnSelectionDialogNodeParameters() {
-        super(ColumnSelectionDialogNodeConfig.class);
+    protected ColumnFilterDialogNodeParameters() {
+        super(ColumnFilterDialogNodeConfig.class);
     }
 
-    @TextMessage(ColumnSelectionOverwrittenByValueMessage.class)
+    @TextMessage(ColumnFilterOverwrittenByValueMessage.class)
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
+    @LoadDefaultsForAbsentFields
     private static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If you want to use a value that is not among the possible"
-                + " choices as the default, override the field using a flow variable.")
+
+        /**
+         * Reason for the nested ColumnFilterLevel1 is the settings structure of default value:
+         * <ul>
+         * <li>defaultValue:</li>
+         * <ul>
+         * <li>columns: string[]</li>
+         * <li>columnFilter:</li>
+         * <ul>
+         * <li>columnFilter: LegacyColumnFilter</li>
+         * <ul>
+         * <li>filter-type: string</li>
+         * <li>...</li>
+         * <li>datatype: ...</li>
+         * </ul>
+         * </ul>
+         * </ul>
+         * </ul>
+         */
+        @LoadDefaultsForAbsentFields
+        static final class ColumnFilterLevel1 implements NodeParameters {
+            @Widget(title = "Default values", description = "The columns that are selected by default.")
+            @Persistor(ColumnFilterPersistor.class)
+            @ChoicesProvider(ColumnFilterChoicesProvider.class)
+            ColumnFilter m_columnFilter = new ColumnFilter().withIncludeUnknownColumns();
+        }
+
         @Layout(OutputSection.Top.class)
-        @Persistor(DefaultColumnValuePersistor.class)
-        @ChoicesProvider(PossibleColumnChoicesProvider.class)
-        @ValueProvider(ColumnValueValueProvider.class)
-        @ValueReference(ColumnValueValueReference.class)
-        String m_columnValue;
+        @Persist(configKey = ColumnFilterNodeConfig.CFG_COLUMN_FILTER)
+        ColumnFilterLevel1 m_columnFilterLevel1 = new ColumnFilterLevel1();
+
+        @Persist(configKey = ColumnFilterNodeValue.CFG_COLUMNS)
+        @ChoicesProvider(ColumnFilterChoicesProvider.class)
+        @ValueProvider(SelectableColumnsValueProvider.class)
+        String[] m_columns = new String[0];
     }
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = "Selection Type", description = """
-            The type of the selection element. This can be either radio buttons with a vertical or horizontal
-            layout, a list or a dropdown selection.
-            """)
-    @ChoicesProvider(SelectionTypeChoicesProvider.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_TYPE)
-    @ValueReference(SelectionTypeValueReference.class)
-    @Layout(FormFieldSection.class)
-    String m_selectionType = ColumnSelectionNodeConfig.DEFAULT_TYPE;
-
     @Widget(title = "Limit number of visible options", description = """
-            By default the List component adjusts its height to display all possible choices without a scroll bar.
+            By default the filter component adjusts its height to display all possible choices without a scroll bar.
             If the setting is enabled, you will be able to limit the number of visible options in case you have too
-            many of them. The setting is available only for List selection type.
+            many of them.
             """)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
+    @Persist(configKey = ColumnFilterNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
     @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
-    @Effect(predicate = IsListSelectionType.class, type = EffectType.SHOW)
     @Layout(FormFieldSection.class)
-    boolean m_limitNumberOfVisibleOptions = ColumnSelectionNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+    boolean m_limitNumberOfVisibleOptions = ColumnFilterNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
     @Widget(title = "Number of visible options", description = """
-            A number of options visible in the List component without a vertical scroll bar. Changing this value
-            will also affect the component's height. The setting is available only for List selection type.
+            A number of options visible in the filter component without a vertical scroll bar. Changing this value
+            will also affect the component's height. Notice that the height cannot be less than the overall height of
+            the control buttons in the middle.
             """)
     @NumberInputWidget(minValidation = IsMin2Validation.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_NUMBER_VIS_OPTIONS)
+    @Persist(configKey = ColumnFilterNodeConfig.CFG_NUMBER_VIS_OPTIONS)
     @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
     @Layout(FormFieldSection.class)
-    int m_numberOfVisibleOptions = ColumnSelectionNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
-
-    @ChoicesProvider(PossibleColumnChoicesProvider.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_POSSIBLE_COLUMNS)
-    String[] m_possibleColumns = new String[0];
+    int m_numberOfVisibleOptions = ColumnFilterNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
 
     @Layout(TypeFilterSection.class)
-    @Persist(configKey = ColumnSelectionDialogNodeConfig.CFG_INPUT_FILTER)
+    @Persist(configKey = ColumnFilterDialogNodeConfig.CFG_INPUT_FILTER)
     InputFilter m_inputFilter = new InputFilter();
+
+    @Layout(ValidationSection.class)
+    @Persist(configKey = ColumnFilterDialogNodeConfig.CFG_VALIDATION)
+    Validation m_validation = new Validation();
+
+    /**
+     * Reason for the nested MinNumValidation is the settings structure of validation:
+     * <ul>
+     * <li>validation:</li>
+     * <ul>
+     * <li>min_num_columns:</li>
+     * <ul>
+     * <li>error_message: string</li>
+     * <li>min_num_columns: integer</li>
+     * </ul>
+     * </ul>
+     * </ul>
+     */
+    @LoadDefaultsForAbsentFields
+    static final class Validation implements NodeParameters {
+
+        @Persist(configKey = MinNumColumnsValidatorConfig.CFG_MIN_NUM_COLUMNS)
+        MinNumValidation m_validation = new MinNumValidation();
+
+        @LoadDefaultsForAbsentFields
+        static final class MinNumValidation implements NodeParameters {
+            @Widget(title = "Minimum number of columns",
+                description = "Minimum number of columns the user has to select.")
+            @NumberInputWidget(minValidation = IsNonNegativeValidation.class)
+            @Persist(configKey = MinNumColumnsValidatorConfig.CFG_MIN_NUM_COLUMNS)
+            int m_minNumColumns = MinNumColumnsValidatorConfig.DEFAULT_MIN_NUM_COLUMNS;
+
+            @Widget(title = "Error message",
+                description = "Error message to display when the minimum number of columns is not selected. If it is"
+                    + " empty, a default message will be displayed: <i>Select at least &lt;number&gt; columns.</i>")
+            @Persist(configKey = AbstractValidatorConfig.CFG_ERROR_MESSAGE)
+            String m_errorMessage = AbstractValidatorConfig.DEFAULT_ERROR_MESSAGE;
+
+        }
+
+    }
+
+    @ChoicesProvider(ColumnFilterChoicesProvider.class)
+    @ValueProvider(SelectableColumnsValueProvider.class)
+    @Persist(configKey = ColumnFilterNodeConfig.CFG_POSSIBLE_COLUMNS)
+    String[] m_possibleColumns = new String[0];
+
+    @Persist(configKey = ColumnFilterNodeConfig.CFG_TYPE)
+    String m_type = ColumnFilterNodeConfig.DEFAULT_TYPE;
 
     // Persistors
 
-    private static final class DefaultColumnValuePersistor implements NodeParametersPersistor<String> {
+    private static final class ColumnFilterPersistor extends LegacyColumnFilterPersistor {
 
-        @Override
-        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return settings.getString(ColumnSelectionNodeValue.CFG_COLUMN, "");
-        }
-
-        @Override
-        public void save(final String param, final NodeSettingsWO settings) {
-            final var valueToSave = param == null ? "" : param;
-            settings.addString(ColumnSelectionNodeValue.CFG_COLUMN, valueToSave);
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{ColumnSelectionNodeValue.CFG_COLUMN}};
+        protected ColumnFilterPersistor() {
+            super(ColumnFilterNodeConfig.CFG_COLUMN_FILTER);
         }
 
     }
 
     // References
 
-    private static final class ColumnValueValueReference implements ParameterReference<String> {
-    }
-
-    private static final class SelectionTypeValueReference implements ParameterReference<String> {
-    }
-
     private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
     }
 
     // State Providers
 
-    static final class PossibleColumnChoicesProvider implements ColumnChoicesProvider {
+    static final class ColumnFilterChoicesProvider implements ColumnChoicesProvider {
 
         private Supplier<Boolean> m_hideColumnsWithoutDomainSupplier;
 
@@ -233,52 +286,31 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
         }
     }
 
-    private static final class ColumnValueValueProvider implements StateProvider<String> {
+    static final class SelectableColumnsValueProvider implements StateProvider<String[]> {
 
-        private Supplier<String> m_columnValueSupplier;
-
-        private Supplier<List<TypedStringChoice>> m_possibleColumnChoicesSupplier;
+        private Supplier<List<TypedStringChoice>> m_columnChoicesSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_columnValueSupplier = initializer.getValueSupplier(ColumnValueValueReference.class);
-            m_possibleColumnChoicesSupplier = initializer.computeFromProvidedState(PossibleColumnChoicesProvider.class);
+            initializer.computeBeforeOpenDialog();
+            m_columnChoicesSupplier = initializer.computeFromProvidedState(ColumnFilterChoicesProvider.class);
         }
 
         @Override
-        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var possibleColumnChoices = m_possibleColumnChoicesSupplier.get();
-            if (possibleColumnChoices.isEmpty()) {
-                return null;
-            }
-            final var columnValue = m_columnValueSupplier.get();
-            final var possibleColumnChoicesIds = possibleColumnChoices.stream().map(TypedStringChoice::id).toList();
-
-            if (columnValue != null && possibleColumnChoicesIds.contains(columnValue)) {
-                return columnValue;
-            }
-            return possibleColumnChoicesIds.get(0);
+        public String[] computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            return m_columnChoicesSupplier.get().stream().map(tsc -> tsc.id()).toArray(String[]::new);
         }
-
     }
 
-    private static final class ColumnSelectionOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<ColumnSelectionDialogNodeValue> {
+    private static final class ColumnFilterOverwrittenByValueMessage
+        extends OverwrittenByValueMessage<ColumnFilterDialogNodeValue> {
 
         @Override
-        protected String valueToString(final ColumnSelectionDialogNodeValue value) {
-            return value.getColumn();
+        protected String valueToString(final ColumnFilterDialogNodeValue value) {
+            return Arrays.toString(value.getColumns());
         }
 
-    }
-
-    private static final class SelectionTypeChoicesProvider implements StringChoicesProvider {
-
-        @Override
-        public List<String> choices(final NodeParametersInput context) {
-            return Arrays.asList(SingleSelectionComponentFactory.listSingleSelectionComponents());
-        }
     }
 
     private static final class IsMin2Validation extends MinValidation {
@@ -292,18 +324,11 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     // Effects
 
-    private static final class IsListSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(SingleSelectionComponentFactory.LIST);
-        }
-    }
-
     private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListSelectionType.class)
-                .and(i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue());
+            return i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue();
         }
     }
+
 }

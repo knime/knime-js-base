@@ -1,0 +1,774 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "column-filter",
+      "parameterName" : "column-filter",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "columnFilterLevel1" : {
+          "columnFilter" : {
+            "mode" : "MANUAL",
+            "patternFilter" : {
+              "pattern" : "",
+              "isCaseSensitive" : true,
+              "isInverted" : false
+            },
+            "manualFilter" : {
+              "manuallySelected" : [ "Universe_0_0", "Universe_0_1", "Cluster Membership" ],
+              "manuallyDeselected" : [ "Universe_1_0", "Universe_1_1" ],
+              "includeUnknownColumns" : false
+            },
+            "typeFilter" : {
+              "selectedTypes" : [ ],
+              "typeDisplays" : [ ]
+            }
+          }
+        },
+        "columns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ]
+      },
+      "limitNumberOfVisibleOptions" : true,
+      "numberOfVisibleOptions" : 5,
+      "inputFilter" : {
+        "allowAllTypes" : true,
+        "filterColumnsWithoutDomains" : false,
+        "typeFilter" : [ "org.knime.core.data.StringValue" ]
+      },
+      "validation" : {
+        "validation" : {
+          "minNumColumns" : 1,
+          "errorMessage" : ""
+        }
+      },
+      "possibleColumns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ],
+      "type" : "Twinlist"
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "columnFilterLevel1" : {
+                "type" : "object",
+                "properties" : {
+                  "columnFilter" : {
+                    "type" : "object",
+                    "properties" : {
+                      "manualFilter" : {
+                        "type" : "object",
+                        "properties" : {
+                          "includeUnknownColumns" : {
+                            "type" : "boolean",
+                            "default" : false
+                          },
+                          "manuallyDeselected" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "manuallySelected" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          }
+                        },
+                        "default" : {
+                          "manuallySelected" : [ ],
+                          "manuallyDeselected" : [ ],
+                          "includeUnknownColumns" : false
+                        }
+                      },
+                      "mode" : {
+                        "oneOf" : [ {
+                          "const" : "MANUAL",
+                          "title" : "Manual"
+                        }, {
+                          "const" : "REGEX",
+                          "title" : "Regex"
+                        }, {
+                          "const" : "WILDCARD",
+                          "title" : "Wildcard"
+                        }, {
+                          "const" : "TYPE",
+                          "title" : "Type"
+                        } ],
+                        "default" : "MANUAL"
+                      },
+                      "patternFilter" : {
+                        "type" : "object",
+                        "properties" : {
+                          "isCaseSensitive" : {
+                            "type" : "boolean",
+                            "default" : false
+                          },
+                          "isInverted" : {
+                            "type" : "boolean",
+                            "default" : false
+                          },
+                          "pattern" : {
+                            "type" : "string",
+                            "default" : ""
+                          }
+                        },
+                        "default" : {
+                          "pattern" : "",
+                          "isCaseSensitive" : false,
+                          "isInverted" : false
+                        }
+                      },
+                      "selected" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "typeFilter" : {
+                        "type" : "object",
+                        "properties" : {
+                          "selectedTypes" : {
+                            "default" : [ ],
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          }
+                        },
+                        "default" : {
+                          "selectedTypes" : [ ],
+                          "typeDisplays" : [ ]
+                        }
+                      }
+                    },
+                    "title" : "Default values",
+                    "description" : "The columns that are selected by default.",
+                    "default" : {
+                      "mode" : "MANUAL",
+                      "patternFilter" : {
+                        "pattern" : "",
+                        "isCaseSensitive" : false,
+                        "isInverted" : false
+                      },
+                      "manualFilter" : {
+                        "manuallySelected" : [ ],
+                        "manuallyDeselected" : [ ],
+                        "includeUnknownColumns" : true
+                      },
+                      "typeFilter" : {
+                        "selectedTypes" : [ ],
+                        "typeDisplays" : [ ]
+                      }
+                    }
+                  }
+                },
+                "default" : {
+                  "columnFilter" : {
+                    "mode" : "MANUAL",
+                    "patternFilter" : {
+                      "pattern" : "",
+                      "isCaseSensitive" : false,
+                      "isInverted" : false
+                    },
+                    "manualFilter" : {
+                      "manuallySelected" : [ ],
+                      "manuallyDeselected" : [ ],
+                      "includeUnknownColumns" : true
+                    },
+                    "typeFilter" : {
+                      "selectedTypes" : [ ],
+                      "typeDisplays" : [ ]
+                    }
+                  }
+                }
+              },
+              "columns" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                },
+                "default" : [ ]
+              }
+            },
+            "default" : {
+              "columnFilterLevel1" : {
+                "columnFilter" : {
+                  "mode" : "MANUAL",
+                  "patternFilter" : {
+                    "pattern" : "",
+                    "isCaseSensitive" : false,
+                    "isInverted" : false
+                  },
+                  "manualFilter" : {
+                    "manuallySelected" : [ ],
+                    "manuallyDeselected" : [ ],
+                    "includeUnknownColumns" : true
+                  },
+                  "typeFilter" : {
+                    "selectedTypes" : [ ],
+                    "typeDisplays" : [ ]
+                  }
+                }
+              },
+              "columns" : [ ]
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "column-filter"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "inputFilter" : {
+            "type" : "object",
+            "properties" : {
+              "allowAllTypes" : {
+                "type" : "boolean",
+                "title" : "Allow all types",
+                "description" : "If checked, all types can be selected, else, the selection can be restricted to a set of types.",
+                "default" : true
+              },
+              "filterColumnsWithoutDomains" : {
+                "type" : "boolean",
+                "title" : "Hide columns without domain",
+                "description" : "If checked, columns without a domain cannot be selected",
+                "default" : false
+              },
+              "typeFilter" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                },
+                "title" : "Allowed types",
+                "description" : "Restrict the selectable columns to certain types.",
+                "default" : [ ]
+              }
+            },
+            "default" : {
+              "allowAllTypes" : true,
+              "filterColumnsWithoutDomains" : false,
+              "typeFilter" : [ ]
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "limitNumberOfVisibleOptions" : {
+            "type" : "boolean",
+            "title" : "Limit number of visible options",
+            "description" : "By default the filter component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them.\n",
+            "default" : true
+          },
+          "numberOfVisibleOptions" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Number of visible options",
+            "description" : "A number of options visible in the filter component without a vertical scroll bar. Changing this value\nwill also affect the component's height. Notice that the height cannot be less than the overall height of\nthe control buttons in the middle.\n",
+            "default" : 5
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "column-filter"
+          },
+          "possibleColumns" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "default" : [ ]
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "type" : {
+            "type" : "string",
+            "default" : "Twinlist"
+          },
+          "validation" : {
+            "type" : "object",
+            "properties" : {
+              "validation" : {
+                "type" : "object",
+                "properties" : {
+                  "errorMessage" : {
+                    "type" : "string",
+                    "title" : "Error message",
+                    "description" : "Error message to display when the minimum number of columns is not selected. If it is empty, a default message will be displayed: <i>Select at least &lt;number&gt; columns.</i>",
+                    "default" : ""
+                  },
+                  "minNumColumns" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Minimum number of columns",
+                    "description" : "Minimum number of columns the user has to select.",
+                    "default" : 0
+                  }
+                },
+                "default" : {
+                  "minNumColumns" : 0,
+                  "errorMessage" : ""
+                }
+              }
+            },
+            "default" : {
+              "validation" : {
+                "minNumColumns" : 0,
+                "errorMessage" : ""
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 2.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 2.0
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Validation",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/validation/properties/validation/properties/minNumColumns",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/validation/properties/validation/properties/errorMessage"
+      } ]
+    }, {
+      "label" : "Type Filter",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
+        "options" : {
+          "format" : "twinList"
+        },
+        "providedOptions" : [ "possibleValues" ],
+        "rule" : {
+          "effect" : "HIDE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
+        "options" : {
+          "format" : "typedStringFilter",
+          "unknownValuesText" : "Any unknown column",
+          "emptyStateLabel" : "No columns in this list."
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "columnFilterLevel1" : {
+                "type" : "object",
+                "properties" : {
+                  "columnFilter" : {
+                    "configPaths" : [ [ "columnFilter", "filter-type" ], [ "columnFilter", "included_names" ], [ "columnFilter", "excluded_names" ], [ "columnFilter", "enforce_option" ], [ "columnFilter", "name_pattern", "pattern" ], [ "columnFilter", "name_pattern", "type" ], [ "columnFilter", "name_pattern", "caseSensitive" ], [ "columnFilter", "name_pattern", "excludeMatching" ] ]
+                  }
+                },
+                "configKey" : "columnFilter"
+              },
+              "columns" : {
+                "configKey" : "columns"
+              }
+            }
+          },
+          "limitNumberOfVisibleOptions" : {
+            "configKey" : "limit_number_visible_options"
+          },
+          "numberOfVisibleOptions" : {
+            "configKey" : "number_visible_options"
+          },
+          "inputFilter" : {
+            "type" : "object",
+            "properties" : {
+              "allowAllTypes" : {
+                "configKey" : "allow_all_types"
+              },
+              "filterColumnsWithoutDomains" : {
+                "configKey" : "filter_columns_without_domain"
+              },
+              "typeFilter" : {
+                "configPaths" : [ ]
+              }
+            },
+            "configKey" : "input_filter"
+          },
+          "validation" : {
+            "type" : "object",
+            "properties" : {
+              "validation" : {
+                "type" : "object",
+                "properties" : {
+                  "minNumColumns" : {
+                    "configKey" : "min_num_columns"
+                  },
+                  "errorMessage" : {
+                    "configKey" : "error_message"
+                  }
+                },
+                "configKey" : "min_num_columns"
+              }
+            },
+            "configKey" : "validation"
+          },
+          "possibleColumns" : {
+            "configKey" : "possibleColumns"
+          },
+          "type" : {
+            "configKey" : "type"
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "column1",
+        "text" : "column1",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
+      }, {
+        "id" : "column2",
+        "text" : "column2",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "column3",
+        "text" : "column3",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column4",
+        "text" : "column4",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column5",
+        "text" : "column5",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/columns",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ "column1", "column2", "column3", "column4", "column5" ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/columns",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "column1",
+        "text" : "column1",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
+      }, {
+        "id" : "column2",
+        "text" : "column2",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "column3",
+        "text" : "column3",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column4",
+        "text" : "column4",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column5",
+        "text" : "column5",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "org.knime.core.data.BooleanValue",
+        "text" : "Boolean"
+      }, {
+        "id" : "org.knime.core.data.IntValue",
+        "text" : "Number (Integer)"
+      }, {
+        "id" : "org.knime.core.data.DoubleValue",
+        "text" : "Number (Float)"
+      }, {
+        "id" : "org.knime.core.data.LongValue",
+        "text" : "Number (Long Integer)"
+      }, {
+        "id" : "org.knime.core.data.StringValue",
+        "text" : "String"
+      }, {
+        "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
+        "text" : "Date&time (Local)"
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/possibleColumns",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ "column1", "column2", "column3", "column4", "column5" ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/possibleColumns",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "column1",
+        "text" : "column1",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
+      }, {
+        "id" : "column2",
+        "text" : "column2",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "column3",
+        "text" : "column3",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column4",
+        "text" : "column4",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "column5",
+        "text" : "column5",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes"
+    },
+    "dependencies" : [ "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains"
+    },
+    "dependencies" : [ "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter"
+    },
+    "dependencies" : [ "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  } ]
+}

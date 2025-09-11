@@ -66,20 +66,20 @@ public class ColumnFilterNodeConfig {
 
     public static final String CFG_COLUMN_FILTER = "columnFilter";
 
-    private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
-    private static final String[] DEFAULT_POSSIBLE_COLUMNS = new String[0];
+    public static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
+    public static final String[] DEFAULT_POSSIBLE_COLUMNS = new String[0];
     private String[] m_possibleColumns = DEFAULT_POSSIBLE_COLUMNS;
 
-    private static final String CFG_TYPE = "type";
-    private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
+    public static final String CFG_TYPE = "type";
+    public static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
     private String m_type = DEFAULT_TYPE;
 
-    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = true;
+    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = true;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**

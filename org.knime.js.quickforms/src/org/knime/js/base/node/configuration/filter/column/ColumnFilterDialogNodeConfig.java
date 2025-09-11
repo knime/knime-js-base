@@ -66,9 +66,9 @@ import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNode
  */
 public class ColumnFilterDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<ColumnFilterDialogNodeValue> {
 
-    private static final String CFG_INPUT_FILTER = "input_filter";
+    public static final String CFG_INPUT_FILTER = "input_filter";
 
-    private static final String CFG_VALIDATION = "validation";
+    public static final String CFG_VALIDATION = "validation";
 
     private final ColumnFilterNodeConfig m_config;
 

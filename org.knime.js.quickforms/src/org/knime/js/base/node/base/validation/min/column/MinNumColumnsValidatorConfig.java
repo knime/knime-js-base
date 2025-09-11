@@ -59,9 +59,11 @@ import org.knime.js.base.node.base.validation.ValidatorConfig;
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-final class MinNumColumnsValidatorConfig extends AbstractValidatorConfig {
+public final class MinNumColumnsValidatorConfig extends AbstractValidatorConfig {
 
-    private static final String CFG_MIN_NUM_COLUMNS = "min_num_columns";
+    public static final String CFG_MIN_NUM_COLUMNS = "min_num_columns";
+
+    public static final int DEFAULT_MIN_NUM_COLUMNS = 0;
 
     private int m_minNumColumns = 0;
 
@@ -88,7 +90,7 @@ final class MinNumColumnsValidatorConfig extends AbstractValidatorConfig {
     @Override
     public void loadInModel(final NodeSettingsRO settings) throws InvalidSettingsException {
         super.loadInModel(settings);
-        m_minNumColumns = settings.getInt(CFG_MIN_NUM_COLUMNS, 0);
+        m_minNumColumns = settings.getInt(CFG_MIN_NUM_COLUMNS, DEFAULT_MIN_NUM_COLUMNS);
     }
 
     /**
@@ -97,7 +99,7 @@ final class MinNumColumnsValidatorConfig extends AbstractValidatorConfig {
     @Override
     public void loadInDialog(final NodeSettingsRO settings) {
         super.loadInDialog(settings);
-        m_minNumColumns = settings.getInt(CFG_MIN_NUM_COLUMNS, 0);
+        m_minNumColumns = settings.getInt(CFG_MIN_NUM_COLUMNS, DEFAULT_MIN_NUM_COLUMNS);
     }
 
     /**

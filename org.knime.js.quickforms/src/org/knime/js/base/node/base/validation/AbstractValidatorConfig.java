@@ -62,9 +62,9 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public abstract class AbstractValidatorConfig implements ValidatorConfig {
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
 
-    private static final String DEFAULT_ERROR_MESSAGE = "";
+    public static final String DEFAULT_ERROR_MESSAGE = "";
 
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 

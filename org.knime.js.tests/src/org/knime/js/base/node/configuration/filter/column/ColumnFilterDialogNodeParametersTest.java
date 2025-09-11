@@ -44,82 +44,54 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   27 May 2019 (albrecht): created
+ *   11 Sept 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.filter.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
-import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the column filter configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class ColumnFilterDialogNodeFactory2 extends ConfigurationNodeFactory<ColumnFilterDialogNodeModel> {
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder() //
-        .name("Column Filter Configuration") //
-        .icon("configuration_column_filter.png") //
-        .shortDescription("Provides a column filter configuration option to an encapsulating component's dialog."
-            + " Takes a data table and returns a filtered data table with only the selected columns.") //
-        .fullDescription("""
-                Provides a column filter configuration option to an encapsulating component's dialog.
-                Takes a data table and returns a filtered data table with only the selected columns.
-                """) //
-        .modelSettingsClass(ColumnFilterDialogNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the columns to be filtered.") //
-        .addOutputTable("Filtered Table", "Filtered table containing only the selected columns.") //
-        .nodeType(NodeType.Configuration) //
+@SuppressWarnings("restriction")
+final class ColumnFilterDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
+
+    static final DataTableSpec TEST_TABLE_SPECS =
+        new DataTableSpec(new String[]{"column1", "column2", "column3", "column4", "column5"},
+            new DataType[]{DoubleCell.TYPE, IntCell.TYPE, StringCell.TYPE, StringCell.TYPE, StringCell.TYPE});
+
+    protected ColumnFilterDialogNodeParametersTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .addInputTableSpec(TEST_TABLE_SPECS) //
+        .testJsonFormsForModel(ColumnFilterDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    public ColumnFilterDialogNodeFactory2() {
-        super(CONFIG, ColumnFilterDialogNodeParameters.class);
+    private static ColumnFilterDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ColumnFilterDialogNodeParametersTest.class).getParent()
+                .resolve("node_settings").resolve("ColumnFilterDialogNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ColumnFilterDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ColumnFilterDialogNodeModel createNodeModel() {
-        return new ColumnFilterDialogNodeModel(Version.V_4_1);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ColumnFilterDialogNodeModel> createNodeView(final int viewIndex,
-        final ColumnFilterDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterDialogNodeNodeDialog(Version.V_4_1);
-    }
-
 }
