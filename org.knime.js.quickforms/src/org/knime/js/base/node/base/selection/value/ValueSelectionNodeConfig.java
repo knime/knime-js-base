@@ -75,29 +75,29 @@ import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory
  */
 public class ValueSelectionNodeConfig {
 
-    private static final String CFG_COLUMN_TYPE = "columnType";
-    private static final ColumnType DEFAULT_COLUMN_TYPE = ColumnType.All;
+    public static final String CFG_COLUMN_TYPE = "columnType";
+    public static final ColumnType DEFAULT_COLUMN_TYPE = ColumnType.All;
     private ColumnType m_columnType = DEFAULT_COLUMN_TYPE;
 
-    private static final String CFG_LOCK_COLUMN = "lockColumn";
+    public static final String CFG_LOCK_COLUMN = "lockColumn";
     private static final boolean DEFAULT_LOCK_COLUMN = false;
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
     private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
     private Map<String, List<String>> m_possibleValues = new TreeMap<String, List<String>>();
 
-    private static final String CFG_TYPE = "type";
-    private static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
+    public static final String CFG_TYPE = "type";
+    public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
     private String m_type = DEFAULT_TYPE;
 
     private static final String CFG_COL = "colValues";
 
-    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
@@ -185,34 +185,46 @@ public class ValueSelectionNodeConfig {
     }
 
     /**
-     * Determines the possible values with the current settings from a given table spec
+     * Sets the possible values with the current settings from a given table spec
      *
      * @param spec the spec to set
      */
     public void setFromSpec(final DataTableSpec spec) {
+        m_possibleValues = getPossibleValues(spec, m_columnType);
+    }
+
+    /**
+     * Determines the possible values with the current settings from a given table spec
+     *
+     * @param dataTableSpec the spec to determine the possible values from
+     * @param columnType the allowed column types
+     * @return a map of columns and their corresponding domain values
+     */
+    public static Map<String, List<String>> getPossibleValues(final DataTableSpec dataTableSpec,
+        final ColumnType columnType) {
         // Only add column specs for columns that have values and are of the selected type
         List<DataColumnSpec> specs = new ArrayList<DataColumnSpec>();
-        for (DataColumnSpec cspec : spec) {
+        for (DataColumnSpec cspec : dataTableSpec) {
             if (cspec.getDomain().hasValues()) {
-                switch (m_columnType) {
-                case String:
-                    if (cspec.getType().isCompatible(StringValue.class)) {
+                switch (columnType) {
+                    case String:
+                        if (cspec.getType().isCompatible(StringValue.class)) {
+                            specs.add(cspec);
+                        }
+                        break;
+                    case Integer:
+                        if (cspec.getType().isCompatible(IntValue.class)) {
+                            specs.add(cspec);
+                        }
+                        break;
+                    case Double:
+                        if (cspec.getType().isCompatible(DoubleValue.class)) {
+                            specs.add(cspec);
+                        }
+                        break;
+                    case All:
                         specs.add(cspec);
-                    }
-                    break;
-                case Integer:
-                    if (cspec.getType().isCompatible(IntValue.class)) {
-                        specs.add(cspec);
-                    }
-                    break;
-                case Double:
-                    if (cspec.getType().isCompatible(DoubleValue.class)) {
-                        specs.add(cspec);
-                    }
-                    break;
-                case All:
-                    specs.add(cspec);
-                    break;
+                        break;
                 }
             }
         }
@@ -232,7 +244,7 @@ public class ValueSelectionNodeConfig {
                 values.put(colSpec.getName(), v);
             }
         }
-        m_possibleValues = values;
+        return values;
     }
 
     /**
@@ -243,16 +255,27 @@ public class ValueSelectionNodeConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_COLUMN_TYPE, m_columnType.name());
         settings.addBoolean(CFG_LOCK_COLUMN, m_lockColumn);
-        settings.addStringArray(CFG_POSSIBLE_COLUMNS,
-            m_possibleValues.keySet().toArray(new String[m_possibleValues.keySet().size()]));
-        NodeSettingsWO colSettings = settings.addNodeSettings(CFG_COL);
-        for (String key : m_possibleValues.keySet()) {
-            List<String> values = m_possibleValues.get(key);
-            colSettings.addStringArray(key, values.toArray(new String[values.size()]));
-        }
+        savePossibleColumnsAndValues(settings, m_possibleValues);
         settings.addString(CFG_TYPE, m_type);
         settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
         settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
+    }
+
+    /**
+     * Saves the current possible values to the given settings
+     *
+     * @param settings the settings to write the possible columns and respective values to
+     * @param possibleValues the map of possible columns and values to save
+     */
+    public static void savePossibleColumnsAndValues(final NodeSettingsWO settings,
+        final Map<String, List<String>> possibleValues) {
+        final var keySet = possibleValues.keySet();
+        settings.addStringArray(CFG_POSSIBLE_COLUMNS, keySet.toArray(new String[keySet.size()]));
+        NodeSettingsWO colSettings = settings.addNodeSettings(CFG_COL);
+        for (String key : keySet) {
+            List<String> values = possibleValues.get(key);
+            colSettings.addStringArray(key, values.toArray(new String[values.size()]));
+        }
     }
 
     /**
@@ -283,18 +306,30 @@ public class ValueSelectionNodeConfig {
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_columnType = ColumnType.valueOf(settings.getString(CFG_COLUMN_TYPE, DEFAULT_COLUMN_TYPE.name()));
         m_lockColumn = settings.getBoolean(CFG_LOCK_COLUMN, DEFAULT_LOCK_COLUMN);
-        m_possibleValues = new TreeMap<String, List<String>>();
+        m_possibleValues = loadPossibleColumnsAndValuesInDialog(settings);
+        m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
+        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
+    }
+
+    /**
+     * Loads the config from saved settings for dialog display
+     *
+     * @param settings the settings to load from
+     * @return the map of possible columns and their respective values
+     */
+    public static Map<String, List<String>> loadPossibleColumnsAndValuesInDialog(final NodeSettingsRO settings) {
+        final var possibleValues = new TreeMap<String, List<String>>();
         String[] columns = settings.getStringArray(CFG_POSSIBLE_COLUMNS, new String[0]);
         NodeSettingsRO colSettings = settings;
         try {
             colSettings = settings.getNodeSettings(CFG_COL);
-        } catch (InvalidSettingsException e) { /* do nothing */ }
+        } catch (InvalidSettingsException e) {
+            /* do nothing */ }
         for (String column : columns) {
-            m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
+            possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
         }
-        m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
-        m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
-        m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
+        return possibleValues;
     }
 
     /**

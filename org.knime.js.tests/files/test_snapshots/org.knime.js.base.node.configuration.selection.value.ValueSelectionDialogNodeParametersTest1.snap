@@ -1,0 +1,411 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "value-selection",
+      "parameterName" : "value-selection",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "defaultColumn" : "Universe_1_0",
+        "defaultValue" : "0.32109816645682043"
+      },
+      "columnType" : "All",
+      "askForColumn" : "YES",
+      "selectionType" : "List",
+      "limitNumberOfVisibleOptions" : true,
+      "numberOfVisibleOptions" : 3,
+      "possibleValues" : {
+        "Cluster Membership" : [ "Cluster_0", "Cluster_1", "Cluster_2", "Cluster_3" ],
+        "Universe_0_0" : [ "0.44683032935216777", "0.21557309315169043", "0.300898550174282", "0.4571889310239766", "0.38269361045678824", "0.3677029629918211", "0.36949245715866297", "0.331970860722705", "0.402133267051207", "0.15868318887017008", "0.09485786644662242", "0.8796547794447265", "0.6732235377913908", "0.4800584749461948", "0.5122732788636175", "0.2550884620807333", "7.418180509843886E-5", "0.38926988475466706", "0.1041219515551276", "0.08025189239988095" ],
+        "Universe_0_1" : [ "0.5734015292960425", "0.4791031545979192", "0.6563289372665588", "0.4398338910934335", "0.7418649959603966", "0.3029988348937088", "0.2626645414376739", "0.3549328184251676", "0.1630211343351641", "0.29613277714106845", "0.8469967631764409", "0.7175221546919568", "0.8415915596134986", "0.7600870695013179", "0.6142647833618805", "0.6075324971926664", "0.03514885140670454", "0.30020972699886694", "0.8704200309631825", "0.5725318793986736" ],
+        "Universe_1_0" : [ "0.884964205166333", "0.7832484707771249", "0.32109816645682043", "0.9854348721827546", "0.7713424552238259", "0.11599380832284734", "0.19573384661219506", "0.1846160902561158", "0.304134902008945", "0.8815915028422217", "0.11778955423433633", "0.1436926309735891", "0.27242152024830113", "0.18838748088346977", "0.1540065897608444", "0.4286863180323771", "0.5916214071264654", "0.6894728131910863", "0.477970401109757", "0.5952789914495601" ],
+        "Universe_1_1" : [ "0.1567495704417292", "0.8217644612746465", "0.8143046600231879", "0.049921068187071205", "0.835291803260147", "0.7204612035668794", "0.16266806798349132", "0.46358582579947916", "0.24355454681349187", "0.9243932171878343", "0.5654896294147952", "0.4178563285716471", "0.8116123588687876", "0.4860518065362393", "0.6085903940014874", "0.3601113885875035", "0.30135958716531025", "0.27104190824213165", "0.3992932765411543", "0.19478888188341736" ]
+      }
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "askForColumn" : {
+            "oneOf" : [ {
+              "const" : "YES",
+              "title" : "Yes"
+            }, {
+              "const" : "NO_USE_DEFAULT",
+              "title" : "No, use default"
+            } ],
+            "title" : "Ask for column",
+            "description" : "How the selection in the component dialog should look like.\n\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
+            "default" : "YES"
+          },
+          "columnType" : {
+            "oneOf" : [ {
+              "const" : "All",
+              "title" : "All"
+            }, {
+              "const" : "String",
+              "title" : "String"
+            }, {
+              "const" : "Integer",
+              "title" : "Integer"
+            }, {
+              "const" : "Double",
+              "title" : "Double"
+            } ],
+            "default" : "All"
+          },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "defaultColumn" : {
+                "type" : "string",
+                "title" : "Default column",
+                "description" : "The column containing the values."
+              },
+              "defaultValue" : {
+                "type" : "string",
+                "title" : "Default value",
+                "description" : "The value that is selected by default."
+              },
+              "noColumnsAvailableMessage" : {
+                "type" : "object"
+              }
+            },
+            "default" : { }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "value-selection"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "limitNumberOfVisibleOptions" : {
+            "type" : "boolean",
+            "title" : "Limit number of visible options",
+            "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them. The setting is available only for List selection type.\n",
+            "default" : false
+          },
+          "numberOfVisibleOptions" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Number of visible options",
+            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value\nwill also affect the component's height. The setting is available only for List selection type.\n",
+            "default" : 5
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "value-selection"
+          },
+          "possibleValues" : {
+            "type" : "object",
+            "default" : { }
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "selectionType" : {
+            "type" : "string",
+            "title" : "Selection Type",
+            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal\nlayout, a list or a dropdown selection.\n",
+            "default" : "Dropdown"
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/askForColumn",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/selectionType",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/selectionType",
+            "schema" : {
+              "const" : "List"
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 2.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 2.0
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/selectionType",
+              "schema" : {
+                "const" : "List"
+              }
+            }, {
+              "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "noColumnsAvailableMessage" : { },
+              "defaultColumn" : {
+                "configKey" : "column"
+              },
+              "defaultValue" : {
+                "configKey" : "value"
+              }
+            }
+          },
+          "columnType" : {
+            "configKey" : "columnType"
+          },
+          "askForColumn" : {
+            "configPaths" : [ [ "lockColumn" ] ]
+          },
+          "selectionType" : {
+            "configKey" : "type"
+          },
+          "limitNumberOfVisibleOptions" : {
+            "configKey" : "limit_number_visible_options"
+          },
+          "numberOfVisibleOptions" : {
+            "configKey" : "number_visible_options"
+          },
+          "possibleValues" : {
+            "configPaths" : [ ]
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : null
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : null
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : { }
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/selectionType",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "Radio buttons (horizontal)",
+        "text" : "Radio buttons (horizontal)"
+      }, {
+        "id" : "Radio buttons (vertical)",
+        "text" : "Radio buttons (vertical)"
+      }, {
+        "id" : "List",
+        "text" : "List"
+      }, {
+        "id" : "Dropdown",
+        "text" : "Dropdown"
+      } ]
+    } ]
+  }, {
+    "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",
+    "providedOptionName" : "message",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "title" : "No domain information available.",
+        "description" : "Add nominal domain information to any column.",
+        "type" : "WARNING"
+      }
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ "#/properties/model/properties/askForColumn", "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/askForColumn"
+    },
+    "dependencies" : [ "#/properties/model/properties/askForColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}

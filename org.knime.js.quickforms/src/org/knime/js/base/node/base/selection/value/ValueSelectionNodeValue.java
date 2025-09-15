@@ -72,7 +72,7 @@ public class ValueSelectionNodeValue extends JSONViewContent {
     /**
      * Config setting for the column
      */
-    protected static final String CFG_COLUMN = "column";
+    public static final String CFG_COLUMN = "column";
 
     /**
      * Default column value
@@ -83,7 +83,7 @@ public class ValueSelectionNodeValue extends JSONViewContent {
     /**
      * Config setting for the value
      */
-    protected static final String CFG_VALUE = "value";
+    public static final String CFG_VALUE = "value";
 
     /**
      * Default values

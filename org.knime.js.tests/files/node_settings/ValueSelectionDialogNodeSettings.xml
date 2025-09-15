@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack">
+        <config key="Variable_0">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="value-selection (column)"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="Universe_1_0"/>
+        </config>
+        <config key="Variable_1">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="value-selection"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="0.32109816645682043"/>
+        </config>
+        <config key="Variable_2">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="value-selection (column)"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="Universe_1_0"/>
+        </config>
+        <config key="Variable_3">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="value-selection"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="0.32109816645682043"/>
+        </config>
+    </config>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="defaultValue">
+            <entry key="column" type="xstring" value="Universe_1_0"/>
+            <entry key="value" type="xstring" value="0.32109816645682043"/>
+        </config>
+        <entry key="hideInDialog" type="xboolean" value="false"/>
+        <entry key="parameterName" type="xstring" value="value-selection"/>
+        <entry key="label" type="xstring" value="Label"/>
+        <entry key="description" type="xstring" value="Enter Description"/>
+        <entry key="required" type="xboolean" value="true"/>
+        <entry key="flowVariableName" type="xstring" value="value-selection"/>
+        <entry key="columnType" type="xstring" value="All"/>
+        <entry key="lockColumn" type="xboolean" value="false"/>
+        <config key="possibleColumns">
+            <entry key="array-size" type="xint" value="5"/>
+            <entry key="0" type="xstring" value="Cluster Membership"/>
+            <entry key="1" type="xstring" value="Universe_0_0"/>
+            <entry key="2" type="xstring" value="Universe_0_1"/>
+            <entry key="3" type="xstring" value="Universe_1_0"/>
+            <entry key="4" type="xstring" value="Universe_1_1"/>
+        </config>
+        <config key="colValues">
+            <config key="Cluster Membership">
+                <entry key="array-size" type="xint" value="4"/>
+                <entry key="0" type="xstring" value="Cluster_0"/>
+                <entry key="1" type="xstring" value="Cluster_1"/>
+                <entry key="2" type="xstring" value="Cluster_2"/>
+                <entry key="3" type="xstring" value="Cluster_3"/>
+            </config>
+            <config key="Universe_0_0">
+                <entry key="array-size" type="xint" value="20"/>
+                <entry key="0" type="xstring" value="0.44683032935216777"/>
+                <entry key="1" type="xstring" value="0.21557309315169043"/>
+                <entry key="2" type="xstring" value="0.300898550174282"/>
+                <entry key="3" type="xstring" value="0.4571889310239766"/>
+                <entry key="4" type="xstring" value="0.38269361045678824"/>
+                <entry key="5" type="xstring" value="0.3677029629918211"/>
+                <entry key="6" type="xstring" value="0.36949245715866297"/>
+                <entry key="7" type="xstring" value="0.331970860722705"/>
+                <entry key="8" type="xstring" value="0.402133267051207"/>
+                <entry key="9" type="xstring" value="0.15868318887017008"/>
+                <entry key="10" type="xstring" value="0.09485786644662242"/>
+                <entry key="11" type="xstring" value="0.8796547794447265"/>
+                <entry key="12" type="xstring" value="0.6732235377913908"/>
+                <entry key="13" type="xstring" value="0.4800584749461948"/>
+                <entry key="14" type="xstring" value="0.5122732788636175"/>
+                <entry key="15" type="xstring" value="0.2550884620807333"/>
+                <entry key="16" type="xstring" value="7.418180509843886E-5"/>
+                <entry key="17" type="xstring" value="0.38926988475466706"/>
+                <entry key="18" type="xstring" value="0.1041219515551276"/>
+                <entry key="19" type="xstring" value="0.08025189239988095"/>
+            </config>
+            <config key="Universe_0_1">
+                <entry key="array-size" type="xint" value="20"/>
+                <entry key="0" type="xstring" value="0.5734015292960425"/>
+                <entry key="1" type="xstring" value="0.4791031545979192"/>
+                <entry key="2" type="xstring" value="0.6563289372665588"/>
+                <entry key="3" type="xstring" value="0.4398338910934335"/>
+                <entry key="4" type="xstring" value="0.7418649959603966"/>
+                <entry key="5" type="xstring" value="0.3029988348937088"/>
+                <entry key="6" type="xstring" value="0.2626645414376739"/>
+                <entry key="7" type="xstring" value="0.3549328184251676"/>
+                <entry key="8" type="xstring" value="0.1630211343351641"/>
+                <entry key="9" type="xstring" value="0.29613277714106845"/>
+                <entry key="10" type="xstring" value="0.8469967631764409"/>
+                <entry key="11" type="xstring" value="0.7175221546919568"/>
+                <entry key="12" type="xstring" value="0.8415915596134986"/>
+                <entry key="13" type="xstring" value="0.7600870695013179"/>
+                <entry key="14" type="xstring" value="0.6142647833618805"/>
+                <entry key="15" type="xstring" value="0.6075324971926664"/>
+                <entry key="16" type="xstring" value="0.03514885140670454"/>
+                <entry key="17" type="xstring" value="0.30020972699886694"/>
+                <entry key="18" type="xstring" value="0.8704200309631825"/>
+                <entry key="19" type="xstring" value="0.5725318793986736"/>
+            </config>
+            <config key="Universe_1_0">
+                <entry key="array-size" type="xint" value="20"/>
+                <entry key="0" type="xstring" value="0.884964205166333"/>
+                <entry key="1" type="xstring" value="0.7832484707771249"/>
+                <entry key="2" type="xstring" value="0.32109816645682043"/>
+                <entry key="3" type="xstring" value="0.9854348721827546"/>
+                <entry key="4" type="xstring" value="0.7713424552238259"/>
+                <entry key="5" type="xstring" value="0.11599380832284734"/>
+                <entry key="6" type="xstring" value="0.19573384661219506"/>
+                <entry key="7" type="xstring" value="0.1846160902561158"/>
+                <entry key="8" type="xstring" value="0.304134902008945"/>
+                <entry key="9" type="xstring" value="0.8815915028422217"/>
+                <entry key="10" type="xstring" value="0.11778955423433633"/>
+                <entry key="11" type="xstring" value="0.1436926309735891"/>
+                <entry key="12" type="xstring" value="0.27242152024830113"/>
+                <entry key="13" type="xstring" value="0.18838748088346977"/>
+                <entry key="14" type="xstring" value="0.1540065897608444"/>
+                <entry key="15" type="xstring" value="0.4286863180323771"/>
+                <entry key="16" type="xstring" value="0.5916214071264654"/>
+                <entry key="17" type="xstring" value="0.6894728131910863"/>
+                <entry key="18" type="xstring" value="0.477970401109757"/>
+                <entry key="19" type="xstring" value="0.5952789914495601"/>
+            </config>
+            <config key="Universe_1_1">
+                <entry key="array-size" type="xint" value="20"/>
+                <entry key="0" type="xstring" value="0.1567495704417292"/>
+                <entry key="1" type="xstring" value="0.8217644612746465"/>
+                <entry key="2" type="xstring" value="0.8143046600231879"/>
+                <entry key="3" type="xstring" value="0.049921068187071205"/>
+                <entry key="4" type="xstring" value="0.835291803260147"/>
+                <entry key="5" type="xstring" value="0.7204612035668794"/>
+                <entry key="6" type="xstring" value="0.16266806798349132"/>
+                <entry key="7" type="xstring" value="0.46358582579947916"/>
+                <entry key="8" type="xstring" value="0.24355454681349187"/>
+                <entry key="9" type="xstring" value="0.9243932171878343"/>
+                <entry key="10" type="xstring" value="0.5654896294147952"/>
+                <entry key="11" type="xstring" value="0.4178563285716471"/>
+                <entry key="12" type="xstring" value="0.8116123588687876"/>
+                <entry key="13" type="xstring" value="0.4860518065362393"/>
+                <entry key="14" type="xstring" value="0.6085903940014874"/>
+                <entry key="15" type="xstring" value="0.3601113885875035"/>
+                <entry key="16" type="xstring" value="0.30135958716531025"/>
+                <entry key="17" type="xstring" value="0.27104190824213165"/>
+                <entry key="18" type="xstring" value="0.3992932765411543"/>
+                <entry key="19" type="xstring" value="0.19478888188341736"/>
+            </config>
+        </config>
+        <entry key="type" type="xstring" value="List"/>
+        <entry key="limit_number_visible_options" type="xboolean" value="true"/>
+        <entry key="number_visible_options" type="xint" value="3"/>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.configuration.selection.value.ValueSelectionDialogNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Value Selection Configuration"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.7.0.v202509100658"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Quick Forms"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.js.quickforms.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.7.0.v202509100658"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Value Selection Configuration"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.port.flowvariable.FlowVariablePortObject"/>
+            <entry key="port_object_summary" type="xstring" value="Variables connection"/>
+            <entry key="port_spec_location" type="xstring" value="spec/spec.zip"/>
+            <entry key="port_object_location" type="xstring" value="object/portobject.zip"/>
+            <entry key="port_dir_location" type="xstring" value="port_1"/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="3e1ebd52-6439-414e-91a8-302465535b45"/>
+    </config>
+</config>

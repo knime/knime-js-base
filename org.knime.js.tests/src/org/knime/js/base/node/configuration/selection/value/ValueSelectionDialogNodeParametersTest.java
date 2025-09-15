@@ -44,55 +44,54 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   31 May 2019 (albrecht): created
+ *   Sep 15, 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.selection.value;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the value selection configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class ValueSelectionDialogNodeFactory extends ConfigurationNodeFactory<ValueSelectionDialogNodeModel> {
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Value Selection Configuration") //
-        .icon("./configuration_value_select.png") //
-        .shortDescription("""
-                Allows selecting a single value from a column's domain values in an encapsulating component's dialog.
-                The selected value is returned as a string flow variable.""") //
-        .fullDescription("""
-                Provides a value selection configuration option to an encapsulating component's dialog.
-                Outputs a string flow variable with the name of the selected value.""") //
-        .modelSettingsClass(ValueSelectionDialogNodeParameters.class) //
-        .addInputPort("Table Input", BufferedDataTable.TYPE,
-            "Table containing the values to be selected.") //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (string) with the selected value name. Additionally the chosen column name is output as a "
-                + "separate flow variable.") //
-        .nodeType(NodeType.Configuration) //
+@SuppressWarnings("restriction")
+final class ValueSelectionDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
+
+    static final DataTableSpec TEST_TABLE_SPEC =
+        new DataTableSpec(new String[]{"column1", "column2", "column3", "column4", "column5"},
+            new DataType[]{DoubleCell.TYPE, IntCell.TYPE, StringCell.TYPE, StringCell.TYPE, StringCell.TYPE});
+
+    protected ValueSelectionDialogNodeParametersTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .addInputTableSpec(TEST_TABLE_SPEC) //
+        .testJsonFormsForModel(ValueSelectionDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public ValueSelectionDialogNodeFactory() {
-        super(CONFIG, ValueSelectionDialogNodeParameters.class);
+    private static ValueSelectionDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ValueSelectionDialogNodeParametersTest.class).getParent()
+                .resolve("node_settings").resolve("ValueSelectionDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ValueSelectionDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public ValueSelectionDialogNodeModel createNodeModel() {
-        return new ValueSelectionDialogNodeModel();
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ValueSelectionDialogNodeNodeDialog();
-    }
-
 }
