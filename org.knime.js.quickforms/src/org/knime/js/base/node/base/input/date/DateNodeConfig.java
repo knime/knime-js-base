@@ -73,44 +73,44 @@ public class DateNodeConfig {
      */
     public static final ZonedDateTime DEFAULT_ZDT = ZonedDateTime.now().withNano(0);
 
-    private static final String CFG_SHOW_NOW_BUTTON = "show_now";
-    private static final boolean DEFAULT_SHOW_NOW_BUTTON = true;
+    public static final String CFG_SHOW_NOW_BUTTON = "show_now";
+    public static final boolean DEFAULT_SHOW_NOW_BUTTON = true;
     private boolean m_showNowButton = DEFAULT_SHOW_NOW_BUTTON;
 
-    private static final String CFG_USE_MIN = "use_min";
-    private static final boolean DEFAULT_USE_MIN = false;
+    public static final String CFG_USE_MIN = "use_min";
+    public static final boolean DEFAULT_USE_MIN = false;
     private boolean m_useMin = DEFAULT_USE_MIN;
 
-    private static final String CFG_USE_MAX = "use_max";
-    private static final boolean DEFAULT_USE_MAX = false;
+    public static final String CFG_USE_MAX = "use_max";
+    public static final boolean DEFAULT_USE_MAX = false;
     private boolean m_useMax = DEFAULT_USE_MAX;
 
-    private static final String CFG_USE_MIN_EXEC_TIME = "use_min_exec_time";
-    private static final boolean DEFAULT_USE_MIN_EXEC_TIME = false;
+    public static final String CFG_USE_MIN_EXEC_TIME = "use_min_exec_time";
+    public static final boolean DEFAULT_USE_MIN_EXEC_TIME = false;
     private boolean m_useMinExecTime = DEFAULT_USE_MIN_EXEC_TIME;
 
-    private static final String CFG_USE_MAX_EXEC_TIME = "use_max_exec_time";
-    private static final boolean DEFAULT_USE_MAX_EXEC_TIME = false;
+    public static final String CFG_USE_MAX_EXEC_TIME = "use_max_exec_time";
+    public static final boolean DEFAULT_USE_MAX_EXEC_TIME = false;
     private boolean m_useMaxExecTime = DEFAULT_USE_MAX_EXEC_TIME;
 
-    private static final String CFG_USE_DEFAULT_EXEC_TIME = "use_default_exec_time";
-    private static final boolean DEFAULT_USE_DEFAULT_EXEC_TIME = false;
+    public static final String CFG_USE_DEFAULT_EXEC_TIME = "use_default_exec_time";
+    public static final boolean DEFAULT_USE_DEFAULT_EXEC_TIME = false;
     private boolean m_useDefaultExecTime = DEFAULT_USE_DEFAULT_EXEC_TIME;
 
-    private static final String CFG_MIN = "min";
+    public static final String CFG_MIN = "min";
     private static final ZonedDateTime DEFAULT_MIN = DEFAULT_ZDT;
     private ZonedDateTime m_min = DEFAULT_MIN;
 
-    private static final String CFG_MAX = "max";
+    public static final String CFG_MAX = "max";
     private static final ZonedDateTime DEFAULT_MAX = DEFAULT_ZDT;
     private ZonedDateTime m_max = DEFAULT_MAX;
 
-    private static final String CFG_TYPE = "date_time_type";
-    private static final DateTimeType DEFAULT_TYPE = DateTimeType.LOCAL_DATE_TIME;
+    public static final String CFG_TYPE = "date_time_type";
+    public static final DateTimeType DEFAULT_TYPE = DateTimeType.LOCAL_DATE_TIME;
     private DateTimeType m_type = DEFAULT_TYPE;
 
-    private static final String CFG_GRANULARITY = "granularity";
-    private static final GranularityTime DEFAULT_GRANULARITY = GranularityTime.SHOW_MINUTES;
+    public static final String CFG_GRANULARITY = "granularity";
+    public static final GranularityTime DEFAULT_GRANULARITY = GranularityTime.SHOW_MINUTES;
     private GranularityTime m_granularity = DEFAULT_GRANULARITY;
 
     /**
@@ -306,7 +306,7 @@ public class DateNodeConfig {
      * @throws InvalidSettingsException
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON);
+        m_showNowButton = settings.getBoolean(CFG_SHOW_NOW_BUTTON, DEFAULT_SHOW_NOW_BUTTON);
         m_granularity = GranularityTime.valueOf(settings.getString(CFG_GRANULARITY));
         m_useMin = settings.getBoolean(CFG_USE_MIN);
         m_useMax = settings.getBoolean(CFG_USE_MAX);

@@ -49,54 +49,45 @@
 package org.knime.js.base.node.configuration.input.date;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the date configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DateDialogNodeFactory extends NodeFactory<DateDialogNodeModel> {
+public class DateDialogNodeFactory extends ConfigurationNodeFactory<DateDialogNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DateDialogNodeModel createNodeModel() {
-        return new DateDialogNodeModel();
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Date&Time Configuration") //
+        .icon("./configuration_date.png") //
+        .shortDescription("""
+                Provides a date&amp;time configuration option to an encapsulating component's dialog.
+                Outputs a string flow variable with the set value.
+                             """) //
+        .fullDescription("Outputs a string flow variable with a set date&amp;time value from a component's dialog.") //
+        .modelSettingsClass(DateDialogNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined.") //
+        .nodeType(NodeType.Configuration) //
+        .keywords("datetime", "date", "time") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public DateDialogNodeFactory() {
+        super(CONFIG, DateDialogNodeParameters.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<DateDialogNodeModel> createNodeView(final int viewIndex, final DateDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new DateDialogNodeNodeDialog();
+    }
+
+    @Override
+    public DateDialogNodeModel createNodeModel() {
+        return new DateDialogNodeModel();
     }
 
 }

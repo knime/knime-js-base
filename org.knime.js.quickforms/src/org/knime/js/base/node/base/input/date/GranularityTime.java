@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.base.input.date;
 
+import org.knime.node.parameters.widget.choices.Label;
+
 /**
  * An enumeration that contains different granularity of time to show in the view.
  *
@@ -57,14 +59,17 @@ public enum GranularityTime {
         /**
          * Show hours and minutes.
          */
+        @Label(value = "Minutes", description = "Show hours and minutes.")
         SHOW_MINUTES("Show minutes"),
         /**
          * Show hours, minutes and seconds.
          */
+        @Label(value = "Seconds", description = "Show hours, minutes and seconds.")
         SHOW_SECONDS("Show seconds"),
         /**
          * Show hours, minutes, seconds and milliseconds.
          */
+        @Label(value = "Milliseconds", description = "Show hours, minutes, seconds and milliseconds.")
         SHOW_MILLIS("Show milliseconds");
 
     private final String m_name;
