@@ -27,7 +27,7 @@
  *  ECLIPSE with only the license terms in place for ECLIPSE applying to
  *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
  *  license terms of ECLIPSE themselves allow for the respective use and
- *  propagation of ECLIPSE together with KNIME.
+ *  propagation of KNIME.
  *
  *  Additional permission relating to nodes for KNIME that extend the Node
  *  Extension (and in particular that are based on subclasses of NodeModel,
@@ -44,62 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 May 2019 (albrecht): created
+ *   Jan 15, 2025 (user): created
  */
 package org.knime.js.base.node.configuration.input.listbox;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.dialog.NodeDialog;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-/**
- * Factory for the list box configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
 @SuppressWarnings("restriction")
-public class ListBoxDialogNodeFactory extends ConfigurationNodeFactory<ListBoxDialogNodeModel> {
+final class ListBoxDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    @SuppressWarnings("deprecation")
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("List Box Configuration (legacy)") //
-        .icon("./configuration_listbox.png") //
-        .shortDescription("""
-                Provides a text area configuration option to an encapsulating component's dialog.
-                Outputs a data table with one column holding a list of strings.
-                             """) //
-        .fullDescription(
-            "Provides a text area configuration option to an encapsulating component's dialog. Outputs a data table "
-                + "with one column holding a list of strings.") //
-        .modelSettingsClass(ListBoxDialogNodeParameters.class) //
-        .addOutputPort("Value Table", BufferedDataTable.TYPE,
-            "Table output holding the parsed string in one column with the rows being determined by the given "
-                + "separator and the given variable name as column name.") //
-        .nodeType(NodeType.Configuration) //
+    protected ListBoxDialogNodeParametersTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(ListBoxDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public ListBoxDialogNodeFactory() {
-        super(CONFIG, ListBoxDialogNodeParameters.class);
+    private static ListBoxDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ListBoxDialogNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("ListBoxDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ListBoxDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ListBoxDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, ListBoxDialogNodeParameters.class);
-    }
-
-    @Override
-    public ListBoxDialogNodeModel createNodeModel() {
-        return new ListBoxDialogNodeModel();
-    }
-
 }

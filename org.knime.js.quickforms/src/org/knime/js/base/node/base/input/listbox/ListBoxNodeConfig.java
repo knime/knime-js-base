@@ -61,32 +61,32 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class ListBoxNodeConfig {
 
-    private static final String CFG_REGEX = "regex";
-    private static final String DEFAULT_REGEX = "";
+    public static final String CFG_REGEX = "regex";
+    public static final String DEFAULT_REGEX = "";
     private String m_regex = DEFAULT_REGEX;
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
-    private static final String DEFAULT_ERROR_MESSAGE = "";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
-    private static final String CFG_SEPARATOR = "separator";
+    public static final String CFG_SEPARATOR = "separator";
     public static final String DEFAULT_SEPARATOR = "\\n";
     private String m_separator = null;
 
-    private static final String CFG_SEPARATE_EACH_CHARACTER = "separate_each_character";
-    private static final boolean DEFAULT_SEPARATE_EACH_CHARACTER = false;
+    public static final String CFG_SEPARATE_EACH_CHARACTER = "separate_each_character";
+    public static final boolean DEFAULT_SEPARATE_EACH_CHARACTER = false;
     private boolean m_separateEachCharacter = DEFAULT_SEPARATE_EACH_CHARACTER;
 
-    private static final String CFG_SEPARATOR_REGEX = "seperator_regex";
-    private static final String DEFAULT_SEPARATOR_REGEX = "";
+    public static final String CFG_SEPARATOR_REGEX = "seperator_regex";
+    public static final String DEFAULT_SEPARATOR_REGEX = "";
     private String m_separatorRegex = DEFAULT_SEPARATOR_REGEX;
 
-    private static final String CFG_OMIT_EMPTY = "omit_empty";
-    private static final boolean DEFAULT_OMIT_EMPTY = true;
+    public static final String CFG_OMIT_EMPTY = "omit_empty";
+    public static final boolean DEFAULT_OMIT_EMPTY = true;
     private boolean m_omitEmpty = DEFAULT_OMIT_EMPTY;
 
-    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**

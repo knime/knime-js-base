@@ -1,0 +1,289 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "list-box-input",
+      "parameterName" : "list-box-input",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "string" : ""
+      },
+      "numberVisibleOptions" : 5,
+      "regex" : "",
+      "errorMessage" : "",
+      "separateEachCharacter" : false,
+      "separator" : "\\n",
+      "separatorRegex" : "",
+      "omitEmpty" : true
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "string" : {
+                "type" : "string",
+                "title" : "Default value",
+                "description" : "Default value for the field.",
+                "default" : ""
+              }
+            },
+            "default" : {
+              "string" : ""
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "errorMessage" : {
+            "type" : "string",
+            "title" : "Failure message",
+            "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
+            "default" : ""
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "list-box-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "numberVisibleOptions" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Number of visible options",
+            "description" : "The number of options visible in the list box without scrolling. Changing this value will also affect the component's height.",
+            "default" : 5
+          },
+          "omitEmpty" : {
+            "type" : "boolean",
+            "title" : "Omit empty values",
+            "description" : "If checked, empty values will be omitted from the list of options and do not have to pass the validation check.",
+            "default" : true
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "list-box-input"
+          },
+          "regex" : {
+            "type" : "string",
+            "title" : "Regex pattern",
+            "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
+            "default" : ""
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "separateEachCharacter" : {
+            "type" : "boolean",
+            "title" : "Separate each character",
+            "description" : "If checked, each character in the input will be treated as a separate option.",
+            "default" : false
+          },
+          "separator" : {
+            "type" : "string",
+            "title" : "Separator",
+            "description" : "The separator string used to split the options.",
+            "default" : "\\n"
+          },
+          "separatorRegex" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/numberVisibleOptions",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 1.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 1.0
+              }
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Validation",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/regex"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/errorMessage"
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/string",
+        "options" : {
+          "rows" : 4,
+          "format" : "textArea"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/separateEachCharacter",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/separator",
+        "rule" : {
+          "effect" : "HIDE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/separateEachCharacter",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/omitEmpty",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "string" : { }
+            }
+          },
+          "numberVisibleOptions" : {
+            "configKey" : "number_visible_options"
+          },
+          "regex" : {
+            "configKey" : "regex"
+          },
+          "errorMessage" : {
+            "configKey" : "error_message"
+          },
+          "separateEachCharacter" : {
+            "configKey" : "separate_each_character"
+          },
+          "separator" : {
+            "configKey" : "separator"
+          },
+          "separatorRegex" : {
+            "configKey" : "seperator_regex"
+          },
+          "omitEmpty" : {
+            "configKey" : "omit_empty"
+          }
+        }
+      }
+    }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}
