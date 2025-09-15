@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="label" type="xstring" value="LAB"/>
+    <entry key="description" type="xstring" value="DESC"/>
+    <entry key="flowVariableName" type="xstring" value="date-input"/>
+    <entry key="parameterName" type="xstring" value="date-input"/>
+    <entry key="hideInDialog" type="xboolean" value="false"/>
+    <entry key="required" type="xboolean" value="true"/>
+    <entry key="use_default_exec_time" type="xboolean" value="true"/>
+    <config key="defaultValue">
+        <entry key="date&amp;time" type="xstring" value="1999-05-03T01:02:03+03:00[Europe/Bucharest]"/>
+    </config>
+    <entry key="date_time_type" type="xstring" value="LOCAL_DATE_TIME"/>
+    <entry key="granularity" type="xstring" value="SHOW_MILLIS"/>
+    <entry key="use_min" type="xboolean" value="false"/>
+    <entry key="use_min_exec_time" type="xboolean" value="false"/>
+    <entry key="min" type="xstring" value="1900-01-01T01:02:02+01:00[Europe/Berlin]"/>
+    <entry key="use_max" type="xboolean" value="true"/>
+    <entry key="use_max_exec_time" type="xboolean" value="false"/>
+    <entry key="max" type="xstring" value="2100-01-01T00:23:22+02:00[Europe/Chisinau]"/>
+</config>
