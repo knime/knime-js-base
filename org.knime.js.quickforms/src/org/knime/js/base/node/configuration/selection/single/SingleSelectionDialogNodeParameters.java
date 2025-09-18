@@ -48,6 +48,13 @@
  */
 package org.knime.js.base.node.configuration.selection.single;
 
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_TITLE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -56,12 +63,17 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleSelectionNodeConfig;
+import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.IsListSelectionType;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.ShowNumberOfVisibleOptions;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -71,8 +83,6 @@ import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
-import org.knime.node.parameters.updates.EffectPredicate;
-import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
@@ -81,7 +91,6 @@ import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 import org.knime.node.parameters.widget.text.TextAreaWidget;
 
 /**
@@ -116,31 +125,21 @@ public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = "Selection Type", description = """
-            The type of the selection element. This can be either radio buttons with a vertical or horizontal
-            layout, a list or a dropdown selection.
-            """)
+    @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
     @ChoicesProvider(SelectionTypeChoicesProvider.class)
     @Persist(configKey = SingleMultipleSelectionNodeConfig.CFG_TYPE)
     @ValueReference(SelectionTypeValueReference.class)
     @Layout(FormFieldSection.class)
     String m_selectionType = SingleSelectionNodeConfig.DEFAULT_TYPE;
 
-    @Widget(title = "Limit number of visible options", description = """
-            By default the List component adjusts its height to display all possible choices without a scroll bar.
-            If the setting is enabled, you will be able to limit the number of visible options in case you have too
-            many of them. The setting is available only for List selection type.
-            """)
+    @Widget(title = LIMIT_VIS_OPT_TITLE, description = LIMIT_VIS_OPT_DESCRIPTION)
     @Persist(configKey = SingleMultipleSelectionNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
     @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
     @Effect(predicate = IsListSelectionType.class, type = EffectType.SHOW)
     @Layout(FormFieldSection.class)
     boolean m_limitNumberOfVisibleOptions = SingleMultipleSelectionNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    @Widget(title = "Number of visible options", description = """
-            A number of options visible in the List component without a vertical scroll bar. Changing this value
-            will also affect the component's height. The setting is available only for List selection type.
-            """)
+    @Widget(title = NUM_VIS_OPT_TITLE, description = NUM_VIS_OPT_DESCRIPTION)
     @NumberInputWidget(minValidation = IsMin2Validation.class)
     @Persist(configKey = SingleMultipleSelectionNodeConfig.CFG_NUMBER_VIS_OPTIONS)
     @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
@@ -153,8 +152,6 @@ public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettin
     @ValueReference(PossibleChoicesReference.class)
     @Layout(FormFieldSection.class)
     String m_possibleChoices;
-
-    // Persistors
 
     private static final class DefaultVariableValuePersistor implements NodeParametersPersistor<String> {
 
@@ -198,21 +195,11 @@ public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     }
 
-    // References
-
     private static final class VariableValueValueReference implements ParameterReference<String> {
-    }
-
-    private static final class SelectionTypeValueReference implements ParameterReference<String> {
-    }
-
-    private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
     }
 
     private static final class PossibleChoicesReference implements ParameterReference<String> {
     }
-
-    // State Providers
 
     private static final class VariableValueChoicesProvider implements StringChoicesProvider {
 
@@ -270,40 +257,6 @@ public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettin
             return value.getVariableValue()[0];
         }
 
-    }
-
-    private static final class SelectionTypeChoicesProvider implements StringChoicesProvider {
-
-        @Override
-        public List<String> choices(final NodeParametersInput context) {
-            return Arrays.asList(SingleSelectionComponentFactory.listSingleSelectionComponents());
-        }
-    }
-
-    private static final class IsMin2Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 2;
-        }
-
-    }
-
-    // Effect
-
-    private static final class IsListSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(SingleSelectionComponentFactory.LIST);
-        }
-    }
-
-    private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListSelectionType.class)
-                .and(i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue());
-        }
     }
 
 }

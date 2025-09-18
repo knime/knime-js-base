@@ -60,6 +60,7 @@ import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.base.validation.AbstractValidatorConfig;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.base.validation.min.column.MinNumColumnsValidatorConfig;
+import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
@@ -92,7 +93,6 @@ import org.knime.node.parameters.widget.choices.TypedStringChoice;
 import org.knime.node.parameters.widget.choices.filter.ColumnFilter;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 
 /**
@@ -236,8 +236,6 @@ public class ColumnFilterDialogNodeParameters extends ConfigurationNodeSettings 
     @Persist(configKey = ColumnFilterNodeConfig.CFG_TYPE)
     String m_type = ColumnFilterNodeConfig.DEFAULT_TYPE;
 
-    // Persistors
-
     private static final class ColumnFilterPersistor extends LegacyColumnFilterPersistor {
 
         protected ColumnFilterPersistor() {
@@ -246,12 +244,8 @@ public class ColumnFilterDialogNodeParameters extends ConfigurationNodeSettings 
 
     }
 
-    // References
-
     private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
     }
-
-    // State Providers
 
     static final class ColumnFilterChoicesProvider implements ColumnChoicesProvider {
 
@@ -312,17 +306,6 @@ public class ColumnFilterDialogNodeParameters extends ConfigurationNodeSettings 
         }
 
     }
-
-    private static final class IsMin2Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 2;
-        }
-
-    }
-
-    // Effects
 
     private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
         @Override

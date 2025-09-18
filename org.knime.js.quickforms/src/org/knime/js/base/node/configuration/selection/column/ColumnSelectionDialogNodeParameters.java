@@ -48,6 +48,13 @@
  */
 package org.knime.js.base.node.configuration.selection.column;
 
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_TITLE;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -58,10 +65,10 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
+import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
@@ -69,6 +76,11 @@ import org.knime.js.base.node.configuration.column.InputFilterUtil.HideColumnsWi
 import org.knime.js.base.node.configuration.column.InputFilterUtil.InputFilter;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterSection;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.IsListSelectionType;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.ShowNumberOfVisibleOptions;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -79,19 +91,15 @@ import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
-import org.knime.node.parameters.updates.EffectPredicate;
-import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
-import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * WebUI Node Parameters for the Column Selection Configuration.
@@ -126,31 +134,21 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = "Selection Type", description = """
-            The type of the selection element. This can be either radio buttons with a vertical or horizontal
-            layout, a list or a dropdown selection.
-            """)
+    @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
     @ChoicesProvider(SelectionTypeChoicesProvider.class)
     @Persist(configKey = ColumnSelectionNodeConfig.CFG_TYPE)
     @ValueReference(SelectionTypeValueReference.class)
     @Layout(FormFieldSection.class)
     String m_selectionType = ColumnSelectionNodeConfig.DEFAULT_TYPE;
 
-    @Widget(title = "Limit number of visible options", description = """
-            By default the List component adjusts its height to display all possible choices without a scroll bar.
-            If the setting is enabled, you will be able to limit the number of visible options in case you have too
-            many of them. The setting is available only for List selection type.
-            """)
+    @Widget(title = LIMIT_VIS_OPT_TITLE, description = LIMIT_VIS_OPT_DESCRIPTION)
     @Persist(configKey = ColumnSelectionNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
     @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
     @Effect(predicate = IsListSelectionType.class, type = EffectType.SHOW)
     @Layout(FormFieldSection.class)
     boolean m_limitNumberOfVisibleOptions = ColumnSelectionNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    @Widget(title = "Number of visible options", description = """
-            A number of options visible in the List component without a vertical scroll bar. Changing this value
-            will also affect the component's height. The setting is available only for List selection type.
-            """)
+    @Widget(title = NUM_VIS_OPT_TITLE, description = NUM_VIS_OPT_DESCRIPTION)
     @NumberInputWidget(minValidation = IsMin2Validation.class)
     @Persist(configKey = ColumnSelectionNodeConfig.CFG_NUMBER_VIS_OPTIONS)
     @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
@@ -164,8 +162,6 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
     @Layout(TypeFilterSection.class)
     @Persist(configKey = ColumnSelectionDialogNodeConfig.CFG_INPUT_FILTER)
     InputFilter m_inputFilter = new InputFilter();
-
-    // Persistors
 
     private static final class DefaultColumnValuePersistor implements NodeParametersPersistor<String> {
 
@@ -187,18 +183,8 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     }
 
-    // References
-
     private static final class ColumnValueValueReference implements ParameterReference<String> {
     }
-
-    private static final class SelectionTypeValueReference implements ParameterReference<String> {
-    }
-
-    private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
-    }
-
-    // State Providers
 
     static final class PossibleColumnChoicesProvider implements ColumnChoicesProvider {
 
@@ -273,37 +259,4 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     }
 
-    private static final class SelectionTypeChoicesProvider implements StringChoicesProvider {
-
-        @Override
-        public List<String> choices(final NodeParametersInput context) {
-            return Arrays.asList(SingleSelectionComponentFactory.listSingleSelectionComponents());
-        }
-    }
-
-    private static final class IsMin2Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 2;
-        }
-
-    }
-
-    // Effects
-
-    private static final class IsListSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(SingleSelectionComponentFactory.LIST);
-        }
-    }
-
-    private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListSelectionType.class)
-                .and(i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue());
-        }
-    }
 }

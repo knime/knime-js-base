@@ -48,7 +48,13 @@
  */
 package org.knime.js.base.node.configuration.selection.value;
 
-import java.util.Arrays;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_TITLE;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
+import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_TITLE;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,12 +68,17 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.base.selection.value.ColumnType;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
+import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.IsListSelectionType;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeValueReference;
+import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.ShowNumberOfVisibleOptions;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -77,8 +88,6 @@ import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
-import org.knime.node.parameters.updates.EffectPredicate;
-import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
@@ -93,7 +102,6 @@ import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.message.TextMessage.Message;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * WebUI Node Parameters for the Value Selection Configuration.
@@ -103,10 +111,10 @@ import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinVa
 public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSettings {
 
     enum AskForColumn {
-            @Label(value = "Yes", description = "Enable to select a column in the component dialog.")
+            @Label(value = "Yes", description = "Enable a column to be selected.")
             YES, //
-            @Label(value = "No, use default", description = "No column can be selected in the component dialog."
-                + " The <i>Default column</i> will be used.")
+            @Label(value = "No, use default",
+                description = "No column can be selected. The <i>Default column</i> will be used.")
             NO_USE_DEFAULT
     }
 
@@ -150,8 +158,8 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     @ValueReference(ColumnTypeParameterReference.class)
     ColumnType m_columnType = ValueSelectionNodeConfig.DEFAULT_COLUMN_TYPE;
 
-    @Widget(title = "Ask for column", description = """
-            How the selection in the component dialog should look like.
+    @Widget(title = "Enable column selection", description = """
+            Enable column selection:
             """)
     @Persistor(AskForColumnPersistor.class)
     @Layout(FormFieldSection.class)
@@ -159,31 +167,21 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     @ValueSwitchWidget
     AskForColumn m_askForColumn = AskForColumn.YES;
 
-    @Widget(title = "Selection Type", description = """
-            The type of the selection element. This can be either radio buttons with a vertical or horizontal
-            layout, a list or a dropdown selection.
-            """)
+    @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
     @ChoicesProvider(SelectionTypeChoicesProvider.class)
     @Persist(configKey = ValueSelectionNodeConfig.CFG_TYPE)
     @ValueReference(SelectionTypeValueReference.class)
     @Layout(FormFieldSection.class)
     String m_selectionType = ValueSelectionNodeConfig.DEFAULT_TYPE;
 
-    @Widget(title = "Limit number of visible options", description = """
-            By default the List component adjusts its height to display all possible choices without a scroll bar.
-            If the setting is enabled, you will be able to limit the number of visible options in case you have too
-            many of them. The setting is available only for List selection type.
-            """)
+    @Widget(title = LIMIT_VIS_OPT_TITLE, description = LIMIT_VIS_OPT_DESCRIPTION)
     @Persist(configKey = ValueSelectionNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
     @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
     @Effect(predicate = IsListSelectionType.class, type = EffectType.SHOW)
     @Layout(FormFieldSection.class)
     boolean m_limitNumberOfVisibleOptions = ValueSelectionNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    @Widget(title = "Number of visible options", description = """
-            A number of options visible in the List component without a vertical scroll bar. Changing this value
-            will also affect the component's height. The setting is available only for List selection type.
-            """)
+    @Widget(title = NUM_VIS_OPT_TITLE, description = NUM_VIS_OPT_DESCRIPTION)
     @NumberInputWidget(minValidation = IsMin2Validation.class)
     @Persist(configKey = ValueSelectionNodeConfig.CFG_NUMBER_VIS_OPTIONS)
     @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
@@ -193,8 +191,6 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     @Persistor(PossibleValuesPersistor.class)
     @ValueProvider(PossibleColumnValuesMapChoicesProvider.class)
     Map<String, List<String>> m_possibleValues = new TreeMap<>();
-
-    // Persistors
 
     private static final class PossibleValuesPersistor implements NodeParametersPersistor<Map<String, List<String>>> {
 
@@ -220,8 +216,6 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
         }
     }
 
-    // References
-
     private static final class DefaultColumnValueReference implements ParameterReference<String> {
     }
 
@@ -231,16 +225,8 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     private static final class DefaultValueValueReference implements ParameterReference<String> {
     }
 
-    private static final class SelectionTypeValueReference implements ParameterReference<String> {
-    }
-
-    private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
-    }
-
     private static final class ColumnTypeParameterReference implements ParameterReference<ColumnType> {
     }
-
-    // State Providers
 
     private static final class PossibleColumnChoicesProvider implements ColumnChoicesProvider {
 
@@ -345,7 +331,7 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
             if (defaultValue != null && possibleValueChoicesIds.contains(defaultValue)) {
                 return defaultValue;
             }
-            return possibleValuesChoices.get(0).id();
+            return possibleValueChoicesIds.get(0);
         }
     }
 
@@ -414,38 +400,5 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
             return Optional.empty();
         }
 
-    }
-
-    private static final class SelectionTypeChoicesProvider implements StringChoicesProvider {
-
-        @Override
-        public List<String> choices(final NodeParametersInput parametersInput) {
-            return Arrays.asList(SingleSelectionComponentFactory.listSingleSelectionComponents());
-        }
-    }
-
-    private static final class IsMin2Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 2;
-        }
-    }
-
-    // Effects
-
-    private static final class IsListSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(SingleSelectionComponentFactory.LIST);
-        }
-    }
-
-    private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListSelectionType.class)
-                .and(i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue());
-        }
     }
 }

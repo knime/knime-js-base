@@ -30,8 +30,8 @@
               "const" : "NO_USE_DEFAULT",
               "title" : "No, use default"
             } ],
-            "title" : "Ask for column",
-            "description" : "How the selection in the component dialog should look like.\n\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
+            "title" : "Enable column selection",
+            "description" : "Enable column selection:\n\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
             "default" : "YES"
           },
           "columnType" : {
@@ -103,7 +103,7 @@
             "type" : "integer",
             "format" : "int32",
             "title" : "Number of visible options",
-            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value\nwill also affect the component's height. The setting is available only for List selection type.\n",
+            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will\nalso affect the component's height. The setting is available only for List selection type.\n",
             "default" : 5
           },
           "overwrittenByValueMessage" : {
@@ -125,8 +125,8 @@
           },
           "selectionType" : {
             "type" : "string",
-            "title" : "Selection Type",
-            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal\nlayout, a list or a dropdown selection.\n",
+            "title" : "Selection type",
+            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout,\na list or a dropdown selection.\n",
             "default" : "Dropdown"
           }
         }

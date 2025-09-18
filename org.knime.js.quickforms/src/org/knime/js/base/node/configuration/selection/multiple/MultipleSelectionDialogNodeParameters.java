@@ -61,6 +61,7 @@ import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFa
 import org.knime.js.base.node.base.selection.singleMultiple.MultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
+import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.node.parameters.NodeParameters;
@@ -83,7 +84,6 @@ import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 import org.knime.node.parameters.widget.text.TextAreaWidget;
 
 /**
@@ -159,8 +159,6 @@ public class MultipleSelectionDialogNodeParameters extends ConfigurationNodeSett
     @Layout(FormFieldSection.class)
     String m_possibleChoices;
 
-    // Persistors
-
     private static final class DefaultVariableValuePersistor implements NodeParametersPersistor<String[]> {
 
         @Override
@@ -202,8 +200,6 @@ public class MultipleSelectionDialogNodeParameters extends ConfigurationNodeSett
 
     }
 
-    // References
-
     private static final class VariableValueValueReference implements ParameterReference<String[]> {
     }
 
@@ -215,8 +211,6 @@ public class MultipleSelectionDialogNodeParameters extends ConfigurationNodeSett
 
     private static final class PossibleChoicesReference implements ParameterReference<String> {
     }
-
-    // State Providers
 
     private static final class VariableValueChoicesProvider implements StringChoicesProvider {
 
@@ -287,17 +281,6 @@ public class MultipleSelectionDialogNodeParameters extends ConfigurationNodeSett
             return Arrays.asList(MultipleSelectionsComponentFactory.listMultipleSelectionsComponents());
         }
     }
-
-    private static final class IsMin2Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 2;
-        }
-
-    }
-
-    // Effect
 
     private static final class IsListOrTwinlistSelectionType implements EffectPredicateProvider {
         @Override

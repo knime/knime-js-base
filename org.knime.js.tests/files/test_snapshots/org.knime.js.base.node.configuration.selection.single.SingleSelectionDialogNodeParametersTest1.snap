@@ -66,7 +66,7 @@
             "type" : "integer",
             "format" : "int32",
             "title" : "Number of visible options",
-            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value\nwill also affect the component's height. The setting is available only for List selection type.\n",
+            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will\nalso affect the component's height. The setting is available only for List selection type.\n",
             "default" : 5
           },
           "overwrittenByValueMessage" : {
@@ -89,8 +89,8 @@
           },
           "selectionType" : {
             "type" : "string",
-            "title" : "Selection Type",
-            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal\nlayout, a list or a dropdown selection.\n",
+            "title" : "Selection type",
+            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout,\na list or a dropdown selection.\n",
             "default" : "Dropdown"
           }
         }
