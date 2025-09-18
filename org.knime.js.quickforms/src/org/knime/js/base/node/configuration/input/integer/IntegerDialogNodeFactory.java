@@ -50,9 +50,6 @@ package org.knime.js.base.node.configuration.input.integer;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -84,15 +81,9 @@ public class IntegerDialogNodeFactory extends ConfigurationNodeFactory<IntegerDi
         super(CONFIG, IntegerDialogNodeSettings.class);
     }
 
-
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new IntegerDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, IntegerDialogNodeSettings.class);
     }
 
     @Override

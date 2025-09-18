@@ -50,9 +50,6 @@ package org.knime.js.base.node.configuration.input.string;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -88,11 +85,6 @@ public class StringDialogNodeFactory extends ConfigurationNodeFactory<StringDial
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new StringDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, StringDialogNodeSettings.class);
     }
 
     @Override

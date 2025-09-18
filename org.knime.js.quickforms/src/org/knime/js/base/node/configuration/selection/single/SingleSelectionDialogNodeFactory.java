@@ -49,11 +49,7 @@
 package org.knime.js.base.node.configuration.selection.single;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.dialog.NodeDialog;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -87,50 +83,14 @@ public class SingleSelectionDialogNodeFactory extends ConfigurationNodeFactory<S
         super(CONFIG, SingleSelectionDialogNodeParameters.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SingleSelectionDialogNodeModel createNodeModel() {
         return new SingleSelectionDialogNodeModel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SingleSelectionDialogNodeModel> createNodeView(final int viewIndex,
-        final SingleSelectionDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new SingleSelectionDialogNodeNodeDialog();
-    }
-
-    @Override
-    public NodeDialog createNodeDialog() {
-        return new DefaultNodeDialog(SettingsType.MODEL, SingleSelectionDialogNodeParameters.class);
     }
 
 }

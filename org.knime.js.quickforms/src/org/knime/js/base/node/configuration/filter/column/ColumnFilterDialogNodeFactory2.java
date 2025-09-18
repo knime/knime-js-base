@@ -49,7 +49,6 @@
 package org.knime.js.base.node.configuration.filter.column;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeView;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 import org.knime.js.base.node.configuration.filter.column.ColumnFilterDialogNodeModel.Version;
@@ -81,42 +80,11 @@ public class ColumnFilterDialogNodeFactory2 extends ConfigurationNodeFactory<Col
         super(CONFIG, ColumnFilterDialogNodeParameters.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ColumnFilterDialogNodeModel createNodeModel() {
         return new ColumnFilterDialogNodeModel(Version.V_4_1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ColumnFilterDialogNodeModel> createNodeView(final int viewIndex,
-        final ColumnFilterDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ColumnFilterDialogNodeNodeDialog(Version.V_4_1);
