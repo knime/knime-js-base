@@ -130,15 +130,8 @@ final class DateDialogNodeParametersValidationUtil {
 
         @Override
         public void save(final TimeSelectionMinMax param, final NodeSettingsWO settings) {
-            boolean useMinOrMax = false;
-            boolean useExecutionTime = false;
-            if (param == TimeSelectionMinMax.CUSTOM) {
-                useMinOrMax = true;
-            } else if (param == TimeSelectionMinMax.EXECUTION_TIME) {
-                useExecutionTime = true;
-            }
-            settings.addBoolean(m_cfgKeyUseMinOrMax, useMinOrMax);
-            settings.addBoolean(m_cfgKeyUseExecutionTime, useExecutionTime);
+            settings.addBoolean(m_cfgKeyUseMinOrMax, param != TimeSelectionMinMax.NONE);
+            settings.addBoolean(m_cfgKeyUseExecutionTime, param == TimeSelectionMinMax.EXECUTION_TIME);
         }
 
         @Override
