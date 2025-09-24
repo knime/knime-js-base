@@ -79,8 +79,9 @@ import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
-import org.knime.node.parameters.widget.choices.StringChoice;
-import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.choices.TypedStringChoice;
+import org.knime.node.parameters.widget.choices.TypedStringChoice.PossibleTypeValue;
+import org.knime.node.parameters.widget.choices.TypedStringChoicesProvider;
 import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 
 /**
@@ -91,14 +92,14 @@ import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 @SuppressWarnings("javadoc")
 public class InputFilterUtil {
 
-    private static final List<StringChoice> POSSIBLE_TYPE_CHOICES =
+    private static final List<TypedStringChoice> POSSIBLE_TYPE_CHOICES =
         TypeFilterDialog.getDefaultTypes().stream().map(valueClass -> {
             final String id = valueClass.getName();
             final UtilityFactory utilityFor = DataType.getUtilityFor(valueClass);
             if (utilityFor instanceof ExtensibleUtilityFactory) {
                 final ExtensibleUtilityFactory eu = (ExtensibleUtilityFactory)utilityFor;
                 final String text = eu.getName();
-                return new StringChoice(id, text);
+                return new TypedStringChoice(id, text, new PossibleTypeValue(id, text));
             }
             throw new IllegalStateException("All value classes need to implement the ExtensibleUtilityFactory.");
         }).toList();
@@ -134,10 +135,10 @@ public class InputFilterUtil {
             }
         }
 
-        static final class TypeFilterChoicesProvider implements StringChoicesProvider {
+        static final class TypeFilterChoicesProvider implements TypedStringChoicesProvider {
 
             @Override
-            public List<StringChoice> computeState(final NodeParametersInput parametersInput) {
+            public List<TypedStringChoice> computeState(final NodeParametersInput parametersInput) {
                 return POSSIBLE_TYPE_CHOICES;
             }
 

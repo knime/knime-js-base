@@ -354,22 +354,46 @@
       "indices" : [ ],
       "value" : [ {
         "id" : "org.knime.core.data.BooleanValue",
-        "text" : "Boolean"
+        "text" : "Boolean",
+        "type" : {
+          "id" : "org.knime.core.data.BooleanValue",
+          "text" : "Boolean"
+        }
       }, {
         "id" : "org.knime.core.data.IntValue",
-        "text" : "Number (Integer)"
+        "text" : "Number (Integer)",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
       }, {
         "id" : "org.knime.core.data.DoubleValue",
-        "text" : "Number (Float)"
+        "text" : "Number (Float)",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
       }, {
         "id" : "org.knime.core.data.LongValue",
-        "text" : "Number (Long Integer)"
+        "text" : "Number (Long Integer)",
+        "type" : {
+          "id" : "org.knime.core.data.LongValue",
+          "text" : "Number (Long Integer)"
+        }
       }, {
         "id" : "org.knime.core.data.StringValue",
-        "text" : "String"
+        "text" : "String",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
       }, {
         "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
-        "text" : "Date&time (Local)"
+        "text" : "Date&time (Local)",
+        "type" : {
+          "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
+          "text" : "Date&time (Local)"
+        }
       } ]
     } ]
   }, {
