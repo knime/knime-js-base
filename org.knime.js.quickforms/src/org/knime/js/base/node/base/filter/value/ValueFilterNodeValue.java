@@ -74,7 +74,7 @@ public class ValueFilterNodeValue extends JSONViewContent {
     /**
      * Config setting for the column
      */
-    protected static final String CFG_COLUMN = "column";
+    public static final String CFG_COLUMN = "column";
 
     /**
      * Default column value

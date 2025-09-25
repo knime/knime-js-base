@@ -64,6 +64,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterUtil;
 
 /**
  * Base config file for the value filter configuration and widget nodes
@@ -72,11 +73,11 @@ import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFa
  */
 public class ValueFilterNodeConfig {
 
-    private static final String CFG_LOCK_COLUMN = "lockColumn";
+    public static final String CFG_LOCK_COLUMN = "lockColumn";
     private static final boolean DEFAULT_LOCK_COLUMN = false;
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
-    private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
+    public static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
 
     /**
      * Maps the names of the columns with <b>discrete</b> domains to the string representations of the values in their
@@ -89,18 +90,18 @@ public class ValueFilterNodeConfig {
      */
     private Map<String, List<String>> m_possibleValues = new TreeMap<>();
 
-    private static final String CFG_TYPE = "type";
-    private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
+    public static final String CFG_TYPE = "type";
+    public static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
     private String m_type = DEFAULT_TYPE;
 
-    private static final String CFG_COL = "colValues";
+    public static final String CFG_COL = "colValues";
 
-    private static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    private static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
@@ -218,15 +219,8 @@ public class ValueFilterNodeConfig {
      */
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_lockColumn = settings.getBoolean(CFG_LOCK_COLUMN, DEFAULT_LOCK_COLUMN);
-        m_possibleValues = new TreeMap<String, List<String>>();
-        String[] columns = settings.getStringArray(CFG_POSSIBLE_COLUMNS, new String[0]);
-        NodeSettingsRO colSettings = settings;
-        try {
-            colSettings = settings.getNodeSettings(CFG_COL);
-        } catch (InvalidSettingsException e) { /* do nothing */ }
-        for (String column : columns) {
-            m_possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
-        }
+        m_possibleValues =
+            ValueSelectionFilterUtil.loadPossibleColumnsAndValuesInDialog(settings, CFG_POSSIBLE_COLUMNS, CFG_COL);
         m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
         m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
         m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
@@ -238,9 +232,19 @@ public class ValueFilterNodeConfig {
      * @param spec the spec to set
      */
     public void setFromSpec(final DataTableSpec spec) {
-        // Only add column specs for columns that have non-null domains
+        m_possibleValues = getPossibleValues(spec);
+    }
+
+    /**
+     * Determines the possible values with the current settings from a given table spec
+     *
+     * @param dataTableSpec the spec to determine the possible values from
+     * @return a map of columns and their corresponding domain values
+     */
+    public static Map<String, List<String>> getPossibleValues(final DataTableSpec dataTableSpec) {
+     // Only add column specs for columns that have non-null domains
         List<DataColumnSpec> specs = new ArrayList<DataColumnSpec>();
-        for (DataColumnSpec cspec : spec) {
+        for (DataColumnSpec cspec : dataTableSpec) {
             if (cspec.getDomain().hasValues()) {
                 specs.add(cspec);
             }
@@ -257,7 +261,7 @@ public class ValueFilterNodeConfig {
                 values.put(colSpec.getName(), v);
             }
         }
-        m_possibleValues = values;
+        return values;
     }
 
     /**

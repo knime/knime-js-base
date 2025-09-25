@@ -54,18 +54,14 @@ import static org.knime.js.base.node.configuration.selection.SelectionNodeParame
 import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_TITLE;
 import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
 import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_TITLE;
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_DESCRIPTION;
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_TITLE;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.selection.value.ColumnType;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
@@ -78,14 +74,20 @@ import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUti
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeValueReference;
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.ShowNumberOfVisibleOptions;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnChoicesProvider;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnValueProvider;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultValueChoicesProvider;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractInvertBooleanPersistor;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractPossibleValuesPersistor;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.DefaultColumnValueReference;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldValueReference;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.NoColumnsAvailableMessage;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.persistence.legacy.EnumBooleanPersistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
@@ -93,14 +95,8 @@ import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
-import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
-import org.knime.node.parameters.widget.choices.Label;
 import org.knime.node.parameters.widget.choices.StringChoice;
-import org.knime.node.parameters.widget.choices.StringChoicesProvider;
-import org.knime.node.parameters.widget.choices.TypedStringChoice;
-import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
-import org.knime.node.parameters.widget.message.TextMessage.Message;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
 
 /**
@@ -109,14 +105,6 @@ import org.knime.node.parameters.widget.number.NumberInputWidget;
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSettings {
-
-    enum AskForColumn {
-            @Label(value = "Yes", description = "Enable a column to be selected.")
-            YES, //
-            @Label(value = "No, use default",
-                description = "No column can be selected. The <i>Default column</i> will be used.")
-            NO_USE_DEFAULT
-    }
 
     /**
      * Default constructor
@@ -137,7 +125,7 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
         @Widget(title = "Default column", description = "The column containing the values.")
         @Layout(OutputSection.Top.class)
         @Persist(configKey = ValueSelectionNodeValue.CFG_COLUMN)
-        @ChoicesProvider(PossibleColumnChoicesProvider.class)
+        @ChoicesProvider(DefaultColumnChoicesProvider.class)
         @ValueProvider(DefaultColumnValueProvider.class)
         @ValueReference(DefaultColumnValueReference.class)
         String m_defaultColumn;
@@ -145,7 +133,7 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
         @Widget(title = "Default value", description = "The value that is selected by default.")
         @Layout(OutputSection.Top.class)
         @Persist(configKey = ValueSelectionNodeValue.CFG_VALUE)
-        @ChoicesProvider(PossibleValuesChoicesProvider.class)
+        @ChoicesProvider(DefaultValueChoicesProvider.class)
         @ValueProvider(DefaultValueValueProvider.class)
         @ValueReference(DefaultValueValueReference.class)
         String m_defaultValue;
@@ -157,15 +145,6 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     @Layout(FormFieldSection.class)
     @ValueReference(ColumnTypeParameterReference.class)
     ColumnType m_columnType = ValueSelectionNodeConfig.DEFAULT_COLUMN_TYPE;
-
-    @Widget(title = "Enable column selection", description = """
-            Enable column selection:
-            """)
-    @Persistor(AskForColumnPersistor.class)
-    @Layout(FormFieldSection.class)
-    @ValueReference(AskForColumnValueReference.class)
-    @ValueSwitchWidget
-    AskForColumn m_askForColumn = AskForColumn.YES;
 
     @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
     @ChoicesProvider(SelectionTypeChoicesProvider.class)
@@ -188,150 +167,19 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
     @Layout(FormFieldSection.class)
     int m_numberOfVisibleOptions = ValueSelectionNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
 
+    @Widget(title = ENABLE_COLUMN_FIELD_TITLE, description = ENABLE_COLUMN_FIELD_DESCRIPTION)
+    @Persistor(EnableColumnFieldPersistor.class)
+    @Layout(FormFieldSection.class)
+    @ValueReference(EnableColumnFieldValueReference.class)
+    boolean m_enableColumnField = true;
+
     @Persistor(PossibleValuesPersistor.class)
     @ValueProvider(PossibleColumnValuesMapChoicesProvider.class)
     Map<String, List<String>> m_possibleValues = new TreeMap<>();
 
-    private static final class PossibleValuesPersistor implements NodeParametersPersistor<Map<String, List<String>>> {
-
-        @Override
-        public Map<String, List<String>> load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return ValueSelectionNodeConfig.loadPossibleColumnsAndValuesInDialog(settings);
-        }
-
-        @Override
-        public void save(final Map<String, List<String>> param, final NodeSettingsWO settings) {
-            ValueSelectionNodeConfig.savePossibleColumnsAndValues(settings, param);
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[0][];
-        }
-    }
-
-    static final class AskForColumnPersistor extends EnumBooleanPersistor<AskForColumn> {
-        public AskForColumnPersistor() {
-            super(ValueSelectionNodeConfig.CFG_LOCK_COLUMN, AskForColumn.class, AskForColumn.NO_USE_DEFAULT);
-        }
-    }
-
-    private static final class DefaultColumnValueReference implements ParameterReference<String> {
-    }
-
-    private static final class AskForColumnValueReference implements ParameterReference<AskForColumn> {
-    }
-
-    private static final class DefaultValueValueReference implements ParameterReference<String> {
-    }
-
-    private static final class ColumnTypeParameterReference implements ParameterReference<ColumnType> {
-    }
-
-    private static final class PossibleColumnChoicesProvider implements ColumnChoicesProvider {
-
-        private Supplier<Map<String, List<String>>> m_possibleColumnValuesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            ColumnChoicesProvider.super.init(initializer);
-            m_possibleColumnValuesSupplier =
-                initializer.computeFromProvidedState(PossibleColumnValuesMapChoicesProvider.class);
-        }
-
-        @Override
-        public List<DataColumnSpec> columnChoices(final NodeParametersInput parametersInput) {
-            final var possibleColumnValues = m_possibleColumnValuesSupplier.get();
-            final var tableSpec = parametersInput.getInTableSpec(0);
-            if (possibleColumnValues.isEmpty() || tableSpec.isEmpty()) {
-                return List.of();
-            }
-            return tableSpec.get().stream().filter(colSpec -> possibleColumnValues.containsKey(colSpec.getName()))
-                .toList();
-        }
-    }
-
-    private static final class PossibleValuesChoicesProvider implements StringChoicesProvider {
-
-        private Supplier<String> m_defaultColumnSupplier;
-
-        private Supplier<Map<String, List<String>>> m_possibleColumnValuesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            StringChoicesProvider.super.init(initializer);
-            m_defaultColumnSupplier = initializer.computeFromValueSupplier(DefaultColumnValueReference.class);
-            m_possibleColumnValuesSupplier =
-                initializer.computeFromProvidedState(PossibleColumnValuesMapChoicesProvider.class);
-        }
-
-        @Override
-        public List<String> choices(final NodeParametersInput parametersInput) {
-            final var defaultColumn = m_defaultColumnSupplier.get();
-            final var possibleColumnValues = m_possibleColumnValuesSupplier.get();
-            if (defaultColumn == null || possibleColumnValues.isEmpty()
-                || !possibleColumnValues.containsKey(defaultColumn)) {
-                return List.of();
-            }
-            return possibleColumnValues.get(defaultColumn);
-        }
-    }
-
-    private static final class DefaultColumnValueProvider implements StateProvider<String> {
-
-        private Supplier<String> m_defaultColumnSupplier;
-
-        private Supplier<List<TypedStringChoice>> m_possibleColumnChoicesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_defaultColumnSupplier = initializer.getValueSupplier(DefaultColumnValueReference.class);
-            m_possibleColumnChoicesSupplier = initializer.computeFromProvidedState(PossibleColumnChoicesProvider.class);
-        }
-
-        @Override
-        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var possibleColumnChoices = m_possibleColumnChoicesSupplier.get();
-            if (possibleColumnChoices.isEmpty()) {
-                return null;
-            }
-            final var defaultColumn = m_defaultColumnSupplier.get();
-            final var possibleColumnChoicesIds = possibleColumnChoices.stream().map(TypedStringChoice::id).toList();
-
-            if (defaultColumn != null && possibleColumnChoicesIds.contains(defaultColumn)) {
-                return defaultColumn;
-            }
-            return possibleColumnChoicesIds.get(0);
-        }
-    }
-
-    private static final class DefaultValueValueProvider implements StateProvider<String> {
-
-        private Supplier<String> m_defaultValueSupplier;
-
-        private Supplier<List<StringChoice>> m_possibleValuesChoicesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_defaultValueSupplier = initializer.getValueSupplier(DefaultValueValueReference.class);
-            m_possibleValuesChoicesSupplier = initializer.computeFromProvidedState(PossibleValuesChoicesProvider.class);
-        }
-
-        @Override
-        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var possibleValuesChoices = m_possibleValuesChoicesSupplier.get();
-            if (possibleValuesChoices.isEmpty()) {
-                return null;
-            }
-            final var defaultValue = m_defaultValueSupplier.get();
-            final var possibleValueChoicesIds = possibleValuesChoices.stream().map(StringChoice::id).toList();
-
-            if (defaultValue != null && possibleValueChoicesIds.contains(defaultValue)) {
-                return defaultValue;
-            }
-            return possibleValueChoicesIds.get(0);
+    static final class PossibleValuesPersistor extends AbstractPossibleValuesPersistor {
+        PossibleValuesPersistor() {
+            super(ValueSelectionNodeConfig.CFG_POSSIBLE_COLUMNS, ValueSelectionNodeConfig.CFG_COL);
         }
     }
 
@@ -355,50 +203,83 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
         }
     }
 
+    private static final class DefaultColumnChoicesProvider extends AbstractDefaultColumnChoicesProvider {
+        DefaultColumnChoicesProvider() {
+            super(PossibleColumnValuesMapChoicesProvider.class);
+        }
+    }
+
+    private static final class DefaultColumnValueProvider extends AbstractDefaultColumnValueProvider {
+        DefaultColumnValueProvider() {
+            super(DefaultColumnChoicesProvider.class);
+        }
+    }
+
+    static final class EnableColumnFieldPersistor extends AbstractInvertBooleanPersistor {
+        public EnableColumnFieldPersistor() {
+            super(ValueSelectionNodeConfig.CFG_LOCK_COLUMN);
+        }
+    }
+
+    private static final class DefaultValueValueReference implements ParameterReference<String> {
+    }
+
+    private static final class ColumnTypeParameterReference implements ParameterReference<ColumnType> {
+    }
+
+    private static final class DefaultValueChoicesProvider extends AbstractDefaultValueChoicesProvider {
+
+        public DefaultValueChoicesProvider() {
+            super(PossibleColumnValuesMapChoicesProvider.class);
+        }
+    }
+
+    private static final class DefaultValueValueProvider implements StateProvider<String> {
+
+        private Supplier<String> m_defaultValueSupplier;
+
+        private Supplier<List<StringChoice>> m_possibleValuesChoicesSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeAfterOpenDialog();
+            m_defaultValueSupplier = initializer.getValueSupplier(DefaultValueValueReference.class);
+            m_possibleValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValueChoicesProvider.class);
+        }
+
+        @Override
+        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
+            final var possibleValuesChoices = m_possibleValuesChoicesSupplier.get();
+            if (possibleValuesChoices.isEmpty()) {
+                return null;
+            }
+            final var defaultValue = m_defaultValueSupplier.get();
+            final var possibleValueChoicesIds = possibleValuesChoices.stream().map(StringChoice::id).toList();
+
+            if (defaultValue != null && possibleValueChoicesIds.contains(defaultValue)) {
+                return defaultValue;
+            }
+            return possibleValuesChoices.get(0).id();
+        }
+    }
+
     static final class ValueSelectionOverwrittenByValueMessage
         extends OverwrittenByValueMessage<ValueSelectionDialogNodeValue> {
 
-        private Supplier<AskForColumn> m_askForColumnSupplier;
+        private Supplier<Boolean> m_enableColumnFieldSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
             super.init(initializer);
-            m_askForColumnSupplier = initializer.computeFromValueSupplier(AskForColumnValueReference.class);
+            m_enableColumnFieldSupplier = initializer.computeFromValueSupplier(EnableColumnFieldValueReference.class);
         }
 
         @Override
         protected String valueToString(final ValueSelectionDialogNodeValue value) {
-            return m_askForColumnSupplier.get() == AskForColumn.NO_USE_DEFAULT ? value.getValue()
-                : String.format("Column: %s; Value: %s", value.getColumn(), value.getValue());
+            return m_enableColumnFieldSupplier.get() != null && m_enableColumnFieldSupplier.get()
+                ? String.format("Column: %s; Value: %s", value.getColumn(), value.getValue()) : value.getValue();
         }
 
     }
 
-    static final class NoColumnsAvailableMessage implements StateProvider<Optional<TextMessage.Message>> {
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
-
-        @Override
-        public Optional<Message> computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            final var tableSpec = parametersInput.getInTableSpec(0);
-            if (tableSpec.isEmpty()) {
-                return Optional.of(new TextMessage.Message("No column information available.",
-                    "Connect a node to the input port.", TextMessage.MessageType.INFO));
-            }
-            if (tableSpec.get().stream().noneMatch(Objects::nonNull)) {
-                return Optional.of(new TextMessage.Message("No column information available.",
-                    "Execute upstream nodes first.", TextMessage.MessageType.INFO));
-            }
-            if (tableSpec.get().stream().noneMatch(colSpec -> colSpec.getDomain().hasValues())) {
-                return Optional.of(new Message("No domain information available.",
-                    "Add nominal domain information to any column.", TextMessage.MessageType.WARNING));
-            }
-            return Optional.empty();
-        }
-
-    }
 }

@@ -49,51 +49,41 @@
 package org.knime.js.base.node.configuration.filter.value;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the value filter configuration node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterDialogNodeFactory extends NodeFactory<ValueFilterDialogNodeModel> {
+@SuppressWarnings({"deprecation", "restriction", "javadoc"})
+public class ValueFilterDialogNodeFactory extends ConfigurationNodeFactory<ValueFilterDialogNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder() //
+        .name("Nominal Row Filter Configuration") //
+        .icon("configuration_value_filter.png") //
+        .shortDescription("Provides a value filter configuration option to encapsulate in a component's dialog."
+            + " Takes a data table and returns a filtered data table with only the selected values of a chosen column.")
+        .fullDescription("""
+                Provides a value filter configuration option to encapsulate in a component's dialog.
+                Takes a data table and returns a filtered data table with only the selected values of a chosen column.
+                """) //
+        .modelSettingsClass(ValueFilterDialogNodeParameters.class) //
+        .addInputTable("Table Input", "Table containing the column(s) with values to be filtered.") //
+        .addOutputTable("Filtered Table", "Filtered table containing only rows with the selected values.") //
+        .nodeType(NodeType.Configuration) //
+        .build();
+
+    public ValueFilterDialogNodeFactory() {
+        super(CONFIG, ValueFilterDialogNodeParameters.class);
+    }
+
     @Override
     public ValueFilterDialogNodeModel createNodeModel() {
         return new ValueFilterDialogNodeModel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueFilterDialogNodeModel> createNodeView(final int viewIndex, final ValueFilterDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ValueFilterDialogNodeNodeDialog();
