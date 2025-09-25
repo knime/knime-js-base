@@ -11,10 +11,10 @@
         <entry key="value" type="xstring" value="0.32109816645682043"/>
     </config>
     <entry key="columnType" type="xstring" value="All"/>
-    <entry key="lockColumn" type="xboolean" value="false"/>
     <entry key="type" type="xstring" value="List"/>
     <entry key="limit_number_visible_options" type="xboolean" value="true"/>
     <entry key="number_visible_options" type="xint" value="3"/>
+    <entry key="lockColumn" type="xboolean" value="false"/>
     <config key="possibleColumns">
         <entry key="array-size" type="xint" value="5"/>
         <entry key="0" type="xstring" value="Cluster Membership"/>

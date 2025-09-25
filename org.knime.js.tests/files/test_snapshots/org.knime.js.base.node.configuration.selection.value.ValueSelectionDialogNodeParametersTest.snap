@@ -9,10 +9,10 @@
       "required" : true,
       "defaultValue" : { },
       "columnType" : "All",
-      "askForColumn" : "YES",
       "selectionType" : "Dropdown",
       "limitNumberOfVisibleOptions" : false,
       "numberOfVisibleOptions" : 5,
+      "enableColumnField" : true,
       "possibleValues" : { }
     }
   },
@@ -22,18 +22,6 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "askForColumn" : {
-            "oneOf" : [ {
-              "const" : "YES",
-              "title" : "Yes"
-            }, {
-              "const" : "NO_USE_DEFAULT",
-              "title" : "No, use default"
-            } ],
-            "title" : "Enable column selection",
-            "description" : "Enable column selection:\n\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
-            "default" : "YES"
-          },
           "columnType" : {
             "oneOf" : [ {
               "const" : "All",
@@ -74,6 +62,12 @@
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
+          },
+          "enableColumnField" : {
+            "type" : "boolean",
+            "title" : "Enable column field",
+            "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
+            "default" : true
           },
           "flowVariableName" : {
             "type" : "string",
@@ -145,12 +139,6 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/askForColumn",
-        "options" : {
-          "format" : "valueSwitch"
-        }
-      }, {
-        "type" : "Control",
         "scope" : "#/properties/model/properties/selectionType",
         "options" : {
           "format" : "dropDown"
@@ -208,6 +196,12 @@
               }
             } ]
           }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/enableColumnField",
+        "options" : {
+          "format" : "checkbox"
         }
       } ]
     }, {
@@ -295,9 +289,6 @@
           "columnType" : {
             "configKey" : "columnType"
           },
-          "askForColumn" : {
-            "configPaths" : [ [ "lockColumn" ] ]
-          },
           "selectionType" : {
             "configKey" : "type"
           },
@@ -306,6 +297,9 @@
           },
           "numberOfVisibleOptions" : {
             "configKey" : "number_visible_options"
+          },
+          "enableColumnField" : {
+            "configPaths" : [ [ "lockColumn" ] ]
           },
           "possibleValues" : {
             "configPaths" : [ ]
@@ -318,7 +312,7 @@
     "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
     "values" : [ {
       "indices" : [ ],
-      "value" : null
+      "value" : ""
     } ]
   }, {
     "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
@@ -382,17 +376,17 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/askForColumn", "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/askForColumn"
-    },
-    "dependencies" : [ "#/properties/model/properties/askForColumn" ]
+    "dependencies" : [ "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn"
     },
     "dependencies" : [ "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/enableColumnField"
+    },
+    "dependencies" : [ "#/properties/model/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"

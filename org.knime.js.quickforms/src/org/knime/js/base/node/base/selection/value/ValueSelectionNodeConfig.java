@@ -67,6 +67,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
+import org.knime.js.base.node.configuration.value.ValueSelectionFilterUtil;
 
 /**
  * Base config file for the value selection configuration and widget nodes
@@ -76,28 +77,39 @@ import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory
 public class ValueSelectionNodeConfig {
 
     public static final String CFG_COLUMN_TYPE = "columnType";
+
     public static final ColumnType DEFAULT_COLUMN_TYPE = ColumnType.All;
+
     private ColumnType m_columnType = DEFAULT_COLUMN_TYPE;
 
     public static final String CFG_LOCK_COLUMN = "lockColumn";
+
     private static final boolean DEFAULT_LOCK_COLUMN = false;
+
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
-    private static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
+    public static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
+
     private Map<String, List<String>> m_possibleValues = new TreeMap<String, List<String>>();
 
     public static final String CFG_TYPE = "type";
+
     public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
+
     private String m_type = DEFAULT_TYPE;
 
-    private static final String CFG_COL = "colValues";
+    public static final String CFG_COL = "colValues";
 
     public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
+
     public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
+
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
     public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
+
     public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
+
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
@@ -255,27 +267,11 @@ public class ValueSelectionNodeConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addString(CFG_COLUMN_TYPE, m_columnType.name());
         settings.addBoolean(CFG_LOCK_COLUMN, m_lockColumn);
-        savePossibleColumnsAndValues(settings, m_possibleValues);
+        ValueSelectionFilterUtil.savePossibleColumnsAndValues(settings, m_possibleValues, CFG_POSSIBLE_COLUMNS,
+            CFG_COL);
         settings.addString(CFG_TYPE, m_type);
         settings.addBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
         settings.addInt(CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
-    }
-
-    /**
-     * Saves the current possible values to the given settings
-     *
-     * @param settings the settings to write the possible columns and respective values to
-     * @param possibleValues the map of possible columns and values to save
-     */
-    public static void savePossibleColumnsAndValues(final NodeSettingsWO settings,
-        final Map<String, List<String>> possibleValues) {
-        final var keySet = possibleValues.keySet();
-        settings.addStringArray(CFG_POSSIBLE_COLUMNS, keySet.toArray(new String[keySet.size()]));
-        NodeSettingsWO colSettings = settings.addNodeSettings(CFG_COL);
-        for (String key : keySet) {
-            List<String> values = possibleValues.get(key);
-            colSettings.addStringArray(key, values.toArray(new String[values.size()]));
-        }
     }
 
     /**
@@ -306,30 +302,11 @@ public class ValueSelectionNodeConfig {
     public void loadSettingsInDialog(final NodeSettingsRO settings) {
         m_columnType = ColumnType.valueOf(settings.getString(CFG_COLUMN_TYPE, DEFAULT_COLUMN_TYPE.name()));
         m_lockColumn = settings.getBoolean(CFG_LOCK_COLUMN, DEFAULT_LOCK_COLUMN);
-        m_possibleValues = loadPossibleColumnsAndValuesInDialog(settings);
+        m_possibleValues =
+            ValueSelectionFilterUtil.loadPossibleColumnsAndValuesInDialog(settings, CFG_POSSIBLE_COLUMNS, CFG_COL);
         m_type = settings.getString(CFG_TYPE, DEFAULT_TYPE);
         m_limitNumberVisOptions = settings.getBoolean(CFG_LIMIT_NUMBER_VIS_OPTIONS, DEFAULT_LIMIT_NUMBER_VIS_OPTIONS);
         m_numberVisOptions = settings.getInt(CFG_NUMBER_VIS_OPTIONS, DEFAULT_NUMBER_VIS_OPTIONS);
-    }
-
-    /**
-     * Loads the config from saved settings for dialog display
-     *
-     * @param settings the settings to load from
-     * @return the map of possible columns and their respective values
-     */
-    public static Map<String, List<String>> loadPossibleColumnsAndValuesInDialog(final NodeSettingsRO settings) {
-        final var possibleValues = new TreeMap<String, List<String>>();
-        String[] columns = settings.getStringArray(CFG_POSSIBLE_COLUMNS, new String[0]);
-        NodeSettingsRO colSettings = settings;
-        try {
-            colSettings = settings.getNodeSettings(CFG_COL);
-        } catch (InvalidSettingsException e) {
-            /* do nothing */ }
-        for (String column : columns) {
-            possibleValues.put(column, Arrays.asList(colSettings.getStringArray(column, new String[0])));
-        }
-        return possibleValues;
     }
 
     /**
@@ -365,14 +342,8 @@ public class ValueSelectionNodeConfig {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(m_columnType)
-                .append(m_lockColumn)
-                .append(m_possibleValues)
-                .append(m_type)
-                .append(m_limitNumberVisOptions)
-                .append(m_numberVisOptions)
-                .toHashCode();
+        return new HashCodeBuilder().append(m_columnType).append(m_lockColumn).append(m_possibleValues).append(m_type)
+            .append(m_limitNumberVisOptions).append(m_numberVisOptions).toHashCode();
     }
 
     /**
@@ -390,14 +361,10 @@ public class ValueSelectionNodeConfig {
             return false;
         }
         ValueSelectionNodeConfig other = (ValueSelectionNodeConfig)obj;
-        return new EqualsBuilder()
-                .append(m_columnType, other.m_columnType)
-                .append(m_lockColumn, other.m_lockColumn)
-                .append(m_possibleValues, other.m_possibleValues)
-                .append(m_type, other.m_type)
-                .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
-                .append(m_numberVisOptions, other.m_numberVisOptions)
-                .isEquals();
+        return new EqualsBuilder().append(m_columnType, other.m_columnType).append(m_lockColumn, other.m_lockColumn)
+            .append(m_possibleValues, other.m_possibleValues).append(m_type, other.m_type)
+            .append(m_limitNumberVisOptions, other.m_limitNumberVisOptions)
+            .append(m_numberVisOptions, other.m_numberVisOptions).isEquals();
     }
 
 }
