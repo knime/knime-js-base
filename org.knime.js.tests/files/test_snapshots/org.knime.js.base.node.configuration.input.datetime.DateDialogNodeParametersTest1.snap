@@ -134,7 +134,7 @@
               "title" : "Milliseconds"
             } ],
             "title" : "Granularity",
-            "description" : "In which granularity the time should be displayed in the wizard.\n<ul>\n<li><b>Minutes</b>: Show hours and minutes.</li>\n<li><b>Seconds</b>: Show hours, minutes and seconds.</li>\n<li><b>Milliseconds</b>: Show hours, minutes, seconds and milliseconds.</li>\n</ul>",
+            "description" : "In which granularity the time field should be displayed.\n<ul>\n<li><b>Minutes</b>: Show hours and minutes.</li>\n<li><b>Seconds</b>: Show hours, minutes and seconds.</li>\n<li><b>Milliseconds</b>: Show hours, minutes, seconds and milliseconds.</li>\n</ul>",
             "default" : "SHOW_MINUTES"
           },
           "hideInDialog" : {

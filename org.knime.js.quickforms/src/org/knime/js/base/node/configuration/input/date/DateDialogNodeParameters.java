@@ -148,7 +148,7 @@ public class DateDialogNodeParameters extends ConfigurationNodeSettings {
      */
     DateTimeType m_type = DateNodeConfig.DEFAULT_TYPE;
 
-    @Widget(title = "Granularity", description = "In which granularity the time should be displayed in the wizard.")
+    @Widget(title = "Granularity", description = "In which granularity the time field should be displayed.")
     @Layout(FormFieldSection.class)
     @Persist(configKey = DateNodeConfig.CFG_GRANULARITY)
     @Effect(type = EffectType.HIDE, predicate = IsLocalDate.class)
