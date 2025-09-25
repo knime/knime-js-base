@@ -93,8 +93,8 @@
           },
           "selectionType" : {
             "type" : "string",
-            "title" : "Selection Type",
-            "description" : "The type of the selection element. This can be either checkboxes with a vertical or horizontal\nlayout, a list or a twinlist selection.\n",
+            "title" : "Selection type",
+            "description" : "Type of the selection panel. This can be either checkboxes with a vertical or horizontal\nlayout, a list, a combobox, or a twinlist selection.\n",
             "default" : "Twinlist"
           }
         }

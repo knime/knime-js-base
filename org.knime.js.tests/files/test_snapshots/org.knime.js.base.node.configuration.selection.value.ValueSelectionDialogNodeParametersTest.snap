@@ -31,7 +31,7 @@
               "title" : "No, use default"
             } ],
             "title" : "Enable column selection",
-            "description" : "Enable column selection:\n\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
+            "description" : "Enable column selection:\n<ul>\n<li><b>Yes</b>: Enable a column to be selected.</li>\n<li><b>No, use default</b>: No column can be selected. The <i>Default column</i> will be used.</li>\n</ul>",
             "default" : "YES"
           },
           "columnType" : {
@@ -318,7 +318,7 @@
     "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
     "values" : [ {
       "indices" : [ ],
-      "value" : null
+      "value" : ""
     } ]
   }, {
     "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",

@@ -91,7 +91,7 @@ public class ValueFilterDialogNodeValue extends ValueFilterNodeValue implements 
 
     public static final String CFG_ENFORCE_OPT = "enforce-option";
 
-    public static final EnforceOption DEFAULT_ENFORCE_OPT = EnforceOption.EnforceInclusion;
+    private static final EnforceOption DEFAULT_ENFORCE_OPT = EnforceOption.EnforceInclusion;
 
     private EnforceOption m_enforceOption = DEFAULT_ENFORCE_OPT;
 
