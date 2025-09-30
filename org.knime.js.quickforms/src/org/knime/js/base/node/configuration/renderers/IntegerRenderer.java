@@ -51,29 +51,46 @@ package org.knime.js.base.node.configuration.renderers;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.IntegerRendererSpec;
 import org.knime.js.base.node.configuration.input.integer.IntegerDialogNodeRepresentation;
+import org.knime.js.base.node.configuration.input.slider.IntegerSliderDialogNodeRepresentation;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
- * A non-localized number renderer for {@link IntegerDialogNodeRepresentation}s.
+ * A non-localized number renderer for {@link IntegerDialogNodeRepresentation}s and
+ * {@link IntegerSliderDialogNodeRepresentation}s.
  *
  * @author Paul Bärnreuther
  */
 public class IntegerRenderer extends AbstractRepresentationRenderer implements IntegerRendererSpec {
 
-    private final IntegerDialogNodeRepresentation m_intDialogRep;
+    private final boolean m_useMin;
+
+    private final int m_min;
+
+    private final boolean m_useMax;
+
+    private final int m_max;
 
     /**
      * Creates a new {@link IntegerRenderer}.
      *
      * @param intDialogRep the representation of the node
+     * @param useMin whether to use a min validation
+     * @param min the value of a min validation
+     * @param useMax whether to use a max validation
+     * @param max the value of a max validation
      */
-    public IntegerRenderer(final IntegerDialogNodeRepresentation intDialogRep) {
+    public IntegerRenderer(final SubNodeDescriptionProvider<?> intDialogRep, final boolean useMin, final int min,
+        final boolean useMax, final int max) {
         super(intDialogRep);
-        this.m_intDialogRep = intDialogRep;
+        m_useMin = useMin;
+        m_min = min;
+        m_useMax = useMax;
+        m_max = max;
     }
 
     @Override
@@ -99,7 +116,6 @@ public class IntegerRenderer extends AbstractRepresentationRenderer implements I
                         return getMinValidation();
                     }
 
-
                 });
             }
 
@@ -113,12 +129,12 @@ public class IntegerRenderer extends AbstractRepresentationRenderer implements I
     }
 
     private Optional<MinValidation> getMinValidation() {
-        if (m_intDialogRep.isUseMin()) {
+        if (m_useMin) {
             return Optional.of(new NumberInputWidgetValidation.MinValidation() {
 
                 @Override
                 protected double getMin() {
-                    return m_intDialogRep.getMin();
+                    return m_min;
                 }
 
             });
@@ -128,12 +144,12 @@ public class IntegerRenderer extends AbstractRepresentationRenderer implements I
     }
 
     private Optional<MaxValidation> getMaxValidation() {
-        if (m_intDialogRep.isUseMax()) {
+        if (m_useMax) {
             return Optional.of(new NumberInputWidgetValidation.MaxValidation() {
 
                 @Override
                 protected double getMax() {
-                    return m_intDialogRep.getMax();
+                    return m_max;
                 }
 
             });

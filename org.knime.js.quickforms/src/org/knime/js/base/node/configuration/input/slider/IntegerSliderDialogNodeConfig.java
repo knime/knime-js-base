@@ -65,12 +65,12 @@ import org.knime.js.base.node.configuration.LabeledFlowVariableDialogNodeConfig;
 public class IntegerSliderDialogNodeConfig extends LabeledFlowVariableDialogNodeConfig<IntegerSliderDialogNodeValue> {
 
     private final SliderNodeConfig m_sliderConfig;
-    private static final String CFG_MIN = "customMin";
-    private static final double DEFAULT_MIN = 0;
+    public static final String CFG_MIN = "customMin";
+    public static final double DEFAULT_MIN = 0;
     private double m_customMin = DEFAULT_MIN;
 
-    private static final String CFG_MAX = "customMax";
-    private static final double DEFAULT_MAX = 100;
+    public static final String CFG_MAX = "customMax";
+    public static final double DEFAULT_MAX = 100;
     private double m_customMax = DEFAULT_MAX;
 
     /**

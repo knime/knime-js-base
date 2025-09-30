@@ -62,15 +62,15 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  */
 public class SliderNodeConfig {
 
-    private static String CFG_DOMAIN_COLUMN = "domainColumn";
+    public static final String CFG_DOMAIN_COLUMN = "domainColumn";
     private SettingsModelString m_domainColumn = new SettingsModelString(CFG_DOMAIN_COLUMN, null);
 
-    private static String CFG_USE_CUSTOM_MIN = "useCustomMin";
-    private static boolean DEFAULT_USE_CUSTOM_MIN = false;
+    public static final String CFG_USE_CUSTOM_MIN = "useCustomMin";
+    public static final boolean DEFAULT_USE_CUSTOM_MIN = false;
     private boolean m_useCustomMin = DEFAULT_USE_CUSTOM_MIN;
 
-    private static String CFG_USE_CUSTOM_MAX = "useCustomMax";
-    private static boolean DEFAULT_USE_CUSTOM_MAX = false;
+    public static final String CFG_USE_CUSTOM_MAX = "useCustomMax";
+    public static final boolean DEFAULT_USE_CUSTOM_MAX = false;
     private boolean m_useCustomMax = DEFAULT_USE_CUSTOM_MAX;
 
     /**

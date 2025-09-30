@@ -72,7 +72,7 @@ public class SliderNodeValue extends JSONViewContent {
     /**
      * Config setting for the string value
      */
-    protected static final String CFG_DOUBLE = "double";
+    public static final String CFG_DOUBLE = "double";
 
     /**
      * Default slider value

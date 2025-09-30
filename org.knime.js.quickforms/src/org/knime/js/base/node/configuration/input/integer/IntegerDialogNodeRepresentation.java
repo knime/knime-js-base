@@ -100,7 +100,7 @@ public class IntegerDialogNodeRepresentation extends IntegerNodeRepresentation<I
 
     @Override
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
-        return new IntegerRenderer(this).at("integer");
+        return new IntegerRenderer(this, isUseMin(), getMin(), isUseMax(), getMax()).at("integer");
     }
 
 }

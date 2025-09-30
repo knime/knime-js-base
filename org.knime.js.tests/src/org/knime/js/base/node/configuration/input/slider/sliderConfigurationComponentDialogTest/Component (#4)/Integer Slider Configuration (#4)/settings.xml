@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack">
+        <config key="Variable_0">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="integer-slider"/>
+            <entry key="class" type="xstring" value="INTEGER"/>
+            <entry key="value" type="xint" value="4"/>
+        </config>
+    </config>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="label" type="xstring" value="With range column"/>
+        <entry key="description" type="xstring" value="Slider with range column"/>
+        <entry key="flowVariableName" type="xstring" value="integer-slider"/>
+        <entry key="parameterName" type="xstring" value="integer-slider"/>
+        <entry key="hideInDialog" type="xboolean" value="false"/>
+        <entry key="required" type="xboolean" value="true"/>
+        <config key="defaultValue">
+            <entry key="double" type="xdouble" value="4.0"/>
+        </config>
+        <entry key="domainColumn" type="xstring" value="column1"/>
+        <entry key="useCustomMin" type="xboolean" value="true"/>
+        <entry key="customMin" type="xdouble" value="4.0"/>
+        <entry key="useCustomMax" type="xboolean" value="false"/>
+        <entry key="customMax" type="xdouble" value="7.0"/>
+    </config>
+    <config key="variables"/>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <config key="nodecontainer_message">
+        <entry key="type" type="xstring" value="WARNING"/>
+        <entry key="message" type="xstring" value="Selected range column column1 has no maximum domain values set. Using previously configured ranage values."/>
+    </config>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.configuration.input.slider.IntegerSliderDialogNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Integer Slider Configuration"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.8.0.qualifier"/>
+    <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Integer Slider Configuration"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>

@@ -1,0 +1,439 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "integer-slider",
+      "parameterName" : "integer-slider",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "integer" : 2
+      },
+      "domainColumn" : {
+        "regularChoice" : "column1"
+      },
+      "useCustomMin" : false,
+      "customMin" : 0,
+      "useCustomMax" : false,
+      "customMax" : 5
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "customMax" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Maximum",
+            "description" : "The maximum value for the slider range. This value is used when 'Use custom maximum' is enabled.",
+            "default" : 100
+          },
+          "customMin" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Minimum",
+            "description" : "The minimum value for the slider range. This value is used when 'Use custom minimum' is enabled.",
+            "default" : 0
+          },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "integer" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Default Value",
+                "description" : "The initial value of the slider parameter. Must be between the minimum and maximum values.",
+                "default" : 50
+              }
+            },
+            "default" : {
+              "integer" : 50
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "domainColumn" : {
+            "type" : "object",
+            "properties" : {
+              "regularChoice" : {
+                "type" : "string"
+              },
+              "specialChoice" : {
+                "oneOf" : [ {
+                  "const" : "NONE",
+                  "title" : "None"
+                } ]
+              }
+            },
+            "title" : "Range Column",
+            "description" : "Select a column from the input table to determine the range of the slider. The minimum and maximum values from this column will be used as the default range.",
+            "default" : {
+              "specialChoice" : "NONE"
+            }
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "integer-slider"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "integer-slider"
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "useCustomMax" : {
+            "type" : "boolean",
+            "title" : "Use custom maximum",
+            "description" : "Check to specify a custom maximum value instead of using the maximum from the range column.",
+            "default" : false
+          },
+          "useCustomMin" : {
+            "type" : "boolean",
+            "title" : "Use custom minimum",
+            "description" : "Check to specify a custom minimum value instead of using the minimum from the range column.",
+            "default" : false
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      } ]
+    }, {
+      "label" : "Validation",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/domainColumn",
+        "options" : {
+          "format" : "singleSelection",
+          "specialChoices" : [ {
+            "id" : "NONE",
+            "text" : "None"
+          } ]
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/useCustomMin",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "DISABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/domainColumn",
+            "schema" : {
+              "properties" : {
+                "specialChoice" : {
+                  "oneOf" : [ {
+                    "const" : "NONE"
+                  } ]
+                }
+              },
+              "required" : [ "specialChoice" ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/customMin",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/useCustomMin",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/useCustomMax",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "DISABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/domainColumn",
+            "schema" : {
+              "properties" : {
+                "specialChoice" : {
+                  "oneOf" : [ {
+                    "const" : "NONE"
+                  } ]
+                }
+              },
+              "required" : [ "specialChoice" ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/customMax",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/useCustomMax",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "providedOptions" : [ "validation.max", "validation.min" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName"
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "integer" : {
+                "configPaths" : [ [ "double" ] ]
+              }
+            }
+          },
+          "domainColumn" : {
+            "configPaths" : [ [ "domainColumn" ] ]
+          },
+          "useCustomMin" : {
+            "configKey" : "useCustomMin"
+          },
+          "customMin" : {
+            "configPaths" : [ [ "customMin" ] ]
+          },
+          "useCustomMax" : {
+            "configKey" : "useCustomMax"
+          },
+          "customMax" : {
+            "configPaths" : [ [ "customMax" ] ]
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+    "providedOptionName" : "validation.max",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "errorMessage" : "The value must not exceed 5.",
+        "parameters" : {
+          "max" : 5.0,
+          "isExclusive" : false
+        }
+      }
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+    "providedOptionName" : "validation.min",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "errorMessage" : "The value must be at least 0.",
+        "parameters" : {
+          "min" : 0.0,
+          "isExclusive" : false
+        }
+      }
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/domainColumn",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "IntColumn1",
+        "text" : "IntColumn1",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "IntColumn2",
+        "text" : "IntColumn2",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "IntColumn3",
+        "text" : "IntColumn3",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      } ]
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ "#/properties/model/properties/domainColumn", "#/properties/model/properties/useCustomMax", "#/properties/model/properties/useCustomMin" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/customMax"
+    },
+    "dependencies" : [ "#/properties/model/properties/customMax" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/customMin"
+    },
+    "dependencies" : [ "#/properties/model/properties/customMin" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/domainColumn"
+    },
+    "dependencies" : [ "#/properties/model/properties/customMax", "#/properties/model/properties/customMin", "#/properties/model/properties/defaultValue/properties/integer", "#/properties/model/properties/domainColumn", "#/properties/model/properties/useCustomMax", "#/properties/model/properties/useCustomMin" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}

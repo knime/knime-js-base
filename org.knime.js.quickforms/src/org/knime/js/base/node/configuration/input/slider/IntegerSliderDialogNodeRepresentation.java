@@ -48,15 +48,23 @@
  */
 package org.knime.js.base.node.configuration.input.slider;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
+import org.knime.js.base.node.base.input.slider.SliderNodeValue;
+import org.knime.js.base.node.configuration.renderers.IntegerRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The representation for the slider input quick form node.
@@ -64,9 +72,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
 public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentation<IntegerSliderDialogNodeValue>
-    implements SubNodeDescriptionProvider<IntegerSliderDialogNodeValue> {
+    implements SubNodeDescriptionProvider<IntegerSliderDialogNodeValue>,
+    WebDialogNodeRepresentation<IntegerSliderDialogNodeValue> {
 
     private final double m_customMin;
+
     private final double m_customMax;
 
     @JsonCreator
@@ -75,10 +85,10 @@ public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentat
         @JsonProperty("defaultValue") final IntegerSliderDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final IntegerSliderDialogNodeValue currentValue,
         @JsonProperty("useCustomMin") final Boolean useCustomMin,
-        @JsonProperty("useCustomMax") final Boolean useCustomMax,
-        @JsonProperty("customMin") final double customMin,
+        @JsonProperty("useCustomMax") final Boolean useCustomMax, @JsonProperty("customMin") final double customMin,
         @JsonProperty("customMax") final double customMax) {
-        super(label, description, required, defaultValue, currentValue, useCustomMin, useCustomMax, customMin, customMax);
+        super(label, description, required, defaultValue, currentValue, useCustomMin, useCustomMax, customMin,
+            customMax);
         m_customMin = customMin;
         m_customMax = customMax;
     }
@@ -87,12 +97,12 @@ public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentat
      * @param currentValue
      * @param config
      */
-    public IntegerSliderDialogNodeRepresentation(final IntegerSliderDialogNodeValue currentValue, final IntegerSliderDialogNodeConfig config) {
-        super(currentValue, config.getDefaultValue(),config.getSliderConfig(), config.getLabelConfig());
+    public IntegerSliderDialogNodeRepresentation(final IntegerSliderDialogNodeValue currentValue,
+        final IntegerSliderDialogNodeConfig config) {
+        super(currentValue, config.getDefaultValue(), config.getSliderConfig(), config.getLabelConfig());
         m_customMin = config.getCustomMin();
         m_customMax = config.getCustomMax();
     }
-
 
     /**
      * {@inheritDoc}
@@ -141,11 +151,11 @@ public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentat
     @Override
     @JsonIgnore
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(m_customMin)
-                .append(m_customMax)
-                .toHashCode();
+        return new HashCodeBuilder() //
+            .appendSuper(super.hashCode()) //
+            .append(m_customMin) //
+            .append(m_customMax) //
+            .toHashCode();
     }
 
     /**
@@ -165,12 +175,42 @@ public class IntegerSliderDialogNodeRepresentation extends SliderNodeRepresentat
         }
         @SuppressWarnings("unchecked")
         IntegerSliderDialogNodeRepresentation other = (IntegerSliderDialogNodeRepresentation)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .appendSuper(super.equals(obj))
-                .append(m_customMin, other.m_customMin)
-                .append(m_customMax, other.m_customMax)
-                .isEquals();
+        return new EqualsBuilder() //
+            .appendSuper(super.equals(obj)) //
+            .appendSuper(super.equals(obj)) //
+            .append(m_customMin, other.m_customMin) //
+            .append(m_customMax, other.m_customMax) //
+            .isEquals();
     }
 
+    private int getUsedMinimum() {
+        return isUseCustomMin() != null && isUseCustomMin() ? (int)getCustomMin()
+            : (int)IntegerSliderDialogNodeConfig.DEFAULT_MIN;
+    }
+
+    private int getUsedMaximum() {
+        return isUseCustomMax() != null && isUseCustomMax() ? (int)getCustomMax()
+            : (int)IntegerSliderDialogNodeConfig.DEFAULT_MAX;
+    }
+
+    @Override
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        return new IntegerRenderer(this, true, getUsedMinimum(), true, getUsedMaximum()).at("double");
+    }
+
+    @Override
+    public JsonNode transformValueToDialogJson(final IntegerSliderDialogNodeValue dialogValue) throws IOException {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var min = getUsedMinimum();
+        final var max = getUsedMaximum();
+        var value = dialogValue.getDouble().intValue();
+        return mapper.createObjectNode().put(SliderNodeValue.CFG_DOUBLE, Math.max(min, Math.min(max, value)));
+    }
+
+    @Override
+    public void setValueFromDialogJson(final JsonNode json, final IntegerSliderDialogNodeValue value)
+        throws IOException {
+        value.fromDialogJson(json);
+    }
 
 }
