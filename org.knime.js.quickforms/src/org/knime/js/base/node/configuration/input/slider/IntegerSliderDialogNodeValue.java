@@ -50,8 +50,8 @@ package org.knime.js.base.node.configuration.input.slider;
 
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue.WebDialogContent;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -68,7 +68,7 @@ import jakarta.json.JsonValue;
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerSliderDialogNodeValue extends SliderNodeValue implements DialogNodeValue {
+public class IntegerSliderDialogNodeValue extends SliderNodeValue implements WebDialogContent {
 
     /**
      * {@inheritDoc}

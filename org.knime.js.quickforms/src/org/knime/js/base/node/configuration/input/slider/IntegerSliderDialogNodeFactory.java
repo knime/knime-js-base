@@ -49,50 +49,45 @@
 package org.knime.js.base.node.configuration.input.slider;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the slider configuration node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class IntegerSliderDialogNodeFactory extends NodeFactory<IntegerSliderDialogNodeModel> {
-    /**
-     * {@inheritDoc}
-     */
+@SuppressWarnings({"deprecation", "restriction"})
+public class IntegerSliderDialogNodeFactory extends ConfigurationNodeFactory<IntegerSliderDialogNodeModel> {
+
+    private static final WebUINodeConfiguration CONFIG =
+        WebUINodeConfiguration.builder().name("Integer Slider Configuration").icon("./configuration_slider.png")
+            .shortDescription("Provides a slider configuration option to an encapsulating component's dialog. "
+                + "Outputs a integer flow variable with the set value.")
+            .fullDescription("""
+                    <p>Outputs an integer flow variable with a set value from a component's dialog.</p>
+                    <p>
+                    This configuration node allows you to create an integer slider parameter that can be used in
+                     component dialogs. The slider can use values from a domain column in the input data to set the
+                     minimum and maximum range, or you can specify custom range values.
+                    </p>
+                    """).modelSettingsClass(IntegerSliderDialogNodeParameters.class).nodeType(NodeType.Configuration)
+            .addInputTable("Table Input with applicable domain values",
+                "Input table which contains at least one integer "
+                    + "column with domain values set, which can be used to control the minimum and maximum values of"
+                    + " the slider.")
+            .addOutputTable("Flow Variable Output", "Variable output (integer) with the given variable defined.")
+            .sinceVersion(5, 4, 0).build();
+
+    public IntegerSliderDialogNodeFactory() {
+        super(CONFIG, IntegerSliderDialogNodeParameters.class);
+    }
+
     @Override
     public IntegerSliderDialogNodeModel createNodeModel() {
         return new IntegerSliderDialogNodeModel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<IntegerSliderDialogNodeModel> createNodeView(final int viewIndex, final IntegerSliderDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new IntegerSliderDialogNodeNodeDialog();
