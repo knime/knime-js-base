@@ -50,11 +50,11 @@ package org.knime.js.base.node.configuration.input.date;
 
 import java.util.List;
 
-import org.knime.base.node.util.EnumBooleanPersistor;
 import org.knime.js.base.node.base.input.date.DateNodeConfig;
 import org.knime.js.base.node.base.input.date.DateNodeValue;
 import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.AbstractDateTimeTypeInputValueProvider;
 import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification;
+import org.knime.node.parameters.persistence.legacy.EnumBooleanPersistor;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;

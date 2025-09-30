@@ -62,7 +62,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
-import org.knime.base.node.util.EnumBooleanPersistor;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -86,6 +85,7 @@ import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.persistence.legacy.EnumBooleanPersistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
