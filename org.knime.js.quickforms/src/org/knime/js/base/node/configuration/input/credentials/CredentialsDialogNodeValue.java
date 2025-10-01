@@ -81,7 +81,7 @@ import jakarta.json.JsonValue;
 @SuppressWarnings("restriction")
 public class CredentialsDialogNodeValue extends CredentialsNodeValue implements WebDialogValue {
 
-    private static final String USE_SERVER_CREDENTIALS = "useServerLoginCredentials";
+    public static final String USE_SERVER_CREDENTIALS = "useServerLoginCredentials";
 
     private boolean m_useServerCredentials;
 

@@ -44,48 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 29, 2019 (Daniel Bogenrieder): created
+ *   1 Oct 2025 (GitHub Copilot): created
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Factory for the credentials configuration node
+ * Snapshot test for {@link CredentialsDialogNodeParameters}.
  *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author GitHub Copilot
  */
-public class CredentialsDialogNodeFactory extends ConfigurationNodeFactory<CredentialsDialogNodeModel> {
+@SuppressWarnings("restriction")
+final class CredentialsDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Credentials Configuration") //
-        .icon("./configuration_credentials.png") //
-        .shortDescription("Provides a credentials configuration option to an encapsulating component's dialog.") //
-        .fullDescription("Outputs an credentials flow variable with a set value from a component's dialog.") //
-        .modelSettingsClass(CredentialsDialogNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (credentials) with the given variable defined.") //
-        .nodeType(NodeType.Configuration) //
-        .keywords("credentials", "username", "password", "login") //
+    protected CredentialsDialogNodeParametersTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(CredentialsDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public CredentialsDialogNodeFactory() {
-        super(CONFIG, CredentialsDialogNodeParameters.class);
+    private static CredentialsDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(CredentialsDialogNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("CredentialsDialogNodeSettings.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    CredentialsDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public CredentialsDialogNodeModel createNodeModel() {
-        return new CredentialsDialogNodeModel();
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new CredentialsDialogNodeNodeDialog();
-    }
-
 }

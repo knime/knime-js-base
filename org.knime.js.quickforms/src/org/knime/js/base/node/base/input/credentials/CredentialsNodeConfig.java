@@ -62,19 +62,19 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class CredentialsNodeConfig {
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
-    private static final String CFG_PROMPT_USER = "prompt_username";
-    private static final String CFG_USE_SERVER_LOGIN = "use_server_login";
-    private static final String CFG_NO_DISPLAY = "no_display";
-    private static final String CFG_USERNAME_LABEL = "usernameLabel";
-    private static final String CFG_PASSWORD_LABEL = "passwordLabel";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String CFG_PROMPT_USER = "prompt_username";
+    public static final String CFG_USE_SERVER_LOGIN = "use_server_login";
+    public static final String CFG_NO_DISPLAY = "no_display";
+    public static final String CFG_USERNAME_LABEL = "usernameLabel";
+    public static final String CFG_PASSWORD_LABEL = "passwordLabel";
 
-    private static final String DEFAULT_ERROR_MESSAGE = "";
-    private static final boolean DEFAULT_PROMPT_USER = true;
-    private static final boolean DEFAULT_USE_SERVER_LOGIN_CREDENTIALS = false;
-    private static final boolean DEFAULT_NO_DISPLAY = false;
-    static final String DEFAULT_USERNAME_LABEL = "User";
-    static final String DEFAULT_PASSWORD_LABEL = "Password";
+    public static final String DEFAULT_ERROR_MESSAGE = "";
+    public static final boolean DEFAULT_PROMPT_USER = true;
+    public static final boolean DEFAULT_USE_SERVER_LOGIN_CREDENTIALS = false;
+    public static final boolean DEFAULT_NO_DISPLAY = false;
+    public static final String DEFAULT_USERNAME_LABEL = "User";
+    public static final String DEFAULT_PASSWORD_LABEL = "Password";
 
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
     private boolean m_promptUsername = DEFAULT_PROMPT_USER;
