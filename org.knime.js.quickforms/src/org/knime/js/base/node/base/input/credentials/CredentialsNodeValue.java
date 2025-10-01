@@ -84,11 +84,11 @@ public class CredentialsNodeValue extends JSONViewContent {
      */
     public static final String CFG_CREDENTIALS_VALUE_PARENT = "credentialsValue";
 
-    protected static final String CFG_USERNAME = "username";
+    public static final String CFG_USERNAME = "username";
 
     protected static final String CFG_PASSWORD = "password";
 
-    protected static final String CFG_SAVE_PASSWORD = "isSavePassword";
+    public static final String CFG_SAVE_PASSWORD = "isSavePassword";
 
     protected static final String CFG_PASSWORD_ENCRYPTED = "passwordEncrypted";
 
@@ -169,10 +169,10 @@ public class CredentialsNodeValue extends JSONViewContent {
     @Override
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
-        settings.addBoolean(CFG_SAVE_PASSWORD, m_isSavePassword);
-        if (m_savedPrior52) {
+        settings.addBoolean(CFG_SAVE_PASSWORD, isSavePassword());
+        if (isSavedPrior52()) {
             settings.addString(CFG_USERNAME, getUsername());
-            if (m_isSavePassword) {
+            if (isSavePassword()) {
                 settings.addPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD, getPassword());
             } else {
                 settings.addTransientString(CFG_PASSWORD, getPassword());
@@ -190,7 +190,7 @@ public class CredentialsNodeValue extends JSONViewContent {
             cValueSet.addString(CredentialsType.CFG_LOGIN, getUsername());
             cValueSet.addTransientString(CredentialsType.CFG_TRANSIENT_PASSWORD, getPassword());
             cValueSet.addTransientString(CredentialsType.CFG_TRANSIENT_SECOND_FACTOR, null); // unused
-            if (m_isSavePassword) {
+            if (isSavePassword()) {
                 cValueSet.addPassword(CFG_PASSWORD_ENCRYPTED, WEAK_ENCRYPTION_PASSWORD, getPassword());
             }
         }
