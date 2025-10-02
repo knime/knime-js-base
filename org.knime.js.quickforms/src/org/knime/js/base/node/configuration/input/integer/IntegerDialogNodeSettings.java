@@ -49,6 +49,7 @@
 package org.knime.js.base.node.configuration.input.integer;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -66,9 +67,15 @@ import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.layout.Section;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.OptionalWidget;
 import org.knime.node.parameters.widget.OptionalWidget.DefaultValueProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * WebUI Node Settings for the Integer Configuration.
@@ -110,6 +117,8 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
         @Layout(OutputSection.Top.class)
+        @NumberInputWidget(minValidationProvider = ValueMinValidation.class,
+            maxValidationProvider = ValueMaxValidation.class)
         int m_integer;
     }
 
@@ -120,20 +129,23 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
     @Widget(title = "Minimum value", description = "An optional minimum value.")
     @Layout(ValidationSection.class)
     @Persistor(MinValuePersistor.class)
+    @ValueReference(MinValueReference.class)
     Optional<Integer> m_minimumValue = Optional.empty();
 
     @Widget(title = "Maximum value", description = "An optional maximum value.")
     @Layout(ValidationSection.class)
     @Persistor(MaxValuePersistor.class)
+    @ValueReference(MaxValueReference.class)
     @OptionalWidget(defaultProvider = MaxValueDefaultProvider.class)
     Optional<Integer> m_maximumValue = Optional.empty();
 
-    static final class MaxValueDefaultProvider implements DefaultValueProvider<Integer> {
+    static final class MinValueReference implements ParameterReference<Optional<Integer>> {
+    }
 
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
+    static final class MaxValueReference implements ParameterReference<Optional<Integer>> {
+    }
+
+    static final class MaxValueDefaultProvider implements DefaultValueProvider<Integer> {
 
         @Override
         public Integer computeState(final NodeParametersInput context) throws StateComputationFailureException {
@@ -190,5 +202,57 @@ public class IntegerDialogNodeSettings extends ConfigurationNodeSettings {
             return new String[][]{{m_useKey}, {m_valueKey}};
         }
 
+    }
+
+    static final class ValueMinValidation implements StateProvider<MinValidation> {
+
+        private Supplier<Optional<Integer>> m_minSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDialog();
+            m_minSupplier = initializer.computeFromValueSupplier(MinValueReference.class);
+        }
+
+        @Override
+        public MinValidation computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            final var min = m_minSupplier.get();
+            if (min.isEmpty()) {
+                return null;
+            }
+            return new MinValidation() {
+                @Override
+                protected double getMin() {
+                    return min.get();
+                }
+            };
+        }
+    }
+
+    static final class ValueMaxValidation implements StateProvider<MaxValidation> {
+
+        private Supplier<Optional<Integer>> m_maxSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDialog();
+            m_maxSupplier = initializer.computeFromValueSupplier(MaxValueReference.class);
+        }
+
+        @Override
+        public MaxValidation computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            final var max = m_maxSupplier.get();
+            if (max.isEmpty()) {
+                return null;
+            }
+            return new MaxValidation() {
+                @Override
+                protected double getMax() {
+                    return max.get();
+                }
+            };
+        }
     }
 }

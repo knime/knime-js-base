@@ -181,7 +181,8 @@
               }
             }
           }
-        }
+        },
+        "providedOptions" : [ "validation.max", "validation.min" ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName"
@@ -238,6 +239,20 @@
     }
   },
   "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+    "providedOptionName" : "validation.max",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : null
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+    "providedOptionName" : "validation.min",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : null
+    } ]
+  }, {
     "scope" : "#/properties/model/properties/maximumValue",
     "providedOptionName" : "default",
     "values" : [ {
@@ -256,5 +271,15 @@
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/maximumValue"
+    },
+    "dependencies" : [ "#/properties/model/properties/maximumValue" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/minimumValue"
+    },
+    "dependencies" : [ "#/properties/model/properties/minimumValue" ]
   } ]
 }
