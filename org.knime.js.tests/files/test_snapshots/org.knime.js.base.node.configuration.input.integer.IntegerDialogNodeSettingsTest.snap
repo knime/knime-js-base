@@ -185,7 +185,17 @@
         "providedOptions" : [ "validation.max", "validation.min" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/flowVariableName"
+        "scope" : "#/properties/model/properties/flowVariableName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          }
+        }
       } ]
     }, {
       "label" : "Advanced Settings",
@@ -197,6 +207,14 @@
         "type" : "Control",
         "scope" : "#/properties/model/properties/parameterName",
         "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          },
           "isAdvanced" : true
         }
       }, {

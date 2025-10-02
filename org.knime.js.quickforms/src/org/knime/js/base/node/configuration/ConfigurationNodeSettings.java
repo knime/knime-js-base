@@ -69,6 +69,8 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.widget.text.TextInputWidget;
+import org.knime.node.parameters.widget.text.TextInputWidgetValidation;
 
 /**
  * This class specifies the common settings of configuration nodes.
@@ -146,6 +148,7 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
             """)
     @Layout(OutputSection.Bottom.class)
     @ValueReference(FlowVariableNameRef.class)
+    @TextInputWidget(patternValidation = IsValidFlowVariableOrParameterNameValidation.class)
     String m_flowVariableName; // see DialogNodeConfig.m_parameterName
 
     /**
@@ -158,7 +161,23 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
                     """, advanced = true)
     @Layout(AdvancedSettingsSection.class)
     @ValueProvider(FlowVariableNameStateProvider.class)
+    @TextInputWidget(patternValidation = IsValidFlowVariableOrParameterNameValidation.class)
     String m_parameterName;
+
+    static final class IsValidFlowVariableOrParameterNameValidation
+        extends TextInputWidgetValidation.PatternValidation {
+
+        @Override
+        protected String getPattern() {
+            return "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?";
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return "Value must start and end with a letter, and may contain only letters, digits, and single dashes.";
+        }
+
+    }
 
     /**
      * A left-over setting from the old nodes that appeared in data apps and in component dialog. See

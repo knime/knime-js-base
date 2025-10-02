@@ -112,15 +112,15 @@
             "max" : {
               "errorMessage" : "The value must not exceed 2147483647.",
               "parameters" : {
-                "max" : 2.147483647E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "max" : 2.147483647E9
               }
             },
             "min" : {
               "errorMessage" : "The value must be at least -2147483648.",
               "parameters" : {
-                "min" : -2.147483648E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "min" : -2.147483648E9
               }
             }
           },
@@ -135,15 +135,15 @@
             "max" : {
               "errorMessage" : "The value must not exceed 2147483647.",
               "parameters" : {
-                "max" : 2.147483647E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "max" : 2.147483647E9
               }
             },
             "min" : {
               "errorMessage" : "The value must be at least -2147483648.",
               "parameters" : {
-                "min" : -2.147483648E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "min" : -2.147483648E9
               }
             }
           },
@@ -169,15 +169,15 @@
             "max" : {
               "errorMessage" : "The value must not exceed 2147483647.",
               "parameters" : {
-                "max" : 2.147483647E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "max" : 2.147483647E9
               }
             },
             "min" : {
               "errorMessage" : "The value must be at least -2147483648.",
               "parameters" : {
-                "min" : -2.147483648E9,
-                "isExclusive" : false
+                "isExclusive" : false,
+                "min" : -2.147483648E9
               }
             }
           }
@@ -185,7 +185,17 @@
         "providedOptions" : [ "validation.max", "validation.min" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/flowVariableName"
+        "scope" : "#/properties/model/properties/flowVariableName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          }
+        }
       } ]
     }, {
       "label" : "Advanced Settings",
@@ -197,6 +207,14 @@
         "type" : "Control",
         "scope" : "#/properties/model/properties/parameterName",
         "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          },
           "isAdvanced" : true
         }
       }, {
