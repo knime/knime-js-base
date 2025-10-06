@@ -96,7 +96,6 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(uiSchema).inPath("$.elements[1].options.passwordLabel").isString().isEqualTo("Password");
     }
 
-
     @Test
     void testCredentialsConfigurationComponentDialogWithHiddenUsername() throws JsonProcessingException {
         final var dialogData = getComponentDialog(getTopLevelNodeId(2));
@@ -105,6 +104,69 @@ class CredentialsConfigurationComponentDialogTest extends IntegratedComponentDia
         assertThatJson(uiSchema).inPath("$.elements[2].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/credentials", paramName));
         assertThatJson(uiSchema).inPath("$.elements[2].options.hasUsername").isBoolean().isFalse();
+    }
+
+    @Test
+    void testCredentialsConfigurationWithSettingsPrior52() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(8));
+        final var paramName = "credentials_old-6";
+        final var data = dialogData.getDataFor(paramName);
+        assertThatJson(data).inPath("$.passwordBefore52.isHiddenPassword").isBoolean().isFalse();
+        assertThatJson(data).inPath("$.usernameBefore52").isString().isEqualTo("");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.passwordBefore52.type").isString().isEqualTo("object");
+        assertThatJson(schema).inPath("$.properties.passwordBefore52.title").isString().isEqualTo("My password label");
+        assertThatJson(schema).inPath("$.properties.usernameBefore52.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.usernameBefore52.title").isString().isEqualTo("My username label");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Group");
+        assertThatJson(uiSchema).inPath("$.elements[0].label").isString().isEqualTo("Before 5.2.");
+        assertThatJson(uiSchema).inPath("$.elements[0].description").isString()
+            .isEqualTo("Settings saved before 5.2. I.e. the username could be overwritten by flow variable. "
+                + "We disallow setting the password via flow variable since it is encrypted.");
+        assertThatJson(uiSchema).inPath("$.elements[0].elements").isArray().hasSize(2);
+        assertThatJson(uiSchema).inPath("$.elements[0].elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/usernameBefore52", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[0].elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[0].elements[1].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/passwordBefore52", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[0].elements[1].options.hasUsername").isBoolean().isFalse();
+        final var persistSchema = dialogData.getPersistSchema();
+        assertThatJson(persistSchema)
+            .inPath(String.format("$.properties.model.properties.%s.properties.passwordBefore52.type", paramName))
+            .isString().isEqualTo("leaf");
+        assertThatJson(persistSchema)
+            .inPath(
+                String.format("$.properties.model.properties.%s.properties.passwordBefore52.configPaths", paramName))
+            .isArray().isEmpty();
+        assertThatJson(persistSchema)
+            .inPath(String.format("$.properties.model.properties.%s.properties.usernameBefore52.type", paramName))
+            .isString().isEqualTo("leaf");
+        assertThatJson(persistSchema)
+            .inPath(String.format("$.properties.model.properties.%s.properties.usernameBefore52.configKey", paramName))
+            .isString().isEqualTo("username");
+
+    }
+
+    @Test
+    void testCredentialsConfigurationWithSettingsPrior52WithoutUsername() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(8));
+        final var paramName = "password_old-7";
+        final var data = dialogData.getDataFor(paramName);
+        assertThatJson(data).inPath("$.usernameBefore52").isString().isEqualTo("");
+        assertThatJson(data).inPath("$.passwordBefore52.isHiddenPassword").isBoolean().isFalse();
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.passwordBefore52.type").isString().isEqualTo("object");
+        assertThatJson(schema).inPath("$.properties.passwordBefore52.title").isString().isEqualTo("My password label");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[1].type").isString().isEqualTo("Group");
+        assertThatJson(uiSchema).inPath("$.elements[1].elements").isArray().hasSize(1);
+        assertThatJson(uiSchema).inPath("$.elements[1].elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[1].elements[0].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/passwordBefore52", paramName));
+        assertThatJson(uiSchema).inPath("$.elements[1].elements[0].options.hasUsername").isBoolean().isFalse();
+
     }
 
 }

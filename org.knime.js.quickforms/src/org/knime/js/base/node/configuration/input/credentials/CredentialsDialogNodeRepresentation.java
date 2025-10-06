@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.configuration.input.credentials;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,10 +57,13 @@ import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.webui.node.dialog.PersistSchema;
 import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.CredentialsRendererSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 import org.knime.js.base.node.configuration.renderers.CredentialsRenderer;
+import org.knime.js.base.node.configuration.renderers.LabeledGroupRenderer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -108,11 +113,91 @@ public class CredentialsDialogNodeRepresentation extends CredentialsNodeRepresen
 
     @Override
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        if (isSavedPrior52()) {
+            final Collection<DialogElementRendererSpec> subRenderers = new ArrayList<>();
+            if (isPromptUsername()) {
+                subRenderers.add(new LegacyUsernameRenderer(getUsernameLabel())
+                    .at(CredentialsDialogNodeValue.DIALOG_JSON_USERNAME_BEFORE_5_2));
+            }
+            subRenderers.add(new LegacyPasswordRenderer(getPasswordLabel())
+                .at(CredentialsDialogNodeValue.DIALOG_JSON_PASSWORD_BEFORE_5_2));
+            return new LabeledGroupRenderer(this, subRenderers);
+
+        }
         return new CredentialsRenderer(this).at(CredentialsDialogNodeValue.DIALOG_JSON_CREDENTIALS_PARENT);
+    }
+
+    private boolean isSavedPrior52() {
+        final var referenceValue = Optional.ofNullable(getCurrentValue()).orElseGet(this::getDefaultValue);
+        return referenceValue.isSavedPrior52();
+    }
+
+    static class LegacyUsernameRenderer implements TextRendererSpec {
+
+        private final String m_title;
+
+        LegacyUsernameRenderer(final String title) {
+            m_title = title;
+        }
+
+        @Override
+        public String getTitle() {
+            return m_title;
+        }
+
+    }
+
+    static class LegacyPasswordRenderer implements CredentialsRendererSpec {
+
+        private final String m_title;
+
+        LegacyPasswordRenderer(final String title) {
+            m_title = title;
+        }
+
+        @Override
+        public String getTitle() {
+            return m_title;
+        }
+
+        @Override
+        public Optional<CredentialsRendererOptions> getOptions() {
+            return Optional.of(new CredentialsRendererOptions() {
+
+                @Override
+                public Optional<Boolean> getHasUsername() {
+                    return Optional.of(false);
+                }
+
+            });
+        }
+
     }
 
     @Override
     public Optional<PersistSchema> getPersistSchema() {
+
+        if (isSavedPrior52()) {
+            return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(Map
+                .of(CredentialsDialogNodeValue.DIALOG_JSON_USERNAME_BEFORE_5_2, new PersistSchema.PersistLeafSchema() {
+                    @Override
+                    public Optional<String> getConfigKey() {
+                        return Optional.of(CredentialsNodeValue.CFG_USERNAME);
+                    }
+
+                }, CredentialsDialogNodeValue.DIALOG_JSON_PASSWORD_BEFORE_5_2, new PersistSchema.PersistLeafSchema() {
+                    @Override
+                    public Optional<String[][]> getConfigPaths() {
+                        /**
+                         * We disallow setting the password here since it is not always saved and it is impossible to
+                         * set it since it is encrypted anyway.
+                         */
+                        return Optional.of(new String[0][]);
+                    }
+
+                })));
+        }
+
         return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
             Map.of(CredentialsDialogNodeValue.DIALOG_JSON_CREDENTIALS_PARENT, new PersistSchema.PersistLeafSchema() {
                 @Override

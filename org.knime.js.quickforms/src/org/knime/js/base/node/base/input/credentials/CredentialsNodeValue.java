@@ -279,11 +279,7 @@ public class CredentialsNodeValue extends JSONViewContent {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(m_username)
-            .append(m_password)
-            .append(m_isSavePassword)
-            .toHashCode();
+        return new HashCodeBuilder().append(m_username).append(m_password).append(m_isSavePassword).toHashCode();
     }
 
     /**
@@ -301,10 +297,27 @@ public class CredentialsNodeValue extends JSONViewContent {
             return false;
         }
         CredentialsNodeValue other = (CredentialsNodeValue)obj;
-        return new EqualsBuilder()
-            .append(m_username, other.m_username)
-            .append(m_password, other.m_password)
-            .append(m_isSavePassword, other.m_isSavePassword)
-            .isEquals();
+        return new EqualsBuilder().append(m_username, other.m_username).append(m_password, other.m_password)
+            .append(m_isSavePassword, other.m_isSavePassword).isEquals();
+    }
+
+    /**
+     * public to be used for modern component dialogs
+     *
+     * @return whether this node was once saved prior 5.2 (in which case username and password are stored in the
+     *         top-level node settings and can be overridden by plain String flow variables).
+     */
+    public boolean isSavedPrior52() {
+        return m_savedPrior52;
+    }
+
+    /**
+     * public to be used for modern component dialogs
+     *
+     * @param savedPrior52 set to true if this node was once saved prior 5.2 (in which case username and password are
+     *            stored in the top-level node settings and can be overridden by plain String flow variables).
+     */
+    public void setSavedPrior52(final boolean savedPrior52) {
+        m_savedPrior52 = savedPrior52;
     }
 }

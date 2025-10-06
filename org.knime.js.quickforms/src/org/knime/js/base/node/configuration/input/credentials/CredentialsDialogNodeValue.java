@@ -194,15 +194,38 @@ public class CredentialsDialogNodeValue extends CredentialsNodeValue implements 
 
     static final String DIALOG_JSON_CREDENTIALS_PARENT = "credentials";
 
+    static final String DIALOG_JSON_USERNAME_BEFORE_5_2 = "usernameBefore52";
+
+    static final String DIALOG_JSON_PASSWORD_BEFORE_5_2 = "passwordBefore52";
+
     @Override
     public JsonNode toDialogJson() throws IOException {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var credentials = getWebUICredentials(this);
+
+        if (isSavedPrior52()) {
+            return mapper.createObjectNode()//
+                .put(DIALOG_JSON_USERNAME_BEFORE_5_2, getUsername())//
+                .set(DIALOG_JSON_PASSWORD_BEFORE_5_2, mapper.valueToTree(credentials));
+        }
+
         return mapper.createObjectNode().set(DIALOG_JSON_CREDENTIALS_PARENT, mapper.valueToTree(credentials));
     }
 
     @Override
     public void fromDialogJson(final JsonNode json) throws IOException {
+        final var isSavedPrior52 = !json.has(DIALOG_JSON_CREDENTIALS_PARENT);
+        if (isSavedPrior52) {
+            final var username = json.get(DIALOG_JSON_USERNAME_BEFORE_5_2).asText(null);
+            final var passwordJson = json.get(DIALOG_JSON_PASSWORD_BEFORE_5_2);
+            final var mapper = JsonFormsDataUtil.getMapper();
+            final var credentials = mapper.treeToValue(passwordJson, Credentials.class);
+            setUsername(username);
+            setPassword(credentials.getPassword());
+            setSavedPrior52(true);
+            return;
+        }
+
         final var credentialsJson = ((ObjectNode)json).get(DIALOG_JSON_CREDENTIALS_PARENT);
         final var mapper = JsonFormsDataUtil.getMapper();
         final var credentials = mapper.treeToValue(credentialsJson, Credentials.class);
