@@ -70,19 +70,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class FileUploadNodeValue extends JSONViewContent {
 
     public static final String CFG_PATH = "path";
-    protected static final String DEFAULT_PATH = "";
+    public static final String DEFAULT_PATH = "";
     protected String m_path = DEFAULT_PATH;
 
     public static final String CFG_PATH_VALID = "pathValid";
-    protected static final boolean DEFAULT_PATH_VALID = true;
+    public static final boolean DEFAULT_PATH_VALID = true;
     protected boolean m_pathValid = DEFAULT_PATH_VALID;
 
     public static final String CFG_FILE_NAME = "fileName";
-    protected static final String DEFAULT_FILE_NAME = "";
+    public static final String DEFAULT_FILE_NAME = "";
     protected String m_fileName = DEFAULT_FILE_NAME;
 
     public static final String CFG_LOCAL_UPLOAD = "localUpload";
-    private static final boolean DEFAULT_LOCAL_UPLOAD = false;
+    public static final boolean DEFAULT_LOCAL_UPLOAD = false;
     private boolean m_localUpload = DEFAULT_LOCAL_UPLOAD;
 
     /**

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="label" type="xstring" value="Label"/>
+    <entry key="description" type="xstring" value="Enter Description"/>
+    <entry key="flowVariableName" type="xstring" value="file-input"/>
+    <entry key="parameterName" type="xstring" value="file-input"/>
+    <entry key="hideInDialog" type="xboolean" value="false"/>
+    <entry key="required" type="xboolean" value="true"/>
+    <config key="defaultValue">
+        <entry key="path" type="xstring" value="/Users/the-user/knime-workspace/data/iris_setosa.csv"/>
+        <entry key="pathValid" type="xboolean" value="true"/>
+        <entry key="fileName" type="xstring" value="iris_setosa.csv"/>
+        <entry key="localUpload" type="xboolean" value="false"/>
+    </config>
+    <config key="types">
+        <entry key="array-size" type="xint" value="3"/>
+        <entry key="0" type="xstring" value=".csv|.pdf"/>
+        <entry key="1" type="xstring" value=".csv"/>
+        <entry key="2" type="xstring" value=".pdf"/>
+    </config>
+    <entry key="timeout" type="xint" value="1000"/>
+    <entry key="error_message" type="xstring" value=""/>
+    <entry key="disable_output" type="xboolean" value="false"/>
+</config>

@@ -61,21 +61,21 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class FileUploadNodeConfig {
 
-    private static final String CFG_FILE_TYPES = "types";
+    public static final String CFG_FILE_TYPES = "types";
 
     private static final String[] DEFAULT_FILE_TYPES = new String[0];
 
     private String[] m_fileTypes = DEFAULT_FILE_TYPES;
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
 
     private static final String DEFAULT_ERROR_MESSAGE = "";
 
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
-    private static final String CFG_DISABLE_OUTPUT = "disable_output";
+    public static final String CFG_DISABLE_OUTPUT = "disable_output";
 
-    private static final String CFG_TIMEOUT = "timeout";
+    public static final String CFG_TIMEOUT = "timeout";
 
     private static final int DEFAULT_TIMEOUT = 1000;
 

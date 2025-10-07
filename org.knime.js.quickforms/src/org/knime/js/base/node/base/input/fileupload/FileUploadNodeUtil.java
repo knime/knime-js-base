@@ -60,28 +60,39 @@ import javax.swing.JTextField;
  */
 public final class FileUploadNodeUtil {
 
-    private FileUploadNodeUtil() { /* utility class */ }
+    private FileUploadNodeUtil() {
+        /* utility class */ }
 
     /**
      * @param m_validExtensionsField the text field with valid extension string
      * @return String[] file types
      */
     public static String[] getFileTypes(final JTextField m_validExtensionsField) {
-        String s = m_validExtensionsField.getText().trim();
-        if (s.isEmpty()) {
+        return getFileTypes(m_validExtensionsField.getText());
+    }
+
+    /**
+     * Get the valid extensions from a string of comma separated extensions
+     *
+     * @param validExtensions an array of valid extensions to transform
+     * @return all valid extensions including an entry which combines all extension by |.
+     *         {@link #extractExtensions(String[])}
+     */
+    public static String[] getFileTypes(final String validExtensions) {
+        if (validExtensions.trim().isEmpty()) {
             return new String[0];
         }
-        String[] fileTypes = s.split(",");
+        String[] fileTypes = validExtensions.split(",");
         List<String> filteredFileTypes = new ArrayList<String>();
         for (String type : fileTypes) {
-            s = type.trim();
-            if (s.isEmpty()) {
+            final var trimmedType = type.trim();
+            if (trimmedType.isEmpty()) {
                 continue;
             }
-            if (s.startsWith(".")) {
-                filteredFileTypes.add(s);
+            if (trimmedType.startsWith(".")) {
+                filteredFileTypes.add(trimmedType);
             } else {
-                filteredFileTypes.add("." + s);
+                filteredFileTypes.add("." + trimmedType);
             }
         }
         if (filteredFileTypes.size() == 0) {
@@ -95,15 +106,19 @@ public final class FileUploadNodeUtil {
     }
 
     /**
-     * This method is to be used on a result of the {@link #getFileTypes(JTextField)} method to extract only the file extensions without the leading dot and without the entry combined by |.
-     * E.g. if the input is:
+     * This method is to be used on a result of the {@link #getFileTypes(JTextField)} method to extract only the file
+     * extensions without the leading dot and without the entry combined by |. E.g. if the input is:
+     *
      * <pre>
      *  ".txt", ".csv", ".tsv", ".xlsx", ".txt|.csv|.tsv|.xlsx"
-     *  </pre>
-     *  the output will be:
-     *  <pre>
+     * </pre>
+     *
+     * the output will be:
+     *
+     * <pre>
      *  "txt", "csv", "tsv", "xlsx"
-     *  </pre>
+     * </pre>
+     *
      * @param fileTypes the file types as returned by {@link #getFileTypes(JTextField)}
      * @return the file extensions without the leading dot and without the entry combined by |
      */
@@ -126,6 +141,7 @@ public final class FileUploadNodeUtil {
 
     /**
      * Tries to determine the file name of an arbitrary path
+     *
      * @param path The path including the file name as last component, can be file system path or a url string
      * @return the file name or the path itself if the file name can not be deduced from it
      */

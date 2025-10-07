@@ -1,0 +1,272 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "Label",
+      "description" : "Enter Description",
+      "flowVariableName" : "file-input",
+      "parameterName" : "file-input",
+      "hideInDialog" : false,
+      "required" : true,
+      "defaultValue" : {
+        "filePath" : "",
+        "pathValid" : true,
+        "fileName" : "",
+        "localUpload" : false
+      },
+      "fileExtensions" : "",
+      "timeout" : 1.0,
+      "errorMessage" : "",
+      "disabledOutput" : false
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "fileName" : {
+                "type" : "string",
+                "default" : ""
+              },
+              "filePath" : {
+                "type" : "string",
+                "title" : "Default file",
+                "description" : "The file that will be used during design time, i.e. when no file is provided by a component dialog.\nIt is possible to enter a URL here. This can be useful if a default file is to be addressed with\nthe knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a\nremote server.\n",
+                "default" : ""
+              },
+              "localUpload" : {
+                "type" : "boolean",
+                "default" : false
+              },
+              "pathValid" : {
+                "type" : "boolean",
+                "default" : true
+              }
+            },
+            "default" : {
+              "filePath" : "",
+              "pathValid" : true,
+              "fileName" : "",
+              "localUpload" : false
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "disabledOutput" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "errorMessage" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "fileExtensions" : {
+            "type" : "string",
+            "title" : "Valid file extensions",
+            "description" : "A comma-separated list of file extensions that is used as filter in the\nfile browser (not only the one in the \"Default file\" option but also\nin a remote file browser), e.g. \".csv,.csv.gz\" (or \"csv,csv.gz\") will filter for\nfiles ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.\n",
+            "default" : ""
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "file-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "file-input"
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "timeout" : {
+            "type" : "number",
+            "format" : "double",
+            "title" : "Timeout (seconds)",
+            "description" : "The time in seconds after which the connection times out. The timeout is used when testing the existence of\ndefault files. The default is set to 1 second and should be sufficient in most cases.\n",
+            "default" : 1.0
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/fileExtensions"
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/filePath",
+        "options" : {
+          "fileExtensions" : [ ],
+          "placeholder" : "",
+          "format" : "localFileChooser"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/timeout",
+        "options" : {
+          "validation" : {
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          },
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "filePath" : {
+                "configKey" : "path"
+              },
+              "pathValid" : {
+                "configKey" : "pathValid"
+              },
+              "fileName" : {
+                "configKey" : "fileName"
+              },
+              "localUpload" : {
+                "configKey" : "localUpload"
+              }
+            }
+          },
+          "fileExtensions" : {
+            "configPaths" : [ [ "types" ] ]
+          },
+          "timeout" : {
+            "configPaths" : [ [ "timeout" ] ]
+          },
+          "errorMessage" : {
+            "configKey" : "error_message"
+          },
+          "disabledOutput" : {
+            "configKey" : "disable_output"
+          }
+        }
+      }
+    }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/defaultValue/properties/filePath"
+    },
+    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/filePath" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}
