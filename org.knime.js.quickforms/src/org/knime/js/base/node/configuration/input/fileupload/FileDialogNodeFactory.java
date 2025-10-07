@@ -49,51 +49,56 @@
 package org.knime.js.base.node.configuration.input.fileupload;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
 /**
  * Factory for the file upload configuration node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileDialogNodeFactory extends NodeFactory<FileDialogNodeModel> {
+public class FileDialogNodeFactory extends ConfigurationNodeFactory<FileDialogNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("Local File Browser Configuration") //
+        .icon("./configuration_fileUpload.png") //
+        .shortDescription("""
+                Allows selecting a local file and exposing it using a flow variable. Variable output representing the
+                file path as variable. In case an absolute file path is selected the node will populate three variables:
+                one representing the path, one representing the URL and one representing the URL as a path variable. If
+                a URL is selected as default file only the URL variable and the URL(path) variable are defined.
+                """) //
+        .fullDescription("""
+                Allows selecting a local file and exposing it using a flow variable. Variable output representing
+                the file path as variable. In case an absolute file path is selected the node will populate three
+                variables: one representing the path, one representing the URL and one representing the URL as a
+                path variable. If a URL is selected as default file only the URL variable and the URL(path) variable
+                are defined.
+                """) //
+        .modelSettingsClass(FileDialogNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, """
+                    Variable output representing the file path as variable. In case an absolute file path is selected
+                    the node will populate three variables: one representing the path, one representing the URL and one
+                    representing the URL as a path variable. If a URL is selected as default file only the URL variable
+                    and the URL(path) variable are defined. Additionally the original file name is retained as a flow
+                    variable.
+                """) //
+        .nodeType(NodeType.Configuration) //
+        .keywords("file", "browser", "local", "upload", "path") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public FileDialogNodeFactory() {
+        super(CONFIG, FileDialogNodeParameters.class);
+    }
+
     @Override
     public FileDialogNodeModel createNodeModel() {
         return new FileDialogNodeModel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileDialogNodeModel> createNodeView(final int viewIndex, final FileDialogNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new FileDialogNodeNodeDialog();
