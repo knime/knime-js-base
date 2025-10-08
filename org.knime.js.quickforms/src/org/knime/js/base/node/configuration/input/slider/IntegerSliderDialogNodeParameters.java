@@ -114,7 +114,7 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
     Void m_overwrittenByValueMessage;
 
     private static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default Value",
+        @Widget(title = "Default value",
             description = "The initial value of the slider parameter. Must be between the minimum and maximum values.")
         @Persistor(DefaultValuePersistor.class)
         @ValueReference(DefaultValueReference.class)
@@ -127,7 +127,7 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = "Range Column",
+    @Widget(title = "Range column",
         description = "Select a column from the input table to determine the range of the slider. "
             + "The minimum and maximum values from this column will be used as the default range.")
     @ChoicesProvider(DomainColumnChoicesProvider.class)

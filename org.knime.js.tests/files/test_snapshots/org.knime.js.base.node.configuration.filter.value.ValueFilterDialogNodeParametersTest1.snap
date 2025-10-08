@@ -48,7 +48,7 @@
               },
               "column" : {
                 "type" : "string",
-                "title" : "Default Column",
+                "title" : "Default column",
                 "description" : "The column containing the values to filter.",
                 "default" : ""
               },
@@ -67,7 +67,7 @@
                 "items" : {
                   "type" : "string"
                 },
-                "title" : "Default Values",
+                "title" : "Default values",
                 "description" : "The values that are selected by default.",
                 "default" : [ ]
               }

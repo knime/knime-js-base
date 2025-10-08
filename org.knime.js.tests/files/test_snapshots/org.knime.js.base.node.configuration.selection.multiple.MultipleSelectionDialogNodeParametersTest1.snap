@@ -84,7 +84,7 @@
           },
           "possibleChoices" : {
             "type" : "string",
-            "title" : "Possible Choices",
+            "title" : "Possible choices",
             "description" : "The possible choices, each line is one possible value."
           },
           "required" : {

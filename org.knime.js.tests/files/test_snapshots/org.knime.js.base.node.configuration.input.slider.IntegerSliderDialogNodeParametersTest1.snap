@@ -45,7 +45,7 @@
               "integer" : {
                 "type" : "integer",
                 "format" : "int32",
-                "title" : "Default Value",
+                "title" : "Default value",
                 "description" : "The initial value of the slider parameter. Must be between the minimum and maximum values.",
                 "default" : 50
               }
@@ -73,7 +73,7 @@
                 } ]
               }
             },
-            "title" : "Range Column",
+            "title" : "Range column",
             "description" : "Select a column from the input table to determine the range of the slider. The minimum and maximum values from this column will be used as the default range.",
             "default" : {
               "specialChoice" : "NONE"

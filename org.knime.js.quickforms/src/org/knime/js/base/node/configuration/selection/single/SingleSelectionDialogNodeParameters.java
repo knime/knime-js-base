@@ -146,7 +146,7 @@ public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettin
     @Layout(FormFieldSection.class)
     int m_numberOfVisibleOptions = SingleMultipleSelectionNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
 
-    @Widget(title = "Possible Choices", description = "The possible choices, each line is one possible value.")
+    @Widget(title = "Possible choices", description = "The possible choices, each line is one possible value.")
     @TextAreaWidget
     @Persistor(PossibleChoicesPersistor.class)
     @ValueReference(PossibleChoicesReference.class)

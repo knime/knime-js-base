@@ -140,7 +140,7 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
         @Layout(OutputSection.Top.class)
         Void m_noColumnsAvailableMessage;
 
-        @Widget(title = "Default Column", description = "The column containing the values to filter.")
+        @Widget(title = "Default column", description = "The column containing the values to filter.")
         @Layout(OutputSection.Top.class)
         @Persist(configKey = ValueFilterNodeValue.CFG_COLUMN)
         @ChoicesProvider(DefaultColumnChoicesProvider.class)
@@ -148,7 +148,7 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
         @ValueReference(DefaultColumnValueReference.class)
         String m_column = "";
 
-        @Widget(title = "Default Values", description = "The values that are selected by default.")
+        @Widget(title = "Default values", description = "The values that are selected by default.")
         @Layout(OutputSection.Top.class)
         @Persist(configKey = ValueFilterNodeValue.CFG_VALUES)
         @ChoicesProvider(DefaultValuesChoicesProvider.class)
