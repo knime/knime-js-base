@@ -31,7 +31,6 @@
         <module>org.knime.js.views</module>
         <module>org.knime.js.views.tests</module>
         <module>org.knime.features.js.views</module>
-        <module>org.knime.js.tests/lib/fetch_jars</module>
         <module>org.knime.js.tests</module>
         <module>org.knime.features.testing.js</module>
         <module>org.knime.features.quickform.legacy</module>
