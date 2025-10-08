@@ -307,6 +307,7 @@ public class CredentialsNodeValue extends JSONViewContent {
      * @return whether this node was once saved prior 5.2 (in which case username and password are stored in the
      *         top-level node settings and can be overridden by plain String flow variables).
      */
+    @JsonIgnore
     public boolean isSavedPrior52() {
         return m_savedPrior52;
     }
@@ -317,6 +318,7 @@ public class CredentialsNodeValue extends JSONViewContent {
      * @param savedPrior52 set to true if this node was once saved prior 5.2 (in which case username and password are
      *            stored in the top-level node settings and can be overridden by plain String flow variables).
      */
+    @JsonIgnore
     public void setSavedPrior52(final boolean savedPrior52) {
         m_savedPrior52 = savedPrior52;
     }
