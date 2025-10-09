@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack">
+        <config key="Variable_0">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="file-chooser"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="/remote/path/test.csv"/>
+        </config>
+    </config>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="defaultValue">
+            <entry key="defaultFile" type="xstring" value="/remote/path/test.csv"/>
+        </config>
+        <entry key="hideInDialog" type="xboolean" value="false"/>
+        <entry key="parameterName" type="xstring" value="file-chooser"/>
+        <entry key="label" type="xstring" value="File Chooser Label"/>
+        <entry key="description" type="xstring" value="Choose files from remote location"/>
+        <entry key="required" type="xboolean" value="false"/>
+        <entry key="flowVariableName" type="xstring" value="file-chooser"/>
+        <entry key="selectWorkflows" type="xboolean" value="true"/>
+        <entry key="selectDirectories" type="xboolean" value="true"/>
+        <entry key="selectDataFiles" type="xboolean" value="true"/>
+        <entry key="outputType" type="xboolean" value="true"/>
+        <entry key="validFileExtensions" type="xstring" value=".csv,.txt,.xml"/>
+        <entry key="multipleSelection" type="xboolean" value="true"/>
+        <entry key="defaultMountId" type="xboolean" value="false"/>
+        <entry key="customMountId" type="xstring" value="custom-mount-123"/>
+        <entry key="rootDir" type="xstring" value="/remote/root"/>
+        <config key="types">
+            <entry key="array-size" type="xint" value="1"/>
+            <entry key="0" type="xstring" value=".csv,.txt,.xml"/>
+        </config>
+        <entry key="error_message" type="xstring" value=""/>
+        <config key="items">
+            <entry key="num_items" type="xint" value="1"/>
+            <config key="item_0">
+                <entry key="path" type="xstring" value="/remote/path/test.csv"/>
+                <entry key="type" type="xstring" value="DATA"/>
+            </config>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Repository File Chooser Configuration (legacy)"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.8.0.v202509301332"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Quick Forms"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.js.quickforms.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.8.0.v202509301332"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Repository File Chooser Configuration (legacy)"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            <entry key="port_object_summary" type="xstring" value="Table with selected files"/>
+            <entry key="port_spec_location" type="xstring" value="spec/spec.zip"/>
+            <entry key="port_object_location" type="xstring" value="object/portobject.zip"/>
+            <entry key="port_dir_location" type="xstring" value="port_1"/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="b7cdbe8f-872d-43ff-b3b7-ae82a4429497"/>
+    </config>
+</config>

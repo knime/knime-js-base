@@ -72,8 +72,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FileChooserNodeValue extends JSONViewContent {
 
-    protected static final String CFG_ITEMS = "items";
+    public static final String CFG_ITEMS = "items";
     private FileItem[] m_items = new FileItem[0];
+
+    public static final String CFG_NUM_ITEMS = "num_items";
 
     /**
      * @return the items
@@ -98,7 +100,7 @@ public class FileChooserNodeValue extends JSONViewContent {
     @JsonIgnore
     public void saveToNodeSettings(final NodeSettingsWO settings) {
         NodeSettingsWO itemSettings = settings.addNodeSettings(CFG_ITEMS);
-        itemSettings.addInt("num_items", m_items.length);
+        itemSettings.addInt(CFG_NUM_ITEMS, m_items.length);
         for (int i = 0; i < m_items.length; i++) {
             NodeSettingsWO singleItemSettings = itemSettings.addNodeSettings("item_" + i);
             m_items[i].saveToNodeSettings(singleItemSettings);
@@ -112,7 +114,7 @@ public class FileChooserNodeValue extends JSONViewContent {
     @JsonIgnore
     public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         NodeSettingsRO itemSettings = settings.getNodeSettings(CFG_ITEMS);
-        int numItems = itemSettings.getInt("num_items");
+        int numItems = itemSettings.getInt(CFG_NUM_ITEMS);
         m_items = new FileItem[numItems];
         for (int i = 0; i < numItems; i++) {
             m_items[i] = new FileItem();

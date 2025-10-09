@@ -44,56 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 Jun 2019 (albrecht): created
+ *   8 October 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Factory for the file chooser configuration node
+ * Snapshot test for {@link FileChooserDialogNodeParameters}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-public class FileChooserDialogNodeFactory extends ConfigurationNodeFactory<FileChooserDialogNodeModel> {
+@SuppressWarnings("restriction")
+final class FileChooserDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Repository File Chooser Configuration (legacy)") //
-        .icon("./configuration_file.png") //
-        .shortDescription("""
-                Allows choosing single or multiple files, workflows or directories from a remote mountpoint.
-                Outputs a table with the selected files.
-                """) //
-        .fullDescription("""
-                Allows choosing single or multiple files, workflows or directories from a remote mountpoint.
-                Outputs a table with the selected files.
-                """) //
-        .modelSettingsClass(FileChooserDialogNodeParameters.class) //
-        .addOutputPort("Selected Files", BufferedDataTable.TYPE, """
-                    Data table containing the selected files and types.
-                """) //
-        .nodeType(NodeType.Configuration) //
-        .keywords("file", "chooser", "repository", "remote", "upload", "path", "browser") //
+    protected FileChooserDialogNodeParametersTest() {
+        super(CONFIG);
+    }
+
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(FileChooserDialogNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public FileChooserDialogNodeFactory() {
-        super(CONFIG, FileChooserDialogNodeParameters.class);
+    private static FileChooserDialogNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(FileChooserDialogNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("FileChooserDialogNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    FileChooserDialogNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public FileChooserDialogNodeModel createNodeModel() {
-        return new FileChooserDialogNodeModel();
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileChooserDialogNodeNodeDialog();
-    }
-
 }

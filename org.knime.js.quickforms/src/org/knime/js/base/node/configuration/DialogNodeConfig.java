@@ -71,7 +71,7 @@ public abstract class DialogNodeConfig<VAL extends DialogNodeValue> {
     public static final boolean DEFAULT_HIDE_IN_DIALOG = false;
     private boolean m_hideInDialog = DEFAULT_HIDE_IN_DIALOG;
 
-    private static final String CFG_DEFAULT_VALUE = "defaultValue";
+    public static final String CFG_DEFAULT_VALUE = "defaultValue";
     private VAL m_defaultValue;
 
     private static final String CFG_PARAMETER_NAME = "parameterName";
