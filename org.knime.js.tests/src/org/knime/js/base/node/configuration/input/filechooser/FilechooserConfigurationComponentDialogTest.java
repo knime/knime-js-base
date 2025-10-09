@@ -44,56 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 Jun 2019 (albrecht): created
+ *   Apr 24, 2025 (Paul Bärnreuther): created
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-/**
- * Factory for the file chooser configuration node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
- */
-public class FileChooserDialogNodeFactory extends ConfigurationNodeFactory<FileChooserDialogNodeModel> {
+import org.junit.jupiter.api.Test;
+import org.knime.js.base.node.configuration.IntegratedComponentDialogTestBase;
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("Repository File Chooser Configuration (legacy)") //
-        .icon("./configuration_file.png") //
-        .shortDescription("""
-                Allows choosing single or multiple files, workflows or directories from a remote mountpoint.
-                Outputs a table with the selected files.
-                """) //
-        .fullDescription("""
-                Allows choosing single or multiple files, workflows or directories from a remote mountpoint.
-                Outputs a table with the selected files.
-                """) //
-        .modelSettingsClass(FileChooserDialogNodeParameters.class) //
-        .addOutputPort("Selected Files", BufferedDataTable.TYPE, """
-                    Data table containing the selected files and types.
-                """) //
-        .nodeType(NodeType.Configuration) //
-        .keywords("file", "chooser", "repository", "remote", "upload", "path", "browser") //
-        .build();
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-    @SuppressWarnings("javadoc")
-    public FileChooserDialogNodeFactory() {
-        super(CONFIG, FileChooserDialogNodeParameters.class);
-    }
+class FilechooserConfigurationComponentDialogTest extends IntegratedComponentDialogTestBase {
 
-    @Override
-    public FileChooserDialogNodeModel createNodeModel() {
-        return new FileChooserDialogNodeModel();
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileChooserDialogNodeNodeDialog();
+    @Test
+    void testFileChooserConfigurationComponentDialog() throws JsonProcessingException {
+        final var dialogData = getComponentDialog(getTopLevelNodeId(2));
+        final var paramName = "file-chooser-input-3";
+        final var data = dialogData.getDataFor(paramName);
+        assertThatJson(data).inPath("$.items.item_0").isString().isEqualTo("knime://LOCAL/Data/iris_setosa.csv");
+        assertThatJson(data).inPath("$.items.prev_item_0.path").isString()
+            .isEqualTo("knime://LOCAL/Data/iris_setosa.csv");
+        assertThatJson(data).inPath("$.items.prev_item_0.type").isString().isEqualTo("UNKNOWN");
+        final var schema = dialogData.getSchemaFor(paramName);
+        assertThatJson(schema).inPath("$.properties.items.properties.item_0.type").isString().isEqualTo("string");
+        assertThatJson(schema).inPath("$.properties.items.properties.item_0.title").isString()
+            .isEqualTo("File chooser label");
+        assertThatJson(schema).inPath("$.properties.items.properties.item_0.description").isString()
+            .isEqualTo("File chooser description");
+        final var uiSchema = dialogData.getUiSchema();
+        assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
+            .isEqualTo(String.format("#/properties/model/properties/%s/properties/items/properties/item_0", paramName));
+        final var persistSchema = dialogData.getPersistSchema();
+        assertThatJson(persistSchema)
+            .inPath(
+                String.format("$.properties.model.properties.%s.properties.items.properties.item_0.type", paramName))
+            .isString().isEqualTo("leaf");
+        assertThatJson(persistSchema).inPath(
+            String.format("$.properties.model.properties.%s.properties.items.properties.item_0.configPaths", paramName))
+            .isArray().isEqualTo(new String[][]{{"item_0", "path"}, {"item_0", "type"}});
     }
 
 }

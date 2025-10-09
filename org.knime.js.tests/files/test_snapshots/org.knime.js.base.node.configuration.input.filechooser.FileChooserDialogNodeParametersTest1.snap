@@ -1,0 +1,315 @@
+{
+  "data" : {
+    "model" : {
+      "label" : "File Chooser Label",
+      "description" : "Choose files from remote location",
+      "flowVariableName" : "file-chooser",
+      "parameterName" : "file-chooser",
+      "hideInDialog" : false,
+      "required" : false,
+      "defaultValue" : {
+        "defaultPath" : "",
+        "defaultType" : "UNKNOWN"
+      },
+      "selectDataFiles" : true,
+      "selectWorkflows" : true,
+      "selectDirectories" : true,
+      "outputType" : true,
+      "validFileExtensions" : ".csv,.txt,.xml",
+      "allowMultipleSelection" : true,
+      "mountIdOption" : false,
+      "customMountId" : "custom-mount-123",
+      "rootPath" : "/remote/root",
+      "errorMessageString" : ""
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "allowMultipleSelection" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "customMountId" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "defaultPath" : {
+                "type" : "string",
+                "title" : "Default file",
+                "description" : "The default file to be output during configure and design time. If the path to the default file is present remotely as well, the file will be preselected in the view.",
+                "default" : ""
+              },
+              "defaultType" : {
+                "oneOf" : [ {
+                  "const" : "UNKNOWN",
+                  "title" : "Unknown"
+                }, {
+                  "const" : "WORKFLOW",
+                  "title" : "Workflow"
+                }, {
+                  "const" : "DIRECTORY",
+                  "title" : "Directory"
+                }, {
+                  "const" : "DATA",
+                  "title" : "Data"
+                } ],
+                "default" : "UNKNOWN"
+              }
+            },
+            "default" : {
+              "defaultPath" : "",
+              "defaultType" : "UNKNOWN"
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Enter Description"
+          },
+          "errorMessageString" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Output variable name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "default" : "file-chooser-input"
+          },
+          "hideInDialog" : {
+            "type" : "boolean",
+            "title" : "Hide in dialog",
+            "description" : "Set this to true to hide this field in a component dialog.\n",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "default" : "Label"
+          },
+          "mountIdOption" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "outputType" : {
+            "type" : "boolean",
+            "title" : "Output selected item type",
+            "description" : "Enabling this option will append a second column to the output table containing the type of the selected items. Also a second flow variable containing the type of the first selected item is created. Possible values are DATA, WORKFLOW and DIRECTORY.",
+            "default" : false
+          },
+          "overwrittenByValueMessage" : {
+            "type" : "object"
+          },
+          "parameterName" : {
+            "type" : "string",
+            "title" : "Parameter name",
+            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
+            "default" : "file-chooser-input"
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "rootPath" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "selectDataFiles" : {
+            "type" : "boolean",
+            "title" : "Select data files",
+            "description" : "Allow selection of data files.",
+            "default" : true
+          },
+          "selectDirectories" : {
+            "type" : "boolean",
+            "title" : "Select directories",
+            "description" : "Allow selection of directories.",
+            "default" : false
+          },
+          "selectWorkflows" : {
+            "type" : "boolean",
+            "title" : "Select workflows",
+            "description" : "Allow selection of workflows.",
+            "default" : false
+          },
+          "validFileExtensions" : {
+            "type" : "string",
+            "title" : "Valid file extensions",
+            "description" : "A list of file extensions that is used as filter in the file browser (not only the one in the \"Default File\" option but also in a remote file browser), e.g. \".csv,.csv.gz\" will filter for files ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.",
+            "default" : ""
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/validFileExtensions"
+      } ]
+    }, {
+      "label" : "Selection Settings",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/selectDataFiles",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/selectWorkflows",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/selectDirectories",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/outputType",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "options" : {
+          "format" : "textMessage"
+        },
+        "providedOptions" : [ "message" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/defaultPath"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Advanced Settings",
+      "type" : "Section",
+      "options" : {
+        "isAdvanced" : true
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/parameterName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "parameters" : {
+                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+              }
+            }
+          },
+          "isAdvanced" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/hideInDialog",
+        "options" : {
+          "format" : "checkbox",
+          "isAdvanced" : true
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "parameterName" : { },
+          "hideInDialog" : { },
+          "required" : { },
+          "overwrittenByValueMessage" : { },
+          "defaultValue" : {
+            "configPaths" : [ [ "defaultValue", "items", "item_0", "path" ], [ "defaultValue", "items", "item_0", "type" ] ]
+          },
+          "selectDataFiles" : {
+            "configKey" : "selectDataFiles"
+          },
+          "selectWorkflows" : {
+            "configKey" : "selectWorkflows"
+          },
+          "selectDirectories" : {
+            "configKey" : "selectDirectories"
+          },
+          "outputType" : {
+            "configKey" : "outputType"
+          },
+          "validFileExtensions" : {
+            "configPaths" : [ [ "types" ] ]
+          },
+          "allowMultipleSelection" : {
+            "configKey" : "multipleSelection"
+          },
+          "mountIdOption" : {
+            "configKey" : "defaultMountId"
+          },
+          "customMountId" : {
+            "configKey" : "customMountId"
+          },
+          "rootPath" : {
+            "configKey" : "rootDir"
+          },
+          "errorMessageString" : {
+            "configKey" : "error_message"
+          }
+        }
+      }
+    }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/flowVariableName"
+    },
+    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  } ]
+}

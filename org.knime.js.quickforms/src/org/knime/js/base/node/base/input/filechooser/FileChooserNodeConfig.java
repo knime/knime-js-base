@@ -61,44 +61,44 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class FileChooserNodeConfig {
 
-    private static final String CFG_SELECT_WORKFLOWS = "selectWorkflows";
-    private static final boolean DEFAULT_SELECT_WORKFLOWS = false;
+    public static final String CFG_SELECT_WORKFLOWS = "selectWorkflows";
+    public static final boolean DEFAULT_SELECT_WORKFLOWS = false;
     private boolean m_selectWorkflows = DEFAULT_SELECT_WORKFLOWS;
 
-    private static final String CFG_SELECT_DIRECTORIES = "selectDirectories";
-    private static final boolean DEFAULT_SELECT_DIRECTORIES = false;
+    public static final String CFG_SELECT_DIRECTORIES = "selectDirectories";
+    public static final boolean DEFAULT_SELECT_DIRECTORIES = false;
     private boolean m_selectDirectories = DEFAULT_SELECT_DIRECTORIES;
 
-    private static final String CFG_SELECT_DATAFILES = "selectDataFiles";
-    private static final boolean DEFAULT_SELECT_DATAFILES = true;
+    public static final String CFG_SELECT_DATAFILES = "selectDataFiles";
+    public static final boolean DEFAULT_SELECT_DATAFILES = true;
     private boolean m_selectDataFiles = DEFAULT_SELECT_DATAFILES;
 
-    private static final String CFG_OUTPUT_TYPE = "outputType";
-    private static final boolean DEFAULT_OUTPUT_TYPE = false;
+    public static final String CFG_OUTPUT_TYPE = "outputType";
+    public static final boolean DEFAULT_OUTPUT_TYPE = false;
     private boolean m_outputType = DEFAULT_OUTPUT_TYPE;
 
-    private static final String CFG_ROOT_DIR = "rootDir";
-    private static final String DEFAULT_ROOT_DIR = "";
+    public static final String CFG_ROOT_DIR = "rootDir";
+    public static final String DEFAULT_ROOT_DIR = "";
     private String m_rootDir = DEFAULT_ROOT_DIR;
 
-    private static final String CFG_DEFAULT_MOUNTID = "defaultMountId";
-    private static final boolean DEFAULT_DEFAULT_MOUNTID = true;
+    public static final String CFG_DEFAULT_MOUNTID = "defaultMountId";
+    public static final boolean DEFAULT_DEFAULT_MOUNTID = true;
     private boolean m_defaultMountId = DEFAULT_DEFAULT_MOUNTID;
 
-    private static final String CFG_CUSTOM_MOUNTID = "customMountId";
-    private static final String DEFAULT_CUSTOM_MOUNTID = "";
+    public static final String CFG_CUSTOM_MOUNTID = "customMountId";
+    public static final String DEFAULT_CUSTOM_MOUNTID = "";
     private String m_customMountId = DEFAULT_CUSTOM_MOUNTID;
 
-    private static final String CFG_FILE_TYPES = "types";
+    public static final String CFG_FILE_TYPES = "types";
     private static final String[] DEFAULT_FILE_TYPES = new String[0];
     private String[] m_fileTypes = DEFAULT_FILE_TYPES;
 
-    private static final String CFG_MULTIPLE_SELECTION = "multipleSelection";
-    private static final boolean DEFAULT_MULTIPLE_SELECTION = false;
+    public static final String CFG_MULTIPLE_SELECTION = "multipleSelection";
+    public static final boolean DEFAULT_MULTIPLE_SELECTION = false;
     private boolean m_multipleSelection = DEFAULT_MULTIPLE_SELECTION;
 
-    private static final String CFG_ERROR_MESSAGE = "error_message";
-    private static final String DEFAULT_ERROR_MESSAGE = "";
+    public static final String CFG_ERROR_MESSAGE = "error_message";
+    public static final String DEFAULT_ERROR_MESSAGE = "";
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
     public static enum SelectionType {

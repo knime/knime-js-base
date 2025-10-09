@@ -48,13 +48,18 @@
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
+import java.io.IOException;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.util.JsonUtil;
+import org.knime.core.webui.node.dialog.WebDialogValue;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig.SelectionType;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -69,7 +74,7 @@ import jakarta.json.JsonValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class FileChooserDialogNodeValue extends FileChooserNodeValue implements DialogNodeValue {
+public class FileChooserDialogNodeValue extends FileChooserNodeValue implements WebDialogValue {
 
     /**
      * {@inheritDoc}
@@ -81,7 +86,7 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
         if (settings.containsKey(CFG_ITEMS)) {
             try {
                 NodeSettingsRO itemSettings = settings.getNodeSettings(CFG_ITEMS);
-                int numItems = itemSettings.getInt("num_items", 0);
+                int numItems = itemSettings.getInt(CFG_NUM_ITEMS, 0);
                 setItems(new FileItem[numItems]);
                 FileItem[] items = getItems();
                 for (int i = 0; i < numItems; i++) {
@@ -89,7 +94,8 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
                     NodeSettingsRO singleItemSettings = itemSettings.getNodeSettings("item_" + i);
                     items[i].loadFromNodeSettingsInDialog(singleItemSettings);
                 }
-            } catch (InvalidSettingsException e) { /* do nothing */ }
+            } catch (InvalidSettingsException e) {
+                /* do nothing */ }
         }
     }
 
@@ -111,7 +117,7 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     @JsonIgnore
     public void loadFromJson(final JsonValue json) throws JsonException {
         if (json instanceof JsonString) {
-            loadFromString(((JsonString) json).getString());
+            loadFromString(((JsonString)json).getString());
         } else if (json instanceof JsonObject || json instanceof JsonArray) {
             try {
                 JsonValue val = json instanceof JsonObject ? ((JsonObject)json).get(CFG_ITEMS) : json;
@@ -203,5 +209,40 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
         itemBuilder.add("fileType", typeBuilder.build());
 
         return itemBuilder.build();
+    }
+
+    static final String FIRST_ITEM = "item_0";
+
+    static final String PREVIOUS_FIRST_ITEM = "prev_item_0";
+
+    @Override
+    public JsonNode toDialogJson() throws IOException {
+        var mapper = JsonFormsDataUtil.getMapper();
+        var rootNode = mapper.createObjectNode();
+        var items = getItems();
+
+        if (items.length > 0) {
+            var item = items[0];
+            rootNode.put(FIRST_ITEM, item.getPath());
+            rootNode.set(PREVIOUS_FIRST_ITEM, mapper.valueToTree(item));
+        } else {
+            rootNode.put(FIRST_ITEM, "");
+            rootNode.set(PREVIOUS_FIRST_ITEM, mapper.nullNode());
+        }
+
+        return mapper.createObjectNode().set(FileChooserNodeValue.CFG_ITEMS, rootNode);
+    }
+
+    @Override
+    public void fromDialogJson(final JsonNode json) throws IOException {
+        var fileChooser = json.get(FileChooserNodeValue.CFG_ITEMS);
+        var path = fileChooser.path(FIRST_ITEM).asText("");
+
+        final var previousItem = fileChooser.path(PREVIOUS_FIRST_ITEM);
+        final var type = (path.isEmpty() || previousItem.isNull() || !path.equals(previousItem.path("path").asText()))
+            ? SelectionType.UNKNOWN.name() //
+            : previousItem.path("type").asText();
+
+        setItems(new FileItem[]{new FileItem(path, type)});
     }
 }

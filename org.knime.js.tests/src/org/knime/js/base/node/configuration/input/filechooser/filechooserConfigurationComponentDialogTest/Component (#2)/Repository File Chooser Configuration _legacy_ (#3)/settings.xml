@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack">
+        <config key="Variable_0">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="file-chooser-input"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="knime://LOCAL/Data/iris_setosa.csv"/>
+        </config>
+        <config key="Variable_1">
+            <entry key="type" type="xstring" value="variable"/>
+            <entry key="name" type="xstring" value="file-chooser-input (type)"/>
+            <entry key="class" type="xstring" value="STRING"/>
+            <entry key="value" type="xstring" value="UNKNOWN"/>
+        </config>
+    </config>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="label" type="xstring" value="File chooser label"/>
+        <entry key="description" type="xstring" value="File chooser description"/>
+        <entry key="flowVariableName" type="xstring" value="file-chooser-input"/>
+        <entry key="parameterName" type="xstring" value="file-chooser-input"/>
+        <entry key="hideInDialog" type="xboolean" value="false"/>
+        <entry key="required" type="xboolean" value="true"/>
+        <config key="defaultValue">
+            <config key="items">
+                <entry key="num_items" type="xint" value="1"/>
+                <config key="item_0">
+                    <entry key="path" type="xstring" value="knime://LOCAL/Data/iris_setosa.csv"/>
+                    <entry key="type" type="xstring" value="UNKNOWN"/>
+                </config>
+            </config>
+        </config>
+        <entry key="selectDataFiles" type="xboolean" value="true"/>
+        <entry key="selectWorkflows" type="xboolean" value="true"/>
+        <entry key="selectDirectories" type="xboolean" value="false"/>
+        <entry key="outputType" type="xboolean" value="true"/>
+        <config key="types">
+            <entry key="array-size" type="xint" value="2"/>
+            <entry key="0" type="xstring" value=".csv"/>
+            <entry key="1" type="xstring" value=".txt"/>
+        </config>
+        <entry key="multipleSelection" type="xboolean" value="false"/>
+        <entry key="defaultMountId" type="xboolean" value="true"/>
+        <entry key="customMountId" type="xstring" value=""/>
+        <entry key="rootDir" type="xstring" value=""/>
+        <entry key="error_message" type="xstring" value=""/>
+    </config>
+    <config key="variables"/>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.configuration.input.filechooser.FileChooserDialogNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Repository File Chooser Configuration (legacy)"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.8.0.qualifier"/>
+    <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Repository File Chooser Configuration (legacy)"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>

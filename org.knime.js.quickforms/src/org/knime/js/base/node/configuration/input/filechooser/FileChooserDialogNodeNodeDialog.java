@@ -90,20 +90,33 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     implements FileStoreContainer {
 
     private final JCheckBox m_selectWorkflowBox;
+
     private final JCheckBox m_selectDirBox;
+
     private final JCheckBox m_selectDataFilesBox;
+
     private final JCheckBox m_outputTypeBox;
+
     private final JCheckBox m_useDefaultMountIdBox;
+
     private final JTextField m_customMountIdField;
+
     private final JTextField m_rootDirField;
+
     private final JButton m_rootDirChooserButton;
+
     private final JTextField m_defaultPathField;
+
     private final JCheckBox m_multipleselectCheckBox;
+
     private final JButton m_fileChooserButton;
+
     private final JTextField m_validExtensionsField;
 
     private final FileChooserValidator m_validator;
+
     private AbstractExplorerFileStore m_fileStore;
+
     private final FileChooserInputDialogNodeConfig m_config;
 
     /**
@@ -117,7 +130,7 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
 
             @Override
             public void stateChanged(final ChangeEvent e) {
-                  m_validator.setSelectWorkflows(m_selectWorkflowBox.isSelected());
+                m_validator.setSelectWorkflows(m_selectWorkflowBox.isSelected());
             }
         });
 
@@ -174,13 +187,14 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
                 try {
                     m_validator.setFileTypes(getFileTypes(m_validExtensionsField.getText()));
                 } catch (Exception exc) {
-                    NodeLogger.getLogger(
-                        FileChooserDialogNodeNodeDialog.class).debug("Unable to update file suffixes", exc);
+                    NodeLogger.getLogger(FileChooserDialogNodeNodeDialog.class).debug("Unable to update file suffixes",
+                        exc);
                 }
             }
 
             @Override
-            public void focusGained(final FocusEvent e) { /* do nothing */ }
+            public void focusGained(final FocusEvent e) {
+                /* do nothing */ }
         });
         createAndAddTab();
     }
@@ -238,10 +252,34 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
     }
 
     /**
+     * Retrieve the valid file extensions from an array of file extensions. Handles elements containing |.
+     *
+     * @param fileExtensions the valid file extensions array
+     * @return the valid file extensions as string
+     */
+    public static String getValidFileExtensions(final String[] fileExtensions) {
+        if (fileExtensions == null || fileExtensions.length == 0) {
+            return "";
+        }
+        if (fileExtensions.length == 1) {
+            return fileExtensions[0];
+        }
+        // since 3.1 the first element should have a pattern "ext1|ext2|ext3..."
+        // need to support backward compatibility
+        if (fileExtensions[0].contains("|")) {
+            // 3.1
+            return fileExtensions[0].replace('|', ',');
+        }
+        // older version
+        return String.join(",", fileExtensions);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+    protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+        throws NotConfigurableException {
         m_config.loadSettingsInDialog(settings);
         loadSettingsFrom(m_config);
         FileChooserNodeConfig fileChooserConfig = m_config.getFileChooserConfig();
@@ -261,24 +299,8 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
         m_defaultPathField.setText(path);
 
         String[] fileExtensions = fileChooserConfig.getFileTypes();
-        String text;
-        if (fileExtensions == null || fileExtensions.length == 0) {
-            text = "";
-        } else {
-            if (fileExtensions.length > 1) {
-                // since 3.1 the first element should have a pattern "ext1|ext2|ext3..."
-                // need to support backward compatibility
-                if (fileExtensions[0].contains("|")) {
-                    // 3.1
-                    text = fileExtensions[0].replace('|', ',');
-                } else {
-                    // older version
-                    text = String.join(",", fileExtensions);
-                }
-            } else {
-                text = fileExtensions[0];
-            }
-        }
+        String text = getValidFileExtensions(fileExtensions);
+
         m_validExtensionsField.setText(text);
 
         m_validator.setSelectWorkflows(fileChooserConfig.getSelectWorkflows());
@@ -292,7 +314,7 @@ public class FileChooserDialogNodeNodeDialog extends FlowVariableDialogNodeNodeD
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-        if (!m_selectWorkflowBox.isSelected() && !m_selectDirBox.isSelected() && !m_selectDataFilesBox.isSelected()){
+        if (!m_selectWorkflowBox.isSelected() && !m_selectDirBox.isSelected() && !m_selectDataFilesBox.isSelected()) {
             throw new InvalidSettingsException("No selection type chosen. Please select at least one type.");
         }
         if (m_fileStore != null && m_fileStore.toString().equals(m_defaultPathField.getText())) {

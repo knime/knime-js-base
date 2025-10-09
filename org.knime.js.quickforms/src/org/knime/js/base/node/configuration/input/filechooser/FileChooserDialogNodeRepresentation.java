@@ -48,9 +48,17 @@
  */
 package org.knime.js.base.node.configuration.input.filechooser;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.knime.core.node.dialog.DialogNodePanel;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.webui.node.dialog.PersistSchema;
+import org.knime.core.webui.node.dialog.WebDialogNodeRepresentation.DefaultWebDialogNodeRepresentation;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.DialogElementRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.TextRendererSpec;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeRepresentation;
+import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,24 +69,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 public class FileChooserDialogNodeRepresentation extends FileChooserNodeRepresentation<FileChooserDialogNodeValue>
-    implements SubNodeDescriptionProvider<FileChooserDialogNodeValue> {
+    implements SubNodeDescriptionProvider<FileChooserDialogNodeValue>,
+    DefaultWebDialogNodeRepresentation<FileChooserDialogNodeValue> {
 
     @JsonCreator
     private FileChooserDialogNodeRepresentation(@JsonProperty("label") final String label,
-        @JsonProperty("description") final String description,
-        @JsonProperty("required") final boolean required,
+        @JsonProperty("description") final String description, @JsonProperty("required") final boolean required,
         @JsonProperty("defaultValue") final FileChooserDialogNodeValue defaultValue,
         @JsonProperty("currentValue") final FileChooserDialogNodeValue currentValue,
         @JsonProperty("selectWorkflows") final boolean selectWorkflows,
         @JsonProperty("selectDirectories") final boolean selectDirectories,
         @JsonProperty("selectDataFiles") final boolean selectDataFiles,
         @JsonProperty("useDefaultMountId") final boolean useDefaultMountId,
-        @JsonProperty("customMountId") final String customMountId,
-        @JsonProperty("rootDir") final String rootDir,
+        @JsonProperty("customMountId") final String customMountId, @JsonProperty("rootDir") final String rootDir,
         @JsonProperty("fileTypes") final String[] fileTypes,
         @JsonProperty("multipleSelection") final boolean multipleSelection,
-        @JsonProperty("errorMessage") final String errorMessage,
-        @JsonProperty("tree") final Object tree) {
+        @JsonProperty("errorMessage") final String errorMessage, @JsonProperty("tree") final Object tree) {
         super(label, description, required, defaultValue, currentValue, selectWorkflows, selectDirectories,
             selectDataFiles, useDefaultMountId, customMountId, rootDir, fileTypes, multipleSelection, errorMessage,
             tree);
@@ -99,6 +105,49 @@ public class FileChooserDialogNodeRepresentation extends FileChooserNodeRepresen
     @Override
     public DialogNodePanel<FileChooserDialogNodeValue> createDialogPanel() {
         return new FileChooserConfigurationPanel(this);
+    }
+
+    @Override
+    public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
+        return new TextRenderer(getLabel(), getDescription()).at(FileChooserNodeValue.CFG_ITEMS,
+            FileChooserDialogNodeValue.FIRST_ITEM);
+    }
+
+    static final class TextRenderer implements TextRendererSpec {
+
+        private final String m_title;
+
+        private final String m_description;
+
+        TextRenderer(final String title, final String description) {
+            m_title = title;
+            m_description = description;
+        }
+
+        @Override
+        public String getTitle() {
+            return m_title;
+        }
+
+        @Override
+        public Optional<String> getDescription() {
+            return Optional.of(m_description);
+        }
+
+    }
+
+    @Override
+    public Optional<PersistSchema> getPersistSchema() {
+        return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+            Map.of(FileChooserNodeValue.CFG_ITEMS, new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
+                Map.of(FileChooserDialogNodeValue.FIRST_ITEM, new PersistSchema.PersistLeafSchema() {
+                    @Override
+                    public Optional<String[][]> getConfigPaths() {
+                        return Optional.of(new String[][]{ //
+                            {FileChooserDialogNodeValue.FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_PATH}, //
+                            {FileChooserDialogNodeValue.FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_TYPE}});
+                    }
+                })))));
     }
 
 }
