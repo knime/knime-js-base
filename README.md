@@ -48,7 +48,7 @@ Contained nodes:
 * Widget Nodes
     * Filter
         * Column Filter Widget
-        * Nominal Row Filter Widget
+        * Category Row Filter Widget
         * Interactive Value Filter Widget
         * Interactive Range Slider Filter Widget
     * Input

@@ -2,7 +2,7 @@
 <knimeNode icon="./configuration_value_filter.png" type="Configuration" xmlns="http://knime.org/node/v3.6" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://knime.org/node/v3.6 http://knime.org/node/v3.6.xsd">
-    <name>Nominal Row Filter Configuration</name>
+    <name>Category Row Filter Configuration</name>
 
 	<shortDescription>
 	   Provides a value filter configuration option to an encapsulating component's dialog. 
