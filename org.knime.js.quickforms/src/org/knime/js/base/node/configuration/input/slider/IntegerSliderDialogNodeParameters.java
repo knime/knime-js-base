@@ -140,9 +140,9 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
         description = "Check to specify a custom minimum value instead of using the minimum from the range column.")
     @Persist(configKey = SliderNodeConfig.CFG_USE_CUSTOM_MIN)
     @ValueReference(UseCustomMinReference.class)
-    @ValueProvider(UseCustomMinValueProvider.class)
+    @ValueProvider(SetToFalseOnNewDomainColumn.class)
     @Layout(Validation.class)
-    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.DISABLE)
+    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.HIDE)
     boolean m_useCustomMin = SliderNodeConfig.DEFAULT_USE_CUSTOM_MIN;
 
     @Widget(title = "Minimum",
@@ -159,9 +159,9 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
         description = "Check to specify a custom maximum value instead of using the maximum from the range column.")
     @Persist(configKey = SliderNodeConfig.CFG_USE_CUSTOM_MAX)
     @ValueReference(UseCustomMaxReference.class)
-    @ValueProvider(UseCustomMaxValueProvider.class)
+    @ValueProvider(SetToFalseOnNewDomainColumn.class)
     @Layout(Validation.class)
-    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.DISABLE)
+    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.HIDE)
     boolean m_useCustomMax = SliderNodeConfig.DEFAULT_USE_CUSTOM_MAX;
 
     @Widget(title = "Maximum",
@@ -249,40 +249,36 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
 
     static final class CustomMinValueProvider implements StateProvider<Integer> {
 
-        private Supplier<Integer> m_customMinSupplier;
-
         private Supplier<Optional<Pair<Integer, Integer>>> m_lowerUpperBoundSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            m_customMinSupplier = initializer.getValueSupplier(CustomMinReference.class);
             m_lowerUpperBoundSupplier = initializer.computeFromProvidedState(LowerUpperBoundStateProvider.class);
 
         }
 
         @Override
         public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return m_lowerUpperBoundSupplier.get().map(Pair::getFirst).orElse(m_customMinSupplier.get());
+            return m_lowerUpperBoundSupplier.get().map(Pair::getFirst)
+                .orElseThrow(StateComputationFailureException::new);
         }
 
     }
 
     static final class CustomMaxValueProvider implements StateProvider<Integer> {
 
-        private Supplier<Integer> m_customMaxSupplier;
-
         private Supplier<Optional<Pair<Integer, Integer>>> m_lowerUpperBoundSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            m_customMaxSupplier = initializer.getValueSupplier(CustomMaxReference.class);
             m_lowerUpperBoundSupplier = initializer.computeFromProvidedState(LowerUpperBoundStateProvider.class);
 
         }
 
         @Override
         public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return m_lowerUpperBoundSupplier.get().map(Pair::getSecond).orElse(m_customMaxSupplier.get());
+            return m_lowerUpperBoundSupplier.get().map(Pair::getSecond)
+                .orElseThrow(StateComputationFailureException::new);
         }
 
     }
@@ -315,44 +311,28 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
         }
     }
 
-    private abstract static class UseCustomMinMaxValueProvider implements StateProvider<Boolean> {
+    static final class SetToFalseOnNewDomainColumn implements StateProvider<Boolean> {
 
         private Supplier<StringOrEnum<NoneChoice>> m_domainColumnSupplier;
 
-        protected Supplier<Boolean> m_useCustomMin;
-
-        protected Supplier<Boolean> m_useCustomMax;
-
         @Override
         public final void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_useCustomMin = initializer.getValueSupplier(UseCustomMinReference.class);
-            m_useCustomMax = initializer.getValueSupplier(UseCustomMaxReference.class);
             m_domainColumnSupplier = initializer.computeFromValueSupplier(DomainColumnReference.class);
         }
+
         @Override
         public Boolean computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
             if (m_domainColumnSupplier.get().getEnumChoice().isPresent()) {
-                return true;
+                /**
+                 * If <none> column is selected, we don't show custom min/max options and it is ignored in the model. We
+                 * don't want to change the value in this case, since it would make the dialog dirty initially without
+                 * any user interaction and without any reason.
+                 */
+                throw new StateComputationFailureException();
             }
-            return getCurrentValue();
+            return false;
         }
 
-        abstract Boolean getCurrentValue();
-    }
-
-    static final class UseCustomMinValueProvider extends UseCustomMinMaxValueProvider {
-        @Override
-        Boolean getCurrentValue() {
-            return m_useCustomMin.get();
-        }
-    }
-
-    static final class UseCustomMaxValueProvider extends UseCustomMinMaxValueProvider {
-        @Override
-        Boolean getCurrentValue() {
-            return m_useCustomMax.get();
-        }
     }
 
     static final class IsNoneDomainColumn implements EffectPredicateProvider {
@@ -365,14 +345,16 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
     static final class UseCustomMin implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            return i.getBoolean(UseCustomMinReference.class).isTrue();
+            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
+            return i.getBoolean(UseCustomMinReference.class).isTrue().or(isNoneColumns);
         }
     }
 
     static final class UseCustomMax implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            return i.getBoolean(UseCustomMaxReference.class).isTrue();
+            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
+            return i.getBoolean(UseCustomMaxReference.class).isTrue().or(isNoneColumns);
         }
     }
 

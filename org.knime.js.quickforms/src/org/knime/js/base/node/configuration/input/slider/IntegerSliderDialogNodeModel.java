@@ -193,11 +193,14 @@ public class IntegerSliderDialogNodeModel
     @Override
     public void validateDialogValue(final IntegerSliderDialogNodeValue value) throws InvalidSettingsException {
         double dialogValue = value.getDouble();
-        if (getConfig().isUseCustomMin() && dialogValue < getConfig().getCustomMin()) {
+        final var colName = getConfig().getDomainColumn().getStringValue();
+        final var usesCustomMin = (colName != null ? getConfig().isUseCustomMin() : true);
+        if (usesCustomMin && dialogValue < getConfig().getCustomMin()) {
             throw new InvalidSettingsException("The set integer " + dialogValue
                 + " is smaller than the allowed minimum of " + getConfig().getCustomMin());
         }
-        if (getConfig().isUseCustomMax() && dialogValue > getConfig().getCustomMax()) {
+        final var usesCustomMax = (colName != null ? getConfig().isUseCustomMax() : true);
+        if (usesCustomMax && dialogValue > getConfig().getCustomMax()) {
             throw new InvalidSettingsException("The set integer " + dialogValue
                 + " is bigger than the allowed maximum of " + getConfig().getCustomMax());
         }

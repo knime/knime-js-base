@@ -133,9 +133,10 @@ public class SliderNodeConfig {
      * @throws InvalidSettingsException
      */
     public void loadSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_useCustomMin = settings.getBoolean(CFG_USE_CUSTOM_MIN);
-        m_useCustomMax = settings.getBoolean(CFG_USE_CUSTOM_MAX);
         m_domainColumn.loadSettingsFrom(settings);
+        final var noDomainColumn = m_domainColumn.getStringValue() == null;
+        m_useCustomMin = noDomainColumn || settings.getBoolean(CFG_USE_CUSTOM_MIN);
+        m_useCustomMax = noDomainColumn || settings.getBoolean(CFG_USE_CUSTOM_MAX);
     }
 
     /**

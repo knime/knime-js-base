@@ -158,7 +158,7 @@
           "format" : "checkbox"
         },
         "rule" : {
-          "effect" : "DISABLE",
+          "effect" : "HIDE",
           "condition" : {
             "scope" : "#/properties/model/properties/domainColumn",
             "schema" : {
@@ -197,10 +197,25 @@
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
-            "scope" : "#/properties/model/properties/useCustomMin",
-            "schema" : {
-              "const" : true
-            }
+            "type" : "OR",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/useCustomMin",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/domainColumn",
+              "schema" : {
+                "properties" : {
+                  "specialChoice" : {
+                    "oneOf" : [ {
+                      "const" : "NONE"
+                    } ]
+                  }
+                },
+                "required" : [ "specialChoice" ]
+              }
+            } ]
           }
         }
       }, {
@@ -210,7 +225,7 @@
           "format" : "checkbox"
         },
         "rule" : {
-          "effect" : "DISABLE",
+          "effect" : "HIDE",
           "condition" : {
             "scope" : "#/properties/model/properties/domainColumn",
             "schema" : {
@@ -249,10 +264,25 @@
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
-            "scope" : "#/properties/model/properties/useCustomMax",
-            "schema" : {
-              "const" : true
-            }
+            "type" : "OR",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/useCustomMax",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/domainColumn",
+              "schema" : {
+                "properties" : {
+                  "specialChoice" : {
+                    "oneOf" : [ {
+                      "const" : "NONE"
+                    } ]
+                  }
+                },
+                "required" : [ "specialChoice" ]
+              }
+            } ]
           }
         }
       } ]
@@ -378,11 +408,11 @@
     "values" : [ {
       "indices" : [ ],
       "value" : {
+        "errorMessage" : "The value must not exceed 5.",
         "parameters" : {
           "max" : 5.0,
           "isExclusive" : false
-        },
-        "errorMessage" : "The value must not exceed 5."
+        }
       }
     } ]
   }, {
@@ -391,11 +421,11 @@
     "values" : [ {
       "indices" : [ ],
       "value" : {
+        "errorMessage" : "The value must be at least 0.",
         "parameters" : {
           "min" : 0.0,
           "isExclusive" : false
-        },
-        "errorMessage" : "The value must be at least 0."
+        }
       }
     } ]
   }, {
@@ -432,7 +462,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/domainColumn", "#/properties/model/properties/useCustomMax", "#/properties/model/properties/useCustomMin" ]
+    "dependencies" : [ ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/customMax"
@@ -447,7 +477,7 @@
     "trigger" : {
       "scope" : "#/properties/model/properties/domainColumn"
     },
-    "dependencies" : [ "#/properties/model/properties/customMax", "#/properties/model/properties/customMin", "#/properties/model/properties/defaultValue/properties/integer", "#/properties/model/properties/domainColumn", "#/properties/model/properties/useCustomMax", "#/properties/model/properties/useCustomMin" ]
+    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/integer", "#/properties/model/properties/domainColumn" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
