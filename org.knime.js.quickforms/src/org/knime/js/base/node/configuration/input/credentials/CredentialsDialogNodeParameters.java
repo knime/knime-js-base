@@ -322,7 +322,7 @@ public class CredentialsDialogNodeParameters extends ConfigurationNodeSettings {
             m_savedPrior52 = savedPrior52;
         }
 
-        @Widget(title = "Default username & password",
+        @Widget(title = "Default username and password",
             description = "The default credentials. When the credentials are for a KNIME Hub, username refers to"
                 + " application password id and password to application password.")
         @CredentialsWidget

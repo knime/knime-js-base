@@ -65,7 +65,7 @@ public class CredentialsDialogNodeFactory extends ConfigurationNodeFactory<Crede
         .name("Credentials Configuration") //
         .icon("./configuration_credentials.png") //
         .shortDescription("Provides a credentials configuration option to an encapsulating component's dialog.") //
-        .fullDescription("Outputs an credentials flow variable with a set value from a component's dialog.") //
+        .fullDescription("Outputs a credentials flow variable of the values set in the component dialog.") //
         .modelSettingsClass(CredentialsDialogNodeParameters.class) //
         .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
             "Variable output (credentials) with the given variable defined.") //
