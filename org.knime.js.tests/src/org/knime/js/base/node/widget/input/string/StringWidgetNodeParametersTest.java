@@ -44,49 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 4, 2025 (marcbux): created
+ *   21 Oct 2025 (Robin Gerling, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.widget.input.string;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.text.DefaultStringNodeValueParameters;
-import org.knime.js.base.node.parameters.text.TextEditorWithValidationParameters;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.updates.Effect;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Settings for the string configuration node.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
- */
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
+
 @SuppressWarnings("restriction")
-public final class StringDialogNodeSettings extends ConfigurationNodeSettings {
+final class StringWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    StringDialogNodeSettings() {
-        super(StringInputDialogNodeConfig.class);
+    protected StringWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @PersistWithin.PersistEmbedded
-    DefaultStringNodeValueParameters m_defaultStringNodeValue = new DefaultStringNodeValueParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(StringWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
 
-    @Modification(ChangeEditorWidthToLegacy.class)
-    @PersistWithin.PersistEmbedded
-    TextEditorWithValidationParameters m_textEditorWithValidationParameters = new TextEditorWithValidationParameters();
-
-    static final class ChangeEditorWidthToLegacy implements Modification.Modifier {
-        @Override
-        public void modify(final WidgetGroupModifier group) {
-            group.find(TextEditorWithValidationParameters.EditorWidthModificationReference.class)
-                .modifyAnnotation(Widget.class) //
-                .withProperty("title", "Field width (legacy)") //
-                .withProperty("advanced", true) //
-                .modify();
-
-            group.find(TextEditorWithValidationParameters.EditorWidthModificationReference.class) //
-                .removeAnnotation(Effect.class);
+    private static StringWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(StringWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("StringWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    StringWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
         }
     }
 }
+

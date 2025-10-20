@@ -48,23 +48,13 @@
  */
 package org.knime.js.base.node.configuration.input.listbox;
 
-import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_ERROR;
-import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_LABEL;
-import static org.knime.js.base.node.base.input.string.RegexPanel.EMAIL_REGEX;
-import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_ERROR;
-import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_LABEL;
-import static org.knime.js.base.node.base.input.string.RegexPanel.IPV4_REGEX;
-import static org.knime.js.base.node.base.input.string.RegexPanel.URL_ERROR;
-import static org.knime.js.base.node.base.input.string.RegexPanel.URL_LABEL;
-import static org.knime.js.base.node.base.input.string.RegexPanel.URL_REGEX;
-import static org.knime.js.base.node.base.input.string.RegexPanel.WIN_FILE_PATH_ERROR;
-import static org.knime.js.base.node.base.input.string.RegexPanel.WIN_FILE_PATH_LABEL;
-import static org.knime.js.base.node.base.input.string.StringNodeConfig.DEFAULT_ERROR_MESSAGE;
-import static org.knime.js.base.node.base.input.string.StringNodeConfig.DEFAULT_REGEX;
-
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeConfig;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.text.TextValidationParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.After;
@@ -134,41 +124,9 @@ public final class ListBoxDialogNodeParameters extends ConfigurationNodeSettings
     @Persist(configKey = ListBoxNodeConfig.CFG_NUMBER_VIS_OPTIONS)
     int m_numberVisibleOptions = ListBoxNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
 
-    // HTML-escaped version of RegexPanel.WIN_FILE_PATH_REGEX
-    private static final String WIN_FILE_PATH_REGEX =
-        "^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)"
-            + "|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$";
-
-    @Widget(title = "Regex pattern", description = """
-            Regular expression defining valid values.
-            Single-line editor only.
-            Common regex patterns are as follows:
-            """ //
-        + "<ul>" //
-        + "<li><b>" + EMAIL_LABEL + "</b>: " + EMAIL_REGEX + "</li>" //
-        + "<li><b>" + URL_LABEL + "</b>: " + URL_REGEX + "</li>" //
-        + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_REGEX + "</li>" //
-        + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_REGEX + "</li>" //
-        + "</ul>")
     @Layout(ValidationSection.class)
-    @Persist(configKey = ListBoxNodeConfig.CFG_REGEX)
-    String m_regex = DEFAULT_REGEX;
-
-    @Widget(title = "Failure message", description = """
-            Message shown if the value is not valid.
-            '?' will be replaced by the invalid value.
-            Single-line editor only.
-            Failure messages corresponding to common regex patterns are as follows:
-            """ //
-        + "<ul>" //
-        + "<li><b>" + EMAIL_LABEL + "</b>: " + EMAIL_ERROR + "</li>" //
-        + "<li><b>" + URL_LABEL + "</b>: " + URL_ERROR + "</li>" //
-        + "<li><b>" + IPV4_LABEL + "</b>: " + IPV4_ERROR + "</li>" //
-        + "<li><b>" + WIN_FILE_PATH_LABEL + "</b>: " + WIN_FILE_PATH_ERROR + "</li>" //
-        + "</ul>")
-    @Layout(ValidationSection.class)
-    @Persist(configKey = ListBoxNodeConfig.CFG_ERROR_MESSAGE)
-    String m_errorMessage = DEFAULT_ERROR_MESSAGE;
+    @PersistWithin.PersistEmbedded
+    TextValidationParameters m_textValidationParameters = new TextValidationParameters();
 
     @Widget(title = "Separate each character",
         description = "If checked, each character in the input will be treated as a separate option.")

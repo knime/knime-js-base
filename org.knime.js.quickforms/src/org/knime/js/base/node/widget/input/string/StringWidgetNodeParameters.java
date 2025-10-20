@@ -44,53 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 10, 2025 (Paul Bärnreuther): created
+ *   20 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.widget.input.string;
 
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersInputImpl;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.node.parameters.NodeParametersInput;
-import org.knime.node.parameters.updates.StateProvider;
-import org.knime.node.parameters.widget.message.TextMessage;
-import org.knime.node.parameters.widget.message.TextMessage.Message;
-import org.knime.node.parameters.widget.message.TextMessage.MessageType;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.text.DefaultStringNodeValueParameters;
+import org.knime.js.base.node.parameters.text.TextEditorWithValidationParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
 
 /**
- * A message shown in configuration dialogs whenever the current value of the configuration comes from saved settings of
- * the containing component.
+ * Settings for the string widget node.
  *
- * @author Paul Bärnreuther
- * @param <VAL> the type of the value of this configuration.
+ * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public abstract class OverwrittenByValueMessage<VAL> implements StateProvider<Optional<TextMessage.Message>> {
+public final class StringWidgetNodeParameters extends WidgetNodeParameters {
 
-    @Override
-    public void init(final StateProviderInitializer initializer) {
-        initializer.computeAfterOpenDialog();
+    StringWidgetNodeParameters() {
+        super(StringInputWidgetConfig.class);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Optional<Message> computeState(final NodeParametersInput context) throws StateComputationFailureException {
-        final var currentValue = ((NodeParametersInputImpl)context).getDialogNode().getDialogValue();
-        if (currentValue == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new Message("Value overwritten by dialog.",
-                String.format("Current value: %s", valueToString((VAL)currentValue)), MessageType.INFO));
-        }
-    }
+    @PersistWithin.PersistEmbedded
+    DefaultStringNodeValueParameters m_defaultStringNodeValue = new DefaultStringNodeValueParameters();
 
-    /**
-     * Converts the given value to a string representation.
-     *
-     * @param value the current value to convert.
-     * @return the string representation of the value.
-     */
-    protected abstract String valueToString(VAL value);
+    @PersistWithin.PersistEmbedded
+    TextEditorWithValidationParameters m_textEditorWithValidationParameters = new TextEditorWithValidationParameters();
 
 }

@@ -385,4 +385,11 @@ public abstract class WidgetNodeModel<REP extends JSONViewContent, VAL extends J
         }
     }
 
+    /**
+     * @return whether the default value is currently overwritten
+     */
+    public boolean hasOverwrittenDefaultValue() {
+        return getOverwriteMode() == ValueOverwriteMode.WIZARD;
+    }
+
 }

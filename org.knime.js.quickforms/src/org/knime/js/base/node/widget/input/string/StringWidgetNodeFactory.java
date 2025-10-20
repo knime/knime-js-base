@@ -49,55 +49,46 @@
 package org.knime.js.base.node.widget.input.string;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the string widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class StringWidgetNodeFactory extends NodeFactory<StringWidgetNodeModel> implements
-    WizardNodeFactoryExtension<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
+public class StringWidgetNodeFactory
+    extends WidgetNodeFactory<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    static final String DESCRIPTION = "Creates a text input widget for use in components views."
+        + " Outputs an string flow variable with a given value.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name("String Widget") //
+        .icon("./widget_string.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(StringWidgetNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined.") //
+        .nodeType(NodeType.Widget) //
+        .keywords() //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public StringWidgetNodeFactory() {
+        super(CONFIG, StringWidgetNodeParameters.class);
+    }
+
     @Override
     public StringWidgetNodeModel createNodeModel() {
         return new StringWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<StringWidgetNodeModel> createNodeView(final int viewIndex, final StringWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new StringWidgetNodeDialog();

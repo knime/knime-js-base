@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.parameters.text.TextValidationParameters;
 
 /**
  * Base config file for the list box configuration and widget nodes
@@ -61,12 +62,12 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class ListBoxNodeConfig {
 
-    public static final String CFG_REGEX = "regex";
-    public static final String DEFAULT_REGEX = "";
+    private static final String CFG_REGEX = TextValidationParameters.CFG_REGEX;
+    private static final String DEFAULT_REGEX = TextValidationParameters.DEFAULT_REGEX;
     private String m_regex = DEFAULT_REGEX;
 
-    public static final String CFG_ERROR_MESSAGE = "error_message";
-    public static final String DEFAULT_ERROR_MESSAGE = "";
+    private static final String CFG_ERROR_MESSAGE = TextValidationParameters.CFG_ERROR_MESSAGE;
+    private static final String DEFAULT_ERROR_MESSAGE = TextValidationParameters.DEFAULT_ERROR_MESSAGE;
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
     public static final String CFG_SEPARATOR = "separator";

@@ -79,7 +79,6 @@ import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParame
 import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SelectionTypeChoicesProvider;
 import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SelectionTypeValueReference;
 import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.ShowNumberOfVisibleOptions;
-import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnChoicesProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnValueProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultValueChoicesProvider;
@@ -88,6 +87,9 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNode
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.DefaultColumnValueReference;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldValueReference;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.NoColumnsAvailableMessage;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;

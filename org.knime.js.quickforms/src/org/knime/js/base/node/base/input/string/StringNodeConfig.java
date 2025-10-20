@@ -53,6 +53,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.parameters.text.TextValidationParameters;
 
 /**
  * Base config file for the string configuration and widget nodes
@@ -66,12 +67,12 @@ public class StringNodeConfig {
     /** Multi-line editor (text area) */
     public static final String EDITOR_TYPE_MULTI_LINE_STRING = "Multi-line";
 
-    private static final String CFG_REGEX = "regex";
-    public static final String DEFAULT_REGEX = "";
+    private static final String CFG_REGEX = TextValidationParameters.CFG_REGEX;
+    private static final String DEFAULT_REGEX = TextValidationParameters.DEFAULT_REGEX;
     private String m_regex = DEFAULT_REGEX;
 
-    public static final String CFG_ERROR_MESSAGE = "error_message";
-    public static final String DEFAULT_ERROR_MESSAGE = "";
+    private static final String CFG_ERROR_MESSAGE = TextValidationParameters.CFG_ERROR_MESSAGE;
+    private static final String DEFAULT_ERROR_MESSAGE = TextValidationParameters.DEFAULT_ERROR_MESSAGE;
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
     public static final String CFG_EDITOR_TYPE = "editorType";
@@ -79,7 +80,7 @@ public class StringNodeConfig {
     private String m_editorType = DEFAULT_EDITOR_TYPE;
 
     private static final String CFG_MULTI_LINE_EDITOR_WIDTH = "multilineEditorWidth";
-    private static final int DEFAULT_MULTI_LINE_EDITOR_WIDTH = 60;
+    public static final int DEFAULT_MULTI_LINE_EDITOR_WIDTH = 60;
     private int m_multilineEditorWidth = DEFAULT_MULTI_LINE_EDITOR_WIDTH;
 
     private static final String CFG_MULTI_LINE_EDITOR_HEIGHT = "multilineEditorHeight";

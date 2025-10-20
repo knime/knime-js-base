@@ -4,8 +4,8 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "string-input",
-      "parameterName" : "string-input",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
       "defaultStringNodeValue" : {
         "defaultValue" : {
@@ -29,6 +29,10 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "defaultStringNodeValue" : {
             "type" : "object",
             "properties" : {
@@ -59,32 +63,24 @@
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "string-input"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "string-input"
           },
           "required" : {
             "type" : "boolean",
@@ -115,7 +111,7 @@
               "multilineEditorWidth" : {
                 "type" : "integer",
                 "format" : "int32",
-                "title" : "Field width (legacy)",
+                "title" : "Field width",
                 "description" : "The width of the editor in number of characters per line.",
                 "default" : 60
               },
@@ -190,8 +186,18 @@
                 "min" : 1.0
               }
             }
-          },
-          "isAdvanced" : true
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/editorType",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "MULTI_LINE"
+              } ]
+            }
+          }
         }
       }, {
         "type" : "Control",
@@ -274,34 +280,6 @@
           }
         }
       } ]
-    }, {
-      "label" : "Advanced Settings",
-      "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
-      "elements" : [ {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
-        }
-      } ]
     } ]
   },
   "persist" : {
@@ -313,8 +291,8 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
           "defaultStringNodeValue" : {
             "type" : "object",
@@ -362,10 +340,5 @@
     },
     "triggerInitially" : true,
     "dependencies" : [ ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   } ]
 }

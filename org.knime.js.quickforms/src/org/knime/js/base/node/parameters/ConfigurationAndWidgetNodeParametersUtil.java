@@ -44,49 +44,79 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 4, 2025 (marcbux): created
+ *   20 Oct 2025 (Robin Gerling, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.js.base.node.configuration.input.string;
+package org.knime.js.base.node.parameters;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.text.DefaultStringNodeValueParameters;
-import org.knime.js.base.node.parameters.text.TextEditorWithValidationParameters;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.updates.Effect;
+import org.knime.node.parameters.Advanced;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.widget.text.TextInputWidgetValidation;
 
 /**
- * Settings for the string configuration node.
+ * This class contains common node parameters related functionality of configuration and widget nodes.
  *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("restriction")
-public final class StringDialogNodeSettings extends ConfigurationNodeSettings {
+public final class ConfigurationAndWidgetNodeParametersUtil {
 
-    StringDialogNodeSettings() {
-        super(StringInputDialogNodeConfig.class);
+    private ConfigurationAndWidgetNodeParametersUtil() {
+        // utility
     }
 
-    @PersistWithin.PersistEmbedded
-    DefaultStringNodeValueParameters m_defaultStringNodeValue = new DefaultStringNodeValueParameters();
+    /**
+     * The form field section of a configuration/widget node
+     */
+    @Section(title = "Form Field")
+    public interface FormFieldSection {
+    }
 
-    @Modification(ChangeEditorWidthToLegacy.class)
-    @PersistWithin.PersistEmbedded
-    TextEditorWithValidationParameters m_textEditorWithValidationParameters = new TextEditorWithValidationParameters();
+    /**
+     * The output section of a configuration/widget node
+     */
+    @Section(title = "Output")
+    @After(FormFieldSection.class)
+    public interface OutputSection {
+        /**
+         * The elements at the top of the output section
+         */
+        interface Top {
+        }
 
-    static final class ChangeEditorWidthToLegacy implements Modification.Modifier {
-        @Override
-        public void modify(final WidgetGroupModifier group) {
-            group.find(TextEditorWithValidationParameters.EditorWidthModificationReference.class)
-                .modifyAnnotation(Widget.class) //
-                .withProperty("title", "Field width (legacy)") //
-                .withProperty("advanced", true) //
-                .modify();
+        /**
+         * The elements at the bottom of the output section
+         */
+        @After(Top.class)
+        interface Bottom {
 
-            group.find(TextEditorWithValidationParameters.EditorWidthModificationReference.class) //
-                .removeAnnotation(Effect.class);
         }
     }
+
+    /**
+     * The advanced settings section of a configuration/widget node
+     */
+    @Section(title = "Advanced Settings")
+    @Advanced
+    @After(OutputSection.class)
+    public interface AdvancedSettingsSection {
+    }
+
+    /**
+     * Checks whether the flow variable name is valid, i.e., whether it starts and ends with a letter, and only contains
+     * letters, digits, and single dashes.
+     */
+    public static final class IsValidFlowVariableNameValidation extends TextInputWidgetValidation.PatternValidation {
+
+        @Override
+        protected String getPattern() {
+            return "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?";
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return "Value must start and end with a letter, and may contain only letters, digits, and single dashes.";
+        }
+
+    }
+
 }

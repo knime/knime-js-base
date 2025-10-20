@@ -57,7 +57,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputat
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeConfig;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;

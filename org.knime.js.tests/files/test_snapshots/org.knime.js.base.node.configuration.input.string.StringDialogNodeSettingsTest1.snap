@@ -7,14 +7,20 @@
       "parameterName" : "string-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "string" : ""
+      "defaultStringNodeValue" : {
+        "defaultValue" : {
+          "string" : ""
+        }
       },
-      "editorType" : "SINGLE_LINE",
-      "multilineEditorWidth" : 40,
-      "multilineEditorHeight" : 5,
-      "regex" : "",
-      "errorMessage" : ""
+      "textEditorWithValidationParameters" : {
+        "editorType" : "SINGLE_LINE",
+        "multilineEditorWidth" : 40,
+        "multilineEditorHeight" : 5,
+        "validation" : {
+          "regex" : "",
+          "errorMessage" : ""
+        }
+      }
     }
   },
   "schema" : {
@@ -23,18 +29,31 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
+          "defaultStringNodeValue" : {
             "type" : "object",
             "properties" : {
-              "string" : {
-                "type" : "string",
-                "title" : "Default value",
-                "description" : "Default value for the field. If empty, no default value will be set.",
-                "default" : ""
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "string" : {
+                    "type" : "string",
+                    "title" : "Default value",
+                    "description" : "Default value for the field. If empty, no default value will be set.",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "string" : ""
+                }
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
               }
             },
             "default" : {
-              "string" : ""
+              "defaultValue" : {
+                "string" : ""
+              }
             }
           },
           "description" : {
@@ -42,24 +61,6 @@
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
-          },
-          "editorType" : {
-            "oneOf" : [ {
-              "const" : "SINGLE_LINE",
-              "title" : "Single-line"
-            }, {
-              "const" : "MULTI_LINE",
-              "title" : "Multi-line"
-            } ],
-            "title" : "Field type",
-            "description" : "Choose between single-line or multi-line text input.",
-            "default" : "SINGLE_LINE"
-          },
-          "errorMessage" : {
-            "type" : "string",
-            "title" : "Failure message",
-            "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
-            "default" : ""
           },
           "flowVariableName" : {
             "type" : "string",
@@ -79,38 +80,76 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "multilineEditorHeight" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Field height",
-            "description" : "Height of the editor in number of text lines. Multi-line editor only.",
-            "default" : 5
-          },
-          "multilineEditorWidth" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Field width (legacy)",
-            "description" : "The width of the editor in number of characters per line.",
-            "default" : 40
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
             "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "string-input"
           },
-          "regex" : {
-            "type" : "string",
-            "title" : "Regex pattern",
-            "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
-            "default" : ""
-          },
           "required" : {
             "type" : "boolean",
             "default" : true
+          },
+          "textEditorWithValidationParameters" : {
+            "type" : "object",
+            "properties" : {
+              "editorType" : {
+                "oneOf" : [ {
+                  "const" : "SINGLE_LINE",
+                  "title" : "Single-line"
+                }, {
+                  "const" : "MULTI_LINE",
+                  "title" : "Multi-line"
+                } ],
+                "title" : "Field type",
+                "description" : "Choose between single-line or multi-line text input.",
+                "default" : "SINGLE_LINE"
+              },
+              "multilineEditorHeight" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Field height",
+                "description" : "Height of the editor in number of text lines. Multi-line editor only.",
+                "default" : 5
+              },
+              "multilineEditorWidth" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Field width (legacy)",
+                "description" : "The width of the editor in number of characters per line.",
+                "default" : 60
+              },
+              "validation" : {
+                "type" : "object",
+                "properties" : {
+                  "errorMessage" : {
+                    "type" : "string",
+                    "title" : "Failure message",
+                    "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
+                    "default" : ""
+                  },
+                  "regex" : {
+                    "type" : "string",
+                    "title" : "Regex pattern",
+                    "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "regex" : "",
+                  "errorMessage" : ""
+                }
+              }
+            },
+            "default" : {
+              "editorType" : "SINGLE_LINE",
+              "multilineEditorWidth" : 60,
+              "multilineEditorHeight" : 5,
+              "validation" : {
+                "regex" : "",
+                "errorMessage" : ""
+              }
+            }
           }
         }
       }
@@ -128,13 +167,13 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/editorType",
+        "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/editorType",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/multilineEditorWidth",
+        "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/multilineEditorWidth",
         "options" : {
           "validation" : {
             "max" : {
@@ -156,7 +195,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/multilineEditorHeight",
+        "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/multilineEditorHeight",
         "options" : {
           "validation" : {
             "max" : {
@@ -178,7 +217,7 @@
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/editorType",
+            "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/editorType",
             "schema" : {
               "oneOf" : [ {
                 "const" : "MULTI_LINE"
@@ -193,7 +232,7 @@
       "rule" : {
         "effect" : "SHOW",
         "condition" : {
-          "scope" : "#/properties/model/properties/editorType",
+          "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/editorType",
           "schema" : {
             "oneOf" : [ {
               "const" : "SINGLE_LINE"
@@ -203,24 +242,24 @@
       },
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/regex"
+        "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/validation/properties/regex"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/errorMessage"
+        "scope" : "#/properties/model/properties/textEditorWithValidationParameters/properties/validation/properties/errorMessage"
       } ]
     }, {
       "label" : "Output",
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/defaultStringNodeValue/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/string"
+        "scope" : "#/properties/model/properties/defaultStringNodeValue/properties/defaultValue/properties/string"
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName",
@@ -277,21 +316,41 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "defaultStringNodeValue" : {
             "type" : "object",
             "properties" : {
-              "string" : { }
-            }
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "string" : { }
+                }
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
-          "editorType" : {
-            "configPaths" : [ [ "editorType" ] ]
-          },
-          "multilineEditorWidth" : { },
-          "multilineEditorHeight" : { },
-          "regex" : { },
-          "errorMessage" : {
-            "configKey" : "error_message"
+          "textEditorWithValidationParameters" : {
+            "type" : "object",
+            "properties" : {
+              "editorType" : {
+                "configPaths" : [ [ "editorType" ] ]
+              },
+              "multilineEditorWidth" : { },
+              "multilineEditorHeight" : { },
+              "validation" : {
+                "type" : "object",
+                "properties" : {
+                  "regex" : {
+                    "configKey" : "regex"
+                  },
+                  "errorMessage" : {
+                    "configKey" : "error_message"
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }

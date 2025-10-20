@@ -44,98 +44,66 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   7 Jun 2025 (Robin Gerling): created
+ *   20 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration;
+package org.knime.js.base.node.widget;
 
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_DESCRIPTION;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_LABEL;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
 
-import java.util.function.Supplier;
-
-import org.knime.core.node.dialog.DialogNode;
+import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.AdvancedSettingsSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.IsValidFlowVariableNameValidation;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.updates.ParameterReference;
-import org.knime.node.parameters.updates.StateProvider;
-import org.knime.node.parameters.updates.ValueProvider;
-import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.text.TextInputWidget;
 
 /**
- * This class specifies the common settings of configuration nodes.
+ * This class specifies the common settings of widget nodes.
  *
  * @author Robin Gerling
  */
-@SuppressWarnings("restriction")
-public abstract class ConfigurationNodeSettings implements NodeParameters {
-
+public abstract class WidgetNodeParameters implements NodeParameters {
     /**
      * Default constructor
      *
      * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
      */
-    protected ConfigurationNodeSettings(final Class<?> nodeConfigClass) {
+    protected WidgetNodeParameters(final Class<?> nodeConfigClass) {
         final var defaultParamName = SubNodeContainer.getDialogNodeParameterNameDefault(nodeConfigClass);
         m_flowVariableName = defaultParamName;
-        m_parameterName = defaultParamName;
     }
 
-    @Widget(title = "Label", description = """
-            A descriptive label that will be shown for instance in \
-            the node description of the component exposing a dialog.\
-            """)
+    @Widget(title = "Label", description = "A descriptive label that will be shown in the view.")
     @Layout(FormFieldSection.class)
     String m_label = DEFAULT_LABEL;
 
-    @Widget(title = "Description", description = """
-            Some lines of description that will be shown for instance in \
-            the node description of the component exposing a dialog.\
-            """)
+    @Widget(title = "Description",
+        description = "Some lines of description that will be shown in the view, for instance by means of a tooltip.")
     @Layout(FormFieldSection.class)
     String m_description = DEFAULT_DESCRIPTION;
 
-    @Widget(title = "Output variable name", description = """
-            Parameter identifier for external parameterization (e.g. batch execution).
-            This will also be the name of the exported flow variable.
-            """)
+    @Widget(title = "Variable name", description = "The name of the exported flow variable.")
     @Layout(OutputSection.Bottom.class)
-    @ValueReference(FlowVariableNameRef.class)
     @TextInputWidget(patternValidation = IsValidFlowVariableNameValidation.class)
-    String m_flowVariableName; // see DialogNodeConfig.m_parameterName
+    String m_flowVariableName;
 
     /**
-     * See {@link DialogNode#getParameterName()} .
+     * A legacy setting from the old nodes which can be enabled from the flow variables tab or the layout editor. See
+     * {@link WizardNode#isHideInWizard()} .
      */
-    @Widget(title = "Parameter name", description = """
-            Parameter identifier for external parameterization (e.g. batch execution). \
-            Whenever the output variable name is adjusted, the current value of the parameter \
-            name is set to the same value.\
-                    """, advanced = true)
-    @Layout(AdvancedSettingsSection.class)
-    @ValueProvider(FlowVariableNameStateProvider.class)
-    @TextInputWidget(patternValidation = IsValidFlowVariableNameValidation.class)
-    String m_parameterName;
+    boolean m_hideInWizard = WidgetConfig.DEFAULT_HIDE_IN_WIZARD;
 
     /**
-     * A left-over setting from the old nodes that appeared in data apps and in component dialog. See
-     * {@link DialogNode#isHideInDialog()} .
+     * This setting was not shown in the dialog previously and is not recommended anymore, but is needed for backwards
+     * compatibility.
      */
-    @Widget(title = "Hide in dialog", description = """
-            Set this to true to hide this field in a component dialog.
-                     """, advanced = true)
-    @Layout(AdvancedSettingsSection.class)
-    boolean m_hideInDialog = DialogNodeConfig.DEFAULT_HIDE_IN_DIALOG;
+    String m_customCSS = "";
 
     /**
      * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was never
@@ -143,25 +111,4 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
      * not be able to load the settings.
      */
     boolean m_required = DEFAULT_REQUIRED;
-
-    /**
-     * The reference to the string input containing the flow variable name
-     */
-    interface FlowVariableNameRef extends ParameterReference<String> {
-    }
-
-    static final class FlowVariableNameStateProvider implements StateProvider<String> {
-        private Supplier<String> m_flowVariableNameSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_flowVariableNameSupplier = initializer.computeFromValueSupplier(FlowVariableNameRef.class);
-        }
-
-        @Override
-        public String computeState(final NodeParametersInput context) throws StateComputationFailureException {
-            return m_flowVariableNameSupplier.get();
-        }
-    }
-
 }

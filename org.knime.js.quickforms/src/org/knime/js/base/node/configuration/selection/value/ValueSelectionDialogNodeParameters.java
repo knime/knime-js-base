@@ -68,7 +68,6 @@ import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
 import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.OverwrittenByValueMessage;
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.IsListSelectionType;
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
 import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
@@ -82,6 +81,9 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNode
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.DefaultColumnValueReference;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldValueReference;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.NoColumnsAvailableMessage;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
