@@ -44,60 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.integer;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
-import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.number.IntegerNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
 
 /**
- * Factory for the integer widget node
+ * Settings for the integer widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class IntegerWidgetNodeFactory
-    extends WidgetNodeFactory<IntegerWidgetNodeModel, IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue> {
+@SuppressWarnings("restriction")
+public final class IntegerWidgetNodeParameters extends WidgetNodeParameters {
 
-    static final String NAME = "Integer Widget";
-
-    static final String DESCRIPTION = "Creates a number input widget for use in components views."
-        + " Outputs an integer flow variable with a given value.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_integer.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(IntegerWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (integer) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public IntegerWidgetNodeFactory() {
-        super(CONFIG, IntegerWidgetNodeParameters.class);
+    IntegerWidgetNodeParameters() {
+        super(IntegerInputWidgetConfig.class);
     }
 
-    @Override
-    public IntegerWidgetNodeModel createNodeModel() {
-        return new IntegerWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return  NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new IntegerWidgetNodeDialog();
-    }
+    @PersistWithin.PersistEmbedded
+    IntegerNodeParameters m_integerNodeParameters = new IntegerNodeParameters();
 
 }

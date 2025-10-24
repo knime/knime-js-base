@@ -7,11 +7,13 @@
       "parameterName" : "integer-input2a",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "integer" : 3
-      },
-      "minimumValue" : 2,
-      "maximumValue" : null
+      "integerNodeParameters" : {
+        "defaultValue" : {
+          "integer" : 3
+        },
+        "minimumValue" : 2,
+        "maximumValue" : null
+      }
     }
   },
   "schema" : {
@@ -20,21 +22,6 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "integer" : {
-                "type" : "integer",
-                "format" : "int32",
-                "title" : "Default value",
-                "description" : "Default value for the field. If empty, no default value will be set.",
-                "default" : 0
-              }
-            },
-            "default" : {
-              "integer" : 0
-            }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
@@ -53,28 +40,55 @@
             "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
+          "integerNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "integer" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Default value",
+                    "description" : "The value that is used by default.",
+                    "default" : 0
+                  }
+                },
+                "default" : {
+                  "integer" : 0
+                }
+              },
+              "maximumValue" : {
+                "type" : [ "integer", "null" ],
+                "format" : "int32",
+                "title" : "Maximum value",
+                "description" : "An optional maximum value.",
+                "default" : null
+              },
+              "minimumValue" : {
+                "type" : [ "integer", "null" ],
+                "format" : "int32",
+                "title" : "Minimum value",
+                "description" : "An optional minimum value.",
+                "default" : null
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              }
+            },
+            "default" : {
+              "defaultValue" : {
+                "integer" : 0
+              },
+              "minimumValue" : null,
+              "maximumValue" : null
+            }
+          },
           "label" : {
             "type" : "string",
             "title" : "Label",
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
-          },
-          "maximumValue" : {
-            "type" : [ "integer", "null" ],
-            "format" : "int32",
-            "title" : "Maximum value",
-            "description" : "An optional maximum value.",
-            "default" : null
-          },
-          "minimumValue" : {
-            "type" : [ "integer", "null" ],
-            "format" : "int32",
-            "title" : "Minimum value",
-            "description" : "An optional minimum value.",
-            "default" : null
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
           },
           "parameterName" : {
             "type" : "string",
@@ -106,7 +120,7 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/minimumValue",
+        "scope" : "#/properties/model/properties/integerNodeParameters/properties/minimumValue",
         "options" : {
           "validation" : {
             "max" : {
@@ -129,7 +143,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/maximumValue",
+        "scope" : "#/properties/model/properties/integerNodeParameters/properties/maximumValue",
         "options" : {
           "validation" : {
             "max" : {
@@ -156,14 +170,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/integerNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/integer",
+        "scope" : "#/properties/model/properties/integerNodeParameters/properties/defaultValue/properties/integer",
         "options" : {
           "validation" : {
             "max" : {
@@ -181,8 +195,7 @@
               }
             }
           }
-        },
-        "providedOptions" : [ "validation.max", "validation.min" ]
+        }
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName",
@@ -239,45 +252,31 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "integerNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "integer" : { }
-            }
-          },
-          "minimumValue" : {
-            "configPaths" : [ [ "useMin" ], [ "min" ] ]
-          },
-          "maximumValue" : {
-            "configPaths" : [ [ "useMax" ], [ "max" ] ]
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "integer" : { }
+                }
+              },
+              "minimumValue" : {
+                "configPaths" : [ [ "useMin" ], [ "min" ] ]
+              },
+              "maximumValue" : {
+                "configPaths" : [ [ "useMax" ], [ "max" ] ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
     }
   },
   "initialUpdates" : [ {
-    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
-    "providedOptionName" : "validation.max",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : null
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/integer",
-    "providedOptionName" : "validation.min",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "parameters" : {
-          "min" : 2.0,
-          "isExclusive" : false
-        },
-        "errorMessage" : "The value must be at least 2."
-      }
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/maximumValue",
+    "scope" : "#/properties/model/properties/integerNodeParameters/properties/maximumValue",
     "providedOptionName" : "default",
     "values" : [ {
       "indices" : [ ],
@@ -295,15 +294,5 @@
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/maximumValue"
-    },
-    "dependencies" : [ "#/properties/model/properties/maximumValue" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/minimumValue"
-    },
-    "dependencies" : [ "#/properties/model/properties/minimumValue" ]
   } ]
 }

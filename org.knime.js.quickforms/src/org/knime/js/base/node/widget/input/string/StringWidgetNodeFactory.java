@@ -63,12 +63,14 @@ import org.knime.js.base.node.widget.WidgetNodeFactory;
 public class StringWidgetNodeFactory
     extends WidgetNodeFactory<StringWidgetNodeModel, StringNodeRepresentation<StringNodeValue>, StringNodeValue> {
 
+    static final String NAME = "String Widget";
+
     static final String DESCRIPTION = "Creates a text input widget for use in components views."
         + " Outputs an string flow variable with a given value.";
 
     @SuppressWarnings({"deprecation", "restriction"})
     static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name("String Widget") //
+        .name(NAME) //
         .icon("./widget_string.png") //
         .shortDescription(DESCRIPTION) //
         .fullDescription(DESCRIPTION) //
@@ -87,6 +89,11 @@ public class StringWidgetNodeFactory
     @Override
     public StringWidgetNodeModel createNodeModel() {
         return new StringWidgetNodeModel(getInteractiveViewName());
+    }
+
+    @Override
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
     @Override

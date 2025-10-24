@@ -44,60 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 May 2019 (albrecht): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.integer;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.integer.IntegerNodeRepresentation;
-import org.knime.js.base.node.base.input.integer.IntegerNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the integer widget node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class IntegerWidgetNodeFactory
-    extends WidgetNodeFactory<IntegerWidgetNodeModel, IntegerNodeRepresentation<IntegerNodeValue>, IntegerNodeValue> {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    static final String NAME = "Integer Widget";
+@SuppressWarnings("restriction")
+final class IntegerWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final String DESCRIPTION = "Creates a number input widget for use in components views."
-        + " Outputs an integer flow variable with a given value.";
+    protected IntegerWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_integer.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(IntegerWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (integer) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(IntegerWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public IntegerWidgetNodeFactory() {
-        super(CONFIG, IntegerWidgetNodeParameters.class);
+    private static IntegerWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(IntegerWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("IntegerWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    IntegerWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public IntegerWidgetNodeModel createNodeModel() {
-        return new IntegerWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return  NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new IntegerWidgetNodeDialog();
-    }
-
 }
