@@ -7,11 +7,13 @@
       "parameterName" : "double-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "double" : 0.0
-      },
-      "minimumValue" : null,
-      "maximumValue" : null
+      "doubleNodeParameters" : {
+        "defaultValue" : {
+          "double" : 0.0
+        },
+        "minimumValue" : null,
+        "maximumValue" : null
+      }
     }
   },
   "schema" : {
@@ -20,26 +22,55 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "double" : {
-                "type" : "number",
-                "format" : "double",
-                "title" : "Default value",
-                "description" : "Default value for the field. If empty, no default value will be set.",
-                "default" : 0.0
-              }
-            },
-            "default" : {
-              "double" : 0.0
-            }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
+          },
+          "doubleNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "double" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Default value",
+                    "description" : "The value that is used by default in the input field.",
+                    "default" : 0.0
+                  }
+                },
+                "default" : {
+                  "double" : 0.0
+                }
+              },
+              "maximumValue" : {
+                "type" : [ "number", "null" ],
+                "format" : "double",
+                "title" : "Maximum value",
+                "description" : "An optional maximum value.",
+                "default" : null
+              },
+              "minimumValue" : {
+                "type" : [ "number", "null" ],
+                "format" : "double",
+                "title" : "Minimum value",
+                "description" : "An optional minimum value.",
+                "default" : null
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              }
+            },
+            "default" : {
+              "defaultValue" : {
+                "double" : 0.0
+              },
+              "minimumValue" : null,
+              "maximumValue" : null
+            }
           },
           "flowVariableName" : {
             "type" : "string",
@@ -58,23 +89,6 @@
             "title" : "Label",
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
-          },
-          "maximumValue" : {
-            "type" : [ "number", "null" ],
-            "format" : "double",
-            "title" : "Maximum value",
-            "description" : "An optional maximum value.",
-            "default" : null
-          },
-          "minimumValue" : {
-            "type" : [ "number", "null" ],
-            "format" : "double",
-            "title" : "Minimum value",
-            "description" : "An optional minimum value.",
-            "default" : null
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
           },
           "parameterName" : {
             "type" : "string",
@@ -106,14 +120,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/minimumValue",
+        "scope" : "#/properties/model/properties/doubleNodeParameters/properties/minimumValue",
         "options" : {
           "hideOnNull" : true,
           "default" : 0
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/maximumValue",
+        "scope" : "#/properties/model/properties/doubleNodeParameters/properties/maximumValue",
         "options" : {
           "hideOnNull" : true
         },
@@ -124,14 +138,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/doubleNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/double"
+        "scope" : "#/properties/model/properties/doubleNodeParameters/properties/defaultValue/properties/double"
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName",
@@ -188,25 +202,31 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "doubleNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "double" : { }
-            }
-          },
-          "minimumValue" : {
-            "configPaths" : [ [ "useMin" ], [ "min" ] ]
-          },
-          "maximumValue" : {
-            "configPaths" : [ [ "useMax" ], [ "max" ] ]
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "double" : { }
+                }
+              },
+              "minimumValue" : {
+                "configPaths" : [ [ "useMin" ], [ "min" ] ]
+              },
+              "maximumValue" : {
+                "configPaths" : [ [ "useMax" ], [ "max" ] ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
     }
   },
   "initialUpdates" : [ {
-    "scope" : "#/properties/model/properties/maximumValue",
+    "scope" : "#/properties/model/properties/doubleNodeParameters/properties/maximumValue",
     "providedOptionName" : "default",
     "values" : [ {
       "indices" : [ ],

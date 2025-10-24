@@ -69,7 +69,7 @@ import org.knime.node.parameters.persistence.Persist;
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-public class TextValidationParameters implements NodeParameters {
+public final class TextValidationParameters implements NodeParameters {
 
     /**
      * The config key for the regex setting.

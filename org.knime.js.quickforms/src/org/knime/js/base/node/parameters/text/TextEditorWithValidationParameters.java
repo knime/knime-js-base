@@ -87,7 +87,7 @@ import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinVa
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public class TextEditorWithValidationParameters implements NodeParameters {
+public final class TextEditorWithValidationParameters implements NodeParameters {
 
     @Section(title = "Validation")
     @After(FormFieldSection.class)

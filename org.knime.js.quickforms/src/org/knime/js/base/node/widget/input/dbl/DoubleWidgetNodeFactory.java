@@ -49,55 +49,52 @@
 package org.knime.js.base.node.widget.input.dbl;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeRepresentation;
 import org.knime.js.base.node.base.input.dbl.DoubleNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the double widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class DoubleWidgetNodeFactory extends NodeFactory<DoubleWidgetNodeModel> implements
-    WizardNodeFactoryExtension<DoubleWidgetNodeModel, DoubleNodeRepresentation<DoubleNodeValue>, DoubleNodeValue> {
+public class DoubleWidgetNodeFactory
+    extends WidgetNodeFactory<DoubleWidgetNodeModel, DoubleNodeRepresentation<DoubleNodeValue>, DoubleNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Double Widget";
+
+    private static final String DESCRIPTION = "Creates a number input widget for use in components views."
+        + " Outputs a double flow variable with a given value.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_double.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(DoubleWidgetNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (double) with the given variable defined.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public DoubleWidgetNodeFactory() {
+        super(CONFIG, DoubleWidgetNodeParameters.class);
+    }
+
     @Override
     public DoubleWidgetNodeModel createNodeModel() {
         return new DoubleWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<DoubleWidgetNodeModel> createNodeView(final int viewIndex, final DoubleWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new DoubleWidgetNodeDialog();

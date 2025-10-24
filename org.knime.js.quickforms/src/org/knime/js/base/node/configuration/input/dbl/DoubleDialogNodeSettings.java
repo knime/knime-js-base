@@ -48,29 +48,9 @@
  */
 package org.knime.js.base.node.configuration.input.dbl;
 
-import java.util.Optional;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.node.base.input.dbl.DoubleNodeConfig;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.NodeParametersInput;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.After;
-import org.knime.node.parameters.layout.Before;
-import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.layout.Section;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
-import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.widget.OptionalWidget;
-import org.knime.node.parameters.widget.OptionalWidget.DefaultValueProvider;
-import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.js.base.node.parameters.number.DoubleNodeParameters;
 
 /**
  * WebUI Node Settings for the Double Configuration.
@@ -87,110 +67,7 @@ public class DoubleDialogNodeSettings extends ConfigurationNodeSettings {
         super(DoubleInputDialogNodeConfig.class);
     }
 
-    @Section(title = "Validation")
-    @After(FormFieldSection.class)
-    @Before(OutputSection.class)
-    interface ValidationSection {
-    }
+    @PersistWithin.PersistEmbedded
+    DoubleNodeParameters m_doubleNodeParameters = new DoubleNodeParameters();
 
-    // the default value whose type is specific to the node
-
-    @TextMessage(DoubleOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
-
-    static final class DoubleOverwrittenByValueMessage extends OverwrittenByValueMessage<DoubleDialogNodeValue> {
-
-        @Override
-        protected String valueToString(final DoubleDialogNodeValue value) {
-            return String.valueOf(value.getDouble());
-        }
-
-    }
-
-    static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If empty, no default value will be set.")
-        @Layout(OutputSection.Top.class)
-        double m_double;
-    }
-
-    DefaultValue m_defaultValue = new DefaultValue();
-
-    // settings specific to the DoubleDialogNode
-
-    @Widget(title = "Minimum value", description = "An optional minimum value.")
-    @Layout(ValidationSection.class)
-    @Persistor(MinValuePersistor.class)
-    Optional<Double> m_minimumValue = Optional.empty();
-
-    @Widget(title = "Maximum value", description = "An optional maximum value.")
-    @Layout(ValidationSection.class)
-    @Persistor(MaxValuePersistor.class)
-    @OptionalWidget(defaultProvider = MaxValueDefaultProvider.class)
-    Optional<Double> m_maximumValue = Optional.empty();
-
-    static final class MaxValueDefaultProvider implements DefaultValueProvider<Double> {
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
-
-        @Override
-        public Double computeState(final NodeParametersInput context) throws StateComputationFailureException {
-            return DoubleNodeConfig.DEFAULT_MAX;
-        }
-
-    }
-
-    static final class MinValuePersistor extends ValidationValuePersistor {
-
-        MinValuePersistor() {
-            super(DoubleNodeConfig.CFG_USE_MIN, DoubleNodeConfig.CFG_MIN);
-        }
-
-    }
-
-    static final class MaxValuePersistor extends ValidationValuePersistor {
-
-        MaxValuePersistor() {
-            super(DoubleNodeConfig.CFG_USE_MAX, DoubleNodeConfig.CFG_MAX);
-        }
-
-    }
-
-    abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Double>> {
-
-        private final String m_useKey;
-
-        private final String m_valueKey;
-
-        ValidationValuePersistor(final String useKey, final String valueKey) {
-            this.m_useKey = useKey;
-            this.m_valueKey = valueKey;
-        }
-
-        @Override
-        public Optional<Double> load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var use = settings.getBoolean(m_useKey);
-            if (!use) {
-                return Optional.empty();
-            }
-            final var value = settings.getDouble(m_valueKey);
-            return Optional.of(value);
-        }
-
-        @Override
-        public void save(final Optional<Double> obj, final NodeSettingsWO settings) {
-            settings.addBoolean(m_useKey, obj.isPresent());
-            settings.addDouble(m_valueKey, obj.isPresent() ? obj.get() : 0);
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{m_useKey}, {m_valueKey}};
-        }
-
-    }
 }

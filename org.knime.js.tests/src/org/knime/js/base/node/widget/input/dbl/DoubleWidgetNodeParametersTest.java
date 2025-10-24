@@ -44,45 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   20 Oct 2025 (Robin Gerling, KNIME GmbH, Konstanz, Germany): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.parameters.text;
+package org.knime.js.base.node.widget.input.dbl;
 
-import org.knime.js.base.node.base.input.string.StringNodeValue;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.widget.message.TextMessage;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * The node parameters for configuration and widget nodes which use the {@link StringNodeValue}.
- *
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
- */
-public final class DefaultStringNodeValueParameters implements NodeParameters {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    @TextMessage(StringOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
+@SuppressWarnings("restriction")
+final class DoubleWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringNodeValue> {
+    protected DoubleWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-        @Override
-        protected String valueToString(final StringNodeValue value) {
-            return value.getString();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(DoubleWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
+
+    private static DoubleWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(DoubleWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("DoubleWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    DoubleWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
         }
-
     }
-
-    static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If empty, no default value will be set.")
-        String m_string = "";
-    }
-
-    @Layout(OutputSection.Top.class)
-    DefaultValue m_defaultValue = new DefaultValue();
-
 }

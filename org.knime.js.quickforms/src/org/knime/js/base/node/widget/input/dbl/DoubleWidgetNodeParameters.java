@@ -44,45 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   20 Oct 2025 (Robin Gerling, KNIME GmbH, Konstanz, Germany): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.parameters.text;
+package org.knime.js.base.node.widget.input.dbl;
 
-import org.knime.js.base.node.base.input.string.StringNodeValue;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.number.DoubleNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
 
 /**
- * The node parameters for configuration and widget nodes which use the {@link StringNodeValue}.
+ * Settings for the double widget node.
  *
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public final class DefaultStringNodeValueParameters implements NodeParameters {
+@SuppressWarnings("restriction")
+public final class DoubleWidgetNodeParameters extends WidgetNodeParameters {
 
-    @TextMessage(StringOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
-
-    static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringNodeValue> {
-
-        @Override
-        protected String valueToString(final StringNodeValue value) {
-            return value.getString();
-        }
-
+    DoubleWidgetNodeParameters() {
+        super(DoubleInputWidgetConfig.class);
     }
 
-    static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If empty, no default value will be set.")
-        String m_string = "";
-    }
-
-    @Layout(OutputSection.Top.class)
-    DefaultValue m_defaultValue = new DefaultValue();
+    @PersistWithin.PersistEmbedded
+    DoubleNodeParameters m_doubleNodeParameters = new DoubleNodeParameters();
 
 }
