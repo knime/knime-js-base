@@ -44,60 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 29, 2019 (Daniel Bogenrieder): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.credentials;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
-import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the credentials widget node
- *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
- */
-public class CredentialsWidgetNodeFactory extends WidgetNodeFactory< //
-        CredentialsWidgetNodeModel, CredentialsNodeRepresentation<CredentialsNodeValue>, CredentialsNodeValue> {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    static final String NAME = "Credentials Widget";
+@SuppressWarnings("restriction")
+final class CredentialsWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final String DESCRIPTION = "Creates a Credentials input widget for use in components views."
-        + " Outputs a credentials flow variable with a given value.";
+    protected CredentialsWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_credentials.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(CredentialsWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (credentials) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(CredentialsWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public CredentialsWidgetNodeFactory() {
-        super(CONFIG, CredentialsWidgetNodeParameters.class);
+    private static CredentialsWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(CredentialsWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("CredentialsWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    CredentialsWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public CredentialsWidgetNodeModel createNodeModel() {
-        return new CredentialsWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new CredentialsWidgetNodeDialog();
-    }
-
 }

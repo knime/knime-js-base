@@ -44,60 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 29, 2019 (Daniel Bogenrieder): created
+ *   24 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.credentials;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.credentials.CredentialsNodeRepresentation;
-import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
+import org.knime.js.base.node.parameters.credentials.CredentialsNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.node.parameters.updates.ValueProvider;
 
 /**
- * Factory for the credentials widget node
+ * Settings for the credentials widget node.
  *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class CredentialsWidgetNodeFactory extends WidgetNodeFactory< //
-        CredentialsWidgetNodeModel, CredentialsNodeRepresentation<CredentialsNodeValue>, CredentialsNodeValue> {
+@SuppressWarnings("restriction")
+public final class CredentialsWidgetNodeParameters extends WidgetNodeParameters {
 
-    static final String NAME = "Credentials Widget";
-
-    static final String DESCRIPTION = "Creates a Credentials input widget for use in components views."
-        + " Outputs a credentials flow variable with a given value.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_credentials.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(CredentialsWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (credentials) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public CredentialsWidgetNodeFactory() {
-        super(CONFIG, CredentialsWidgetNodeParameters.class);
+    CredentialsWidgetNodeParameters() {
+        super(CredentialsInputWidgetConfig.class);
     }
 
-    @Override
-    public CredentialsWidgetNodeModel createNodeModel() {
-        return new CredentialsWidgetNodeModel(getInteractiveViewName());
-    }
+    @PersistWithin.PersistEmbedded
+    CredentialsNodeParameters m_credentialsNodeParameters = new CredentialsNodeParameters();
 
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
+    /**
+     * The {@link CredentialsNodeParameters} contain a cfgKey from the CredentialsDialogNodeValue. This node value
+     * should only be used in the configuration node, but in this case, it is also used in the widget node
+     * ({@link CredentialsInputWidgetConfig#createEmptyValue}). However, the widget node does not use the value, why
+     * we don't need to update it.
+     */
+    static final class RemoveUseServerLoginValueProviderFromDefaultValue implements Modification.Modifier {
 
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new CredentialsWidgetNodeDialog();
+        @Override
+        public void modify(final WidgetGroupModifier group) {
+            group.find(CredentialsNodeParameters.UseServerLoginModificationReference.class)
+                .removeAnnotation(ValueProvider.class);
+        }
+
     }
 
 }
