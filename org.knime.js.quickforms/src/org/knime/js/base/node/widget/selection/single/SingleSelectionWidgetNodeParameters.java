@@ -44,26 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 Sept 2025 (Robin Gerling): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.single;
+package org.knime.js.base.node.widget.selection.single;
 
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionNodeParameters;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.filterandselection.SingleSelectionNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * WebUI Node Settings for the Single Selection Configuration.
+ * WebUI Node Parameters for the Single Selection Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettings {
+@SuppressWarnings("restriction")
+public final class SingleSelectionWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    /**
-     * Default constructor
-     */
-    protected SingleSelectionDialogNodeParameters() {
-        super(SingleSelectionDialogNodeConfig.class);
+    SingleSelectionWidgetNodeParameters() {
+        super(SingleSelectionWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded
