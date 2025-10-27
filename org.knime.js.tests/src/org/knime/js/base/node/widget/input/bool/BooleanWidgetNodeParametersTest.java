@@ -44,59 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the boolean widget node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-@SuppressWarnings({"restriction", "deprecation"})
-public class BooleanWidgetNodeFactory extends WidgetNodeFactory< //
-        BooleanWidgetNodeModel, ReExecutableBooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue> {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    static final String NAME = "Boolean Widget";
+@SuppressWarnings("restriction")
+final class BooleanWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final String DESCRIPTION = "Creates a boolean widget for use in components views."
-        + " Outputs a flow variable with a given value (boolean or integer).";
+    protected BooleanWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_boolean.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(BooleanWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (boolean or integer) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(BooleanWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public BooleanWidgetNodeFactory() {
-        super(CONFIG, BooleanWidgetNodeParameters.class);
-    }
-
-    @Override
-    public BooleanWidgetNodeModel createNodeModel() {
-        return new BooleanWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new BooleanWidgetNodeDialog();
+    private static BooleanWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(BooleanWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("BooleanWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    BooleanWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }

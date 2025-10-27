@@ -44,59 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   27 Oct 2025 (robin): created
  */
-package org.knime.js.base.node.widget.input.bool;
+package org.knime.js.base.node.widget;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.After;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.layout.Section;
+import org.knime.node.parameters.migration.Migrate;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * Factory for the boolean widget node
+ * This class specifies the common settings of widget nodes with re-execution.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-@SuppressWarnings({"restriction", "deprecation"})
-public class BooleanWidgetNodeFactory extends WidgetNodeFactory< //
-        BooleanWidgetNodeModel, ReExecutableBooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue> {
+public abstract class ReexecutionWidgetNodeParameters extends WidgetNodeParameters {
 
-    static final String NAME = "Boolean Widget";
-
-    static final String DESCRIPTION = "Creates a boolean widget for use in components views."
-        + " Outputs a flow variable with a given value (boolean or integer).";
-
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_boolean.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(BooleanWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (boolean or integer) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public BooleanWidgetNodeFactory() {
-        super(CONFIG, BooleanWidgetNodeParameters.class);
+    /**
+     * Default constructor
+     *
+     * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
+     */
+    protected ReexecutionWidgetNodeParameters(final Class<?> nodeConfigClass) {
+        super(nodeConfigClass);
     }
 
-    @Override
-    public BooleanWidgetNodeModel createNodeModel() {
-        return new BooleanWidgetNodeModel(getInteractiveViewName());
+    /**
+     * The re-execution section of a widget node
+     */
+    @Section(title = "Re-execution")
+    @After(OutputSection.class)
+    public interface ReExecutionSection {
     }
 
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new BooleanWidgetNodeDialog();
-    }
+    @Widget(title = "Re-execution on widget value change",
+        description = "If selected, the widget emits reactivity events that trigger the re-execution of downstream"
+            + " nodes in a component composite view when its value changes. It allows users to create interactive Data"
+            + " Apps and visualizations.")
+    @Layout(ReExecutionSection.class)
+    @Persist(configKey = ReExecutableConfig.CFG_TRIGGER_REEXECUTION)
+    @Migrate(loadDefaultIfAbsent = true)
+    boolean m_triggerReExecution;
 
 }

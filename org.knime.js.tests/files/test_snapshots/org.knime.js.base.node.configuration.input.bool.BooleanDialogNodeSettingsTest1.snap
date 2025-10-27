@@ -7,10 +7,12 @@
       "parameterName" : "boolean-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "boolean" : false
-      },
-      "pushIntVar" : "BOOLEAN"
+      "booleanNodeParameters" : {
+        "defaultValue" : {
+          "boolean" : false
+        },
+        "outputType" : "BOOLEAN"
+      }
     }
   },
   "schema" : {
@@ -19,18 +21,44 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
+          "booleanNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "boolean" : {
-                "type" : "boolean",
-                "title" : "Default value",
-                "description" : "Default value for the field. If empty, no default value will be set.",
-                "default" : false
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "boolean" : {
+                    "type" : "boolean",
+                    "title" : "Default value",
+                    "description" : "The value that is selected by default.",
+                    "default" : false
+                  }
+                },
+                "default" : {
+                  "boolean" : false
+                }
+              },
+              "outputType" : {
+                "oneOf" : [ {
+                  "const" : "BOOLEAN",
+                  "title" : "Boolean"
+                }, {
+                  "const" : "INTEGER",
+                  "title" : "Number (Integer)"
+                } ],
+                "title" : "Output type",
+                "description" : "The type of the output variable.",
+                "default" : "BOOLEAN"
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
               }
             },
             "default" : {
-              "boolean" : false
+              "defaultValue" : {
+                "boolean" : false
+              },
+              "outputType" : "BOOLEAN"
             }
           },
           "description" : {
@@ -57,26 +85,11 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
             "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "boolean-input"
-          },
-          "pushIntVar" : {
-            "oneOf" : [ {
-              "const" : "BOOLEAN",
-              "title" : "Boolean"
-            }, {
-              "const" : "INTEGER",
-              "title" : "Number (Integer)"
-            } ],
-            "title" : "Output type",
-            "description" : "The type of the output variable.",
-            "default" : "BOOLEAN"
           },
           "required" : {
             "type" : "boolean",
@@ -102,14 +115,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/booleanNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/boolean",
+        "scope" : "#/properties/model/properties/booleanNodeParameters/properties/defaultValue/properties/boolean",
         "options" : {
           "format" : "checkbox"
         }
@@ -128,7 +141,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/pushIntVar",
+        "scope" : "#/properties/model/properties/booleanNodeParameters/properties/outputType",
         "options" : {
           "format" : "valueSwitch"
         }
@@ -175,15 +188,21 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "booleanNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "boolean" : { }
-            }
-          },
-          "pushIntVar" : {
-            "configPaths" : [ [ "pushIntVar" ] ]
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "boolean" : { }
+                }
+              },
+              "outputType" : {
+                "configPaths" : [ [ "pushIntVar" ] ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }

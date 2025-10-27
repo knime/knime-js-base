@@ -44,59 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   10 May 2019 (albrecht): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.bool;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.bool.BooleanNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.bool.BooleanNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * Factory for the boolean widget node
+ * Settings for the boolean widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-@SuppressWarnings({"restriction", "deprecation"})
-public class BooleanWidgetNodeFactory extends WidgetNodeFactory< //
-        BooleanWidgetNodeModel, ReExecutableBooleanNodeRepresentation<BooleanNodeValue>, BooleanNodeValue> {
+@SuppressWarnings("restriction")
+public final class BooleanWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    static final String NAME = "Boolean Widget";
-
-    static final String DESCRIPTION = "Creates a boolean widget for use in components views."
-        + " Outputs a flow variable with a given value (boolean or integer).";
-
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_boolean.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(BooleanWidgetNodeParameters.class) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (boolean or integer) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public BooleanWidgetNodeFactory() {
-        super(CONFIG, BooleanWidgetNodeParameters.class);
+    BooleanWidgetNodeParameters() {
+        super(BooleanInputWidgetConfig.class);
     }
 
-    @Override
-    public BooleanWidgetNodeModel createNodeModel() {
-        return new BooleanWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new BooleanWidgetNodeDialog();
-    }
+    @PersistWithin.PersistEmbedded
+    BooleanNodeParameters m_booleanNodeParameters = new BooleanNodeParameters();
 
 }

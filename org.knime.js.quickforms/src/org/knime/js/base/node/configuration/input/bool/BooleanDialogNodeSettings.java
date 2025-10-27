@@ -48,23 +48,9 @@
  */
 package org.knime.js.base.node.configuration.input.bool;
 
-import static org.knime.js.base.node.base.input.bool.BooleanNodeConfig.CFG_PUSH_INT_VAR;
-import static org.knime.js.base.node.base.input.bool.BooleanNodeConfig.DEFAULT_PUSH_INT_VAR;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.input.bool.BooleanDialogNodeSettings.OutputType.OutputTypePersistor;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
-import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.widget.choices.Label;
-import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
-import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.js.base.node.parameters.bool.BooleanNodeParameters;
 
 /**
  * Settings for the boolean configuration node.
@@ -74,70 +60,11 @@ import org.knime.node.parameters.widget.message.TextMessage;
 @SuppressWarnings("restriction")
 public final class BooleanDialogNodeSettings extends ConfigurationNodeSettings {
 
-    /**
-     * Default constructor
-     */
-    public BooleanDialogNodeSettings() {
+    BooleanDialogNodeSettings() {
         super(BooleanInputDialogNodeConfig.class);
     }
 
-    // the default value whose type is specific to the node
-
-    @TextMessage(BooleanOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
-
-    static final class BooleanOverwrittenByValueMessage extends OverwrittenByValueMessage<BooleanDialogNodeValue> {
-
-        @Override
-        protected String valueToString(final BooleanDialogNodeValue value) {
-            return String.valueOf(value.getBoolean());
-        }
-
-    }
-
-    static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If empty, no default value will be set.")
-        @Layout(OutputSection.Top.class)
-        boolean m_boolean;
-    }
-
-    DefaultValue m_defaultValue = new DefaultValue();
-
-    // settings specific to the BooleanDialogNode
-
-    enum OutputType {
-            /** Output as a value of type boolean */
-            @Label("Boolean")
-            BOOLEAN,
-            /** Output as a value of type number */
-            @Label("Number (Integer)")
-            INTEGER;
-
-        static final class OutputTypePersistor implements NodeParametersPersistor<OutputType> {
-            @Override
-            public OutputType load(final NodeSettingsRO settings) {
-                final var pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, DEFAULT_PUSH_INT_VAR);
-                return pushIntVar ? INTEGER : BOOLEAN;
-            }
-
-            @Override
-            public void save(final OutputType outputType, final NodeSettingsWO settings) {
-                settings.addBoolean(CFG_PUSH_INT_VAR, outputType == INTEGER);
-            }
-
-            @Override
-            public String[][] getConfigPaths() {
-                return new String[][]{{CFG_PUSH_INT_VAR}};
-            }
-        }
-    }
-
-    @Widget(title = "Output type", description = "The type of the output variable.")
-    @ValueSwitchWidget
-    @Layout(OutputSection.Bottom.class)
-    @Persistor(OutputTypePersistor.class)
-    OutputType m_pushIntVar = OutputType.BOOLEAN;
+    @PersistWithin.PersistEmbedded
+    BooleanNodeParameters m_booleanNodeParameters = new BooleanNodeParameters();
 
 }
