@@ -49,56 +49,52 @@
 package org.knime.js.base.node.widget.input.listbox;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeRepresentation;
 import org.knime.js.base.node.base.input.listbox.ListBoxNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the list box widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ListBoxWidgetNodeFactory extends NodeFactory<ListBoxWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ListBoxWidgetNodeModel, ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue> {
+public class ListBoxWidgetNodeFactory
+    extends WidgetNodeFactory<ListBoxWidgetNodeModel, ListBoxNodeRepresentation<ListBoxNodeValue>, ListBoxNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "List Box Widget";
+
+    private static final String DESCRIPTION = "Creates a text area input widget for use in components views."
+        + " Outputs a data table with one column holding a list of strings.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_listbox.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(ListBoxWidgetNodeParameters.class) //
+        .addOutputPort("List Values", PortObject.TYPE,
+            "Variable output with the given variable defined and the selected option as index.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public ListBoxWidgetNodeFactory() {
+        super(CONFIG, ListBoxWidgetNodeParameters.class);
+    }
+
     @Override
     public ListBoxWidgetNodeModel createNodeModel() {
         return new ListBoxWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ListBoxWidgetNodeModel> createNodeView(final int viewIndex,
-        final ListBoxWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ListBoxWidgetNodeDialog();

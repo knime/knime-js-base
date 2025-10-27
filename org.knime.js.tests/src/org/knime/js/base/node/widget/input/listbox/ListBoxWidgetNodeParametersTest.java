@@ -44,26 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 15, 2025 (user): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.listbox;
+package org.knime.js.base.node.widget.input.listbox;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.listbox.ListBoxNodeParameters;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Settings for the list box configuration node.
+ * Test for {@link ListBoxWidgetNodeParameters}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class ListBoxDialogNodeParameters extends ConfigurationNodeSettings {
+final class ListBoxWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    ListBoxDialogNodeParameters() {
-        super(ListBoxInputDialogNodeConfig.class);
+    protected ListBoxWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @PersistWithin.PersistEmbedded
-    ListBoxNodeParameters m_listBoxNodeParameters = new ListBoxNodeParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(ListBoxWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
+
+    private static ListBoxWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ListBoxWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("ListBoxWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ListBoxWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
 }

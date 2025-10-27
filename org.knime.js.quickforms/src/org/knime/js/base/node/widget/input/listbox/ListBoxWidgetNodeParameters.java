@@ -44,24 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 15, 2025 (user): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.listbox;
+package org.knime.js.base.node.widget.input.listbox;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.parameters.listbox.ListBoxNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
 
 /**
- * Settings for the list box configuration node.
+ * Settings for the list box widget node.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class ListBoxDialogNodeParameters extends ConfigurationNodeSettings {
+public final class ListBoxWidgetNodeParameters extends WidgetNodeParameters {
 
-    ListBoxDialogNodeParameters() {
-        super(ListBoxInputDialogNodeConfig.class);
+    ListBoxWidgetNodeParameters() {
+        super(ListBoxInputWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded

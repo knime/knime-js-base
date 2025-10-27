@@ -4,8 +4,8 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "list-box-input",
-      "parameterName" : "list-box-input",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
       "listBoxNodeParameters" : {
         "defaultValue" : {
@@ -13,13 +13,13 @@
         },
         "numberVisibleOptions" : 5,
         "textValidationParameters" : {
-          "regex" : "^(https:[/][/]|http:[/][/]|www.)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\\-\\._\\?\\,\\'/\\\\\\+&amp;%\\$#\\=~])*$",
-          "errorMessage" : "The given input '?' is not a valid URL"
+          "regex" : "",
+          "errorMessage" : ""
         },
         "separateEachCharacter" : false,
         "separator" : "\\n",
         "separatorRegex" : "",
-        "omitEmpty" : false
+        "omitEmpty" : true
       }
     }
   },
@@ -29,28 +29,30 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "list-box-input"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
           },
           "listBoxNodeParameters" : {
@@ -138,12 +140,6 @@
               "separatorRegex" : "",
               "omitEmpty" : true
             }
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "list-box-input"
           },
           "required" : {
             "type" : "boolean",
@@ -242,40 +238,12 @@
         "options" : {
           "validation" : {
             "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
               "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+                "pattern" : "\\S(.*\\S)?"
               }
             }
           }
-        }
-      } ]
-    }, {
-      "label" : "Advanced Settings",
-      "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
-      "elements" : [ {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
         }
       } ]
     } ]
@@ -289,8 +257,8 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
           "listBoxNodeParameters" : {
             "type" : "object",
@@ -342,10 +310,5 @@
     },
     "triggerInitially" : true,
     "dependencies" : [ ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   } ]
 }

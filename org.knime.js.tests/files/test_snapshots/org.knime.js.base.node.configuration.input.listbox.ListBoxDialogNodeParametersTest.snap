@@ -7,18 +7,20 @@
       "parameterName" : "list-box-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "string" : ""
-      },
-      "numberVisibleOptions" : 5,
-      "textValidationParameters" : {
-        "regex" : "",
-        "errorMessage" : ""
-      },
-      "separateEachCharacter" : false,
-      "separator" : "\\n",
-      "separatorRegex" : "",
-      "omitEmpty" : true
+      "listBoxNodeParameters" : {
+        "defaultValue" : {
+          "string" : ""
+        },
+        "numberVisibleOptions" : 5,
+        "textValidationParameters" : {
+          "regex" : "",
+          "errorMessage" : ""
+        },
+        "separateEachCharacter" : false,
+        "separator" : "\\n",
+        "separatorRegex" : "",
+        "omitEmpty" : true
+      }
     }
   },
   "schema" : {
@@ -27,20 +29,6 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "string" : {
-                "type" : "string",
-                "title" : "Default value",
-                "description" : "Default value for the field.",
-                "default" : ""
-              }
-            },
-            "default" : {
-              "string" : ""
-            }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
@@ -65,21 +53,91 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "numberVisibleOptions" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Number of visible options",
-            "description" : "The number of options visible in the list box without scrolling. Changing this value will also affect the component's height.",
-            "default" : 5
-          },
-          "omitEmpty" : {
-            "type" : "boolean",
-            "title" : "Omit empty values",
-            "description" : "If checked, empty values will be omitted from the list of options and do not have to pass the validation check.",
-            "default" : true
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
+          "listBoxNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "string" : {
+                    "type" : "string",
+                    "title" : "Default value",
+                    "description" : "The value that is used by default in the text area.",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "string" : ""
+                }
+              },
+              "numberVisibleOptions" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Number of visible options",
+                "description" : "The number of options visible in the list box without scrolling. Changing this value will also affect the component's height.",
+                "default" : 5
+              },
+              "omitEmpty" : {
+                "type" : "boolean",
+                "title" : "Omit empty values",
+                "description" : "If checked, empty values will be omitted from the list of options and do not have to pass the validation check.",
+                "default" : true
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "separateEachCharacter" : {
+                "type" : "boolean",
+                "title" : "Separate at each character",
+                "description" : "If checked, each character in the input will be treated as a separate option.",
+                "default" : false
+              },
+              "separator" : {
+                "type" : "string",
+                "title" : "Separator",
+                "description" : "The separator string used to split the options.",
+                "default" : "\\n"
+              },
+              "separatorRegex" : {
+                "type" : "string",
+                "default" : ""
+              },
+              "textValidationParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "errorMessage" : {
+                    "type" : "string",
+                    "title" : "Failure message",
+                    "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
+                    "default" : ""
+                  },
+                  "regex" : {
+                    "type" : "string",
+                    "title" : "Regex pattern",
+                    "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "regex" : "",
+                  "errorMessage" : ""
+                }
+              }
+            },
+            "default" : {
+              "defaultValue" : {
+                "string" : ""
+              },
+              "numberVisibleOptions" : 5,
+              "textValidationParameters" : {
+                "regex" : "",
+                "errorMessage" : ""
+              },
+              "separateEachCharacter" : false,
+              "separator" : "\\n",
+              "separatorRegex" : "",
+              "omitEmpty" : true
+            }
           },
           "parameterName" : {
             "type" : "string",
@@ -90,43 +148,6 @@
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "separateEachCharacter" : {
-            "type" : "boolean",
-            "title" : "Separate each character",
-            "description" : "If checked, each character in the input will be treated as a separate option.",
-            "default" : false
-          },
-          "separator" : {
-            "type" : "string",
-            "title" : "Separator",
-            "description" : "The separator string used to split the options.",
-            "default" : "\\n"
-          },
-          "separatorRegex" : {
-            "type" : "string",
-            "default" : ""
-          },
-          "textValidationParameters" : {
-            "type" : "object",
-            "properties" : {
-              "errorMessage" : {
-                "type" : "string",
-                "title" : "Failure message",
-                "description" : "Message shown if the value is not valid.\n'?' will be replaced by the invalid value.\nSingle-line editor only.\nFailure messages corresponding to common regex patterns are as follows:\n<ul><li><b>Email address</b>: The given input '?' is not a valid email address</li><li><b>URL</b>: The given input '?' is not a valid URL</li><li><b>IPv4</b>: The given input '?' is not a valid IPv4 address</li><li><b>Windows file path</b>: The given input '?' is not a valid Windows path</li></ul>",
-                "default" : ""
-              },
-              "regex" : {
-                "type" : "string",
-                "title" : "Regex pattern",
-                "description" : "Regular expression defining valid values.\nSingle-line editor only.\nCommon regex patterns are as follows:\n<ul><li><b>Email address</b>: ^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$</li><li><b>URL</b>: ^((f|ht)tps?://(.*@)?|www\\.)[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?(:[0-9]+)?(/[^#?\\s]*)?(\\?[^#?\\s]*)?(#.*)?$</li><li><b>IPv4</b>: ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</li><li><b>Windows file path</b>: ^((\\\\\\\\[a-zA-Z0-9-]+\\\\[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+([ ]+[a-zA-Z0-9`~!@#$%^&amp;(){}'._-]+)*)|([a-zA-Z]:))(\\\\[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+([ ]+[^ \\\\/:*?&quot;&quot;&lt;&gt;|]+)*)*\\\\?$</li></ul>",
-                "default" : ""
-              }
-            },
-            "default" : {
-              "regex" : "",
-              "errorMessage" : ""
-            }
           }
         }
       }
@@ -144,7 +165,7 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/numberVisibleOptions",
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/numberVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -169,41 +190,41 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/textValidationParameters/properties/regex"
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/textValidationParameters/properties/regex"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/textValidationParameters/properties/errorMessage"
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/textValidationParameters/properties/errorMessage"
       } ]
     }, {
       "label" : "Output",
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/listBoxNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/string",
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/defaultValue/properties/string",
         "options" : {
           "rows" : 4,
           "format" : "textArea"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/separateEachCharacter",
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/separateEachCharacter",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/separator",
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/separator",
         "rule" : {
           "effect" : "HIDE",
           "condition" : {
-            "scope" : "#/properties/model/properties/separateEachCharacter",
+            "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/separateEachCharacter",
             "schema" : {
               "const" : true
             }
@@ -211,7 +232,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/omitEmpty",
+        "scope" : "#/properties/model/properties/listBoxNodeParameters/properties/omitEmpty",
         "options" : {
           "format" : "checkbox"
         }
@@ -271,39 +292,45 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "listBoxNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "string" : { }
-            }
-          },
-          "numberVisibleOptions" : {
-            "configKey" : "number_visible_options"
-          },
-          "textValidationParameters" : {
-            "type" : "object",
-            "properties" : {
-              "regex" : {
-                "configKey" : "regex"
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "string" : { }
+                }
               },
-              "errorMessage" : {
-                "configKey" : "error_message"
+              "numberVisibleOptions" : {
+                "configKey" : "number_visible_options"
+              },
+              "textValidationParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "regex" : {
+                    "configKey" : "regex"
+                  },
+                  "errorMessage" : {
+                    "configKey" : "error_message"
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              },
+              "separateEachCharacter" : {
+                "configKey" : "separate_each_character"
+              },
+              "separator" : {
+                "configKey" : "separator"
+              },
+              "separatorRegex" : {
+                "configKey" : "seperator_regex"
+              },
+              "omitEmpty" : {
+                "configKey" : "omit_empty"
               }
             },
             "propertiesRoute" : [ ".." ]
-          },
-          "separateEachCharacter" : {
-            "configKey" : "separate_each_character"
-          },
-          "separator" : {
-            "configKey" : "separator"
-          },
-          "separatorRegex" : {
-            "configKey" : "seperator_regex"
-          },
-          "omitEmpty" : {
-            "configKey" : "omit_empty"
           }
         }
       }
