@@ -44,29 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 Sept 2025 (Robin Gerling): created
+ *   27 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.single;
+package org.knime.js.base.node.widget.selection.single;
 
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionNodeParameters;
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * WebUI Node Settings for the Single Selection Configuration.
- *
- * @author Robin Gerling, KNIME GmbH, Konstanz
- */
-public class SingleSelectionDialogNodeParameters extends ConfigurationNodeSettings {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    /**
-     * Default constructor
-     */
-    protected SingleSelectionDialogNodeParameters() {
-        super(SingleSelectionDialogNodeConfig.class);
+@SuppressWarnings("restriction")
+final class SingleSelectionWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
+
+    protected SingleSelectionWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @PersistWithin.PersistEmbedded
-    SingleSelectionNodeParameters m_singleSelectionNodeParameters = new SingleSelectionNodeParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(SingleSelectionWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
 
+    private static SingleSelectionWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(SingleSelectionWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("SingleSelectionWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    SingleSelectionWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
