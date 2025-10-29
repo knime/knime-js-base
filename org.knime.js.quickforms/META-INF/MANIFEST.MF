@@ -45,7 +45,7 @@ Export-Package: org.knime.js.base.node.base,
  org.knime.js.base.node.quickform.selection.single,
  org.knime.js.base.node.quickform.selection.value,
  org.knime.js.base.node.widget,
- org.knime.js.base.node.widget.input.string
+ org.knime.js.base.node.widget.input.string;x-internal:=true
 Require-Bundle: org.knime.core.workbench;bundle-version="[5.8.0,6.0.0)",
  org.knime.base;bundle-version="[5.8.0,6.0.0)",
  org.knime.core.ui;bundle-version="[5.8.0,6.0.0)",

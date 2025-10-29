@@ -56,12 +56,12 @@ import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.IsValidFlowVariableNameValidation;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.widget.text.TextInputWidget;
+import org.knime.node.parameters.widget.text.util.ColumnNameValidationUtils.ColumnNameValidation;
 
 /**
  * This class specifies the common settings of widget nodes.
@@ -90,12 +90,12 @@ public abstract class WidgetNodeParameters implements NodeParameters {
 
     @Widget(title = "Variable name", description = "The name of the exported flow variable.")
     @Layout(OutputSection.Bottom.class)
-    @TextInputWidget(patternValidation = IsValidFlowVariableNameValidation.class)
+    @TextInputWidget(patternValidation = ColumnNameValidation.class)
     String m_flowVariableName;
 
     /**
      * A legacy setting from the old nodes which can be enabled from the flow variables tab or the layout editor. See
-     * {@link WizardNode#isHideInWizard()} .
+     * {@link WizardNode#isHideInWizard()}.
      */
     boolean m_hideInWizard = WidgetConfig.DEFAULT_HIDE_IN_WIZARD;
 

@@ -60,7 +60,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputat
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.AdvancedSettingsSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.IsValidFlowVariableNameValidation;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
@@ -71,6 +70,7 @@ import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.text.TextInputWidget;
+import org.knime.node.parameters.widget.text.TextInputWidgetValidation;
 
 /**
  * This class specifies the common settings of configuration nodes.
@@ -162,6 +162,20 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
         public String computeState(final NodeParametersInput context) throws StateComputationFailureException {
             return m_flowVariableNameSupplier.get();
         }
+    }
+
+    static final class IsValidFlowVariableNameValidation extends TextInputWidgetValidation.PatternValidation {
+
+        @Override
+        protected String getPattern() {
+            return "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?";
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return "Value must start and end with a letter, and may contain only letters, digits, and single dashes.";
+        }
+
     }
 
 }

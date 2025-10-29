@@ -51,7 +51,6 @@ package org.knime.js.base.node.parameters;
 import org.knime.node.parameters.Advanced;
 import org.knime.node.parameters.layout.After;
 import org.knime.node.parameters.layout.Section;
-import org.knime.node.parameters.widget.text.TextInputWidgetValidation;
 
 /**
  * This class contains common node parameters related functionality of configuration and widget nodes.
@@ -99,24 +98,6 @@ public final class ConfigurationAndWidgetNodeParametersUtil {
     @Advanced
     @After(OutputSection.class)
     public interface AdvancedSettingsSection {
-    }
-
-    /**
-     * Checks whether the flow variable name is valid, i.e., whether it starts and ends with a letter, and only contains
-     * letters, digits, and single dashes.
-     */
-    public static final class IsValidFlowVariableNameValidation extends TextInputWidgetValidation.PatternValidation {
-
-        @Override
-        protected String getPattern() {
-            return "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?";
-        }
-
-        @Override
-        public String getErrorMessage() {
-            return "Value must start and end with a letter, and may contain only letters, digits, and single dashes.";
-        }
-
     }
 
 }
