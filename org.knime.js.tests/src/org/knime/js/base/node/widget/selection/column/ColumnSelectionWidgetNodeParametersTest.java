@@ -44,62 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   29 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.selection.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the column selection widget node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- */
-public class ColumnSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        ColumnSelectionWidgetNodeModel, //
-        ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, //
-        ColumnSelectionNodeValue> {
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    private static final String NAME = "Column Selection Widget";
+@SuppressWarnings("restriction")
+final class ColumnSelectionWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    private static final String DESCRIPTION = "Creates a column selection widget for use in components views. "
-        + "Outputs a string flow variable with the name of the selected column.";
+    protected ColumnSelectionWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_column_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(ColumnSelectionWidgetNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the columns to be selected.") //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (string) with the selected column name.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .withInputPortObjectSpecs(createInputPortSpecs())
+        .testJsonFormsForModel(ColumnSelectionWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public ColumnSelectionWidgetNodeFactory() {
-        super(CONFIG, ColumnSelectionWidgetNodeParameters.class);
+    private static ColumnSelectionWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ColumnSelectionWidgetNodeParametersTest.class).getParent()
+                .resolve("node_settings").resolve("ColumnSelectionWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ColumnSelectionWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
-    @Override
-    public ColumnSelectionWidgetNodeModel createNodeModel() {
-        return new ColumnSelectionWidgetNodeModel(getInteractiveViewName());
+    private static PortObjectSpec[] createInputPortSpecs() {
+        return new PortObjectSpec[]{createDefaultTestTableSpec(), createDefaultTestTableSpec()};
     }
 
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnSelectionWidgetNodeDialog();
+    private static DataTableSpec createDefaultTestTableSpec() {
+        return new DataTableSpec(new String[]{"StringColumn", "IntColumn", "DoubleColumn"}, new DataType[]{
+            DataType.getType(StringCell.class), DataType.getType(IntCell.class), DataType.getType(DoubleCell.class)});
     }
 
 }
