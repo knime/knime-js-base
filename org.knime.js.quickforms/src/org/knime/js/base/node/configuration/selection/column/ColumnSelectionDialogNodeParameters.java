@@ -54,13 +54,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
@@ -68,33 +62,19 @@ import org.knime.js.base.node.configuration.column.InputFilterUtil.HideColumnsWi
 import org.knime.js.base.node.configuration.column.InputFilterUtil.InputFilter;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterSection;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterValueReference;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.js.base.node.parameters.filterandselection.ColumnSelectionNodeParameters;
+import org.knime.js.base.node.parameters.filterandselection.ColumnSelectionNodeParameters.ColumnValueValueProvider;
 import org.knime.node.parameters.NodeParametersInput;
-import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.migration.Migrate;
 import org.knime.node.parameters.persistence.Persist;
-import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.updates.ParameterReference;
-import org.knime.node.parameters.updates.StateProvider;
-import org.knime.node.parameters.updates.ValueProvider;
-import org.knime.node.parameters.updates.ValueReference;
-import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
-import org.knime.node.parameters.widget.choices.TypedStringChoice;
-import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
  * WebUI Node Parameters for the Column Selection Configuration.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-@LoadDefaultsForAbsentFields
 @SuppressWarnings("restriction")
 public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettings {
 
@@ -105,60 +85,38 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
         super(ColumnSelectionDialogNodeConfig.class);
     }
 
-    @TextMessage(ColumnSelectionOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
-
-    private static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "Default value for the field. If you want to use a value that is not among the possible"
-                + " choices as the default, override the field using a flow variable.")
-        @Layout(OutputSection.Top.class)
-        @Persistor(DefaultColumnValuePersistor.class)
-        @ChoicesProvider(PossibleColumnChoicesProvider.class)
-        @ValueProvider(ColumnValueValueProvider.class)
-        @ValueReference(ColumnValueValueReference.class)
-        String m_columnValue;
-    }
-
-    DefaultValue m_defaultValue = new DefaultValue();
-
     @PersistWithin.PersistEmbedded
-    @Layout(FormFieldSection.class)
-    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
-
-    @ChoicesProvider(PossibleColumnChoicesProvider.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_POSSIBLE_COLUMNS)
-    String[] m_possibleColumns = new String[0];
+    ColumnSelectionNodeParameters m_columnSelectionNodeParameters = new ColumnSelectionNodeParameters();
 
     @Layout(TypeFilterSection.class)
     @Persist(configKey = ColumnSelectionDialogNodeConfig.CFG_INPUT_FILTER)
+    @Migrate(loadDefaultIfAbsent = true)
     InputFilter m_inputFilter = new InputFilter();
 
-    private static final class DefaultColumnValuePersistor implements NodeParametersPersistor<String> {
+    static final class ChangeColumnChoicesProviderModification
+        extends ColumnSelectionNodeParameters.ChangeColumnProvider {
 
         @Override
-        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return settings.getString(ColumnSelectionNodeValue.CFG_COLUMN, "");
+        public Class<? extends ColumnChoicesProvider> getColumnChoicesProvider() {
+            return TypeFilteredColumnChoicesProvider.class;
         }
 
         @Override
-        public void save(final String param, final NodeSettingsWO settings) {
-            final var valueToSave = param == null ? "" : param;
-            settings.addString(ColumnSelectionNodeValue.CFG_COLUMN, valueToSave);
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{ColumnSelectionNodeValue.CFG_COLUMN}};
+        public Class<? extends ColumnValueValueProvider> getColumnValueValueProvider() {
+            return null;
         }
 
     }
 
-    private static final class ColumnValueValueReference implements ParameterReference<String> {
+    static final class TypeFilteredColumnValueValueProvider extends ColumnValueValueProvider {
+
+        TypeFilteredColumnValueValueProvider() {
+            super(TypeFilteredColumnChoicesProvider.class);
+        }
+
     }
 
-    static final class PossibleColumnChoicesProvider implements ColumnChoicesProvider {
+    static final class TypeFilteredColumnChoicesProvider implements ColumnChoicesProvider {
 
         private Supplier<Boolean> m_hideColumnsWithoutDomainSupplier;
 
@@ -189,46 +147,6 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
                 .filter(colSpec -> !m_hideColumnsWithoutDomainSupplier.get() || !InputSpecFilter.hasNoDomain(colSpec))
                 .toList();
         }
-    }
-
-    private static final class ColumnValueValueProvider implements StateProvider<String> {
-
-        private Supplier<String> m_columnValueSupplier;
-
-        private Supplier<List<TypedStringChoice>> m_possibleColumnChoicesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_columnValueSupplier = initializer.getValueSupplier(ColumnValueValueReference.class);
-            m_possibleColumnChoicesSupplier = initializer.computeFromProvidedState(PossibleColumnChoicesProvider.class);
-        }
-
-        @Override
-        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var possibleColumnChoices = m_possibleColumnChoicesSupplier.get();
-            if (possibleColumnChoices.isEmpty()) {
-                return null;
-            }
-            final var columnValue = m_columnValueSupplier.get();
-            final var possibleColumnChoicesIds = possibleColumnChoices.stream().map(TypedStringChoice::id).toList();
-
-            if (columnValue != null && possibleColumnChoicesIds.contains(columnValue)) {
-                return columnValue;
-            }
-            return possibleColumnChoicesIds.get(0);
-        }
-
-    }
-
-    private static final class ColumnSelectionOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<ColumnSelectionDialogNodeValue> {
-
-        @Override
-        protected String valueToString(final ColumnSelectionDialogNodeValue value) {
-            return value.getColumn();
-        }
-
     }
 
 }

@@ -4,26 +4,22 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "column-selection",
-      "parameterName" : "column-selection",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
+      "triggerReExecution" : false,
       "columnSelectionNodeParameters" : {
         "defaultValue" : {
-          "columnValue" : "Universe_1_1"
+          "columnValue" : ""
         },
         "limitVisOptions" : {
-          "selectionType" : "Radio buttons (horizontal)",
+          "selectionType" : "Dropdown",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
-            "numberOfVisibleOptions" : 5
+            "numberOfVisibleOptions" : 10
           }
         },
-        "possibleColumns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1" ]
-      },
-      "inputFilter" : {
-        "allowAllTypes" : false,
-        "filterColumnsWithoutDomains" : true,
-        "typeFilter" : [ "org.knime.core.data.DoubleValue", "org.knime.core.data.StringValue", "org.knime.core.data.time.localdatetime.LocalDateTimeValue" ]
+        "possibleColumns" : [ ]
       }
     }
   },
@@ -110,70 +106,41 @@
               "possibleColumns" : [ ]
             }
           },
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "column-selection"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
-          },
-          "inputFilter" : {
-            "type" : "object",
-            "properties" : {
-              "allowAllTypes" : {
-                "type" : "boolean",
-                "title" : "Allow all types",
-                "description" : "If checked, all types can be selected, else, the selection can be restricted to a set of types.",
-                "default" : true
-              },
-              "filterColumnsWithoutDomains" : {
-                "type" : "boolean",
-                "title" : "Hide columns without domain",
-                "description" : "If checked, columns without a domain cannot be selected",
-                "default" : false
-              },
-              "typeFilter" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                },
-                "title" : "Allowed types",
-                "description" : "Restrict the selectable columns to certain types.",
-                "default" : [ ]
-              }
-            },
-            "default" : {
-              "allowAllTypes" : true,
-              "filterColumnsWithoutDomains" : false,
-              "typeFilter" : [ ]
-            }
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "column-selection"
           },
           "required" : {
             "type" : "boolean",
             "default" : true
+          },
+          "triggerReExecution" : {
+            "type" : "boolean",
+            "title" : "Re-execution on widget value change",
+            "description" : "If selected, the widget emits reactivity events that trigger the re-execution of downstream nodes in a component composite view when its value changes. It allows users to create interactive Data Apps and visualizations.",
+            "default" : false
           }
         }
       }
@@ -251,38 +218,6 @@
         }
       } ]
     }, {
-      "label" : "Type Filter",
-      "type" : "Section",
-      "elements" : [ {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes",
-        "options" : {
-          "format" : "checkbox"
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains",
-        "options" : {
-          "format" : "checkbox"
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
-        "options" : {
-          "format" : "twinList"
-        },
-        "providedOptions" : [ "possibleValues" ],
-        "rule" : {
-          "effect" : "HIDE",
-          "condition" : {
-            "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes",
-            "schema" : {
-              "const" : true
-            }
-          }
-        }
-      } ]
-    }, {
       "label" : "Output",
       "type" : "Section",
       "elements" : [ {
@@ -305,40 +240,22 @@
         "options" : {
           "validation" : {
             "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
               "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+                "pattern" : "\\S(.*\\S)?"
               }
             }
           }
         }
       } ]
     }, {
-      "label" : "Advanced Settings",
+      "label" : "Re-execution",
       "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
+        "scope" : "#/properties/model/properties/triggerReExecution",
         "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
+          "format" : "checkbox"
         }
       } ]
     } ]
@@ -352,9 +269,12 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
+          "triggerReExecution" : {
+            "configKey" : "trigger_reexecution"
+          },
           "columnSelectionNodeParameters" : {
             "type" : "object",
             "properties" : {
@@ -393,21 +313,6 @@
               }
             },
             "propertiesRoute" : [ ".." ]
-          },
-          "inputFilter" : {
-            "type" : "object",
-            "properties" : {
-              "allowAllTypes" : {
-                "configKey" : "allow_all_types"
-              },
-              "filterColumnsWithoutDomains" : {
-                "configKey" : "filter_columns_without_domain"
-              },
-              "typeFilter" : {
-                "configPaths" : [ ]
-              }
-            },
-            "configKey" : "input_filter"
           }
         }
       }
@@ -417,7 +322,7 @@
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
     "values" : [ {
       "indices" : [ ],
-      "value" : "column1"
+      "value" : "StringColumn"
     } ]
   }, {
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
@@ -425,39 +330,25 @@
     "values" : [ {
       "indices" : [ ],
       "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
+        "id" : "StringColumn",
+        "text" : "StringColumn",
         "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
         }
       }, {
-        "id" : "column2",
-        "text" : "column2",
+        "id" : "IntColumn",
+        "text" : "IntColumn",
         "type" : {
           "id" : "org.knime.core.data.IntValue",
           "text" : "Number (Integer)"
         }
       }, {
-        "id" : "column3",
-        "text" : "column3",
+        "id" : "DoubleColumn",
+        "text" : "DoubleColumn",
         "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
         }
       } ]
     } ]
@@ -486,88 +377,25 @@
     "values" : [ {
       "indices" : [ ],
       "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
+        "id" : "StringColumn",
+        "text" : "StringColumn",
         "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
         }
       }, {
-        "id" : "column2",
-        "text" : "column2",
+        "id" : "IntColumn",
+        "text" : "IntColumn",
         "type" : {
           "id" : "org.knime.core.data.IntValue",
           "text" : "Number (Integer)"
         }
       }, {
-        "id" : "column3",
-        "text" : "column3",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ {
-        "id" : "org.knime.core.data.BooleanValue",
-        "text" : "Boolean",
-        "type" : {
-          "id" : "org.knime.core.data.BooleanValue",
-          "text" : "Boolean"
-        }
-      }, {
-        "id" : "org.knime.core.data.IntValue",
-        "text" : "Number (Integer)",
-        "type" : {
-          "id" : "org.knime.core.data.IntValue",
-          "text" : "Number (Integer)"
-        }
-      }, {
-        "id" : "org.knime.core.data.DoubleValue",
-        "text" : "Number (Float)",
+        "id" : "DoubleColumn",
+        "text" : "DoubleColumn",
         "type" : {
           "id" : "org.knime.core.data.DoubleValue",
           "text" : "Number (Float)"
-        }
-      }, {
-        "id" : "org.knime.core.data.LongValue",
-        "text" : "Number (Long Integer)",
-        "type" : {
-          "id" : "org.knime.core.data.LongValue",
-          "text" : "Number (Long Integer)"
-        }
-      }, {
-        "id" : "org.knime.core.data.StringValue",
-        "text" : "String",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
-        "text" : "Date&time (Local)",
-        "type" : {
-          "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
-          "text" : "Date&time (Local)"
         }
       } ]
     } ]
@@ -578,10 +406,5 @@
     },
     "triggerInitially" : true,
     "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   } ]
 }

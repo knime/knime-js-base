@@ -44,62 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   29 May 2019 (albrecht): created
+ *   29 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.selection.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.filterandselection.ColumnSelectionNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * Factory for the column selection widget node
+ * WebUI Node Parameters for the Column Selection Widget.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class ColumnSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        ColumnSelectionWidgetNodeModel, //
-        ReExecutableColumnSelectionNodeRepresentation<ColumnSelectionNodeValue>, //
-        ColumnSelectionNodeValue> {
+@SuppressWarnings("restriction")
+public final class ColumnSelectionWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    private static final String NAME = "Column Selection Widget";
-
-    private static final String DESCRIPTION = "Creates a column selection widget for use in components views. "
-        + "Outputs a string flow variable with the name of the selected column.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_column_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(ColumnSelectionWidgetNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the columns to be selected.") //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (string) with the selected column name.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public ColumnSelectionWidgetNodeFactory() {
-        super(CONFIG, ColumnSelectionWidgetNodeParameters.class);
+    ColumnSelectionWidgetNodeParameters() {
+        super(ColumnSelectionWidgetConfig.class);
     }
 
-    @Override
-    public ColumnSelectionWidgetNodeModel createNodeModel() {
-        return new ColumnSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnSelectionWidgetNodeDialog();
-    }
+    @PersistWithin.PersistEmbedded
+    ColumnSelectionNodeParameters m_columnSelectionNodeParameters = new ColumnSelectionNodeParameters();
 
 }
