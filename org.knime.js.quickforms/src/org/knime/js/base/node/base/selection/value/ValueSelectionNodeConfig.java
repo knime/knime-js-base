@@ -48,6 +48,8 @@
  */
 package org.knime.js.base.node.base.selection.value;
 
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldParameter.CFG_LOCK_COLUMN;
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldParameter.DEFAULT_LOCK_COLUMN;
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
@@ -87,10 +89,6 @@ public class ValueSelectionNodeConfig {
     public static final ColumnType DEFAULT_COLUMN_TYPE = ColumnType.All;
 
     private ColumnType m_columnType = DEFAULT_COLUMN_TYPE;
-
-    public static final String CFG_LOCK_COLUMN = "lockColumn";
-
-    private static final boolean DEFAULT_LOCK_COLUMN = false;
 
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 

@@ -4,32 +4,30 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "value-filter",
-      "parameterName" : "value-filter",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
+      "triggerReExecution" : false,
       "valueFilterNodeParameters" : {
         "multipleSelectionComponentParameters" : {
           "selectionType" : "Twinlist",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
-            "numberOfVisibleOptions" : 5
+            "numberOfVisibleOptions" : 10
           }
         },
         "enableColumnFieldParameter" : {
           "enableColumnField" : true
         },
-        "possibleValues" : {
-          "Clean Alternative Fuel Vehicle (CAFV) Eligibility" : [ "Clean Alternative Fuel Vehicle Eligible", "Not eligible due to low battery range", "Eligibility unknown as battery range has not been researched" ],
-          "Electric Vehicle Type" : [ "Battery Electric Vehicle (BEV)", "Plug-in Hybrid Electric Vehicle (PHEV)" ],
-          "Make" : [ "TESLA", "BMW", "NISSAN", "TOYOTA", "FORD", "FIAT", "CHRYSLER", "AUDI", "VOLVO", "PORSCHE", "JEEP", "HYUNDAI", "VOLKSWAGEN", "CHEVROLET", "KIA", "MERCEDES-BENZ", "MINI", "MITSUBISHI", "HONDA", "RIVIAN", "JAGUAR", "DODGE", "CADILLAC", "LUCID", "SUBARU", "POLESTAR", "LEXUS", "SMART", "ALFA ROMEO", "MAZDA", "FISKER", "LINCOLN", "GENESIS", "LAND ROVER", "GMC", "TH!NK", "AZURE DYNAMICS", "WHEEGO ELECTRIC CARS", "BENTLEY", "ROLLS ROYCE", "ACURA", "RAM" ],
-          "State" : [ "WA", "BC", "AE", "AZ", "NC", "NV", "TX", "CO", "FL", "CA", "PA", "AL", "VA", "GA", "SC", "MO", "NY", "IL", "NE", "ID", "KS", "MD", "LA", "DE", "OH", "AR", "WY", "UT", "MN", "HI", "NM", "OR", "IN", "MI", "NJ", "RI", "NH", "CT", "IA", "MA", "OK", "KY", "DC", "AK", "MT", "WI" ]
-        }
+        "possibleValues" : { }
       },
       "defaultValue" : {
-        "column" : "State",
-        "values" : [ ],
-        "excludes" : [ "WA", "BC", "AE", "AZ", "NC", "NV", "TX", "CO", "FL", "CA", "PA", "AL", "VA", "GA", "SC", "MO", "NY", "IL", "NE", "ID", "KS", "MD", "LA", "DE", "OH", "AR", "WY", "UT", "MN", "HI", "NM", "OR", "IN", "MI", "NJ", "RI", "NH", "CT", "IA", "MA", "OK", "KY", "DC", "AK", "MT", "WI" ],
-        "anyUnknownValueHandling" : "EXCLUDE"
+        "column" : "",
+        "values" : [ ]
+      },
+      "searchAndIgnoreInvalidValuesParameters" : {
+        "enableSearch" : false,
+        "ignoreInvalidValues" : true
       }
     }
   },
@@ -39,33 +37,18 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "defaultValue" : {
             "type" : "object",
             "properties" : {
-              "anyUnknownValueHandling" : {
-                "oneOf" : [ {
-                  "const" : "EXCLUDE",
-                  "title" : "Exclude"
-                }, {
-                  "const" : "INCLUDE",
-                  "title" : "Include"
-                } ],
-                "title" : "Any unknown value handling",
-                "description" : "Specifies the handling of new values:\n<ul>\n<li><b>Exclude</b>: New values are added to the exclude list.</li>\n<li><b>Include</b>: New values are added to the include list.</li>\n</ul>",
-                "default" : "EXCLUDE"
-              },
               "column" : {
                 "type" : "string",
                 "title" : "Default column",
                 "description" : "The column containing the values to filter.",
                 "default" : ""
-              },
-              "excludes" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                },
-                "default" : [ ]
               },
               "noColumnsAvailableMessage" : {
                 "type" : "object"
@@ -82,44 +65,61 @@
             },
             "default" : {
               "column" : "",
-              "values" : [ ],
-              "excludes" : [ ],
-              "anyUnknownValueHandling" : "EXCLUDE"
+              "values" : [ ]
             }
           },
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "value-filter"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "value-filter"
           },
           "required" : {
             "type" : "boolean",
             "default" : true
+          },
+          "searchAndIgnoreInvalidValuesParameters" : {
+            "type" : "object",
+            "properties" : {
+              "enableSearch" : {
+                "type" : "boolean",
+                "title" : "Enable search",
+                "description" : "If selected, a search field to filter the available columns will be rendered above the multiple selection.",
+                "default" : false
+              },
+              "ignoreInvalidValues" : {
+                "type" : "boolean",
+                "title" : "Ignore missing selected values",
+                "description" : "If this option is checked, selected values that are missing from the input data will not be shown in the widget and they will be removed from the list of selected values once settings are applied. If this option is not checked missing values will be shown in the widget and need to be removed manually to pass input validation.",
+                "default" : true
+              }
+            },
+            "default" : {
+              "enableSearch" : false,
+              "ignoreInvalidValues" : true
+            }
+          },
+          "triggerReExecution" : {
+            "type" : "boolean",
+            "title" : "Re-execution on widget value change",
+            "description" : "If selected, the widget emits reactivity events that trigger the re-execution of downstream nodes in a component composite view when its value changes. It allows users to create interactive Data Apps and visualizations.",
+            "default" : false
           },
           "valueFilterNodeParameters" : {
             "type" : "object",
@@ -296,6 +296,18 @@
         "options" : {
           "format" : "checkbox"
         }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/searchAndIgnoreInvalidValuesParameters/properties/enableSearch",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/searchAndIgnoreInvalidValuesParameters/properties/ignoreInvalidValues",
+        "options" : {
+          "format" : "checkbox"
+        }
       } ]
     }, {
       "label" : "Output",
@@ -330,50 +342,26 @@
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/anyUnknownValueHandling",
-        "options" : {
-          "format" : "valueSwitch"
-        }
-      }, {
-        "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName",
         "options" : {
           "validation" : {
             "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
               "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+                "pattern" : "\\S(.*\\S)?"
               }
             }
           }
         }
       } ]
     }, {
-      "label" : "Advanced Settings",
+      "label" : "Re-execution",
       "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
+        "scope" : "#/properties/model/properties/triggerReExecution",
         "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
+          "format" : "checkbox"
         }
       } ]
     } ]
@@ -387,9 +375,12 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
+          "triggerReExecution" : {
+            "configKey" : "trigger_reexecution"
+          },
           "valueFilterNodeParameters" : {
             "type" : "object",
             "properties" : {
@@ -439,14 +430,20 @@
               },
               "values" : {
                 "configKey" : "values"
-              },
-              "excludes" : {
-                "configKey" : "excludes"
-              },
-              "anyUnknownValueHandling" : {
-                "configPaths" : [ [ "enforce-option" ] ]
               }
             }
+          },
+          "searchAndIgnoreInvalidValuesParameters" : {
+            "type" : "object",
+            "properties" : {
+              "enableSearch" : {
+                "configKey" : "enable_search"
+              },
+              "ignoreInvalidValues" : {
+                "configKey" : "ignore_invalid_values"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
@@ -542,16 +539,6 @@
       "scope" : "#/properties/model/properties/defaultValue/properties/column"
     },
     "dependencies" : [ "#/properties/model/properties/defaultValue/properties/column", "#/properties/model/properties/defaultValue/properties/values" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/defaultValue/properties/values"
-    },
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/column", "#/properties/model/properties/defaultValue/properties/values", "#/properties/model/properties/valueFilterNodeParameters/properties/possibleValues" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField"

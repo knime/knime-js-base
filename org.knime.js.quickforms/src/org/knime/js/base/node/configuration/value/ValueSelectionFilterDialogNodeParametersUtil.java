@@ -61,10 +61,16 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.configuration.filter.value.ValueFilterDialogNodeParameters;
 import org.knime.js.base.node.configuration.selection.value.ValueSelectionDialogNodeParameters;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
@@ -81,22 +87,44 @@ import org.knime.node.parameters.widget.message.TextMessage.Message;
 public class ValueSelectionFilterDialogNodeParametersUtil {
 
     /**
-     * Use as a widget title on an boolean field with a {@link EnableColumnFieldValueReference}.
+     * Node Parameter for the Enable Column Field (previously Lock Column)
+     *
+     * With the migration of the Configuration & Widget nodes to ModernUI the setting title was adjusted resulting in
+     * the default value being inverted.
      */
-    public static final String ENABLE_COLUMN_FIELD_TITLE = "Enable column field";
+    public static final class EnableColumnFieldParameter implements NodeParameters {
 
-    /**
-     * Use as a widget description on an boolean field with a {@link EnableColumnFieldValueReference}.
-     */
-    public static final String ENABLE_COLUMN_FIELD_DESCRIPTION =
-        "When checked, the column field is shown and a column can be selected, else the field is not shown and the"
-            + " <i>Default column</i> will be used.";
+        /**
+         * Config key for the lock column field setting (now called: enable column field).
+         */
+        public static final String CFG_LOCK_COLUMN = "lockColumn";
 
-    /**
-     * Parameter reference which should be attached to a boolean field.
-     */
-    public static final class EnableColumnFieldValueReference implements ParameterReference<Boolean> {
+        /**
+         * The default value for the lock column field setting. (Inverted for the enable column field setting)
+         */
+        public static final boolean DEFAULT_LOCK_COLUMN = false;
+
+        @Widget(title = "Enable column field",
+            description = "When checked, the column field is shown and a column can be selected, else the field is not"
+                + " shown and the <i>Default column</i> will be used.")
+        @Persistor(EnableColumnFieldPersistor.class)
+        @Layout(FormFieldSection.class)
+        @ValueReference(EnableColumnFieldValueReference.class)
+        boolean m_enableColumnField = !DEFAULT_LOCK_COLUMN;
+
+        static final class EnableColumnFieldPersistor extends AbstractInvertBooleanPersistor {
+            public EnableColumnFieldPersistor() {
+                super(CFG_LOCK_COLUMN);
+            }
+        }
+
+        /**
+         * Parameter reference which should be attached to a boolean field.
+         */
+        public static final class EnableColumnFieldValueReference implements ParameterReference<Boolean> {
+        }
     }
+
 
     /**
      * Persistor mapping from a boolean to the inverted boolean.
@@ -129,7 +157,7 @@ public class ValueSelectionFilterDialogNodeParametersUtil {
     }
 
     /**
-     * Choices Provider returning all column with a domain.
+     * Choices Provider returning all columns with a domain.
      */
     public abstract static class AbstractDefaultColumnChoicesProvider implements ColumnChoicesProvider {
 
@@ -213,7 +241,7 @@ public class ValueSelectionFilterDialogNodeParametersUtil {
     }
 
     /**
-     * Persistor used to save/load the map of possible columns and values, and that saves the .
+     * Persistor used to save/load the map of possible columns and values.
      */
     public abstract static class AbstractPossibleValuesPersistor
         implements NodeParametersPersistor<Map<String, List<String>>> {

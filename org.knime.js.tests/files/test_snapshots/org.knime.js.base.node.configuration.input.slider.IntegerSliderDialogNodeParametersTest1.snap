@@ -408,11 +408,11 @@
     "values" : [ {
       "indices" : [ ],
       "value" : {
-        "errorMessage" : "The value must not exceed 5.",
         "parameters" : {
           "max" : 5.0,
           "isExclusive" : false
-        }
+        },
+        "errorMessage" : "The value must not exceed 5."
       }
     } ]
   }, {
@@ -421,11 +421,11 @@
     "values" : [ {
       "indices" : [ ],
       "value" : {
-        "errorMessage" : "The value must be at least 0.",
         "parameters" : {
           "min" : 0.0,
           "isExclusive" : false
-        }
+        },
+        "errorMessage" : "The value must be at least 0."
       }
     } ]
   }, {

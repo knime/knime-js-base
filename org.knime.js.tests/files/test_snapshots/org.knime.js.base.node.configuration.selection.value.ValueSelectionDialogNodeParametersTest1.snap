@@ -20,7 +20,9 @@
             "numberOfVisibleOptions" : 3
           }
         },
-        "enableColumnField" : true,
+        "enableColumnFieldParameter" : {
+          "enableColumnField" : true
+        },
         "possibleValues" : {
           "Cluster Membership" : [ "Cluster_0", "Cluster_1", "Cluster_2", "Cluster_3" ],
           "Universe_0_0" : [ "0.44683032935216777", "0.21557309315169043", "0.300898550174282", "0.4571889310239766", "0.38269361045678824", "0.3677029629918211", "0.36949245715866297", "0.331970860722705", "0.402133267051207", "0.15868318887017008", "0.09485786644662242", "0.8796547794447265", "0.6732235377913908", "0.4800584749461948", "0.5122732788636175", "0.2550884620807333", "7.418180509843886E-5", "0.38926988475466706", "0.1041219515551276", "0.08025189239988095" ],
@@ -109,11 +111,19 @@
                 },
                 "default" : { }
               },
-              "enableColumnField" : {
-                "type" : "boolean",
-                "title" : "Enable column field",
-                "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
-                "default" : true
+              "enableColumnFieldParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "enableColumnField" : {
+                    "type" : "boolean",
+                    "title" : "Enable column field",
+                    "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
+                    "default" : true
+                  }
+                },
+                "default" : {
+                  "enableColumnField" : true
+                }
               },
               "limitVisOptions" : {
                 "type" : "object",
@@ -173,7 +183,9 @@
                   "numberOfVisibleOptions" : 5
                 }
               },
-              "enableColumnField" : true,
+              "enableColumnFieldParameter" : {
+                "enableColumnField" : true
+              },
               "possibleValues" : { }
             }
           }
@@ -253,7 +265,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField",
         "options" : {
           "format" : "checkbox"
         }
@@ -385,8 +397,14 @@
                 },
                 "propertiesRoute" : [ ".." ]
               },
-              "enableColumnField" : {
-                "configPaths" : [ [ "lockColumn" ] ]
+              "enableColumnFieldParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "enableColumnField" : {
+                    "configPaths" : [ [ "lockColumn" ] ]
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
               },
               "possibleValues" : {
                 "configPaths" : [ ]
@@ -466,7 +484,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
@@ -479,8 +497,8 @@
     "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue" ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField"
+      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField"
     },
-    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   } ]
 }

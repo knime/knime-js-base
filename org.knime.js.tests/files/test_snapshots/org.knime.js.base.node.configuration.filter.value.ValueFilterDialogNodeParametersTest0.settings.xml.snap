@@ -6,62 +6,6 @@
     <entry key="parameterName" type="xstring" value="value-filter"/>
     <entry key="hideInDialog" type="xboolean" value="false"/>
     <entry key="required" type="xboolean" value="true"/>
-    <config key="defaultValue">
-        <entry key="column" type="xstring" value="State"/>
-        <config key="values">
-            <entry key="array-size" type="xint" value="0"/>
-        </config>
-        <config key="excludes">
-            <entry key="array-size" type="xint" value="46"/>
-            <entry key="0" type="xstring" value="WA"/>
-            <entry key="1" type="xstring" value="BC"/>
-            <entry key="2" type="xstring" value="AE"/>
-            <entry key="3" type="xstring" value="AZ"/>
-            <entry key="4" type="xstring" value="NC"/>
-            <entry key="5" type="xstring" value="NV"/>
-            <entry key="6" type="xstring" value="TX"/>
-            <entry key="7" type="xstring" value="CO"/>
-            <entry key="8" type="xstring" value="FL"/>
-            <entry key="9" type="xstring" value="CA"/>
-            <entry key="10" type="xstring" value="PA"/>
-            <entry key="11" type="xstring" value="AL"/>
-            <entry key="12" type="xstring" value="VA"/>
-            <entry key="13" type="xstring" value="GA"/>
-            <entry key="14" type="xstring" value="SC"/>
-            <entry key="15" type="xstring" value="MO"/>
-            <entry key="16" type="xstring" value="NY"/>
-            <entry key="17" type="xstring" value="IL"/>
-            <entry key="18" type="xstring" value="NE"/>
-            <entry key="19" type="xstring" value="ID"/>
-            <entry key="20" type="xstring" value="KS"/>
-            <entry key="21" type="xstring" value="MD"/>
-            <entry key="22" type="xstring" value="LA"/>
-            <entry key="23" type="xstring" value="DE"/>
-            <entry key="24" type="xstring" value="OH"/>
-            <entry key="25" type="xstring" value="AR"/>
-            <entry key="26" type="xstring" value="WY"/>
-            <entry key="27" type="xstring" value="UT"/>
-            <entry key="28" type="xstring" value="MN"/>
-            <entry key="29" type="xstring" value="HI"/>
-            <entry key="30" type="xstring" value="NM"/>
-            <entry key="31" type="xstring" value="OR"/>
-            <entry key="32" type="xstring" value="IN"/>
-            <entry key="33" type="xstring" value="MI"/>
-            <entry key="34" type="xstring" value="NJ"/>
-            <entry key="35" type="xstring" value="RI"/>
-            <entry key="36" type="xstring" value="NH"/>
-            <entry key="37" type="xstring" value="CT"/>
-            <entry key="38" type="xstring" value="IA"/>
-            <entry key="39" type="xstring" value="MA"/>
-            <entry key="40" type="xstring" value="OK"/>
-            <entry key="41" type="xstring" value="KY"/>
-            <entry key="42" type="xstring" value="DC"/>
-            <entry key="43" type="xstring" value="AK"/>
-            <entry key="44" type="xstring" value="MT"/>
-            <entry key="45" type="xstring" value="WI"/>
-        </config>
-        <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
-    </config>
     <entry key="type" type="xstring" value="Twinlist"/>
     <entry key="limit_number_visible_options" type="xboolean" value="false"/>
     <entry key="number_visible_options" type="xint" value="5"/>
@@ -179,5 +123,61 @@
             <entry key="44" type="xstring" value="MT"/>
             <entry key="45" type="xstring" value="WI"/>
         </config>
+    </config>
+    <config key="defaultValue">
+        <entry key="column" type="xstring" value="State"/>
+        <config key="values">
+            <entry key="array-size" type="xint" value="0"/>
+        </config>
+        <config key="excludes">
+            <entry key="array-size" type="xint" value="46"/>
+            <entry key="0" type="xstring" value="WA"/>
+            <entry key="1" type="xstring" value="BC"/>
+            <entry key="2" type="xstring" value="AE"/>
+            <entry key="3" type="xstring" value="AZ"/>
+            <entry key="4" type="xstring" value="NC"/>
+            <entry key="5" type="xstring" value="NV"/>
+            <entry key="6" type="xstring" value="TX"/>
+            <entry key="7" type="xstring" value="CO"/>
+            <entry key="8" type="xstring" value="FL"/>
+            <entry key="9" type="xstring" value="CA"/>
+            <entry key="10" type="xstring" value="PA"/>
+            <entry key="11" type="xstring" value="AL"/>
+            <entry key="12" type="xstring" value="VA"/>
+            <entry key="13" type="xstring" value="GA"/>
+            <entry key="14" type="xstring" value="SC"/>
+            <entry key="15" type="xstring" value="MO"/>
+            <entry key="16" type="xstring" value="NY"/>
+            <entry key="17" type="xstring" value="IL"/>
+            <entry key="18" type="xstring" value="NE"/>
+            <entry key="19" type="xstring" value="ID"/>
+            <entry key="20" type="xstring" value="KS"/>
+            <entry key="21" type="xstring" value="MD"/>
+            <entry key="22" type="xstring" value="LA"/>
+            <entry key="23" type="xstring" value="DE"/>
+            <entry key="24" type="xstring" value="OH"/>
+            <entry key="25" type="xstring" value="AR"/>
+            <entry key="26" type="xstring" value="WY"/>
+            <entry key="27" type="xstring" value="UT"/>
+            <entry key="28" type="xstring" value="MN"/>
+            <entry key="29" type="xstring" value="HI"/>
+            <entry key="30" type="xstring" value="NM"/>
+            <entry key="31" type="xstring" value="OR"/>
+            <entry key="32" type="xstring" value="IN"/>
+            <entry key="33" type="xstring" value="MI"/>
+            <entry key="34" type="xstring" value="NJ"/>
+            <entry key="35" type="xstring" value="RI"/>
+            <entry key="36" type="xstring" value="NH"/>
+            <entry key="37" type="xstring" value="CT"/>
+            <entry key="38" type="xstring" value="IA"/>
+            <entry key="39" type="xstring" value="MA"/>
+            <entry key="40" type="xstring" value="OK"/>
+            <entry key="41" type="xstring" value="KY"/>
+            <entry key="42" type="xstring" value="DC"/>
+            <entry key="43" type="xstring" value="AK"/>
+            <entry key="44" type="xstring" value="MT"/>
+            <entry key="45" type="xstring" value="WI"/>
+        </config>
+        <entry key="enforce-option" type="xstring" value="EnforceInclusion"/>
     </config>
 </config>

@@ -18,7 +18,9 @@
             "numberOfVisibleOptions" : 5
           }
         },
-        "enableColumnField" : true,
+        "enableColumnFieldParameter" : {
+          "enableColumnField" : true
+        },
         "possibleValues" : { }
       }
     }
@@ -103,11 +105,19 @@
                 },
                 "default" : { }
               },
-              "enableColumnField" : {
-                "type" : "boolean",
-                "title" : "Enable column field",
-                "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
-                "default" : true
+              "enableColumnFieldParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "enableColumnField" : {
+                    "type" : "boolean",
+                    "title" : "Enable column field",
+                    "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
+                    "default" : true
+                  }
+                },
+                "default" : {
+                  "enableColumnField" : true
+                }
               },
               "limitVisOptions" : {
                 "type" : "object",
@@ -167,7 +177,9 @@
                   "numberOfVisibleOptions" : 5
                 }
               },
-              "enableColumnField" : true,
+              "enableColumnFieldParameter" : {
+                "enableColumnField" : true
+              },
               "possibleValues" : { }
             }
           }
@@ -247,7 +259,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField",
         "options" : {
           "format" : "checkbox"
         }
@@ -364,8 +376,14 @@
                 },
                 "propertiesRoute" : [ ".." ]
               },
-              "enableColumnField" : {
-                "configPaths" : [ [ "lockColumn" ] ]
+              "enableColumnFieldParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "enableColumnField" : {
+                    "configPaths" : [ [ "lockColumn" ] ]
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
               },
               "possibleValues" : {
                 "configPaths" : [ ]
@@ -450,7 +468,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn"
@@ -458,8 +476,8 @@
     "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue" ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField"
+      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField"
     },
-    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   } ]
 }

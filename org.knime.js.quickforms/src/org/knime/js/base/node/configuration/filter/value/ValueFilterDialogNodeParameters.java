@@ -48,14 +48,9 @@
  */
 package org.knime.js.base.node.configuration.filter.value;
 
-import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_DESCRIPTION;
-import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_TITLE;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -65,25 +60,18 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnChoicesProvider;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnValueProvider;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultValueChoicesProvider;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractInvertBooleanPersistor;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractPossibleValuesPersistor;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.DefaultColumnValueReference;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldValueReference;
-import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.NoColumnsAvailableMessage;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters;
-import org.knime.node.parameters.NodeParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValue.AbstractModifyDefaultValuesValueProvider;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValuesChoicesProvider;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValuesValueReference;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.PossibleColumnValuesValueReference;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
@@ -91,25 +79,19 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
-import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.Label;
 import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
-import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
-import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
- * WebUI Node Parameters for the Nominal Row Filter Configuration.
+ * WebUI Node Parameters for the Value Filter Configuration.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
+public final class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
 
-    /**
-     * Default constructor
-     */
-    protected ValueFilterDialogNodeParameters() {
+    ValueFilterDialogNodeParameters() {
         super(ValueFilterDialogNodeConfig.class);
     }
 
@@ -120,32 +102,8 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
             INCLUDE; // NOSONAR
     }
 
-    @TextMessage(ValueFilterOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
-
-    private static final class DefaultValue implements NodeParameters {
-        @TextMessage(NoColumnsAvailableMessage.class)
-        @Layout(OutputSection.Top.class)
-        Void m_noColumnsAvailableMessage;
-
-        @Widget(title = "Default column", description = "The column containing the values to filter.")
-        @Layout(OutputSection.Top.class)
-        @Persist(configKey = ValueFilterNodeValue.CFG_COLUMN)
-        @ChoicesProvider(DefaultColumnChoicesProvider.class)
-        @ValueProvider(DefaultColumnValueProvider.class)
-        @ValueReference(DefaultColumnValueReference.class)
-        String m_column = "";
-
-        @Widget(title = "Default values", description = "The values that are selected by default.")
-        @Layout(OutputSection.Top.class)
-        @Persist(configKey = ValueFilterNodeValue.CFG_VALUES)
-        @ChoicesProvider(DefaultValuesChoicesProvider.class)
-        @ValueProvider(DefaultValuesValueProvider.class)
-        @ValueReference(DefaultValuesValueReference.class)
-        @TwinlistWidget
-        String[] m_values = new String[0];
-
+    @LoadDefaultsForAbsentFields
+    private static final class DefaultValue extends ValueFilterNodeParameters.DefaultValue {
         @ValueProvider(DefaultExcludesValueProvider.class)
         @ValueReference(DefaultExcludesValueReference.class)
         @Persist(configKey = ValueFilterDialogNodeValue.CFG_EXCLUDES)
@@ -159,54 +117,21 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
         AnyUnknownValueHandling m_anyUnknownValueHandling = AnyUnknownValueHandling.EXCLUDE;
     }
 
+    @PersistWithin.PersistEmbedded
+    ValueFilterNodeParameters m_valueFilterNodeParameters = new ValueFilterNodeParameters();
+
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @PersistWithin.PersistEmbedded
-    @Layout(FormFieldSection.class)
-    MultipleSelectionComponentParameters m_limitVisibleOptionsParameters =
-        new MultipleSelectionComponentParameters();
-
-    @Widget(title = ENABLE_COLUMN_FIELD_TITLE, description = ENABLE_COLUMN_FIELD_DESCRIPTION)
-    @Persistor(EnableColumnFieldPersistor.class)
-    @Layout(FormFieldSection.class)
-    @ValueReference(EnableColumnFieldValueReference.class)
-    boolean m_enableColumnField = true;
-
-    @Persistor(PossibleColumnValuesMapPersistor.class)
-    @ValueProvider(PossibleColumnValuesMapChoicesProvider.class)
-    @ValueReference(PossibleColumnValuesValueReference.class)
-    Map<String, List<String>> m_possibleValues = new TreeMap<>();
-
-    static final class PossibleColumnValuesMapChoicesProvider implements StateProvider<Map<String, List<String>>> {
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
-
-        @Override
-        public Map<String, List<String>> computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            final var tableSpec = parametersInput.getInTableSpec(0);
-            return tableSpec.isEmpty() ? Map.of() : ValueFilterNodeConfig.getPossibleValues(tableSpec.get());
-        }
+    private static final class DefaultExcludesValueReference implements ParameterReference<String[]> {
     }
 
-    private static final class DefaultColumnChoicesProvider extends AbstractDefaultColumnChoicesProvider {
-        DefaultColumnChoicesProvider() {
-            super(PossibleColumnValuesMapChoicesProvider.class);
-        }
+    private static final class DefaultAnyUnkownValueHandlingValueReference
+        implements ParameterReference<AnyUnknownValueHandling> {
     }
 
-    private static final class DefaultColumnValueProvider extends AbstractDefaultColumnValueProvider {
-        DefaultColumnValueProvider() {
-            super(DefaultColumnChoicesProvider.class);
-        }
-    }
-
-    private static final class DefaultValuesChoicesProvider extends AbstractDefaultValueChoicesProvider {
-        public DefaultValuesChoicesProvider() {
-            super(PossibleColumnValuesMapChoicesProvider.class);
+    static final class ModifyDefaultValuesValueProvider extends AbstractModifyDefaultValuesValueProvider {
+        ModifyDefaultValuesValueProvider() {
+            super(DefaultValuesValueProvider.class);
         }
     }
 
@@ -249,6 +174,30 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
         }
     }
 
+    static final class AnyUnknownColumnHandlingPersistor implements NodeParametersPersistor<AnyUnknownValueHandling> {
+
+        @Override
+        public AnyUnknownValueHandling load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var enforceOption = EnforceOption.parse(settings.getString(ValueFilterDialogNodeValue.CFG_ENFORCE_OPT,
+                ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT.toString()));
+            return enforceOption == EnforceOption.EnforceInclusion ? AnyUnknownValueHandling.EXCLUDE
+                : AnyUnknownValueHandling.INCLUDE;
+        }
+
+        @Override
+        public void save(final AnyUnknownValueHandling param, final NodeSettingsWO settings) {
+            settings.addString(ValueFilterDialogNodeValue.CFG_ENFORCE_OPT, (param == AnyUnknownValueHandling.EXCLUDE
+                ? EnforceOption.EnforceInclusion : EnforceOption.EnforceExclusion).toString());
+
+        }
+
+        @Override
+        public String[][] getConfigPaths() {
+            return new String[][]{{ValueFilterDialogNodeValue.CFG_ENFORCE_OPT}};
+        }
+
+    }
+
     private static final class DefaultExcludesValueProvider implements StateProvider<String[]> {
 
         private Supplier<String> m_defaultColumnSupplier;
@@ -277,76 +226,6 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
             final var possibleValues = possibleColumnValues.get(defaultColumn);
             return possibleValues.stream().filter(Predicate.not(defaultValues::contains)).toArray(String[]::new);
         }
-    }
-
-    static final class EnableColumnFieldPersistor extends AbstractInvertBooleanPersistor {
-        public EnableColumnFieldPersistor() {
-            super(ValueFilterNodeConfig.CFG_LOCK_COLUMN);
-        }
-    }
-
-    static final class PossibleColumnValuesMapPersistor extends AbstractPossibleValuesPersistor {
-        PossibleColumnValuesMapPersistor() {
-            super(ValueFilterNodeConfig.CFG_POSSIBLE_COLUMNS, ValueFilterNodeConfig.CFG_COL);
-        }
-    }
-
-    static final class AnyUnknownColumnHandlingPersistor implements NodeParametersPersistor<AnyUnknownValueHandling> {
-
-        @Override
-        public AnyUnknownValueHandling load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var enforceOption = EnforceOption.parse(settings.getString(ValueFilterDialogNodeValue.CFG_ENFORCE_OPT,
-                ValueFilterDialogNodeValue.DEFAULT_ENFORCE_OPT.toString()));
-            return enforceOption == EnforceOption.EnforceInclusion ? AnyUnknownValueHandling.EXCLUDE
-                : AnyUnknownValueHandling.INCLUDE;
-        }
-
-        @Override
-        public void save(final AnyUnknownValueHandling param, final NodeSettingsWO settings) {
-            settings.addString(ValueFilterDialogNodeValue.CFG_ENFORCE_OPT, (param == AnyUnknownValueHandling.EXCLUDE
-                ? EnforceOption.EnforceInclusion : EnforceOption.EnforceExclusion).toString());
-
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{ValueFilterDialogNodeValue.CFG_ENFORCE_OPT}};
-        }
-
-    }
-
-    private static final class PossibleColumnValuesValueReference
-        implements ParameterReference<Map<String, List<String>>> {
-    }
-
-    private static final class DefaultValuesValueReference implements ParameterReference<String[]> {
-    }
-
-    private static final class DefaultExcludesValueReference implements ParameterReference<String[]> {
-    }
-
-    private static final class DefaultAnyUnkownValueHandlingValueReference
-        implements ParameterReference<AnyUnknownValueHandling> {
-    }
-
-    private static final class ValueFilterOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<ValueFilterDialogNodeValue> {
-
-        private Supplier<Boolean> m_enableColumnFieldSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            super.init(initializer);
-            m_enableColumnFieldSupplier = initializer.computeFromValueSupplier(EnableColumnFieldValueReference.class);
-        }
-
-        @Override
-        protected String valueToString(final ValueFilterDialogNodeValue value) {
-            final var values = Arrays.toString(value.getValues());
-            return m_enableColumnFieldSupplier.get() != null && m_enableColumnFieldSupplier.get()
-                ? String.format("Column: %s; Value: %s", value.getColumn(), values) : values;
-        }
-
     }
 
 }

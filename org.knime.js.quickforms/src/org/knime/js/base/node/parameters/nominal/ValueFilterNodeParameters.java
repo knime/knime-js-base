@@ -46,18 +46,21 @@
  * History
  *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.parameters.selection.value;
+package org.knime.js.base.node.parameters.nominal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.node.base.selection.value.ColumnType;
-import org.knime.js.base.node.base.selection.value.ValueSelectionNodeConfig;
-import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
+import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
+import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnChoicesProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnValueProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultValueChoicesProvider;
@@ -69,7 +72,7 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNode
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -83,84 +86,131 @@ import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoice;
+import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
- * Shared WebUI Node Parameters for the Value Selection nodes.
+ * Shared WebUI Node Parameters for Value Filter Configuration and Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
 @LoadDefaultsForAbsentFields
-public class ValueSelectionNodeParameters implements NodeParameters {
+public final class ValueFilterNodeParameters implements NodeParameters {
 
-    @TextMessage(ValueSelectionOverwrittenByValueMessage.class)
+    @TextMessage(ValueFilterOverwrittenByValueMessage.class)
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
-    private static final class DefaultValue implements NodeParameters {
+    /**
+     * The default parameters of the value filter configuration/widget.
+     */
+    public static class DefaultValue implements NodeParameters {
         @TextMessage(NoColumnsAvailableMessage.class)
         @Layout(OutputSection.Top.class)
         Void m_noColumnsAvailableMessage;
 
-        @Widget(title = "Default column", description = "The column containing the values.")
+        @Widget(title = "Default column", description = "The column containing the values to filter.")
         @Layout(OutputSection.Top.class)
-        @Persist(configKey = ValueSelectionNodeValue.CFG_COLUMN)
+        @Persist(configKey = ValueFilterNodeValue.CFG_COLUMN)
         @ChoicesProvider(DefaultColumnChoicesProvider.class)
         @ValueProvider(DefaultColumnValueProvider.class)
         @ValueReference(DefaultColumnValueReference.class)
-        String m_defaultColumn;
+        String m_column = "";
 
-        @Widget(title = "Default value", description = "The value that is selected by default.")
+        @Widget(title = "Default values", description = "The values that are selected by default.")
         @Layout(OutputSection.Top.class)
-        @Persist(configKey = ValueSelectionNodeValue.CFG_VALUE)
-        @ChoicesProvider(DefaultValueChoicesProvider.class)
-        @ValueProvider(DefaultValueValueProvider.class)
-        @ValueReference(DefaultValueValueReference.class)
-        String m_defaultValue;
+        @Persist(configKey = ValueFilterNodeValue.CFG_VALUES)
+        @ChoicesProvider(DefaultValuesChoicesProvider.class)
+        @ValueProvider(DefaultValuesValueProvider.class)
+        @ValueReference(DefaultValuesValueReference.class)
+        @Modification.WidgetReference(DefaultValuesModificationReference.class)
+        @TwinlistWidget
+        String[] m_values = new String[0];
+
+        static final class DefaultValuesModificationReference implements Modification.Reference {
+        }
+
+        /**
+         * Modification to change the Value Provider of the default values.
+         */
+        public abstract static class AbstractModifyDefaultValuesValueProvider implements Modification.Modifier {
+
+            private final Class<? extends StateProvider<String[]>> m_defaultValuesValueProviderClass;
+
+            /**
+             * Default constructor
+             *
+             * @param defaultValuesValueProviderClass the value provider to use for the default values
+             */
+            protected AbstractModifyDefaultValuesValueProvider(
+                final Class<? extends StateProvider<String[]>> defaultValuesValueProviderClass) {
+                m_defaultValuesValueProviderClass = defaultValuesValueProviderClass;
+            }
+
+            @Override
+            public final void modify(final WidgetGroupModifier group) {
+                group.find(DefaultValuesModificationReference.class).modifyAnnotation(ValueProvider.class)
+                    .withValue(m_defaultValuesValueProviderClass).modify();
+            }
+
+        }
     }
-
-    DefaultValue m_defaultValue = new DefaultValue();
-
-    @Persist(configKey = ValueSelectionNodeConfig.CFG_COLUMN_TYPE)
-    @Layout(FormFieldSection.class)
-    @ValueReference(ColumnTypeParameterReference.class)
-    ColumnType m_columnType = ValueSelectionNodeConfig.DEFAULT_COLUMN_TYPE;
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
+    MultipleSelectionComponentParameters m_multipleSelectionComponentParameters =
+        new MultipleSelectionComponentParameters();
 
     @PersistWithin.PersistEmbedded
     EnableColumnFieldParameter m_enableColumnFieldParameter = new EnableColumnFieldParameter();
 
-    @Persistor(PossibleValuesPersistor.class)
+    @Persistor(PossibleColumnValuesMapPersistor.class)
     @ValueProvider(PossibleColumnValuesMapChoicesProvider.class)
+    @ValueReference(PossibleColumnValuesValueReference.class)
     Map<String, List<String>> m_possibleValues = new TreeMap<>();
 
-    static final class PossibleValuesPersistor extends AbstractPossibleValuesPersistor {
-        PossibleValuesPersistor() {
-            super(ValueSelectionNodeConfig.CFG_POSSIBLE_COLUMNS, ValueSelectionNodeConfig.CFG_COL);
-        }
-    }
-
     static final class PossibleColumnValuesMapChoicesProvider implements StateProvider<Map<String, List<String>>> {
-
-        private Supplier<ColumnType> m_columnTypeSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
             initializer.computeBeforeOpenDialog();
-            m_columnTypeSupplier = initializer.getValueSupplier(ColumnTypeParameterReference.class);
         }
 
         @Override
         public Map<String, List<String>> computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
-            final var tableSpecOpt = parametersInput.getInTableSpec(0);
+            final var tableSpec = parametersInput.getInTableSpec(0);
+            return tableSpec.isEmpty() ? Map.of() : ValueFilterNodeConfig.getPossibleValues(tableSpec.get());
+        }
+    }
 
-            return tableSpecOpt.isEmpty() ? Map.of()
-                : ValueSelectionNodeConfig.getPossibleValues(tableSpecOpt.get(), m_columnTypeSupplier.get());
+    private static final class DefaultValuesValueProvider implements StateProvider<String[]> {
+
+        private Supplier<String[]> m_defaultValuesSupplier;
+
+        private Supplier<List<StringChoice>> m_defaultValuesChoicesSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeAfterOpenDialog();
+            m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
+            m_defaultValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);
+        }
+
+        @Override
+        public String[] computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            final var defaultValuesChoices = m_defaultValuesChoicesSupplier.get();
+            if (defaultValuesChoices.isEmpty()) {
+                return new String[0];
+            }
+            final var defaultValues = Set.of(m_defaultValuesSupplier.get());
+
+            return defaultValuesChoices.stream() //
+                .map(StringChoice::id) //
+                .filter(defaultValues::contains) //
+                .toArray(String[]::new);
         }
     }
 
@@ -176,50 +226,36 @@ public class ValueSelectionNodeParameters implements NodeParameters {
         }
     }
 
-    private static final class DefaultValueValueReference implements ParameterReference<String> {
-    }
-
-    private static final class ColumnTypeParameterReference implements ParameterReference<ColumnType> {
-    }
-
-    private static final class DefaultValueChoicesProvider extends AbstractDefaultValueChoicesProvider {
-
-        public DefaultValueChoicesProvider() {
+    /**
+     * The choices provider for the default values.
+     */
+    public static final class DefaultValuesChoicesProvider extends AbstractDefaultValueChoicesProvider {
+        DefaultValuesChoicesProvider() {
             super(PossibleColumnValuesMapChoicesProvider.class);
         }
     }
 
-    private static final class DefaultValueValueProvider implements StateProvider<String> {
-
-        private Supplier<String> m_defaultValueSupplier;
-
-        private Supplier<List<StringChoice>> m_possibleValuesChoicesSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-            m_defaultValueSupplier = initializer.getValueSupplier(DefaultValueValueReference.class);
-            m_possibleValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValueChoicesProvider.class);
-        }
-
-        @Override
-        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var possibleValuesChoices = m_possibleValuesChoicesSupplier.get();
-            if (possibleValuesChoices.isEmpty()) {
-                return null;
-            }
-            final var defaultValue = m_defaultValueSupplier.get();
-            final var possibleValueChoicesIds = possibleValuesChoices.stream().map(StringChoice::id).toList();
-
-            if (defaultValue != null && possibleValueChoicesIds.contains(defaultValue)) {
-                return defaultValue;
-            }
-            return possibleValuesChoices.get(0).id();
+    static final class PossibleColumnValuesMapPersistor extends AbstractPossibleValuesPersistor {
+        PossibleColumnValuesMapPersistor() {
+            super(ValueFilterNodeConfig.CFG_POSSIBLE_COLUMNS, ValueFilterNodeConfig.CFG_COL);
         }
     }
 
-    static final class ValueSelectionOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<ValueSelectionNodeValue> {
+    /**
+     * The reference for the map of possible columns and their values.
+     */
+    public static final class PossibleColumnValuesValueReference
+        implements ParameterReference<Map<String, List<String>>> {
+    }
+
+    /**
+     * The reference for the default values.
+     */
+    public static final class DefaultValuesValueReference implements ParameterReference<String[]> {
+    }
+
+    private static final class ValueFilterOverwrittenByValueMessage
+        extends OverwrittenByValueMessage<ValueFilterNodeValue> {
 
         private Supplier<Boolean> m_enableColumnFieldSupplier;
 
@@ -230,9 +266,10 @@ public class ValueSelectionNodeParameters implements NodeParameters {
         }
 
         @Override
-        protected String valueToString(final ValueSelectionNodeValue value) {
+        protected String valueToString(final ValueFilterNodeValue value) {
+            final var values = Arrays.toString(value.getValues());
             return m_enableColumnFieldSupplier.get() != null && m_enableColumnFieldSupplier.get()
-                ? String.format("Column: %s; Value: %s", value.getColumn(), value.getValue()) : value.getValue();
+                ? String.format("Column: %s; Value: %s", value.getColumn(), values) : values;
         }
 
     }

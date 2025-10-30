@@ -44,60 +44,35 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   31 May 2019 (albrecht): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.filter.value;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValue;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * Factory for the nominal row filter widget node
+ * WebUI Node Parameters for the Value Filter Widget.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class ValueFilterWidgetNodeFactory extends WidgetNodeFactory< //
-        ValueFilterWidgetNodeModel, //
-        ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, //
-        ValueFilterNodeValue> {
+@SuppressWarnings("restriction")
+public final class ValueFilterWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    private static final String NAME = "Nominal Row Filter Widget";
-
-    private static final String DESCRIPTION = "Creates a value filter widget for use in components views. "
-        + "Takes a data table and returns a filtered data table with only the selected values of a chosen column.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_value_filter.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(ValueFilterWidgetNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the column(s) with values to be filtered.") //
-        .addOutputTable("Filtered Table", "Filtered table containing only rows with the selected values.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public ValueFilterWidgetNodeFactory() {
-        super(CONFIG, ValueFilterWidgetNodeParameters.class);
+    ValueFilterWidgetNodeParameters() {
+        super(ValueFilterWidgetConfig.class);
     }
 
-    @Override
-    public ValueFilterWidgetNodeModel createNodeModel() {
-        return new ValueFilterWidgetNodeModel(getInteractiveViewName());
-    }
+    @PersistWithin.PersistEmbedded
+    ValueFilterNodeParameters m_valueFilterNodeParameters = new ValueFilterNodeParameters();
 
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
+    DefaultValue m_defaultValue = new DefaultValue();
 
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ValueFilterWidgetNodeDialog();
-    }
+    @PersistWithin.PersistEmbedded
+    EnableSearchAndIgnoreInvalidValuesParameters m_searchAndIgnoreInvalidValuesParameters =
+        new EnableSearchAndIgnoreInvalidValuesParameters();
 
 }

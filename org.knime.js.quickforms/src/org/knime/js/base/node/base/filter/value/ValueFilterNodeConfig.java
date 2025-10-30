@@ -48,6 +48,15 @@
  */
 package org.knime.js.base.node.base.filter.value;
 
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldParameter.CFG_LOCK_COLUMN;
+import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.EnableColumnFieldParameter.DEFAULT_LOCK_COLUMN;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.CFG_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.DEFAULT_TYPE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +72,6 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterUtil;
 
 /**
@@ -73,8 +81,6 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterUtil;
  */
 public class ValueFilterNodeConfig {
 
-    public static final String CFG_LOCK_COLUMN = "lockColumn";
-    private static final boolean DEFAULT_LOCK_COLUMN = false;
     private boolean m_lockColumn = DEFAULT_LOCK_COLUMN;
 
     public static final String CFG_POSSIBLE_COLUMNS = "possibleColumns";
@@ -90,18 +96,12 @@ public class ValueFilterNodeConfig {
      */
     private Map<String, List<String>> m_possibleValues = new TreeMap<>();
 
-    public static final String CFG_TYPE = "type";
-    public static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
     private String m_type = DEFAULT_TYPE;
 
     public static final String CFG_COL = "colValues";
 
-    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
@@ -182,7 +182,7 @@ public class ValueFilterNodeConfig {
     public void saveSettings(final NodeSettingsWO settings) {
         settings.addBoolean(CFG_LOCK_COLUMN, m_lockColumn);
         settings.addStringArray(CFG_POSSIBLE_COLUMNS,
-                m_possibleValues.keySet().toArray(new String[m_possibleValues.keySet().size()]));
+            m_possibleValues.keySet().toArray(new String[m_possibleValues.keySet().size()]));
         NodeSettingsWO colSettings = settings.addNodeSettings(CFG_COL);
         for (String key : m_possibleValues.keySet()) {
             List<String> values = m_possibleValues.get(key);
@@ -242,7 +242,7 @@ public class ValueFilterNodeConfig {
      * @return a map of columns and their corresponding domain values
      */
     public static Map<String, List<String>> getPossibleValues(final DataTableSpec dataTableSpec) {
-     // Only add column specs for columns that have non-null domains
+        // Only add column specs for columns that have non-null domains
         List<DataColumnSpec> specs = new ArrayList<DataColumnSpec>();
         for (DataColumnSpec cspec : dataTableSpec) {
             if (cspec.getDomain().hasValues()) {
@@ -326,6 +326,5 @@ public class ValueFilterNodeConfig {
                 .append(m_numberVisOptions, other.m_numberVisOptions)
                 .isEquals();
     }
-
 
 }
