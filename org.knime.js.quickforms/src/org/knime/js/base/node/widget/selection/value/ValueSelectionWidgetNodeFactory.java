@@ -48,57 +48,58 @@
  */
 package org.knime.js.base.node.widget.selection.value;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.selection.value.ValueSelectionNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the value selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueSelectionWidgetNodeFactory extends NodeFactory<ValueSelectionWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueSelectionWidgetNodeModel, ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>,
-    ValueSelectionNodeValue> {
+public class ValueSelectionWidgetNodeFactory extends WidgetNodeFactory< //
+        ValueSelectionWidgetNodeModel, //
+        ReExecutableValueSelectionNodeRepresentation<ValueSelectionNodeValue>, //
+        ValueSelectionNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Value Selection Widget";
+
+    private static final String DESCRIPTION = """
+            Creates a value selection widget for use in components views.
+            Outputs a string flow variable with the name of the selected value.""";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_value_select.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(ValueSelectionWidgetNodeParameters.class) //
+        .addInputPort("Table Input", BufferedDataTable.TYPE, "Table containing the values to be selected.") //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the selected value name. Additionally the chosen column name is output as a "
+                + "separate flow variable.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public ValueSelectionWidgetNodeFactory() {
+        super(CONFIG, ValueSelectionWidgetNodeParameters.class);
+    }
+
     @Override
     public ValueSelectionWidgetNodeModel createNodeModel() {
         return new ValueSelectionWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final ValueSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ValueSelectionWidgetNodeDialog();
