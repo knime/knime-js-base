@@ -44,62 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Factory for the multiple selection widget node
+ * Test class for Multiple Selection Widget Node Parameters.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class MultipleSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        MultipleSelectionWidgetNodeModel, //
-        MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+@SuppressWarnings("restriction")
+final class MultipleSelectionWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    private static final String NAME = "Multiple Selection Widget";
+    protected MultipleSelectionWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    private static final String DESCRIPTION =
-        "Allows selecting multiple values from a list of strings in an encapsulating component's view. "
-            + "The selected values are returned as a data table and a string flow variable.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_multiple_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(MultipleSelectionWidgetNodeParameters.class) //
-        .addOutputPort("Selected Value Table", BufferedDataTable.TYPE,
-            "Table output holding the selected choices in one column with the given parameter name as column name.") //
-        .nodeType(NodeType.Widget) //
-        .keywords() //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(MultipleSelectionWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public MultipleSelectionWidgetNodeFactory() {
-        super(CONFIG, MultipleSelectionWidgetNodeParameters.class);
-    }
-
-    @Override
-    public MultipleSelectionWidgetNodeModel createNodeModel() {
-        return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
+    private static MultipleSelectionWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(MultipleSelectionWidgetNodeParametersTest.class).getParent()
+                .resolve("node_settings").resolve("MultipleSelectionWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    MultipleSelectionWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }
