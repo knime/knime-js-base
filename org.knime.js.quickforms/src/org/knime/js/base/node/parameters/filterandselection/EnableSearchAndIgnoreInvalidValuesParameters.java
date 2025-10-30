@@ -44,62 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.selection.multiple;
+package org.knime.js.base.node.parameters.filterandselection;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.widget.selection.multiple.MultipleSelectionWidgetNodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.migration.Migrate;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * Factory for the multiple selection widget node
+ * The enable search and ignore invalid values parameters for use in the {@link MultipleSelectionWidgetNodeParameters}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class MultipleSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        MultipleSelectionWidgetNodeModel, //
-        MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+public final class EnableSearchAndIgnoreInvalidValuesParameters extends EnableSearchParameter {
 
-    private static final String NAME = "Multiple Selection Widget";
+    /**
+     * The config key for the ignore invalid values setting.
+     */
+    public static final String CFG_IGNORE_INVALID_VALUES = "ignore_invalid_values";
 
-    private static final String DESCRIPTION =
-        "Allows selecting multiple values from a list of strings in an encapsulating component's view. "
-            + "The selected values are returned as a data table and a string flow variable.";
+    /**
+     * The default value for the ignore invalid values setting.
+     */
+    public static final boolean DEFAULT_IGNORE_INVALID_VALUES = true;
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_multiple_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(MultipleSelectionWidgetNodeParameters.class) //
-        .addOutputPort("Selected Value Table", BufferedDataTable.TYPE,
-            "Table output holding the selected choices in one column with the given parameter name as column name.") //
-        .nodeType(NodeType.Widget) //
-        .keywords() //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public MultipleSelectionWidgetNodeFactory() {
-        super(CONFIG, MultipleSelectionWidgetNodeParameters.class);
-    }
-
-    @Override
-    public MultipleSelectionWidgetNodeModel createNodeModel() {
-        return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
-    }
+    @Widget(title = "Ignore missing selected values",
+        description = "If this option is checked, selected values that are missing from the input data will not be"
+            + " shown in the widget and they will be removed from the list of selected values once settings are"
+            + " applied. If this option is not checked missing values will be shown in the widget and need to be"
+            + " removed manually to pass input validation.")
+    @Persist(configKey = CFG_IGNORE_INVALID_VALUES)
+    @Migrate(loadDefaultIfAbsent = true)
+    @Layout(FormFieldSection.class)
+    boolean m_ignoreInvalidValues = DEFAULT_IGNORE_INVALID_VALUES;
 
 }

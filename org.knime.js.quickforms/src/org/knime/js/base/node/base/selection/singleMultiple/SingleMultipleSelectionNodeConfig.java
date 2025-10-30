@@ -48,6 +48,11 @@
  */
 package org.knime.js.base.node.base.selection.singleMultiple;
 
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
+
 import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -55,7 +60,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters;
 
 /**
  * Base abstract config file for the single and multiple selection configuration and widget nodes
@@ -65,19 +69,15 @@ import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsP
 public abstract class SingleMultipleSelectionNodeConfig {
 
     public static final String CFG_POSSIBLE_CHOICES = "possible_choices";
+
     private static final String[] DEFAULT_POSSIBLE_CHOICES = new String[0];
+
     private String[] m_possibleChoices = DEFAULT_POSSIBLE_CHOICES;
 
     public static final String CFG_TYPE = "type";
 
-    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS =
-        LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
-    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS =
-        LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    public static final String CFG_NUMBER_VIS_OPTIONS = LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
-    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**
