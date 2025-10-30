@@ -44,62 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * Factory for the multiple selection widget node
+ * WebUI Node Parameters for the Multiple Selection Widget.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class MultipleSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        MultipleSelectionWidgetNodeModel, //
-        MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+@SuppressWarnings("restriction")
+public final class MultipleSelectionWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    private static final String NAME = "Multiple Selection Widget";
-
-    private static final String DESCRIPTION =
-        "Allows selecting multiple values from a list of strings in an encapsulating component's view. "
-            + "The selected values are returned as a data table and a string flow variable.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_multiple_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(MultipleSelectionWidgetNodeParameters.class) //
-        .addOutputPort("Selected Value Table", BufferedDataTable.TYPE,
-            "Table output holding the selected choices in one column with the given parameter name as column name.") //
-        .nodeType(NodeType.Widget) //
-        .keywords() //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public MultipleSelectionWidgetNodeFactory() {
-        super(CONFIG, MultipleSelectionWidgetNodeParameters.class);
+    MultipleSelectionWidgetNodeParameters() {
+        super(MultipleSelectionWidgetConfig.class);
     }
 
-    @Override
-    public MultipleSelectionWidgetNodeModel createNodeModel() {
-        return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
+    @PersistWithin.PersistEmbedded
+    MultipleSelectionNodeParameters m_multipleSelectionNodeParameters = new MultipleSelectionNodeParameters();
 
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
-    }
-
+    @PersistWithin.PersistEmbedded
+    EnableSearchAndIgnoreInvalidValuesParameters m_searchAndIgnoreInvalidValuesParameters =
+        new EnableSearchAndIgnoreInvalidValuesParameters();
 }

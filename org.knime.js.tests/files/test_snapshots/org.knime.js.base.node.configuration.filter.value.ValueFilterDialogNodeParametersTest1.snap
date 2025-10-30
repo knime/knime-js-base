@@ -13,9 +13,13 @@
         "excludes" : [ "WA", "BC", "AE", "AZ", "NC", "NV", "TX", "CO", "FL", "CA", "PA", "AL", "VA", "GA", "SC", "MO", "NY", "IL", "NE", "ID", "KS", "MD", "LA", "DE", "OH", "AR", "WY", "UT", "MN", "HI", "NM", "OR", "IN", "MI", "NJ", "RI", "NH", "CT", "IA", "MA", "OK", "KY", "DC", "AK", "MT", "WI" ],
         "anyUnknownValueHandling" : "EXCLUDE"
       },
-      "selectionType" : "Twinlist",
-      "limitNumberOfVisibleOptions" : false,
-      "numberOfVisibleOptions" : 5,
+      "limitVisibleOptionsParameters" : {
+        "selectionType" : "Twinlist",
+        "limitVisibleOptions" : {
+          "limitNumberOfVisibleOptions" : false,
+          "numberOfVisibleOptions" : 5
+        }
+      },
       "enableColumnField" : true,
       "possibleValues" : {
         "Clean Alternative Fuel Vehicle (CAFV) Eligibility" : [ "Clean Alternative Fuel Vehicle Eligible", "Not eligible due to low battery range", "Eligibility unknown as battery range has not been researched" ],
@@ -109,18 +113,45 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "limitNumberOfVisibleOptions" : {
-            "type" : "boolean",
-            "title" : "Limit number of visible options",
-            "description" : "By default the List and Twinlist components adjust their height to display all possible choices without a\nscroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you\nhave too many of them. The setting is available only for List or Twinlist selection type.\n",
-            "default" : false
-          },
-          "numberOfVisibleOptions" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Number of visible options",
-            "description" : "A number of options visible in the List or Twinlist component without a vertical scroll bar.\nChanging this value will also affect the component's height. Notice that for Twinlist the height cannot\nbe less than the overall height of the control buttons in the middle. The setting is available only for\nList or Twinlist selection type.\n",
-            "default" : 5
+          "limitVisibleOptionsParameters" : {
+            "type" : "object",
+            "properties" : {
+              "limitVisibleOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "type" : "boolean",
+                    "title" : "Limit number of visible options",
+                    "description" : "By default the List and Twinlist components adjust their height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them. The setting is available only for List or Twinlist selection type.",
+                    "default" : false
+                  },
+                  "numberOfVisibleOptions" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Number of visible options",
+                    "description" : "A number of options visible in the List or Twinlist component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that for Twinlist the height cannot be less than the overall height of the control buttons in the middle. The setting is available only for List or Twinlist selection type.",
+                    "default" : 5
+                  }
+                },
+                "default" : {
+                  "limitNumberOfVisibleOptions" : false,
+                  "numberOfVisibleOptions" : 5
+                }
+              },
+              "selectionType" : {
+                "type" : "string",
+                "title" : "Selection type",
+                "description" : "Type of the selection panel. This can be either checkboxes with a vertical or horizontal layout, a list, a combobox, or a twinlist selection.",
+                "default" : "Twinlist"
+              }
+            },
+            "default" : {
+              "selectionType" : "Twinlist",
+              "limitVisibleOptions" : {
+                "limitNumberOfVisibleOptions" : false,
+                "numberOfVisibleOptions" : 5
+              }
+            }
           },
           "overwrittenByValueMessage" : {
             "type" : "object"
@@ -138,12 +169,6 @@
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "selectionType" : {
-            "type" : "string",
-            "title" : "Selection type",
-            "description" : "Type of the selection panel. This can be either checkboxes with a vertical or horizontal\nlayout, a list, a combobox, or a twinlist selection.\n",
-            "default" : "Twinlist"
           }
         }
       }
@@ -161,14 +186,14 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectionType",
+        "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
@@ -177,12 +202,12 @@
           "condition" : {
             "type" : "OR",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/selectionType",
+              "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
               "schema" : {
                 "const" : "List"
               }
             }, {
-              "scope" : "#/properties/model/properties/selectionType",
+              "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
               "schema" : {
                 "const" : "Twinlist"
               }
@@ -191,7 +216,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -215,23 +240,23 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
+              "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+              "schema" : {
+                "const" : true
+              }
+            }, {
               "type" : "OR",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/selectionType",
+                "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
                 "schema" : {
                   "const" : "List"
                 }
               }, {
-                "scope" : "#/properties/model/properties/selectionType",
+                "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
                 "schema" : {
                   "const" : "Twinlist"
                 }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
-              "schema" : {
-                "const" : true
-              }
             } ]
           }
         }
@@ -354,14 +379,26 @@
               }
             }
           },
-          "selectionType" : {
-            "configKey" : "type"
-          },
-          "limitNumberOfVisibleOptions" : {
-            "configKey" : "limit_number_visible_options"
-          },
-          "numberOfVisibleOptions" : {
-            "configKey" : "number_visible_options"
+          "limitVisibleOptionsParameters" : {
+            "type" : "object",
+            "properties" : {
+              "selectionType" : {
+                "configKey" : "type"
+              },
+              "limitVisibleOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "configKey" : "limit_number_visible_options"
+                  },
+                  "numberOfVisibleOptions" : {
+                    "configKey" : "number_visible_options"
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "enableColumnField" : {
             "configPaths" : [ [ "lockColumn" ] ]
@@ -414,16 +451,7 @@
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "CategoryColumn" : [ "A", "B", "C" ],
-        "StringColumn" : [ "C1", "C2", "C3" ]
-      }
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/selectionType",
+    "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -443,6 +471,15 @@
         "id" : "ComboBox",
         "text" : "ComboBox"
       } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "CategoryColumn" : [ "A", "B", "C" ],
+        "StringColumn" : [ "C1", "C2", "C3" ]
+      }
     } ]
   }, {
     "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",

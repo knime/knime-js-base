@@ -48,12 +48,6 @@
  */
 package org.knime.js.base.node.configuration.filter.value;
 
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.LIMIT_VIS_OPT_DESCRIPTION;
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.LIMIT_VIS_OPT_TITLE;
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.NUM_VIS_OPT_DESCRIPTION;
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.NUM_VIS_OPT_TITLE;
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
-import static org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SELECTION_TYPE_TITLE;
 import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_DESCRIPTION;
 import static org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.ENABLE_COLUMN_FIELD_TITLE;
 
@@ -69,16 +63,11 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeConfig;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
-import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.IsListOrTwinlistSelectionType;
-import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
-import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SelectionTypeChoicesProvider;
-import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.SelectionTypeValueReference;
-import org.knime.js.base.node.configuration.MultipleSelectionAndFilterNodeParametersUtil.ShowNumberOfVisibleOptions;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnChoicesProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultColumnValueProvider;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.AbstractDefaultValueChoicesProvider;
@@ -90,6 +79,7 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNode
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -97,8 +87,6 @@ import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.updates.Effect;
-import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
@@ -109,7 +97,6 @@ import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
 import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
-import org.knime.node.parameters.widget.number.NumberInputWidget;
 
 /**
  * WebUI Node Parameters for the Nominal Row Filter Configuration.
@@ -174,26 +161,10 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
-    @ChoicesProvider(SelectionTypeChoicesProvider.class)
-    @Persist(configKey = ValueFilterNodeConfig.CFG_TYPE)
-    @ValueReference(SelectionTypeValueReference.class)
+    @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    String m_selectionType = ValueFilterNodeConfig.DEFAULT_TYPE;
-
-    @Widget(title = LIMIT_VIS_OPT_TITLE, description = LIMIT_VIS_OPT_DESCRIPTION)
-    @Persist(configKey = ValueFilterNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
-    @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
-    @Effect(predicate = IsListOrTwinlistSelectionType.class, type = EffectType.SHOW)
-    @Layout(FormFieldSection.class)
-    boolean m_limitNumberOfVisibleOptions = ValueFilterNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
-
-    @Widget(title = NUM_VIS_OPT_TITLE, description = NUM_VIS_OPT_DESCRIPTION)
-    @NumberInputWidget(minValidation = IsMin2Validation.class)
-    @Persist(configKey = ValueFilterNodeConfig.CFG_NUMBER_VIS_OPTIONS)
-    @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
-    @Layout(FormFieldSection.class)
-    int m_numberOfVisibleOptions = ValueFilterNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
+    MultipleSelectionComponentParameters m_limitVisibleOptionsParameters =
+        new MultipleSelectionComponentParameters();
 
     @Widget(title = ENABLE_COLUMN_FIELD_TITLE, description = ENABLE_COLUMN_FIELD_DESCRIPTION)
     @Persistor(EnableColumnFieldPersistor.class)

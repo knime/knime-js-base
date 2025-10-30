@@ -48,6 +48,11 @@
  */
 package org.knime.js.base.node.widget.selection.multiple;
 
+import static org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters.CFG_IGNORE_INVALID_VALUES;
+import static org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters.DEFAULT_IGNORE_INVALID_VALUES;
+import static org.knime.js.base.node.parameters.filterandselection.EnableSearchParameter.CFG_ENABLE_SEARCH;
+import static org.knime.js.base.node.parameters.filterandselection.EnableSearchParameter.DEFAULT_ENABLE_SEARCH;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -66,12 +71,8 @@ public class MultipleSelectionWidgetConfig extends ReExecutableWidgetConfig<Sing
 
     private final MultipleSelectionNodeConfig m_config;
 
-    private static final String CFG_ENABLE_SEARCH = "enable_search";
-    private static final boolean DEFAULT_ENABLE_SEARCH = false;
     private boolean m_enableSearch = DEFAULT_ENABLE_SEARCH;
 
-    private static final String CFG_IGNORE_INVALID_VALUES = "ignore_invalid_values";
-    private static final boolean DEFAULT_IGNORE_INVALID_VALUES = true;
     private boolean m_ignoreInvalidValues = DEFAULT_IGNORE_INVALID_VALUES;
 
     /**

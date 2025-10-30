@@ -44,62 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2019 (albrecht): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.selection.multiple;
+package org.knime.js.base.node.parameters.filterandselection;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.widget.selection.multiple.MultipleSelectionWidgetNodeParameters;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.migration.Migrate;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * Factory for the multiple selection widget node
+ * The enable search parameter for use in {@link MultipleSelectionWidgetNodeParameters}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-public class MultipleSelectionWidgetNodeFactory extends WidgetNodeFactory< //
-        MultipleSelectionWidgetNodeModel, //
-        MultipleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+public class EnableSearchParameter implements NodeParameters {
 
-    private static final String NAME = "Multiple Selection Widget";
+    /**
+     * The config key for the enable search setting.
+     */
+    public static final String CFG_ENABLE_SEARCH = "enable_search";
 
-    private static final String DESCRIPTION =
-        "Allows selecting multiple values from a list of strings in an encapsulating component's view. "
-            + "The selected values are returned as a data table and a string flow variable.";
+    /**
+     * The default value for the enable search setting.
+     */
+    public static final boolean DEFAULT_ENABLE_SEARCH = false;
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_multiple_select.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(MultipleSelectionWidgetNodeParameters.class) //
-        .addOutputPort("Selected Value Table", BufferedDataTable.TYPE,
-            "Table output holding the selected choices in one column with the given parameter name as column name.") //
-        .nodeType(NodeType.Widget) //
-        .keywords() //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public MultipleSelectionWidgetNodeFactory() {
-        super(CONFIG, MultipleSelectionWidgetNodeParameters.class);
-    }
-
-    @Override
-    public MultipleSelectionWidgetNodeModel createNodeModel() {
-        return new MultipleSelectionWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new MultipleSelectionWidgetNodeDialog();
-    }
+    @Widget(title = "Enable search",
+        description = "If selected, a search field to filter the available columns will be rendered above the multiple"
+            + " selection.")
+    @Persist(configKey = CFG_ENABLE_SEARCH)
+    @Migrate(loadDefaultIfAbsent = true)
+    @Layout(FormFieldSection.class)
+    boolean m_enableSearch = DEFAULT_ENABLE_SEARCH;
 
 }
