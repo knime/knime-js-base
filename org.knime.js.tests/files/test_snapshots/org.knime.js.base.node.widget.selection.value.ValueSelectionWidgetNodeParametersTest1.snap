@@ -4,17 +4,21 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "value-selection",
-      "parameterName" : "value-selection",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
+      "triggerReExecution" : false,
       "valueSelectionNodeParameters" : {
-        "defaultValue" : { },
+        "defaultValue" : {
+          "defaultColumn" : "",
+          "defaultValue" : ""
+        },
         "columnType" : "All",
         "limitVisOptions" : {
           "selectionType" : "Dropdown",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
-            "numberOfVisibleOptions" : 5
+            "numberOfVisibleOptions" : 10
           }
         },
         "enableColumnField" : true,
@@ -28,39 +32,41 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "value-selection"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "value-selection"
           },
           "required" : {
             "type" : "boolean",
             "default" : true
+          },
+          "triggerReExecution" : {
+            "type" : "boolean",
+            "title" : "Re-execution on widget value change",
+            "description" : "If selected, the widget emits reactivity events that trigger the re-execution of downstream nodes in a component composite view when its value changes. It allows users to create interactive Data Apps and visualizations.",
+            "default" : false
           },
           "valueSelectionNodeParameters" : {
             "type" : "object",
@@ -286,40 +292,22 @@
         "options" : {
           "validation" : {
             "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
               "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+                "pattern" : "\\S(.*\\S)?"
               }
             }
           }
         }
       } ]
     }, {
-      "label" : "Advanced Settings",
+      "label" : "Re-execution",
       "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
+        "scope" : "#/properties/model/properties/triggerReExecution",
         "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
+          "format" : "checkbox"
         }
       } ]
     } ]
@@ -333,9 +321,12 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
+          "triggerReExecution" : {
+            "configKey" : "trigger_reexecution"
+          },
           "valueSelectionNodeParameters" : {
             "type" : "object",
             "properties" : {
@@ -393,14 +384,21 @@
     "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn",
     "values" : [ {
       "indices" : [ ],
-      "value" : ""
+      "value" : "Test"
     } ]
   }, {
     "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
-      "value" : [ ]
+      "value" : [ {
+        "id" : "Test",
+        "text" : "Test",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
     } ]
   }, {
     "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
@@ -438,18 +436,16 @@
     "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/possibleValues",
     "values" : [ {
       "indices" : [ ],
-      "value" : { }
+      "value" : {
+        "Test" : [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ]
+      }
     } ]
   }, {
     "id" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/noColumnsAvailableMessage",
     "providedOptionName" : "message",
     "values" : [ {
       "indices" : [ ],
-      "value" : {
-        "title" : "No domain information available.",
-        "description" : "Add nominal domain information to any column.",
-        "type" : "WARNING"
-      }
+      "value" : null
     } ]
   } ],
   "globalUpdates" : [ {
@@ -458,11 +454,6 @@
     },
     "triggerInitially" : true,
     "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn"

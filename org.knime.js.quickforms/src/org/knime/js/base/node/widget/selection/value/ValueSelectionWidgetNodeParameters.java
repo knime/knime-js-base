@@ -44,24 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   15 Sept 2025 (Robin Gerling): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.selection.value;
+package org.knime.js.base.node.widget.selection.value;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.parameters.selection.value.ValueSelectionNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * WebUI Node Parameters for the Value Selection Configuration.
+ * WebUI Node Parameters for the Value Selection Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSettings {
+public final class ValueSelectionWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    ValueSelectionDialogNodeParameters() {
-        super(ValueSelectionDialogNodeConfig.class);
+    ValueSelectionWidgetNodeParameters() {
+        super(ValueSelectionWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded

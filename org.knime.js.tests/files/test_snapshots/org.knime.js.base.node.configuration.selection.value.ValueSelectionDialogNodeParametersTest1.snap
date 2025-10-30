@@ -7,25 +7,27 @@
       "parameterName" : "value-selection",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "defaultColumn" : "Universe_1_0",
-        "defaultValue" : "0.32109816645682043"
-      },
-      "columnType" : "All",
-      "limitVisOptions" : {
-        "selectionType" : "List",
-        "limitVisibleOptions" : {
-          "limitNumberOfVisibleOptions" : true,
-          "numberOfVisibleOptions" : 3
+      "valueSelectionNodeParameters" : {
+        "defaultValue" : {
+          "defaultColumn" : "Universe_1_0",
+          "defaultValue" : "0.32109816645682043"
+        },
+        "columnType" : "All",
+        "limitVisOptions" : {
+          "selectionType" : "List",
+          "limitVisibleOptions" : {
+            "limitNumberOfVisibleOptions" : true,
+            "numberOfVisibleOptions" : 3
+          }
+        },
+        "enableColumnField" : true,
+        "possibleValues" : {
+          "Cluster Membership" : [ "Cluster_0", "Cluster_1", "Cluster_2", "Cluster_3" ],
+          "Universe_0_0" : [ "0.44683032935216777", "0.21557309315169043", "0.300898550174282", "0.4571889310239766", "0.38269361045678824", "0.3677029629918211", "0.36949245715866297", "0.331970860722705", "0.402133267051207", "0.15868318887017008", "0.09485786644662242", "0.8796547794447265", "0.6732235377913908", "0.4800584749461948", "0.5122732788636175", "0.2550884620807333", "7.418180509843886E-5", "0.38926988475466706", "0.1041219515551276", "0.08025189239988095" ],
+          "Universe_0_1" : [ "0.5734015292960425", "0.4791031545979192", "0.6563289372665588", "0.4398338910934335", "0.7418649959603966", "0.3029988348937088", "0.2626645414376739", "0.3549328184251676", "0.1630211343351641", "0.29613277714106845", "0.8469967631764409", "0.7175221546919568", "0.8415915596134986", "0.7600870695013179", "0.6142647833618805", "0.6075324971926664", "0.03514885140670454", "0.30020972699886694", "0.8704200309631825", "0.5725318793986736" ],
+          "Universe_1_0" : [ "0.884964205166333", "0.7832484707771249", "0.32109816645682043", "0.9854348721827546", "0.7713424552238259", "0.11599380832284734", "0.19573384661219506", "0.1846160902561158", "0.304134902008945", "0.8815915028422217", "0.11778955423433633", "0.1436926309735891", "0.27242152024830113", "0.18838748088346977", "0.1540065897608444", "0.4286863180323771", "0.5916214071264654", "0.6894728131910863", "0.477970401109757", "0.5952789914495601" ],
+          "Universe_1_1" : [ "0.1567495704417292", "0.8217644612746465", "0.8143046600231879", "0.049921068187071205", "0.835291803260147", "0.7204612035668794", "0.16266806798349132", "0.46358582579947916", "0.24355454681349187", "0.9243932171878343", "0.5654896294147952", "0.4178563285716471", "0.8116123588687876", "0.4860518065362393", "0.6085903940014874", "0.3601113885875035", "0.30135958716531025", "0.27104190824213165", "0.3992932765411543", "0.19478888188341736" ]
         }
-      },
-      "enableColumnField" : true,
-      "possibleValues" : {
-        "Cluster Membership" : [ "Cluster_0", "Cluster_1", "Cluster_2", "Cluster_3" ],
-        "Universe_0_0" : [ "0.44683032935216777", "0.21557309315169043", "0.300898550174282", "0.4571889310239766", "0.38269361045678824", "0.3677029629918211", "0.36949245715866297", "0.331970860722705", "0.402133267051207", "0.15868318887017008", "0.09485786644662242", "0.8796547794447265", "0.6732235377913908", "0.4800584749461948", "0.5122732788636175", "0.2550884620807333", "7.418180509843886E-5", "0.38926988475466706", "0.1041219515551276", "0.08025189239988095" ],
-        "Universe_0_1" : [ "0.5734015292960425", "0.4791031545979192", "0.6563289372665588", "0.4398338910934335", "0.7418649959603966", "0.3029988348937088", "0.2626645414376739", "0.3549328184251676", "0.1630211343351641", "0.29613277714106845", "0.8469967631764409", "0.7175221546919568", "0.8415915596134986", "0.7600870695013179", "0.6142647833618805", "0.6075324971926664", "0.03514885140670454", "0.30020972699886694", "0.8704200309631825", "0.5725318793986736" ],
-        "Universe_1_0" : [ "0.884964205166333", "0.7832484707771249", "0.32109816645682043", "0.9854348721827546", "0.7713424552238259", "0.11599380832284734", "0.19573384661219506", "0.1846160902561158", "0.304134902008945", "0.8815915028422217", "0.11778955423433633", "0.1436926309735891", "0.27242152024830113", "0.18838748088346977", "0.1540065897608444", "0.4286863180323771", "0.5916214071264654", "0.6894728131910863", "0.477970401109757", "0.5952789914495601" ],
-        "Universe_1_1" : [ "0.1567495704417292", "0.8217644612746465", "0.8143046600231879", "0.049921068187071205", "0.835291803260147", "0.7204612035668794", "0.16266806798349132", "0.46358582579947916", "0.24355454681349187", "0.9243932171878343", "0.5654896294147952", "0.4178563285716471", "0.8116123588687876", "0.4860518065362393", "0.6085903940014874", "0.3601113885875035", "0.30135958716531025", "0.27104190824213165", "0.3992932765411543", "0.19478888188341736" ]
       }
     }
   },
@@ -35,52 +37,11 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "columnType" : {
-            "oneOf" : [ {
-              "const" : "All",
-              "title" : "All"
-            }, {
-              "const" : "String",
-              "title" : "String"
-            }, {
-              "const" : "Integer",
-              "title" : "Integer"
-            }, {
-              "const" : "Double",
-              "title" : "Double"
-            } ],
-            "default" : "All"
-          },
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "defaultColumn" : {
-                "type" : "string",
-                "title" : "Default column",
-                "description" : "The column containing the values."
-              },
-              "defaultValue" : {
-                "type" : "string",
-                "title" : "Default value",
-                "description" : "The value that is selected by default."
-              },
-              "noColumnsAvailableMessage" : {
-                "type" : "object"
-              }
-            },
-            "default" : { }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
-          },
-          "enableColumnField" : {
-            "type" : "boolean",
-            "title" : "Enable column field",
-            "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
-            "default" : true
           },
           "flowVariableName" : {
             "type" : "string",
@@ -100,62 +61,121 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "limitVisOptions" : {
-            "type" : "object",
-            "properties" : {
-              "limitVisibleOptions" : {
-                "type" : "object",
-                "properties" : {
-                  "limitNumberOfVisibleOptions" : {
-                    "type" : "boolean",
-                    "title" : "Limit number of visible options",
-                    "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them. The setting is available only for List selection type.",
-                    "default" : false
-                  },
-                  "numberOfVisibleOptions" : {
-                    "type" : "integer",
-                    "format" : "int32",
-                    "title" : "Number of visible options",
-                    "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will also affect the component's height. The setting is available only for List selection type.",
-                    "default" : 5
-                  }
-                },
-                "default" : {
-                  "limitNumberOfVisibleOptions" : false,
-                  "numberOfVisibleOptions" : 5
-                }
-              },
-              "selectionType" : {
-                "type" : "string",
-                "title" : "Selection type",
-                "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout, a list or a dropdown selection.",
-                "default" : "Dropdown"
-              }
-            },
-            "default" : {
-              "selectionType" : "Dropdown",
-              "limitVisibleOptions" : {
-                "limitNumberOfVisibleOptions" : false,
-                "numberOfVisibleOptions" : 5
-              }
-            }
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
             "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "value-selection"
           },
-          "possibleValues" : {
-            "type" : "object",
-            "default" : { }
-          },
           "required" : {
             "type" : "boolean",
             "default" : true
+          },
+          "valueSelectionNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "columnType" : {
+                "oneOf" : [ {
+                  "const" : "All",
+                  "title" : "All"
+                }, {
+                  "const" : "String",
+                  "title" : "String"
+                }, {
+                  "const" : "Integer",
+                  "title" : "Integer"
+                }, {
+                  "const" : "Double",
+                  "title" : "Double"
+                } ],
+                "default" : "All"
+              },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "defaultColumn" : {
+                    "type" : "string",
+                    "title" : "Default column",
+                    "description" : "The column containing the values."
+                  },
+                  "defaultValue" : {
+                    "type" : "string",
+                    "title" : "Default value",
+                    "description" : "The value that is selected by default."
+                  },
+                  "noColumnsAvailableMessage" : {
+                    "type" : "object"
+                  }
+                },
+                "default" : { }
+              },
+              "enableColumnField" : {
+                "type" : "boolean",
+                "title" : "Enable column field",
+                "description" : "When checked, the column field is shown and a column can be selected, else the field is not shown and the <i>Default column</i> will be used.",
+                "default" : true
+              },
+              "limitVisOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitVisibleOptions" : {
+                    "type" : "object",
+                    "properties" : {
+                      "limitNumberOfVisibleOptions" : {
+                        "type" : "boolean",
+                        "title" : "Limit number of visible options",
+                        "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them. The setting is available only for List selection type.",
+                        "default" : false
+                      },
+                      "numberOfVisibleOptions" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "title" : "Number of visible options",
+                        "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will also affect the component's height. The setting is available only for List selection type.",
+                        "default" : 5
+                      }
+                    },
+                    "default" : {
+                      "limitNumberOfVisibleOptions" : false,
+                      "numberOfVisibleOptions" : 5
+                    }
+                  },
+                  "selectionType" : {
+                    "type" : "string",
+                    "title" : "Selection type",
+                    "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout, a list or a dropdown selection.",
+                    "default" : "Dropdown"
+                  }
+                },
+                "default" : {
+                  "selectionType" : "Dropdown",
+                  "limitVisibleOptions" : {
+                    "limitNumberOfVisibleOptions" : false,
+                    "numberOfVisibleOptions" : 5
+                  }
+                }
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "possibleValues" : {
+                "type" : "object",
+                "default" : { }
+              }
+            },
+            "default" : {
+              "defaultValue" : { },
+              "columnType" : "All",
+              "limitVisOptions" : {
+                "selectionType" : "Dropdown",
+                "limitVisibleOptions" : {
+                  "limitNumberOfVisibleOptions" : false,
+                  "numberOfVisibleOptions" : 5
+                }
+              },
+              "enableColumnField" : true,
+              "possibleValues" : { }
+            }
           }
         }
       }
@@ -173,21 +193,21 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+            "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
             "schema" : {
               "const" : "List"
             }
@@ -195,7 +215,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -219,12 +239,12 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+              "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
               }
             }, {
-              "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+              "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
               "schema" : {
                 "const" : "List"
               }
@@ -233,7 +253,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/enableColumnField",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField",
         "options" : {
           "format" : "checkbox"
         }
@@ -243,28 +263,28 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/valueSelectionNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",
+        "id" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/noColumnsAvailableMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+        "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
         "options" : {
           "format" : "dropDown"
         },
@@ -325,81 +345,87 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "valueSelectionNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "noColumnsAvailableMessage" : { },
-              "defaultColumn" : {
-                "configKey" : "column"
-              },
+              "overwrittenByValueMessage" : { },
               "defaultValue" : {
-                "configKey" : "value"
-              }
-            }
-          },
-          "columnType" : {
-            "configKey" : "columnType"
-          },
-          "limitVisOptions" : {
-            "type" : "object",
-            "properties" : {
-              "selectionType" : {
-                "configKey" : "type"
-              },
-              "limitVisibleOptions" : {
                 "type" : "object",
                 "properties" : {
-                  "limitNumberOfVisibleOptions" : {
-                    "configKey" : "limit_number_visible_options"
+                  "noColumnsAvailableMessage" : { },
+                  "defaultColumn" : {
+                    "configKey" : "column"
                   },
-                  "numberOfVisibleOptions" : {
-                    "configKey" : "number_visible_options"
+                  "defaultValue" : {
+                    "configKey" : "value"
+                  }
+                }
+              },
+              "columnType" : {
+                "configKey" : "columnType"
+              },
+              "limitVisOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "selectionType" : {
+                    "configKey" : "type"
+                  },
+                  "limitVisibleOptions" : {
+                    "type" : "object",
+                    "properties" : {
+                      "limitNumberOfVisibleOptions" : {
+                        "configKey" : "limit_number_visible_options"
+                      },
+                      "numberOfVisibleOptions" : {
+                        "configKey" : "number_visible_options"
+                      }
+                    },
+                    "propertiesRoute" : [ ".." ]
                   }
                 },
                 "propertiesRoute" : [ ".." ]
+              },
+              "enableColumnField" : {
+                "configPaths" : [ [ "lockColumn" ] ]
+              },
+              "possibleValues" : {
+                "configPaths" : [ ]
               }
             },
             "propertiesRoute" : [ ".." ]
-          },
-          "enableColumnField" : {
-            "configPaths" : [ [ "lockColumn" ] ]
-          },
-          "possibleValues" : {
-            "configPaths" : [ ]
           }
         }
       }
     }
   },
   "initialUpdates" : [ {
-    "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn",
     "values" : [ {
       "indices" : [ ],
       "value" : ""
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
     "values" : [ {
       "indices" : [ ],
       "value" : null
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/defaultValue",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -418,13 +444,13 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/possibleValues",
+    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/possibleValues",
     "values" : [ {
       "indices" : [ ],
       "value" : { }
     } ]
   }, {
-    "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",
+    "id" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/noColumnsAvailableMessage",
     "providedOptionName" : "message",
     "values" : [ {
       "indices" : [ ],
@@ -440,21 +466,21 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/enableColumnField" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/defaultValue/properties/defaultColumn"
-    },
-    "dependencies" : [ "#/properties/model/properties/columnType", "#/properties/model/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/defaultValue/properties/defaultValue" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/enableColumnField"
-    },
-    "dependencies" : [ "#/properties/model/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn"
+    },
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField"
+    },
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnField" ]
   } ]
 }

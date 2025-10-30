@@ -48,6 +48,13 @@
  */
 package org.knime.js.base.node.base.selection.value;
 
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.CFG_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.DEFAULT_TYPE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +73,6 @@ import org.knime.core.data.StringValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterUtil;
 
 /**
@@ -92,23 +98,11 @@ public class ValueSelectionNodeConfig {
 
     private Map<String, List<String>> m_possibleValues = new TreeMap<String, List<String>>();
 
-    public static final String CFG_TYPE = "type";
-
-    public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
-
     private String m_type = DEFAULT_TYPE;
 
     public static final String CFG_COL = "colValues";
 
-    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-
-    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
-
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
-
-    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-
-    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
 
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
