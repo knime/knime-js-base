@@ -74,7 +74,7 @@ public class ValueFilterWidgetNodeFactory extends WidgetNodeFactory< //
         .icon("./widget_value_filter.png") //
         .shortDescription(DESCRIPTION) //
         .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(NominalRowFilterWidgetNodeParameters.class) //
+        .modelSettingsClass(ValueFilterWidgetNodeParameters.class) //
         .addInputTable("Table Input", "Table containing the column(s) with values to be filtered.") //
         .addOutputTable("Filtered Table", "Filtered table containing only rows with the selected values.") //
         .nodeType(NodeType.Widget) //
@@ -82,7 +82,7 @@ public class ValueFilterWidgetNodeFactory extends WidgetNodeFactory< //
 
     @SuppressWarnings("javadoc")
     public ValueFilterWidgetNodeFactory() {
-        super(CONFIG, NominalRowFilterWidgetNodeParameters.class);
+        super(CONFIG, ValueFilterWidgetNodeParameters.class);
     }
 
     @Override

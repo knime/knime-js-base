@@ -59,31 +59,31 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.test.DefaultNo
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.test.SnapshotTestConfiguration;
 
 /**
- * Snapshot test for the {@link NominalRowFilterWidgetNodeParameters}.
+ * Snapshot test for the {@link ValueFilterWidgetNodeParameters}.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-final class NominalRowFilterWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
+final class ValueFilterWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    protected NominalRowFilterWidgetNodeParametersTest() {
+    protected ValueFilterWidgetNodeParametersTest() {
         super(CONFIG);
     }
 
     private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
-        .testJsonFormsForModel(NominalRowFilterWidgetNodeParameters.class) //
+        .testJsonFormsForModel(ValueFilterWidgetNodeParameters.class) //
         .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
         .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    private static NominalRowFilterWidgetNodeParameters readSettings() {
+    private static ValueFilterWidgetNodeParameters readSettings() {
         try {
-            var path = getSnapshotPath(NominalRowFilterWidgetNodeParametersTest.class).getParent().resolve("node_settings")
-                .resolve("NominalRowFilterWidgetNodeParameters.xml");
+            var path = getSnapshotPath(ValueFilterWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("ValueFilterWidgetNodeParameters.xml");
             try (var fis = new FileInputStream(path.toFile())) {
                 var nodeSettings = NodeSettings.loadFromXML(fis);
                 return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
-                    NominalRowFilterWidgetNodeParameters.class);
+                    ValueFilterWidgetNodeParameters.class);
             }
         } catch (IOException | InvalidSettingsException e) {
             throw new IllegalStateException(e);

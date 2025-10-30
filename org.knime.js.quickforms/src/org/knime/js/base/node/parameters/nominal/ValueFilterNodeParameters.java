@@ -101,18 +101,18 @@ import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
 import org.knime.node.parameters.widget.message.TextMessage;
 
 /**
- * Shared WebUI Node Parameters for Nominal Row Filter Configuration and Widget.
+ * Shared WebUI Node Parameters for Value Filter Configuration and Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
 @LoadDefaultsForAbsentFields
-public class NominalRowFilterNodeParameters implements NodeParameters {
+public class ValueFilterNodeParameters implements NodeParameters {
 
     /**
      * Default constructor
      */
-    public NominalRowFilterNodeParameters() {
+    public ValueFilterNodeParameters() {
         // Default constructor
     }
 

@@ -50,10 +50,10 @@ package org.knime.js.base.node.configuration.filter.value;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.nominal.NominalRowFilterNodeParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
 
 /**
- * WebUI Node Parameters for the Nominal Row Filter Configuration.
+ * WebUI Node Parameters for the Value Filter Configuration.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
@@ -68,6 +68,6 @@ public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
     }
 
     @PersistWithin.PersistEmbedded
-    NominalRowFilterNodeParameters m_nominalRowFilterNodeParameters = new NominalRowFilterNodeParameters();
+    ValueFilterNodeParameters m_valueFilterNodeParameters = new ValueFilterNodeParameters();
 
 }

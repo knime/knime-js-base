@@ -50,23 +50,23 @@ package org.knime.js.base.node.widget.filter.value;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
-import org.knime.js.base.node.parameters.nominal.NominalRowFilterNodeParameters;
+import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
 import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * WebUI Node Parameters for the Nominal Row Filter Widget.
+ * WebUI Node Parameters for the Value Filter Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-public final class NominalRowFilterWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
+public final class ValueFilterWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    NominalRowFilterWidgetNodeParameters() {
+    ValueFilterWidgetNodeParameters() {
         super(ValueFilterWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded
-    NominalRowFilterNodeParameters m_nominalRowFilterNodeParameters = new NominalRowFilterNodeParameters();
+    ValueFilterNodeParameters m_valueFilterNodeParameters = new ValueFilterNodeParameters();
 
     @PersistWithin.PersistEmbedded
     EnableSearchAndIgnoreInvalidValuesParameters m_searchAndIgnoreInvalidValuesParameters =
