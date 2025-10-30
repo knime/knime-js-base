@@ -234,7 +234,7 @@ public final class CredentialsNodeParameters implements NodeParameters {
     }
 
     static final class CredentialsOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<CredentialsDialogNodeValue> {
+        extends OverwrittenByValueMessage<CredentialsNodeValue> {
 
         private Supplier<Boolean> m_enableUsernameFieldSupplier;
 
@@ -245,7 +245,7 @@ public final class CredentialsNodeParameters implements NodeParameters {
         }
 
         @Override
-        protected String valueToString(final CredentialsDialogNodeValue value) {
+        protected String valueToString(final CredentialsNodeValue value) {
             final var passwordValue =
                 value.getPassword() == null || value.getPassword().isEmpty() ? "not provided" : "******";
             return m_enableUsernameFieldSupplier.get() != null && m_enableUsernameFieldSupplier.get()
