@@ -44,30 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   23 Sept 2025 (Robin Gerling): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.filter.value;
+package org.knime.js.base.node.widget.filter.value;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.nominal.NominalRowFilterNodeParameters;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeParametersUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.test.DefaultNodeSettingsSnapshotTest;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.test.SnapshotTestConfiguration;
 
 /**
- * WebUI Node Parameters for the Nominal Row Filter Configuration.
+ * Snapshot test for the {@link NominalRowFilterWidgetNodeParameters}.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
+final class NominalRowFilterWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    /**
-     * Default constructor
-     */
-    protected ValueFilterDialogNodeParameters() {
-        super(ValueFilterDialogNodeConfig.class);
+    protected NominalRowFilterWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @PersistWithin.PersistEmbedded
-    NominalRowFilterNodeParameters m_nominalRowFilterNodeParameters = new NominalRowFilterNodeParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(NominalRowFilterWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
+
+    private static NominalRowFilterWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(NominalRowFilterWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("NominalRowFilterWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    NominalRowFilterWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
 }

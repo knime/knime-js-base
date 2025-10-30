@@ -44,30 +44,32 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   23 Sept 2025 (Robin Gerling): created
+ *   30 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.filter.value;
+package org.knime.js.base.node.widget.filter.value;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
+import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
 import org.knime.js.base.node.parameters.nominal.NominalRowFilterNodeParameters;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * WebUI Node Parameters for the Nominal Row Filter Configuration.
+ * WebUI Node Parameters for the Nominal Row Filter Widget.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @SuppressWarnings("restriction")
-public class ValueFilterDialogNodeParameters extends ConfigurationNodeSettings {
+public final class NominalRowFilterWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    /**
-     * Default constructor
-     */
-    protected ValueFilterDialogNodeParameters() {
-        super(ValueFilterDialogNodeConfig.class);
+    NominalRowFilterWidgetNodeParameters() {
+        super(ValueFilterWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded
     NominalRowFilterNodeParameters m_nominalRowFilterNodeParameters = new NominalRowFilterNodeParameters();
+
+    @PersistWithin.PersistEmbedded
+    EnableSearchAndIgnoreInvalidValuesParameters m_searchAndIgnoreInvalidValuesParameters =
+        new EnableSearchAndIgnoreInvalidValuesParameters();
 
 }

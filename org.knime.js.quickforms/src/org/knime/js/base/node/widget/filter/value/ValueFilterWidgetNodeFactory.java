@@ -49,56 +49,52 @@
 package org.knime.js.base.node.widget.filter.value;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.filter.value.ValueFilterNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
- * Factory for the value filter widget node
+ * Factory for the nominal row filter widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterWidgetNodeFactory extends NodeFactory<ValueFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterWidgetNodeModel,
-    ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, ValueFilterNodeValue> {
+public class ValueFilterWidgetNodeFactory extends WidgetNodeFactory< //
+        ValueFilterWidgetNodeModel, //
+        ReExecutableValueFilterNodeRepresentation<ValueFilterNodeValue>, //
+        ValueFilterNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Nominal Row Filter Widget";
+
+    private static final String DESCRIPTION = "Creates a value filter widget for use in components views. "
+        + "Takes a data table and returns a filtered data table with only the selected values of a chosen column.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_value_filter.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(NominalRowFilterWidgetNodeParameters.class) //
+        .addInputTable("Table Input", "Table containing the column(s) with values to be filtered.") //
+        .addOutputTable("Filtered Table", "Filtered table containing only rows with the selected values.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public ValueFilterWidgetNodeFactory() {
+        super(CONFIG, NominalRowFilterWidgetNodeParameters.class);
+    }
+
     @Override
     public ValueFilterWidgetNodeModel createNodeModel() {
         return new ValueFilterWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final ValueFilterWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ValueFilterWidgetNodeDialog();

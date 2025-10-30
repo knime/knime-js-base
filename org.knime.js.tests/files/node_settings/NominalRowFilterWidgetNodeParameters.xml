@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="NodeSettings">
+    <config key="model">
+        <config key="nominalRowFilterNodeParameters">
+            <config key="defaultValue">
+                <entry key="column" type="xstring" value="Column1"/>
+                <config key="values">
+                    <entry key="array-size" type="xint" value="2"/>
+                    <entry key="0" type="xstring" value="Value1"/>
+                    <entry key="1" type="xstring" value="Value2"/>
+                </config>
+                <config key="excludes">
+                    <entry key="array-size" type="xint" value="1"/>
+                    <entry key="0" type="xstring" value="Value3"/>
+                </config>
+                <entry key="anyUnknownValueHandling" type="xstring" value="EXCLUDE"/>
+            </config>
+            <config key="limitVisibleOptionsParameters">
+                <entry key="limitNumberVisOptions" type="xboolean" value="true"/>
+                <entry key="numberVisOptions" type="xint" value="10"/>
+            </config>
+            <entry key="enableColumnField" type="xboolean" value="true"/>
+            <config key="possibleValues">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Column1"/>
+            </config>
+            <config key="colValues">
+                <config key="Column1">
+                    <entry key="array-size" type="xint" value="3"/>
+                    <entry key="0" type="xstring" value="Value1"/>
+                    <entry key="1" type="xstring" value="Value2"/>
+                    <entry key="2" type="xstring" value="Value3"/>
+                </config>
+            </config>
+        </config>
+        <config key="searchAndIgnoreInvalidValuesParameters">
+            <entry key="enableSearch" type="xboolean" value="true"/>
+            <entry key="ignoreInvalidValues" type="xboolean" value="false"/>
+        </config>
+        <entry key="hideInWizard" type="xboolean" value="false"/>
+        <entry key="customCSS" type="xstring" value=""/>
+        <entry key="label" type="xstring" value="Nominal Row Filter"/>
+        <entry key="description" type="xstring" value="Select values to filter rows"/>
+        <entry key="variableName" type="xstring" value="nominalRowFilter"/>
+        <entry key="subscribeToSelection" type="xboolean" value="false"/>
+        <entry key="subscribeToFilter" type="xboolean" value="false"/>
+        <config key="publishSelection">
+            <entry key="publishSelection" type="xboolean" value="false"/>
+            <entry key="selectionColumnName" type="xstring" value=""/>
+        </config>
+        <entry key="reExecuteOnWidgetChange" type="xboolean" value="false"/>
+    </config>
+</config>
