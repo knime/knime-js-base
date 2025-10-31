@@ -48,8 +48,7 @@
  */
 package org.knime.js.base.node.parameters.filterandselection;
 
-import java.util.Optional;
-
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
@@ -101,6 +100,7 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     @NumberInputWidget(minValidation = IsMin2Validation.class)
     @Persist(configKey = CFG_NUMBER_VIS_OPTIONS)
     @Modification.WidgetReference(NumberOfVisibleOptionsModificationReference.class)
+    @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
     int m_numberOfVisibleOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
@@ -122,7 +122,7 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     private static final class NumberOfVisibleOptionsModificationReference implements Modification.Reference {
     }
 
-    abstract static class AdaptTitlesAndDescriptions implements Modification.Modifier {
+    abstract static class LimitVisibleOptionsParametersModifier implements Modification.Modifier {
         @Override
         public void modify(final WidgetGroupModifier group) {
             group.find(LimitNumberOfVisibleOptionsModificationReference.class) //
@@ -131,26 +131,24 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
                 .withProperty("description", getLimitNumVisOptionsDescription()) //
                 .modify();
 
-            final var limitNumVisOptionsEffectPredicate = getLimitNumVisOptionsEffectPredicate();
-            if (limitNumVisOptionsEffectPredicate.isPresent()) {
-                group.find(LimitNumberOfVisibleOptionsModificationReference.class) //
-                    .addAnnotation(Effect.class) //
-                    .withProperty("predicate", limitNumVisOptionsEffectPredicate.get()) //
-                    .withProperty("type", EffectType.SHOW) //
-                    .modify();
-            }
-
             group.find(NumberOfVisibleOptionsModificationReference.class) //
                 .addAnnotation(Widget.class) //
                 .withProperty("title", getNumVisOptionsTitle()) //
                 .withProperty("description", getNumVisOptionsDescription()) //
                 .modify();
-
-            group.find(NumberOfVisibleOptionsModificationReference.class) //
-                .addAnnotation(Effect.class) //
-                .withProperty("predicate", getNumVisOptionsEffectPredicate()) //
-                .withProperty("type", EffectType.SHOW) //
-                .modify();
+            final var effectPredicates = getEffectPredicates();
+            if (effectPredicates != null) {
+                group.find(LimitNumberOfVisibleOptionsModificationReference.class) //
+                    .addAnnotation(Effect.class) //
+                    .withProperty("predicate", effectPredicates.getFirst()) //
+                    .withProperty("type", EffectType.SHOW) //
+                    .modify();
+                group.find(NumberOfVisibleOptionsModificationReference.class) //
+                    .modifyAnnotation(Effect.class) //
+                    .withProperty("predicate", effectPredicates.getSecond()) //
+                    .withProperty("type", EffectType.SHOW) //
+                    .modify();
+            }
         }
 
         String getLimitNumVisOptionsTitle() {
@@ -159,19 +157,46 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
 
         abstract String getLimitNumVisOptionsDescription();
 
-        Optional<Class<? extends EffectPredicateProvider>> getLimitNumVisOptionsEffectPredicate() {
-            return Optional.empty();
-        }
-
         String getNumVisOptionsTitle() {
             return "Number of visible options";
         }
 
         abstract String getNumVisOptionsDescription();
 
-        Class<? extends EffectPredicateProvider> getNumVisOptionsEffectPredicate() {
-            return ShowNumberOfVisibleOptions.class;
+        /**
+         * Use if the options should be hidden/shown based on another setting.
+         *
+         * @return a pair of the predicate to show the options at all and the predicate to show the number of visible
+         *         options
+         */
+        Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
+            getEffectPredicates() {
+            return null;
         }
+
+        static abstract class AbstractShowNumberOfVisibleOptions implements EffectPredicateProvider {
+
+            Class<? extends EffectPredicateProvider> m_limitNumVisOptionsEffectPredicate;
+
+            /**
+             * Pass in the same class as the first value of the pair returned by
+             * {@link LimitVisibleOptionsParametersModifier#getNumVisOptionsEffectPredicate()}.
+             *
+             * @param limitNumVisOptionsEffectPredicate the effect predicate to determine whether to show the number of
+             *            visible options setting
+             */
+            AbstractShowNumberOfVisibleOptions(
+                final Class<? extends EffectPredicateProvider> limitNumVisOptionsEffectPredicate) {
+                m_limitNumVisOptionsEffectPredicate = limitNumVisOptionsEffectPredicate;
+            }
+
+            @Override
+            public EffectPredicate init(final PredicateInitializer i) {
+                return i.getPredicate(ShowNumberOfVisibleOptions.class)
+                    .and(i.getPredicate(m_limitNumVisOptionsEffectPredicate));
+            }
+        }
+
     }
 
 }

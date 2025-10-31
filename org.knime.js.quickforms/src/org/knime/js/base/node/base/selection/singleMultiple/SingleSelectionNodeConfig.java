@@ -48,7 +48,7 @@
  */
 package org.knime.js.base.node.base.selection.singleMultiple;
 
-import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionLimitVisibleOptionsParameters.DEFAULT_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.DEFAULT_TYPE;
 
 /**
  * Base config file for the single selection configuration and widget nodes

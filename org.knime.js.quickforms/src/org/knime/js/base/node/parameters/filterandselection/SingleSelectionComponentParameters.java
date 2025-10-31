@@ -50,13 +50,13 @@ package org.knime.js.base.node.parameters.filterandselection;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.AdaptTitlesAndDescriptions;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.ShowNumberOfVisibleOptions;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier.AbstractShowNumberOfVisibleOptions;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -69,13 +69,13 @@ import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 
 /**
- * The common settings of single selection configuration/widgets nodes regarding the limitation of visible options in
- * the frontend component.
+ * The common settings of single selection configuration/widgets nodes regarding the type of component and the
+ * limitation of visible options in the List frontend component.
  *
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public class SingleSelectionLimitVisibleOptionsParameters implements NodeParameters {
+public class SingleSelectionComponentParameters implements NodeParameters {
 
     /**
      * The config key for the type setting.
@@ -117,14 +117,15 @@ public class SingleSelectionLimitVisibleOptionsParameters implements NodeParamet
         }
     }
 
-    private static final class IsListAndShowNumberOfVisibleOptions implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListSelectionType.class).and(i.getPredicate(ShowNumberOfVisibleOptions.class));
+    private static final class IsListAndShowNumberOfVisibleOptions extends AbstractShowNumberOfVisibleOptions {
+
+        IsListAndShowNumberOfVisibleOptions() {
+            super(IsListSelectionType.class);
         }
+
     }
 
-    private static final class LimitVisibleOptionsModification extends AdaptTitlesAndDescriptions {
+    private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
 
         @Override
         String getLimitNumVisOptionsDescription() {
@@ -143,13 +144,9 @@ public class SingleSelectionLimitVisibleOptionsParameters implements NodeParamet
         }
 
         @Override
-        Optional<Class<? extends EffectPredicateProvider>> getLimitNumVisOptionsEffectPredicate() {
-            return Optional.of(IsListSelectionType.class);
-        }
-
-        @Override
-        Class<? extends EffectPredicateProvider> getNumVisOptionsEffectPredicate() {
-            return IsListAndShowNumberOfVisibleOptions.class;
+        Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
+            getEffectPredicates() {
+            return new Pair<>(IsListSelectionType.class, IsListAndShowNumberOfVisibleOptions.class);
         }
 
     }

@@ -73,7 +73,7 @@ import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNode
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionLimitVisibleOptionsParameters;
+import org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -138,7 +138,7 @@ public class ValueSelectionDialogNodeParameters extends ConfigurationNodeSetting
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionLimitVisibleOptionsParameters m_limitVisOptions = new SingleSelectionLimitVisibleOptionsParameters();
+    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
 
     @Widget(title = ENABLE_COLUMN_FIELD_TITLE, description = ENABLE_COLUMN_FIELD_DESCRIPTION)
     @Persistor(EnableColumnFieldPersistor.class)

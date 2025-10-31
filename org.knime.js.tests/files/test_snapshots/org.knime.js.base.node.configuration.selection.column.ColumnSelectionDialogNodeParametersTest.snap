@@ -217,14 +217,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
-              "schema" : {
-                "const" : "List"
-              }
-            }, {
               "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+              "schema" : {
+                "const" : "List"
               }
             } ]
           }

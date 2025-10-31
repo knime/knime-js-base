@@ -71,7 +71,7 @@ import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterVal
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.SingleSelectionLimitVisibleOptionsParameters;
+import org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -125,7 +125,7 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionLimitVisibleOptionsParameters m_limitVisOptions = new SingleSelectionLimitVisibleOptionsParameters();
+    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
 
     @ChoicesProvider(PossibleColumnChoicesProvider.class)
     @Persist(configKey = ColumnSelectionNodeConfig.CFG_POSSIBLE_COLUMNS)

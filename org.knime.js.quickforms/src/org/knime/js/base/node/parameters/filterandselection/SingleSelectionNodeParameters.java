@@ -105,7 +105,7 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionLimitVisibleOptionsParameters m_limitVisOptions = new SingleSelectionLimitVisibleOptionsParameters();
+    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
 
     @Widget(title = "Possible choices", description = "The possible choices, each line is one possible value.")
     @TextAreaWidget

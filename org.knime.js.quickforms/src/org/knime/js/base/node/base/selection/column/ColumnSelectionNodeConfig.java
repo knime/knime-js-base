@@ -52,8 +52,8 @@ import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleO
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
-import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionLimitVisibleOptionsParameters.CFG_TYPE;
-import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionLimitVisibleOptionsParameters.DEFAULT_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.CFG_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.DEFAULT_TYPE;
 
 import java.util.Arrays;
 
