@@ -67,12 +67,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class RefreshButtonWidgetViewValue extends JSONViewContent {
 
-    private static final String CFG_REFRESH_COUNTER = "refreshCounter";
-    private static final int DEFAULT_REFRESH_COUNTER = 0;
+    public static final String CFG_REFRESH_COUNTER = "refreshCounter";
+    public static final int DEFAULT_REFRESH_COUNTER = 0;
     private int m_refreshCounter = DEFAULT_REFRESH_COUNTER;
 
-    private static final String CFG_REFRESH_TIMESTAMP = "refreshTimestamp";
-    private static final String DEFAULT_REFRESH_TIMESTAMP = "";
+    public static final String CFG_REFRESH_TIMESTAMP = "refreshTimestamp";
+    public static final String DEFAULT_REFRESH_TIMESTAMP = "";
     private String m_refreshTimestamp = DEFAULT_REFRESH_TIMESTAMP;
 
     /**

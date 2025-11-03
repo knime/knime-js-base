@@ -66,8 +66,8 @@ public class RefreshButtonWidgetNodeConfig extends ReExecutableWidgetConfig<Refr
     /** legacy node flow variable output name - outputs the button text */
     protected static final String FLOW_VARIABLE_NAME = "refresh_widget";
 
-    private static final String DEFAULT_TEXT = "Refresh";
-    private static final String CFG_BUTTON_TEXT = "buttonText";
+    public static final String DEFAULT_TEXT = "Refresh";
+    public static final String CFG_BUTTON_TEXT = "buttonText";
     private String m_buttonText = DEFAULT_TEXT;
 
     /**

@@ -44,61 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   20 Oct 2025 (Robin Gerling): created
+ *   3 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget;
+package org.knime.js.base.node.widget.reexecution.refresh;
 
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeDialog;
-import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.widget.text.TextInputWidget;
-import org.knime.node.parameters.widget.text.util.ColumnNameValidationUtils.ColumnNameValidation;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-/**
- * This class specifies the common settings of widget nodes using the {@link LabeledConfig}, outputting a flow variable,
- * and additionally containing the required field in the node settings.
- *
- * @author Robin Gerling
- */
 @SuppressWarnings("restriction")
-public abstract class WidgetNodeParametersFlowVariable extends WidgetNodeParametersLabeled {
+final class RefreshButtonWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    /**
-     * Default constructor
-     *
-     * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
-     */
-    protected WidgetNodeParametersFlowVariable(final Class<?> nodeConfigClass) {
-        final var defaultParamName = SubNodeContainer.getDialogNodeParameterNameDefault(nodeConfigClass);
-        m_flowVariableName = defaultParamName;
+    protected RefreshButtonWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @Widget(title = "Variable name", description = "The name of the exported flow variable.")
-    @Layout(OutputSection.Bottom.class)
-    @TextInputWidget(patternValidation = ColumnNameValidation.class)
-    @Modification.WidgetReference(FlowVariableNameRef.class)
-    String m_flowVariableName;
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(RefreshButtonWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
 
-    /**
-     * Modification reference for the flow variable name field.
-     */
-    public static final class FlowVariableNameRef implements Modification.Reference {
+    private static RefreshButtonWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(RefreshButtonWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("RefreshButtonWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    RefreshButtonWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    /**
-     * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was only
-     * implemented in a single client
-     * ({@link MultipleFileUploadWidgetNodeDialog#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}). We probably want
-     * to remove it in the future, but if we do so now, the node model will not be able to load the settings.
-     */
-    boolean m_required = DEFAULT_REQUIRED;
-
 }

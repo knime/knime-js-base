@@ -1,0 +1,152 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "label" : "",
+      "description" : "",
+      "flowVariableName" : "refresh-button",
+      "required" : true,
+      "defaultValue" : {
+        "refreshCounter" : 0,
+        "refreshTimestamp" : ""
+      },
+      "buttonText" : "Refresh",
+      "triggerReExecution" : true
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "buttonText" : {
+            "type" : "string",
+            "title" : "Button text",
+            "description" : "The text of the button.",
+            "default" : "Refresh"
+          },
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "refreshCounter" : {
+                "type" : "integer",
+                "format" : "int32",
+                "default" : 0
+              },
+              "refreshTimestamp" : {
+                "type" : "string",
+                "default" : ""
+              }
+            },
+            "default" : {
+              "refreshCounter" : 0,
+              "refreshTimestamp" : ""
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
+            "default" : "Enter Description"
+          },
+          "flowVariableName" : {
+            "type" : "string",
+            "title" : "Variable name",
+            "description" : "Variable identifier. Two variables are created with the suffix <ul>  <li> -counter: Number of refreshes the button has triggered</li>  <li> -timestamp: An ISO formatted timestamp from the last refresh triggered by the button</li></ul>\n",
+            "default" : "refresh-button"
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown in the view.",
+            "default" : "Label"
+          },
+          "required" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "triggerReExecution" : {
+            "type" : "boolean",
+            "default" : true
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/buttonText"
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariableName",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
+              "parameters" : {
+                "pattern" : "\\S(.*\\S)?"
+              }
+            }
+          }
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "label" : { },
+          "description" : { },
+          "flowVariableName" : { },
+          "required" : { },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "refreshCounter" : {
+                "configKey" : "refreshCounter"
+              },
+              "refreshTimestamp" : {
+                "configKey" : "refreshTimestamp"
+              }
+            }
+          },
+          "buttonText" : {
+            "configKey" : "buttonText"
+          },
+          "triggerReExecution" : {
+            "configKey" : "trigger_reexecution"
+          }
+        }
+      }
+    }
+  }
+}

@@ -47,9 +47,9 @@
 package org.knime.js.base.node.widget.reexecution.refresh;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the refresh button widget node.
@@ -57,46 +57,51 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
  * @author Ben Laney, KNIME GmbH, Konstanz, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RefreshButtonWidgetNodeFactory extends NodeFactory<RefreshButtonWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RefreshButtonWidgetNodeModel,
-    RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>, RefreshButtonWidgetViewValue> {
+public class RefreshButtonWidgetNodeFactory extends WidgetNodeFactory< //
+        RefreshButtonWidgetNodeModel, //
+        RefreshButtonWidgetViewRepresentation<RefreshButtonWidgetViewValue>, RefreshButtonWidgetViewValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    static final String NAME = "Refresh Button Widget";
+
+    static final String DESCRIPTION =
+        "Creates a button widget with configurable text which emits reactivity events in component visualizations.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_refresh.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription("""
+                Adds a button widget with configurable text which can be used to refresh the composite view of the \
+                component. The button widget emits reactivity events that trigger the re-execution of downstream \
+                nodes in a component when clicked. It allows users to create interactive Data Apps and \
+                visualizations.<br /><br />\
+                To use the node, connect the variable output port to the nodes which should be re-executed. <b>The \
+                downstream nodes of those connected nodes will also be re-executed when the widget is clicked.</b>""")
+        .modelSettingsClass(RefreshButtonWidgetNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, """
+                Variable output port to connect to nodes which should be re-executed when the widget is clicked. \
+                Downstream nodes of a node connected to this flow variable output port will also be re-executed, \
+                so it's only necessary to connect to the root node in each workflow branch for which re-execution \
+                is desired. The flow variable value is trivial and does not contain any information.""") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public RefreshButtonWidgetNodeFactory() {
+        super(CONFIG, RefreshButtonWidgetNodeParameters.class);
+    }
+
     @Override
     public RefreshButtonWidgetNodeModel createNodeModel() {
         return new RefreshButtonWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<RefreshButtonWidgetNodeModel> createNodeView(final int viewIndex,
-        final RefreshButtonWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new RefreshButtonWidgetNodeDialog();

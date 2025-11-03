@@ -44,61 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   20 Oct 2025 (Robin Gerling): created
+ *   3 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget;
+package org.knime.js.base.node.widget.reexecution.refresh;
 
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
-
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.base.LabeledConfig;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.widget.ReExecutableConfig;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import org.knime.js.base.node.widget.reexecution.refresh.RefreshButtonWidgetNodeParameters.ExplainFlowVariableName;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.widget.text.TextInputWidget;
-import org.knime.node.parameters.widget.text.util.ColumnNameValidationUtils.ColumnNameValidation;
+import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * This class specifies the common settings of widget nodes using the {@link LabeledConfig}, outputting a flow variable,
- * and additionally containing the required field in the node settings.
+ * Settings for the refresh button widget node.
  *
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public abstract class WidgetNodeParametersFlowVariable extends WidgetNodeParametersLabeled {
+@LoadDefaultsForAbsentFields
+@Modification(ExplainFlowVariableName.class)
+public final class RefreshButtonWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
-    /**
-     * Default constructor
-     *
-     * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
-     */
-    protected WidgetNodeParametersFlowVariable(final Class<?> nodeConfigClass) {
-        final var defaultParamName = SubNodeContainer.getDialogNodeParameterNameDefault(nodeConfigClass);
-        m_flowVariableName = defaultParamName;
+    RefreshButtonWidgetNodeParameters() {
+        super(RefreshButtonWidgetNodeConfig.class);
     }
 
-    @Widget(title = "Variable name", description = "The name of the exported flow variable.")
-    @Layout(OutputSection.Bottom.class)
-    @TextInputWidget(patternValidation = ColumnNameValidation.class)
-    @Modification.WidgetReference(FlowVariableNameRef.class)
-    String m_flowVariableName;
+    private static final class DefaultValue implements NodeParameters {
+        @Persist(configKey = RefreshButtonWidgetViewValue.CFG_REFRESH_COUNTER)
+        int m_refreshCounter = RefreshButtonWidgetViewValue.DEFAULT_REFRESH_COUNTER;
 
-    /**
-     * Modification reference for the flow variable name field.
-     */
-    public static final class FlowVariableNameRef implements Modification.Reference {
+        @Persist(configKey = RefreshButtonWidgetViewValue.CFG_REFRESH_TIMESTAMP)
+        String m_refreshTimestamp = RefreshButtonWidgetViewValue.DEFAULT_REFRESH_TIMESTAMP;
     }
 
-    /**
-     * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was only
-     * implemented in a single client
-     * ({@link MultipleFileUploadWidgetNodeDialog#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}). We probably want
-     * to remove it in the future, but if we do so now, the node model will not be able to load the settings.
-     */
-    boolean m_required = DEFAULT_REQUIRED;
+    DefaultValue m_defaultValue = new DefaultValue();
+
+    @Widget(title = "Button text", description = "The text of the button.")
+    @Layout(FormFieldSection.class)
+    @Persist(configKey = RefreshButtonWidgetNodeConfig.CFG_BUTTON_TEXT)
+    String m_buttonText = RefreshButtonWidgetNodeConfig.DEFAULT_TEXT;
+
+    @Persist(configKey = ReExecutableConfig.CFG_TRIGGER_REEXECUTION)
+    boolean m_triggerReExecution = true;
+
+    static final class ExplainFlowVariableName implements Modification.Modifier {
+
+        @Override
+        public void modify(final WidgetGroupModifier group) {
+            group.find(WidgetNodeParametersFlowVariable.FlowVariableNameRef.class).modifyAnnotation(Widget.class)
+                .withProperty("description", """
+                        Variable identifier. Two variables are created with the suffix \
+                        <ul>\
+                          <li> -counter: Number of refreshes the button has triggered</li>\
+                          <li> -timestamp: An ISO formatted timestamp from the last refresh \
+                        triggered by the button</li>\
+                        </ul>
+                            """).modify();
+        }
+
+    }
 
 }
