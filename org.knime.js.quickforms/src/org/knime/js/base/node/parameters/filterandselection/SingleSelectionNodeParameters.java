@@ -114,7 +114,7 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
     @Layout(FormFieldSection.class)
     String m_possibleChoices;
 
-    static final class DefaultVariableValuePersistor implements NodeParametersPersistor<String> {
+    private static final class DefaultVariableValuePersistor implements NodeParametersPersistor<String> {
 
         @Override
         public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
@@ -135,7 +135,7 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
 
     }
 
-    static final class PossibleChoicesPersistor implements NodeParametersPersistor<String> {
+    private static final class PossibleChoicesPersistor implements NodeParametersPersistor<String> {
 
         @Override
         public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
@@ -156,13 +156,13 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
 
     }
 
-    static final class VariableValueValueReference implements ParameterReference<String> {
+    private static final class VariableValueValueReference implements ParameterReference<String> {
     }
 
-    static final class PossibleChoicesReference implements ParameterReference<String> {
+    private static final class PossibleChoicesReference implements ParameterReference<String> {
     }
 
-    static final class VariableValueChoicesProvider implements StringChoicesProvider {
+    private static final class VariableValueChoicesProvider implements StringChoicesProvider {
 
         private Supplier<String> m_possibleChoicesSupplier;
 
@@ -180,7 +180,7 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
         }
     }
 
-    static final class VariableValueValueProvider implements StateProvider<String> {
+    private static final class VariableValueValueProvider implements StateProvider<String> {
 
         private Supplier<String> m_possibleChoicesSupplier;
 

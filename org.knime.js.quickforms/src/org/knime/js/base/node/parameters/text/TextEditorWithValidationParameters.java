@@ -61,7 +61,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWit
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.text.TextEditorWithValidationParameters.EditorType.EditorTypePersistor;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.After;
@@ -102,24 +101,24 @@ public final class TextEditorWithValidationParameters implements NodeParameters 
             @Label("Multi-line")
             MULTI_LINE;
 
-        static final class Ref implements ParameterReference<EditorType> {
+        private static final class Ref implements ParameterReference<EditorType> {
         }
 
-        static final class IsSingleLine implements EffectPredicateProvider {
+        private static final class IsSingleLine implements EffectPredicateProvider {
             @Override
             public EffectPredicate init(final PredicateInitializer i) {
                 return i.getEnum(Ref.class).isOneOf(SINGLE_LINE);
             }
         }
 
-        static final class IsMultiLine implements EffectPredicateProvider {
+        private static final class IsMultiLine implements EffectPredicateProvider {
             @Override
             public EffectPredicate init(final PredicateInitializer i) {
                 return i.getEnum(Ref.class).isOneOf(MULTI_LINE);
             }
         }
 
-        static final class EditorTypePersistor implements NodeParametersPersistor<EditorType> {
+        private static final class EditorTypePersistor implements NodeParametersPersistor<EditorType> {
             @Override
             public EditorType load(final NodeSettingsRO settings) {
                 final var editorType = settings.getString(CFG_EDITOR_TYPE, DEFAULT_EDITOR_TYPE);
@@ -145,7 +144,7 @@ public final class TextEditorWithValidationParameters implements NodeParameters 
     @Widget(title = "Field type", description = "Choose between single-line or multi-line text input.")
     @ValueSwitchWidget
     @Layout(FormFieldSection.class)
-    @Persistor(EditorTypePersistor.class)
+    @Persistor(EditorType.EditorTypePersistor.class)
     @ValueReference(EditorType.Ref.class)
     EditorType m_editorType = EditorType.SINGLE_LINE;
 

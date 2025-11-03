@@ -89,7 +89,7 @@ public final class IntegerNodeParameters implements NodeParameters {
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
-    static final class IntegerOverwrittenByValueMessage extends OverwrittenByValueMessage<IntegerNodeValue> {
+    private static final class IntegerOverwrittenByValueMessage extends OverwrittenByValueMessage<IntegerNodeValue> {
 
         @Override
         protected String valueToString(final IntegerNodeValue value) {
@@ -98,7 +98,7 @@ public final class IntegerNodeParameters implements NodeParameters {
 
     }
 
-    static final class DefaultValue implements NodeParameters {
+    private static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value", description = "The value that is used by default.")
         @Layout(OutputSection.Top.class)
         int m_integer;
@@ -117,7 +117,7 @@ public final class IntegerNodeParameters implements NodeParameters {
     @OptionalWidget(defaultProvider = MaxValueDefaultProvider.class)
     Optional<Integer> m_maximumValue = Optional.empty();
 
-    static final class MaxValueDefaultProvider implements DefaultValueProvider<Integer> {
+    private static final class MaxValueDefaultProvider implements DefaultValueProvider<Integer> {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
@@ -131,7 +131,7 @@ public final class IntegerNodeParameters implements NodeParameters {
 
     }
 
-    static final class MinValuePersistor extends ValidationValuePersistor {
+    private static final class MinValuePersistor extends ValidationValuePersistor {
 
         MinValuePersistor() {
             super(IntegerNodeConfig.CFG_USE_MIN, IntegerNodeConfig.CFG_MIN);
@@ -139,7 +139,7 @@ public final class IntegerNodeParameters implements NodeParameters {
 
     }
 
-    static final class MaxValuePersistor extends ValidationValuePersistor {
+    private static final class MaxValuePersistor extends ValidationValuePersistor {
 
         MaxValuePersistor() {
             super(IntegerNodeConfig.CFG_USE_MAX, IntegerNodeConfig.CFG_MAX);
@@ -147,7 +147,7 @@ public final class IntegerNodeParameters implements NodeParameters {
 
     }
 
-    abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Integer>> {
+    private abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Integer>> {
 
         private final String m_useKey;
 

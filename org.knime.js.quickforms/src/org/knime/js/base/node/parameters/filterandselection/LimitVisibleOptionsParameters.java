@@ -79,7 +79,6 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     }
 
     /**
-     *
      * @param limitNumberOfVisibleOptions whether to limit the number of visible options
      */
     public LimitVisibleOptionsParameters(final boolean limitNumberOfVisibleOptions) {
@@ -138,7 +137,7 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
 
     abstract static class LimitVisibleOptionsParametersModifier implements Modification.Modifier {
         @Override
-        public void modify(final WidgetGroupModifier group) {
+        public final void modify(final WidgetGroupModifier group) {
             group.find(LimitNumberOfVisibleOptionsModificationReference.class) //
                 .addAnnotation(Widget.class) //
                 .withProperty("title", getLimitNumVisOptionsTitle()) //
@@ -188,7 +187,7 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
             return null;
         }
 
-        static abstract class AbstractShowNumberOfVisibleOptions implements EffectPredicateProvider {
+        abstract static class AbstractShowNumberOfVisibleOptions implements EffectPredicateProvider {
 
             Class<? extends EffectPredicateProvider> m_limitNumVisOptionsEffectPredicate;
 

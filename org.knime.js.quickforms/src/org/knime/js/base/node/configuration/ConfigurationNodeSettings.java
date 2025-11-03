@@ -147,10 +147,10 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
     /**
      * The reference to the string input containing the flow variable name
      */
-    interface FlowVariableNameRef extends ParameterReference<String> {
+    private interface FlowVariableNameRef extends ParameterReference<String> {
     }
 
-    static final class FlowVariableNameStateProvider implements StateProvider<String> {
+    private static final class FlowVariableNameStateProvider implements StateProvider<String> {
         private Supplier<String> m_flowVariableNameSupplier;
 
         @Override
@@ -164,7 +164,7 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
         }
     }
 
-    static final class IsValidFlowVariableNameValidation extends TextInputWidgetValidation.PatternValidation {
+    private static final class IsValidFlowVariableNameValidation extends TextInputWidgetValidation.PatternValidation {
 
         @Override
         protected String getPattern() {

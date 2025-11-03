@@ -89,7 +89,7 @@ public final class DoubleNodeParameters implements NodeParameters {
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
-    static final class DoubleOverwrittenByValueMessage extends OverwrittenByValueMessage<DoubleNodeValue> {
+    private static final class DoubleOverwrittenByValueMessage extends OverwrittenByValueMessage<DoubleNodeValue> {
 
         @Override
         protected String valueToString(final DoubleNodeValue value) {
@@ -98,7 +98,7 @@ public final class DoubleNodeParameters implements NodeParameters {
 
     }
 
-    static final class DefaultValue implements NodeParameters {
+    private static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value", description = "The value that is used by default in the input field.")
         @Layout(OutputSection.Top.class)
         double m_double;
@@ -117,7 +117,7 @@ public final class DoubleNodeParameters implements NodeParameters {
     @OptionalWidget(defaultProvider = MaxValueDefaultProvider.class)
     Optional<Double> m_maximumValue = Optional.empty();
 
-    static final class MaxValueDefaultProvider implements DefaultValueProvider<Double> {
+    private static final class MaxValueDefaultProvider implements DefaultValueProvider<Double> {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
@@ -131,7 +131,7 @@ public final class DoubleNodeParameters implements NodeParameters {
 
     }
 
-    static final class MinValuePersistor extends ValidationValuePersistor {
+    private static final class MinValuePersistor extends ValidationValuePersistor {
 
         MinValuePersistor() {
             super(DoubleNodeConfig.CFG_USE_MIN, DoubleNodeConfig.CFG_MIN);
@@ -139,7 +139,7 @@ public final class DoubleNodeParameters implements NodeParameters {
 
     }
 
-    static final class MaxValuePersistor extends ValidationValuePersistor {
+    private static final class MaxValuePersistor extends ValidationValuePersistor {
 
         MaxValuePersistor() {
             super(DoubleNodeConfig.CFG_USE_MAX, DoubleNodeConfig.CFG_MAX);
@@ -147,7 +147,7 @@ public final class DoubleNodeParameters implements NodeParameters {
 
     }
 
-    abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Double>> {
+    private abstract static class ValidationValuePersistor implements NodeParametersPersistor<Optional<Double>> {
 
         private final String m_useKey;
 

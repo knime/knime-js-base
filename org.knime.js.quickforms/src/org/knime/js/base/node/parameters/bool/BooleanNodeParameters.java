@@ -78,7 +78,7 @@ public final class BooleanNodeParameters implements NodeParameters {
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
-    static final class BooleanOverwrittenByValueMessage extends OverwrittenByValueMessage<BooleanNodeValue> {
+    private static final class BooleanOverwrittenByValueMessage extends OverwrittenByValueMessage<BooleanNodeValue> {
 
         @Override
         protected String valueToString(final BooleanNodeValue value) {
@@ -86,7 +86,7 @@ public final class BooleanNodeParameters implements NodeParameters {
         }
     }
 
-    static final class DefaultValue implements NodeParameters {
+    private static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value", description = "The value that is selected by default.")
         @Layout(OutputSection.Top.class)
         boolean m_boolean;
@@ -102,7 +102,7 @@ public final class BooleanNodeParameters implements NodeParameters {
             @Label("Number (Integer)")
             INTEGER;
 
-        static final class OutputTypePersistor implements NodeParametersPersistor<OutputType> {
+        private static final class OutputTypePersistor implements NodeParametersPersistor<OutputType> {
             @Override
             public OutputType load(final NodeSettingsRO settings) {
                 final var pushIntVar = settings.getBoolean(CFG_PUSH_INT_VAR, DEFAULT_PUSH_INT_VAR);

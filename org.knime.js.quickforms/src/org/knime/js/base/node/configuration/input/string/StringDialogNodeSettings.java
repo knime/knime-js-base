@@ -76,7 +76,7 @@ public final class StringDialogNodeSettings extends ConfigurationNodeSettings {
     @PersistWithin.PersistEmbedded
     TextEditorWithValidationParameters m_textEditorWithValidationParameters = new TextEditorWithValidationParameters();
 
-    static final class ChangeEditorWidthToLegacy implements Modification.Modifier {
+    private static final class ChangeEditorWidthToLegacy implements Modification.Modifier {
         @Override
         public void modify(final WidgetGroupModifier group) {
             group.find(TextEditorWithValidationParameters.EditorWidthModificationReference.class)

@@ -67,7 +67,7 @@ public final class DefaultStringNodeValueParameters implements NodeParameters {
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
-    static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringNodeValue> {
+    private static final class StringOverwrittenByValueMessage extends OverwrittenByValueMessage<StringNodeValue> {
 
         @Override
         protected String valueToString(final StringNodeValue value) {
@@ -76,7 +76,7 @@ public final class DefaultStringNodeValueParameters implements NodeParameters {
 
     }
 
-    static final class DefaultValue implements NodeParameters {
+    private static final class DefaultValue implements NodeParameters {
         @Widget(title = "Default value",
             description = "Default value for the field. If empty, no default value will be set.")
         String m_string = "";
