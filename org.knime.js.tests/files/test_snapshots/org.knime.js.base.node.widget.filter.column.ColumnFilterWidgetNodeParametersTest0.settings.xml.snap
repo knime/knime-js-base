@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="label" type="xstring" value="Label"/>
+    <entry key="description" type="xstring" value="Enter Description"/>
+    <entry key="flowVariableName" type="xstring" value="column-filter"/>
+    <entry key="hideInWizard" type="xboolean" value="false"/>
+    <entry key="customCSS" type="xstring" value=""/>
+    <entry key="required" type="xboolean" value="true"/>
+    <entry key="trigger_reexecution" type="xboolean" value="false"/>
+    <config key="defaultValue">
+        <config key="columnFilter">
+            <config key="columnFilter">
+                <entry key="filter-type" type="xstring" value="STANDARD"/>
+                <config key="included_names">
+                    <entry key="array-size" type="xint" value="0"/>
+                </config>
+                <config key="excluded_names">
+                    <entry key="array-size" type="xint" value="0"/>
+                </config>
+                <entry key="enforce_option" type="xstring" value="EnforceExclusion"/>
+                <config key="name_pattern">
+                    <entry key="pattern" type="xstring" value=""/>
+                    <entry key="caseSensitive" type="xboolean" value="true"/>
+                    <entry key="excludeMatching" type="xboolean" value="false"/>
+                    <entry key="type" type="xstring" value="Wildcard"/>
+                </config>
+                <config key="datatype">
+                    <config key="typelist"/>
+                </config>
+            </config>
+        </config>
+        <config key="columns">
+            <entry key="array-size" type="xint" value="0"/>
+        </config>
+    </config>
+    <entry key="limit_number_visible_options" type="xboolean" value="false"/>
+    <entry key="number_visible_options" type="xint" value="10"/>
+    <config key="possibleColumns">
+        <entry key="array-size" type="xint" value="0"/>
+    </config>
+    <entry key="type" type="xstring" value="Twinlist"/>
+    <entry key="enable_search" type="xboolean" value="false"/>
+</config>

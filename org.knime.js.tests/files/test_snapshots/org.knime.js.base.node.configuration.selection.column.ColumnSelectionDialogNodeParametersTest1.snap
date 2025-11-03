@@ -417,49 +417,14 @@
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
     "values" : [ {
       "indices" : [ ],
-      "value" : "column1"
+      "value" : null
     } ]
   }, {
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
-      "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
-        "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
-        }
-      }, {
-        "id" : "column2",
-        "text" : "column2",
-        "type" : {
-          "id" : "org.knime.core.data.IntValue",
-          "text" : "Number (Integer)"
-        }
-      }, {
-        "id" : "column3",
-        "text" : "column3",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      } ]
+      "value" : [ ]
     } ]
   }, {
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
@@ -485,42 +450,7 @@
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
-      "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
-        "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
-        }
-      }, {
-        "id" : "column2",
-        "text" : "column2",
-        "type" : {
-          "id" : "org.knime.core.data.IntValue",
-          "text" : "Number (Integer)"
-        }
-      }, {
-        "id" : "column3",
-        "text" : "column3",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      } ]
+      "value" : [ ]
     } ]
   }, {
     "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
@@ -577,11 +507,26 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue" ]
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
   } ]
 }

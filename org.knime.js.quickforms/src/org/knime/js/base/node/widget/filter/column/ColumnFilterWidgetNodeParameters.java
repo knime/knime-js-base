@@ -44,60 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   28 May 2019 (albrecht): created
+ *   3 Nov 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.filter.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
-import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.js.base.node.parameters.filterandselection.ColumnFilterNodeParameters;
+import org.knime.js.base.node.parameters.filterandselection.EnableSearchParameter;
+import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
 /**
- * Factory for the column filter widget node
+ * WebUI Node Parameters for the Column Filter Widget.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class ColumnFilterWidgetNodeFactory2 extends WidgetNodeFactory< //
-        ColumnFilterWidgetNodeModel, //
-        ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
+@SuppressWarnings("restriction")
+public final class ColumnFilterWidgetNodeParameters extends ReexecutionWidgetNodeParameters {
 
-    private static final String NAME = "Column Filter Widget";
-
-    static final String DESCRIPTION = "Creates a column filter widget for use in components views. "
-        + "Takes a data table and returns a filtered data table with only the selected columns.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_column_filter.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(ColumnFilterWidgetNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the columns to be filtered.") //
-        .addOutputTable("Filtered Table", "Filtered table containing only the selected columns.") //
-        .nodeType(NodeType.Widget) //
-        .build();
-
-    @SuppressWarnings("javadoc")
-    public ColumnFilterWidgetNodeFactory2() {
-        super(CONFIG, ColumnFilterWidgetNodeParameters.class);
+    ColumnFilterWidgetNodeParameters() {
+        super(ColumnFilterWidgetConfig.class);
     }
 
-    @Override
-    public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
-    }
+    @PersistWithin.PersistEmbedded
+    ColumnFilterNodeParameters m_columnFilterNodeParameters = new ColumnFilterNodeParameters();
 
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterWidgetNodeDialog(Version.V_4_1);
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
+    @PersistWithin.PersistEmbedded
+    EnableSearchParameter m_enableSearchParameter = new EnableSearchParameter();
 
 }

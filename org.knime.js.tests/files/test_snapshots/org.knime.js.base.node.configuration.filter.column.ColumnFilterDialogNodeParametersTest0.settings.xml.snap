@@ -44,6 +44,15 @@
     </config>
     <entry key="limit_number_visible_options" type="xboolean" value="true"/>
     <entry key="number_visible_options" type="xint" value="5"/>
+    <config key="possibleColumns">
+        <entry key="array-size" type="xint" value="5"/>
+        <entry key="0" type="xstring" value="Universe_0_0"/>
+        <entry key="1" type="xstring" value="Universe_0_1"/>
+        <entry key="2" type="xstring" value="Universe_1_0"/>
+        <entry key="3" type="xstring" value="Universe_1_1"/>
+        <entry key="4" type="xstring" value="Cluster Membership"/>
+    </config>
+    <entry key="type" type="xstring" value="Twinlist"/>
     <config key="input_filter">
         <entry key="allow_all_types" type="xboolean" value="true"/>
         <entry key="filter_columns_without_domain" type="xboolean" value="false"/>
@@ -62,13 +71,4 @@
             <entry key="error_message" type="xstring" value=""/>
         </config>
     </config>
-    <config key="possibleColumns">
-        <entry key="array-size" type="xint" value="5"/>
-        <entry key="0" type="xstring" value="Universe_0_0"/>
-        <entry key="1" type="xstring" value="Universe_0_1"/>
-        <entry key="2" type="xstring" value="Universe_1_0"/>
-        <entry key="3" type="xstring" value="Universe_1_1"/>
-        <entry key="4" type="xstring" value="Cluster Membership"/>
-    </config>
-    <entry key="type" type="xstring" value="Twinlist"/>
 </config>

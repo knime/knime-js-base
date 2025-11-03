@@ -7,30 +7,36 @@
       "parameterName" : "column-filter",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "columnFilterLevel1" : {
-          "columnFilter" : {
-            "mode" : "MANUAL",
-            "patternFilter" : {
-              "pattern" : "",
-              "isCaseSensitive" : true,
-              "isInverted" : false
-            },
-            "manualFilter" : {
-              "manuallySelected" : [ "Universe_0_0", "Universe_0_1", "Cluster Membership" ],
-              "manuallyDeselected" : [ "Universe_1_0", "Universe_1_1" ],
-              "includeUnknownColumns" : false
-            },
-            "typeFilter" : {
-              "selectedTypes" : [ ],
-              "typeDisplays" : [ ]
+      "columnFilterNodeParameters" : {
+        "defaultValue" : {
+          "columnFilterLevel1" : {
+            "columnFilter" : {
+              "mode" : "MANUAL",
+              "patternFilter" : {
+                "pattern" : "",
+                "isCaseSensitive" : true,
+                "isInverted" : false
+              },
+              "manualFilter" : {
+                "manuallySelected" : [ "Universe_0_0", "Universe_0_1", "Cluster Membership" ],
+                "manuallyDeselected" : [ "Universe_1_0", "Universe_1_1" ],
+                "includeUnknownColumns" : false
+              },
+              "typeFilter" : {
+                "selectedTypes" : [ ],
+                "typeDisplays" : [ ]
+              }
             }
-          }
+          },
+          "columns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ]
         },
-        "columns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ]
+        "limitVisibleOptionsParameters" : {
+          "limitNumberOfVisibleOptions" : true,
+          "numberOfVisibleOptions" : 5
+        },
+        "possibleColumns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ],
+        "type" : "Twinlist"
       },
-      "limitNumberOfVisibleOptions" : true,
-      "numberOfVisibleOptions" : 5,
       "inputFilter" : {
         "allowAllTypes" : true,
         "filterColumnsWithoutDomains" : false,
@@ -41,9 +47,7 @@
           "minNumColumns" : 1,
           "errorMessage" : ""
         }
-      },
-      "possibleColumns" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1", "Cluster Membership" ],
-      "type" : "Twinlist"
+      }
     }
   },
   "schema" : {
@@ -52,105 +56,157 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
+          "columnFilterNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "columnFilterLevel1" : {
+              "defaultValue" : {
                 "type" : "object",
                 "properties" : {
-                  "columnFilter" : {
+                  "columnFilterLevel1" : {
                     "type" : "object",
                     "properties" : {
-                      "manualFilter" : {
+                      "columnFilter" : {
                         "type" : "object",
                         "properties" : {
-                          "includeUnknownColumns" : {
-                            "type" : "boolean",
-                            "default" : false
+                          "manualFilter" : {
+                            "type" : "object",
+                            "properties" : {
+                              "includeUnknownColumns" : {
+                                "type" : "boolean",
+                                "default" : false
+                              },
+                              "manuallyDeselected" : {
+                                "type" : "array",
+                                "items" : {
+                                  "type" : "string"
+                                }
+                              },
+                              "manuallySelected" : {
+                                "type" : "array",
+                                "items" : {
+                                  "type" : "string"
+                                }
+                              }
+                            },
+                            "default" : {
+                              "manuallySelected" : [ ],
+                              "manuallyDeselected" : [ ],
+                              "includeUnknownColumns" : false
+                            }
                           },
-                          "manuallyDeselected" : {
+                          "mode" : {
+                            "oneOf" : [ {
+                              "const" : "MANUAL",
+                              "title" : "Manual"
+                            }, {
+                              "const" : "REGEX",
+                              "title" : "Regex"
+                            }, {
+                              "const" : "WILDCARD",
+                              "title" : "Wildcard"
+                            }, {
+                              "const" : "TYPE",
+                              "title" : "Type"
+                            } ],
+                            "default" : "MANUAL"
+                          },
+                          "patternFilter" : {
+                            "type" : "object",
+                            "properties" : {
+                              "isCaseSensitive" : {
+                                "type" : "boolean",
+                                "default" : false
+                              },
+                              "isInverted" : {
+                                "type" : "boolean",
+                                "default" : false
+                              },
+                              "pattern" : {
+                                "type" : "string",
+                                "default" : ""
+                              }
+                            },
+                            "default" : {
+                              "pattern" : "",
+                              "isCaseSensitive" : false,
+                              "isInverted" : false
+                            }
+                          },
+                          "selected" : {
                             "type" : "array",
                             "items" : {
                               "type" : "string"
                             }
                           },
-                          "manuallySelected" : {
-                            "type" : "array",
-                            "items" : {
-                              "type" : "string"
+                          "typeFilter" : {
+                            "type" : "object",
+                            "properties" : {
+                              "selectedTypes" : {
+                                "default" : [ ],
+                                "type" : "array",
+                                "items" : {
+                                  "type" : "string"
+                                }
+                              }
+                            },
+                            "default" : {
+                              "selectedTypes" : [ ],
+                              "typeDisplays" : [ ]
                             }
                           }
                         },
+                        "title" : "Default values",
+                        "description" : "The columns that are selected by default.",
                         "default" : {
-                          "manuallySelected" : [ ],
-                          "manuallyDeselected" : [ ],
-                          "includeUnknownColumns" : false
+                          "mode" : "MANUAL",
+                          "patternFilter" : {
+                            "pattern" : "",
+                            "isCaseSensitive" : false,
+                            "isInverted" : false
+                          },
+                          "manualFilter" : {
+                            "manuallySelected" : [ ],
+                            "manuallyDeselected" : [ ],
+                            "includeUnknownColumns" : true
+                          },
+                          "typeFilter" : {
+                            "selectedTypes" : [ ],
+                            "typeDisplays" : [ ]
+                          }
                         }
-                      },
-                      "mode" : {
-                        "oneOf" : [ {
-                          "const" : "MANUAL",
-                          "title" : "Manual"
-                        }, {
-                          "const" : "REGEX",
-                          "title" : "Regex"
-                        }, {
-                          "const" : "WILDCARD",
-                          "title" : "Wildcard"
-                        }, {
-                          "const" : "TYPE",
-                          "title" : "Type"
-                        } ],
-                        "default" : "MANUAL"
-                      },
-                      "patternFilter" : {
-                        "type" : "object",
-                        "properties" : {
-                          "isCaseSensitive" : {
-                            "type" : "boolean",
-                            "default" : false
-                          },
-                          "isInverted" : {
-                            "type" : "boolean",
-                            "default" : false
-                          },
-                          "pattern" : {
-                            "type" : "string",
-                            "default" : ""
-                          }
-                        },
-                        "default" : {
+                      }
+                    },
+                    "default" : {
+                      "columnFilter" : {
+                        "mode" : "MANUAL",
+                        "patternFilter" : {
                           "pattern" : "",
                           "isCaseSensitive" : false,
                           "isInverted" : false
-                        }
-                      },
-                      "selected" : {
-                        "type" : "array",
-                        "items" : {
-                          "type" : "string"
-                        }
-                      },
-                      "typeFilter" : {
-                        "type" : "object",
-                        "properties" : {
-                          "selectedTypes" : {
-                            "default" : [ ],
-                            "type" : "array",
-                            "items" : {
-                              "type" : "string"
-                            }
-                          }
                         },
-                        "default" : {
+                        "manualFilter" : {
+                          "manuallySelected" : [ ],
+                          "manuallyDeselected" : [ ],
+                          "includeUnknownColumns" : true
+                        },
+                        "typeFilter" : {
                           "selectedTypes" : [ ],
                           "typeDisplays" : [ ]
                         }
                       }
+                    }
+                  },
+                  "columns" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
                     },
-                    "title" : "Default values",
-                    "description" : "The columns that are selected by default.",
-                    "default" : {
+                    "default" : [ ]
+                  }
+                },
+                "default" : {
+                  "columnFilterLevel1" : {
+                    "columnFilter" : {
                       "mode" : "MANUAL",
                       "patternFilter" : {
                         "pattern" : "",
@@ -167,9 +223,50 @@
                         "typeDisplays" : [ ]
                       }
                     }
+                  },
+                  "columns" : [ ]
+                }
+              },
+              "limitVisibleOptionsParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "type" : "boolean",
+                    "title" : "Limit number of visible options",
+                    "description" : "By default the filter component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them.",
+                    "default" : false
+                  },
+                  "numberOfVisibleOptions" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Number of visible options",
+                    "description" : "A number of options visible in the filter component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that the height cannot be less than the overall height of the control buttons in the middle.",
+                    "default" : 5
                   }
                 },
                 "default" : {
+                  "limitNumberOfVisibleOptions" : true,
+                  "numberOfVisibleOptions" : 5
+                }
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "possibleColumns" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                },
+                "default" : [ ]
+              },
+              "type" : {
+                "type" : "string",
+                "default" : "Twinlist"
+              }
+            },
+            "default" : {
+              "defaultValue" : {
+                "columnFilterLevel1" : {
                   "columnFilter" : {
                     "mode" : "MANUAL",
                     "patternFilter" : {
@@ -187,37 +284,15 @@
                       "typeDisplays" : [ ]
                     }
                   }
-                }
-              },
-              "columns" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
                 },
-                "default" : [ ]
-              }
-            },
-            "default" : {
-              "columnFilterLevel1" : {
-                "columnFilter" : {
-                  "mode" : "MANUAL",
-                  "patternFilter" : {
-                    "pattern" : "",
-                    "isCaseSensitive" : false,
-                    "isInverted" : false
-                  },
-                  "manualFilter" : {
-                    "manuallySelected" : [ ],
-                    "manuallyDeselected" : [ ],
-                    "includeUnknownColumns" : true
-                  },
-                  "typeFilter" : {
-                    "selectedTypes" : [ ],
-                    "typeDisplays" : [ ]
-                  }
-                }
+                "columns" : [ ]
               },
-              "columns" : [ ]
+              "limitVisibleOptionsParameters" : {
+                "limitNumberOfVisibleOptions" : true,
+                "numberOfVisibleOptions" : 5
+              },
+              "possibleColumns" : [ ],
+              "type" : "Twinlist"
             }
           },
           "description" : {
@@ -275,42 +350,15 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "limitNumberOfVisibleOptions" : {
-            "type" : "boolean",
-            "title" : "Limit number of visible options",
-            "description" : "By default the filter component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them.\n",
-            "default" : true
-          },
-          "numberOfVisibleOptions" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Number of visible options",
-            "description" : "A number of options visible in the filter component without a vertical scroll bar. Changing this value\nwill also affect the component's height. Notice that the height cannot be less than the overall height of\nthe control buttons in the middle.\n",
-            "default" : 5
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
             "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "column-filter"
           },
-          "possibleColumns" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "default" : [ ]
-          },
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "type" : {
-            "type" : "string",
-            "default" : "Twinlist"
           },
           "validation" : {
             "type" : "object",
@@ -351,6 +399,42 @@
   },
   "ui_schema" : {
     "elements" : [ {
+      "type" : "Control",
+      "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
+      "options" : {
+        "format" : "checkbox"
+      }
+    }, {
+      "type" : "Control",
+      "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/numberOfVisibleOptions",
+      "options" : {
+        "validation" : {
+          "max" : {
+            "errorMessage" : "The value must not exceed 2147483647.",
+            "parameters" : {
+              "isExclusive" : false,
+              "max" : 2.147483647E9
+            }
+          },
+          "min" : {
+            "errorMessage" : "The value must be at least 2.",
+            "parameters" : {
+              "isExclusive" : false,
+              "min" : 2.0
+            }
+          }
+        }
+      },
+      "rule" : {
+        "effect" : "SHOW",
+        "condition" : {
+          "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
+          "schema" : {
+            "const" : true
+          }
+        }
+      }
+    }, {
       "label" : "Form Field",
       "type" : "Section",
       "elements" : [ {
@@ -359,42 +443,6 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/description"
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
-        "options" : {
-          "format" : "checkbox"
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
-        "options" : {
-          "validation" : {
-            "max" : {
-              "errorMessage" : "The value must not exceed 2147483647.",
-              "parameters" : {
-                "isExclusive" : false,
-                "max" : 2.147483647E9
-              }
-            },
-            "min" : {
-              "errorMessage" : "The value must be at least 2.",
-              "parameters" : {
-                "isExclusive" : false,
-                "min" : 2.0
-              }
-            }
-          }
-        },
-        "rule" : {
-          "effect" : "SHOW",
-          "condition" : {
-            "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
-            "schema" : {
-              "const" : true
-            }
-          }
-        }
       } ]
     }, {
       "label" : "Validation",
@@ -461,14 +509,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/columnFilterNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
+        "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
         "options" : {
           "format" : "typedStringFilter",
           "unknownValuesText" : "Any unknown column",
@@ -531,29 +579,47 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "columnFilterNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "columnFilterLevel1" : {
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
                 "type" : "object",
                 "properties" : {
-                  "columnFilter" : {
-                    "configPaths" : [ [ "columnFilter", "filter-type" ], [ "columnFilter", "included_names" ], [ "columnFilter", "excluded_names" ], [ "columnFilter", "enforce_option" ], [ "columnFilter", "name_pattern", "pattern" ], [ "columnFilter", "name_pattern", "type" ], [ "columnFilter", "name_pattern", "caseSensitive" ], [ "columnFilter", "name_pattern", "excludeMatching" ] ]
+                  "columnFilterLevel1" : {
+                    "type" : "object",
+                    "properties" : {
+                      "columnFilter" : {
+                        "configPaths" : [ [ "columnFilter", "filter-type" ], [ "columnFilter", "included_names" ], [ "columnFilter", "excluded_names" ], [ "columnFilter", "enforce_option" ], [ "columnFilter", "name_pattern", "pattern" ], [ "columnFilter", "name_pattern", "type" ], [ "columnFilter", "name_pattern", "caseSensitive" ], [ "columnFilter", "name_pattern", "excludeMatching" ] ]
+                      }
+                    },
+                    "configKey" : "columnFilter"
+                  },
+                  "columns" : {
+                    "configKey" : "columns"
+                  }
+                }
+              },
+              "limitVisibleOptionsParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "configKey" : "limit_number_visible_options"
+                  },
+                  "numberOfVisibleOptions" : {
+                    "configKey" : "number_visible_options"
                   }
                 },
-                "configKey" : "columnFilter"
+                "propertiesRoute" : [ ".." ]
               },
-              "columns" : {
-                "configKey" : "columns"
+              "possibleColumns" : {
+                "configKey" : "possibleColumns"
+              },
+              "type" : {
+                "configKey" : "type"
               }
-            }
-          },
-          "limitNumberOfVisibleOptions" : {
-            "configKey" : "limit_number_visible_options"
-          },
-          "numberOfVisibleOptions" : {
-            "configKey" : "number_visible_options"
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "inputFilter" : {
             "type" : "object",
@@ -587,19 +653,13 @@
               }
             },
             "configKey" : "validation"
-          },
-          "possibleColumns" : {
-            "configKey" : "possibleColumns"
-          },
-          "type" : {
-            "configKey" : "type"
           }
         }
       }
     }
   },
   "initialUpdates" : [ {
-    "scope" : "#/properties/model/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
+    "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/defaultValue/properties/columnFilterLevel1/properties/columnFilter",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -641,52 +701,16 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/columns",
+    "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/defaultValue/properties/columns",
     "values" : [ {
       "indices" : [ ],
       "value" : [ "column1", "column2", "column3", "column4", "column5" ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/columns",
-    "providedOptionName" : "possibleValues",
+    "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/possibleColumns",
     "values" : [ {
       "indices" : [ ],
-      "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
-        "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
-        }
-      }, {
-        "id" : "column2",
-        "text" : "column2",
-        "type" : {
-          "id" : "org.knime.core.data.IntValue",
-          "text" : "Number (Integer)"
-        }
-      }, {
-        "id" : "column3",
-        "text" : "column3",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      } ]
+      "value" : [ "column1", "column2", "column3", "column4", "column5" ]
     } ]
   }, {
     "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter",
@@ -734,54 +758,6 @@
         "type" : {
           "id" : "org.knime.core.data.time.localdatetime.LocalDateTimeValue",
           "text" : "Date&time (Local)"
-        }
-      } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/possibleColumns",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ "column1", "column2", "column3", "column4", "column5" ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/possibleColumns",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ {
-        "id" : "column1",
-        "text" : "column1",
-        "type" : {
-          "id" : "org.knime.core.data.DoubleValue",
-          "text" : "Number (Float)"
-        }
-      }, {
-        "id" : "column2",
-        "text" : "column2",
-        "type" : {
-          "id" : "org.knime.core.data.IntValue",
-          "text" : "Number (Integer)"
-        }
-      }, {
-        "id" : "column3",
-        "text" : "column3",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column4",
-        "text" : "column4",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
-        }
-      }, {
-        "id" : "column5",
-        "text" : "column5",
-        "type" : {
-          "id" : "org.knime.core.data.StringValue",
-          "text" : "String"
         }
       } ]
     } ]

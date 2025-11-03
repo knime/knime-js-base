@@ -44,60 +44,60 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   28 May 2019 (albrecht): created
+ *   3 Nov 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.filter.column;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
-import org.knime.js.base.node.widget.filter.column.ColumnFilterWidgetNodeModel.Version;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Factory for the column filter widget node
+ * Snapshot test for {@link ColumnFilterWidgetNodeParameters}.
  *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public class ColumnFilterWidgetNodeFactory2 extends WidgetNodeFactory< //
-        ColumnFilterWidgetNodeModel, //
-        ReExecutableColumnFilterNodeRepresentation<ColumnFilterNodeValue>, ColumnFilterNodeValue> {
+@SuppressWarnings("restriction")
+final class ColumnFilterWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    private static final String NAME = "Column Filter Widget";
+    static final DataTableSpec TEST_TABLE_SPECS =
+        new DataTableSpec(new String[]{"column1", "column2", "column3", "column4", "column5"},
+            new DataType[]{DoubleCell.TYPE, IntCell.TYPE, StringCell.TYPE, StringCell.TYPE, StringCell.TYPE});
 
-    static final String DESCRIPTION = "Creates a column filter widget for use in components views. "
-        + "Takes a data table and returns a filtered data table with only the selected columns.";
+    protected ColumnFilterWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_column_filter.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(ColumnFilterWidgetNodeParameters.class) //
-        .addInputTable("Table Input", "Table containing the columns to be filtered.") //
-        .addOutputTable("Filtered Table", "Filtered table containing only the selected columns.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .addInputTableSpec(TEST_TABLE_SPECS) //
+        .testJsonFormsForModel(ColumnFilterWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public ColumnFilterWidgetNodeFactory2() {
-        super(CONFIG, ColumnFilterWidgetNodeParameters.class);
-    }
-
-    @Override
-    public ColumnFilterWidgetNodeModel createNodeModel() {
-        return new ColumnFilterWidgetNodeModel(getInteractiveViewName(), Version.V_4_1);
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new ColumnFilterWidgetNodeDialog(Version.V_4_1);
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
+    private static ColumnFilterWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(ColumnFilterWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("ColumnFilterWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    ColumnFilterWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }

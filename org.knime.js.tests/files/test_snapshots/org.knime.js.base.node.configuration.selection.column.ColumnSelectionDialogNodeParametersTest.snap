@@ -575,11 +575,26 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue" ]
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/allowAllTypes"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/inputFilter/properties/typeFilter"
+    },
+    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue", "#/properties/model/properties/inputFilter/properties/allowAllTypes", "#/properties/model/properties/inputFilter/properties/filterColumnsWithoutDomains", "#/properties/model/properties/inputFilter/properties/typeFilter" ]
   } ]
 }

@@ -55,6 +55,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
@@ -86,6 +87,7 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
     }
 
     @PersistWithin.PersistEmbedded
+    @Modification(ChangeColumnChoicesProviderModification.class)
     ColumnSelectionNodeParameters m_columnSelectionNodeParameters = new ColumnSelectionNodeParameters();
 
     @Layout(TypeFilterSection.class)
@@ -93,7 +95,7 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
     @Migrate(loadDefaultIfAbsent = true)
     InputFilter m_inputFilter = new InputFilter();
 
-    static final class ChangeColumnChoicesProviderModification
+    private static final class ChangeColumnChoicesProviderModification
         extends ColumnSelectionNodeParameters.ChangeColumnProvider {
 
         @Override
@@ -103,12 +105,12 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
         @Override
         public Class<? extends ColumnValueValueProvider> getColumnValueValueProvider() {
-            return null;
+            return TypeFilteredColumnValueValueProvider.class;
         }
 
     }
 
-    static final class TypeFilteredColumnValueValueProvider extends ColumnValueValueProvider {
+    private static final class TypeFilteredColumnValueValueProvider extends ColumnValueValueProvider {
 
         TypeFilteredColumnValueValueProvider() {
             super(TypeFilteredColumnChoicesProvider.class);
@@ -116,7 +118,7 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     }
 
-    static final class TypeFilteredColumnChoicesProvider implements ColumnChoicesProvider {
+    private static final class TypeFilteredColumnChoicesProvider implements ColumnChoicesProvider {
 
         private Supplier<Boolean> m_hideColumnsWithoutDomainSupplier;
 

@@ -73,6 +73,20 @@ import org.knime.node.parameters.widget.number.NumberInputWidget;
 public class LimitVisibleOptionsParameters implements NodeParameters {
 
     /**
+     * Default constructor
+     */
+    LimitVisibleOptionsParameters() {
+    }
+
+    /**
+     *
+     * @param limitNumberOfVisibleOptions whether to limit the number of visible options
+     */
+    public LimitVisibleOptionsParameters(final boolean limitNumberOfVisibleOptions) {
+        m_limitNumberOfVisibleOptions = limitNumberOfVisibleOptions;
+    }
+
+    /**
      * The config key for the limit number of visible options setting.
      */
     public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
