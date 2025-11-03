@@ -48,13 +48,6 @@
  */
 package org.knime.js.base.node.configuration.selection.column;
 
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_DESCRIPTION;
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LIMIT_VIS_OPT_TITLE;
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_DESCRIPTION;
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.NUM_VIS_OPT_TITLE;
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_DESCRIPTION;
-import static org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SELECTION_TYPE_TITLE;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -64,25 +57,21 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeConfig;
 import org.knime.js.base.node.base.selection.column.ColumnSelectionNodeValue;
 import org.knime.js.base.node.base.validation.InputSpecFilter;
-import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.AllowAllTypesValueReference;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.HideColumnsWithoutDomainValueReference;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.InputFilter;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterSection;
 import org.knime.js.base.node.configuration.column.InputFilterUtil.TypeFilterValueReference;
-import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.IsListSelectionType;
-import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.LimitNumberOfVisibleOptionsValueReference;
-import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeChoicesProvider;
-import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.SelectionTypeValueReference;
-import org.knime.js.base.node.configuration.selection.SelectionNodeParametersUtil.ShowNumberOfVisibleOptions;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -91,8 +80,6 @@ import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.updates.Effect;
-import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
@@ -101,7 +88,6 @@ import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
 import org.knime.node.parameters.widget.message.TextMessage;
-import org.knime.node.parameters.widget.number.NumberInputWidget;
 
 /**
  * WebUI Node Parameters for the Column Selection Configuration.
@@ -109,6 +95,7 @@ import org.knime.node.parameters.widget.number.NumberInputWidget;
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
 @LoadDefaultsForAbsentFields
+@SuppressWarnings("restriction")
 public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettings {
 
     /**
@@ -136,26 +123,9 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = SELECTION_TYPE_TITLE, description = SELECTION_TYPE_DESCRIPTION)
-    @ChoicesProvider(SelectionTypeChoicesProvider.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_TYPE)
-    @ValueReference(SelectionTypeValueReference.class)
+    @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    String m_selectionType = ColumnSelectionNodeConfig.DEFAULT_TYPE;
-
-    @Widget(title = LIMIT_VIS_OPT_TITLE, description = LIMIT_VIS_OPT_DESCRIPTION)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS)
-    @ValueReference(LimitNumberOfVisibleOptionsValueReference.class)
-    @Effect(predicate = IsListSelectionType.class, type = EffectType.SHOW)
-    @Layout(FormFieldSection.class)
-    boolean m_limitNumberOfVisibleOptions = ColumnSelectionNodeConfig.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
-
-    @Widget(title = NUM_VIS_OPT_TITLE, description = NUM_VIS_OPT_DESCRIPTION)
-    @NumberInputWidget(minValidation = IsMin2Validation.class)
-    @Persist(configKey = ColumnSelectionNodeConfig.CFG_NUMBER_VIS_OPTIONS)
-    @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
-    @Layout(FormFieldSection.class)
-    int m_numberOfVisibleOptions = ColumnSelectionNodeConfig.DEFAULT_NUMBER_VIS_OPTIONS;
+    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
 
     @ChoicesProvider(PossibleColumnChoicesProvider.class)
     @Persist(configKey = ColumnSelectionNodeConfig.CFG_POSSIBLE_COLUMNS)

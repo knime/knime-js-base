@@ -49,56 +49,55 @@
 package org.knime.js.base.node.widget.selection.single;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.selection.singleMultiple.SingleMultipleSelectionNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the single selection widget node
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class SingleSelectionWidgetNodeFactory extends NodeFactory<SingleSelectionWidgetNodeModel>
-    implements WizardNodeFactoryExtension<SingleSelectionWidgetNodeModel,
-    SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, SingleMultipleSelectionNodeValue> {
+public class SingleSelectionWidgetNodeFactory extends WidgetNodeFactory< //
+        SingleSelectionWidgetNodeModel, //
+        SingleSelectionWidgetRepresentation<SingleMultipleSelectionNodeValue>, //
+        SingleMultipleSelectionNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Single Selection Widget";
+
+    private static final String DESCRIPTION =
+        "Allows selecting a single value from a list of strings in an encapsulating component's view. "
+            + "The selected value is returned as a string flow variable.";
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_single_select.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(SingleSelectionWidgetNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (string) with the given variable defined from the selected value"
+                + " and the selected option as index.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public SingleSelectionWidgetNodeFactory() {
+        super(CONFIG, SingleSelectionWidgetNodeParameters.class);
+    }
+
     @Override
     public SingleSelectionWidgetNodeModel createNodeModel() {
         return new SingleSelectionWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SingleSelectionWidgetNodeModel> createNodeView(final int viewIndex,
-        final SingleSelectionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new SingleSelectionWidgetNodeDialog();

@@ -48,6 +48,13 @@
  */
 package org.knime.js.base.node.base.selection.column;
 
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.CFG_TYPE;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.DEFAULT_TYPE;
+
 import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -55,7 +62,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
 
 /**
  * Base config file for the column selection configuration and widget nodes
@@ -68,16 +74,10 @@ public class ColumnSelectionNodeConfig {
     private static final String[] DEFAULT_POSSIBLE_COLUMNS = new String[0];
     private String[] m_possibleColumns = DEFAULT_POSSIBLE_COLUMNS;
 
-    public static final String CFG_TYPE = "type";
-    public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
     private String m_type = DEFAULT_TYPE;
 
-    public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    public static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    public static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    public static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 5;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     /**

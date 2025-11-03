@@ -7,12 +7,18 @@
       "parameterName" : "single-selection",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "variableValue" : ""
-      },
-      "selectionType" : "List",
-      "limitNumberOfVisibleOptions" : true,
-      "numberOfVisibleOptions" : 2
+      "singleSelectionNodeParameters" : {
+        "defaultValue" : {
+          "variableValue" : ""
+        },
+        "limitVisOptions" : {
+          "selectionType" : "List",
+          "limitVisibleOptions" : {
+            "limitNumberOfVisibleOptions" : true,
+            "numberOfVisibleOptions" : 2
+          }
+        }
+      }
     }
   },
   "schema" : {
@@ -21,17 +27,6 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "variableValue" : {
-                "type" : "string",
-                "title" : "Default value",
-                "description" : "Default value for the field. If you want to use a value that is not among the possible choices as the default, override the field using a flow variable."
-              }
-            },
-            "default" : { }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
@@ -56,42 +51,89 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "limitNumberOfVisibleOptions" : {
-            "type" : "boolean",
-            "title" : "Limit number of visible options",
-            "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them. The setting is available only for List selection type.\n",
-            "default" : false
-          },
-          "numberOfVisibleOptions" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Number of visible options",
-            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will\nalso affect the component's height. The setting is available only for List selection type.\n",
-            "default" : 5
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
             "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
             "default" : "single-selection"
           },
-          "possibleChoices" : {
-            "type" : "string",
-            "title" : "Possible choices",
-            "description" : "The possible choices, each line is one possible value."
-          },
           "required" : {
             "type" : "boolean",
             "default" : true
           },
-          "selectionType" : {
-            "type" : "string",
-            "title" : "Selection type",
-            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout,\na list or a dropdown selection.\n",
-            "default" : "Dropdown"
+          "singleSelectionNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "variableValue" : {
+                    "type" : "string",
+                    "title" : "Default value",
+                    "description" : "Default value for the field. If you want to use a value that is not among the possible choices as the default, override the field using a flow variable."
+                  }
+                },
+                "default" : { }
+              },
+              "limitVisOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitVisibleOptions" : {
+                    "type" : "object",
+                    "properties" : {
+                      "limitNumberOfVisibleOptions" : {
+                        "type" : "boolean",
+                        "title" : "Limit number of visible options",
+                        "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them. The setting is available only for List selection type.",
+                        "default" : false
+                      },
+                      "numberOfVisibleOptions" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "title" : "Number of visible options",
+                        "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will also affect the component's height. The setting is available only for List selection type.",
+                        "default" : 5
+                      }
+                    },
+                    "default" : {
+                      "limitNumberOfVisibleOptions" : false,
+                      "numberOfVisibleOptions" : 5
+                    }
+                  },
+                  "selectionType" : {
+                    "type" : "string",
+                    "title" : "Selection type",
+                    "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout, a list or a dropdown selection.",
+                    "default" : "Dropdown"
+                  }
+                },
+                "default" : {
+                  "selectionType" : "Dropdown",
+                  "limitVisibleOptions" : {
+                    "limitNumberOfVisibleOptions" : false,
+                    "numberOfVisibleOptions" : 5
+                  }
+                }
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "possibleChoices" : {
+                "type" : "string",
+                "title" : "Possible choices",
+                "description" : "The possible choices, each line is one possible value."
+              }
+            },
+            "default" : {
+              "defaultValue" : { },
+              "limitVisOptions" : {
+                "selectionType" : "Dropdown",
+                "limitVisibleOptions" : {
+                  "limitNumberOfVisibleOptions" : false,
+                  "numberOfVisibleOptions" : 5
+                }
+              }
+            }
           }
         }
       }
@@ -109,21 +151,21 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectionType",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/selectionType",
+            "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
             "schema" : {
               "const" : "List"
             }
@@ -131,7 +173,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -155,21 +197,21 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/selectionType",
-              "schema" : {
-                "const" : "List"
-              }
-            }, {
-              "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+              "schema" : {
+                "const" : "List"
               }
             } ]
           }
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/possibleChoices",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices",
         "options" : {
           "rows" : 4,
           "format" : "textArea"
@@ -180,14 +222,14 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/singleSelectionNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/variableValue",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/defaultValue/properties/variableValue",
         "options" : {
           "format" : "dropDown"
         },
@@ -248,40 +290,58 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "singleSelectionNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "variableValue" : {
-                "configPaths" : [ [ "variable_value" ] ]
+              "overwrittenByValueMessage" : { },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "variableValue" : {
+                    "configPaths" : [ [ "variable_value" ] ]
+                  }
+                }
+              },
+              "limitVisOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "selectionType" : {
+                    "configKey" : "type"
+                  },
+                  "limitVisibleOptions" : {
+                    "type" : "object",
+                    "properties" : {
+                      "limitNumberOfVisibleOptions" : {
+                        "configKey" : "limit_number_visible_options"
+                      },
+                      "numberOfVisibleOptions" : {
+                        "configKey" : "number_visible_options"
+                      }
+                    },
+                    "propertiesRoute" : [ ".." ]
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              },
+              "possibleChoices" : {
+                "configPaths" : [ [ "possible_choices" ] ]
               }
-            }
-          },
-          "selectionType" : {
-            "configKey" : "type"
-          },
-          "limitNumberOfVisibleOptions" : {
-            "configKey" : "limit_number_visible_options"
-          },
-          "numberOfVisibleOptions" : {
-            "configKey" : "number_visible_options"
-          },
-          "possibleChoices" : {
-            "configPaths" : [ [ "possible_choices" ] ]
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
     }
   },
   "initialUpdates" : [ {
-    "scope" : "#/properties/model/properties/defaultValue/properties/variableValue",
+    "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/defaultValue/properties/variableValue",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/selectionType",
+    "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -305,7 +365,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/variableValue", "#/properties/model/properties/possibleChoices" ]
+    "dependencies" : [ "#/properties/model/properties/singleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
@@ -313,8 +373,8 @@
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/possibleChoices"
+      "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices"
     },
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/variableValue", "#/properties/model/properties/possibleChoices" ]
+    "dependencies" : [ "#/properties/model/properties/singleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices" ]
   } ]
 }

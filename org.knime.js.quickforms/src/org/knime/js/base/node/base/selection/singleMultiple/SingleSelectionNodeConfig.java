@@ -48,7 +48,7 @@
  */
 package org.knime.js.base.node.base.selection.singleMultiple;
 
-import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory;
+import static org.knime.js.base.node.parameters.filterandselection.SingleSelectionComponentParameters.DEFAULT_TYPE;
 
 /**
  * Base config file for the single selection configuration and widget nodes
@@ -57,7 +57,6 @@ import org.knime.js.base.dialog.selection.single.SingleSelectionComponentFactory
  */
 public class SingleSelectionNodeConfig extends SingleMultipleSelectionNodeConfig {
 
-    public static final String DEFAULT_TYPE = SingleSelectionComponentFactory.DROPDOWN;
     private String m_type = DEFAULT_TYPE;
 
     /**

@@ -8,9 +8,13 @@
       "hideInDialog" : false,
       "required" : true,
       "defaultValue" : { },
-      "selectionType" : "Dropdown",
-      "limitNumberOfVisibleOptions" : false,
-      "numberOfVisibleOptions" : 5,
+      "limitVisOptions" : {
+        "selectionType" : "Dropdown",
+        "limitVisibleOptions" : {
+          "limitNumberOfVisibleOptions" : false,
+          "numberOfVisibleOptions" : 5
+        }
+      },
       "possibleColumns" : [ ],
       "inputFilter" : {
         "allowAllTypes" : true,
@@ -91,18 +95,45 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "limitNumberOfVisibleOptions" : {
-            "type" : "boolean",
-            "title" : "Limit number of visible options",
-            "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar.\nIf the setting is enabled, you will be able to limit the number of visible options in case you have too\nmany of them. The setting is available only for List selection type.\n",
-            "default" : false
-          },
-          "numberOfVisibleOptions" : {
-            "type" : "integer",
-            "format" : "int32",
-            "title" : "Number of visible options",
-            "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will\nalso affect the component's height. The setting is available only for List selection type.\n",
-            "default" : 5
+          "limitVisOptions" : {
+            "type" : "object",
+            "properties" : {
+              "limitVisibleOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "type" : "boolean",
+                    "title" : "Limit number of visible options",
+                    "description" : "By default the List component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them. The setting is available only for List selection type.",
+                    "default" : false
+                  },
+                  "numberOfVisibleOptions" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Number of visible options",
+                    "description" : "A number of options visible in the List component without a vertical scroll bar. Changing this value will also affect the component's height. The setting is available only for List selection type.",
+                    "default" : 5
+                  }
+                },
+                "default" : {
+                  "limitNumberOfVisibleOptions" : false,
+                  "numberOfVisibleOptions" : 5
+                }
+              },
+              "selectionType" : {
+                "type" : "string",
+                "title" : "Selection type",
+                "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout, a list or a dropdown selection.",
+                "default" : "Dropdown"
+              }
+            },
+            "default" : {
+              "selectionType" : "Dropdown",
+              "limitVisibleOptions" : {
+                "limitNumberOfVisibleOptions" : false,
+                "numberOfVisibleOptions" : 5
+              }
+            }
           },
           "overwrittenByValueMessage" : {
             "type" : "object"
@@ -123,12 +154,6 @@
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "selectionType" : {
-            "type" : "string",
-            "title" : "Selection type",
-            "description" : "The type of the selection element. This can be either radio buttons with a vertical or horizontal layout,\na list or a dropdown selection.\n",
-            "default" : "Dropdown"
           }
         }
       }
@@ -146,21 +171,21 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectionType",
+        "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/selectionType",
+            "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
             "schema" : {
               "const" : "List"
             }
@@ -168,7 +193,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -192,14 +217,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/selectionType",
-              "schema" : {
-                "const" : "List"
-              }
-            }, {
-              "scope" : "#/properties/model/properties/limitNumberOfVisibleOptions",
+              "scope" : "#/properties/model/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+              "schema" : {
+                "const" : "List"
               }
             } ]
           }
@@ -319,14 +344,26 @@
               }
             }
           },
-          "selectionType" : {
-            "configKey" : "type"
-          },
-          "limitNumberOfVisibleOptions" : {
-            "configKey" : "limit_number_visible_options"
-          },
-          "numberOfVisibleOptions" : {
-            "configKey" : "number_visible_options"
+          "limitVisOptions" : {
+            "type" : "object",
+            "properties" : {
+              "selectionType" : {
+                "configKey" : "type"
+              },
+              "limitVisibleOptions" : {
+                "type" : "object",
+                "properties" : {
+                  "limitNumberOfVisibleOptions" : {
+                    "configKey" : "limit_number_visible_options"
+                  },
+                  "numberOfVisibleOptions" : {
+                    "configKey" : "number_visible_options"
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "possibleColumns" : {
             "configKey" : "possibleColumns"
@@ -448,6 +485,25 @@
       } ]
     } ]
   }, {
+    "scope" : "#/properties/model/properties/limitVisOptions/properties/selectionType",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "Radio buttons (horizontal)",
+        "text" : "Radio buttons (horizontal)"
+      }, {
+        "id" : "Radio buttons (vertical)",
+        "text" : "Radio buttons (vertical)"
+      }, {
+        "id" : "List",
+        "text" : "List"
+      }, {
+        "id" : "Dropdown",
+        "text" : "Dropdown"
+      } ]
+    } ]
+  }, {
     "scope" : "#/properties/model/properties/possibleColumns",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -487,25 +543,6 @@
           "id" : "org.knime.core.data.StringValue",
           "text" : "String"
         }
-      } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/selectionType",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ {
-        "id" : "Radio buttons (horizontal)",
-        "text" : "Radio buttons (horizontal)"
-      }, {
-        "id" : "Radio buttons (vertical)",
-        "text" : "Radio buttons (vertical)"
-      }, {
-        "id" : "List",
-        "text" : "List"
-      }, {
-        "id" : "Dropdown",
-        "text" : "Dropdown"
       } ]
     } ]
   } ],
