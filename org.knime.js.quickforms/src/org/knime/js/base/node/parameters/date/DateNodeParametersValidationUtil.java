@@ -46,7 +46,7 @@
  * History
  *   18 Sept 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.date;
+package org.knime.js.base.node.parameters.date;
 
 import java.util.List;
 
@@ -54,8 +54,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.js.base.node.base.input.date.DateNodeConfig;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.AbstractDateTimeTypeInputValueProvider;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification;
+import org.knime.js.base.node.configuration.input.date.DateDialogNodeParameters;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.AbstractDateTimeTypeInputValueProvider;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
@@ -70,20 +71,20 @@ import org.knime.time.util.DateTimeType.IsDateTimeType;
  *
  * @author Robin Gerling
  */
-final class DateDialogNodeParametersValidationUtil {
+final class DateNodeParametersValidationUtil {
 
-    private DateDialogNodeParametersValidationUtil() {
+    private DateNodeParametersValidationUtil() {
         // Utility
     }
 
     enum TimeSelectionMinMax {
             @Label(value = "None", description = "Do not use a date&amp;time.")
             NONE, //
-            @Label(value = DateDialogNodeParameters.LABEL_VALUE_CUSTOM,
-                description = DateDialogNodeParameters.LABEL_DESCRIPTION_CUSTOM)
+            @Label(value = DateNodeParameters.LABEL_VALUE_CUSTOM,
+                description = DateNodeParameters.LABEL_DESCRIPTION_CUSTOM)
             CUSTOM, //
-            @Label(value = DateDialogNodeParameters.LABEL_VALUE_EXECUTION_TIME,
-                description = DateDialogNodeParameters.LABEL_DESCRIPTION_EXECUTION_TIME)
+            @Label(value = DateNodeParameters.LABEL_VALUE_EXECUTION_TIME,
+                description = DateNodeParameters.LABEL_DESCRIPTION_EXECUTION_TIME)
             EXECUTION_TIME
     }
 

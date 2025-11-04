@@ -46,7 +46,7 @@
  * History
  *   12 Sept 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.date;
+package org.knime.js.base.node.parameters.date;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,10 +64,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalDateModificationReference;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalDateTimeModificationReference;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalTimeModificationReference;
-import org.knime.js.base.node.configuration.input.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.ZonedDateTimeModificationReference;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalDateModificationReference;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalDateTimeModificationReference;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.LocalTimeModificationReference;
+import org.knime.js.base.node.parameters.date.DateTimeTypeInputParameters.DateTimeTypeInputParametersModification.ZonedDateTimeModificationReference;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -159,7 +159,7 @@ final class DateTimeTypeInputParameters implements NodeParameters {
         static final class ZonedDateTimeModificationReference implements Modification.Reference {
         }
 
-        private static final List<String> TYPE = List.of("Date", "Time", "Local Date&Time", "Zoned Date&Time");
+        private static final List<String> TYPE = List.of("date", "time", "local date&time", "zoned date&time");
 
         private static final List<Class<? extends Modification.Reference>> MODIFICATION_REFS =
             List.of(LocalDateModificationReference.class, //

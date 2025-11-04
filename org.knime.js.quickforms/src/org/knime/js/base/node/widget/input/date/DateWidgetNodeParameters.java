@@ -44,30 +44,39 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   11 Sept 2025 (Robin Gerling): created
+ *   4 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.date;
+package org.knime.js.base.node.widget.input.date;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
+import org.knime.js.base.node.base.input.date.DateNodeConfig;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.date.DateNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * WebUI Node Parameters for the Date&Time Configuration.
+ * Settings for the date&amp;time widget node.
  *
- * @author Robin Gerling, KNIME GmbH, Konstanz
+ * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public class DateDialogNodeParameters extends ConfigurationNodeSettings {
+public final class DateWidgetNodeParameters extends WidgetNodeParameters {
 
-    /**
-     * Default constructor
-     */
-    protected DateDialogNodeParameters() {
-        super(DateInputDialogNodeConfig.class);
+    DateWidgetNodeParameters() {
+        super(DateInputWidgetConfig.class);
     }
 
     @PersistWithin.PersistEmbedded
     DateNodeParameters m_dateNodeParameters = new DateNodeParameters();
+
+    @Widget(title = "Show \"Now\" button next to input field",
+        description = "If enabled, a button labeled \"Now\" is shown next to the"
+            + " input field and inserts the current time when clicked.")
+    @Layout(FormFieldSection.class)
+    @Persist(configKey = DateNodeConfig.CFG_SHOW_NOW_BUTTON)
+    boolean m_showNowButton = DateNodeConfig.DEFAULT_SHOW_NOW_BUTTON;
 
 }

@@ -4,8 +4,8 @@
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "date-input",
-      "parameterName" : "date-input",
-      "hideInDialog" : false,
+      "hideInWizard" : false,
+      "customCSS" : "",
       "required" : true,
       "dateNodeParameters" : {
         "timeSelectionDefault" : "CUSTOM",
@@ -42,7 +42,8 @@
             "timeZone" : "Europe/Berlin"
           }
         }
-      }
+      },
+      "showNowButton" : true
     }
   },
   "schema" : {
@@ -51,6 +52,10 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
           "dateNodeParameters" : {
             "type" : "object",
             "properties" : {
@@ -324,35 +329,33 @@
           "description" : {
             "type" : "string",
             "title" : "Description",
-            "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
             "default" : "Enter Description"
           },
           "flowVariableName" : {
             "type" : "string",
-            "title" : "Output variable name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
+            "title" : "Variable name",
+            "description" : "The name of the exported flow variable.",
             "default" : "date-input"
           },
-          "hideInDialog" : {
+          "hideInWizard" : {
             "type" : "boolean",
-            "title" : "Hide in dialog",
-            "description" : "Set this to true to hide this field in a component dialog.\n",
             "default" : false
           },
           "label" : {
             "type" : "string",
             "title" : "Label",
-            "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
+            "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
-          },
-          "parameterName" : {
-            "type" : "string",
-            "title" : "Parameter name",
-            "description" : "Parameter identifier for external parameterization (e.g. batch execution). Whenever the output variable name is adjusted, the current value of the parameter name is set to the same value.",
-            "default" : "date-input"
           },
           "required" : {
             "type" : "boolean",
+            "default" : true
+          },
+          "showNowButton" : {
+            "type" : "boolean",
+            "title" : "Show \"Now\" button next to input field",
+            "description" : "If enabled, a button labeled \"Now\" is shown next to the input field and inserts the current time when clicked.",
             "default" : true
           }
         }
@@ -388,6 +391,12 @@
               } ]
             }
           }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/showNowButton",
+        "options" : {
+          "format" : "checkbox"
         }
       } ]
     }, {
@@ -854,40 +863,12 @@
         "options" : {
           "validation" : {
             "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
+              "errorMessage" : "The string must start and end with a non-whitespace character.",
               "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
+                "pattern" : "\\S(.*\\S)?"
               }
             }
           }
-        }
-      } ]
-    }, {
-      "label" : "Advanced Settings",
-      "type" : "Section",
-      "options" : {
-        "isAdvanced" : true
-      },
-      "elements" : [ {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/parameterName",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "Value must start and end with a letter, and may contain only letters, digits, and single dashes.",
-              "parameters" : {
-                "pattern" : "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?"
-              }
-            }
-          },
-          "isAdvanced" : true
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/hideInDialog",
-        "options" : {
-          "format" : "checkbox",
-          "isAdvanced" : true
         }
       } ]
     } ]
@@ -901,8 +882,8 @@
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "parameterName" : { },
-          "hideInDialog" : { },
+          "hideInWizard" : { },
+          "customCSS" : { },
           "required" : { },
           "dateNodeParameters" : {
             "type" : "object",
@@ -939,6 +920,9 @@
               }
             },
             "propertiesRoute" : [ ".." ]
+          },
+          "showNowButton" : {
+            "configKey" : "show_now"
           }
         }
       }
@@ -955,10 +939,5 @@
       "scope" : "#/properties/model/properties/dateNodeParameters/properties/type"
     },
     "dependencies" : [ "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default", "#/properties/model/properties/dateNodeParameters/properties/max", "#/properties/model/properties/dateNodeParameters/properties/min", "#/properties/model/properties/dateNodeParameters/properties/type" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/flowVariableName"
-    },
-    "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
   } ]
 }

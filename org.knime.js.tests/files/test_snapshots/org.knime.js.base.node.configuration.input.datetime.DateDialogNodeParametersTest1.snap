@@ -7,38 +7,40 @@
       "parameterName" : "date-input",
       "hideInDialog" : false,
       "required" : true,
-      "timeSelectionDefault" : "EXECUTION_TIME",
-      "defaultValue" : {
-        "default" : {
-          "date" : "1999-05-03",
-          "time" : "01:02:03",
-          "localDateTime" : "1999-05-03T01:02:03",
-          "zonedDateTime" : {
-            "dateTime" : "1999-05-03T01:02:03",
-            "timeZone" : "Europe/Bucharest"
+      "dateNodeParameters" : {
+        "timeSelectionDefault" : "EXECUTION_TIME",
+        "defaultValue" : {
+          "default" : {
+            "date" : "1999-05-03",
+            "time" : "01:02:03",
+            "localDateTime" : "1999-05-03T01:02:03",
+            "zonedDateTime" : {
+              "dateTime" : "1999-05-03T01:02:03",
+              "timeZone" : "Europe/Bucharest"
+            }
           }
-        }
-      },
-      "type" : "LOCAL_DATE_TIME",
-      "granularity" : "SHOW_MILLIS",
-      "timeSelectionMin" : "NONE",
-      "min" : {
-        "date" : "1900-01-01",
-        "time" : "01:02:02",
-        "localDateTime" : "1900-01-01T01:02:02",
-        "zonedDateTime" : {
-          "dateTime" : "1900-01-01T01:02:02",
-          "timeZone" : "Europe/Berlin"
-        }
-      },
-      "timeSelectionMax" : "CUSTOM",
-      "max" : {
-        "date" : "2100-01-01",
-        "time" : "00:23:22",
-        "localDateTime" : "2100-01-01T00:23:22",
-        "zonedDateTime" : {
-          "dateTime" : "2100-01-01T00:23:22",
-          "timeZone" : "Europe/Chisinau"
+        },
+        "type" : "LOCAL_DATE_TIME",
+        "granularity" : "SHOW_MILLIS",
+        "timeSelectionMin" : "NONE",
+        "min" : {
+          "date" : "1900-01-01",
+          "time" : "01:02:02",
+          "localDateTime" : "1900-01-01T01:02:02",
+          "zonedDateTime" : {
+            "dateTime" : "1900-01-01T01:02:02",
+            "timeZone" : "Europe/Berlin"
+          }
+        },
+        "timeSelectionMax" : "CUSTOM",
+        "max" : {
+          "date" : "2100-01-01",
+          "time" : "00:23:22",
+          "localDateTime" : "2100-01-01T00:23:22",
+          "zonedDateTime" : {
+            "dateTime" : "2100-01-01T00:23:22",
+            "timeZone" : "Europe/Chisinau"
+          }
         }
       }
     }
@@ -49,38 +51,114 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
+          "dateNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "default" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "default" : {
+                    "type" : "object",
+                    "properties" : {
+                      "date" : {
+                        "type" : "string",
+                        "format" : "date",
+                        "title" : "Custom default date",
+                        "description" : "The default date.",
+                        "default" : "2025-09-15"
+                      },
+                      "localDateTime" : {
+                        "type" : "string",
+                        "format" : "date-time",
+                        "title" : "Custom default local date&time",
+                        "description" : "The default local date&amp;time.",
+                        "default" : "2025-09-15T11:00:00"
+                      },
+                      "time" : {
+                        "type" : "string",
+                        "format" : "time",
+                        "title" : "Custom default time",
+                        "description" : "The default time.",
+                        "default" : "11:00:00"
+                      },
+                      "zonedDateTime" : {
+                        "type" : "string",
+                        "format" : "date-time",
+                        "title" : "Custom default zoned date&time",
+                        "description" : "The default zoned date&amp;time.",
+                        "default" : {
+                          "dateTime" : "2025-09-15T11:00:00",
+                          "timeZone" : "Europe/Berlin"
+                        }
+                      }
+                    },
+                    "default" : {
+                      "date" : "2025-09-15",
+                      "time" : "11:00:00",
+                      "localDateTime" : "2025-09-15T11:00:00",
+                      "zonedDateTime" : {
+                        "dateTime" : "2025-09-15T11:00:00",
+                        "timeZone" : "Europe/Berlin"
+                      }
+                    }
+                  }
+                },
+                "default" : {
+                  "default" : {
+                    "date" : "2025-09-15",
+                    "time" : "11:00:00",
+                    "localDateTime" : "2025-09-15T11:00:00",
+                    "zonedDateTime" : {
+                      "dateTime" : "2025-09-15T11:00:00",
+                      "timeZone" : "Europe/Berlin"
+                    }
+                  }
+                }
+              },
+              "granularity" : {
+                "oneOf" : [ {
+                  "const" : "SHOW_MINUTES",
+                  "title" : "Minutes"
+                }, {
+                  "const" : "SHOW_SECONDS",
+                  "title" : "Seconds"
+                }, {
+                  "const" : "SHOW_MILLIS",
+                  "title" : "Milliseconds"
+                } ],
+                "title" : "Granularity",
+                "description" : "In which granularity the time field should be displayed.\n<ul>\n<li><b>Minutes</b>: Show hours and minutes.</li>\n<li><b>Seconds</b>: Show hours, minutes and seconds.</li>\n<li><b>Milliseconds</b>: Show hours, minutes, seconds and milliseconds.</li>\n</ul>",
+                "default" : "SHOW_MINUTES"
+              },
+              "max" : {
                 "type" : "object",
                 "properties" : {
                   "date" : {
                     "type" : "string",
                     "format" : "date",
-                    "title" : "Custom default Date",
-                    "description" : "The default date.",
+                    "title" : "Custom latest date",
+                    "description" : "The latest allowed date.",
                     "default" : "2025-09-15"
                   },
                   "localDateTime" : {
                     "type" : "string",
                     "format" : "date-time",
-                    "title" : "Custom default Local Date&Time",
-                    "description" : "The default local date&amp;time.",
+                    "title" : "Custom latest local date&time",
+                    "description" : "The latest allowed local date&amp;time.",
                     "default" : "2025-09-15T11:00:00"
                   },
                   "time" : {
                     "type" : "string",
                     "format" : "time",
-                    "title" : "Custom default Time",
-                    "description" : "The default time.",
+                    "title" : "Custom latest time",
+                    "description" : "The latest allowed time.",
                     "default" : "11:00:00"
                   },
                   "zonedDateTime" : {
                     "type" : "string",
                     "format" : "date-time",
-                    "title" : "Custom default Zoned Date&Time",
-                    "description" : "The default zoned date&amp;time.",
+                    "title" : "Custom latest zoned date&time",
+                    "description" : "The latest allowed zoned date&amp;time.",
                     "default" : {
                       "dateTime" : "2025-09-15T11:00:00",
                       "timeZone" : "Europe/Berlin"
@@ -96,10 +174,143 @@
                     "timeZone" : "Europe/Berlin"
                   }
                 }
+              },
+              "min" : {
+                "type" : "object",
+                "properties" : {
+                  "date" : {
+                    "type" : "string",
+                    "format" : "date",
+                    "title" : "Custom earliest date",
+                    "description" : "The earliest allowed date.",
+                    "default" : "2025-09-15"
+                  },
+                  "localDateTime" : {
+                    "type" : "string",
+                    "format" : "date-time",
+                    "title" : "Custom earliest local date&time",
+                    "description" : "The earliest allowed local date&amp;time.",
+                    "default" : "2025-09-15T11:00:00"
+                  },
+                  "time" : {
+                    "type" : "string",
+                    "format" : "time",
+                    "title" : "Custom earliest time",
+                    "description" : "The earliest allowed time.",
+                    "default" : "11:00:00"
+                  },
+                  "zonedDateTime" : {
+                    "type" : "string",
+                    "format" : "date-time",
+                    "title" : "Custom earliest zoned date&time",
+                    "description" : "The earliest allowed zoned date&amp;time.",
+                    "default" : {
+                      "dateTime" : "2025-09-15T11:00:00",
+                      "timeZone" : "Europe/Berlin"
+                    }
+                  }
+                },
+                "default" : {
+                  "date" : "2025-09-15",
+                  "time" : "11:00:00",
+                  "localDateTime" : "2025-09-15T11:00:00",
+                  "zonedDateTime" : {
+                    "dateTime" : "2025-09-15T11:00:00",
+                    "timeZone" : "Europe/Berlin"
+                  }
+                }
+              },
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "timeSelectionDefault" : {
+                "oneOf" : [ {
+                  "const" : "CUSTOM",
+                  "title" : "Custom"
+                }, {
+                  "const" : "EXECUTION_TIME",
+                  "title" : "Execution time"
+                } ],
+                "title" : "Default value",
+                "description" : "The default values used as date&amp;time.\n<ul>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
+                "default" : "CUSTOM"
+              },
+              "timeSelectionMax" : {
+                "oneOf" : [ {
+                  "const" : "NONE",
+                  "title" : "None"
+                }, {
+                  "const" : "CUSTOM",
+                  "title" : "Custom"
+                }, {
+                  "const" : "EXECUTION_TIME",
+                  "title" : "Execution time"
+                } ],
+                "title" : "Latest value",
+                "description" : "The latest allowed value used as date&amp;time.\n<ul>\n<li><b>None</b>: Do not use a date&amp;time.</li>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
+                "default" : "NONE"
+              },
+              "timeSelectionMin" : {
+                "oneOf" : [ {
+                  "const" : "NONE",
+                  "title" : "None"
+                }, {
+                  "const" : "CUSTOM",
+                  "title" : "Custom"
+                }, {
+                  "const" : "EXECUTION_TIME",
+                  "title" : "Execution time"
+                } ],
+                "title" : "Earliest value",
+                "description" : "The earliest allowed value used as date&amp;time.\n<ul>\n<li><b>None</b>: Do not use a date&amp;time.</li>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
+                "default" : "NONE"
+              },
+              "type" : {
+                "oneOf" : [ {
+                  "const" : "LOCAL_DATE",
+                  "title" : "Date"
+                }, {
+                  "const" : "LOCAL_TIME",
+                  "title" : "Time"
+                }, {
+                  "const" : "LOCAL_DATE_TIME",
+                  "title" : "Date & time"
+                }, {
+                  "const" : "ZONED_DATE_TIME",
+                  "title" : "Date & time & zone"
+                } ],
+                "title" : "Type",
+                "description" : "Which date&amp;time type should be selectable.\n<ul>\n<li><b>Date</b>: Outputs values of type Date</li>\n<li><b>Time</b>: Outputs values of type Time</li>\n<li><b>Date &amp; time</b>: Outputs values of type Date&amp;time (Local)</li>\n<li><b>Date &amp; time &amp; zone</b>: Outputs values of type Date&amp;time (Zoned)</li>\n</ul>",
+                "default" : "LOCAL_DATE_TIME"
               }
             },
             "default" : {
-              "default" : {
+              "timeSelectionDefault" : "CUSTOM",
+              "defaultValue" : {
+                "default" : {
+                  "date" : "2025-09-15",
+                  "time" : "11:00:00",
+                  "localDateTime" : "2025-09-15T11:00:00",
+                  "zonedDateTime" : {
+                    "dateTime" : "2025-09-15T11:00:00",
+                    "timeZone" : "Europe/Berlin"
+                  }
+                }
+              },
+              "type" : "LOCAL_DATE_TIME",
+              "granularity" : "SHOW_MINUTES",
+              "timeSelectionMin" : "NONE",
+              "min" : {
+                "date" : "2025-09-15",
+                "time" : "11:00:00",
+                "localDateTime" : "2025-09-15T11:00:00",
+                "zonedDateTime" : {
+                  "dateTime" : "2025-09-15T11:00:00",
+                  "timeZone" : "Europe/Berlin"
+                }
+              },
+              "timeSelectionMax" : "NONE",
+              "max" : {
                 "date" : "2025-09-15",
                 "time" : "11:00:00",
                 "localDateTime" : "2025-09-15T11:00:00",
@@ -122,21 +333,6 @@
             "description" : "Parameter identifier for external parameterization (e.g. batch execution).\nThis will also be the name of the exported flow variable.\n",
             "default" : "date-input"
           },
-          "granularity" : {
-            "oneOf" : [ {
-              "const" : "SHOW_MINUTES",
-              "title" : "Minutes"
-            }, {
-              "const" : "SHOW_SECONDS",
-              "title" : "Seconds"
-            }, {
-              "const" : "SHOW_MILLIS",
-              "title" : "Milliseconds"
-            } ],
-            "title" : "Granularity",
-            "description" : "In which granularity the time field should be displayed.\n<ul>\n<li><b>Minutes</b>: Show hours and minutes.</li>\n<li><b>Seconds</b>: Show hours, minutes and seconds.</li>\n<li><b>Milliseconds</b>: Show hours, minutes, seconds and milliseconds.</li>\n</ul>",
-            "default" : "SHOW_MINUTES"
-          },
           "hideInDialog" : {
             "type" : "boolean",
             "title" : "Hide in dialog",
@@ -149,99 +345,6 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "max" : {
-            "type" : "object",
-            "properties" : {
-              "date" : {
-                "type" : "string",
-                "format" : "date",
-                "title" : "Custom latest Date",
-                "description" : "The latest allowed date.",
-                "default" : "2025-09-15"
-              },
-              "localDateTime" : {
-                "type" : "string",
-                "format" : "date-time",
-                "title" : "Custom latest Local Date&Time",
-                "description" : "The latest allowed local date&amp;time.",
-                "default" : "2025-09-15T11:00:00"
-              },
-              "time" : {
-                "type" : "string",
-                "format" : "time",
-                "title" : "Custom latest Time",
-                "description" : "The latest allowed time.",
-                "default" : "11:00:00"
-              },
-              "zonedDateTime" : {
-                "type" : "string",
-                "format" : "date-time",
-                "title" : "Custom latest Zoned Date&Time",
-                "description" : "The latest allowed zoned date&amp;time.",
-                "default" : {
-                  "dateTime" : "2025-09-15T11:00:00",
-                  "timeZone" : "Europe/Berlin"
-                }
-              }
-            },
-            "default" : {
-              "date" : "2025-09-15",
-              "time" : "11:00:00",
-              "localDateTime" : "2025-09-15T11:00:00",
-              "zonedDateTime" : {
-                "dateTime" : "2025-09-15T11:00:00",
-                "timeZone" : "Europe/Berlin"
-              }
-            }
-          },
-          "min" : {
-            "type" : "object",
-            "properties" : {
-              "date" : {
-                "type" : "string",
-                "format" : "date",
-                "title" : "Custom earliest Date",
-                "description" : "The earliest allowed date.",
-                "default" : "2025-09-15"
-              },
-              "localDateTime" : {
-                "type" : "string",
-                "format" : "date-time",
-                "title" : "Custom earliest Local Date&Time",
-                "description" : "The earliest allowed local date&amp;time.",
-                "default" : "2025-09-15T11:00:00"
-              },
-              "time" : {
-                "type" : "string",
-                "format" : "time",
-                "title" : "Custom earliest Time",
-                "description" : "The earliest allowed time.",
-                "default" : "11:00:00"
-              },
-              "zonedDateTime" : {
-                "type" : "string",
-                "format" : "date-time",
-                "title" : "Custom earliest Zoned Date&Time",
-                "description" : "The earliest allowed zoned date&amp;time.",
-                "default" : {
-                  "dateTime" : "2025-09-15T11:00:00",
-                  "timeZone" : "Europe/Berlin"
-                }
-              }
-            },
-            "default" : {
-              "date" : "2025-09-15",
-              "time" : "11:00:00",
-              "localDateTime" : "2025-09-15T11:00:00",
-              "zonedDateTime" : {
-                "dateTime" : "2025-09-15T11:00:00",
-                "timeZone" : "Europe/Berlin"
-              }
-            }
-          },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
@@ -251,66 +354,6 @@
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "timeSelectionDefault" : {
-            "oneOf" : [ {
-              "const" : "CUSTOM",
-              "title" : "Custom"
-            }, {
-              "const" : "EXECUTION_TIME",
-              "title" : "Execution time"
-            } ],
-            "title" : "Default value",
-            "description" : "The default values used as date&amp;time.\n<ul>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
-            "default" : "CUSTOM"
-          },
-          "timeSelectionMax" : {
-            "oneOf" : [ {
-              "const" : "NONE",
-              "title" : "None"
-            }, {
-              "const" : "CUSTOM",
-              "title" : "Custom"
-            }, {
-              "const" : "EXECUTION_TIME",
-              "title" : "Execution time"
-            } ],
-            "title" : "Latest value",
-            "description" : "The latest allowed value used as date&amp;time.\n<ul>\n<li><b>None</b>: Do not use a date&amp;time.</li>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
-            "default" : "NONE"
-          },
-          "timeSelectionMin" : {
-            "oneOf" : [ {
-              "const" : "NONE",
-              "title" : "None"
-            }, {
-              "const" : "CUSTOM",
-              "title" : "Custom"
-            }, {
-              "const" : "EXECUTION_TIME",
-              "title" : "Execution time"
-            } ],
-            "title" : "Earliest value",
-            "description" : "The earliest allowed value used as date&amp;time.\n<ul>\n<li><b>None</b>: Do not use a date&amp;time.</li>\n<li><b>Custom</b>: Use a custom date&amp;time.</li>\n<li><b>Execution time</b>: Use the execution time.</li>\n</ul>",
-            "default" : "NONE"
-          },
-          "type" : {
-            "oneOf" : [ {
-              "const" : "LOCAL_DATE",
-              "title" : "Date"
-            }, {
-              "const" : "LOCAL_TIME",
-              "title" : "Time"
-            }, {
-              "const" : "LOCAL_DATE_TIME",
-              "title" : "Date & time"
-            }, {
-              "const" : "ZONED_DATE_TIME",
-              "title" : "Date & time & zone"
-            } ],
-            "title" : "Type",
-            "description" : "Which date&amp;time type should be selectable.\n<ul>\n<li><b>Date</b>: Outputs values of type Date</li>\n<li><b>Time</b>: Outputs values of type Time</li>\n<li><b>Date &amp; time</b>: Outputs values of type Date&amp;time (Local)</li>\n<li><b>Date &amp; time &amp; zone</b>: Outputs values of type Date&amp;time (Zoned)</li>\n</ul>",
-            "default" : "LOCAL_DATE_TIME"
           }
         }
       }
@@ -328,17 +371,17 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/type",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/granularity",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/granularity",
         "rule" : {
           "effect" : "HIDE",
           "condition" : {
-            "scope" : "#/properties/model/properties/type",
+            "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
             "schema" : {
               "oneOf" : [ {
                 "const" : "LOCAL_DATE"
@@ -352,13 +395,13 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/timeSelectionMin",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMin",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/min/properties/date",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/min/properties/date",
         "options" : {
           "format" : "localDate"
         },
@@ -367,14 +410,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMin",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMin",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -385,7 +428,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/min/properties/time",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/min/properties/time",
         "options" : {
           "showMilliseconds" : true,
           "format" : "localTime"
@@ -395,14 +438,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMin",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMin",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -413,7 +456,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/min/properties/localDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/min/properties/localDateTime",
         "options" : {
           "showMilliseconds" : true,
           "format" : "dateTime"
@@ -423,14 +466,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMin",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMin",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -441,7 +484,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/min/properties/zonedDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/min/properties/zonedDateTime",
         "options" : {
           "possibleValues" : [ {
             "id" : "Africa/Johannesburg",
@@ -482,14 +525,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "ZONED_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMin",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMin",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -500,13 +543,13 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/timeSelectionMax",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMax",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/max/properties/date",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/max/properties/date",
         "options" : {
           "format" : "localDate"
         },
@@ -515,14 +558,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMax",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMax",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -533,7 +576,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/max/properties/time",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/max/properties/time",
         "options" : {
           "showMilliseconds" : true,
           "format" : "localTime"
@@ -543,14 +586,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMax",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMax",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -561,7 +604,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/max/properties/localDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/max/properties/localDateTime",
         "options" : {
           "showMilliseconds" : true,
           "format" : "dateTime"
@@ -571,14 +614,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMax",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMax",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -589,7 +632,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/max/properties/zonedDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/max/properties/zonedDateTime",
         "options" : {
           "possibleValues" : [ {
             "id" : "Africa/Johannesburg",
@@ -630,14 +673,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "ZONED_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionMax",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionMax",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -652,20 +695,20 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/dateNodeParameters/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/timeSelectionDefault",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionDefault",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/default/properties/date",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default/properties/date",
         "options" : {
           "format" : "localDate"
         },
@@ -674,14 +717,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionDefault",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionDefault",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -692,7 +735,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/default/properties/time",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default/properties/time",
         "options" : {
           "showMilliseconds" : true,
           "format" : "localTime"
@@ -702,14 +745,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionDefault",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionDefault",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -720,7 +763,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/default/properties/localDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default/properties/localDateTime",
         "options" : {
           "showMilliseconds" : true,
           "format" : "dateTime"
@@ -730,14 +773,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "LOCAL_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionDefault",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionDefault",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -748,7 +791,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/default/properties/zonedDateTime",
+        "scope" : "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default/properties/zonedDateTime",
         "options" : {
           "possibleValues" : [ {
             "id" : "Africa/Johannesburg",
@@ -789,14 +832,14 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/type",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/type",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "ZONED_DATE_TIME"
                 } ]
               }
             }, {
-              "scope" : "#/properties/model/properties/timeSelectionDefault",
+              "scope" : "#/properties/model/properties/dateNodeParameters/properties/timeSelectionDefault",
               "schema" : {
                 "oneOf" : [ {
                   "const" : "CUSTOM"
@@ -861,35 +904,41 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "timeSelectionDefault" : {
-            "configPaths" : [ [ "use_default_exec_time" ] ]
-          },
-          "defaultValue" : {
+          "dateNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "default" : {
-                "configPaths" : [ [ "date&time" ] ]
+              "overwrittenByValueMessage" : { },
+              "timeSelectionDefault" : {
+                "configPaths" : [ [ "use_default_exec_time" ] ]
+              },
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "default" : {
+                    "configPaths" : [ [ "date&time" ] ]
+                  }
+                }
+              },
+              "type" : {
+                "configKey" : "date_time_type"
+              },
+              "granularity" : {
+                "configKey" : "granularity"
+              },
+              "timeSelectionMin" : {
+                "configPaths" : [ [ "use_min" ], [ "use_min_exec_time" ] ]
+              },
+              "min" : {
+                "configPaths" : [ [ "min" ] ]
+              },
+              "timeSelectionMax" : {
+                "configPaths" : [ [ "use_max" ], [ "use_max_exec_time" ] ]
+              },
+              "max" : {
+                "configPaths" : [ [ "max" ] ]
               }
-            }
-          },
-          "type" : {
-            "configKey" : "date_time_type"
-          },
-          "granularity" : {
-            "configKey" : "granularity"
-          },
-          "timeSelectionMin" : {
-            "configPaths" : [ [ "use_min" ], [ "use_min_exec_time" ] ]
-          },
-          "min" : {
-            "configPaths" : [ [ "min" ] ]
-          },
-          "timeSelectionMax" : {
-            "configPaths" : [ [ "use_max" ], [ "use_max_exec_time" ] ]
-          },
-          "max" : {
-            "configPaths" : [ [ "max" ] ]
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
@@ -900,16 +949,16 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/type" ]
+    "dependencies" : [ "#/properties/model/properties/dateNodeParameters/properties/type" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/dateNodeParameters/properties/type"
+    },
+    "dependencies" : [ "#/properties/model/properties/dateNodeParameters/properties/defaultValue/properties/default", "#/properties/model/properties/dateNodeParameters/properties/max", "#/properties/model/properties/dateNodeParameters/properties/min", "#/properties/model/properties/dateNodeParameters/properties/type" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
-  }, {
-    "trigger" : {
-      "scope" : "#/properties/model/properties/type"
-    },
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/default", "#/properties/model/properties/max", "#/properties/model/properties/min", "#/properties/model/properties/type" ]
   } ]
 }
