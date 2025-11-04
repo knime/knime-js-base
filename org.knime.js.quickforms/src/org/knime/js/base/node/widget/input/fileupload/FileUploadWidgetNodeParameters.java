@@ -44,30 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   7 October 2025 (Robin Gerling): created
+ *   4 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.fileupload;
+package org.knime.js.base.node.widget.input.fileupload;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.parameters.fileupload.SingleFileUploadNodeParameters;
-import org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.HideDisableOutputCheckbox;
+import org.knime.js.base.node.parameters.fileupload.StoreInWFDirParameter;
+import org.knime.js.base.node.widget.WidgetNodeParameters;
 
 /**
- * WebUI Node Parameters for the Local File Browser Configuration.
+ * Settings for the file upload widget node.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public final class FileDialogNodeParameters extends ConfigurationNodeSettings {
+public final class FileUploadWidgetNodeParameters extends WidgetNodeParameters {
 
-    FileDialogNodeParameters() {
-        super(FileInputDialogNodeConfig.class);
+    FileUploadWidgetNodeParameters() {
+        super(FileUploadInputWidgetConfig.class);
     }
 
-    @Modification(HideDisableOutputCheckbox.class)
     @PersistWithin.PersistEmbedded
     SingleFileUploadNodeParameters m_fileUploadNodeParameters = new SingleFileUploadNodeParameters();
 
+    @PersistWithin.PersistEmbedded
+    StoreInWFDirParameter m_storeInWFDirParameter = new StoreInWFDirParameter();
 }

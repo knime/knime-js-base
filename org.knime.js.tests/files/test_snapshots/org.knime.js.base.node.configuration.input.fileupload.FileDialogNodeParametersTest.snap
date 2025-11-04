@@ -7,16 +7,20 @@
       "parameterName" : "file-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "filePath" : "",
-        "pathValid" : true,
-        "fileName" : "",
-        "localUpload" : false
-      },
-      "fileExtensions" : "",
-      "timeout" : 1.0,
-      "errorMessage" : "",
-      "disabledOutput" : false
+      "fileUploadNodeParameters" : {
+        "defaultValue" : {
+          "filePath" : "",
+          "pathValid" : true,
+          "fileName" : "",
+          "localUpload" : false
+        },
+        "singleFileUploadNodeParameters" : {
+          "fileExtensions" : "",
+          "timeout" : 1.0,
+          "errorMessage" : "",
+          "disableOutputIfFileDoesNotExist" : true
+        }
+      }
     }
   },
   "schema" : {
@@ -25,54 +29,94 @@
       "model" : {
         "type" : "object",
         "properties" : {
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "fileName" : {
-                "type" : "string",
-                "default" : ""
-              },
-              "filePath" : {
-                "type" : "string",
-                "title" : "Default file",
-                "description" : "The file that will be used during design time, i.e. when no file is provided by a component dialog.\nIt is possible to enter a URL here. This can be useful if a default file is to be addressed with\nthe knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a\nremote server.\n",
-                "default" : ""
-              },
-              "localUpload" : {
-                "type" : "boolean",
-                "default" : false
-              },
-              "pathValid" : {
-                "type" : "boolean",
-                "default" : true
-              }
-            },
-            "default" : {
-              "filePath" : "",
-              "pathValid" : true,
-              "fileName" : "",
-              "localUpload" : false
-            }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
           },
-          "disabledOutput" : {
-            "type" : "boolean",
-            "default" : false
-          },
-          "errorMessage" : {
-            "type" : "string",
-            "default" : ""
-          },
-          "fileExtensions" : {
-            "type" : "string",
-            "title" : "Valid file extensions",
-            "description" : "A comma-separated list of file extensions that is used as filter in the\nfile browser (not only the one in the \"Default file\" option but also\nin a remote file browser), e.g. \".csv,.csv.gz\" (or \"csv,csv.gz\") will filter for\nfiles ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.\n",
-            "default" : ""
+          "fileUploadNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "fileName" : {
+                    "type" : "string",
+                    "default" : ""
+                  },
+                  "filePath" : {
+                    "type" : "string",
+                    "title" : "Default file",
+                    "description" : "The file that will be used during design time, i.e. when no file is provided by a component dialog.\nIt is possible to enter a URL here. This can be useful if a default file is to be addressed with\nthe knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a\nremote server.\n",
+                    "default" : ""
+                  },
+                  "localUpload" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "overwrittenByValueMessage" : {
+                    "type" : "object"
+                  },
+                  "pathValid" : {
+                    "type" : "boolean",
+                    "default" : true
+                  }
+                },
+                "default" : {
+                  "filePath" : "",
+                  "pathValid" : true,
+                  "fileName" : "",
+                  "localUpload" : false
+                }
+              },
+              "singleFileUploadNodeParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "disableOutputIfFileDoesNotExist" : {
+                    "type" : "boolean",
+                    "default" : true
+                  },
+                  "errorMessage" : {
+                    "type" : "string",
+                    "default" : ""
+                  },
+                  "fileExtensions" : {
+                    "type" : "string",
+                    "title" : "Valid file extensions",
+                    "description" : "A comma-separated list of file extensions that is used as filter in the\nfile browser (not only the one in the \"Default file\" option but also\nin a remote file browser), e.g. \".csv,.csv.gz\" (or \"csv,csv.gz\") will filter for\nfiles ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.\n",
+                    "default" : ""
+                  },
+                  "timeout" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Timeout (seconds)",
+                    "description" : "The time in seconds after which the connection times out. The timeout is used when testing the existence of\ndefault files. The default is set to 1 second and should be sufficient in most cases.\n",
+                    "default" : 1.0
+                  }
+                },
+                "default" : {
+                  "fileExtensions" : "",
+                  "timeout" : 1.0,
+                  "errorMessage" : "",
+                  "disableOutputIfFileDoesNotExist" : true
+                }
+              }
+            },
+            "default" : {
+              "defaultValue" : {
+                "filePath" : "",
+                "pathValid" : true,
+                "fileName" : "",
+                "localUpload" : false
+              },
+              "singleFileUploadNodeParameters" : {
+                "fileExtensions" : "",
+                "timeout" : 1.0,
+                "errorMessage" : "",
+                "disableOutputIfFileDoesNotExist" : true
+              }
+            }
           },
           "flowVariableName" : {
             "type" : "string",
@@ -92,9 +136,6 @@
             "description" : "A descriptive label that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Label"
           },
-          "overwrittenByValueMessage" : {
-            "type" : "object"
-          },
           "parameterName" : {
             "type" : "string",
             "title" : "Parameter name",
@@ -104,13 +145,6 @@
           "required" : {
             "type" : "boolean",
             "default" : true
-          },
-          "timeout" : {
-            "type" : "number",
-            "format" : "double",
-            "title" : "Timeout (seconds)",
-            "description" : "The time in seconds after which the connection times out. The timeout is used when testing the existence of\ndefault files. The default is set to 1 second and should be sufficient in most cases.\n",
-            "default" : 1.0
           }
         }
       }
@@ -128,21 +162,21 @@
         "scope" : "#/properties/model/properties/description"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/fileExtensions"
+        "scope" : "#/properties/model/properties/fileUploadNodeParameters/properties/singleFileUploadNodeParameters/properties/fileExtensions"
       } ]
     }, {
       "label" : "Output",
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "id" : "#/properties/model/properties/overwrittenByValueMessage",
+        "id" : "#/properties/model/properties/fileUploadNodeParameters/properties/defaultValue/properties/overwrittenByValueMessage",
         "options" : {
           "format" : "textMessage"
         },
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/filePath",
+        "scope" : "#/properties/model/properties/fileUploadNodeParameters/properties/defaultValue/properties/filePath",
         "options" : {
           "fileSystem" : "LOCAL",
           "isLocal" : true,
@@ -150,7 +184,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/timeout",
+        "scope" : "#/properties/model/properties/fileUploadNodeParameters/properties/singleFileUploadNodeParameters/properties/timeout",
         "options" : {
           "validation" : {
             "min" : {
@@ -218,35 +252,47 @@
           "parameterName" : { },
           "hideInDialog" : { },
           "required" : { },
-          "overwrittenByValueMessage" : { },
-          "defaultValue" : {
+          "fileUploadNodeParameters" : {
             "type" : "object",
             "properties" : {
-              "filePath" : {
-                "configKey" : "path"
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "overwrittenByValueMessage" : { },
+                  "filePath" : {
+                    "configKey" : "path"
+                  },
+                  "pathValid" : {
+                    "configKey" : "pathValid"
+                  },
+                  "fileName" : {
+                    "configKey" : "fileName"
+                  },
+                  "localUpload" : {
+                    "configKey" : "localUpload"
+                  }
+                }
               },
-              "pathValid" : {
-                "configKey" : "pathValid"
-              },
-              "fileName" : {
-                "configKey" : "fileName"
-              },
-              "localUpload" : {
-                "configKey" : "localUpload"
+              "singleFileUploadNodeParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "fileExtensions" : {
+                    "configPaths" : [ [ "types" ] ]
+                  },
+                  "timeout" : {
+                    "configPaths" : [ [ "timeout" ] ]
+                  },
+                  "errorMessage" : {
+                    "configKey" : "error_message"
+                  },
+                  "disableOutputIfFileDoesNotExist" : {
+                    "configKey" : "disable_output"
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
               }
-            }
-          },
-          "fileExtensions" : {
-            "configPaths" : [ [ "types" ] ]
-          },
-          "timeout" : {
-            "configPaths" : [ [ "timeout" ] ]
-          },
-          "errorMessage" : {
-            "configKey" : "error_message"
-          },
-          "disabledOutput" : {
-            "configKey" : "disable_output"
+            },
+            "propertiesRoute" : [ ".." ]
           }
         }
       }
@@ -260,9 +306,9 @@
     "dependencies" : [ ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/defaultValue/properties/filePath"
+      "scope" : "#/properties/model/properties/fileUploadNodeParameters/properties/defaultValue/properties/filePath"
     },
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/filePath" ]
+    "dependencies" : [ "#/properties/model/properties/fileUploadNodeParameters/properties/defaultValue/properties/filePath" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"

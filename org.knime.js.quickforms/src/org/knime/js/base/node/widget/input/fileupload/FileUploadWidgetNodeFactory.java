@@ -49,55 +49,62 @@
 package org.knime.js.base.node.widget.input.fileupload;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeRepresentation;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the file upload widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class FileUploadWidgetNodeFactory extends NodeFactory<FileUploadWidgetNodeModel> implements
-    WizardNodeFactoryExtension<FileUploadWidgetNodeModel, FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue> {
+public class FileUploadWidgetNodeFactory extends WidgetNodeFactory< //
+        FileUploadWidgetNodeModel, FileUploadNodeRepresentation<FileUploadNodeValue>, FileUploadNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "File Upload Widget";
+
+    private static final String DESCRIPTION = """
+            Creates a file upload widget for use in components views. Variable output representing the file path as
+            variable. In case an absolute file path is selected the node will populate three variables: one
+            representing the path, one representing the URL and one representing the URL as a path variable. If a
+            URL is selected as default file only the URL variable and the URL(path) variable are defined.
+            """;
+
+    @SuppressWarnings({"deprecation", "restriction"})
+    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_fileUpload.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(FileUploadWidgetNodeParameters.class) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE, """
+                    Variable output representing the file path as variable. In case an absolute file path is selected,
+                    the node will populate three variables: one representing the path, one representing the URL, and one
+                    representing the URL as a path variable. If a URL is selected as default file, only the URL variable
+                    and the URL(path) variable are defined. Additionally, the original file name is retained as a flow
+                    variable.
+                """) //
+        .nodeType(NodeType.Widget) //
+        .keywords("file", "upload", "local", "browser", "path") //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public FileUploadWidgetNodeFactory() {
+        super(CONFIG, FileUploadWidgetNodeParameters.class);
+    }
+
     @Override
     public FileUploadWidgetNodeModel createNodeModel() {
         return new FileUploadWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<FileUploadWidgetNodeModel> createNodeView(final int viewIndex, final FileUploadWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new FileUploadWidgetNodeDialog();

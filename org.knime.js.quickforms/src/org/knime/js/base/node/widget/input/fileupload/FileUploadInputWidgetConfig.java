@@ -48,6 +48,9 @@
  */
 package org.knime.js.base.node.widget.input.fileupload;
 
+import static org.knime.js.base.node.parameters.fileupload.StoreInWFDirParameter.CFG_STORE_IN_WF_DIR;
+import static org.knime.js.base.node.parameters.fileupload.StoreInWFDirParameter.DEFAULT_STORE_IN_WF_DIR;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -66,11 +69,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
 
     private final FileUploadNodeConfig m_config;
 
-    private static final String CFG_STORE_IN_WF_DIR = "store_in_wf_dir";
-
-    private static final boolean DEFAULT_STORE_IN_WF_DIR = true;
-
-    private boolean m_storeInWfDir = true;
+    private boolean m_storeInWfDir = DEFAULT_STORE_IN_WF_DIR;
 
     /**
      * @return the fileTypes
@@ -186,10 +185,7 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode())
-                .append(m_config)
-                .append(m_storeInWfDir)
-                .toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_config).append(m_storeInWfDir).toHashCode();
     }
 
     /**
@@ -207,11 +203,8 @@ public class FileUploadInputWidgetConfig extends LabeledFlowVariableWidgetConfig
             return false;
         }
         FileUploadInputWidgetConfig other = (FileUploadInputWidgetConfig)obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
-                .append(m_config, other.m_config)
-                .append(m_storeInWfDir, other.m_storeInWfDir)
-                .isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_config, other.m_config)
+            .append(m_storeInWfDir, other.m_storeInWfDir).isEquals();
     }
-
 
 }

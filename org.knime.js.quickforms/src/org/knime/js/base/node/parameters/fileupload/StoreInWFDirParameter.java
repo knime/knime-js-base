@@ -44,30 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   7 October 2025 (Robin Gerling): created
+ *   4 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.fileupload;
+package org.knime.js.base.node.parameters.fileupload;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.fileupload.SingleFileUploadNodeParameters;
-import org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.HideDisableOutputCheckbox;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.persistence.Persist;
 
 /**
- * WebUI Node Parameters for the Local File Browser Configuration.
+ * The common store in workflow directory node parameter of the single/multiple file upload widgets.
  *
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-@SuppressWarnings("restriction")
-public final class FileDialogNodeParameters extends ConfigurationNodeSettings {
+public class StoreInWFDirParameter implements NodeParameters {
 
-    FileDialogNodeParameters() {
-        super(FileInputDialogNodeConfig.class);
-    }
+    /**
+     * The config key for the store in workflow directory setting.
+     */
+    public static final String CFG_STORE_IN_WF_DIR = "store_in_wf_dir";
 
-    @Modification(HideDisableOutputCheckbox.class)
-    @PersistWithin.PersistEmbedded
-    SingleFileUploadNodeParameters m_fileUploadNodeParameters = new SingleFileUploadNodeParameters();
+    /**
+     * The default value for the store in workflow directory setting.
+     */
+    public static final boolean DEFAULT_STORE_IN_WF_DIR = true;
+
+    @Widget(title = "Store uploaded file in workflow directory", description = """
+            Check this box to store the file in a temp directory in the workflow directory (e.g.
+            /path/to/workflow/tmp/file_name). Otherwise, it will be created in the temp directory of the system, which
+            can lead to unwanted behaviour, i.e. reader nodes do not allow direct access to the file system on
+            KNIME Hub or due to swapping a job between systems in a server/executor environment. Note that the
+            uploaded file will be deleted from the workflow when the workflow is discarded or reset.
+            """)
+    @Layout(OutputSection.Bottom.class)
+    @Persist(configKey = CFG_STORE_IN_WF_DIR)
+    boolean m_storeInWfDir = DEFAULT_STORE_IN_WF_DIR;
 
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="label" type="xstring" value="Label"/>
+    <entry key="description" type="xstring" value="Enter Description"/>
+    <entry key="flowVariableName" type="xstring" value="file-upload-input"/>
+    <entry key="hideInWizard" type="xboolean" value="false"/>
+    <entry key="customCSS" type="xstring" value=""/>
+    <entry key="required" type="xboolean" value="true"/>
+    <config key="defaultValue">
+        <entry key="path" type="xstring" value=""/>
+        <entry key="pathValid" type="xboolean" value="true"/>
+        <entry key="fileName" type="xstring" value=""/>
+        <entry key="localUpload" type="xboolean" value="false"/>
+    </config>
+    <config key="types">
+        <entry key="array-size" type="xint" value="0"/>
+    </config>
+    <entry key="timeout" type="xint" value="1000"/>
+    <entry key="error_message" type="xstring" value=""/>
+    <entry key="disable_output" type="xboolean" value="true"/>
+    <entry key="store_in_wf_dir" type="xboolean" value="false"/>
+</config>

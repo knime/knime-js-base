@@ -44,30 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   7 October 2025 (Robin Gerling): created
+ *   4 Nov 2025 (robin): created
  */
-package org.knime.js.base.node.configuration.input.fileupload;
+package org.knime.js.base.node.parameters.fileupload;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.fileupload.SingleFileUploadNodeParameters;
-import org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.HideDisableOutputCheckbox;
+import org.knime.node.parameters.NodeParameters;
 
 /**
- * WebUI Node Parameters for the Local File Browser Configuration.
+ * The parameters for the single file upload configuration/widget nodes.
  *
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class FileDialogNodeParameters extends ConfigurationNodeSettings {
+public class SingleFileUploadNodeParameters implements NodeParameters {
 
-    FileDialogNodeParameters() {
-        super(FileInputDialogNodeConfig.class);
-    }
+    SingleFileUploadDefaultValueParameters m_defaultValue = new SingleFileUploadDefaultValueParameters();
 
-    @Modification(HideDisableOutputCheckbox.class)
     @PersistWithin.PersistEmbedded
-    SingleFileUploadNodeParameters m_fileUploadNodeParameters = new SingleFileUploadNodeParameters();
+    SingleMultipleFileUploadNodeParameters m_singleFileUploadNodeParameters =
+        new SingleMultipleFileUploadNodeParameters();
 
 }

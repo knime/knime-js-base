@@ -48,6 +48,9 @@
  */
 package org.knime.js.base.node.base.input.fileupload;
 
+import static org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.CFG_DISABLE_OUTPUT;
+import static org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.DEFAULT_DISABLE_OUTPUT;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -73,15 +76,11 @@ public class FileUploadNodeConfig {
 
     private String m_errorMessage = DEFAULT_ERROR_MESSAGE;
 
-    public static final String CFG_DISABLE_OUTPUT = "disable_output";
-
     public static final String CFG_TIMEOUT = "timeout";
 
     private static final int DEFAULT_TIMEOUT = 1000;
 
     private int m_timeout = DEFAULT_TIMEOUT;
-
-    private static final boolean DEFAULT_DISABLE_OUTPUT = true;
 
     private boolean m_disableOutput = DEFAULT_DISABLE_OUTPUT;
 
@@ -213,8 +212,8 @@ public class FileUploadNodeConfig {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_fileTypes).append(m_errorMessage).append(m_timeout)
-            .append(m_disableOutput).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(m_fileTypes).append(m_errorMessage)
+            .append(m_timeout).append(m_disableOutput).toHashCode();
     }
 
     /**
@@ -233,6 +232,7 @@ public class FileUploadNodeConfig {
         }
         FileUploadNodeConfig other = (FileUploadNodeConfig)obj;
         return new EqualsBuilder().appendSuper(super.equals(obj)).append(m_fileTypes, other.m_fileTypes)
-            .append(m_errorMessage, other.m_errorMessage).append(m_timeout, other.m_timeout).append(m_disableOutput, other.m_disableOutput).isEquals();
+            .append(m_errorMessage, other.m_errorMessage).append(m_timeout, other.m_timeout)
+            .append(m_disableOutput, other.m_disableOutput).isEquals();
     }
 }

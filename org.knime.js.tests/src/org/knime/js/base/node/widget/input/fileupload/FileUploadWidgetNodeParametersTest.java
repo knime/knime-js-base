@@ -44,30 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   7 October 2025 (Robin Gerling): created
+ *   4 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.fileupload;
+package org.knime.js.base.node.widget.input.fileupload;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.fileupload.SingleFileUploadNodeParameters;
-import org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters.HideDisableOutputCheckbox;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * WebUI Node Parameters for the Local File Browser Configuration.
+ * Tests for the {@link FileUploadWidgetNodeParameters} class.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public final class FileDialogNodeParameters extends ConfigurationNodeSettings {
+final class FileUploadWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    FileDialogNodeParameters() {
-        super(FileInputDialogNodeConfig.class);
+    protected FileUploadWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @Modification(HideDisableOutputCheckbox.class)
-    @PersistWithin.PersistEmbedded
-    SingleFileUploadNodeParameters m_fileUploadNodeParameters = new SingleFileUploadNodeParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(FileUploadWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
+
+    private static FileUploadWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(FileUploadWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("FileUploadWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    FileUploadWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
 }
