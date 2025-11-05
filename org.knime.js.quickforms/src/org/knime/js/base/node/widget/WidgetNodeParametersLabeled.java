@@ -50,34 +50,19 @@ package org.knime.js.base.node.widget;
 
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_DESCRIPTION;
 import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_LABEL;
-import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
 
-import org.knime.core.node.wizard.WizardNode;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.widget.text.TextInputWidget;
-import org.knime.node.parameters.widget.text.util.ColumnNameValidationUtils.ColumnNameValidation;
 
 /**
- * This class specifies the common settings of widget nodes.
+ * This class specifies the common settings of those widget nodes additionally offering to input a label and a
+ * description via a {@link LabeledConfig}.
  *
  * @author Robin Gerling
  */
-public abstract class WidgetNodeParameters implements NodeParameters {
-    /**
-     * Default constructor
-     *
-     * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
-     */
-    protected WidgetNodeParameters(final Class<?> nodeConfigClass) {
-        final var defaultParamName = SubNodeContainer.getDialogNodeParameterNameDefault(nodeConfigClass);
-        m_flowVariableName = defaultParamName;
-    }
+public abstract class WidgetNodeParametersLabeled extends WidgetNodeParametersBase {
 
     @Widget(title = "Label", description = "A descriptive label that will be shown in the view.")
     @Layout(FormFieldSection.class)
@@ -88,27 +73,4 @@ public abstract class WidgetNodeParameters implements NodeParameters {
     @Layout(FormFieldSection.class)
     String m_description = DEFAULT_DESCRIPTION;
 
-    @Widget(title = "Variable name", description = "The name of the exported flow variable.")
-    @Layout(OutputSection.Bottom.class)
-    @TextInputWidget(patternValidation = ColumnNameValidation.class)
-    String m_flowVariableName;
-
-    /**
-     * A legacy setting from the old nodes which can be enabled from the flow variables tab or the layout editor. See
-     * {@link WizardNode#isHideInWizard()}.
-     */
-    boolean m_hideInWizard = WidgetConfig.DEFAULT_HIDE_IN_WIZARD;
-
-    /**
-     * This setting was not shown in the dialog previously and is not recommended anymore, but is needed for backwards
-     * compatibility.
-     */
-    String m_customCSS = "";
-
-    /**
-     * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was never
-     * implemented in any client. We probably want to remove it in the future, but if we do so now, the node model will
-     * not be able to load the settings.
-     */
-    boolean m_required = DEFAULT_REQUIRED;
 }

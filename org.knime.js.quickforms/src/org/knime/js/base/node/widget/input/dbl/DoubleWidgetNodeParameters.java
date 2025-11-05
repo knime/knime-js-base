@@ -50,7 +50,7 @@ package org.knime.js.base.node.widget.input.dbl;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.parameters.number.DoubleNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
 
 /**
  * Settings for the double widget node.
@@ -58,7 +58,7 @@ import org.knime.js.base.node.widget.WidgetNodeParameters;
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class DoubleWidgetNodeParameters extends WidgetNodeParameters {
+public final class DoubleWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     DoubleWidgetNodeParameters() {
         super(DoubleInputWidgetConfig.class);

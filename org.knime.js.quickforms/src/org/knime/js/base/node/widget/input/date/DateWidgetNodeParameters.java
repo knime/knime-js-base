@@ -52,7 +52,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWit
 import org.knime.js.base.node.base.input.date.DateNodeConfig;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.date.DateNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.persistence.Persist;
@@ -63,7 +63,7 @@ import org.knime.node.parameters.persistence.Persist;
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class DateWidgetNodeParameters extends WidgetNodeParameters {
+public final class DateWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     DateWidgetNodeParameters() {
         super(DateInputWidgetConfig.class);

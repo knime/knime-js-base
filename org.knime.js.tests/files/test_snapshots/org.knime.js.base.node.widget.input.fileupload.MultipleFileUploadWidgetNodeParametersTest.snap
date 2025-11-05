@@ -1,0 +1,327 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "label" : "Label",
+      "description" : "Enter Description",
+      "defaultValue" : {
+        "defaultFile" : {
+          "path" : "",
+          "fileName" : "",
+          "pathValid" : true,
+          "fileSize" : null,
+          "id" : ""
+        },
+        "wizardFiles" : [ ],
+        "localUpload" : false
+      },
+      "multipleFileUploadNodeParameters" : {
+        "fileExtensions" : "",
+        "timeout" : 1.0,
+        "errorMessage" : "",
+        "disableOutputIfFileDoesNotExist" : true
+      },
+      "storeInWFDirParameter" : {
+        "storeInWfDir" : true
+      },
+      "allowMultipleFiles" : true,
+      "required" : true
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "allowMultipleFiles" : {
+            "type" : "boolean",
+            "title" : "Allow multiple file uploads",
+            "description" : "Check this box to allow the upload of multiple files at once. Each file will be represented as an individual row in the output table. It is only possible to set one default file.\n",
+            "default" : true
+          },
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "defaultValue" : {
+            "type" : "object",
+            "properties" : {
+              "defaultFile" : {
+                "type" : "object",
+                "properties" : {
+                  "fileName" : {
+                    "type" : "string",
+                    "default" : ""
+                  },
+                  "fileSize" : {
+                    "type" : [ "integer", "null" ],
+                    "format" : "int64",
+                    "default" : null
+                  },
+                  "id" : {
+                    "type" : "string",
+                    "default" : ""
+                  },
+                  "path" : {
+                    "type" : "string",
+                    "title" : "Default file",
+                    "description" : "The file that will be used during design time, i.e. when no file is provided by a component dialog.\nIt is possible to enter a URL here. This can be useful if a default file is to be addressed with\nthe knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a\nremote server.\n",
+                    "default" : ""
+                  },
+                  "pathValid" : {
+                    "type" : "boolean",
+                    "default" : true
+                  }
+                },
+                "default" : {
+                  "path" : "",
+                  "fileName" : "",
+                  "pathValid" : true,
+                  "fileSize" : null,
+                  "id" : ""
+                }
+              },
+              "localUpload" : {
+                "type" : "boolean",
+                "default" : false
+              },
+              "wizardFiles" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "properties" : {
+                    "fileName" : {
+                      "type" : "string",
+                      "default" : ""
+                    },
+                    "fileSize" : {
+                      "type" : [ "integer", "null" ],
+                      "format" : "int64",
+                      "default" : null
+                    },
+                    "id" : {
+                      "type" : "string",
+                      "default" : ""
+                    },
+                    "path" : {
+                      "type" : "string",
+                      "default" : ""
+                    },
+                    "pathValid" : {
+                      "type" : "boolean",
+                      "default" : true
+                    }
+                  }
+                },
+                "default" : [ ]
+              }
+            },
+            "default" : {
+              "defaultFile" : {
+                "path" : "",
+                "fileName" : "",
+                "pathValid" : true,
+                "fileSize" : null,
+                "id" : ""
+              },
+              "wizardFiles" : [ ],
+              "localUpload" : false
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
+            "default" : "Enter Description"
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown in the view.",
+            "default" : "Label"
+          },
+          "multipleFileUploadNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "disableOutputIfFileDoesNotExist" : {
+                "type" : "boolean",
+                "title" : "Disable output, if file does not exist",
+                "description" : "If enabled, the output port will be disabled, if the provided file does not exist or cannot be accessed.\nThis option is helpful in the wizard (WebPortal) execution to keep this and subsequent nodes from failing\nduring execution.\n",
+                "default" : true
+              },
+              "errorMessage" : {
+                "type" : "string",
+                "default" : ""
+              },
+              "fileExtensions" : {
+                "type" : "string",
+                "title" : "Valid file extensions",
+                "description" : "A comma-separated list of file extensions that is used as filter in the\nfile browser (not only the one in the \"Default file\" option but also\nin a remote file browser), e.g. \".csv,.csv.gz\" (or \"csv,csv.gz\") will filter for\nfiles ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.\n",
+                "default" : ""
+              },
+              "timeout" : {
+                "type" : "number",
+                "format" : "double",
+                "title" : "Timeout (seconds)",
+                "description" : "The time in seconds after which the connection times out. The timeout is used when testing the existence of\ndefault files. The default is set to 1 second and should be sufficient in most cases.\n",
+                "default" : 1.0
+              }
+            },
+            "default" : {
+              "fileExtensions" : "",
+              "timeout" : 1.0,
+              "errorMessage" : "",
+              "disableOutputIfFileDoesNotExist" : true
+            }
+          },
+          "required" : {
+            "type" : "boolean",
+            "title" : "Require file upload",
+            "description" : "Check this box to require the user to upload at least one file. If this box is checked and no file is provided the node will not execute.",
+            "default" : true
+          },
+          "storeInWFDirParameter" : {
+            "type" : "object",
+            "properties" : {
+              "storeInWfDir" : {
+                "type" : "boolean",
+                "title" : "Store uploaded file in workflow directory",
+                "description" : "Check this box to store the file in a temp directory in the workflow directory (e.g.\n/path/to/workflow/tmp/file_name). Otherwise, it will be created in the temp directory of the system, which\ncan lead to unwanted behaviour, i.e. reader nodes do not allow direct access to the file system on\nKNIME Hub or due to swapping a job between systems in a server/executor environment. Note that the\nuploaded file will be deleted from the workflow when the workflow is discarded or reset.\n",
+                "default" : true
+              }
+            },
+            "default" : {
+              "storeInWfDir" : true
+            }
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multipleFileUploadNodeParameters/properties/fileExtensions"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/allowMultipleFiles",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/required",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValue/properties/defaultFile/properties/path",
+        "options" : {
+          "fileSystem" : "LOCAL",
+          "isLocal" : true,
+          "format" : "stringFileChooser"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multipleFileUploadNodeParameters/properties/timeout",
+        "options" : {
+          "validation" : {
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multipleFileUploadNodeParameters/properties/disableOutputIfFileDoesNotExist",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/storeInWFDirParameter/properties/storeInWfDir",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "label" : { },
+          "description" : { },
+          "defaultValue" : {
+            "configPaths" : [ [ "defaultValue", "baseFileID0", "path" ], [ "defaultValue", "baseFileID0", "pathValid" ], [ "defaultValue", "baseFileID0", "fileName" ], [ "defaultValue", "baseFileID0", "fileSize" ] ]
+          },
+          "multipleFileUploadNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "fileExtensions" : {
+                "configPaths" : [ [ "types" ] ]
+              },
+              "timeout" : {
+                "configPaths" : [ [ "timeout" ] ]
+              },
+              "errorMessage" : {
+                "configKey" : "error_message"
+              },
+              "disableOutputIfFileDoesNotExist" : {
+                "configKey" : "disable_output"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
+          },
+          "storeInWFDirParameter" : {
+            "type" : "object",
+            "properties" : {
+              "storeInWfDir" : {
+                "configKey" : "store_in_wf_dir"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
+          },
+          "allowMultipleFiles" : {
+            "configKey" : "multiple"
+          },
+          "required" : { }
+        }
+      }
+    }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/defaultValue/properties/defaultFile/properties/path"
+    },
+    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/defaultFile/properties/path" ]
+  } ]
+}

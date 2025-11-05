@@ -83,7 +83,7 @@ public abstract class WidgetNodeFactory<T extends NodeModel & WizardNode<V, U>, 
 
     private final WebUINodeConfiguration m_config;
 
-    private final Class<? extends WidgetNodeParameters> m_settingsClass;
+    private final Class<? extends WidgetNodeParametersBase> m_settingsClass;
 
     /**
      * Constructor for the widget node factory.
@@ -93,7 +93,7 @@ public abstract class WidgetNodeFactory<T extends NodeModel & WizardNode<V, U>, 
      * @param settingsClass the settings class for the node dialog
      */
     protected WidgetNodeFactory(final WebUINodeConfiguration config,
-        final Class<? extends WidgetNodeParameters> settingsClass) {
+        final Class<? extends WidgetNodeParametersBase> settingsClass) {
         super(true);
         m_config = config;
         m_settingsClass = settingsClass;

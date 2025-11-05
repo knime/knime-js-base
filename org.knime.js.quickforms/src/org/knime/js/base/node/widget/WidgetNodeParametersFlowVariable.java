@@ -44,27 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 Oct 2025 (Robin Gerling): created
+ *   20 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.input.integer;
+package org.knime.js.base.node.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.parameters.number.IntegerNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import static org.knime.js.base.node.base.LabeledConfig.DEFAULT_REQUIRED;
+
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
+import org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeDialog;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.widget.text.TextInputWidget;
+import org.knime.node.parameters.widget.text.util.ColumnNameValidationUtils.ColumnNameValidation;
 
 /**
- * Settings for the integer widget node.
+ * This class specifies the common settings of widget nodes using the {@link LabeledConfig}, outputting a flow variable,
+ * and additionally containing the required field in the node settings.
  *
  * @author Robin Gerling
  */
-@SuppressWarnings("restriction")
-public final class IntegerWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
+public abstract class WidgetNodeParametersFlowVariable extends WidgetNodeParametersLabeled {
 
-    IntegerWidgetNodeParameters() {
-        super(IntegerInputWidgetConfig.class);
+    /**
+     * Default constructor
+     *
+     * @param nodeConfigClass the nodeConfigClass to determine the default flow variable name from
+     */
+    protected WidgetNodeParametersFlowVariable(final Class<?> nodeConfigClass) {
+        final var defaultParamName = SubNodeContainer.getDialogNodeParameterNameDefault(nodeConfigClass);
+        m_flowVariableName = defaultParamName;
     }
 
-    @PersistWithin.PersistEmbedded
-    IntegerNodeParameters m_integerNodeParameters = new IntegerNodeParameters();
+    @Widget(title = "Variable name", description = "The name of the exported flow variable.")
+    @Layout(OutputSection.Bottom.class)
+    @TextInputWidget(patternValidation = ColumnNameValidation.class)
+    String m_flowVariableName;
+
+    /**
+     * See {@link LabeledConfig}. This setting was initially thought to be a useful feature to have, but it was only
+     * implemented in a single client
+     * ({@link MultipleFileUploadWidgetNodeDialog#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}). We probably want
+     * to remove it in the future, but if we do so now, the node model will not be able to load the settings.
+     */
+    boolean m_required = DEFAULT_REQUIRED;
 
 }

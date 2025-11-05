@@ -70,7 +70,7 @@ public abstract class WidgetConfig<VAL extends JSONViewContent> {
     protected static final String DEFAULT_CUSTOM_CSS = "";
     private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
-    protected static final String CFG_DEFAULT_VALUE = "defaultValue";
+    public static final String CFG_DEFAULT_VALUE = "defaultValue";
     protected VAL m_defaultValue;
 
     /**

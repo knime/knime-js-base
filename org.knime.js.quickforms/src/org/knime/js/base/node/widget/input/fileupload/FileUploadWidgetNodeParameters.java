@@ -51,7 +51,7 @@ package org.knime.js.base.node.widget.input.fileupload;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.parameters.fileupload.SingleFileUploadNodeParameters;
 import org.knime.js.base.node.parameters.fileupload.StoreInWFDirParameter;
-import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
 
 /**
  * Settings for the file upload widget node.
@@ -59,7 +59,7 @@ import org.knime.js.base.node.widget.WidgetNodeParameters;
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public final class FileUploadWidgetNodeParameters extends WidgetNodeParameters {
+public final class FileUploadWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     FileUploadWidgetNodeParameters() {
         super(FileUploadInputWidgetConfig.class);

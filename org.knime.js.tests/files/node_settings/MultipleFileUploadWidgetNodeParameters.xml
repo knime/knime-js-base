@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="defaultValue">
+            <config key="baseFileID0">
+                <entry key="path" type="xstring" value="/Users/robin/Archive.zip"/>
+                <entry key="pathValid" type="xboolean" value="true"/>
+                <entry key="fileName" type="xstring" value="Archive.zip"/>
+                <entry key="fileSize" type="xlong" value="4339020"/>
+            </config>
+            <config key="baseFileID1">
+                <entry key="path" type="xstring" value="/var/folders/l5/3g9khy2s461cp1xdvbvvflk80000gp/T/knime_NodeToConvert_18228/iris_setosa17040936240992151836.csv"/>
+                <entry key="pathValid" type="xboolean" value="false"/>
+                <entry key="fileName" type="xstring" value="iris_setosa.csv"/>
+                <entry key="fileSize" type="xlong" value="3975"/>
+            </config>
+            <config key="baseFileID2">
+                <entry key="path" type="xstring" value="/var/folders/l5/3g9khy2s461cp1xdvbvvflk80000gp/T/knime_NodeToConvert_18228/example18225489484307597670.sqlite"/>
+                <entry key="pathValid" type="xboolean" value="false"/>
+                <entry key="fileName" type="xstring" value="example.sqlite"/>
+                <entry key="fileSize" type="xlong" value="20480"/>
+            </config>
+            <entry key="amountFiles" type="xint" value="3"/>
+            <entry key="localUpload" type="xboolean" value="true"/>
+        </config>
+        <entry key="hideInWizard" type="xboolean" value="false"/>
+        <entry key="customCSS" type="xstring" value=""/>
+        <entry key="label" type="xstring" value="Label"/>
+        <entry key="description" type="xstring" value="Enter Description"/>
+        <entry key="required" type="xboolean" value="false"/>
+        <config key="types">
+            <entry key="array-size" type="xint" value="0"/>
+        </config>
+        <entry key="error_message" type="xstring" value=""/>
+        <entry key="timeout" type="xint" value="1000"/>
+        <entry key="disable_output" type="xboolean" value="true"/>
+        <entry key="multiple" type="xboolean" value="true"/>
+        <entry key="store_in_wf_dir" type="xboolean" value="false"/>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadWidgetNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Multiple File Upload Widget (Labs)"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Quick Form Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.js.quickforms"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.9.0.v202510291747"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Quick Forms"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.js.quickforms.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.9.0.v202510291747"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Multiple File Upload Widget (Labs)"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            <entry key="port_object_summary" type="xstring" value="Rows: 3, Cols: 3"/>
+            <entry key="port_dir_location" type="xstring" value="port_1"/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="f0b8dc69-732a-4ee0-96cc-c80a89578ba4"/>
+    </config>
+</config>

@@ -52,7 +52,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWit
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.base.node.parameters.credentials.CredentialsNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
 import org.knime.node.parameters.updates.ValueProvider;
 
 /**
@@ -61,7 +61,7 @@ import org.knime.node.parameters.updates.ValueProvider;
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class CredentialsWidgetNodeParameters extends WidgetNodeParameters {
+public final class CredentialsWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     CredentialsWidgetNodeParameters() {
         super(CredentialsInputWidgetConfig.class);

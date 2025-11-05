@@ -61,7 +61,7 @@ import org.knime.node.parameters.persistence.Persist;
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-public abstract class ReexecutionWidgetNodeParameters extends WidgetNodeParameters {
+public abstract class ReexecutionWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     /**
      * Default constructor

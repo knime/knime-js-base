@@ -62,20 +62,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FileUploadObject {
-    protected static final String CFG_PATH = "path";
-    protected static final String DEFAULT_PATH = "";
+    public static final String CFG_PATH = "path";
+    public static final String DEFAULT_PATH = "";
     protected String m_path = DEFAULT_PATH;
 
-    protected static final String CFG_PATH_VALID = "pathValid";
-    protected static final boolean DEFAULT_PATH_VALID = true;
+    public static final String CFG_PATH_VALID = "pathValid";
+    public static final boolean DEFAULT_PATH_VALID = true;
     protected boolean m_pathValid = DEFAULT_PATH_VALID;
 
-    protected static final String CFG_FILE_NAME = "fileName";
-    protected static final String DEFAULT_FILE_NAME = "";
+    public static final String CFG_FILE_NAME = "fileName";
+    public static final String DEFAULT_FILE_NAME = "";
     protected String m_fileName = DEFAULT_FILE_NAME;
 
-    protected static final String CFG_FILE_SIZE = "fileSize";
-    protected static final Long DEFAULT_FILE_SIZE= null;
+    public static final String CFG_FILE_SIZE = "fileSize";
+    public static final Long DEFAULT_FILE_SIZE= null;
     protected Long m_fileSize = DEFAULT_FILE_SIZE;
 
     protected static final String CFG_ID = "id";

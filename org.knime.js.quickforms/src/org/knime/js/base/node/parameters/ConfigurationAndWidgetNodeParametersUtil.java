@@ -68,6 +68,11 @@ public final class ConfigurationAndWidgetNodeParametersUtil {
      */
     @Section(title = "Form Field")
     public interface FormFieldSection {
+        /**
+         * The elements at the bottom of the form field section
+         */
+        interface Bottom {
+        }
     }
 
     /**
@@ -87,7 +92,6 @@ public final class ConfigurationAndWidgetNodeParametersUtil {
          */
         @After(Top.class)
         interface Bottom {
-
         }
     }
 

@@ -44,27 +44,54 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 Oct 2025 (Robin Gerling): created
+ *   5 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.input.integer;
+package org.knime.js.base.node.widget.input.fileupload;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.parameters.number.IntegerNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import org.knime.js.base.node.base.LabeledConfig;
+import org.knime.js.base.node.base.input.fileupload.MultipleFileUploadNodeConfig;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.fileupload.SingleMultipleFileUploadNodeParameters;
+import org.knime.js.base.node.parameters.fileupload.StoreInWFDirParameter;
+import org.knime.js.base.node.widget.WidgetNodeParametersLabeled;
+import org.knime.js.base.node.widget.input.fileupload.MultipleFileUploadDefaultValueParameters.MultipleFileUploadDefaultValueParametersPersistor;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.persistence.Persist;
+import org.knime.node.parameters.persistence.Persistor;
 
 /**
- * Settings for the integer widget node.
+ * Settings for the multiple file upload widget node.
  *
- * @author Robin Gerling
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public final class IntegerWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
+public final class MultipleFileUploadWidgetNodeParameters extends WidgetNodeParametersLabeled {
 
-    IntegerWidgetNodeParameters() {
-        super(IntegerInputWidgetConfig.class);
-    }
+    @Persistor(MultipleFileUploadDefaultValueParametersPersistor.class)
+    MultipleFileUploadDefaultValueParameters m_defaultValue = new MultipleFileUploadDefaultValueParameters();
 
     @PersistWithin.PersistEmbedded
-    IntegerNodeParameters m_integerNodeParameters = new IntegerNodeParameters();
+    SingleMultipleFileUploadNodeParameters m_multipleFileUploadNodeParameters =
+        new SingleMultipleFileUploadNodeParameters();
+
+    @PersistWithin.PersistEmbedded
+    StoreInWFDirParameter m_storeInWFDirParameter = new StoreInWFDirParameter();
+
+    @Widget(title = "Allow multiple file uploads", description = """
+            Check this box to allow the upload of multiple files at once. \
+            Each file will be represented as an individual row in the output table. \
+            It is only possible to set one default file.
+            """)
+    @Layout(FormFieldSection.class)
+    @Persist(configKey = MultipleFileUploadNodeConfig.CFG_ALLOW_MULTIPLE_FILES)
+    boolean m_allowMultipleFiles = MultipleFileUploadNodeConfig.DEFAULT_ALLOW_MULTIPLE_FILES;
+
+    @Widget(title = "Require file upload",
+        description = "Check this box to require the user to upload at least one file. If this box is checked and no"
+            + " file is provided the node will not execute.")
+    @Layout(FormFieldSection.Bottom.class)
+    boolean m_required = LabeledConfig.DEFAULT_REQUIRED;
 
 }

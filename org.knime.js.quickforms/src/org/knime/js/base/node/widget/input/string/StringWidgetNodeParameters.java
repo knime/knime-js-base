@@ -51,7 +51,7 @@ package org.knime.js.base.node.widget.input.string;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.parameters.text.DefaultStringNodeValueParameters;
 import org.knime.js.base.node.parameters.text.TextEditorWithValidationParameters;
-import org.knime.js.base.node.widget.WidgetNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
 
 /**
  * Settings for the string widget node.
@@ -59,7 +59,7 @@ import org.knime.js.base.node.widget.WidgetNodeParameters;
  * @author Robin Gerling
  */
 @SuppressWarnings("restriction")
-public final class StringWidgetNodeParameters extends WidgetNodeParameters {
+public final class StringWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
     StringWidgetNodeParameters() {
         super(StringInputWidgetConfig.class);

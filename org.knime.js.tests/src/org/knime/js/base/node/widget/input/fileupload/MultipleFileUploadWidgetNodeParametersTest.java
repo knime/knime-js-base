@@ -44,27 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 Oct 2025 (Robin Gerling): created
+ *   5 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.input.integer;
+package org.knime.js.base.node.widget.input.fileupload;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.parameters.number.IntegerNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Settings for the integer widget node.
+ * Tests for the {@link MultipleFileUploadWidgetNodeParameters} class.
  *
- * @author Robin Gerling
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public final class IntegerWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
+final class MultipleFileUploadWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    IntegerWidgetNodeParameters() {
-        super(IntegerInputWidgetConfig.class);
+    protected MultipleFileUploadWidgetNodeParametersTest() {
+        super(CONFIG);
     }
 
-    @PersistWithin.PersistEmbedded
-    IntegerNodeParameters m_integerNodeParameters = new IntegerNodeParameters();
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(MultipleFileUploadWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
+        .build();
+
+    private static MultipleFileUploadWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(MultipleFileUploadWidgetNodeParametersTest.class).getParent()
+                .resolve("node_settings").resolve("MultipleFileUploadWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    MultipleFileUploadWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
 }

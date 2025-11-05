@@ -86,9 +86,9 @@ public class MultipleFileUploadNodeConfig {
 
     private boolean m_disableOutput = DEFAULT_DISABLE_OUTPUT;
 
-    private final String CFG_ALLOW_MULTIPLE_FILES = "multiple";
+    public static final String CFG_ALLOW_MULTIPLE_FILES = "multiple";
 
-    private final boolean DEFAULT_ALLOW_MULTIPLE_FILES = true;
+    public static final boolean DEFAULT_ALLOW_MULTIPLE_FILES = true;
 
     private boolean m_allowMultipleFiles = DEFAULT_ALLOW_MULTIPLE_FILES;
 

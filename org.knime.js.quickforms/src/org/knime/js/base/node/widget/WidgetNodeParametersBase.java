@@ -44,27 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   24 Oct 2025 (Robin Gerling): created
+ *   20 Oct 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.widget.input.integer;
+package org.knime.js.base.node.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.js.base.node.parameters.number.IntegerNodeParameters;
-import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import org.knime.core.node.wizard.WizardNode;
+import org.knime.node.parameters.NodeParameters;
 
 /**
- * Settings for the integer widget node.
+ * This class specifies the common settings of <b>all</b> widget nodes.
  *
  * @author Robin Gerling
  */
-@SuppressWarnings("restriction")
-public final class IntegerWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
+public abstract class WidgetNodeParametersBase implements NodeParameters {
 
-    IntegerWidgetNodeParameters() {
-        super(IntegerInputWidgetConfig.class);
-    }
+    /**
+     * A legacy setting from the old nodes which can be enabled from the flow variables tab or the layout editor. See
+     * {@link WizardNode#isHideInWizard()}.
+     */
+    boolean m_hideInWizard = WidgetConfig.DEFAULT_HIDE_IN_WIZARD;
 
-    @PersistWithin.PersistEmbedded
-    IntegerNodeParameters m_integerNodeParameters = new IntegerNodeParameters();
+    /**
+     * This setting was not shown in the dialog previously and is not recommended anymore, but is needed for backwards
+     * compatibility.
+     */
+    String m_customCSS = "";
 
 }

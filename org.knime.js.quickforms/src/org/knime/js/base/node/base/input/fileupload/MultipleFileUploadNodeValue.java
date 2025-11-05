@@ -72,7 +72,7 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
 
     private static final String CFG_LOCAL_UPLOAD = "localUpload";
 
-    private static final boolean DEFAULT_LOCAL_UPLOAD = false;
+    public static final boolean DEFAULT_LOCAL_UPLOAD = false;
 
     private boolean m_localUpload = DEFAULT_LOCAL_UPLOAD;
 
@@ -81,7 +81,7 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
     @JsonProperty("files")
     private FileUploadObject[] m_files;
 
-    private static final String DEFAULT_ID = "baseFileID";
+    public static final String DEFAULT_ID = "baseFileID";
 
     /**
      * @return the localUpload
@@ -116,30 +116,43 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
     }
 
     /**
-     * {@inheritDoc}
+     * Saves the node value to the settings.
+     *
+     * @param settings to save to
+     * @param files the selected files to save
+     * @param localUpload value to save
      */
-    @Override
-    @JsonIgnore
-    public void saveToNodeSettings(final NodeSettingsWO settings) {
-        if (m_files != null) {
-            for (var i = 0; i < m_files.length; i++) {
+    public static void saveSettings(final NodeSettingsWO settings, final FileUploadObject[] files,
+        final boolean localUpload) {
+        if (files != null) {
+            final var numFiles = files.length;
+            for (var i = 0; i < numFiles; i++) {
+                final var file = files[i];
                 var fileSettings = settings.addNodeSettings(DEFAULT_ID + i);
-                fileSettings.addString(FileUploadObject.CFG_PATH, m_files[i].getPath());
-                fileSettings.addBoolean(FileUploadObject.CFG_PATH_VALID, m_files[i].isPathValid());
-                fileSettings.addString(FileUploadObject.CFG_FILE_NAME, m_files[i].m_fileName);
-                fileSettings.addLong(FileUploadObject.CFG_FILE_SIZE, m_files[i].m_fileSize);
+                fileSettings.addString(FileUploadObject.CFG_PATH, file.getPath());
+                fileSettings.addBoolean(FileUploadObject.CFG_PATH_VALID, file.isPathValid());
+                fileSettings.addString(FileUploadObject.CFG_FILE_NAME, file.m_fileName);
+                fileSettings.addLong(FileUploadObject.CFG_FILE_SIZE, file.m_fileSize);
             }
-            settings.addInt(CFG_AMOUNT_FILES, m_files.length);
-            settings.addBoolean(CFG_LOCAL_UPLOAD, m_localUpload);
+            settings.addInt(CFG_AMOUNT_FILES, numFiles);
+            settings.addBoolean(CFG_LOCAL_UPLOAD, localUpload);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @JsonIgnore
-    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+    public void saveToNodeSettings(final NodeSettingsWO settings) {
+        saveSettings(settings, m_files, m_localUpload);
+    }
+
+    /**
+     * Load the files from the node settings.
+     *
+     * @param settings to load from
+     * @return the saved files
+     * @throws InvalidSettingsException when the amount of files is bigger than the saved list of files
+     */
+    public static FileUploadObject[] loadFiles(final NodeSettingsRO settings) throws InvalidSettingsException {
         var fileAmount = settings.getInt(CFG_AMOUNT_FILES, 0);
         FileUploadObject[] files = new FileUploadObject[fileAmount];
         for (int i = 0; i < fileAmount; i++) {
@@ -152,14 +165,26 @@ public class MultipleFileUploadNodeValue extends JSONViewContent {
             var fileUploadObject = new FileUploadObject(path, pathValid, fileName, DEFAULT_ID + i, fileSize);
             files[i] = fileUploadObject;
         }
-        m_files = files;
-
-        setLocalUpload(settings.getBoolean(CFG_LOCAL_UPLOAD, DEFAULT_LOCAL_UPLOAD));
+        return files;
     }
 
     /**
-     * {@inheritDoc}
+     * Load the local upload setting from the node settings.
+     *
+     * @param settings to load from
+     * @return the local upload settings value
      */
+    public static boolean loadLocalUpload(final NodeSettingsRO settings) {
+        return settings.getBoolean(CFG_LOCAL_UPLOAD, DEFAULT_LOCAL_UPLOAD);
+    }
+
+    @Override
+    @JsonIgnore
+    public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        m_files = loadFiles(settings);
+        setLocalUpload(loadLocalUpload(settings));
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
