@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
@@ -138,6 +139,7 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Modification(LimitVisibleOptionsModification.class)
+    @Layout(FormFieldSection.class)
     LimitVisibleOptionsParameters m_limitVisibleOptionsParameters = new LimitVisibleOptionsParameters(true);
 
     private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
