@@ -65,7 +65,7 @@ public class CredentialsWidgetNodeFactory extends WidgetNodeFactory< //
 
     static final String NAME = "Credentials Widget";
 
-    static final String DESCRIPTION = "Creates a Credentials input widget for use in components views."
+    static final String DESCRIPTION = "Creates a credentials input widget for use in components views."
         + " Outputs a credentials flow variable with a given value.";
 
     @SuppressWarnings({"deprecation", "restriction"})

@@ -53,14 +53,17 @@ import java.util.function.Supplier;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.WidgetInternal;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeConfig;
 import org.knime.js.base.node.base.input.credentials.CredentialsNodeValue;
 import org.knime.js.base.node.configuration.input.credentials.CredentialsDialogNodeValue;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.credentials.CredentialsNodeParameters.CredentialsParameters.RemoveParametersFromNodeDescriptionModification;
 import org.knime.js.base.node.widget.input.credentials.CredentialsInputWidgetConfig;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
@@ -123,6 +126,7 @@ public final class CredentialsNodeParameters implements NodeParameters {
 
         @Persistor(CredentialsParametersSavedSince52Persistor.class)
         @Effect(predicate = WasSavedPrior52.class, type = EffectType.HIDE)
+        @Modification(RemoveParametersFromNodeDescriptionModification.class)
         CredentialsParametersSavedSince52 m_credentialsParametersSince52 = new CredentialsParametersSavedSince52();
 
         /**
@@ -233,8 +237,7 @@ public final class CredentialsNodeParameters implements NodeParameters {
         }
     }
 
-    static final class CredentialsOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<CredentialsNodeValue> {
+    static final class CredentialsOverwrittenByValueMessage extends OverwrittenByValueMessage<CredentialsNodeValue> {
 
         private Supplier<Boolean> m_enableUsernameFieldSupplier;
 
@@ -334,6 +337,7 @@ public final class CredentialsNodeParameters implements NodeParameters {
             description = "The default credentials. When the credentials are for a KNIME Hub, username refers to"
                 + " application password id and password to application password.")
         @CredentialsWidget
+        @Modification.WidgetReference(CredentialsModificationReference.class)
         Credentials m_credentials = new Credentials();
 
         @Widget(title = "Save password in configuration (weakly encrypted)",
@@ -346,9 +350,35 @@ public final class CredentialsNodeParameters implements NodeParameters {
                 + " password is not part of the credentials object passed from this node into the workflow - a"
                 + " re-configuration of this node is required.")
         @Persist(configKey = CredentialsNodeValue.CFG_SAVE_PASSWORD)
+        @Modification.WidgetReference(IsSavePasswordModificationReference.class)
         boolean m_isSavePassword;
 
         boolean m_savedPrior52;
+
+        private static final class CredentialsModificationReference implements Modification.Reference {
+        }
+
+        private static final class IsSavePasswordModificationReference implements Modification.Reference {
+        }
+
+        static final class RemoveParametersFromNodeDescriptionModification implements Modification.Modifier {
+
+            private static final String PROPERTY = "hideControlInNodeDescription";
+
+            private static final String VALUE = """
+                    This class is used twice: once for settings saved before 5.2 using string flow variables for the \
+                    credentials, and once for settings from 5.2 using a credentials flow variable. Because one setting \
+                    will always be hidden, the parameters should only occur once in the node description.
+                    """;
+
+            @Override
+            public void modify(final WidgetGroupModifier group) {
+                group.find(CredentialsModificationReference.class).addAnnotation(WidgetInternal.class)
+                    .withProperty(PROPERTY, VALUE).modify();
+                group.find(IsSavePasswordModificationReference.class).addAnnotation(WidgetInternal.class)
+                    .withProperty(PROPERTY, VALUE).modify();
+            }
+        }
     }
 
     static final class CredentialsParametersSavedPrior52 extends CredentialsParameters {
