@@ -48,10 +48,11 @@
  */
 package org.knime.js.base.node.parameters.filterandselection;
 
+import java.util.function.Supplier;
+
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
-import org.knime.js.base.node.configuration.ConfigurationNodeParametersUtility.IsMin2Validation;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.persistence.Persist;
@@ -60,8 +61,11 @@ import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.StateProvider;
+import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * The common settings of selection/filter configuration/widgets nodes regarding the limitation of visible options in
@@ -113,16 +117,17 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     @NumberInputWidget(minValidation = IsMin2Validation.class)
     @Persist(configKey = CFG_NUMBER_VIS_OPTIONS)
     @Modification.WidgetReference(NumberOfVisibleOptionsModificationReference.class)
+    @ValueReference(NumberOfVisibleOptionsValueReference.class)
     @Effect(predicate = ShowNumberOfVisibleOptions.class, type = EffectType.SHOW)
     int m_numberOfVisibleOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     private static final class LimitNumberOfVisibleOptionsValueReference implements ParameterReference<Boolean> {
     }
 
-    /**
-     * Effect predicate provider determining whether to show the number of visible options setting
-     */
-    public static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
+    private static final class NumberOfVisibleOptionsValueReference implements ParameterReference<Integer> {
+    }
+
+    private static final class ShowNumberOfVisibleOptions implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
             return i.getBoolean(LimitNumberOfVisibleOptionsValueReference.class).isTrue();
@@ -162,6 +167,24 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
                     .withProperty("type", EffectType.SHOW) //
                     .modify();
             }
+            final var numVisOptionsProviders = getNumVisOptionsProviders();
+            if (numVisOptionsProviders != null) {
+                group.find(NumberOfVisibleOptionsModificationReference.class) //
+                    .modifyAnnotation(NumberInputWidget.class) //
+                    .withProperty("minValidationProvider", numVisOptionsProviders.getFirst()) //
+                    .modify();
+                group.find(NumberOfVisibleOptionsModificationReference.class) //
+                    .addAnnotation(ValueProvider.class) //
+                    .withValue(numVisOptionsProviders.getSecond()) //
+                    .modify();
+            }
+            final var numVisOptionMinValidation = getMinNumVisOptions();
+            if (numVisOptionMinValidation != null) {
+                group.find(NumberOfVisibleOptionsModificationReference.class) //
+                    .modifyAnnotation(NumberInputWidget.class) //
+                    .withProperty("minValidation", numVisOptionMinValidation) //
+                    .modify();
+            }
         }
 
         String getLimitNumVisOptionsTitle() {
@@ -175,6 +198,27 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
         }
 
         abstract String getNumVisOptionsDescription();
+
+        /**
+         * Use if the minimum allowed number of visible options should be different than the default (2).
+         *
+         * @return the min validation to limit the number of options.
+         */
+        Class<? extends MinValidation> getMinNumVisOptions() {
+            return null;
+        }
+
+        /**
+         * Use if the minimum number of visible options depends on another setting. Defaults to 2 when the min
+         * validation provider returns null or this method is not implemented.
+         *
+         * @return a pair of the min validation state provider to dynamically limit the number of options and the value
+         *         provider to set a value if the current value is smaller than the new minimum.
+         */
+        Pair<Class<? extends StateProvider<? extends MinValidation>>, Class<? extends AbstractNumVisOptionsValueProvider>>
+            getNumVisOptionsProviders() {
+            return null;
+        }
 
         /**
          * Use if the options should be hidden/shown based on another setting.
@@ -208,6 +252,25 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
                 return i.getPredicate(ShowNumberOfVisibleOptions.class)
                     .and(i.getPredicate(m_limitNumVisOptionsEffectPredicate));
             }
+        }
+
+        abstract static class AbstractNumVisOptionsValueProvider implements StateProvider<Integer> {
+
+            protected Supplier<Integer> m_numVisOptionsSupplier;
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                m_numVisOptionsSupplier = initializer.getValueSupplier(NumberOfVisibleOptionsValueReference.class);
+            }
+        }
+
+    }
+
+    private static final class IsMin2Validation extends MinValidation {
+
+        @Override
+        protected double getMin() {
+            return 2;
         }
 
     }

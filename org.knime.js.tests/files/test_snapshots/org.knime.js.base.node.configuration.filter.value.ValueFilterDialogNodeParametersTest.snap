@@ -260,6 +260,7 @@
             }
           }
         },
+        "providedOptions" : [ "validation.min" ],
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
@@ -488,6 +489,19 @@
       "value" : [ ]
     } ]
   }, {
+    "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+    "providedOptionName" : "validation.min",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "parameters" : {
+          "min" : 5.0,
+          "isExclusive" : false
+        },
+        "errorMessage" : "The value must be at least 5."
+      }
+    } ]
+  }, {
     "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -552,5 +566,10 @@
       "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField"
     },
     "dependencies" : [ "#/properties/model/properties/valueFilterNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/selectionType"
+    },
+    "dependencies" : [ "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/selectionType" ]
   } ]
 }

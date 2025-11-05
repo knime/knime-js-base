@@ -426,10 +426,10 @@
               }
             },
             "min" : {
-              "errorMessage" : "The value must be at least 2.",
+              "errorMessage" : "The value must be at least 5.",
               "parameters" : {
                 "isExclusive" : false,
-                "min" : 2.0
+                "min" : 5.0
               }
             }
           }

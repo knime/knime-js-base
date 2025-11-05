@@ -50,12 +50,15 @@ package org.knime.js.base.node.parameters.filterandselection;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier.AbstractNumVisOptionsValueProvider;
 import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier.AbstractShowNumberOfVisibleOptions;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
@@ -64,9 +67,11 @@ import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * The common settings of multiple selection configuration/widgets nodes regarding the type of component and the
@@ -124,6 +129,54 @@ public class MultipleSelectionComponentParameters implements NodeParameters {
         }
     }
 
+    private static final int MIN_NUM_VIS_OPTIONS_TWINLIST = 5;
+
+    private static final class NumVisOptionsMinValidationProvider implements StateProvider<MinValidation> {
+        private Supplier<String> m_selectionTypeSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDialog();
+            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
+        }
+
+        @Override
+        public MinValidation computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            if (!m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
+                return null;
+            }
+            return new MinValidation() {
+
+                @Override
+                protected double getMin() {
+                    return MIN_NUM_VIS_OPTIONS_TWINLIST;
+                }
+
+            };
+
+        }
+    }
+
+    private static final class NumVisOptionsValueProvider extends AbstractNumVisOptionsValueProvider {
+
+        private Supplier<String> m_selectionTypeSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            super.init(initializer);
+            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
+        }
+
+        @Override
+        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
+            final var numVisOptions = m_numVisOptionsSupplier.get();
+            final var isTwinlist = m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST);
+            return isTwinlist && numVisOptions < MIN_NUM_VIS_OPTIONS_TWINLIST ? MIN_NUM_VIS_OPTIONS_TWINLIST
+                : numVisOptions;
+        }
+    }
+
     private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
 
         @Override
@@ -142,6 +195,12 @@ public class MultipleSelectionComponentParameters implements NodeParameters {
                     Changing this value will also affect the component's height. Notice that for Twinlist the height \
                     cannot be less than the overall height of the control buttons in the middle. The setting is \
                     available only for List or Twinlist selection type.""";
+        }
+
+        @Override
+            Pair<Class<? extends StateProvider<? extends MinValidation>>, //
+                    Class<? extends AbstractNumVisOptionsValueProvider>> getNumVisOptionsProviders() {
+            return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
         }
 
         @Override

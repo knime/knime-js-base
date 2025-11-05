@@ -81,6 +81,7 @@ import org.knime.node.parameters.widget.choices.TypedStringChoice;
 import org.knime.node.parameters.widget.choices.filter.ColumnFilter;
 import org.knime.node.parameters.widget.choices.util.AllColumnsProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * Shared WebUI Node Parameters for Column Filter Configuration and Widget.
@@ -158,6 +159,20 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
                     A number of options visible in the filter component without a vertical scroll bar. Changing this \
                     value will also affect the component's height. Notice that the height cannot be less than the \
                     overall height of the control buttons in the middle.""";
+        }
+
+        @Override
+        Class<? extends MinValidation> getMinNumVisOptions() {
+            return IsMin5Validation.class;
+        }
+
+    }
+
+    private static final class IsMin5Validation extends MinValidation {
+
+        @Override
+        protected double getMin() {
+            return 5;
         }
 
     }

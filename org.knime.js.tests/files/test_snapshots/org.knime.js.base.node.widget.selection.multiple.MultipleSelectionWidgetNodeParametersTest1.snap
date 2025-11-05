@@ -231,6 +231,7 @@
             }
           }
         },
+        "providedOptions" : [ "validation.min" ],
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
@@ -397,6 +398,19 @@
       "value" : [ ]
     } ]
   }, {
+    "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+    "providedOptionName" : "validation.min",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "parameters" : {
+          "min" : 5.0,
+          "isExclusive" : false
+        },
+        "errorMessage" : "The value must be at least 5."
+      }
+    } ]
+  }, {
     "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -425,6 +439,11 @@
     },
     "triggerInitially" : true,
     "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/multipleSelectionNodeParameters/properties/possibleChoices" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType"
+    },
+    "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/possibleChoices"
