@@ -69,14 +69,14 @@ public class SliderInputWidgetConfig extends LabeledFlowVariableWidgetConfig<Sli
 
     private final SliderNodeConfig m_sliderConfig;
 
-    private static final String CFG_SLIDER = "sliderSettings";
-    private static final String CFG_SLIDER_EXISTS = "sliderExists";
+    static final String CFG_SLIDER = "sliderSettings";
+    static final String CFG_SLIDER_EXISTS = "sliderExists";
     private SliderSettings m_sliderSettings = null;
 
-    private static final String CFG_MIN_VALUE = "customMinValue";
+    static final String CFG_MIN_VALUE = "customMinValue";
     private double m_customMinValue = Double.NaN;
 
-    private static final String CFG_MAX_VALUE = "customMaxValue";
+    static final String CFG_MAX_VALUE = "customMaxValue";
     private double m_customMaxValue = Double.NaN;
 
     /**

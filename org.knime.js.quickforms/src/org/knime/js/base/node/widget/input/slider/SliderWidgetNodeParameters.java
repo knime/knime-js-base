@@ -44,50 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   25 Sept 2025 (Robin Gerling): created
+ *   7 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.slider;
+package org.knime.js.base.node.widget.input.slider;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.knime.core.data.DataCell;
+import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.NoneChoice;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.StringOrEnum;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMaxValueProvider;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMinValueProvider;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractDefaultValueValueProvider;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractLowerUpperBoundStateProvider;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMaxValidation;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMinValidation;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnPersistor;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnReference;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMax;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainSection;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMaxParameter;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMin;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMinParameter;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.CustomMaxReference;
+import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.CustomMinReference;
+import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.LowerUpperBoundStateProvider;
 import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.layout.After;
-import org.knime.node.parameters.layout.Before;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.layout.Section;
 import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.updates.Effect;
-import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
+import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
@@ -96,38 +90,32 @@ import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
 
 /**
- * Node parameters for the Integer Slider Configuration Node.
+ * Settings for the slider widget node.
  *
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
  */
-@SuppressWarnings("restriction")
 @LoadDefaultsForAbsentFields
-public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSettings {
+@SuppressWarnings("restriction")
+public final class SliderWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
-    protected IntegerSliderDialogNodeParameters() {
-        super(IntegerSliderDialogNodeConfig.class);
+    SliderWidgetNodeParameters() {
+        super(SliderInputWidgetConfig.class);
     }
 
-    @Section(title = "Validation")
-    @After(FormFieldSection.class)
-    @Before(OutputSection.class)
-    interface Validation {
-    }
-
-    @TextMessage(IntegerSliderOverwrittenByValueMessage.class)
+    @TextMessage(SliderOverwrittenByValueMessage.class)
     @Layout(OutputSection.Top.class)
     Void m_overwrittenByValueMessage;
 
     private static final class DefaultValue implements NodeParameters {
         @Widget(title = SliderNodeParametersUtil.DEFAULT_VALUE_TITLE,
             description = SliderNodeParametersUtil.DEFAULT_VALUE_DESCRIPTION)
-        @Persistor(DefaultValuePersistor.class)
         @ValueReference(DefaultValueReference.class)
-        @ValueProvider(DefaultValueValueProvider.class)
         @Layout(OutputSection.Top.class)
         @NumberInputWidget(minValidationProvider = ValueMinValidation.class,
             maxValidationProvider = ValueMaxValidation.class)
-        int m_integer = 50;
+        @ValueProvider(DefaultValueProvider.class)
+        @Persist(configKey = SliderNodeValue.CFG_DOUBLE)
+        double m_double;
     }
 
     DefaultValue m_defaultValue = new DefaultValue();
@@ -137,143 +125,81 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
     @ChoicesProvider(DomainColumnChoicesProvider.class)
     @ValueReference(DomainColumnReference.class)
     @Persistor(DomainColumnPersistor.class)
-    @Layout(SliderNodeParametersUtil.DomainSection.class)
+    @Layout(DomainSection.class)
     StringOrEnum<NoneChoice> m_domainColumn = new StringOrEnum<>(NoneChoice.NONE);
 
     @PersistWithin.PersistEmbedded
     UseCustomMinParameter m_useCustomMinParameter = new UseCustomMinParameter();
 
-    @Widget(title = SliderNodeParametersUtil.MINIMUM_TITLE, description = SliderNodeParametersUtil.MINIMUM_DESCRIPTION)
-    @Persistor(CustomMinPersistor.class)
-    @ValueReference(CustomMinReference.class)
-    @ValueProvider(CustomMinValueProvider.class)
-    @Layout(SliderNodeParametersUtil.DomainSection.class)
-    @Effect(predicate = UseCustomMin.class, type = EffectType.ENABLE)
-    int m_customMin = (int)IntegerSliderDialogNodeConfig.DEFAULT_MIN;
+    @Persist(configKey = SliderInputWidgetConfig.CFG_MIN_VALUE)
+    double m_customMin = Double.NaN;
 
     @PersistWithin.PersistEmbedded
     UseCustomMaxParameter m_useCustomMaxParameter = new UseCustomMaxParameter();
 
-    @Widget(title = SliderNodeParametersUtil.MAXIMUM_TITLE, description = SliderNodeParametersUtil.MAXIMUM_DESCRIPTION)
-    @Persistor(CustomMaxPersistor.class)
-    @ValueReference(CustomMaxReference.class)
-    @ValueProvider(CustomMaxValueProvider.class)
-    @Layout(SliderNodeParametersUtil.DomainSection.class)
-    @Effect(predicate = UseCustomMax.class, type = EffectType.ENABLE)
-    int m_customMax = (int)IntegerSliderDialogNodeConfig.DEFAULT_MAX;
+    @Persist(configKey = SliderInputWidgetConfig.CFG_MAX_VALUE)
+    double m_customMax = Double.NaN;
 
-    private static final class IntegerSliderOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<IntegerSliderDialogNodeValue> {
+    @Persist(configKey = SliderInputWidgetConfig.CFG_SLIDER)
+    SliderWidgetSliderSettingsNodeParameters m_sliderSettings = new SliderWidgetSliderSettingsNodeParameters();
+
+    static final class DefaultValueReference implements ParameterReference<Double> {
+    }
+
+    private static final class DomainColumnChoicesProvider extends CompatibleColumnsProvider {
+        public DomainColumnChoicesProvider() {
+            super(List.of(IntValue.class, DoubleValue.class));
+        }
+    }
+
+    private static final class SliderOverwrittenByValueMessage extends OverwrittenByValueMessage<SliderNodeValue> {
 
         @Override
-        protected String valueToString(final IntegerSliderDialogNodeValue value) {
-            return String.valueOf(value.getDouble().intValue());
+        protected String valueToString(final SliderNodeValue value) {
+            return String.valueOf(value.getDouble().doubleValue());
         }
 
     }
 
-    private abstract static class IntegerToDoublePersistor implements NodeParametersPersistor<Integer> {
-
-        private final String m_cfgKey;
-
-        protected IntegerToDoublePersistor(final String cfgKey) {
-            m_cfgKey = cfgKey;
-        }
-
-        @Override
-        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return (int)settings.getDouble(m_cfgKey);
-        }
-
-        @Override
-        public void save(final Integer param, final NodeSettingsWO settings) {
-            settings.addDouble(m_cfgKey, param.doubleValue());
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{m_cfgKey}};
-        }
-    }
-
-    private static final class DefaultValuePersistor extends IntegerToDoublePersistor {
-        public DefaultValuePersistor() {
-            super(SliderNodeValue.CFG_DOUBLE);
-        }
-    }
-
-    private static final class CustomMinPersistor extends IntegerToDoublePersistor {
-        public CustomMinPersistor() {
-            super(IntegerSliderDialogNodeConfig.CFG_MIN);
-        }
-    }
-
-    private static final class CustomMaxPersistor extends IntegerToDoublePersistor {
-        public CustomMaxPersistor() {
-            super(IntegerSliderDialogNodeConfig.CFG_MAX);
-        }
-    }
-
-    private static final class CustomMinReference implements ParameterReference<Integer> {
-    }
-
-    private static final class DefaultValueReference implements ParameterReference<Integer> {
-    }
-
-    private static final class CustomMaxReference implements ParameterReference<Integer> {
-    }
-
-    private static final class LowerUpperBoundStateProvider extends AbstractLowerUpperBoundStateProvider<Integer> {
-        LowerUpperBoundStateProvider() {
-            super(IntValue.class);
-        }
-
-        @Override
-        public Integer transformDataValueCompatibleCell(final DataCell cell) {
-            return ((IntValue)cell).getIntValue();
-        }
-    }
-
-    private static final class DefaultValueValueProvider extends AbstractDefaultValueValueProvider<Integer> {
-        DefaultValueValueProvider() {
+    private static final class DefaultValueProvider extends AbstractDefaultValueValueProvider<Double> {
+        DefaultValueProvider() {
             super(DefaultValueReference.class, LowerUpperBoundStateProvider.class);
         }
 
         @Override
-        public Integer computeDefaultValue(final Integer min, final Integer max) {
+        public Double computeDefaultValue(final Double min, final Double max) {
             return (max - min) / 2 + min;
         }
 
     }
 
-    private static final class DomainColumnChoicesProvider extends CompatibleColumnsProvider {
-        public DomainColumnChoicesProvider() {
-            super(List.of(IntValue.class));
-        }
-    }
-
-    private static final class ValueMinValidation extends AbstractValueMinValidation<Integer> {
+    private static final class ValueMinValidation extends AbstractValueMinValidation<Double> {
         ValueMinValidation() {
             super(CustomMinReference.class);
         }
     }
 
-    private static final class ValueMaxValidation extends AbstractValueMaxValidation<Integer> {
+    private static final class ValueMaxValidation extends AbstractValueMaxValidation<Double> {
         ValueMaxValidation() {
             super(CustomMaxReference.class);
         }
     }
 
-    private static final class CustomMinValueProvider extends AbstractCustomMinValueProvider<Integer> {
-        CustomMinValueProvider() {
-            super(LowerUpperBoundStateProvider.class);
-        }
-    }
+    static final class DefaultValueMirrorProvider implements StateProvider<Double> {
 
-    private static final class CustomMaxValueProvider extends AbstractCustomMaxValueProvider<Integer> {
-        CustomMaxValueProvider() {
-            super(LowerUpperBoundStateProvider.class);
+        private Supplier<Double> m_defaultValueSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDialog();
+            m_defaultValueSupplier = initializer.computeFromValueSupplier(DefaultValueReference.class);
         }
+
+        @Override
+        public Double computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
+            return m_defaultValueSupplier.get();
+        }
+
     }
 
 }

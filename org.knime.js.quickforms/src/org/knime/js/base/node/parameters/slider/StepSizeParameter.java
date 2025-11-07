@@ -44,64 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 27, 2019 (Daniel Bogenrieder): created
+ *   11 Nov 2025 (robin): created
  */
-package org.knime.js.base.node.widget.input.slider;
+package org.knime.js.base.node.parameters.slider;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
-import org.knime.js.base.node.base.input.slider.SliderNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.util.Optional;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.Widget;
+import org.knime.node.parameters.migration.Migrate;
+import org.knime.node.parameters.persistence.NodeParametersPersistor;
+import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 
 /**
- * Factory for the slider widget node
+ * Parameter for the step size of a slider widget.
  *
- * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz
  */
-@SuppressWarnings({"deprecation", "restriction"})
-public class SliderWidgetNodeFactory
-    extends WidgetNodeFactory<SliderWidgetNodeModel, SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue> {
+public final class StepSizeParameter implements NodeParameters {
 
-    private static final String NAME = "Slider Widget";
+    @Widget(title = "Step size", description = "A step size. If set the slider only outputs values in set intervals.")
+    @Persistor(StepSizePersistor.class)
+    @Migrate(loadDefaultIfAbsent = true)
+    @NumberInputWidget(minValidation = IsNonNegativeValidation.class)
+    Optional<Double> m_step = Optional.empty();
 
-    static final String DESCRIPTION =
-        "Creates a slider input widget for use in components views. Outputs a string flow variable with a given value.";
+    private static final class StepSizePersistor implements NodeParametersPersistor<Optional<Double>> {
 
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_slider.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(SliderWidgetNodeParameters.class) //
-        .addInputTable("Table Input with applicable domain values",
-            "Input table which contains at least one numeric column with domain values set, "
-                + "which can be used to control the minimum and maximum values of the slider.",
-            true) //
-        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
-            "Variable output (double) with the given variable defined.") //
-        .nodeType(NodeType.Widget) //
-        .build();
+        private static final String CFG_STEP = "step";
 
-    @SuppressWarnings("javadoc")
-    public SliderWidgetNodeFactory() {
-        super(CONFIG, SliderWidgetNodeParameters.class);
+        @Override
+        public Optional<Double> load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return Optional.ofNullable(settings.getDoubleArray(CFG_STEP)) //
+                .filter(arr -> arr.length > 0) //
+                .map(arr -> arr[0]);
+        }
+
+        @Override
+        public void save(final Optional<Double> param, final NodeSettingsWO settings) {
+            settings.addDoubleArray(CFG_STEP, param.map(value -> new double[]{value}).orElse(null));
+        }
+
+        @Override
+        public String[][] getConfigPaths() {
+            return new String[][]{{CFG_STEP}};
+        }
+
     }
-
-    @Override
-    public SliderWidgetNodeModel createNodeModel() {
-        return new SliderWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new SliderWidgetNodeDialog();
-    }
-
 }
