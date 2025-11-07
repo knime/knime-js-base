@@ -48,19 +48,25 @@
  */
 package org.knime.js.base.node.parameters.filterandselection;
 
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.IsComboboxSelectionType;
 import org.knime.js.base.node.widget.selection.multiple.MultipleSelectionWidgetNodeParameters;
+import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.migration.Migrate;
 import org.knime.node.parameters.persistence.Persist;
+import org.knime.node.parameters.updates.Effect;
+import org.knime.node.parameters.updates.Effect.EffectType;
 
 /**
  * The enable search and ignore invalid values parameters for use in the {@link MultipleSelectionWidgetNodeParameters}.
  *
  * @author Robin Gerling
  */
-public final class EnableSearchAndIgnoreInvalidValuesParameters extends EnableSearchParameter {
+@SuppressWarnings("restriction")
+public final class EnableSearchAndIgnoreInvalidValuesParameters implements NodeParameters {
 
     /**
      * The config key for the ignore invalid values setting.
@@ -71,6 +77,10 @@ public final class EnableSearchAndIgnoreInvalidValuesParameters extends EnableSe
      * The default value for the ignore invalid values setting.
      */
     public static final boolean DEFAULT_IGNORE_INVALID_VALUES = true;
+
+    @Effect(predicate = IsComboboxSelectionType.class, type = EffectType.HIDE)
+    @PersistWithin.PersistEmbedded
+    EnableSearchParameter m_enableSearchParameter = new EnableSearchParameter();
 
     @Widget(title = "Ignore missing selected values",
         description = "If this option is checked, selected values that are missing from the input data will not be"

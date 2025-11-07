@@ -49,7 +49,9 @@
 package org.knime.js.base.node.widget.filter.value;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsWidgetModification;
 import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
 import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValue;
 import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
@@ -67,6 +69,7 @@ public final class ValueFilterWidgetNodeParameters extends ReexecutionWidgetNode
     }
 
     @PersistWithin.PersistEmbedded
+    @Modification(LimitVisibleOptionsWidgetModification.class)
     ValueFilterNodeParameters m_valueFilterNodeParameters = new ValueFilterNodeParameters();
 
     DefaultValue m_defaultValue = new DefaultValue();

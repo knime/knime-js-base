@@ -49,7 +49,9 @@
 package org.knime.js.base.node.widget.selection.multiple;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.parameters.filterandselection.EnableSearchAndIgnoreInvalidValuesParameters;
+import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsWidgetModification;
 import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionNodeParameters;
 import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
 
@@ -66,6 +68,7 @@ public final class MultipleSelectionWidgetNodeParameters extends ReexecutionWidg
     }
 
     @PersistWithin.PersistEmbedded
+    @Modification(LimitVisibleOptionsWidgetModification.class)
     MultipleSelectionNodeParameters m_multipleSelectionNodeParameters = new MultipleSelectionNodeParameters();
 
     @PersistWithin.PersistEmbedded
