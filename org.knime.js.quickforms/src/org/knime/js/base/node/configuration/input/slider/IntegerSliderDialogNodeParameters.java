@@ -48,26 +48,35 @@
  */
 package org.knime.js.base.node.configuration.input.slider;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.List;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.IntValue;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.NoneChoice;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.StringOrEnum;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
-import org.knime.js.base.node.base.input.slider.SliderNodeConfig;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMaxValueProvider;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMinValueProvider;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractDefaultValueValueProvider;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractLowerUpperBoundStateProvider;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMaxValidation;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMinValidation;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnPersistor;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnReference;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMax;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMaxParameter;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMin;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMinParameter;
 import org.knime.node.parameters.NodeParameters;
-import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.After;
 import org.knime.node.parameters.layout.Before;
@@ -75,22 +84,16 @@ import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.layout.Section;
 import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
-import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
-import org.knime.node.parameters.updates.EffectPredicate;
-import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
-import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.util.CompatibleColumnsProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * Node parameters for the Integer Slider Configuration Node.
@@ -116,8 +119,8 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
     Void m_overwrittenByValueMessage;
 
     private static final class DefaultValue implements NodeParameters {
-        @Widget(title = "Default value",
-            description = "The initial value of the slider parameter. Must be between the minimum and maximum values.")
+        @Widget(title = SliderNodeParametersUtil.DEFAULT_VALUE_TITLE,
+            description = SliderNodeParametersUtil.DEFAULT_VALUE_DESCRIPTION)
         @Persistor(DefaultValuePersistor.class)
         @ValueReference(DefaultValueReference.class)
         @ValueProvider(DefaultValueValueProvider.class)
@@ -129,72 +132,37 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
 
     DefaultValue m_defaultValue = new DefaultValue();
 
-    @Widget(title = "Range column",
-        description = "Select a column from the input table to determine the range of the slider. "
-            + "The minimum and maximum values from this column will be used as the default range.")
+    @Widget(title = SliderNodeParametersUtil.RANGE_COLUMN_TITLE,
+        description = SliderNodeParametersUtil.RANGE_COLUMN_DESCRIPTION)
     @ChoicesProvider(DomainColumnChoicesProvider.class)
     @ValueReference(DomainColumnReference.class)
     @Persistor(DomainColumnPersistor.class)
-    @Layout(Validation.class)
+    @Layout(SliderNodeParametersUtil.RangeSection.RangeColumn.class)
     StringOrEnum<NoneChoice> m_domainColumn = new StringOrEnum<>(NoneChoice.NONE);
 
-    @Widget(title = "Use custom minimum",
-        description = "Check to specify a custom minimum value instead of using the minimum from the range column.")
-    @Persist(configKey = SliderNodeConfig.CFG_USE_CUSTOM_MIN)
-    @ValueReference(UseCustomMinReference.class)
-    @ValueProvider(SetToFalseOnNewDomainColumn.class)
-    @Layout(Validation.class)
-    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.HIDE)
-    boolean m_useCustomMin = SliderNodeConfig.DEFAULT_USE_CUSTOM_MIN;
+    @PersistWithin.PersistEmbedded
+    UseCustomMinParameter m_useCustomMinParameter = new UseCustomMinParameter();
 
-    @Widget(title = "Minimum",
-        description = "The minimum value for the slider range."
-            + " This value is used when 'Use custom minimum' is enabled.")
+    @Widget(title = SliderNodeParametersUtil.MINIMUM_TITLE, description = SliderNodeParametersUtil.MINIMUM_DESCRIPTION)
     @Persistor(CustomMinPersistor.class)
     @ValueReference(CustomMinReference.class)
     @ValueProvider(CustomMinValueProvider.class)
-    @Layout(Validation.class)
+    @Layout(SliderNodeParametersUtil.RangeSection.Minimum.class)
     @Effect(predicate = UseCustomMin.class, type = EffectType.ENABLE)
     int m_customMin = (int)IntegerSliderDialogNodeConfig.DEFAULT_MIN;
 
-    @Widget(title = "Use custom maximum",
-        description = "Check to specify a custom maximum value instead of using the maximum from the range column.")
-    @Persist(configKey = SliderNodeConfig.CFG_USE_CUSTOM_MAX)
-    @ValueReference(UseCustomMaxReference.class)
-    @ValueProvider(SetToFalseOnNewDomainColumn.class)
-    @Layout(Validation.class)
-    @Effect(predicate = IsNoneDomainColumn.class, type = EffectType.HIDE)
-    boolean m_useCustomMax = SliderNodeConfig.DEFAULT_USE_CUSTOM_MAX;
+    @PersistWithin.PersistEmbedded
+    UseCustomMaxParameter m_useCustomMaxParameter = new UseCustomMaxParameter();
 
-    @Widget(title = "Maximum",
-        description = "The maximum value for the slider range."
-            + " This value is used when 'Use custom maximum' is enabled.")
+    @Widget(title = SliderNodeParametersUtil.MAXIMUM_TITLE, description = SliderNodeParametersUtil.MAXIMUM_DESCRIPTION)
     @Persistor(CustomMaxPersistor.class)
     @ValueReference(CustomMaxReference.class)
     @ValueProvider(CustomMaxValueProvider.class)
-    @Layout(Validation.class)
+    @Layout(SliderNodeParametersUtil.RangeSection.Maximum.class)
     @Effect(predicate = UseCustomMax.class, type = EffectType.ENABLE)
     int m_customMax = (int)IntegerSliderDialogNodeConfig.DEFAULT_MAX;
 
-    static final class DomainColumnReference implements ParameterReference<StringOrEnum<NoneChoice>> {
-    }
-
-    static final class UseCustomMinReference implements ParameterReference<Boolean> {
-    }
-
-    static final class CustomMinReference implements ParameterReference<Integer> {
-    }
-
-    static final class DefaultValueReference implements ParameterReference<Integer> {
-    }
-
-    static final class UseCustomMaxReference implements ParameterReference<Boolean> {
-    }
-
-    static final class CustomMaxReference implements ParameterReference<Integer> {
-    }
-
-    static final class IntegerSliderOverwrittenByValueMessage
+    private static final class IntegerSliderOverwrittenByValueMessage
         extends OverwrittenByValueMessage<IntegerSliderDialogNodeValue> {
 
         @Override
@@ -204,190 +172,7 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
 
     }
 
-    static final class LowerUpperBoundStateProvider implements StateProvider<Optional<Pair<Integer, Integer>>> {
-
-        private Supplier<StringOrEnum<NoneChoice>> m_domainColumnSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_domainColumnSupplier = initializer.computeFromValueSupplier(DomainColumnReference.class);
-        }
-
-        @Override
-        public Optional<Pair<Integer, Integer>> computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            final var tableSpecOpt = parametersInput.getInTableSpec(0);
-            final var domainColumn = m_domainColumnSupplier.get();
-
-            if (tableSpecOpt.isEmpty() || domainColumn.getEnumChoice().isPresent()) {
-                return Optional.empty();
-            }
-
-            final var spec = tableSpecOpt.get();
-            final var columnName = domainColumn.getStringChoice();
-            if (!spec.containsName(columnName)) {
-                return Optional.empty();
-            }
-
-            final var domain = spec.getColumnSpec(columnName).getDomain();
-            final var lower = domain.getLowerBound();
-            final var upper = domain.getUpperBound();
-            final var hasLower = domain.hasLowerBound() && lower.getType().isCompatible(IntValue.class);
-            final var hasUpper = domain.hasUpperBound() && upper.getType().isCompatible(IntValue.class);
-
-            if (!hasLower && !hasUpper) {
-                return Optional.empty();
-            }
-
-            int min = hasLower ? intCompatibleDataCellToInt(lower) : intCompatibleDataCellToInt(upper);
-            int max = hasUpper ? intCompatibleDataCellToInt(upper) : min;
-            return Optional.of(new Pair<>(min, max));
-        }
-
-        private static int intCompatibleDataCellToInt(final DataCell cell) {
-            return ((IntValue)cell).getIntValue();
-        }
-    }
-
-    static final class CustomMinValueProvider implements StateProvider<Integer> {
-
-        private Supplier<Optional<Pair<Integer, Integer>>> m_lowerUpperBoundSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_lowerUpperBoundSupplier = initializer.computeFromProvidedState(LowerUpperBoundStateProvider.class);
-
-        }
-
-        @Override
-        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return m_lowerUpperBoundSupplier.get().map(Pair::getFirst)
-                .orElseThrow(StateComputationFailureException::new);
-        }
-
-    }
-
-    static final class CustomMaxValueProvider implements StateProvider<Integer> {
-
-        private Supplier<Optional<Pair<Integer, Integer>>> m_lowerUpperBoundSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_lowerUpperBoundSupplier = initializer.computeFromProvidedState(LowerUpperBoundStateProvider.class);
-
-        }
-
-        @Override
-        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return m_lowerUpperBoundSupplier.get().map(Pair::getSecond)
-                .orElseThrow(StateComputationFailureException::new);
-        }
-
-    }
-
-    static final class DefaultValueValueProvider implements StateProvider<Integer> {
-
-        private Supplier<Integer> m_defaultValueSupplier;
-
-        private Supplier<Optional<Pair<Integer, Integer>>> m_lowerUpperBoundSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_defaultValueSupplier = initializer.getValueSupplier(DefaultValueReference.class);
-            m_lowerUpperBoundSupplier = initializer.computeFromProvidedState(LowerUpperBoundStateProvider.class);
-
-        }
-
-        @Override
-        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var lowerUpperBound = m_lowerUpperBoundSupplier.get();
-            if (lowerUpperBound.isEmpty()) {
-                return m_defaultValueSupplier.get();
-            }
-            final var min = lowerUpperBound.get().getFirst();
-            final var max = lowerUpperBound.get().getSecond();
-            /**
-             * see {@link IntegerSliderDialogNodeNodeDialog} line 232
-             */
-            return (max - min) / 2 + min;
-        }
-    }
-
-    static final class SetToFalseOnNewDomainColumn implements StateProvider<Boolean> {
-
-        private Supplier<StringOrEnum<NoneChoice>> m_domainColumnSupplier;
-
-        @Override
-        public final void init(final StateProviderInitializer initializer) {
-            m_domainColumnSupplier = initializer.computeFromValueSupplier(DomainColumnReference.class);
-        }
-
-        @Override
-        public Boolean computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            if (m_domainColumnSupplier.get().getEnumChoice().isPresent()) {
-                /**
-                 * If <none> column is selected, we don't show custom min/max options and it is ignored in the model. We
-                 * don't want to change the value in this case, since it would make the dialog dirty initially without
-                 * any user interaction and without any reason.
-                 */
-                throw new StateComputationFailureException();
-            }
-            return false;
-        }
-
-    }
-
-    static final class IsNoneDomainColumn implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
-        }
-    }
-
-    static final class UseCustomMin implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
-            return i.getBoolean(UseCustomMinReference.class).isTrue().or(isNoneColumns);
-        }
-    }
-
-    static final class UseCustomMax implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
-            return i.getBoolean(UseCustomMaxReference.class).isTrue().or(isNoneColumns);
-        }
-    }
-
-    static final class DomainColumnChoicesProvider extends CompatibleColumnsProvider {
-        public DomainColumnChoicesProvider() {
-            super(IntValue.class);
-        }
-    }
-
-    static final class DomainColumnPersistor implements NodeParametersPersistor<StringOrEnum<NoneChoice>> {
-
-        @Override
-        public StringOrEnum<NoneChoice> load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var domainColumn = settings.getString(SliderNodeConfig.CFG_DOMAIN_COLUMN);
-            return domainColumn == null ? new StringOrEnum<>(NoneChoice.NONE) : new StringOrEnum<>(domainColumn);
-        }
-
-        @Override
-        public void save(final StringOrEnum<NoneChoice> param, final NodeSettingsWO settings) {
-            settings.addString(SliderNodeConfig.CFG_DOMAIN_COLUMN,
-                param.getEnumChoice().isPresent() ? null : param.getStringChoice());
-        }
-
-        @Override
-        public String[][] getConfigPaths() {
-            return new String[][]{{SliderNodeConfig.CFG_DOMAIN_COLUMN}};
-        }
-
-    }
-
-    abstract static class IntegerToDoublePersistor implements NodeParametersPersistor<Integer> {
+    private abstract static class IntegerToDoublePersistor implements NodeParametersPersistor<Integer> {
 
         private final String m_cfgKey;
 
@@ -411,65 +196,83 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
         }
     }
 
-    static final class DefaultValuePersistor extends IntegerToDoublePersistor {
+    private static final class DefaultValuePersistor extends IntegerToDoublePersistor {
         public DefaultValuePersistor() {
             super(SliderNodeValue.CFG_DOUBLE);
         }
     }
 
-    static final class CustomMinPersistor extends IntegerToDoublePersistor {
+    private static final class CustomMinPersistor extends IntegerToDoublePersistor {
         public CustomMinPersistor() {
             super(IntegerSliderDialogNodeConfig.CFG_MIN);
         }
     }
 
-    static final class CustomMaxPersistor extends IntegerToDoublePersistor {
+    private static final class CustomMaxPersistor extends IntegerToDoublePersistor {
         public CustomMaxPersistor() {
             super(IntegerSliderDialogNodeConfig.CFG_MAX);
         }
     }
 
-    static final class ValueMinValidation implements StateProvider<MinValidation> {
+    private static final class CustomMinReference implements ParameterReference<Integer> {
+    }
 
-        private Supplier<Integer> m_customMinSupplier;
+    private static final class DefaultValueReference implements ParameterReference<Integer> {
+    }
 
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-            m_customMinSupplier = initializer.computeFromValueSupplier(CustomMinReference.class);
+    private static final class CustomMaxReference implements ParameterReference<Integer> {
+    }
+
+    private static final class LowerUpperBoundStateProvider extends AbstractLowerUpperBoundStateProvider<Integer> {
+        LowerUpperBoundStateProvider() {
+            super(IntValue.class);
         }
 
         @Override
-        public MinValidation computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            return new MinValidation() {
-                @Override
-                protected double getMin() {
-                    return m_customMinSupplier.get();
-                }
-            };
+        public Integer transformDataValueCompatibleCell(final DataCell cell) {
+            return ((IntValue)cell).getIntValue();
         }
     }
 
-    static final class ValueMaxValidation implements StateProvider<MaxValidation> {
-
-        private Supplier<Integer> m_customMaxSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-            m_customMaxSupplier = initializer.computeFromValueSupplier(CustomMaxReference.class);
+    private static final class DefaultValueValueProvider extends AbstractDefaultValueValueProvider<Integer> {
+        DefaultValueValueProvider() {
+            super(DefaultValueReference.class, LowerUpperBoundStateProvider.class);
         }
 
         @Override
-        public MaxValidation computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            return new MaxValidation() {
-                @Override
-                protected double getMax() {
-                    return m_customMaxSupplier.get();
-                }
-            };
+        public Integer computeDefaultValue(final Integer min, final Integer max) {
+            return (max - min) / 2 + min;
+        }
+
+    }
+
+    private static final class DomainColumnChoicesProvider extends CompatibleColumnsProvider {
+        public DomainColumnChoicesProvider() {
+            super(List.of(IntValue.class));
+        }
+    }
+
+    private static final class ValueMinValidation extends AbstractValueMinValidation<Integer> {
+        ValueMinValidation() {
+            super(CustomMinReference.class);
+        }
+    }
+
+    private static final class ValueMaxValidation extends AbstractValueMaxValidation<Integer> {
+        ValueMaxValidation() {
+            super(CustomMaxReference.class);
+        }
+    }
+
+    private static final class CustomMinValueProvider extends AbstractCustomMinValueProvider<Integer> {
+        CustomMinValueProvider() {
+            super(LowerUpperBoundStateProvider.class);
+        }
+    }
+
+    private static final class CustomMaxValueProvider extends AbstractCustomMaxValueProvider<Integer> {
+        CustomMaxValueProvider() {
+            super(LowerUpperBoundStateProvider.class);
         }
     }
 

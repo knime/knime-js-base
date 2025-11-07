@@ -13,9 +13,13 @@
       "domainColumn" : {
         "regularChoice" : "column1"
       },
-      "useCustomMin" : false,
+      "useCustomMinParameter" : {
+        "useCustomMin" : false
+      },
       "customMin" : 0,
-      "useCustomMax" : false,
+      "useCustomMaxParameter" : {
+        "useCustomMax" : false
+      },
       "customMax" : 5
     }
   },
@@ -110,17 +114,33 @@
             "type" : "boolean",
             "default" : true
           },
-          "useCustomMax" : {
-            "type" : "boolean",
-            "title" : "Use custom maximum",
-            "description" : "Check to specify a custom maximum value instead of using the maximum from the range column.",
-            "default" : false
+          "useCustomMaxParameter" : {
+            "type" : "object",
+            "properties" : {
+              "useCustomMax" : {
+                "type" : "boolean",
+                "title" : "Use custom maximum",
+                "description" : "Check to specify a custom maximum value instead of using the maximum from the range column.",
+                "default" : false
+              }
+            },
+            "default" : {
+              "useCustomMax" : false
+            }
           },
-          "useCustomMin" : {
-            "type" : "boolean",
-            "title" : "Use custom minimum",
-            "description" : "Check to specify a custom minimum value instead of using the minimum from the range column.",
-            "default" : false
+          "useCustomMinParameter" : {
+            "type" : "object",
+            "properties" : {
+              "useCustomMin" : {
+                "type" : "boolean",
+                "title" : "Use custom minimum",
+                "description" : "Check to specify a custom minimum value instead of using the minimum from the range column.",
+                "default" : false
+              }
+            },
+            "default" : {
+              "useCustomMin" : false
+            }
           }
         }
       }
@@ -138,7 +158,7 @@
         "scope" : "#/properties/model/properties/description"
       } ]
     }, {
-      "label" : "Validation",
+      "label" : "Range",
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
@@ -153,7 +173,7 @@
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/useCustomMin",
+        "scope" : "#/properties/model/properties/useCustomMinParameter/properties/useCustomMin",
         "options" : {
           "format" : "checkbox"
         },
@@ -199,7 +219,7 @@
           "condition" : {
             "type" : "OR",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/useCustomMin",
+              "scope" : "#/properties/model/properties/useCustomMinParameter/properties/useCustomMin",
               "schema" : {
                 "const" : true
               }
@@ -220,7 +240,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/useCustomMax",
+        "scope" : "#/properties/model/properties/useCustomMaxParameter/properties/useCustomMax",
         "options" : {
           "format" : "checkbox"
         },
@@ -266,7 +286,7 @@
           "condition" : {
             "type" : "OR",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/useCustomMax",
+              "scope" : "#/properties/model/properties/useCustomMaxParameter/properties/useCustomMax",
               "schema" : {
                 "const" : true
               }
@@ -386,14 +406,26 @@
           "domainColumn" : {
             "configPaths" : [ [ "domainColumn" ] ]
           },
-          "useCustomMin" : {
-            "configKey" : "useCustomMin"
+          "useCustomMinParameter" : {
+            "type" : "object",
+            "properties" : {
+              "useCustomMin" : {
+                "configKey" : "useCustomMin"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "customMin" : {
             "configPaths" : [ [ "customMin" ] ]
           },
-          "useCustomMax" : {
-            "configKey" : "useCustomMax"
+          "useCustomMaxParameter" : {
+            "type" : "object",
+            "properties" : {
+              "useCustomMax" : {
+                "configKey" : "useCustomMax"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "customMax" : {
             "configPaths" : [ [ "customMax" ] ]
@@ -483,5 +515,15 @@
       "scope" : "#/properties/model/properties/flowVariableName"
     },
     "dependencies" : [ "#/properties/model/properties/flowVariableName" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/useCustomMaxParameter/properties/useCustomMax"
+    },
+    "dependencies" : [ "#/properties/model/properties/domainColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/useCustomMinParameter/properties/useCustomMin"
+    },
+    "dependencies" : [ "#/properties/model/properties/domainColumn" ]
   } ]
 }

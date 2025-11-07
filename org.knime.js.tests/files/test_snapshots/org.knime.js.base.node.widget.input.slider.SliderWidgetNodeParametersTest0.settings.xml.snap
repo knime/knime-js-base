@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="hideInWizard" type="xboolean" value="false"/>
+    <entry key="customCSS" type="xstring" value=""/>
+    <entry key="label" type="xstring" value="Label"/>
+    <entry key="description" type="xstring" value="Enter Description"/>
+    <entry key="flowVariableName" type="xstring" value="slider-input"/>
+    <entry key="required" type="xboolean" value="true"/>
+    <config key="defaultValue">
+        <entry key="double" type="xdouble" value="50.0"/>
+    </config>
+    <entry key="domainColumn" type="xstring" isnull="true" value=""/>
+    <entry key="useCustomMin" type="xboolean" value="true"/>
+    <entry key="customMinValue" type="xdouble" value="NaN"/>
+    <entry key="useCustomMax" type="xboolean" value="true"/>
+    <entry key="customMaxValue" type="xdouble" value="NaN"/>
+    <config key="sliderSettings">
+        <entry key="sliderExists" type="xboolean" value="true"/>
+        <config key="connect">
+            <entry key="array-size" type="xint" value="2"/>
+            <entry key="0" type="xboolean" value="true"/>
+            <entry key="1" type="xboolean" value="true"/>
+        </config>
+        <config key="start">
+            <entry key="array-size" type="xint" value="1"/>
+            <entry key="0" type="xdouble" value="50.0"/>
+        </config>
+        <config key="range">
+            <entry key="numSettings" type="xint" value="2"/>
+            <entry key="key_0" type="xstring" value="min"/>
+            <config key="value_0">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xdouble" value="0.0"/>
+            </config>
+            <entry key="key_1" type="xstring" value="max"/>
+            <config key="value_1">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xdouble" value="100.0"/>
+            </config>
+        </config>
+        <config key="step">
+            <entry key="array-size" type="xint" value="1"/>
+            <entry key="0" type="xdouble" value="0.05"/>
+        </config>
+        <entry key="orientation" type="xstring" value="vertical"/>
+        <entry key="direction" type="xstring" value="rtl"/>
+        <config key="tooltips">
+            <entry key="numSettings" type="xint" value="1"/>
+            <entry key="type_0" type="xstring" value="format"/>
+            <config key="value_0">
+                <entry key="decimals" type="xstring" value="2"/>
+                <entry key="mark" type="xstring" value="."/>
+                <entry key="thousand" type="xstring" isnull="true" value=""/>
+                <entry key="prefix" type="xstring" isnull="true" value=""/>
+                <entry key="postfix" type="xstring" isnull="true" value=""/>
+                <entry key="negative" type="xstring" value="-"/>
+                <entry key="negativeBefore" type="xstring" isnull="true" value=""/>
+                <entry key="negativeClasses" type="xstring" isnull="true" value=""/>
+                <entry key="encoder" type="xstring" isnull="true" value=""/>
+                <entry key="decoder" type="xstring" isnull="true" value=""/>
+                <entry key="edit" type="xstring" isnull="true" value=""/>
+                <entry key="undo" type="xstring" isnull="true" value=""/>
+            </config>
+        </config>
+        <config key="fix"/>
+        <config key="snap"/>
+        <config key="margin"/>
+        <config key="limit"/>
+        <config key="animate"/>
+        <config key="animationDuration"/>
+        <entry key="behaviour" type="xstring" isnull="true" value=""/>
+        <config key="pips">
+            <entry key="pipsDefined" type="xboolean" value="true"/>
+            <entry key="mode" type="xstring" value="count"/>
+            <config key="values">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xdouble" value="10.0"/>
+            </config>
+            <config key="stepped">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xboolean" value="true"/>
+            </config>
+            <config key="density">
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xint" value="2"/>
+            </config>
+            <entry key="filter" type="xstring" isnull="true" value=""/>
+            <config key="format">
+                <entry key="decimals" type="xstring" value="2"/>
+                <entry key="mark" type="xstring" value="."/>
+                <entry key="thousand" type="xstring" isnull="true" value=""/>
+                <entry key="prefix" type="xstring" isnull="true" value=""/>
+                <entry key="postfix" type="xstring" isnull="true" value=""/>
+                <entry key="negative" type="xstring" value="-"/>
+                <entry key="negativeBefore" type="xstring" isnull="true" value=""/>
+                <entry key="negativeClasses" type="xstring" isnull="true" value=""/>
+                <entry key="encoder" type="xstring" isnull="true" value=""/>
+                <entry key="decoder" type="xstring" isnull="true" value=""/>
+                <entry key="edit" type="xstring" isnull="true" value=""/>
+                <entry key="undo" type="xstring" isnull="true" value=""/>
+                <entry key="formatDefined" type="xboolean" value="true"/>
+            </config>
+        </config>
+    </config>
+</config>

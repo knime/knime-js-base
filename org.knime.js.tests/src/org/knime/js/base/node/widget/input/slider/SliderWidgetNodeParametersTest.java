@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   25 Sept 2025 (Robin Gerling): created
+ *   7 Nov 2025 (Robin Gerling): created
  */
-package org.knime.js.base.node.configuration.input.slider;
+package org.knime.js.base.node.widget.input.slider;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -66,34 +66,34 @@ import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
 import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Test for IntegerSliderDialogNodeParameters
+ * Test for SliderWidgetNodeParameters
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-final class IntegerSliderDialogNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
+final class SliderWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    IntegerSliderDialogNodeParametersTest() {
+    SliderWidgetNodeParametersTest() {
         super(getConfig());
     }
 
     private static SnapshotTestConfiguration getConfig() {
         return SnapshotTestConfiguration.builder() //
             .withInputPortObjectSpecs(createInputPortSpecs()) //
-            .testJsonFormsForModel(IntegerSliderDialogNodeParameters.class) //
+            .testJsonFormsForModel(SliderWidgetNodeParameters.class) //
             .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
             .testNodeSettingsStructure(() -> readSettings()) //
             .build();
     }
 
-    private static IntegerSliderDialogNodeParameters readSettings() {
+    private static SliderWidgetNodeParameters readSettings() {
         try {
-            var path = getSnapshotPath(IntegerSliderDialogNodeParametersTest.class).getParent().resolve("node_settings")
-                .resolve("IntegerSliderDialogNodeParameters.xml");
+            var path = getSnapshotPath(SliderWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("SliderWidgetNodeParameters.xml");
             try (var fis = new FileInputStream(path.toFile())) {
                 var nodeSettings = NodeSettings.loadFromXML(fis);
                 return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
-                    IntegerSliderDialogNodeParameters.class);
+                    SliderWidgetNodeParameters.class);
             }
         } catch (IOException | InvalidSettingsException e) {
             throw new IllegalStateException(e);
@@ -115,12 +115,15 @@ final class IntegerSliderDialogNodeParametersTest extends DefaultNodeSettingsSna
 
         var specIntCol3 = new DataColumnSpecCreator("IntColumn3", IntCell.TYPE).createSpec();
 
-        var specCreatorDoubleCol1 = new DataColumnSpecCreator("DoubleColumn2", DoubleCell.TYPE);
-        specCreatorDoubleCol1
-            .setDomain(new DataColumnDomainCreator(new DoubleCell(-2.2), new DoubleCell(2.2)).createDomain());
-        final var specDoubleCol1 = specCreatorDoubleCol1.createSpec();
+        var specDoubleCol1 = new DataColumnSpecCreator("DoubleColumn1", DoubleCell.TYPE).createSpec();
 
-        return new DataTableSpec(new DataColumnSpec[]{specIntCol1, specIntCol2, specIntCol3, specDoubleCol1});
+        var specCreatorDoubleCol2 = new DataColumnSpecCreator("DoubleColumn2", DoubleCell.TYPE);
+        specCreatorDoubleCol2
+            .setDomain(new DataColumnDomainCreator(new DoubleCell(-2.2), new DoubleCell(2.2)).createDomain());
+        final var specDoubleCol2 = specCreatorDoubleCol2.createSpec();
+
+        return new DataTableSpec(
+            new DataColumnSpec[]{specIntCol1, specIntCol2, specIntCol3, specDoubleCol1, specDoubleCol2});
     }
 
 }

@@ -49,55 +49,56 @@
 package org.knime.js.base.node.widget.input.slider;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.slider.SliderNodeRepresentation;
 import org.knime.js.base.node.base.input.slider.SliderNodeValue;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 
 /**
  * Factory for the slider widget node
  *
  * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public class SliderWidgetNodeFactory extends NodeFactory<SliderWidgetNodeModel> implements
-    WizardNodeFactoryExtension<SliderWidgetNodeModel, SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue> {
+@SuppressWarnings({"deprecation", "restriction"})
+public class SliderWidgetNodeFactory
+    extends WidgetNodeFactory<SliderWidgetNodeModel, SliderNodeRepresentation<SliderNodeValue>, SliderNodeValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Slider Widget";
+
+    static final String DESCRIPTION =
+        "Creates a slider input widget for use in components views. Outputs a string flow variable with a given value.";
+
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./widget_slider.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(DESCRIPTION) //
+        .modelSettingsClass(SliderWidgetNodeParameters.class) //
+        .addInputTable("Table Input with applicable domain values",
+            "Input table which contains at least one numeric column with domain values set, "
+                + "which can be used to control the minimum and maximum values of the slider.",
+            true) //
+        .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
+            "Variable output (double) with the given variable defined.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public SliderWidgetNodeFactory() {
+        super(CONFIG, SliderWidgetNodeParameters.class);
+    }
+
     @Override
     public SliderWidgetNodeModel createNodeModel() {
         return new SliderWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SliderWidgetNodeModel> createNodeView(final int viewIndex, final SliderWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new SliderWidgetNodeDialog();
