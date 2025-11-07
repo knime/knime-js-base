@@ -44,61 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 4, 2019 (Daniel Bogenrieder): created
+ *   7 Nov 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.output.filedownload;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
 /**
- * Factory for the file download widget node
+ * Tests for the {@link FileDownloadWidgetNodeParameters} class.
  *
- * @author Daniel Bogenrieder, Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-public class FileDownloadWidgetNodeFactory
-    extends WidgetNodeFactory<FileDownloadWidgetNodeModel, FileDownloadWidgetRepresentation, FileDownloadWidgetValue> {
+@SuppressWarnings("restriction")
+final class FileDownloadWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    private static final String NAME = "File Download Widget";
+    protected FileDownloadWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    private static final String DESCRIPTION =
-        "Provides a link with a downloadable file. The user needs to select a string or path flow variable "
-            + "pointing to an existing file. This node is typically connected to a file writer (e.g. "
-            + "CSV writer), whereby the writer exposes its destination file as variable that is selected in this "
-            + "node's configuration dialog.";
-
-    @SuppressWarnings({"deprecation", "restriction"})
-    private static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_download_file.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(FileDownloadWidgetNodeParameters.class) //
-        .addInputPort("Flow Variable Input", FlowVariablePortObject.TYPE,
-            "Variable input with the given path variable defined.") //
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(FileDownloadWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public FileDownloadWidgetNodeFactory() {
-        super(CONFIG, FileDownloadWidgetNodeParameters.class);
-    }
-
-    @Override
-    public FileDownloadWidgetNodeModel createNodeModel() {
-        return new FileDownloadWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileDownloadWidgetDialog();
+    private static FileDownloadWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(FileDownloadWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("FileDownloadWidget.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    FileDownloadWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }

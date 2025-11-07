@@ -1,0 +1,136 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "label" : "Label",
+      "description" : "Enter Description",
+      "linkTitle" : "Download",
+      "flowVariable" : "",
+      "resourceName" : "file-download"
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
+            "default" : "Enter Description"
+          },
+          "flowVariable" : {
+            "type" : "string",
+            "title" : "File path variable",
+            "description" : "Select the name of the variable whose value points to the download file.",
+            "default" : ""
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown in the view.",
+            "default" : "Label"
+          },
+          "linkTitle" : {
+            "type" : "string",
+            "title" : "Link title",
+            "description" : "Title for the link shown in the Web Portal",
+            "default" : "Download"
+          },
+          "resourceName" : {
+            "type" : "string",
+            "title" : "Output resource name",
+            "description" : "A name for the output resource, used for web service calls.",
+            "default" : "file-download"
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/linkTitle"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/flowVariable",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/resourceName"
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "label" : { },
+          "description" : { },
+          "linkTitle" : {
+            "configKey" : "linktitle"
+          },
+          "flowVariable" : {
+            "configKey" : "flowvariable"
+          },
+          "resourceName" : {
+            "configKey" : "resourceName"
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/flowVariable",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "knime.workspace",
+        "text" : "knime.workspace",
+        "type" : {
+          "id" : "STRING",
+          "text" : "StringType"
+        }
+      } ]
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ "#/properties/model/properties/flowVariable" ]
+  } ]
+}

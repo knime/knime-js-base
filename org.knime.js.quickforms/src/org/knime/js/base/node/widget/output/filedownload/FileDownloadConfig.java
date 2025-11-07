@@ -64,16 +64,16 @@ import org.knime.js.base.util.LabeledViewConfig;
  */
 public class FileDownloadConfig extends LabeledViewConfig {
 
-    private static final String CFG_LINK_TITLE = "linktitle";
-    private static final String DEFAULT_LINK_TITLE = "Download";
+    static final String CFG_LINK_TITLE = "linktitle";
+    static final String DEFAULT_LINK_TITLE = "Download";
     private String m_linkTitle = DEFAULT_LINK_TITLE;
 
-    private static final String CFG_FLOW_VARIABLE = "flowvariable";
-    private static final String DEFAULT_FLOW_VARIABLE = "";
+    static final String CFG_FLOW_VARIABLE = "flowvariable";
+    static final String DEFAULT_FLOW_VARIABLE = "";
     private String m_flowVariable = DEFAULT_FLOW_VARIABLE;
 
-    private static final String CFG_RESOURCE_NAME = "resourceName";
-    private static final String DEFAULT_RESOURCE_NAME = "file-download";
+    static final String CFG_RESOURCE_NAME = "resourceName";
+    static final String DEFAULT_RESOURCE_NAME = "file-download";
     private String m_resourceName = DEFAULT_RESOURCE_NAME;
 
     /**

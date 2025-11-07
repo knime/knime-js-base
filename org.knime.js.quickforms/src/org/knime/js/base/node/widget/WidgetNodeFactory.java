@@ -63,7 +63,6 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
-import org.knime.js.base.node.base.LabeledNodeRepresentation;
 import org.knime.js.core.JSONViewContent;
 import org.xml.sax.SAXException;
 
@@ -78,8 +77,11 @@ import org.xml.sax.SAXException;
  * @param <U> the value implementation for the widget node
  */
 @SuppressWarnings({"restriction", "deprecation"})
-public abstract class WidgetNodeFactory<T extends NodeModel & WizardNode<V, U>, V extends LabeledNodeRepresentation<U>, U extends JSONViewContent>
-    extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory {
+public abstract class WidgetNodeFactory< //
+        T extends NodeModel & WizardNode<V, U>, //
+        V extends JSONViewContent, //
+        U extends JSONViewContent //
+> extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory {
 
     private final WebUINodeConfiguration m_config;
 
