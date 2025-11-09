@@ -55,7 +55,9 @@ import java.util.stream.Collectors;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.internal.file.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.file.FileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.file.FileSystemOption;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.file.WithFileSystem;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeConfig;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
@@ -108,9 +110,10 @@ public final class FileDialogNodeParameters extends ConfigurationNodeSettings {
                 the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a
                 remote server.
                 """)
-        @LocalFileReaderWidget
         @ValueReference(PathReference.class)
         @Persist(configKey = FileUploadNodeValue.CFG_PATH)
+        @FileReaderWidget
+        @WithFileSystem(FileSystemOption.LOCAL)
         String m_filePath = FileUploadNodeValue.DEFAULT_PATH;
 
         /**

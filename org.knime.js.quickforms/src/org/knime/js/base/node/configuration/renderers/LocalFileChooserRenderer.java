@@ -50,7 +50,11 @@ package org.knime.js.base.node.configuration.renderers;
 
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.LocalFileChooserRendererSpec;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2.ExecutorType;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.file.FileSystemOption;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.StringFileChooserRendererSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.options.FileChooserRendererOptions;
+import org.knime.filehandling.core.util.WorkflowContextUtil;
 import org.knime.js.base.node.base.input.fileupload.FileUploadNodeUtil;
 import org.knime.js.base.node.configuration.input.date.DateDialogNodeRepresentation;
 import org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeRepresentation;
@@ -61,7 +65,7 @@ import org.knime.js.base.node.configuration.input.fileupload.FileDialogNodeRepre
  * @author Robin Gerling
  */
 public final class LocalFileChooserRenderer extends AbstractRepresentationRenderer
-    implements LocalFileChooserRendererSpec {
+    implements StringFileChooserRendererSpec {
 
     private final FileDialogNodeRepresentation m_localFileChooserDialogRep;
 
@@ -76,14 +80,25 @@ public final class LocalFileChooserRenderer extends AbstractRepresentationRender
     }
 
     @Override
-    public Optional<LocalFileChooserRendererOptions> getOptions() {
-        return Optional.of(new LocalFileChooserRendererOptions() {
+    public Optional<FileChooserRendererOptions.StringFileChooserOptions> getOptions() {
+        return Optional.of(new FileChooserRendererOptions.StringFileChooserOptions() {
 
             @Override
             public Optional<String[]> getFileExtensions() {
                 final var fileTypes = m_localFileChooserDialogRep.getFileTypes();
                 final var fileExtensions = FileUploadNodeUtil.extractExtensions(fileTypes);
                 return fileExtensions.length == 0 ? Optional.empty() : Optional.of(fileExtensions);
+            }
+
+            @Override
+            public FileSystemOption getFileSystem() {
+                return FileSystemOption.LOCAL;
+            }
+
+            @Override
+            public Optional<Boolean> getIsLocal() {
+                return WorkflowContextUtil.getWorkflowContextV2Optional()
+                    .map(context -> context.getExecutorType() == ExecutorType.ANALYTICS_PLATFORM);
             }
 
         });

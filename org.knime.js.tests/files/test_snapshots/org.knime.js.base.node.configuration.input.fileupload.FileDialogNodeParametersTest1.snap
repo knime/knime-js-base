@@ -144,9 +144,9 @@
         "type" : "Control",
         "scope" : "#/properties/model/properties/defaultValue/properties/filePath",
         "options" : {
-          "fileExtensions" : [ ],
-          "placeholder" : "",
-          "format" : "localFileChooser"
+          "format" : "stringFileChooser",
+          "isLocal": true,
+          "fileSystem": "LOCAL"
         }
       }, {
         "type" : "Control",

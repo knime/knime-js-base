@@ -65,13 +65,16 @@ class LocalFileBrowserConfigurationComponentDialogTest extends IntegratedCompone
         final var schema = dialogData.getSchemaFor(paramName);
         assertThatJson(schema).inPath("$.properties.localFile.type").isString().isEqualTo("string");
         assertThatJson(schema).inPath("$.properties.localFile.title").isString().isEqualTo("Local file browser title");
-        assertThatJson(schema).inPath("$.properties.localFile.description").isString().isEqualTo("Local file browser description");
+        assertThatJson(schema).inPath("$.properties.localFile.description").isString()
+            .isEqualTo("Local file browser description");
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(uiSchema).inPath("$.elements[0].scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/localFile", paramName));
         assertThatJson(uiSchema).inPath("$.elements[0].options").isObject().doesNotContainKey("fileExtensions");
-        assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.format").isString().isEqualTo("stringFileChooser");
+        assertThatJson(uiSchema).inPath("$.elements[0].options.fileSystem").isString().isEqualTo("LOCAL");
+
     }
 
     @Test
