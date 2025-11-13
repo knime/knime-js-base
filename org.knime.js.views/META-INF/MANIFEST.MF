@@ -7,7 +7,7 @@ Bundle-ClassPath: js-views.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.js.base.node.viz.decisiontree.classification,
   org.knime.js.base.node.viz.plotter.roc
-Require-Bundle: org.knime.base;bundle-version="[5.6.0,6.0.0)",
+Require-Bundle: org.knime.base;bundle-version="[5.9.0,6.0.0)",
   org.knime.js.core;bundle-version="[5.6.0,6.0.0)",
   org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
   com.google.guava;bundle-version="[19.0.0,20.0.0)",

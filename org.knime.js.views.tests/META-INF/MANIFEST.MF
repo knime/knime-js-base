@@ -3,14 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Unit-Tests for org.knime.js.views.tests
 Bundle-SymbolicName: org.knime.js.views.tests;singleton:=true
 Bundle-Version: 5.9.0.qualifier
-Fragment-Host: org.knime.js.views;bundle-version="[5.6.0,6.0.0)"
+Fragment-Host: org.knime.js.views;bundle-version="[5.9.0,6.0.0)"
 Automatic-Module-Name: org.knime.js.views.tests
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Require-Bundle: org.junit;bundle-version="[4.12.0,5.0.0)",
- org.knime.testing;bundle-version="[5.6.0,6.0.0)",
+ org.knime.testing;bundle-version="[5.9.0,6.0.0)",
  com.fasterxml.jackson.module.jackson-module-mrbean;bundle-version="[2.11.0,3.0.0)",
  org.hamcrest.library;bundle-version="[2.2.0,3.0.0)",
- org.knime.js.core;bundle-version="[5.6.0,6.0.0)",
- org.knime.dynamic.js;bundle-version="[5.6.0,6.0.0)",
- org.knime.js.quickforms;bundle-version="[5.6.0,6.0.0)"
+ org.knime.js.core;bundle-version="[5.9.0,6.0.0)",
+ org.knime.dynamic.js;bundle-version="[5.9.0,6.0.0)",
+ org.knime.js.quickforms;bundle-version="[5.9.0,6.0.0)"
