@@ -48,21 +48,28 @@
  */
 package org.knime.js.base.node.parameters.slider;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.CustomMaxReference;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.CustomMinReference;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.migration.Migrate;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persistor;
+import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.widget.OptionalWidget;
 import org.knime.node.parameters.widget.OptionalWidget.DefaultValueProvider;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MaxValidation;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation.IsNonNegativeValidation;
 
 /**
@@ -70,12 +77,14 @@ import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinVa
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
+@SuppressWarnings("restriction")
 public final class StepSizeParameter implements NodeParameters {
 
     @Widget(title = "Step size", description = "A step size. If set the slider only outputs values in set intervals.")
     @Persistor(StepSizePersistor.class)
     @Migrate(loadDefaultIfAbsent = true)
-    @NumberInputWidget(minValidation = IsNonNegativeValidation.class)
+    @NumberInputWidget(minValidation = IsNonNegativeValidation.class,
+        maxValidationProvider = StepSizeMaxValidationProvider.class)
     @OptionalWidget(defaultProvider = ProvideOneAsDefaultStepSize.class)
     Optional<Double> m_step = Optional.empty();
 
@@ -84,6 +93,40 @@ public final class StepSizeParameter implements NodeParameters {
         @Override
         public Double computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
             return 1.0;
+        }
+
+    }
+
+    private static final class StepSizeMaxValidationProvider
+        implements StateProvider<NumberInputWidgetValidation.MaxValidation> {
+
+        private Supplier<Double> m_customMinSupplier;
+
+        private Supplier<Double> m_customMaxSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            m_customMinSupplier = initializer.computeFromValueSupplier(CustomMinReference.class);
+            m_customMaxSupplier = initializer.computeFromValueSupplier(CustomMaxReference.class);
+        }
+
+        @Override
+        public MaxValidation computeState(final NodeParametersInput parametersInput)
+            throws StateComputationFailureException {
+            final var range = m_customMaxSupplier.get() - m_customMinSupplier.get();
+            return new MaxValidation() {
+
+                @Override
+                protected double getMax() {
+                    return range;
+                }
+
+                @Override
+                public String getErrorMessage() {
+                    return String.format("The value must not exceed the range of the slider (%s).",
+                        BigDecimal.valueOf(range).stripTrailingZeros().toPlainString());
+                }
+            };
         }
 
     }
