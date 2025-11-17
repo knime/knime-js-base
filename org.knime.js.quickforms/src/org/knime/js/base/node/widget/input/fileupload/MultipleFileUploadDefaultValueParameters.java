@@ -144,7 +144,7 @@ final class MultipleFileUploadDefaultValueParameters implements NodeParameters {
         }
 
         @Widget(title = "Default file", description = """
-                The file that will be used during design time, i.e. when no file is provided by a component dialog.
+                The file that will be used during design time, i.e. when no file is provided by a component view.
                 It is possible to enter a URL here. This can be useful if a default file is to be addressed with
                 the knime:// protocol (e.g. knime://knime.workflow/../data/file.csv) or if the file is present on a
                 remote server.

@@ -123,7 +123,7 @@ public final class SingleMultipleFileUploadNodeParameters implements NodeParamet
      */
     @Widget(title = "Disable output, if file does not exist", description = """
             If enabled, the output port will be disabled, if the provided file does not exist or cannot be accessed.
-            This option is helpful in the wizard (WebPortal) execution to keep this and subsequent nodes from failing
+            This option is helpful in the wizard (KNIME Hub) execution to keep this and subsequent nodes from failing
             during execution.
             """)
     @Layout(OutputSection.Bottom.class)

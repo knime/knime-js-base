@@ -77,7 +77,7 @@ import org.knime.node.parameters.widget.choices.FlowVariableChoicesProvider;
 @SuppressWarnings("restriction")
 public final class FileDownloadWidgetNodeParameters extends WidgetNodeParametersLabeled {
 
-    @Widget(title = "Link title", description = "Title for the link shown in the Web Portal")
+    @Widget(title = "Link title", description = "Title for the link shown in the view.")
     @Layout(FormFieldSection.class)
     @Persist(configKey = FileDownloadConfig.CFG_LINK_TITLE)
     String m_linkTitle = FileDownloadConfig.DEFAULT_LINK_TITLE;

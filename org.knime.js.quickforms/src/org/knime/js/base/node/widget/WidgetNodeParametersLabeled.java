@@ -69,7 +69,7 @@ public abstract class WidgetNodeParametersLabeled extends WidgetNodeParametersBa
     String m_label = DEFAULT_LABEL;
 
     @Widget(title = "Description",
-        description = "Some lines of description that will be shown in the view, for instance by means of a tooltip.")
+        description = "Some lines of description that will be shown in the view, for instance as a tooltip.")
     @Layout(FormFieldSection.class)
     String m_description = DEFAULT_DESCRIPTION;
 
