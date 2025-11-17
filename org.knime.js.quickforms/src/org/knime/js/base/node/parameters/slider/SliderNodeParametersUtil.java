@@ -186,6 +186,33 @@ public final class SliderNodeParametersUtil {
 
     }
 
+    /** Layout section for default value section of the {@link RangeSliderFilterNodeFactory}. */
+    @After(OutputSection.class)
+    @Before(SliderBehaviourSection.class)
+    @Section(title = "Default Value")
+    public interface DefaultValueSection {
+
+        interface UseCustomDefaultMin {
+
+        }
+
+        @After(UseCustomDefaultMin.class)
+        interface DefaultMinimum {
+
+        }
+
+        @After(DefaultMinimum.class)
+        interface UseCustomDefaultMax {
+
+        }
+
+        @After(UseCustomDefaultMax.class)
+        interface DefaultMaximum {
+
+        }
+
+    }
+
     /** Layout section for slider behaviour settings (orientation/direction, tooltip, etc). */
     @After(OutputSection.class)
     @Before(SliderTooltipSection.class)
@@ -198,6 +225,13 @@ public final class SliderNodeParametersUtil {
     @Before(LabelAndTicksSection.class)
     @Section(title = "Slider Tooltip")
     public interface SliderTooltipSection {
+    }
+
+    /** Layout section regarding the format settings for multiple tooltips. */
+    @After(SliderBehaviourSection.class)
+    @Before(LabelAndTicksSection.class)
+    @Section(title = "Slider Tooltips")
+    public interface SliderTooltipsSection {
     }
 
     /** Layout section for label and pips settings. */
@@ -279,8 +313,13 @@ public final class SliderNodeParametersUtil {
     public static final class UseCustomMin implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
-            return i.getBoolean(UseCustomMinReference.class).isTrue().or(isNoneColumns);
+            final var useCustomMin = i.getBoolean(UseCustomMinReference.class).isTrue();
+            /**
+             * The domain column reference is missing in the range slider node ({@link RangeSliderFilterNodeFactory}),
+             * because it has no NONE option and therefore only depends on the {@link UseCustomMinReference}.
+             */
+            return i.isMissing(DomainColumnReference.class) ? useCustomMin
+                : useCustomMin.or(i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE));
         }
     }
 
@@ -288,9 +327,32 @@ public final class SliderNodeParametersUtil {
     public static final class UseCustomMax implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            final var isNoneColumns = i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE);
-            return i.getBoolean(UseCustomMaxReference.class).isTrue().or(isNoneColumns);
+            final var useCustomMax = i.getBoolean(UseCustomMaxReference.class).isTrue();
+            /**
+             * The domain column reference is missing in the range slider node ({@link RangeSliderFilterNodeFactory}),
+             * because it has no NONE option and therefore only depends on the {@link UseCustomMaxReference}.
+             */
+            return i.isMissing(DomainColumnReference.class) ? useCustomMax
+                : useCustomMax.or(i.getStringOrEnum(DomainColumnReference.class).isEnumChoice(NoneChoice.NONE));
         }
+    }
+
+    /** State provider that extracts the string column name from the domain column ({@link DomainColumnReference}). */
+    public static final class StringOrEnumDomainColumnProvider implements StateProvider<String> {
+
+        private Supplier<StringOrEnum<NoneChoice>> m_domainColumnSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            m_domainColumnSupplier = initializer.computeFromValueSupplier(DomainColumnReference.class);
+        }
+
+        @Override
+        public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
+            final var domainColumn = m_domainColumnSupplier.get();
+            return domainColumn.getEnumChoice().isPresent() ? null : domainColumn.getStringChoice();
+        }
+
     }
 
     /**
@@ -302,20 +364,24 @@ public final class SliderNodeParametersUtil {
     public abstract static class AbstractLowerUpperBoundStateProvider<T>
         implements StateProvider<Optional<Pair<T, T>>> {
 
-        private Supplier<StringOrEnum<NoneChoice>> m_domainColumnSupplier;
+        private Supplier<String> m_domainColumnSupplier;
 
         private Class<? extends DataValue> m_compatibleDataValue;
+
+        private Class<? extends StateProvider<String>> m_domainColumnProvider;
 
         /**
          * @param compatibleDataValue the DataValue, the bound should be compatible to
          */
-        protected AbstractLowerUpperBoundStateProvider(final Class<? extends DataValue> compatibleDataValue) {
+        protected AbstractLowerUpperBoundStateProvider(final Class<? extends DataValue> compatibleDataValue,
+            final Class<? extends StateProvider<String>> domainColumnProvider) {
             m_compatibleDataValue = compatibleDataValue;
+            m_domainColumnProvider = domainColumnProvider;
         }
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            m_domainColumnSupplier = initializer.computeFromValueSupplier(DomainColumnReference.class);
+            m_domainColumnSupplier = initializer.computeFromProvidedState(m_domainColumnProvider);
         }
 
         @Override
@@ -324,17 +390,16 @@ public final class SliderNodeParametersUtil {
             final var tableSpecOpt = parametersInput.getInTableSpec(0);
             final var domainColumn = m_domainColumnSupplier.get();
 
-            if (tableSpecOpt.isEmpty() || domainColumn.getEnumChoice().isPresent()) {
+            if (tableSpecOpt.isEmpty() || domainColumn == null) {
                 return Optional.empty();
             }
 
             final var spec = tableSpecOpt.get();
-            final var columnName = domainColumn.getStringChoice();
-            if (!spec.containsName(columnName)) {
+            if (!spec.containsName(domainColumn)) {
                 return Optional.empty();
             }
 
-            final var domain = spec.getColumnSpec(columnName).getDomain();
+            final var domain = spec.getColumnSpec(domainColumn).getDomain();
             final var lower = domain.getLowerBound();
             final var upper = domain.getUpperBound();
             final var hasLower = domain.hasLowerBound() && lower.getType().isCompatible(m_compatibleDataValue);
@@ -532,7 +597,8 @@ public final class SliderNodeParametersUtil {
     }
 
     /**
-     * Abstract state provider that extracts the minimum value from domain column bounds.
+     * Abstract state provider that extracts the minimum value from domain column bounds when the domain bounds change
+     * or when the value of the boolean field with the {@link UseCustomMinReference} changes.
      *
      * @param <T> the data type for the minimum value
      */
@@ -561,11 +627,13 @@ public final class SliderNodeParametersUtil {
     }
 
     /**
-     * Abstract state provider that extracts the maximum value from domain column bounds.
+     * Abstract state provider that extracts the maximum value from domain column bounds when the domain bounds change
+     * or when the value of the boolean field with the {@link UseCustomMaxReference} changes.
      *
      * @param <T> the data type for the maximum value
      */
-    public abstract static class AbstractCustomMaxValueProvider<T> extends AbstractCustomMinMaxValueProvider<T> {
+    public abstract static class AbstractCustomMaxValueProvider<T>
+        extends AbstractCustomMinMaxValueProvider<T> {
 
         /**
          * @param lowerUpperBoundProvider state provider providing the lower/upper bound

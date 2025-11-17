@@ -69,41 +69,41 @@ public class RangeSliderFilterWidgetConfig {
     private static final boolean DEFAULT_HIDE_WIZARD = false;
     private boolean m_hideInWizard = DEFAULT_HIDE_WIZARD;
 
-    private static final String CFG_SLIDER = "sliderSettings";
-    private static final String CFG_SLIDER_EXISTS = "sliderExists";
+    static final String CFG_SLIDER = "sliderSettings";
+    static final String CFG_SLIDER_EXISTS = "sliderExists";
     private SliderSettings m_sliderSettings = null;
 
     private SettingsModelString m_domainColumn = new SettingsModelString(SliderNodeDialogUI.CFG_DOMAIN_COLUMN, null);
 
-    private static final String CFG_USE_LABEL = "useLabel";
+    static final String CFG_USE_LABEL = "useLabel";
     private static final boolean DEFAULT_USE_LABEL = false;
     private boolean m_useLabel;
 
-    private static final String CFG_LABEL = "label";
+    static final String CFG_LABEL = "label";
     private String m_label;
 
-    private static final String CFG_CUSTOM_LABEL = "customLabel";
+    static final String CFG_CUSTOM_LABEL = "customLabel";
     private static final boolean DEFAULT_CUSTOM_LABEL = false;
     private boolean m_customLabel;
 
-    private static final String CFG_CUSTOM_MIN = "customMin";
-    private static final boolean DEFAULT_CUSTOM_MIN = false;
+    static final String CFG_CUSTOM_MIN = "customMin";
+    static final boolean DEFAULT_CUSTOM_MIN = false;
     private boolean m_customMin = DEFAULT_CUSTOM_MIN;
 
-    private static final String CFG_CUSTOM_MAX = "customMax";
-    private static final boolean DEFAULT_CUSTOM_MAX = false;
+    static final String CFG_CUSTOM_MAX = "customMax";
+    static final boolean DEFAULT_CUSTOM_MAX = false;
     private boolean m_customMax = DEFAULT_CUSTOM_MAX;
 
-    private static final String CFG_USE_DOMAIN_EXTENDS = "domainExtends";
+    static final String CFG_USE_DOMAIN_EXTENDS = "domainExtends";
     private static final boolean[] DEFAULT_USE_DOMAIN_EXTENDS = new boolean[]{true, true};
     private boolean[] m_useDomainExtends = DEFAULT_USE_DOMAIN_EXTENDS;
 
-    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_TABLE = "mergeWithExistingFiltersTable";
-    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE = true;
+    static final String CFG_MERGE_WITH_EXISTING_FILTERS_TABLE = "mergeWithExistingFiltersTable";
+    static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE = true;
     private boolean m_mergeWithExistingFiltersTable = DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
 
-    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_MODEL = "mergeWithExistingFiltersModel";
-    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
+    static final String CFG_MERGE_WITH_EXISTING_FILTERS_MODEL = "mergeWithExistingFiltersModel";
+    static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
     private boolean m_mergeWithExistingFiltersModel = DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
 
     private static final String CFG_CUSTOM_CSS = "customCSS";
