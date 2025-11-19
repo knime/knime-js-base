@@ -67,7 +67,7 @@ public class SliderWidgetNodeFactory
     private static final String NAME = "Slider Widget";
 
     static final String DESCRIPTION =
-        "Creates a slider input widget for use in components views. Outputs a string flow variable with a given value.";
+        "Creates a slider input widget for use in components views. Outputs a double flow variable with a given value.";
 
     static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
         .name(NAME) //
@@ -75,10 +75,9 @@ public class SliderWidgetNodeFactory
         .shortDescription(DESCRIPTION) //
         .fullDescription(DESCRIPTION) //
         .modelSettingsClass(SliderWidgetNodeParameters.class) //
-        .addInputTable("Table Input with applicable domain values",
+        .addOptionalInputTable("Table Input with applicable domain values",
             "Input table which contains at least one numeric column with domain values set, "
-                + "which can be used to control the minimum and maximum values of the slider.",
-            true) //
+                + "which can be used to control the minimum and maximum values of the slider.") //
         .addOutputPort("Flow Variable Output", FlowVariablePortObject.TYPE,
             "Variable output (double) with the given variable defined.") //
         .nodeType(NodeType.Widget) //
