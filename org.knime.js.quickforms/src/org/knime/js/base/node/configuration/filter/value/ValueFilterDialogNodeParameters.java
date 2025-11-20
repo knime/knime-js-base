@@ -64,7 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
 import org.knime.js.base.node.configuration.value.ValueSelectionFilterDialogNodeParametersUtil.DefaultColumnValueReference;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsConfigurationModification;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsConfigurationModification;
 import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters;
 import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValue.AbstractModifyDefaultValuesValueProvider;
 import org.knime.js.base.node.parameters.nominal.ValueFilterNodeParameters.DefaultValuesChoicesProvider;

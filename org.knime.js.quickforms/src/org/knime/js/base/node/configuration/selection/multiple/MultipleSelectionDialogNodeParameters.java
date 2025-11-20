@@ -51,7 +51,7 @@ package org.knime.js.base.node.configuration.selection.multiple;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
-import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsConfigurationModification;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsConfigurationModification;
 import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionNodeParameters;
 
 /**

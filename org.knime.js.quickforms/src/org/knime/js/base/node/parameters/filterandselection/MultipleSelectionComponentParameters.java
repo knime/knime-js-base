@@ -50,16 +50,9 @@ package org.knime.js.base.node.parameters.filterandselection;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
-import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier.AbstractNumVisOptionsValueProvider;
-import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsConfigurationModification;
-import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.LimitVisibleOptionsModification.LimitVisibleOptionsWidgetModification;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -67,11 +60,9 @@ import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
-import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * The common settings of multiple selection configuration/widgets nodes regarding the type of component and the
@@ -111,63 +102,7 @@ public class MultipleSelectionComponentParameters implements NodeParameters {
         }
     }
 
-    private static final class SelectionTypeValueReference implements ParameterReference<String> {
-    }
-
-    private static final int MIN_NUM_VIS_OPTIONS_TWINLIST = 5;
-
-    private static final class NumVisOptionsMinValidationProvider implements StateProvider<MinValidation> {
-        private Supplier<String> m_selectionTypeSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
-        }
-
-        @Override
-        public MinValidation computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            if (!m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
-                return null;
-            }
-            return new MinValidation() {
-
-                @Override
-                protected double getMin() {
-                    return MIN_NUM_VIS_OPTIONS_TWINLIST;
-                }
-
-            };
-
-        }
-    }
-
-    private static final class NumVisOptionsValueProvider extends AbstractNumVisOptionsValueProvider {
-
-        private Supplier<String> m_selectionTypeSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            super.init(initializer);
-            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
-        }
-
-        @Override
-        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var numVisOptions = m_numVisOptionsSupplier.get();
-            final var isTwinlist = m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST);
-            return isTwinlist && numVisOptions < MIN_NUM_VIS_OPTIONS_TWINLIST ? MIN_NUM_VIS_OPTIONS_TWINLIST
-                : numVisOptions;
-        }
-    }
-
-    private static final class IsListOrTwinlistSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(MultipleSelectionsComponentFactory.LIST).or(
-                i.getString(SelectionTypeValueReference.class).isEqualTo(MultipleSelectionsComponentFactory.TWINLIST));
-        }
+    static final class SelectionTypeValueReference implements ParameterReference<String> {
     }
 
     /**
@@ -181,98 +116,4 @@ public class MultipleSelectionComponentParameters implements NodeParameters {
         }
     }
 
-    private static final class IsListOrTwinlistOrComboboxSelectionType implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(IsListOrTwinlistSelectionType.class)
-                .or(i.getPredicate(IsComboboxSelectionType.class));
-        }
-    }
-
-    public abstract static sealed class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier
-        permits LimitVisibleOptionsConfigurationModification, LimitVisibleOptionsWidgetModification {
-
-        @Override
-        final Pair<Class<? extends StateProvider<? extends MinValidation>>, //
-                Class<? extends AbstractNumVisOptionsValueProvider>> getNumVisOptionsProviders() {
-            return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
-        }
-
-        /**
-         * The visible options modification for multiple selection configuration nodes. Configurations allow to limit
-         * the number of visible options for the List and Twinlist component.
-         */
-        public static final class LimitVisibleOptionsConfigurationModification extends LimitVisibleOptionsModification {
-            @Override
-            String getLimitNumVisOptionsDescription() {
-                return """
-                        By default the List and Twinlist components adjust their height to display all possible \
-                        choices without a scroll bar. If the setting is enabled, you will be able to limit the number \
-                        of visible options in case you have too many of them. The setting is available only for List \
-                        or Twinlist selection type.""";
-            }
-
-            @Override
-            String getNumVisOptionsDescription() {
-                return """
-                        A number of options visible in the List or Twinlist component without a vertical scroll bar. \
-                        Changing this value will also affect the component's height. Notice that for Twinlist the \
-                        height cannot be less than the overall height of the control buttons in the middle. The \
-                        setting is available only for List or Twinlist selection type.""";
-            }
-
-            @Override
-            Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
-                getEffectPredicates() {
-                return new Pair<>(IsListOrTwinlistSelectionType.class,
-                    IsListOrTwinlistShowNumberOfVisibleOptions.class);
-            }
-
-            private static final class IsListOrTwinlistShowNumberOfVisibleOptions
-                extends AbstractShowNumberOfVisibleOptions {
-                IsListOrTwinlistShowNumberOfVisibleOptions() {
-                    super(IsListOrTwinlistSelectionType.class);
-                }
-            }
-        }
-
-        /**
-         * The visible options modification for multiple selection widget nodes. Widgets allow to limit the number of
-         * visible options for the List, Twinlist, and Combobox component.
-         */
-        public static final class LimitVisibleOptionsWidgetModification extends LimitVisibleOptionsModification {
-            @Override
-            String getLimitNumVisOptionsDescription() {
-                return """
-                        By default the List, Twinlist, and Combobox components adjust their height to display all \
-                        possible choices without a scroll bar. If the setting is enabled, you will be able to limit \
-                        the number of visible options in case you have too many of them. The setting is available only \
-                        for List, Twinlist, and Combobox selection type.""";
-            }
-
-            @Override
-            String getNumVisOptionsDescription() {
-                return """
-                        A number of options visible in the List, Twinlist or Combobox component without a vertical \
-                        scroll bar. Changing this value will also affect the component's height. Notice that for \
-                        Twinlist the height cannot be less than the overall height of the control buttons in the \
-                        middle. The setting is available only for List, Twinlist, and Combobox selection type.""";
-            }
-
-            @Override
-            Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
-                getEffectPredicates() {
-                return new Pair<>(IsListOrTwinlistOrComboboxSelectionType.class,
-                    IsListOrTwinlistOrComboboxShowNumberOfVisibleOptions.class);
-            }
-
-            private static final class IsListOrTwinlistOrComboboxShowNumberOfVisibleOptions
-                extends AbstractShowNumberOfVisibleOptions {
-                IsListOrTwinlistOrComboboxShowNumberOfVisibleOptions() {
-                    super(IsListOrTwinlistOrComboboxSelectionType.class);
-                }
-            }
-        }
-
-    }
 }
