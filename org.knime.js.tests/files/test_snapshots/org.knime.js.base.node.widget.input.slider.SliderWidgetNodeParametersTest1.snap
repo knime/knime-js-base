@@ -653,7 +653,11 @@
         "scope" : "#/properties/model/properties/label"
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/description"
+        "scope" : "#/properties/model/properties/description",
+        "options" : {
+          "rows" : 4,
+          "format" : "textArea"
+        }
       } ]
     }, {
       "label" : "Range",

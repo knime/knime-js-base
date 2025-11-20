@@ -69,6 +69,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.widget.text.TextAreaWidget;
 import org.knime.node.parameters.widget.text.TextInputWidget;
 import org.knime.node.parameters.widget.text.TextInputWidgetValidation;
 
@@ -103,6 +104,7 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
             the node description of the component exposing a dialog.\
             """)
     @Layout(FormFieldSection.class)
+    @TextAreaWidget
     String m_description = DEFAULT_DESCRIPTION;
 
     @Widget(title = "Output variable name", description = """

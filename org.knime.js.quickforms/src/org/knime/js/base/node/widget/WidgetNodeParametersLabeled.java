@@ -55,6 +55,7 @@ import org.knime.js.base.node.base.LabeledConfig;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.widget.text.TextAreaWidget;
 
 /**
  * This class specifies the common settings of those widget nodes additionally offering to input a label and a
@@ -71,6 +72,7 @@ public abstract class WidgetNodeParametersLabeled extends WidgetNodeParametersBa
     @Widget(title = "Description",
         description = "Some lines of description that will be shown in the view, for instance by means of a tooltip.")
     @Layout(FormFieldSection.class)
+    @TextAreaWidget
     String m_description = DEFAULT_DESCRIPTION;
 
 }
