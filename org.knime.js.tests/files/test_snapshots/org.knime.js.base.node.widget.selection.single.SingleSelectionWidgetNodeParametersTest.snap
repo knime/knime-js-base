@@ -1,16 +1,16 @@
 {
   "data" : {
     "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "single-selection",
-      "hideInWizard" : false,
-      "customCSS" : "",
       "required" : true,
       "triggerReExecution" : false,
       "singleSelectionNodeParameters" : {
         "defaultValue" : { },
-        "limitVisOptions" : {
+        "singleSelectionComponentParameters" : {
           "selectionType" : "Dropdown",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
@@ -70,7 +70,15 @@
                 },
                 "default" : { }
               },
-              "limitVisOptions" : {
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "possibleChoices" : {
+                "type" : "string",
+                "title" : "Possible choices",
+                "description" : "The possible choices, each line is one possible value."
+              },
+              "singleSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "limitVisibleOptions" : {
@@ -109,19 +117,11 @@
                     "numberOfVisibleOptions" : 5
                   }
                 }
-              },
-              "overwrittenByValueMessage" : {
-                "type" : "object"
-              },
-              "possibleChoices" : {
-                "type" : "string",
-                "title" : "Possible choices",
-                "description" : "The possible choices, each line is one possible value."
               }
             },
             "default" : {
               "defaultValue" : { },
-              "limitVisOptions" : {
+              "singleSelectionComponentParameters" : {
                 "selectionType" : "Dropdown",
                 "limitVisibleOptions" : {
                   "limitNumberOfVisibleOptions" : false,
@@ -156,21 +156,21 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+            "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
             "schema" : {
               "const" : "List"
             }
@@ -178,7 +178,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -202,12 +202,12 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
               }
             }, {
-              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+              "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
               "schema" : {
                 "const" : "List"
               }
@@ -271,11 +271,11 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "hideInWizard" : { },
-          "customCSS" : { },
           "required" : { },
           "triggerReExecution" : {
             "configKey" : "trigger_reexecution"
@@ -292,7 +292,7 @@
                   }
                 }
               },
-              "limitVisOptions" : {
+              "singleSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "selectionType" : {
@@ -331,7 +331,7 @@
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+    "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],

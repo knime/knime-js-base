@@ -1,18 +1,18 @@
 {
   "data" : {
     "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "column-selection",
-      "hideInWizard" : false,
-      "customCSS" : "",
       "required" : true,
       "triggerReExecution" : false,
       "columnSelectionNodeParameters" : {
         "defaultValue" : {
           "columnValue" : ""
         },
-        "limitVisOptions" : {
+        "singleSelectionComponentParameters" : {
           "selectionType" : "Dropdown",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
@@ -43,7 +43,17 @@
                 },
                 "default" : { }
               },
-              "limitVisOptions" : {
+              "overwrittenByValueMessage" : {
+                "type" : "object"
+              },
+              "possibleColumns" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                },
+                "default" : [ ]
+              },
+              "singleSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "limitVisibleOptions" : {
@@ -82,21 +92,11 @@
                     "numberOfVisibleOptions" : 5
                   }
                 }
-              },
-              "overwrittenByValueMessage" : {
-                "type" : "object"
-              },
-              "possibleColumns" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                },
-                "default" : [ ]
               }
             },
             "default" : {
               "defaultValue" : { },
-              "limitVisOptions" : {
+              "singleSelectionComponentParameters" : {
                 "selectionType" : "Dropdown",
                 "limitVisibleOptions" : {
                   "limitNumberOfVisibleOptions" : false,
@@ -162,21 +162,21 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+            "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
             "schema" : {
               "const" : "List"
             }
@@ -184,7 +184,7 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -208,12 +208,12 @@
           "condition" : {
             "type" : "AND",
             "conditions" : [ {
-              "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+              "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
               "schema" : {
                 "const" : true
               }
             }, {
-              "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+              "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
               "schema" : {
                 "const" : "List"
               }
@@ -270,11 +270,11 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "hideInWizard" : { },
-          "customCSS" : { },
           "required" : { },
           "triggerReExecution" : {
             "configKey" : "trigger_reexecution"
@@ -291,7 +291,7 @@
                   }
                 }
               },
-              "limitVisOptions" : {
+              "singleSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "selectionType" : {
@@ -357,25 +357,6 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ {
-        "id" : "Radio buttons (horizontal)",
-        "text" : "Radio buttons (horizontal)"
-      }, {
-        "id" : "Radio buttons (vertical)",
-        "text" : "Radio buttons (vertical)"
-      }, {
-        "id" : "List",
-        "text" : "List"
-      }, {
-        "id" : "Dropdown",
-        "text" : "Dropdown"
-      } ]
-    } ]
-  }, {
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/possibleColumns",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -401,6 +382,25 @@
           "id" : "org.knime.core.data.DoubleValue",
           "text" : "Number (Float)"
         }
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "Radio buttons (horizontal)",
+        "text" : "Radio buttons (horizontal)"
+      }, {
+        "id" : "Radio buttons (vertical)",
+        "text" : "Radio buttons (vertical)"
+      }, {
+        "id" : "List",
+        "text" : "List"
+      }, {
+        "id" : "Dropdown",
+        "text" : "Dropdown"
       } ]
     } ]
   } ],

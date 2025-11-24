@@ -1,11 +1,11 @@
 {
   "data" : {
     "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "value-filter",
-      "hideInWizard" : false,
-      "customCSS" : "",
       "required" : true,
       "triggerReExecution" : false,
       "valueFilterNodeParameters" : {
@@ -256,10 +256,10 @@
               }
             },
             "min" : {
-              "errorMessage" : "The value must be at least 2.",
+              "errorMessage" : "The value must be at least -2147483648.",
               "parameters" : {
                 "isExclusive" : false,
-                "min" : 2.0
+                "min" : -2.147483648E9
               }
             }
           }
@@ -365,11 +365,11 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "hideInWizard" : { },
-          "customCSS" : { },
           "required" : { },
           "triggerReExecution" : {
             "configKey" : "trigger_reexecution"

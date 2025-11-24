@@ -129,7 +129,7 @@ public class ValueSelectionNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
+    SingleSelectionComponentParameters m_singleSelectionComponentParameters = new SingleSelectionComponentParameters();
 
     @PersistWithin.PersistEmbedded
     EnableColumnFieldParameter m_enableColumnFieldParameter = new EnableColumnFieldParameter();

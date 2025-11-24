@@ -51,9 +51,12 @@ package org.knime.js.base.node.parameters.filterandselection;
 import java.util.function.Supplier;
 
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.TypeDependentMinValidation;
 import org.knime.node.parameters.NodeParameters;
+import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.updates.Effect;
@@ -169,11 +172,13 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
             }
             final var numVisOptionsProviders = getNumVisOptionsProviders();
             if (numVisOptionsProviders != null) {
-                group.find(NumberOfVisibleOptionsModificationReference.class) //
-                    .modifyAnnotation(NumberInputWidget.class) //
+                final var numVisOptionsWidget = group.find(NumberOfVisibleOptionsModificationReference.class);
+                numVisOptionsWidget.modifyAnnotation(NumberInputWidget.class) //
                     .withProperty("minValidationProvider", numVisOptionsProviders.getFirst()) //
+                    // remove the static min validation
+                    .withProperty("minValidation", TypeDependentMinValidation.class) //
                     .modify();
-                group.find(NumberOfVisibleOptionsModificationReference.class) //
+                numVisOptionsWidget //
                     .addAnnotation(ValueProvider.class) //
                     .withValue(numVisOptionsProviders.getSecond()) //
                     .modify();
@@ -215,7 +220,7 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
          * @return a pair of the min validation state provider to dynamically limit the number of options and the value
          *         provider to set a value if the current value is smaller than the new minimum.
          */
-        Pair<Class<? extends StateProvider<? extends MinValidation>>, Class<? extends AbstractNumVisOptionsValueProvider>>
+        Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
             getNumVisOptionsProviders() {
             return null;
         }
@@ -252,6 +257,30 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
                 return i.getPredicate(ShowNumberOfVisibleOptions.class)
                     .and(i.getPredicate(m_limitNumVisOptionsEffectPredicate));
             }
+        }
+
+        abstract static class AbstractNumVisOptionsValidationProvider implements StateProvider<MinValidation> {
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                initializer.computeBeforeOpenDialog();
+            }
+
+            /**
+             * Default implementation that always returns a minimum of 2.
+             */
+            @Override
+            public MinValidation computeState(final NodeParametersInput parametersInput)
+                throws StateComputationFailureException {
+                return new MinValidation() {
+
+                    @Override
+                    protected double getMin() {
+                        return 2;
+                    }
+                };
+            }
+
         }
 
         abstract static class AbstractNumVisOptionsValueProvider implements StateProvider<Integer> {

@@ -109,7 +109,7 @@ public final class ColumnSelectionNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    SingleSelectionComponentParameters m_limitVisOptions = new SingleSelectionComponentParameters();
+    SingleSelectionComponentParameters m_singleSelectionComponentParameters = new SingleSelectionComponentParameters();
 
     @ChoicesProvider(AllColumnsProvider.class)
     @Modification.WidgetReference(PossibleColumnsModificationReference.class)

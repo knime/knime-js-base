@@ -56,7 +56,6 @@ import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFa
 import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
 import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.SelectionTypeValueReference;
 import org.knime.node.parameters.NodeParametersInput;
-import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
@@ -66,6 +65,13 @@ import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinVa
 @SuppressWarnings("restriction")
 public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOptionsParametersModifier {
 
+    /**
+     * Minimum used for TwinList, Checkboxes (both vertical and horizontal) and (searchable!) List components.
+     *
+     * Even if for some of the components less options would make sense (all apart from TwinList, where the buttons in
+     * the middle dictate a minimum of the number of these buttons), the frontend components currently do not allow less
+     * than 5 visible options.
+     */
     public static final int MIN_NUM_VIS_OPTIONS_NON_COMBOBOX = 5;
 
     @Override
@@ -85,17 +91,17 @@ public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOpt
     }
 
     @Override
-    Pair<Class<? extends StateProvider<? extends MinValidation>>, Class<? extends AbstractNumVisOptionsValueProvider>>
+    Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
         getNumVisOptionsProviders() {
         return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
     }
 
-    private static final class NumVisOptionsMinValidationProvider implements StateProvider<MinValidation> {
+    private static final class NumVisOptionsMinValidationProvider extends AbstractNumVisOptionsValidationProvider {
         private Supplier<String> m_selectionTypeSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
+            super.init(initializer);
             m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
         }
 
@@ -103,7 +109,7 @@ public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOpt
         public MinValidation computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
             if (m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.COMBOBOX)) {
-                return null;
+                return super.computeState(parametersInput);
             }
             return new MinValidation() {
 

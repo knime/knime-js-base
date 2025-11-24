@@ -58,7 +58,6 @@ import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionCom
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
-import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
@@ -95,7 +94,7 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
     }
 
     @Override
-    Pair<Class<? extends StateProvider<? extends MinValidation>>, Class<? extends AbstractNumVisOptionsValueProvider>>
+    Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
         getNumVisOptionsProviders() {
         return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
     }
@@ -114,12 +113,12 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
         }
     }
 
-    private static final class NumVisOptionsMinValidationProvider implements StateProvider<MinValidation> {
+    private static final class NumVisOptionsMinValidationProvider extends AbstractNumVisOptionsValidationProvider {
         private Supplier<String> m_selectionTypeSupplier;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
+            super.init(initializer);
             m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
         }
 
@@ -127,7 +126,7 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
         public MinValidation computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
             if (!m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
-                return null;
+                return super.computeState(parametersInput);
             }
             return new MinValidation() {
 

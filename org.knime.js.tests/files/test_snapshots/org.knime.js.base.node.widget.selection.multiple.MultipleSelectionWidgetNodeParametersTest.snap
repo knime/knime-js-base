@@ -1,16 +1,16 @@
 {
   "data" : {
     "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
       "label" : "Label",
       "description" : "Enter Description",
       "flowVariableName" : "multiple-selection",
-      "hideInWizard" : false,
-      "customCSS" : "",
       "required" : true,
       "triggerReExecution" : false,
       "multipleSelectionNodeParameters" : {
         "defaultValue" : { },
-        "limitVisOptions" : {
+        "multiSelectionComponentParameters" : {
           "selectionType" : "Twinlist",
           "limitVisibleOptions" : {
             "limitNumberOfVisibleOptions" : false,
@@ -75,7 +75,7 @@
                 },
                 "default" : { }
               },
-              "limitVisOptions" : {
+              "multiSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "limitVisibleOptions" : {
@@ -126,7 +126,7 @@
             },
             "default" : {
               "defaultValue" : { },
-              "limitVisOptions" : {
+              "multiSelectionComponentParameters" : {
                 "selectionType" : "Twinlist",
                 "limitVisibleOptions" : {
                   "limitNumberOfVisibleOptions" : false,
@@ -196,20 +196,20 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/selectionType",
         "options" : {
           "format" : "dropDown"
         },
         "providedOptions" : [ "possibleValues" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -220,10 +220,10 @@
               }
             },
             "min" : {
-              "errorMessage" : "The value must be at least 2.",
+              "errorMessage" : "The value must be at least -2147483648.",
               "parameters" : {
                 "isExclusive" : false,
-                "min" : 2.0
+                "min" : -2.147483648E9
               }
             }
           }
@@ -232,7 +232,7 @@
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+            "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
             "schema" : {
               "const" : true
             }
@@ -254,7 +254,7 @@
         "rule" : {
           "effect" : "HIDE",
           "condition" : {
-            "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+            "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/selectionType",
             "schema" : {
               "const" : "ComboBox"
             }
@@ -316,11 +316,11 @@
       "model" : {
         "type" : "object",
         "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
           "label" : { },
           "description" : { },
           "flowVariableName" : { },
-          "hideInWizard" : { },
-          "customCSS" : { },
           "required" : { },
           "triggerReExecution" : {
             "configKey" : "trigger_reexecution"
@@ -337,7 +337,7 @@
                   }
                 }
               },
-              "limitVisOptions" : {
+              "multiSelectionComponentParameters" : {
                 "type" : "object",
                 "properties" : {
                   "selectionType" : {
@@ -394,7 +394,7 @@
       "value" : [ ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+    "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
     "providedOptionName" : "validation.min",
     "values" : [ {
       "indices" : [ ],
@@ -407,7 +407,7 @@
       }
     } ]
   }, {
-    "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType",
+    "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -437,9 +437,9 @@
     "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/multipleSelectionNodeParameters/properties/possibleChoices" ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType"
+      "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/selectionType"
     },
-    "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/multipleSelectionNodeParameters/properties/limitVisOptions/properties/selectionType" ]
+    "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/multipleSelectionNodeParameters/properties/multiSelectionComponentParameters/properties/selectionType" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/multipleSelectionNodeParameters/properties/possibleChoices"

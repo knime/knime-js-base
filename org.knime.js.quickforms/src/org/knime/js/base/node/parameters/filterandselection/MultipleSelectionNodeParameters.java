@@ -110,8 +110,7 @@ public final class MultipleSelectionNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    MultipleSelectionComponentParameters m_limitVisOptions =
-        new MultipleSelectionComponentParameters();
+    MultipleSelectionComponentParameters m_multiSelectionComponentParameters = new MultipleSelectionComponentParameters();
 
     @Widget(title = "Possible choices", description = "The possible choices, each line is one possible value.")
     @TextAreaWidget
