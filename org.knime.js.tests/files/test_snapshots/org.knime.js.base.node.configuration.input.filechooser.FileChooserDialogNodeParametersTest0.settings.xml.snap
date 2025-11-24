@@ -6,6 +6,12 @@
     <entry key="parameterName" type="xstring" value="file-chooser"/>
     <entry key="hideInDialog" type="xboolean" value="false"/>
     <entry key="required" type="xboolean" value="false"/>
+    <config key="types">
+        <entry key="array-size" type="xint" value="3"/>
+        <entry key="0" type="xstring" value=".csv"/>
+        <entry key="1" type="xstring" value=".txt"/>
+        <entry key="2" type="xstring" value=".xml"/>
+    </config>
     <config key="defaultValue">
         <config key="items">
             <entry key="num_items" type="xint" value="1"/>
@@ -19,15 +25,9 @@
     <entry key="selectWorkflows" type="xboolean" value="true"/>
     <entry key="selectDirectories" type="xboolean" value="true"/>
     <entry key="outputType" type="xboolean" value="true"/>
-    <config key="types">
-        <entry key="array-size" type="xint" value="3"/>
-        <entry key="0" type="xstring" value=".csv"/>
-        <entry key="1" type="xstring" value=".txt"/>
-        <entry key="2" type="xstring" value=".xml"/>
-    </config>
+    <entry key="error_message" type="xstring" value=""/>
     <entry key="multipleSelection" type="xboolean" value="true"/>
     <entry key="defaultMountId" type="xboolean" value="false"/>
     <entry key="customMountId" type="xstring" value="custom-mount-123"/>
     <entry key="rootDir" type="xstring" value="/remote/root"/>
-    <entry key="error_message" type="xstring" value=""/>
 </config>

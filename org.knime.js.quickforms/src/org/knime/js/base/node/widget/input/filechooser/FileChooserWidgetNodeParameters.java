@@ -41,69 +41,72 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   24 Nov 2025 (Robin Gerling): created
  */
-
-package org.knime.js.base.node.configuration.input.filechooser;
+package org.knime.js.base.node.widget.input.filechooser;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.js.base.node.base.input.filechooser.FileChooserNodeConfig;
-import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue.FileItem;
-import org.knime.js.base.node.configuration.ConfigurationNodeSettings;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
-import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.js.base.node.parameters.filechooser.FileChooserNodeParameters;
+import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
+import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
-import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
 import org.knime.node.parameters.persistence.Persist;
-import org.knime.node.parameters.widget.message.TextMessage;
+import org.knime.node.parameters.updates.Effect;
+import org.knime.node.parameters.updates.Effect.EffectType;
+import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.util.BooleanReference;
 
 /**
- * Node parameters for Repository File Chooser Configuration (legacy).
+ * Settings for the file chooser widget node.
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
- * @author AI Migration Pipeline v1.1
  */
 @SuppressWarnings("restriction")
-@LoadDefaultsForAbsentFields
-public final class FileChooserDialogNodeParameters extends ConfigurationNodeSettings {
+public final class FileChooserWidgetNodeParameters extends WidgetNodeParametersFlowVariable {
 
-    FileChooserDialogNodeParameters() {
-        super(FileChooserInputDialogNodeConfig.class);
+    FileChooserWidgetNodeParameters() {
+        super(FileChooserInputWidgetConfig.class);
     }
-
-    @TextMessage(FileChooserOverwrittenByValueMessage.class)
-    @Layout(OutputSection.Top.class)
-    Void m_overwrittenByValueMessage;
 
     @PersistWithin.PersistEmbedded
     FileChooserNodeParameters m_fileChooserNodeParameters = new FileChooserNodeParameters();
 
-    /**
-     * The configuration node does not use the following settings why those settings are hidden (the widget does).
-     */
+    @Widget(title = "Allow multiple selection",
+        description = "Option to enable or disable the selection of multiple items."
+            + " If unchecked only one item can be selected.")
     @Persist(configKey = FileChooserNodeConfig.CFG_MULTIPLE_SELECTION)
+    @Layout(FormFieldSection.class)
     boolean m_allowMultipleSelection = FileChooserNodeConfig.DEFAULT_MULTIPLE_SELECTION;
 
-    @Persist(configKey = FileChooserNodeConfig.CFG_DEFAULT_MOUNTID)
-    boolean m_mountIdOption = FileChooserNodeConfig.DEFAULT_DEFAULT_MOUNTID;
-
-    @Persist(configKey = FileChooserNodeConfig.CFG_CUSTOM_MOUNTID)
-    String m_customMountId = FileChooserNodeConfig.DEFAULT_CUSTOM_MOUNTID;
-
+    @Widget(title = "Root path",
+        description = "An optional root path to only make items contained"
+            + " within this given directory available for selection.")
     @Persist(configKey = FileChooserNodeConfig.CFG_ROOT_DIR)
+    @Layout(FormFieldSection.class)
     String m_rootPath = FileChooserNodeConfig.DEFAULT_ROOT_DIR;
 
-    private static final class FileChooserOverwrittenByValueMessage
-        extends OverwrittenByValueMessage<FileChooserDialogNodeValue> {
+    @Widget(title = "Use default mount id of target",
+        description = "Setting this option will query the mount id of the hub the node is running on for creating"
+            + " absolute paths to the selected items. If unchecked a custom mount id can be provided.")
+    @Persist(configKey = FileChooserNodeConfig.CFG_DEFAULT_MOUNTID)
+    @Layout(OutputSection.class)
+    @ValueReference(MountIdOptionReference.class)
+    boolean m_mountIdOption = FileChooserNodeConfig.DEFAULT_DEFAULT_MOUNTID;
 
-        @Override
-        protected String valueToString(final FileChooserDialogNodeValue value) {
-            FileItem[] items = value.getItems();
-            if (items != null && items.length > 0 && items[0] != null) {
-                return items[0].getPath();
-            }
-            return "";
-        }
+    @Widget(title = "Custom mount id",
+        description = "A custom mount id to be included in the absolute paths to the selected items.")
+    @Persist(configKey = FileChooserNodeConfig.CFG_CUSTOM_MOUNTID)
+    @Layout(OutputSection.class)
+    @Effect(predicate = MountIdOptionReference.class, type = EffectType.HIDE)
+    String m_customMountId = FileChooserNodeConfig.DEFAULT_CUSTOM_MOUNTID;
+
+    private static final class MountIdOptionReference implements BooleanReference {
     }
+
 }

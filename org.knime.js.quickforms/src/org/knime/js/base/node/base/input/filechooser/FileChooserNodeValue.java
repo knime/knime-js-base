@@ -77,6 +77,8 @@ public class FileChooserNodeValue extends JSONViewContent {
 
     public static final String CFG_NUM_ITEMS = "num_items";
 
+    public static final String CFG_FIRST_ITEM = "item_0";
+
     /**
      * @return the items
      */

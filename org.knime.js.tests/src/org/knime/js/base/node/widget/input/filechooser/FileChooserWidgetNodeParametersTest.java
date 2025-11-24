@@ -44,61 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 Jun 2019 (albrecht): created
+ *   24 Nov 2025 (Robin Gerling): created
  */
 package org.knime.js.base.node.widget.input.filechooser;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.js.base.node.base.input.filechooser.FileChooserNodeRepresentation;
-import org.knime.js.base.node.base.input.filechooser.FileChooserNodeValue;
-import org.knime.js.base.node.widget.WidgetNodeFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-/**
- * Factory for the file chooser widget node
- *
- * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
- */
-public class FileChooserWidgetNodeFactory extends WidgetNodeFactory< //
-        FileChooserWidgetNodeModel, FileChooserNodeRepresentation<FileChooserNodeValue>, FileChooserNodeValue> {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.NodeParametersUtil;
+import org.knime.testing.node.dialog.DefaultNodeSettingsSnapshotTest;
+import org.knime.testing.node.dialog.SnapshotTestConfiguration;
 
-    private static final String NAME = "File Chooser Widget";
+@SuppressWarnings("restriction")
+final class FileChooserWidgetNodeParametersTest extends DefaultNodeSettingsSnapshotTest {
 
-    static final String DESCRIPTION =
-        "Allows choosing single or multiple files, workflows or directories from a remote mountpoint. "
-            + "Outputs a table with the selected files.";
+    protected FileChooserWidgetNodeParametersTest() {
+        super(CONFIG);
+    }
 
-    @SuppressWarnings({"deprecation", "restriction"})
-    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
-        .name(NAME) //
-        .icon("./widget_file.png") //
-        .shortDescription(DESCRIPTION) //
-        .fullDescription(DESCRIPTION) //
-        .modelSettingsClass(FileChooserWidgetNodeParameters.class) //
-        .addOutputPort("Selected Files", BufferedDataTable.TYPE, "Data table containing the selected files and types.")
-        .nodeType(NodeType.Widget) //
+    private static final SnapshotTestConfiguration CONFIG = SnapshotTestConfiguration.builder() //
+        .testJsonFormsForModel(FileChooserWidgetNodeParameters.class) //
+        .testJsonFormsWithInstance(SettingsType.MODEL, () -> readSettings()) //
+        .testNodeSettingsStructure(() -> readSettings()) //
         .build();
 
-    @SuppressWarnings("javadoc")
-    public FileChooserWidgetNodeFactory() {
-        super(CONFIG, FileChooserWidgetNodeParameters.class);
+    private static FileChooserWidgetNodeParameters readSettings() {
+        try {
+            var path = getSnapshotPath(FileChooserWidgetNodeParametersTest.class).getParent().resolve("node_settings")
+                .resolve("FileChooserWidgetNodeParameters.xml");
+            try (var fis = new FileInputStream(path.toFile())) {
+                var nodeSettings = NodeSettings.loadFromXML(fis);
+                return NodeParametersUtil.loadSettings(nodeSettings.getNodeSettings(SettingsType.MODEL.getConfigKey()),
+                    FileChooserWidgetNodeParameters.class);
+            }
+        } catch (IOException | InvalidSettingsException e) {
+            throw new IllegalStateException(e);
+        }
     }
-
-    @Override
-    public FileChooserWidgetNodeModel createNodeModel() {
-        return new FileChooserWidgetNodeModel(getInteractiveViewName());
-    }
-
-    @Override
-    public String getInteractiveViewName() {
-        return NAME;
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane() {
-        return new FileChooserWidgetNodeDialog();
-    }
-
 }

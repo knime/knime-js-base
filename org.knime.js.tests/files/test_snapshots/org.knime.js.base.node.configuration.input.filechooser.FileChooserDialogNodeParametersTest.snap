@@ -7,20 +7,22 @@
       "parameterName" : "file-chooser-input",
       "hideInDialog" : false,
       "required" : true,
-      "defaultValue" : {
-        "defaultPath" : "",
-        "defaultType" : "UNKNOWN"
+      "fileChooserNodeParameters" : {
+        "validFileExtensions" : "",
+        "defaultValue" : {
+          "defaultPath" : "",
+          "defaultType" : "UNKNOWN"
+        },
+        "selectDataFiles" : true,
+        "selectWorkflows" : false,
+        "selectDirectories" : false,
+        "outputType" : false,
+        "errorMessageString" : ""
       },
-      "selectDataFiles" : true,
-      "selectWorkflows" : false,
-      "selectDirectories" : false,
-      "outputType" : false,
-      "validFileExtensions" : "",
       "allowMultipleSelection" : false,
       "mountIdOption" : true,
       "customMountId" : "",
-      "rootPath" : "",
-      "errorMessageString" : ""
+      "rootPath" : ""
     }
   },
   "schema" : {
@@ -37,46 +39,93 @@
             "type" : "string",
             "default" : ""
           },
-          "defaultValue" : {
-            "type" : "object",
-            "properties" : {
-              "defaultPath" : {
-                "type" : "string",
-                "title" : "Default file",
-                "description" : "The default file to be output during configure and design time. If the path to the default file is present remotely as well, the file will be preselected in the view.",
-                "default" : ""
-              },
-              "defaultType" : {
-                "oneOf" : [ {
-                  "const" : "UNKNOWN",
-                  "title" : "Unknown"
-                }, {
-                  "const" : "WORKFLOW",
-                  "title" : "Workflow"
-                }, {
-                  "const" : "DIRECTORY",
-                  "title" : "Directory"
-                }, {
-                  "const" : "DATA",
-                  "title" : "Data"
-                } ],
-                "default" : "UNKNOWN"
-              }
-            },
-            "default" : {
-              "defaultPath" : "",
-              "defaultType" : "UNKNOWN"
-            }
-          },
           "description" : {
             "type" : "string",
             "title" : "Description",
             "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
             "default" : "Enter Description"
           },
-          "errorMessageString" : {
-            "type" : "string",
-            "default" : ""
+          "fileChooserNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "defaultValue" : {
+                "type" : "object",
+                "properties" : {
+                  "defaultPath" : {
+                    "type" : "string",
+                    "title" : "Default file",
+                    "description" : "The default file to be output during configure and design time. If the path to the default file is present remotely as well, the file will be preselected in the view.",
+                    "default" : ""
+                  },
+                  "defaultType" : {
+                    "oneOf" : [ {
+                      "const" : "UNKNOWN",
+                      "title" : "Unknown"
+                    }, {
+                      "const" : "WORKFLOW",
+                      "title" : "Workflow"
+                    }, {
+                      "const" : "DIRECTORY",
+                      "title" : "Directory"
+                    }, {
+                      "const" : "DATA",
+                      "title" : "Data"
+                    } ],
+                    "default" : "UNKNOWN"
+                  }
+                },
+                "default" : {
+                  "defaultPath" : "",
+                  "defaultType" : "UNKNOWN"
+                }
+              },
+              "errorMessageString" : {
+                "type" : "string",
+                "default" : ""
+              },
+              "outputType" : {
+                "type" : "boolean",
+                "title" : "Output selected item type",
+                "description" : "Enabling this option will append a second column to the output table containing the type of the selected items. Also a second flow variable containing the type of the first selected item is created. Possible values are DATA, WORKFLOW and DIRECTORY.",
+                "default" : false
+              },
+              "selectDataFiles" : {
+                "type" : "boolean",
+                "title" : "Select data files",
+                "description" : "Allow selection of data files.",
+                "default" : true
+              },
+              "selectDirectories" : {
+                "type" : "boolean",
+                "title" : "Select directories",
+                "description" : "Allow selection of directories.",
+                "default" : false
+              },
+              "selectWorkflows" : {
+                "type" : "boolean",
+                "title" : "Select workflows",
+                "description" : "Allow selection of workflows.",
+                "default" : false
+              },
+              "validFileExtensions" : {
+                "type" : "string",
+                "title" : "Valid file extensions",
+                "description" : "A list of file extensions that is used as filter in the file browser (not only the one in the \"Default File\" option but also in a remote file browser), e.g. \".csv,.csv.gz\" will filter for files ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.",
+                "default" : ""
+              }
+            },
+            "default" : {
+              "validFileExtensions" : "",
+              "defaultValue" : {
+                "defaultPath" : "",
+                "defaultType" : "UNKNOWN"
+              },
+              "selectDataFiles" : true,
+              "selectWorkflows" : false,
+              "selectDirectories" : false,
+              "outputType" : false,
+              "errorMessageString" : ""
+            }
           },
           "flowVariableName" : {
             "type" : "string",
@@ -100,12 +149,6 @@
             "type" : "boolean",
             "default" : true
           },
-          "outputType" : {
-            "type" : "boolean",
-            "title" : "Output selected item type",
-            "description" : "Enabling this option will append a second column to the output table containing the type of the selected items. Also a second flow variable containing the type of the first selected item is created. Possible values are DATA, WORKFLOW and DIRECTORY.",
-            "default" : false
-          },
           "overwrittenByValueMessage" : {
             "type" : "object"
           },
@@ -121,30 +164,6 @@
           },
           "rootPath" : {
             "type" : "string",
-            "default" : ""
-          },
-          "selectDataFiles" : {
-            "type" : "boolean",
-            "title" : "Select data files",
-            "description" : "Allow selection of data files.",
-            "default" : true
-          },
-          "selectDirectories" : {
-            "type" : "boolean",
-            "title" : "Select directories",
-            "description" : "Allow selection of directories.",
-            "default" : false
-          },
-          "selectWorkflows" : {
-            "type" : "boolean",
-            "title" : "Select workflows",
-            "description" : "Allow selection of workflows.",
-            "default" : false
-          },
-          "validFileExtensions" : {
-            "type" : "string",
-            "title" : "Valid file extensions",
-            "description" : "A list of file extensions that is used as filter in the file browser (not only the one in the \"Default File\" option but also in a remote file browser), e.g. \".csv,.csv.gz\" will filter for files ending with \".csv\" or \".csv.gz\". Leave empty to accept any file.",
             "default" : ""
           }
         }
@@ -167,32 +186,32 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/validFileExtensions"
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/validFileExtensions"
       } ]
     }, {
       "label" : "Selection Settings",
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectDataFiles",
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/selectDataFiles",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectWorkflows",
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/selectWorkflows",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/selectDirectories",
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/selectDirectories",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/outputType",
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/outputType",
         "options" : {
           "format" : "checkbox"
         }
@@ -209,7 +228,7 @@
         "providedOptions" : [ "message" ]
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/defaultValue/properties/defaultPath"
+        "scope" : "#/properties/model/properties/fileChooserNodeParameters/properties/defaultValue/properties/defaultPath"
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/flowVariableName",
@@ -267,23 +286,32 @@
           "hideInDialog" : { },
           "required" : { },
           "overwrittenByValueMessage" : { },
-          "defaultValue" : {
-            "configPaths" : [ [ "defaultValue", "items", "item_0", "path" ], [ "defaultValue", "items", "item_0", "type" ] ]
-          },
-          "selectDataFiles" : {
-            "configKey" : "selectDataFiles"
-          },
-          "selectWorkflows" : {
-            "configKey" : "selectWorkflows"
-          },
-          "selectDirectories" : {
-            "configKey" : "selectDirectories"
-          },
-          "outputType" : {
-            "configKey" : "outputType"
-          },
-          "validFileExtensions" : {
-            "configPaths" : [ [ "types" ] ]
+          "fileChooserNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "validFileExtensions" : {
+                "configPaths" : [ [ "types" ] ]
+              },
+              "defaultValue" : {
+                "configPaths" : [ [ "defaultValue", "items", "item_0", "path" ], [ "defaultValue", "items", "item_0", "type" ] ]
+              },
+              "selectDataFiles" : {
+                "configKey" : "selectDataFiles"
+              },
+              "selectWorkflows" : {
+                "configKey" : "selectWorkflows"
+              },
+              "selectDirectories" : {
+                "configKey" : "selectDirectories"
+              },
+              "outputType" : {
+                "configKey" : "outputType"
+              },
+              "errorMessageString" : {
+                "configKey" : "error_message"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "allowMultipleSelection" : {
             "configKey" : "multipleSelection"
@@ -296,9 +324,6 @@
           },
           "rootPath" : {
             "configKey" : "rootDir"
-          },
-          "errorMessageString" : {
-            "configKey" : "error_message"
           }
         }
       }

@@ -211,8 +211,6 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
         return itemBuilder.build();
     }
 
-    static final String FIRST_ITEM = "item_0";
-
     static final String PREVIOUS_FIRST_ITEM = "prev_item_0";
 
     @Override
@@ -223,10 +221,10 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
 
         if (items.length > 0) {
             var item = items[0];
-            rootNode.put(FIRST_ITEM, item.getPath());
+            rootNode.put(CFG_FIRST_ITEM, item.getPath());
             rootNode.set(PREVIOUS_FIRST_ITEM, mapper.valueToTree(item));
         } else {
-            rootNode.put(FIRST_ITEM, "");
+            rootNode.put(CFG_FIRST_ITEM, "");
             rootNode.set(PREVIOUS_FIRST_ITEM, mapper.nullNode());
         }
 
@@ -236,7 +234,7 @@ public class FileChooserDialogNodeValue extends FileChooserNodeValue implements 
     @Override
     public void fromDialogJson(final JsonNode json) throws IOException {
         var fileChooser = json.get(FileChooserNodeValue.CFG_ITEMS);
-        var path = fileChooser.path(FIRST_ITEM).asText("");
+        var path = fileChooser.path(CFG_FIRST_ITEM).asText("");
 
         final var previousItem = fileChooser.path(PREVIOUS_FIRST_ITEM);
         final var type = (path.isEmpty() || previousItem.isNull() || !path.equals(previousItem.path("path").asText()))

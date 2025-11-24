@@ -110,7 +110,7 @@ public class FileChooserDialogNodeRepresentation extends FileChooserNodeRepresen
     @Override
     public DialogElementRendererSpec getWebUIDialogElementRendererSpec() {
         return new TextRenderer(getLabel(), getDescription()).at(FileChooserNodeValue.CFG_ITEMS,
-            FileChooserDialogNodeValue.FIRST_ITEM);
+            FileChooserNodeValue.CFG_FIRST_ITEM);
     }
 
     static final class TextRenderer implements TextRendererSpec {
@@ -140,12 +140,12 @@ public class FileChooserDialogNodeRepresentation extends FileChooserNodeRepresen
     public Optional<PersistSchema> getPersistSchema() {
         return Optional.of(new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
             Map.of(FileChooserNodeValue.CFG_ITEMS, new PersistSchema.PersistTreeSchema.PersistTreeSchemaRecord(
-                Map.of(FileChooserDialogNodeValue.FIRST_ITEM, new PersistSchema.PersistLeafSchema() {
+                Map.of(FileChooserNodeValue.CFG_FIRST_ITEM, new PersistSchema.PersistLeafSchema() {
                     @Override
                     public Optional<String[][]> getConfigPaths() {
                         return Optional.of(new String[][]{ //
-                            {FileChooserDialogNodeValue.FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_PATH}, //
-                            {FileChooserDialogNodeValue.FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_TYPE}});
+                            {FileChooserNodeValue.CFG_FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_PATH}, //
+                            {FileChooserNodeValue.CFG_FIRST_ITEM, FileChooserNodeValue.FileItem.CFG_TYPE}});
                     }
                 })))));
     }
