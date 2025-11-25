@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 
 import org.apache.xmlbeans.XmlException;
 import org.eclipse.core.runtime.FileLocator;
@@ -66,9 +67,14 @@ import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.util.FileUtil;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialogFactory;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.dynamic.js.DynamicJSNodeSetFactory;
 import org.knime.dynamicjsnode.v212.KnimeNodeDocument;
 import org.knime.dynamicnode.v212.DynamicFullDescription;
+import org.knime.node.parameters.NodeParameters;
 import org.osgi.framework.Bundle;
 
 /**
@@ -76,19 +82,35 @@ import org.osgi.framework.Bundle;
  * @author Christian Albrecht, KNIME AG, Zurich, Switzerland
  * @since 3.0
  */
+@SuppressWarnings("restriction")
 public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel> implements
-		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue> {
+		WizardNodeFactoryExtension<DynamicJSNodeModel, DynamicJSViewRepresentation, DynamicJSViewValue>,
+		NodeDialogFactory {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicJSNodeFactory.class);
 
 	static final String NODE_PLUGIN = "nodePlugin";
 	static final String PLUGIN_FOLDER = "pluginFolder";
 
+    /**
+     * Feature flag for webUI widget dialogs in local AP.
+     */
+    private static final boolean SYSPROP_WEBUI_DIALOG_AP = "js".equals(System.getProperty("org.knime.widget.ui.mode"));
+
+    /**
+     * If we are headless and a dialog is required (i.e. remote workflow editing), we enforce webUI dialogs.
+     */
+    private static final boolean SYSPROP_HEADLESS = Boolean.getBoolean("java.awt.headless");
+
+    private static final boolean HAS_WEBUI_DIALOG = SYSPROP_HEADLESS || SYSPROP_WEBUI_DIALOG_AP;
+
 	private File m_nodeDir;
 	private String m_pluginName;
 	private String m_configFolder;
 	private String m_nodeFolder;
 	private KnimeNodeDocument m_doc;
+
+    private Class<? extends NodeParameters> m_parametersClass;
 
 	@Override
 	public NodeDescription createNodeDescription() {
@@ -128,8 +150,39 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 			LOGGER.error("Error reading node config: " + e.getMessage(), e);
 			throw new InvalidSettingsException(e);
 		}
+
+        loadParametersClass();
+
 		super.loadAdditionalFactorySettings(config);
 	}
+
+    /**
+     * Attempts to load a NodeParameters class from the org.knime.dynamic.js.base._root_ plugin, where root is replaced
+     * by the lowercase name of the folder in which the node.xml of the node can be found. The class should be named
+     * like the folder of the node.xml with the first char being upper case and a "NodeParameters" suffix.
+     */
+    @SuppressWarnings("unchecked")
+    private void loadParametersClass() {
+        try {
+            final var className =
+                m_nodeFolder.substring(0, 1).toUpperCase(Locale.ENGLISH) + m_nodeFolder.substring(1) + "NodeParameters";
+            final var classPackage = "org.knime.dynamic.js.base." + m_nodeFolder.toLowerCase(Locale.ENGLISH);
+            final var fullClassName = classPackage + "." + className;
+            final var clazz = Class.forName(fullClassName);
+
+            if (NodeParameters.class.isAssignableFrom(clazz)) {
+                m_parametersClass = (Class<? extends NodeParameters>)clazz;
+                return;
+            }
+            LOGGER.debug("Found a class with suffix NodeParameters (" + fullClassName
+                + "), but it does not implement the NodeParameters interface, falling back to legacy dialog.");
+        } catch (ClassNotFoundException | LinkageError e) { //NOSONAR
+            /**
+             * We do not log this as an error because not having a NodeParameters class is valid for nearly all nodes
+             * using this class.
+             */
+        }
+    }
 
 	@Override
 	public void saveAdditionalFactorySettings(final ConfigWO config) {
@@ -155,6 +208,9 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 
 	@Override
 	public boolean hasDialog() {
+        if (HAS_WEBUI_DIALOG && m_parametersClass != null) {
+            return false;
+        }
 	    DynamicFullDescription desc = m_doc.getKnimeNode().getFullDescription();
 		boolean hasDialog = desc.getOptions() != null;
 		hasDialog |= desc.getTabArray() != null && desc.getTabArray().length > 0;
@@ -165,6 +221,25 @@ public class DynamicJSNodeFactory extends DynamicNodeFactory<DynamicJSNodeModel>
 	public NodeDialogPane createNodeDialogPane() {
 		return new DynamicJSNodeDialog(m_doc.getKnimeNode());
 	}
+
+    /**
+     * @since 5.10
+     */
+    @Override
+    public boolean hasNodeDialog() {
+        return HAS_WEBUI_DIALOG && m_parametersClass != null;
+    }
+
+    /**
+     * @since 5.10
+     */
+    @Override
+    public NodeDialog createNodeDialog() {
+        if (m_parametersClass != null) {
+            return new DefaultNodeDialog(SettingsType.MODEL, m_parametersClass);
+        }
+        throw new IllegalStateException("No WebUI parameters class available");
+    }
 
 	/**
      * {@inheritDoc}
