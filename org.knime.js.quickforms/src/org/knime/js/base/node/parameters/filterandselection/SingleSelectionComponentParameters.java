@@ -128,7 +128,7 @@ public class SingleSelectionComponentParameters implements NodeParameters {
     private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
 
         @Override
-        String getLimitNumVisOptionsDescription() {
+        public String getLimitNumVisOptionsDescription() {
             return """
                     By default the List component adjusts its height to display all possible choices without a scroll \
                     bar. If the setting is enabled, you will be able to limit the number of visible options in case \
@@ -136,7 +136,7 @@ public class SingleSelectionComponentParameters implements NodeParameters {
         }
 
         @Override
-        String getNumVisOptionsDescription() {
+        public String getNumVisOptionsDescription() {
             return """
                     A number of options visible in the List component without a vertical scroll bar. Changing this \
                     value will also affect the component's height. The setting is available only for List selection \
@@ -144,7 +144,7 @@ public class SingleSelectionComponentParameters implements NodeParameters {
         }
 
         @Override
-        Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
+        public Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
             getEffectPredicates() {
             return new Pair<>(IsListSelectionType.class, IsListAndShowNumberOfVisibleOptions.class);
         }

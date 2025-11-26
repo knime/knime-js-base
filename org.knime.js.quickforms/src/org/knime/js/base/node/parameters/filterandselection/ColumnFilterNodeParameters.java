@@ -146,7 +146,7 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
     private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
 
         @Override
-        String getLimitNumVisOptionsDescription() {
+        public String getLimitNumVisOptionsDescription() {
             return """
                     By default the filter component adjusts its height to display all possible choices without a \
                     scroll bar. If the setting is enabled, you will be able to limit the number of visible options in \
@@ -154,7 +154,7 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
         }
 
         @Override
-        String getNumVisOptionsDescription() {
+        public String getNumVisOptionsDescription() {
             return """
                     A number of options visible in the filter component without a vertical scroll bar. Changing this \
                     value will also affect the component's height. Notice that the height cannot be less than the \
@@ -162,7 +162,7 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
         }
 
         @Override
-        Class<? extends MinValidation> getMinNumVisOptions() {
+        public Class<? extends MinValidation> getMinNumVisOptions() {
             return IsMin5Validation.class;
         }
 

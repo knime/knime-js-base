@@ -74,6 +74,7 @@ import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.R
 import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RoundedDoubleValueProvider;
 import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.TrueValueProvider;
 import org.knime.js.base.node.parameters.slider.StepSizeParameter;
+import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.FilterColumnReference;
 import org.knime.js.base.node.widget.filter.definition.rangeslider.StartParameters.StartParametersPersistor;
 import org.knime.js.base.node.widget.filter.definition.rangeslider.TooltipsParameters.TooltipsPersistor;
 import org.knime.node.parameters.NodeParameters;
@@ -177,9 +178,6 @@ public final class RangeSliderFilterWidgetSliderSettingsNodeParameters implement
     private static final class FilterBoundaryModeReference implements ParameterReference<FilterBoundaryMode> {
     }
 
-    static final class RangeColumnReference implements ParameterReference<String> {
-    }
-
     static final class IsDefiningMinimum implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
@@ -203,7 +201,7 @@ public final class RangeSliderFilterWidgetSliderSettingsNodeParameters implement
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            m_rangeColumnSupplier = initializer.computeFromValueSupplier(RangeColumnReference.class);
+            m_rangeColumnSupplier = initializer.computeFromValueSupplier(FilterColumnReference.class);
         }
 
         @Override

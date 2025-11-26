@@ -93,6 +93,13 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     }
 
     /**
+     * @param numberOfVisibleOptions the number of visible options
+     */
+    public LimitVisibleOptionsParameters(final int numberOfVisibleOptions) {
+        m_numberOfVisibleOptions = numberOfVisibleOptions;
+    }
+
+    /**
      * The config key for the limit number of visible options setting.
      */
     public static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
@@ -143,7 +150,10 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
     private static final class NumberOfVisibleOptionsModificationReference implements Modification.Reference {
     }
 
-    abstract static class LimitVisibleOptionsParametersModifier implements Modification.Modifier {
+    /**
+     * Modifier to adapt the limit visible options settings.
+     */
+    public abstract static class LimitVisibleOptionsParametersModifier implements Modification.Modifier {
         @Override
         public final void modify(final WidgetGroupModifier group) {
             group.find(LimitNumberOfVisibleOptionsModificationReference.class) //
@@ -192,24 +202,36 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
             }
         }
 
-        String getLimitNumVisOptionsTitle() {
+        /**
+         * @return the title for the limit number of visible options setting
+         */
+        public String getLimitNumVisOptionsTitle() {
             return "Limit number of visible options";
         }
 
-        abstract String getLimitNumVisOptionsDescription();
+        /**
+         * @return the description for the limit number of visible options setting
+         */
+        public abstract String getLimitNumVisOptionsDescription();
 
-        String getNumVisOptionsTitle() {
+        /**
+         * @return the title for the number of visible options setting
+         */
+        public String getNumVisOptionsTitle() {
             return "Number of visible options";
         }
 
-        abstract String getNumVisOptionsDescription();
+        /**
+         * @return the description for the number of visible options setting
+         */
+        public abstract String getNumVisOptionsDescription();
 
         /**
          * Use if the minimum allowed number of visible options should be different than the default (2).
          *
          * @return the min validation to limit the number of options.
          */
-        Class<? extends MinValidation> getMinNumVisOptions() {
+        public Class<? extends MinValidation> getMinNumVisOptions() {
             return null;
         }
 
@@ -220,7 +242,8 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
          * @return a pair of the min validation state provider to dynamically limit the number of options and the value
          *         provider to set a value if the current value is smaller than the new minimum.
          */
-        Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
+        public
+            Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
             getNumVisOptionsProviders() {
             return null;
         }
@@ -231,23 +254,26 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
          * @return a pair of the predicate to show the options at all and the predicate to show the number of visible
          *         options
          */
-        Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
+        public Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
             getEffectPredicates() {
             return null;
         }
 
-        abstract static class AbstractShowNumberOfVisibleOptions implements EffectPredicateProvider {
+        /**
+         * Base class to determine whether to show the number of visible options based on another effect predicate.
+         */
+        public abstract static class AbstractShowNumberOfVisibleOptions implements EffectPredicateProvider {
 
             Class<? extends EffectPredicateProvider> m_limitNumVisOptionsEffectPredicate;
 
             /**
              * Pass in the same class as the first value of the pair returned by
-             * {@link LimitVisibleOptionsParametersModifier#getNumVisOptionsEffectPredicate()}.
+             * {@link LimitVisibleOptionsParametersModifier#getEffectPredicates()}.
              *
              * @param limitNumVisOptionsEffectPredicate the effect predicate to determine whether to show the number of
              *            visible options setting
              */
-            AbstractShowNumberOfVisibleOptions(
+            protected AbstractShowNumberOfVisibleOptions(
                 final Class<? extends EffectPredicateProvider> limitNumVisOptionsEffectPredicate) {
                 m_limitNumVisOptionsEffectPredicate = limitNumVisOptionsEffectPredicate;
             }
@@ -259,7 +285,10 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
             }
         }
 
-        abstract static class AbstractNumVisOptionsValidationProvider implements StateProvider<MinValidation> {
+        /**
+         * Base class to provide the validation for the number of visible options field.
+         */
+        public abstract static class AbstractNumVisOptionsValidationProvider implements StateProvider<MinValidation> {
 
             @Override
             public void init(final StateProviderInitializer initializer) {
@@ -272,19 +301,17 @@ public class LimitVisibleOptionsParameters implements NodeParameters {
             @Override
             public MinValidation computeState(final NodeParametersInput parametersInput)
                 throws StateComputationFailureException {
-                return new MinValidation() {
-
-                    @Override
-                    protected double getMin() {
-                        return 2;
-                    }
-                };
+                return new IsMin2Validation();
             }
 
         }
 
-        abstract static class AbstractNumVisOptionsValueProvider implements StateProvider<Integer> {
+        /**
+         * Base class to provide the value of the number of visible options field.
+         */
+        public abstract static class AbstractNumVisOptionsValueProvider implements StateProvider<Integer> {
 
+            /** Supplier providing the current number of visible options. */
             protected Supplier<Integer> m_numVisOptionsSupplier;
 
             @Override

@@ -48,6 +48,19 @@
  */
 package org.knime.js.base.node.widget.filter.definition.value;
 
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_CUSTOM_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_MERGE_WITH_EXISTING_FILTERS_MODEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_MERGE_WITH_EXISTING_FILTERS_TABLE;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_USE_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_CUSTOM_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_USE_LABEL;
+
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.StringValue;
@@ -70,23 +83,14 @@ public class ValueFilterDefinitionWidgetConfig {
     private static final String DEFAULT_CUSTOM_CSS = "";
     private String m_customCSS = DEFAULT_CUSTOM_CSS;
 
-    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_TABLE = "mergeWithExistingFiltersTable";
-    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE = true;
     private boolean m_mergeWithExistingFiltersTable = DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
 
-    private static final String CFG_MERGE_WITH_EXISTING_FILTERS_MODEL = "mergeWithExistingFiltersModel";
-    private static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
     private boolean m_mergeWithExistingFiltersModel = DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
 
-    private static final String CFG_USE_LABEL = "useLabel";
-    private static final boolean DEFAULT_USE_LABEL = false;
     private boolean m_useLabel;
 
-    static final String CFG_LABEL = "label";
     private String m_label;
 
-    private static final String CFG_CUSTOM_LABEL = "customLabel";
-    private static final boolean DEFAULT_CUSTOM_LABEL = false;
     private boolean m_customLabel;
 
     static final String CFG_USE_MULTIPLE = "useMultiple";
@@ -97,19 +101,16 @@ public class ValueFilterDefinitionWidgetConfig {
     private static final String DEFAULT_TYPE = MultipleSelectionsComponentFactory.TWINLIST;
     private String m_type = DEFAULT_TYPE;
 
-    static final String CFG_LIMIT_NUMBER_VIS_OPTIONS = "limit_number_visible_options";
-    private static final boolean DEFAULT_LIMIT_NUMBER_VIS_OPTIONS = false;
     private boolean m_limitNumberVisOptions = DEFAULT_LIMIT_NUMBER_VIS_OPTIONS;
 
-    static final String CFG_NUMBER_VIS_OPTIONS = "number_visible_options";
-    private static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
+    static final Integer DEFAULT_NUMBER_VIS_OPTIONS = 10;
     private Integer m_numberVisOptions = DEFAULT_NUMBER_VIS_OPTIONS;
 
     static final String CFG_COLUMN = "column";
     private static final String DEFAULT_COLUMN = "";
     private String m_column = DEFAULT_COLUMN;
 
-    private static final String CFG_FILTER_VALUES = "filterValues";
+    static final String CFG_FILTER_VALUES = "filterValues";
     private ValueFilterWidgetPanelConfiguration m_filterValues = new ValueFilterWidgetPanelConfiguration(CFG_FILTER_VALUES);
 
     /**

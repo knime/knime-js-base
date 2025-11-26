@@ -53,6 +53,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters;
+import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters;
 import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -212,11 +214,11 @@ public class ValueFilterDefinitionWidgetRepresentation extends JSONViewContent {
         settings.addBoolean(CFG_DISABLED, m_disabled);
         settings.addStringArray(CFG_POSSIBLE_VALUES, m_possibleValues);
         settings.addString(ValueFilterDefinitionWidgetConfig.CFG_COLUMN, m_column);
-        settings.addString(ValueFilterDefinitionWidgetConfig.CFG_LABEL, m_label);
+        settings.addString(RangeFilterWidgetNodeParameters.CFG_LABEL, m_label);
         settings.addBoolean(ValueFilterDefinitionWidgetConfig.CFG_USE_MULTIPLE, m_multipleValues);
         settings.addString(ValueFilterDefinitionWidgetConfig.CFG_TYPE, m_type);
-        settings.addBoolean(ValueFilterDefinitionWidgetConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
-        settings.addInt(ValueFilterDefinitionWidgetConfig.CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
+        settings.addBoolean(LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS, m_limitNumberVisOptions);
+        settings.addInt(LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS, m_numberVisOptions);
     }
 
     /**
@@ -229,11 +231,11 @@ public class ValueFilterDefinitionWidgetRepresentation extends JSONViewContent {
         m_disabled = settings.getBoolean(CFG_DISABLED);
         m_possibleValues = settings.getStringArray(CFG_POSSIBLE_VALUES);
         m_column = settings.getString(ValueFilterDefinitionWidgetConfig.CFG_COLUMN);
-        m_label = settings.getString(ValueFilterDefinitionWidgetConfig.CFG_LABEL);
+        m_label = settings.getString(RangeFilterWidgetNodeParameters.CFG_LABEL);
         m_multipleValues = settings.getBoolean(ValueFilterDefinitionWidgetConfig.CFG_USE_MULTIPLE);
         m_type = settings.getString(ValueFilterDefinitionWidgetConfig.CFG_TYPE);
-        m_limitNumberVisOptions = settings.getBoolean(ValueFilterDefinitionWidgetConfig.CFG_LIMIT_NUMBER_VIS_OPTIONS);
-        m_numberVisOptions = settings.getInt(ValueFilterDefinitionWidgetConfig.CFG_NUMBER_VIS_OPTIONS);
+        m_limitNumberVisOptions = settings.getBoolean(LimitVisibleOptionsParameters.CFG_LIMIT_NUMBER_VIS_OPTIONS);
+        m_numberVisOptions = settings.getInt(LimitVisibleOptionsParameters.CFG_NUMBER_VIS_OPTIONS);
     }
 
     /**
