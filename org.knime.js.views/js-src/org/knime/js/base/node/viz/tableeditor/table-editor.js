@@ -129,7 +129,7 @@ window.table_editor = (function () {
             case 'Number (Long Integer)':
                 editor = new IntEditor();
                 break;
-            case "Number (Float)":
+            case 'Number (Float)':
                 editor = new DoubleEditor();
                 break;
             case 'Boolean':
@@ -652,12 +652,12 @@ window.table_editor = (function () {
                 res.value = value.toString();
                 res.status = true;
                 break;
-            case 'Number (integer)':
-            case 'Number (long)':
+            case 'Number (Integer)':
+            case 'Number (Long Integer)':
                 res.value = this._filterInt(value);
                 res.status = !isNaN(res.value);
                 break;
-            case 'Number (double)':
+            case 'Number (Float)':
                 res.value = Number(value.replace(',', '.'));
                 res.status = !isNaN(res.value);
                 break;
