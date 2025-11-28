@@ -1,0 +1,2058 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "mergeWithExistingFiltersTable" : true,
+      "mergeWithExistingFiltersModel" : true,
+      "displayLabel" : "NONE",
+      "useCustomMin" : false,
+      "useCustomMax" : false,
+      "domainExtents" : {
+        "useCustomDefaultMin" : false,
+        "useCustomDefaultMax" : false
+      },
+      "sliderSettings" : {
+        "sliderExists" : true,
+        "range" : {
+          "numSettings" : 2,
+          "key0" : "min",
+          "value0" : 0.0,
+          "key1" : "max",
+          "value1" : 100.0
+        },
+        "startParameters" : {
+          "customDefaultMinimum" : 0.0,
+          "customDefaultMaximum" : 100.0
+        },
+        "stepSizeParameter" : {
+          "step" : null
+        },
+        "boundaryMode" : "BOTH",
+        "orientationAndDirection" : {
+          "orientation" : "horizontal",
+          "direction" : "ltr"
+        },
+        "tooltips" : {
+          "tooltipMinimum" : {
+            "showTooltip" : false,
+            "useFormatter" : false,
+            "numberFormatParameters" : {
+              "decimals" : 2,
+              "mark" : ".",
+              "negative" : "-"
+            }
+          },
+          "tooltipMaximum" : {
+            "showTooltip" : false,
+            "useFormatter" : false,
+            "numberFormatParameters" : {
+              "decimals" : 2,
+              "mark" : ".",
+              "negative" : "-"
+            }
+          }
+        },
+        "pips" : {
+          "enableLabels" : false,
+          "ticksSettings" : {
+            "mode" : "range",
+            "positionValues" : "0,25,50,75,100",
+            "countValue" : 6,
+            "values" : "",
+            "stepped" : false
+          },
+          "density" : 3,
+          "format" : {
+            "decimals" : 2,
+            "mark" : ".",
+            "negative" : "-"
+          },
+          "formatDefined" : true
+        }
+      }
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "displayLabel" : {
+            "oneOf" : [ {
+              "const" : "NONE",
+              "title" : "None"
+            }, {
+              "const" : "COLUMN_NAME",
+              "title" : "Column name"
+            }, {
+              "const" : "CUSTOM",
+              "title" : "Custom"
+            } ],
+            "title" : "Label",
+            "description" : "Display a label below or besides the slider.\n<ul>\n<li><b>None</b>: No label will be displayed.</li>\n<li><b>Column name</b>: The column name of the selected range column will be used as label.</li>\n<li><b>Custom</b>: Use a custom label.</li>\n</ul>",
+            "default" : "NONE"
+          },
+          "domainExtents" : {
+            "type" : "object",
+            "properties" : {
+              "useCustomDefaultMax" : {
+                "type" : "boolean",
+                "title" : "Use custom default maximum value",
+                "description" : "Check to specify a custom default maximum value for the maximum slider handle instead of using the maximum from the range column.",
+                "default" : false
+              },
+              "useCustomDefaultMin" : {
+                "type" : "boolean",
+                "title" : "Use custom default minimum value",
+                "description" : "Check to specify a custom default minimum value for the minimum slider handle instead of using the minimum from the range column.",
+                "default" : false
+              }
+            },
+            "default" : {
+              "useCustomDefaultMin" : false,
+              "useCustomDefaultMax" : false
+            }
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Custom label",
+            "description" : "The custom label to display."
+          },
+          "mergeWithExistingFiltersModel" : {
+            "type" : "boolean",
+            "title" : "Merge with existing filter definitions (Model port)",
+            "description" : "Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.",
+            "default" : true
+          },
+          "mergeWithExistingFiltersTable" : {
+            "type" : "boolean",
+            "title" : "Merge with existing filter definitions (Table)",
+            "description" : "Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.",
+            "default" : true
+          },
+          "rangeColumn" : {
+            "type" : "string",
+            "title" : "Range column",
+            "description" : "Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider."
+          },
+          "sliderSettings" : {
+            "type" : "object",
+            "properties" : {
+              "animate" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "boolean"
+                }
+              },
+              "animationDuration" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "integer",
+                  "format" : "int32"
+                }
+              },
+              "behaviour" : {
+                "type" : "string"
+              },
+              "boundaryMode" : {
+                "oneOf" : [ {
+                  "const" : "BOTH",
+                  "title" : "Both"
+                }, {
+                  "const" : "MINIMUM",
+                  "title" : "Minimum"
+                }, {
+                  "const" : "MAXIMUM",
+                  "title" : "Maximum"
+                } ],
+                "title" : "Filter boundary mode",
+                "description" : "Select how the slider determines the boundaries applied by the filter.\n<ul>\n<li><b>Both</b>: The slider defines both boundaries. The filter applies the full closed range between the selected minimum and maximum.</li>\n<li><b>Minimum</b>: The slider defines only the minimum value. The upper boundary remains open and will be treated as infinity when the filter is applied.</li>\n<li><b>Maximum</b>: The slider defines only the maximum value. The lower boundary remains open and will be treated as negative infinity when the filter is applied.</li>\n</ul>",
+                "default" : "BOTH"
+              },
+              "connect" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "boolean"
+                }
+              },
+              "limit" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "number",
+                  "format" : "double"
+                }
+              },
+              "margin" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "number",
+                  "format" : "double"
+                }
+              },
+              "orientationAndDirection" : {
+                "type" : "object",
+                "properties" : {
+                  "direction" : {
+                    "oneOf" : [ {
+                      "const" : "ltr",
+                      "title" : "Ltr"
+                    }, {
+                      "const" : "rtl",
+                      "title" : "Rtl"
+                    } ],
+                    "title" : "Direction",
+                    "description" : "Choose if the slider is drawn left to right or right to left for horizontal orientation, top to bottom or bottom to top for vertical orientation.",
+                    "default" : "ltr"
+                  },
+                  "orientation" : {
+                    "oneOf" : [ {
+                      "const" : "horizontal",
+                      "title" : "Horizontal"
+                    }, {
+                      "const" : "vertical",
+                      "title" : "Vertical"
+                    } ],
+                    "title" : "Orientation",
+                    "description" : "Choose if the slider is drawn horizontally or vertically.",
+                    "default" : "horizontal"
+                  }
+                },
+                "default" : {
+                  "orientation" : "horizontal",
+                  "direction" : "ltr"
+                }
+              },
+              "pips" : {
+                "type" : "object",
+                "properties" : {
+                  "density" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "title" : "Density",
+                    "description" : "A measure to pre-scale the number of ticks. Higher number means less ticks.",
+                    "default" : 3
+                  },
+                  "enableLabels" : {
+                    "type" : "boolean",
+                    "title" : "Enable labels & ticks",
+                    "description" : "Check, to enable the display of ticks and labels for the slider.",
+                    "default" : false
+                  },
+                  "filter" : {
+                    "type" : "string"
+                  },
+                  "format" : {
+                    "type" : "object",
+                    "properties" : {
+                      "decimals" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "title" : "Decimal digits",
+                        "description" : "The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.",
+                        "default" : 2
+                      },
+                      "decoder" : {
+                        "type" : "string"
+                      },
+                      "edit" : {
+                        "type" : "string"
+                      },
+                      "encoder" : {
+                        "type" : "string"
+                      },
+                      "mark" : {
+                        "type" : "string",
+                        "title" : "Decimal separator",
+                        "description" : "The decimal separator character. Defaults to '.'",
+                        "default" : "."
+                      },
+                      "negative" : {
+                        "type" : "string",
+                        "title" : "Negative sign",
+                        "description" : "The string used to denote a negative number. Defaults to '-'",
+                        "default" : "-"
+                      },
+                      "negativeBefore" : {
+                        "type" : "string",
+                        "title" : "Negative before string",
+                        "description" : "A custom string rendered before any custom prefix, when number is negative."
+                      },
+                      "negativeClasses" : {
+                        "type" : "string"
+                      },
+                      "postfix" : {
+                        "type" : "string",
+                        "title" : "Custom postfix",
+                        "description" : "A custom string rendered after the number."
+                      },
+                      "prefix" : {
+                        "type" : "string",
+                        "title" : "Custom prefix",
+                        "description" : "A custom prefix string. A common use case for this is a currency symbol."
+                      },
+                      "thousandSeparator" : {
+                        "type" : "string",
+                        "title" : "Thousands separator",
+                        "description" : "The thousands separator character. Leave blank for displaying no separator character."
+                      },
+                      "undo" : {
+                        "type" : "string"
+                      }
+                    },
+                    "default" : {
+                      "decimals" : 2,
+                      "mark" : ".",
+                      "negative" : "-"
+                    }
+                  },
+                  "formatDefined" : {
+                    "type" : "boolean",
+                    "default" : true
+                  },
+                  "ticksSettings" : {
+                    "type" : "object",
+                    "properties" : {
+                      "countValue" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "title" : "Count",
+                        "description" : "Provide the specific number of labels to draw.",
+                        "default" : 6
+                      },
+                      "mode" : {
+                        "oneOf" : [ {
+                          "const" : "range",
+                          "title" : "Range"
+                        }, {
+                          "const" : "steps",
+                          "title" : "Steps"
+                        }, {
+                          "const" : "positions",
+                          "title" : "Positions"
+                        }, {
+                          "const" : "count",
+                          "title" : "Count"
+                        }, {
+                          "const" : "values",
+                          "title" : "Values"
+                        } ],
+                        "title" : "Ticks mode",
+                        "description" : "The mode after which the labels and ticks are displayed.\n<ul>\n<li><b>Range</b>: Draw labels at the specified range points. For linear sliders this is only minimum and maximum.</li>\n<li><b>Steps</b>: Draws labels at specified steps (See \"Step size\" option). Major ticks and labels are generated at the minimum and maximum and smaller labels at each step size.</li>\n<li><b>Positions</b>: Draw labels and major ticks at set positions (percentages). Use the \"Position values\" field to specify the positions as a comma separated list of values between 0 and 100.</li>\n<li><b>Count</b>: Draws the number of labels specified. Use the \"Count\" field to provide the count as an integer number.</li>\n<li><b>Values</b>: Draw labels and major ticks at positions of the actual values. Use the \"Values\" field to specify the values as a comma separated list of numbers.</li>\n</ul>",
+                        "default" : "range"
+                      },
+                      "positionValues" : {
+                        "type" : "string",
+                        "title" : "Position values",
+                        "description" : "Provide the values as a comma separated list of values between 0 and 100.",
+                        "default" : "0,25,50,75,100"
+                      },
+                      "stepped" : {
+                        "type" : "boolean",
+                        "title" : "Stepped",
+                        "description" : "Check to override calculated or given label positions, to match the values to the provided slider steps.",
+                        "default" : false
+                      },
+                      "values" : {
+                        "type" : "string",
+                        "title" : "Values",
+                        "description" : "Draw labels and major ticks at positions of the actual values.",
+                        "default" : ""
+                      }
+                    },
+                    "default" : {
+                      "mode" : "range",
+                      "positionValues" : "0,25,50,75,100",
+                      "countValue" : 6,
+                      "values" : "",
+                      "stepped" : false
+                    }
+                  }
+                },
+                "default" : {
+                  "enableLabels" : false,
+                  "ticksSettings" : {
+                    "mode" : "range",
+                    "positionValues" : "0,25,50,75,100",
+                    "countValue" : 6,
+                    "values" : "",
+                    "stepped" : false
+                  },
+                  "density" : 3,
+                  "format" : {
+                    "decimals" : 2,
+                    "mark" : ".",
+                    "negative" : "-"
+                  },
+                  "formatDefined" : true
+                }
+              },
+              "range" : {
+                "type" : "object",
+                "properties" : {
+                  "key0" : {
+                    "type" : "string",
+                    "default" : "min"
+                  },
+                  "key1" : {
+                    "type" : "string",
+                    "default" : "max"
+                  },
+                  "numSettings" : {
+                    "type" : "integer",
+                    "format" : "int32",
+                    "default" : 2
+                  },
+                  "value0" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Minimum",
+                    "description" : "The minimum value for the slider range. This value is used when 'Use custom minimum' is enabled.",
+                    "default" : 0.0
+                  },
+                  "value1" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Maximum",
+                    "description" : "The maximum value for the slider range. This value is used when 'Use custom maximum' is enabled.",
+                    "default" : 100.0
+                  }
+                },
+                "default" : {
+                  "numSettings" : 2,
+                  "key0" : "min",
+                  "value0" : 0.0,
+                  "key1" : "max",
+                  "value1" : 100.0
+                }
+              },
+              "sliderExists" : {
+                "type" : "boolean",
+                "default" : true
+              },
+              "snap" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "boolean"
+                }
+              },
+              "startParameters" : {
+                "type" : "object",
+                "properties" : {
+                  "customDefaultMaximum" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Default maximum",
+                    "description" : "The maximum value for the slider range. This value is used when 'Use custom maximum' is enabled.",
+                    "default" : 100.0
+                  },
+                  "customDefaultMinimum" : {
+                    "type" : "number",
+                    "format" : "double",
+                    "title" : "Default minimum",
+                    "description" : "The default minimum value for the minimum slider. This value is used when 'Use custom default minimum value' is enabled.",
+                    "default" : 0.0
+                  }
+                },
+                "default" : {
+                  "customDefaultMinimum" : 0.0,
+                  "customDefaultMaximum" : 100.0
+                }
+              },
+              "stepSizeParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "step" : {
+                    "type" : [ "number", "null" ],
+                    "format" : "double",
+                    "title" : "Step size",
+                    "description" : "A step size. If set the slider only outputs values in set intervals.",
+                    "default" : null
+                  }
+                },
+                "default" : {
+                  "step" : null
+                }
+              },
+              "tooltips" : {
+                "type" : "object",
+                "properties" : {
+                  "tooltipMaximum" : {
+                    "type" : "object",
+                    "properties" : {
+                      "numberFormatParameters" : {
+                        "type" : "object",
+                        "properties" : {
+                          "decimals" : {
+                            "type" : "integer",
+                            "format" : "int32",
+                            "title" : "Decimal digits",
+                            "description" : "The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.",
+                            "default" : 2
+                          },
+                          "decoder" : {
+                            "type" : "string"
+                          },
+                          "edit" : {
+                            "type" : "string"
+                          },
+                          "encoder" : {
+                            "type" : "string"
+                          },
+                          "mark" : {
+                            "type" : "string",
+                            "title" : "Decimal separator",
+                            "description" : "The decimal separator character. Defaults to '.'",
+                            "default" : "."
+                          },
+                          "negative" : {
+                            "type" : "string",
+                            "title" : "Negative sign",
+                            "description" : "The string used to denote a negative number. Defaults to '-'",
+                            "default" : "-"
+                          },
+                          "negativeBefore" : {
+                            "type" : "string",
+                            "title" : "Negative before string",
+                            "description" : "A custom string rendered before any custom prefix, when number is negative."
+                          },
+                          "negativeClasses" : {
+                            "type" : "string"
+                          },
+                          "postfix" : {
+                            "type" : "string",
+                            "title" : "Custom postfix",
+                            "description" : "A custom string rendered after the number."
+                          },
+                          "prefix" : {
+                            "type" : "string",
+                            "title" : "Custom prefix",
+                            "description" : "A custom prefix string. A common use case for this is a currency symbol."
+                          },
+                          "thousandSeparator" : {
+                            "type" : "string",
+                            "title" : "Thousands separator",
+                            "description" : "The thousands separator character. Leave blank for displaying no separator character."
+                          },
+                          "undo" : {
+                            "type" : "string"
+                          }
+                        },
+                        "default" : {
+                          "decimals" : 2,
+                          "mark" : ".",
+                          "negative" : "-"
+                        }
+                      },
+                      "showTooltip" : {
+                        "type" : "boolean",
+                        "title" : "Show tooltip for maximum slider handle",
+                        "description" : "Check, if the currently selected value on the slider is supposed to be shown in a tooltip.",
+                        "default" : false
+                      },
+                      "useFormatter" : {
+                        "type" : "boolean",
+                        "title" : "Use formatter for tooltip of maximum slider handle",
+                        "description" : "Enable or disable formatting options for the tooltip.",
+                        "default" : false
+                      }
+                    },
+                    "default" : {
+                      "showTooltip" : false,
+                      "useFormatter" : false,
+                      "numberFormatParameters" : {
+                        "decimals" : 2,
+                        "mark" : ".",
+                        "negative" : "-"
+                      }
+                    }
+                  },
+                  "tooltipMinimum" : {
+                    "type" : "object",
+                    "properties" : {
+                      "numberFormatParameters" : {
+                        "type" : "object",
+                        "properties" : {
+                          "decimals" : {
+                            "type" : "integer",
+                            "format" : "int32",
+                            "title" : "Decimal digits",
+                            "description" : "The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.",
+                            "default" : 2
+                          },
+                          "decoder" : {
+                            "type" : "string"
+                          },
+                          "edit" : {
+                            "type" : "string"
+                          },
+                          "encoder" : {
+                            "type" : "string"
+                          },
+                          "mark" : {
+                            "type" : "string",
+                            "title" : "Decimal separator",
+                            "description" : "The decimal separator character. Defaults to '.'",
+                            "default" : "."
+                          },
+                          "negative" : {
+                            "type" : "string",
+                            "title" : "Negative sign",
+                            "description" : "The string used to denote a negative number. Defaults to '-'",
+                            "default" : "-"
+                          },
+                          "negativeBefore" : {
+                            "type" : "string",
+                            "title" : "Negative before string",
+                            "description" : "A custom string rendered before any custom prefix, when number is negative."
+                          },
+                          "negativeClasses" : {
+                            "type" : "string"
+                          },
+                          "postfix" : {
+                            "type" : "string",
+                            "title" : "Custom postfix",
+                            "description" : "A custom string rendered after the number."
+                          },
+                          "prefix" : {
+                            "type" : "string",
+                            "title" : "Custom prefix",
+                            "description" : "A custom prefix string. A common use case for this is a currency symbol."
+                          },
+                          "thousandSeparator" : {
+                            "type" : "string",
+                            "title" : "Thousands separator",
+                            "description" : "The thousands separator character. Leave blank for displaying no separator character."
+                          },
+                          "undo" : {
+                            "type" : "string"
+                          }
+                        },
+                        "default" : {
+                          "decimals" : 2,
+                          "mark" : ".",
+                          "negative" : "-"
+                        }
+                      },
+                      "showTooltip" : {
+                        "type" : "boolean",
+                        "title" : "Show tooltip for minimum slider handle",
+                        "description" : "Check, if the currently selected value on the slider is supposed to be shown in a tooltip.",
+                        "default" : false
+                      },
+                      "useFormatter" : {
+                        "type" : "boolean",
+                        "title" : "Use formatter for tooltip of minimum slider handle",
+                        "description" : "Enable or disable formatting options for the tooltip.",
+                        "default" : false
+                      }
+                    },
+                    "default" : {
+                      "showTooltip" : false,
+                      "useFormatter" : false,
+                      "numberFormatParameters" : {
+                        "decimals" : 2,
+                        "mark" : ".",
+                        "negative" : "-"
+                      }
+                    }
+                  }
+                },
+                "default" : {
+                  "tooltipMinimum" : {
+                    "showTooltip" : false,
+                    "useFormatter" : false,
+                    "numberFormatParameters" : {
+                      "decimals" : 2,
+                      "mark" : ".",
+                      "negative" : "-"
+                    }
+                  },
+                  "tooltipMaximum" : {
+                    "showTooltip" : false,
+                    "useFormatter" : false,
+                    "numberFormatParameters" : {
+                      "decimals" : 2,
+                      "mark" : ".",
+                      "negative" : "-"
+                    }
+                  }
+                }
+              }
+            },
+            "default" : {
+              "sliderExists" : true,
+              "range" : {
+                "numSettings" : 2,
+                "key0" : "min",
+                "value0" : 0.0,
+                "key1" : "max",
+                "value1" : 100.0
+              },
+              "startParameters" : {
+                "customDefaultMinimum" : 0.0,
+                "customDefaultMaximum" : 100.0
+              },
+              "stepSizeParameter" : {
+                "step" : null
+              },
+              "boundaryMode" : "BOTH",
+              "orientationAndDirection" : {
+                "orientation" : "horizontal",
+                "direction" : "ltr"
+              },
+              "tooltips" : {
+                "tooltipMinimum" : {
+                  "showTooltip" : false,
+                  "useFormatter" : false,
+                  "numberFormatParameters" : {
+                    "decimals" : 2,
+                    "mark" : ".",
+                    "negative" : "-"
+                  }
+                },
+                "tooltipMaximum" : {
+                  "showTooltip" : false,
+                  "useFormatter" : false,
+                  "numberFormatParameters" : {
+                    "decimals" : 2,
+                    "mark" : ".",
+                    "negative" : "-"
+                  }
+                }
+              },
+              "pips" : {
+                "enableLabels" : false,
+                "ticksSettings" : {
+                  "mode" : "range",
+                  "positionValues" : "0,25,50,75,100",
+                  "countValue" : 6,
+                  "values" : "",
+                  "stepped" : false
+                },
+                "density" : 3,
+                "format" : {
+                  "decimals" : 2,
+                  "mark" : ".",
+                  "negative" : "-"
+                },
+                "formatDefined" : true
+              }
+            }
+          },
+          "useCustomMax" : {
+            "type" : "boolean",
+            "title" : "Use custom maximum",
+            "description" : "Check to specify a custom maximum value instead of using the maximum from the range column.",
+            "default" : false
+          },
+          "useCustomMin" : {
+            "type" : "boolean",
+            "title" : "Use custom minimum",
+            "description" : "Check to specify a custom minimum value instead of using the minimum from the range column.",
+            "default" : false
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/displayLabel",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label",
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/displayLabel",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "CUSTOM"
+              } ]
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Range",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/rangeColumn",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/useCustomMin",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value0",
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/useCustomMin",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/useCustomMax",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value1",
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/useCustomMax",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/mergeWithExistingFiltersTable",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/mergeWithExistingFiltersModel",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      } ]
+    }, {
+      "label" : "Default Value",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/domainExtents/properties/useCustomDefaultMin",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMinimum",
+        "providedOptions" : [ "validation.max", "validation.min" ],
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/domainExtents/properties/useCustomDefaultMin",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "BOTH"
+                }, {
+                  "const" : "MINIMUM"
+                } ]
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/domainExtents/properties/useCustomDefaultMax",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMaximum",
+        "providedOptions" : [ "validation.max", "validation.min" ],
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/domainExtents/properties/useCustomDefaultMax",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "BOTH"
+                }, {
+                  "const" : "MAXIMUM"
+                } ]
+              }
+            } ]
+          }
+        }
+      } ]
+    }, {
+      "label" : "Slider Behaviour",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/stepSizeParameter/properties/step",
+        "options" : {
+          "validation" : {
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          },
+          "hideOnNull" : true
+        },
+        "providedOptions" : [ "validation.max", "default" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/orientation",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/direction",
+        "options" : {
+          "format" : "valueSwitch"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      } ]
+    }, {
+      "label" : "Slider Tooltips",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "BOTH"
+                }, {
+                  "const" : "MINIMUM"
+                } ]
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/decimals",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 7.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 7.0
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/mark",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/thousandSeparator",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/prefix",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/postfix",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negative",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negativeBefore",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MINIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "BOTH"
+                }, {
+                  "const" : "MAXIMUM"
+                } ]
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/decimals",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 7.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 7.0
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/mark",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/thousandSeparator",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/prefix",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/postfix",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negative",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negativeBefore",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "schema" : {
+                  "const" : true
+                }
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "BOTH"
+                  }, {
+                    "const" : "MAXIMUM"
+                  } ]
+                }
+              } ]
+            }, {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+              "schema" : {
+                "const" : true
+              }
+            } ]
+          }
+        }
+      } ]
+    }, {
+      "label" : "Labels & Ticks",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/positionValues",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "The string must consist of comma-separated numbers.",
+              "parameters" : {
+                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "positions"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/countValue",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "count"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/values",
+        "options" : {
+          "validation" : {
+            "pattern" : {
+              "errorMessage" : "The string must consist of comma-separated numbers.",
+              "parameters" : {
+                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "values"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/stepped",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "HIDE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "range"
+              }, {
+                "const" : "steps"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/density",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "Label Format",
+      "type" : "Section",
+      "rule" : {
+        "effect" : "SHOW",
+        "condition" : {
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+          "schema" : {
+            "const" : true
+          }
+        }
+      },
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/decimals",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 7.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 7.0
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least 0.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : 0.0
+              }
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/mark"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/thousandSeparator"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/prefix"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/postfix"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/negative"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/format/properties/negativeBefore"
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "mergeWithExistingFiltersTable" : {
+            "configKey" : "mergeWithExistingFiltersTable"
+          },
+          "mergeWithExistingFiltersModel" : {
+            "configKey" : "mergeWithExistingFiltersModel"
+          },
+          "displayLabel" : {
+            "configPaths" : [ [ "useLabel" ], [ "customLabel" ] ]
+          },
+          "label" : {
+            "configKey" : "label"
+          },
+          "rangeColumn" : {
+            "configKey" : "DOMAIN_COLUMN"
+          },
+          "useCustomMin" : {
+            "configKey" : "customMin"
+          },
+          "useCustomMax" : {
+            "configKey" : "customMax"
+          },
+          "domainExtents" : {
+            "configPaths" : [ [ "domainExtends" ] ]
+          },
+          "sliderSettings" : {
+            "type" : "object",
+            "properties" : {
+              "sliderExists" : {
+                "configKey" : "sliderExists"
+              },
+              "range" : {
+                "type" : "object",
+                "properties" : {
+                  "numSettings" : { },
+                  "key0" : {
+                    "configKey" : "key_0"
+                  },
+                  "value0" : {
+                    "configPaths" : [ [ "value_0" ] ]
+                  },
+                  "key1" : {
+                    "configKey" : "key_1"
+                  },
+                  "value1" : {
+                    "configPaths" : [ [ "value_1" ] ]
+                  }
+                }
+              },
+              "startParameters" : {
+                "configPaths" : [ [ "start" ] ]
+              },
+              "stepSizeParameter" : {
+                "type" : "object",
+                "properties" : {
+                  "step" : {
+                    "configPaths" : [ [ "step" ] ]
+                  }
+                },
+                "propertiesRoute" : [ ".." ]
+              },
+              "boundaryMode" : {
+                "configPaths" : [ [ "fix" ] ]
+              },
+              "orientationAndDirection" : {
+                "type" : "object",
+                "properties" : {
+                  "orientation" : { },
+                  "direction" : { }
+                },
+                "propertiesRoute" : [ ".." ]
+              },
+              "tooltips" : {
+                "configPaths" : [ [ "tooltips", "numSettings" ], [ "tooltips", "type_0" ], [ "tooltips", "value_0", "decimals" ], [ "tooltips", "value_0", "mark" ], [ "tooltips", "value_0", "thousand" ], [ "tooltips", "value_0", "prefix" ], [ "tooltips", "value_0", "postfix" ], [ "tooltips", "value_0", "negative" ], [ "tooltips", "value_0", "negativeBefore" ], [ "tooltips", "numSettings" ], [ "tooltips", "type_1" ], [ "tooltips", "value_1", "decimals" ], [ "tooltips", "value_1", "mark" ], [ "tooltips", "value_1", "thousand" ], [ "tooltips", "value_1", "prefix" ], [ "tooltips", "value_1", "postfix" ], [ "tooltips", "value_1", "negative" ], [ "tooltips", "value_1", "negativeBefore" ] ]
+              },
+              "connect" : { },
+              "snap" : { },
+              "margin" : { },
+              "limit" : { },
+              "animate" : { },
+              "animationDuration" : { },
+              "behaviour" : { },
+              "pips" : {
+                "type" : "object",
+                "properties" : {
+                  "enableLabels" : {
+                    "configKey" : "pipsDefined"
+                  },
+                  "ticksSettings" : {
+                    "configPaths" : [ [ "mode" ], [ "values" ], [ "stepped" ] ]
+                  },
+                  "density" : {
+                    "configPaths" : [ [ "density" ] ]
+                  },
+                  "filter" : {
+                    "configKey" : "filter"
+                  },
+                  "format" : {
+                    "type" : "object",
+                    "properties" : {
+                      "decimals" : {
+                        "configPaths" : [ [ "decimals" ] ]
+                      },
+                      "mark" : {
+                        "configKey" : "mark"
+                      },
+                      "thousandSeparator" : {
+                        "configKey" : "thousand"
+                      },
+                      "prefix" : {
+                        "configKey" : "prefix"
+                      },
+                      "postfix" : {
+                        "configKey" : "postfix"
+                      },
+                      "negative" : {
+                        "configKey" : "negative"
+                      },
+                      "negativeBefore" : {
+                        "configKey" : "negativeBefore"
+                      },
+                      "negativeClasses" : {
+                        "configKey" : "negativeClasses"
+                      },
+                      "encoder" : {
+                        "configKey" : "encoder"
+                      },
+                      "decoder" : {
+                        "configKey" : "decoder"
+                      },
+                      "edit" : {
+                        "configKey" : "edit"
+                      },
+                      "undo" : {
+                        "configKey" : "undo"
+                      }
+                    },
+                    "configKey" : "format"
+                  },
+                  "formatDefined" : {
+                    "configKey" : "formatDefined",
+                    "route" : [ "format" ]
+                  }
+                }
+              }
+            },
+            "configKey" : "sliderSettings"
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/label",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : ""
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/rangeColumn",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "IntColumn1",
+        "text" : "IntColumn1",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "IntColumn2",
+        "text" : "IntColumn2",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "IntColumn3",
+        "text" : "IntColumn3",
+        "type" : {
+          "id" : "org.knime.core.data.IntValue",
+          "text" : "Number (Integer)"
+        }
+      }, {
+        "id" : "DoubleColumn1",
+        "text" : "DoubleColumn1",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
+      }, {
+        "id" : "DoubleColumn2",
+        "text" : "DoubleColumn2",
+        "type" : {
+          "id" : "org.knime.core.data.DoubleValue",
+          "text" : "Number (Float)"
+        }
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/direction",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "ltr",
+        "text" : "Left to right"
+      }, {
+        "id" : "rtl",
+        "text" : "Right to left"
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/sliderSettings/properties/sliderExists",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : true
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/sliderSettings/properties/stepSizeParameter/properties/step",
+    "providedOptionName" : "default",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : 1.0
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog"
+    },
+    "triggerInitially" : true,
+    "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/displayLabel"
+    },
+    "dependencies" : [ "#/properties/model/properties/displayLabel", "#/properties/model/properties/rangeColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/rangeColumn"
+    },
+    "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode"
+    },
+    "dependencies" : [ "#/properties/model/properties/domainExtents/properties/useCustomDefaultMax", "#/properties/model/properties/domainExtents/properties/useCustomDefaultMin", "#/properties/model/properties/sliderSettings/properties/boundaryMode", "#/properties/model/properties/sliderSettings/properties/range/properties/value0", "#/properties/model/properties/sliderSettings/properties/range/properties/value1", "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMaximum", "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMinimum" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/orientation"
+    },
+    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/orientation" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value0"
+    },
+    "dependencies" : [ "#/properties/model/properties/domainExtents/properties/useCustomDefaultMin", "#/properties/model/properties/sliderSettings/properties/boundaryMode", "#/properties/model/properties/sliderSettings/properties/range/properties/value0", "#/properties/model/properties/sliderSettings/properties/range/properties/value1", "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMinimum" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value1"
+    },
+    "dependencies" : [ "#/properties/model/properties/domainExtents/properties/useCustomDefaultMax", "#/properties/model/properties/sliderSettings/properties/boundaryMode", "#/properties/model/properties/sliderSettings/properties/range/properties/value0", "#/properties/model/properties/sliderSettings/properties/range/properties/value1", "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMaximum" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMinimum"
+    },
+    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/startParameters/properties/customDefaultMinimum" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/useCustomMax"
+    },
+    "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/useCustomMin"
+    },
+    "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
+  } ]
+}

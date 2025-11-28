@@ -72,6 +72,7 @@ import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.Abstrac
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMinValidation;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnPersistor;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnReference;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.StringOrEnumDomainColumnProvider;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMax;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMaxParameter;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMin;
@@ -225,7 +226,7 @@ public final class IntegerSliderDialogNodeParameters extends ConfigurationNodeSe
 
     private static final class LowerUpperBoundStateProvider extends AbstractLowerUpperBoundStateProvider<Integer> {
         LowerUpperBoundStateProvider() {
-            super(IntValue.class);
+            super(IntValue.class, StringOrEnumDomainColumnProvider.class);
         }
 
         @Override

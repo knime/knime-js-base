@@ -830,7 +830,7 @@
           },
           "hideOnNull" : true
         },
-        "providedOptions" : [ "default" ]
+        "providedOptions" : [ "validation.max", "default" ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/orientation",
@@ -1534,12 +1534,12 @@
     "trigger" : {
       "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value0"
     },
-    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/range/properties/value0" ]
+    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/range/properties/value0", "#/properties/model/properties/sliderSettings/properties/range/properties/value1" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/sliderSettings/properties/range/properties/value1"
     },
-    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/range/properties/value1" ]
+    "dependencies" : [ "#/properties/model/properties/sliderSettings/properties/range/properties/value0", "#/properties/model/properties/sliderSettings/properties/range/properties/value1" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/useCustomMaxParameter/properties/useCustomMax"

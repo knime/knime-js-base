@@ -45,9 +45,9 @@
 package org.knime.js.base.node.widget.filter.definition.rangeslider;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.viewproperty.FilterDefinitionHandlerPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
 
 /**
@@ -55,45 +55,46 @@ import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class RangeSliderFilterNodeFactory extends NodeFactory<RangeSliderFilterWidgetNodeModel> implements
-    WizardNodeFactoryExtension<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
+@SuppressWarnings({"deprecation", "restriction"})
+public class RangeSliderFilterNodeFactory extends
+    WidgetNodeFactory<RangeSliderFilterWidgetNodeModel, RangeSliderFilterWidgetRepresentation, RangeFilterWidgetValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Interactive Range Slider Filter Widget";
+
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder()//
+        .name(NAME) //
+        .icon("./range_slider.png") //
+        .shortDescription("Defines a filter definition to the input table and provides an interactive slider view.") //
+        .fullDescription("""
+                <p>A slider which can be used to trigger interactive filter events in a layout of views \
+                (e.g. the Hub). The node appends a filter definition to the table spec.</p> \
+                <p>Only view nodes downstream of this node can receive interactive filter events.</p>
+                """) //
+        .modelSettingsClass(RangeSliderFilterWidgetNodeParameters.class) //
+        .addInputTable("Input Table",
+            "Input table which contains at least one column with domain values set, "
+                + "which can be used to control the minimum and maximum values of the slider.") //
+        .addOutputTable("Table with Filter Definition", "Input table with filter definition appended to one column.") //
+        .addOutputPort("Filter Definition", FilterDefinitionHandlerPortObject.TYPE,
+            "Filter definition applied to the input column.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public RangeSliderFilterNodeFactory() {
+        super(CONFIG, RangeSliderFilterWidgetNodeParameters.class);
+    }
+
     @Override
     public RangeSliderFilterWidgetNodeModel createNodeModel() {
         return new RangeSliderFilterWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<RangeSliderFilterWidgetNodeModel> createNodeView(final int viewIndex,
-        final RangeSliderFilterWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new RangeSliderFilterWidgetDialog();

@@ -48,7 +48,9 @@
  */
 package org.knime.js.base.node.widget.input.slider;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DoubleValue;
@@ -57,20 +59,22 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin.PersistEmbedded;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.node.parameters.slider.OrientationAndDirectionParameters;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMaxValueProvider;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractCustomMinValueProvider;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractLowerUpperBoundStateProvider;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.RangeSection;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.SliderBehaviourSection;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.SliderTooltipSection;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMax;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMin;
+import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.StringOrEnumDomainColumnProvider;
 import org.knime.js.base.node.parameters.slider.SliderTicksSettingsNodeParameters;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.DoubleToArrayPersistor;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RangeParameters;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RangeParameters.RangeParametersProviderModification;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RoundedDoubleValueProvider;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.TrueValueProvider;
 import org.knime.js.base.node.parameters.slider.StepSizeParameter;
 import org.knime.js.base.node.parameters.slider.TooltipParameters;
-import org.knime.js.base.node.parameters.slider.TooltipParameters.AbstractTooltipPersistor;
 import org.knime.js.base.node.widget.input.slider.SliderWidgetNodeParameters.DefaultValueMirrorProvider;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
@@ -80,8 +84,6 @@ import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
-import org.knime.node.parameters.updates.Effect;
-import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
@@ -96,7 +98,7 @@ import org.knime.node.parameters.updates.ValueReference;
 @LoadDefaultsForAbsentFields
 public final class SliderWidgetSliderSettingsNodeParameters implements NodeParameters {
 
-    @ValueProvider(SliderExistsValueProvider.class)
+    @ValueProvider(TrueValueProvider.class)
     @Persist(configKey = SliderInputWidgetConfig.CFG_SLIDER_EXISTS)
     boolean m_sliderExists = true;
 
@@ -110,6 +112,7 @@ public final class SliderWidgetSliderSettingsNodeParameters implements NodeParam
     @Persistor(StartPersistor.class)
     double m_start;
 
+    @Modification(AddRangeValueProviders.class)
     RangeParameters m_range = new RangeParameters();
 
     @PersistEmbedded
@@ -140,84 +143,12 @@ public final class SliderWidgetSliderSettingsNodeParameters implements NodeParam
 
     SliderTicksSettingsNodeParameters m_pips = new SliderTicksSettingsNodeParameters();
 
-    static final class CustomMinReference implements ParameterReference<Double> {
-    }
-
-    static final class CustomMaxReference implements ParameterReference<Double> {
-    }
-
     private static final class ConnectValueReference implements ParameterReference<ConnectParameters> {
-    }
-
-    @SuppressWarnings("unused")
-    @LoadDefaultsForAbsentFields
-    private static final class RangeParameters implements NodeParameters {
-
-        private static final String CFG_MIN_KEY = "key_0";
-
-        private static final String CFG_MAX_KEY = "key_1";
-
-        private static final String CFG_MIN_VALUE = "value_0";
-
-        private static final String CFG_MAX_VALUE = "value_1";
-
-        int m_numSettings = 2;
-
-        @Persist(configKey = CFG_MIN_KEY)
-        String m_key0 = "min";
-
-        @Widget(title = SliderNodeParametersUtil.MINIMUM_TITLE,
-            description = SliderNodeParametersUtil.MINIMUM_DESCRIPTION)
-        @ValueReference(CustomMinReference.class)
-        @ValueProvider(RoundedCustomMinValueProvider.class)
-        @Effect(predicate = UseCustomMin.class, type = EffectType.ENABLE)
-        @Persistor(RangeMinPersistor.class)
-        @Layout(RangeSection.Minimum.class)
-        double m_value0;
-
-        @Persist(configKey = CFG_MAX_KEY)
-        String m_key1 = "max";
-
-        @Widget(title = SliderNodeParametersUtil.MAXIMUM_TITLE,
-            description = SliderNodeParametersUtil.MAXIMUM_DESCRIPTION)
-        @ValueReference(CustomMaxReference.class)
-        @ValueProvider(RoundedCustomMaxValueProvider.class)
-        @Effect(predicate = UseCustomMax.class, type = EffectType.ENABLE)
-        @Persistor(RangeMaxPersistor.class)
-        @Layout(RangeSection.Maximum.class)
-        double m_value1 = 100;
-
-        private static final class RangeMinPersistor extends DoubleToArrayPersistor {
-            RangeMinPersistor() {
-                super(CFG_MIN_VALUE, 0);
-            }
-        }
-
-        private static final class RangeMaxPersistor extends DoubleToArrayPersistor {
-            RangeMaxPersistor() {
-                super(CFG_MAX_VALUE, 100);
-            }
-        }
-
-    }
-
-    private static final class SliderExistsValueProvider implements StateProvider<Boolean> {
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
-
-        @Override
-        public Boolean computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return true;
-        }
-
     }
 
     private static final class StartPersistor extends DoubleToArrayPersistor {
         StartPersistor() {
-            super("start", 50);
+            super("start");
         }
     }
 
@@ -289,43 +220,36 @@ public final class SliderWidgetSliderSettingsNodeParameters implements NodeParam
         }
     }
 
-    private static final class TooltipPersistor extends AbstractTooltipPersistor {
-        TooltipPersistor() {
-            super(0, "tooltips");
-        }
-    }
+    private static final class TooltipPersistor implements NodeParametersPersistor<TooltipParameters> {
 
-    private abstract static class DoubleToArrayPersistor implements NodeParametersPersistor<Double> {
+        private static final String CFG_TOOLTIPS = "tooltips";
 
-        private final String m_configKey;
-
-        private final double m_defaultValue;
-
-        protected DoubleToArrayPersistor(final String configKey, final double defaultValue) {
-            m_configKey = configKey;
-            m_defaultValue = defaultValue;
+        @Override
+        public TooltipParameters load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return TooltipParameters.loadTooltipParameters(settings.getNodeSettings(CFG_TOOLTIPS), 0);
         }
 
         @Override
-        public Double load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var arr = settings.getDoubleArray(m_configKey);
-            return arr == null || arr.length == 0 ? m_defaultValue : arr[0];
-        }
-
-        @Override
-        public void save(final Double param, final NodeSettingsWO settings) {
-            settings.addDoubleArray(m_configKey, param);
+        public void save(final TooltipParameters param, final NodeSettingsWO settings) {
+            final var tooltipSettings = settings.addNodeSettings(CFG_TOOLTIPS);
+            TooltipParameters.saveTooltipParameters(param, tooltipSettings, 0);
         }
 
         @Override
         public String[][] getConfigPaths() {
-            return new String[][]{{m_configKey}};
+            return Arrays.stream(TooltipParameters.getTooltipConfigPaths(0)) //
+                .map(row -> Stream.concat( //
+                    Stream.of(CFG_TOOLTIPS), //
+                    Arrays.stream(row) //
+                ).toArray(String[]::new)) //
+                .toArray(String[][]::new);
         }
+
     }
 
     static final class LowerUpperBoundStateProvider extends AbstractLowerUpperBoundStateProvider<Double> {
         LowerUpperBoundStateProvider() {
-            super(DoubleValue.class);
+            super(DoubleValue.class, StringOrEnumDomainColumnProvider.class);
         }
 
         @Override
@@ -340,45 +264,34 @@ public final class SliderWidgetSliderSettingsNodeParameters implements NodeParam
         }
     }
 
-    private static final class RoundedCustomMinValueProvider extends RoundedDoubleValueProvider {
-        RoundedCustomMinValueProvider() {
-            super(CustomMinValueProvider.class);
-        }
-    }
-
     private static final class CustomMaxValueProvider extends AbstractCustomMaxValueProvider<Double> {
         CustomMaxValueProvider() {
             super(LowerUpperBoundStateProvider.class);
         }
     }
 
-    private static final class RoundedCustomMaxValueProvider extends RoundedDoubleValueProvider {
-        RoundedCustomMaxValueProvider() {
+    private static final class DoubleCustomMinValueProvider extends RoundedDoubleValueProvider {
+        DoubleCustomMinValueProvider() {
+            super(CustomMinValueProvider.class);
+        }
+    }
+
+    private static final class DoubleCustomMaxValueProvider extends RoundedDoubleValueProvider {
+        public DoubleCustomMaxValueProvider() {
             super(CustomMaxValueProvider.class);
         }
     }
 
-    /**
-     * We round to 6 decimal places to avoid rounding issues when choosing an extreme value in the resulting slider
-     * (which rounds to 7 digits).
-     */
-    private abstract static class RoundedDoubleValueProvider implements StateProvider<Double> {
-        private final Class<? extends StateProvider<Double>> m_baseProvider;
+    private static final class AddRangeValueProviders extends RangeParametersProviderModification {
 
-        private Supplier<Double> m_unroundedValueProvider;
-
-        protected RoundedDoubleValueProvider(final Class<? extends StateProvider<Double>> baseProvider) {
-            m_baseProvider = baseProvider;
+        @Override
+        public Class<? extends RoundedDoubleValueProvider> getCustomMinProvider() {
+            return DoubleCustomMinValueProvider.class;
         }
 
         @Override
-        public void init(final StateProviderInitializer initializer) {
-            m_unroundedValueProvider = initializer.computeFromProvidedState(m_baseProvider);
-        }
-
-        @Override
-        public Double computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return Math.round(m_unroundedValueProvider.get() * 1000000.0) / 1000000.0;
+        public Class<? extends RoundedDoubleValueProvider> getCustomMaxProvider() {
+            return DoubleCustomMaxValueProvider.class;
         }
 
     }

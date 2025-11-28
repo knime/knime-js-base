@@ -48,9 +48,14 @@
  */
 package org.knime.js.base.node.parameters.slider;
 
+import java.util.List;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.WidgetInternal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.core.settings.numberFormat.NumberFormatSettings;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
@@ -67,6 +72,7 @@ import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinVa
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
+@SuppressWarnings("restriction")
 @LoadDefaultsForAbsentFields
 public final class NumberFormatParameters implements NodeParameters {
 
@@ -98,33 +104,40 @@ public final class NumberFormatParameters implements NodeParameters {
         description = "The number of decimal digits to be shown. Use 0 for no decimal digits. Maximum is 7 digits.")
     @NumberInputWidget(minValidation = IsNonNegativeValidation.class, maxValidation = IsMax7Validation.class)
     @Persistor(DecimalsPersistor.class)
+    @Modification.WidgetReference(DecimalsRef.class)
     int m_decimals = 2;
 
     @Widget(title = "Decimal separator", description = "The decimal separator character. Defaults to '.'")
     @Persist(configKey = CFG_MARK)
+    @Modification.WidgetReference(MarkRef.class)
     String m_mark = ".";
 
     @Widget(title = "Thousands separator",
         description = "The thousands separator character. Leave blank for displaying no separator character.")
     @Persist(configKey = CFG_THOUSAND)
+    @Modification.WidgetReference(ThousandRef.class)
     String m_thousandSeparator;
 
     @Widget(title = "Custom prefix",
         description = "A custom prefix string. A common use case for this is a currency symbol.")
     @Persist(configKey = CFG_PREFIX)
+    @Modification.WidgetReference(PrefixRef.class)
     String m_prefix;
 
     @Widget(title = "Custom postfix", description = "A custom string rendered after the number.")
     @Persist(configKey = CFG_POSTFIX)
+    @Modification.WidgetReference(PostfixRef.class)
     String m_postfix;
 
     @Widget(title = "Negative sign", description = "The string used to denote a negative number. Defaults to '-'")
     @Persist(configKey = CFG_NEGATIVE)
+    @Modification.WidgetReference(NegativeRef.class)
     String m_negative = "-";
 
     @Widget(title = "Negative before string",
         description = "A custom string rendered before any custom prefix, when number is negative.")
     @Persist(configKey = CFG_NEGATIVE_BEFORE)
+    @Modification.WidgetReference(NegativeBeforeRef.class)
     String m_negativeBefore;
 
     @Persist(configKey = CFG_NEGATIVE_CLASSES)
@@ -142,10 +155,49 @@ public final class NumberFormatParameters implements NodeParameters {
     @Persist(configKey = CFG_UNDO)
     String m_undo;
 
+    private static final class DecimalsRef implements Modification.Reference {
+    }
+
+    private static final class MarkRef implements Modification.Reference {
+    }
+
+    private static final class ThousandRef implements Modification.Reference {
+    }
+
+    private static final class PrefixRef implements Modification.Reference {
+    }
+
+    private static final class PostfixRef implements Modification.Reference {
+    }
+
+    private static final class NegativeRef implements Modification.Reference {
+    }
+
+    private static final class NegativeBeforeRef implements Modification.Reference {
+    }
+
     private static final class IsMax7Validation extends MaxValidation {
         @Override
         protected double getMax() {
             return 7.0;
+        }
+    }
+
+    /**
+     * A modification that removes all number format related elements from the node description. This should only be
+     * used when the parameters are else displayed multiple times in the description.
+     */
+    public static final class RemoveElementsFromNodeDescription implements Modification.Modifier {
+        private static final List<Class<? extends Modification.Reference>> ELEMENTS =
+            List.of(DecimalsRef.class, MarkRef.class, ThousandRef.class, PrefixRef.class, PostfixRef.class,
+                NegativeRef.class, NegativeBeforeRef.class);
+
+        @Override
+        public void modify(final WidgetGroupModifier group) {
+            ELEMENTS.forEach(element -> group.find(element) //
+                .addAnnotation(WidgetInternal.class) //
+                .withProperty("hideControlInNodeDescription", "To not display the same description multiple times.") //
+                .modify());
         }
     }
 

@@ -48,11 +48,8 @@
  */
 package org.knime.js.base.node.widget.input.slider;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DoubleValue;
-import org.knime.core.data.IntValue;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.NoneChoice;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.singleselection.StringOrEnum;
@@ -62,16 +59,15 @@ import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUti
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractDefaultValueValueProvider;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMaxValidation;
-import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.AbstractValueMinValidation;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnPersistor;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.DomainColumnReference;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.RangeSection;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMaxParameter;
 import org.knime.js.base.node.parameters.slider.SliderNodeParametersUtil.UseCustomMinParameter;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.ValueMaxValidation;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.ValueMinValidation;
 import org.knime.js.base.node.widget.WidgetNodeParametersFlowVariable;
-import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.CustomMaxReference;
-import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.CustomMinReference;
 import org.knime.js.base.node.widget.input.slider.SliderWidgetSliderSettingsNodeParameters.LowerUpperBoundStateProvider;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
@@ -85,7 +81,7 @@ import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
-import org.knime.node.parameters.widget.choices.util.CompatibleColumnsProvider;
+import org.knime.node.parameters.widget.choices.util.CompatibleColumnsProvider.DoubleColumnsProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
 import org.knime.node.parameters.widget.number.NumberInputWidget;
 
@@ -122,7 +118,7 @@ public final class SliderWidgetNodeParameters extends WidgetNodeParametersFlowVa
 
     @Widget(title = SliderNodeParametersUtil.RANGE_COLUMN_TITLE,
         description = SliderNodeParametersUtil.RANGE_COLUMN_DESCRIPTION)
-    @ChoicesProvider(DomainColumnChoicesProvider.class)
+    @ChoicesProvider(DoubleColumnsProvider.class)
     @ValueReference(DomainColumnReference.class)
     @Persistor(DomainColumnPersistor.class)
     @Layout(RangeSection.RangeColumn.class)
@@ -154,12 +150,6 @@ public final class SliderWidgetNodeParameters extends WidgetNodeParametersFlowVa
     static final class DefaultValueReference implements ParameterReference<Double> {
     }
 
-    private static final class DomainColumnChoicesProvider extends CompatibleColumnsProvider {
-        public DomainColumnChoicesProvider() {
-            super(List.of(IntValue.class, DoubleValue.class));
-        }
-    }
-
     private static final class SliderOverwrittenByValueMessage extends OverwrittenByValueMessage<SliderNodeValue> {
 
         @Override
@@ -177,21 +167,9 @@ public final class SliderWidgetNodeParameters extends WidgetNodeParametersFlowVa
         @Override
         public Double computeDefaultValue(final Double min, final Double max) {
             final var mean = (max - min) / 2 + min;
-            return Math.round(mean * 1000000.0) / 1000000.0;
+            return SliderWidgetNodeParametersUtil.roundTo6DecimalPlaces(mean);
         }
 
-    }
-
-    private static final class ValueMinValidation extends AbstractValueMinValidation<Double> {
-        ValueMinValidation() {
-            super(CustomMinReference.class);
-        }
-    }
-
-    private static final class ValueMaxValidation extends AbstractValueMaxValidation<Double> {
-        ValueMaxValidation() {
-            super(CustomMaxReference.class);
-        }
     }
 
     static final class DefaultValueMirrorProvider implements StateProvider<Double> {

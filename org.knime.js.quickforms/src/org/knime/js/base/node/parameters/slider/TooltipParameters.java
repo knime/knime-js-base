@@ -54,22 +54,26 @@ import java.util.stream.Stream;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
+import org.knime.js.base.node.parameters.slider.NumberFormatParameters.RemoveElementsFromNodeDescription;
 import org.knime.js.core.settings.slider.SliderSettings;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.Widget;
-import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.updates.Effect;
 import org.knime.node.parameters.updates.Effect.EffectType;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.util.BooleanReference;
 
 /**
  * Tooltip related parameters for slider widgets (see {@link SliderSettings}).
  *
  * @author Robin Gerling, KNIME GmbH, Konstanz
  */
+@SuppressWarnings("restriction")
 public final class TooltipParameters implements NodeParameters {
 
     private static final String TOOLTIP_TYPE_BOOLEAN = "boolean";
@@ -80,7 +84,8 @@ public final class TooltipParameters implements NodeParameters {
 
     private static final String CFG_TOOLTIP_VALUE_PREFIX = "value_";
 
-    private static final String NUM_SETTINGS = "numSettings";
+    /** Configuration key for number of settings. */
+    public static final String CFG_NUM_SETTINGS = "numSettings";
 
     /** Default constructor. */
     public TooltipParameters() {
@@ -93,109 +98,163 @@ public final class TooltipParameters implements NodeParameters {
         m_numberFormatParameters = numberFormatParameters;
     }
 
+    /** Whether to show the tooltip for the current value. Public to determine how to persist from the outside. */
     @Widget(title = "Show tooltip",
         description = "Check, if the currently selected value on the slider is supposed to be shown in a tooltip.")
     @ValueReference(ShowTooltipReference.class)
-    boolean m_showTooltip;
+    @Modification.WidgetReference(ShowTooltipReference.class)
+    public boolean m_showTooltip;
 
     @Widget(title = "Use formatter for tooltip", description = "Enable or disable formatting options for the tooltip.")
     @ValueReference(UseFormatterForTooltipReference.class)
-    @Effect(predicate = ShowTooltip.class, type = EffectType.SHOW)
+    @Modification.WidgetReference(UseFormatterForTooltipReference.class)
+    @Effect(predicate = ShowTooltipReference.class, type = EffectType.SHOW)
     boolean m_useFormatter;
 
     @Effect(predicate = ShowTooltipAndUseFormatter.class, type = EffectType.SHOW)
+    @Modification.WidgetReference(NumberFormatParametersReference.class)
     NumberFormatParameters m_numberFormatParameters = new NumberFormatParameters();
 
-    private static final class ShowTooltipReference implements ParameterReference<Boolean> {
+    private static final class ShowTooltipReference implements BooleanReference, Modification.Reference {
     }
 
-    private static final class UseFormatterForTooltipReference implements ParameterReference<Boolean> {
+    private static final class UseFormatterForTooltipReference
+        implements ParameterReference<Boolean>, Modification.Reference {
     }
 
-    private static final class ShowTooltip implements EffectPredicateProvider {
+    private static final class NumberFormatParametersReference implements Modification.Reference {
+    }
+
+    /** Predicate to show number format parameters when both show tooltip and use formatter are enabled. */
+    public static final class ShowTooltipAndUseFormatter implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            return i.getBoolean(ShowTooltipReference.class).isTrue();
-        }
-    }
-
-    private static final class ShowTooltipAndUseFormatter implements EffectPredicateProvider {
-        @Override
-        public EffectPredicate init(final PredicateInitializer i) {
-            return i.getPredicate(ShowTooltip.class).and(i.getBoolean(UseFormatterForTooltipReference.class).isTrue());
+            return i.getPredicate(ShowTooltipReference.class)
+                .and(i.getBoolean(UseFormatterForTooltipReference.class).isTrue());
         }
     }
 
     /**
-     * Abstract persistor for tooltip parameters.
+     * Modification to set titles, references, and effects for tooltip related parameters.
      */
-    public abstract static class AbstractTooltipPersistor implements NodeParametersPersistor<TooltipParameters> {
-
-        private final String m_typeConfigKey;
-
-        private final String m_valueConfigKey;
-
-        private final String m_baseConfigKey;
-
-        /**
-         * @param configKeySuffix the suffix for the value_ and key_ config keys
-         * @param baseConfigKey the config key under which all tooltip settings are stored
-         */
-        protected AbstractTooltipPersistor(final int configKeySuffix, final String baseConfigKey) {
-            m_typeConfigKey = CFG_TOOLTIP_TYPE_PREFIX + configKeySuffix;
-            m_valueConfigKey = CFG_TOOLTIP_VALUE_PREFIX + configKeySuffix;
-            m_baseConfigKey = baseConfigKey;
-        }
-
+    public abstract static class TooltipParametersModification implements Modification.Modifier {
         @Override
-        public TooltipParameters load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var tooltipSettings = settings.getNodeSettings(m_baseConfigKey);
-            final var numSettings = tooltipSettings.getInt(NUM_SETTINGS);
-            if (numSettings == 0) {
-                return new TooltipParameters(false, false, new NumberFormatParameters());
-            }
-            final var type = tooltipSettings.getString(m_typeConfigKey);
-            if (type.equals(TOOLTIP_TYPE_BOOLEAN)) {
-                final var showTooltip = tooltipSettings.getBoolean(m_valueConfigKey);
-                return new TooltipParameters(showTooltip, false, new NumberFormatParameters());
-            }
-            final var tooltipFormatSettings = tooltipSettings.getNodeSettings(m_valueConfigKey);
-            return new TooltipParameters(true, true,
-                NumberFormatParameters.loadNumberFormatParameters(tooltipFormatSettings));
-        }
+        public void modify(final WidgetGroupModifier group) {
+            group.find(ShowTooltipReference.class).modifyAnnotation(Widget.class)
+                .withProperty("title", getShowTooltipTitle()).modify();
+            group.find(ShowTooltipReference.class).modifyAnnotation(ValueReference.class)
+                .withValue(getShowTooltipReference()).modify();
 
-        @Override
-        public void save(final TooltipParameters param, final NodeSettingsWO settings) {
-            final var tooltipSettings = settings.addNodeSettings(m_baseConfigKey);
-            if (!param.m_showTooltip) {
-                tooltipSettings.addInt(NUM_SETTINGS, 0);
-                return;
-            }
-            tooltipSettings.addInt(NUM_SETTINGS, 1);
-            if (!param.m_useFormatter) {
-                tooltipSettings.addString(m_typeConfigKey, TOOLTIP_TYPE_BOOLEAN);
-                tooltipSettings.addBoolean(m_valueConfigKey, param.m_showTooltip);
-            } else {
-                tooltipSettings.addString(m_typeConfigKey, TOOLTIP_TYPE_FORMAT);
-                final var tooltipFormatSettings = tooltipSettings.addNodeSettings(m_valueConfigKey);
-                NumberFormatParameters.saveNumberFormatParameters(param.m_numberFormatParameters,
-                    tooltipFormatSettings);
+            group.find(UseFormatterForTooltipReference.class).modifyAnnotation(Widget.class)
+                .withProperty("title", getUseFormatterTitle()).modify();
+            group.find(UseFormatterForTooltipReference.class).modifyAnnotation(ValueReference.class)
+                .withValue(getUseFormatterReference()).modify();
+            group.find(UseFormatterForTooltipReference.class).modifyAnnotation(Effect.class)
+                .withProperty("predicate", getShowTooltipPredicate()).modify();
+            group.find(NumberFormatParametersReference.class).modifyAnnotation(Effect.class)
+                .withProperty("predicate", getShowTooltipAndUseFormatterPredicate()).modify();
+            if (removeNumberFormatParametersFromDescription()) {
+                group.find(NumberFormatParametersReference.class).addAnnotation(Modification.class)
+                    .withValue(new Class[]{RemoveElementsFromNodeDescription.class}).modify();
             }
         }
 
-        @Override
-        public String[][] getConfigPaths() {
-            final var tooltipParamPaths =
-                new String[][]{{m_baseConfigKey, NUM_SETTINGS}, {m_baseConfigKey, m_typeConfigKey}};
-            final var baseValuePath = new String[]{m_baseConfigKey, m_valueConfigKey};
-            final var numberFormatPaths = Arrays //
-                .stream(NumberFormatParameters.getConfigPaths()) //
-                .map(numberFormatPath -> Stream //
-                    .of(baseValuePath, numberFormatPath) //
-                    .flatMap(Arrays::stream) //
-                    .toArray(String[]::new));
-            return Stream.concat(Stream.of(tooltipParamPaths), numberFormatPaths).toArray(String[][]::new);
-        }
+        /** @return the title for the show tooltip parameter */
+        public abstract String getShowTooltipTitle();
 
+        /** @return the title for the use formatter parameter */
+        public abstract String getUseFormatterTitle();
+
+        /** @return the parameter reference for the show tooltip parameter */
+        public abstract Class<? extends ParameterReference<Boolean>> getShowTooltipReference();
+
+        /** @return the parameter reference for the use formatter parameter */
+        public abstract Class<? extends ParameterReference<Boolean>> getUseFormatterReference();
+
+        /** @return the effect predicate provider for showing the use formatter parameter */
+        public abstract Class<? extends EffectPredicateProvider> getShowTooltipPredicate();
+
+        /** @return the effect predicate provider for showing the number format parameters */
+        public abstract Class<? extends EffectPredicateProvider> getShowTooltipAndUseFormatterPredicate();
+
+        /** @return whether to remove number format parameters from the description */
+        public boolean removeNumberFormatParametersFromDescription() {
+            return false;
+        }
+    }
+
+    /**
+     * Utility method to load tooltip parameters.
+     *
+     * @param settings the settings layer in which the base tooltip parameters are stored
+     * @param configKeySuffix the suffix for the base tooltip parameter config keys (i.e. value_, key_, numSettings)
+     * @return the loaded tooltip parameters
+     * @throws InvalidSettingsException if loading fails
+     */
+    public static TooltipParameters loadTooltipParameters(final NodeSettingsRO settings, final int configKeySuffix)
+        throws InvalidSettingsException {
+
+        final var numSettings = settings.getInt(CFG_NUM_SETTINGS);
+        if (numSettings == 0) {
+            return new TooltipParameters(false, false, new NumberFormatParameters());
+        }
+        final var typeConfigKey = CFG_TOOLTIP_TYPE_PREFIX + configKeySuffix;
+        final var valueConfigKey = CFG_TOOLTIP_VALUE_PREFIX + configKeySuffix;
+        final var type = settings.getString(typeConfigKey);
+        if (type.equals(TOOLTIP_TYPE_BOOLEAN)) {
+            final var showTooltip = settings.getBoolean(valueConfigKey);
+            return new TooltipParameters(showTooltip, false, new NumberFormatParameters());
+        }
+        final var tooltipFormatSettings = settings.getNodeSettings(valueConfigKey);
+        return new TooltipParameters(true, true,
+            NumberFormatParameters.loadNumberFormatParameters(tooltipFormatSettings));
+    }
+
+    /**
+     * Utility method to save tooltip parameters. It handles 0 and 1 for numSettings only. If more settings are needed,
+     * the setting must be overriden in the calling method (config key: {@link #CFG_NUM_SETTINGS}).
+     *
+     * @param param the tooltip parameters to save
+     * @param settings the settings layer in which to save the base tooltip parameters
+     * @param configKeySuffix the suffix for the base tooltip parameter config keys (i.e. value_, key_, numSettings)
+     */
+    public static void saveTooltipParameters(final TooltipParameters param, final NodeSettingsWO settings,
+        final int configKeySuffix) {
+        if (!param.m_showTooltip) {
+            settings.addInt(CFG_NUM_SETTINGS, 0);
+            return;
+        }
+        final var typeConfigKey = CFG_TOOLTIP_TYPE_PREFIX + configKeySuffix;
+        final var valueConfigKey = CFG_TOOLTIP_VALUE_PREFIX + configKeySuffix;
+        settings.addInt(CFG_NUM_SETTINGS, 1);
+        if (!param.m_useFormatter) {
+            settings.addString(typeConfigKey, TOOLTIP_TYPE_BOOLEAN);
+            settings.addBoolean(valueConfigKey, param.m_showTooltip);
+        } else {
+            settings.addString(typeConfigKey, TOOLTIP_TYPE_FORMAT);
+            final var tooltipFormatSettings = settings.addNodeSettings(valueConfigKey);
+            NumberFormatParameters.saveNumberFormatParameters(param.m_numberFormatParameters, tooltipFormatSettings);
+        }
+    }
+
+    /**
+     * Utility method to get the config paths for tooltip parameters.
+     *
+     * @param configKeySuffix the suffix for the base tooltip parameter config keys (i.e. value_, key_, numSettings)
+     * @return the config paths for the tooltip parameters
+     */
+    public static String[][] getTooltipConfigPaths(final int configKeySuffix) {
+        final var typeConfigKey = CFG_TOOLTIP_TYPE_PREFIX + configKeySuffix;
+        final var valueConfigKey = CFG_TOOLTIP_VALUE_PREFIX + configKeySuffix;
+
+        final var tooltipParamPaths = new String[][]{{CFG_NUM_SETTINGS}, {typeConfigKey}};
+        final var baseValuePath = new String[]{valueConfigKey};
+        final var numberFormatPaths = Arrays //
+            .stream(NumberFormatParameters.getConfigPaths()) //
+            .map(numberFormatPath -> Stream //
+                .of(baseValuePath, numberFormatPath) //
+                .flatMap(Arrays::stream) //
+                .toArray(String[]::new));
+        return Stream.concat(Stream.of(tooltipParamPaths), numberFormatPaths).toArray(String[][]::new);
     }
 }
