@@ -3,10 +3,12 @@
     "model" : {
       "hideInWizard" : false,
       "customCSS" : "",
-      "mergeWithExistingFiltersTable" : true,
-      "mergeWithExistingFiltersModel" : true,
-      "displayLabel" : "CUSTOM",
-      "label" : "my custom label",
+      "rangeFilterWidgetNodeParameters" : {
+        "mergeWithExistingFiltersTable" : true,
+        "mergeWithExistingFiltersModel" : true,
+        "displayLabel" : "CUSTOM",
+        "label" : "my custom label"
+      },
       "rangeColumn" : "petal_width",
       "useCustomMin" : false,
       "useCustomMax" : true,
@@ -89,21 +91,6 @@
             "type" : "string",
             "default" : ""
           },
-          "displayLabel" : {
-            "oneOf" : [ {
-              "const" : "NONE",
-              "title" : "None"
-            }, {
-              "const" : "COLUMN_NAME",
-              "title" : "Column name"
-            }, {
-              "const" : "CUSTOM",
-              "title" : "Custom"
-            } ],
-            "title" : "Label",
-            "description" : "Display a label below or besides the slider.\n<ul>\n<li><b>None</b>: No label will be displayed.</li>\n<li><b>Column name</b>: The column name of the selected range column will be used as label.</li>\n<li><b>Custom</b>: Use a custom label.</li>\n</ul>",
-            "default" : "NONE"
-          },
           "domainExtents" : {
             "type" : "object",
             "properties" : {
@@ -129,27 +116,52 @@
             "type" : "boolean",
             "default" : false
           },
-          "label" : {
-            "type" : "string",
-            "title" : "Custom label",
-            "description" : "The custom label to display."
-          },
-          "mergeWithExistingFiltersModel" : {
-            "type" : "boolean",
-            "title" : "Merge with existing filter definitions (Model port)",
-            "description" : "Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.",
-            "default" : true
-          },
-          "mergeWithExistingFiltersTable" : {
-            "type" : "boolean",
-            "title" : "Merge with existing filter definitions (Table)",
-            "description" : "Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.",
-            "default" : true
-          },
           "rangeColumn" : {
             "type" : "string",
             "title" : "Range column",
             "description" : "Select the column to apply the filter definition to. Additionally the domain of the column can be used for the range of the slider."
+          },
+          "rangeFilterWidgetNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "displayLabel" : {
+                "oneOf" : [ {
+                  "const" : "NONE",
+                  "title" : "None"
+                }, {
+                  "const" : "COLUMN_NAME",
+                  "title" : "Column name"
+                }, {
+                  "const" : "CUSTOM",
+                  "title" : "Custom"
+                } ],
+                "title" : "Label",
+                "description" : "Display a label below or besides the slider.\n<ul>\n<li><b>None</b>: No label will be displayed.</li>\n<li><b>Column name</b>: The column name of the selected range column will be used as label.</li>\n<li><b>Custom</b>: Use a custom label.</li>\n</ul>",
+                "default" : "NONE"
+              },
+              "label" : {
+                "type" : "string",
+                "title" : "Custom label",
+                "description" : "The custom label to display."
+              },
+              "mergeWithExistingFiltersModel" : {
+                "type" : "boolean",
+                "title" : "Merge with existing filter definitions (Model port)",
+                "description" : "Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.",
+                "default" : true
+              },
+              "mergeWithExistingFiltersTable" : {
+                "type" : "boolean",
+                "title" : "Merge with existing filter definitions (Table)",
+                "description" : "Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.",
+                "default" : true
+              }
+            },
+            "default" : {
+              "mergeWithExistingFiltersTable" : true,
+              "mergeWithExistingFiltersModel" : true,
+              "displayLabel" : "NONE"
+            }
           },
           "sliderSettings" : {
             "type" : "object",
@@ -777,17 +789,17 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/displayLabel",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
         "options" : {
           "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/label",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
-            "scope" : "#/properties/model/properties/displayLabel",
+            "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
             "schema" : {
               "oneOf" : [ {
                 "const" : "CUSTOM"
@@ -848,13 +860,13 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/mergeWithExistingFiltersTable",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/mergeWithExistingFiltersTable",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/mergeWithExistingFiltersModel",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/mergeWithExistingFiltersModel",
         "options" : {
           "format" : "checkbox"
         }
@@ -1783,17 +1795,23 @@
         "properties" : {
           "hideInWizard" : { },
           "customCSS" : { },
-          "mergeWithExistingFiltersTable" : {
-            "configKey" : "mergeWithExistingFiltersTable"
-          },
-          "mergeWithExistingFiltersModel" : {
-            "configKey" : "mergeWithExistingFiltersModel"
-          },
-          "displayLabel" : {
-            "configPaths" : [ [ "useLabel" ], [ "customLabel" ] ]
-          },
-          "label" : {
-            "configKey" : "label"
+          "rangeFilterWidgetNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "mergeWithExistingFiltersTable" : {
+                "configKey" : "mergeWithExistingFiltersTable"
+              },
+              "mergeWithExistingFiltersModel" : {
+                "configKey" : "mergeWithExistingFiltersModel"
+              },
+              "displayLabel" : {
+                "configPaths" : [ [ "useLabel" ], [ "customLabel" ] ]
+              },
+              "label" : {
+                "configKey" : "label"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
           },
           "rangeColumn" : {
             "configKey" : "DOMAIN_COLUMN"
@@ -2011,14 +2029,14 @@
     "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
   }, {
     "trigger" : {
-      "scope" : "#/properties/model/properties/displayLabel"
-    },
-    "dependencies" : [ "#/properties/model/properties/displayLabel", "#/properties/model/properties/rangeColumn" ]
-  }, {
-    "trigger" : {
       "scope" : "#/properties/model/properties/rangeColumn"
     },
     "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel"
+    },
+    "dependencies" : [ "#/properties/model/properties/rangeColumn", "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode"

@@ -49,9 +49,9 @@
 package org.knime.js.base.node.widget.filter.definition.value;
 
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.wizard.WizardNodeFactoryExtension;
+import org.knime.core.node.port.viewproperty.FilterDefinitionHandlerPortObject;
+import org.knime.core.webui.node.impl.WebUINodeConfiguration;
+import org.knime.js.base.node.widget.WidgetNodeFactory;
 import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
 
 /**
@@ -59,45 +59,55 @@ import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-public class ValueFilterDefinitionNodeFactory extends NodeFactory<ValueFilterDefinitionWidgetNodeModel> implements
-    WizardNodeFactoryExtension<ValueFilterDefinitionWidgetNodeModel, ValueFilterDefinitionWidgetRepresentation, RangeFilterWidgetValue> {
+@SuppressWarnings({"deprecation", "restriction"})
+public class ValueFilterDefinitionNodeFactory extends WidgetNodeFactory< //
+        ValueFilterDefinitionWidgetNodeModel, ValueFilterDefinitionWidgetRepresentation, RangeFilterWidgetValue> {
 
-    /**
-     * {@inheritDoc}
-     */
+    private static final String NAME = "Interactive Value Filter Widget";
+
+    private static final String DESCRIPTION =
+        "Defines a filter definition to the input table and provides an interactive value filter on nominal columns.";
+
+    private static final String FULL_DESCRIPTION = """
+            <p>A value filter which can be used to trigger interactive filter events in a layout of views (e.g. the \
+            WebPortal). The node appends a filter definition to the table spec.</p>
+            <p>Only view nodes downstream of this node can receive interactive filter events.</p>
+            <p>Note that the filter uses the possible values set on a nominal column's domain as configuration. To \
+            ensure the values are reflected and sorted correctly the <i>Domain Calculator</i> and/or \
+            <i>Edit Nominal Domain</i> nodes can be used beforehand.</p>
+            """;
+
+    static final WebUINodeConfiguration CONFIG = WebUINodeConfiguration.builder() //
+        .name(NAME) //
+        .icon("./value_filter.png") //
+        .shortDescription(DESCRIPTION) //
+        .fullDescription(FULL_DESCRIPTION) //
+        .modelSettingsClass(ValueFilterDefinitionWidgetNodeParameters.class) //
+        .addInputTable("Input Table",
+            "Input table which contains at least one nominal column with domain including possible values set, "
+                + "which is used to control the filter view.") //
+        .addOutputTable("Table with Filter Definition",
+            "Input table with filter definition appended to the selected column.") //
+        .addOutputPort("Filter Definition", FilterDefinitionHandlerPortObject.TYPE,
+            "Filter definition applied to the selected column.") //
+        .nodeType(NodeType.Widget) //
+        .build();
+
+    @SuppressWarnings("javadoc")
+    public ValueFilterDefinitionNodeFactory() {
+        super(CONFIG, ValueFilterDefinitionWidgetNodeParameters.class);
+    }
+
     @Override
     public ValueFilterDefinitionWidgetNodeModel createNodeModel() {
         return new ValueFilterDefinitionWidgetNodeModel(getInteractiveViewName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getNrNodeViews() {
-        return 0;
+    public String getInteractiveViewName() {
+        return NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ValueFilterDefinitionWidgetNodeModel> createNodeView(final int viewIndex,
-        final ValueFilterDefinitionWidgetNodeModel nodeModel) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean hasDialog() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ValueFilterDefinitionWidgetDialog();

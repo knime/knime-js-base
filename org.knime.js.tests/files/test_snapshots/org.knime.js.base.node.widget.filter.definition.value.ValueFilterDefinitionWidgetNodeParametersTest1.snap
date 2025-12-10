@@ -1,0 +1,561 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "rangeFilterWidgetNodeParameters" : {
+        "mergeWithExistingFiltersTable" : true,
+        "mergeWithExistingFiltersModel" : true,
+        "displayLabel" : "CUSTOM",
+        "label" : "Test Filter Label"
+      },
+      "column" : "StringColumn",
+      "defaultValues" : {
+        "mode" : "MANUAL",
+        "patternFilter" : {
+          "pattern" : "",
+          "isCaseSensitive" : true,
+          "isInverted" : false
+        },
+        "manualFilter" : {
+          "manuallySelected" : [ "Value1", "Value2" ],
+          "manuallyDeselected" : [ ],
+          "includeUnknownColumns" : false
+        }
+      },
+      "multipleOrSingleValues" : "MULTIPLE",
+      "type" : "Twinlist",
+      "limitVisibleOptions" : {
+        "limitNumberOfVisibleOptions" : true,
+        "numberOfVisibleOptions" : 15
+      }
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "column" : {
+            "type" : "string",
+            "title" : "Filter column",
+            "description" : "Select the column to apply the filter definition to. The domain of possible values of the column is used to configure the filter.",
+            "default" : ""
+          },
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "defaultValues" : {
+            "type" : "object",
+            "properties" : {
+              "manualFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "includeUnknownColumns" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "manuallyDeselected" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "manuallySelected" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  }
+                },
+                "default" : {
+                  "manuallySelected" : [ ],
+                  "manuallyDeselected" : [ ],
+                  "includeUnknownColumns" : false
+                }
+              },
+              "mode" : {
+                "oneOf" : [ {
+                  "const" : "MANUAL",
+                  "title" : "Manual"
+                }, {
+                  "const" : "REGEX",
+                  "title" : "Regex"
+                }, {
+                  "const" : "WILDCARD",
+                  "title" : "Wildcard"
+                } ],
+                "default" : "MANUAL"
+              },
+              "patternFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "isCaseSensitive" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "isInverted" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "pattern" : {
+                    "type" : "string",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "pattern" : "",
+                  "isCaseSensitive" : false,
+                  "isInverted" : false
+                }
+              }
+            },
+            "title" : "Default values",
+            "description" : "Select the default values to be used for filtering from the possible values of the chosen filter column. If <i>Single Values</i> is selected only the first value in the includes list will be present on the filter.",
+            "default" : {
+              "mode" : "MANUAL",
+              "patternFilter" : {
+                "pattern" : "",
+                "isCaseSensitive" : false,
+                "isInverted" : false
+              },
+              "manualFilter" : {
+                "manuallySelected" : [ ],
+                "manuallyDeselected" : [ ],
+                "includeUnknownColumns" : false
+              }
+            }
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "limitVisibleOptions" : {
+            "type" : "object",
+            "properties" : {
+              "limitNumberOfVisibleOptions" : {
+                "type" : "boolean",
+                "title" : "Limit number of visible options",
+                "description" : "By default, some components adjust their height to display all possible choices without a scroll bar. If this option is enabled, you will be able to limit the number of visible options in case there is too many.",
+                "default" : false
+              },
+              "numberOfVisibleOptions" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Number of visible options",
+                "description" : "A number of options visible in the selection component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that for Twinlist the height cannot be less than the overall height of the control buttons in the middle.",
+                "default" : 5
+              }
+            },
+            "default" : {
+              "limitNumberOfVisibleOptions" : false,
+              "numberOfVisibleOptions" : 10
+            }
+          },
+          "multipleOrSingleValues" : {
+            "oneOf" : [ {
+              "const" : "MULTIPLE",
+              "title" : "Multiple"
+            }, {
+              "const" : "SINGLE",
+              "title" : "Single"
+            } ],
+            "title" : "Selection type",
+            "description" : "Choose multiple to be able to select multiple nominal values for filtering and single if only one value should be part of the filter at any given time. Depending on the selection here the type field will offer different options for the display of the filter in the view.\n<ul>\n<li><b>Multiple</b>: Allow selection of multiple values.</li>\n<li><b>Single</b>: Allow selection of a single value only.</li>\n</ul>",
+            "default" : "MULTIPLE"
+          },
+          "rangeFilterWidgetNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "displayLabel" : {
+                "oneOf" : [ {
+                  "const" : "NONE",
+                  "title" : "None"
+                }, {
+                  "const" : "COLUMN_NAME",
+                  "title" : "Column name"
+                }, {
+                  "const" : "CUSTOM",
+                  "title" : "Custom"
+                } ],
+                "title" : "Label",
+                "description" : "Display a label below or besides the slider.\n<ul>\n<li><b>None</b>: No label will be displayed.</li>\n<li><b>Column name</b>: The column name of the selected range column will be used as label.</li>\n<li><b>Custom</b>: Use a custom label.</li>\n</ul>",
+                "default" : "NONE"
+              },
+              "label" : {
+                "type" : "string",
+                "title" : "Custom label",
+                "description" : "The custom label to display."
+              },
+              "mergeWithExistingFiltersModel" : {
+                "type" : "boolean",
+                "title" : "Merge with existing filter definitions (Model port)",
+                "description" : "Check this setting to keep any pre-existing filter definitions on the model output port. If not set only this node's filter definition is present on the output model.",
+                "default" : true
+              },
+              "mergeWithExistingFiltersTable" : {
+                "type" : "boolean",
+                "title" : "Merge with existing filter definitions (Table)",
+                "description" : "Check this setting to keep any pre-existing filter definitions on the output table. If not set only this node's filter definition is present on the output table.",
+                "default" : true
+              }
+            },
+            "default" : {
+              "mergeWithExistingFiltersTable" : true,
+              "mergeWithExistingFiltersModel" : true,
+              "displayLabel" : "NONE"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "title" : "Selection component type",
+            "description" : "Select the display type of the filter. Depending on the selection of multiple / single values, different options are offered.",
+            "default" : "Twinlist"
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+        "rule" : {
+          "effect" : "ENABLE",
+          "condition" : {
+            "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "CUSTOM"
+              } ]
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/multipleOrSingleValues",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/type",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "OR",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/multipleOrSingleValues",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "MULTIPLE"
+                } ]
+              }
+            }, {
+              "type" : "AND",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/multipleOrSingleValues",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "SINGLE"
+                  } ]
+                }
+              }, {
+                "scope" : "#/properties/model/properties/type",
+                "schema" : {
+                  "const" : "List"
+                }
+              } ]
+            } ]
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        },
+        "providedOptions" : [ "validation.min" ],
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "type" : "AND",
+            "conditions" : [ {
+              "scope" : "#/properties/model/properties/limitVisibleOptions/properties/limitNumberOfVisibleOptions",
+              "schema" : {
+                "const" : true
+              }
+            }, {
+              "type" : "OR",
+              "conditions" : [ {
+                "scope" : "#/properties/model/properties/multipleOrSingleValues",
+                "schema" : {
+                  "oneOf" : [ {
+                    "const" : "MULTIPLE"
+                  } ]
+                }
+              }, {
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/multipleOrSingleValues",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "SINGLE"
+                    } ]
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/type",
+                  "schema" : {
+                    "const" : "List"
+                  }
+                } ]
+              } ]
+            } ]
+          }
+        }
+      } ]
+    }, {
+      "label" : "Data",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/column",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/defaultValues",
+        "options" : {
+          "format" : "nameFilter"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/mergeWithExistingFiltersTable",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/mergeWithExistingFiltersModel",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "rangeFilterWidgetNodeParameters" : {
+            "type" : "object",
+            "properties" : {
+              "mergeWithExistingFiltersTable" : {
+                "configKey" : "mergeWithExistingFiltersTable"
+              },
+              "mergeWithExistingFiltersModel" : {
+                "configKey" : "mergeWithExistingFiltersModel"
+              },
+              "displayLabel" : {
+                "configPaths" : [ [ "useLabel" ], [ "customLabel" ] ]
+              },
+              "label" : {
+                "configKey" : "label"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
+          },
+          "column" : {
+            "configKey" : "column"
+          },
+          "defaultValues" : {
+            "configPaths" : [ [ "filterValues", "filter-type" ], [ "filterValues", "included_names" ], [ "filterValues", "excluded_names" ], [ "filterValues", "enforce_option" ], [ "filterValues", "name_pattern", "pattern" ], [ "filterValues", "name_pattern", "type" ], [ "filterValues", "name_pattern", "caseSensitive" ], [ "filterValues", "name_pattern", "excludeMatching" ] ]
+          },
+          "multipleOrSingleValues" : {
+            "configPaths" : [ [ "useMultiple" ] ]
+          },
+          "type" : {
+            "configKey" : "type"
+          },
+          "limitVisibleOptions" : {
+            "type" : "object",
+            "properties" : {
+              "limitNumberOfVisibleOptions" : {
+                "configKey" : "limit_number_visible_options"
+              },
+              "numberOfVisibleOptions" : {
+                "configKey" : "number_visible_options"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
+          }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/column",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : "StringColumn"
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/column",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "StringColumn",
+        "text" : "StringColumn",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      }, {
+        "id" : "CategoryColumn",
+        "text" : "CategoryColumn",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "mode" : "MANUAL",
+        "patternFilter" : {
+          "pattern" : "",
+          "isCaseSensitive" : false,
+          "isInverted" : false
+        },
+        "manualFilter" : {
+          "manuallySelected" : [ "C1", "C2", "C3" ],
+          "manuallyDeselected" : [ ],
+          "includeUnknownColumns" : false
+        }
+      }
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/defaultValues",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "C1",
+        "text" : "C1"
+      }, {
+        "id" : "C2",
+        "text" : "C2"
+      }, {
+        "id" : "C3",
+        "text" : "C3"
+      } ]
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
+    "providedOptionName" : "validation.min",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : {
+        "parameters" : {
+          "min" : 5.0,
+          "isExclusive" : false
+        },
+        "errorMessage" : "The value must be at least 5."
+      }
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/type",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "Check boxes (horizontal)",
+        "text" : "Check boxes (horizontal)"
+      }, {
+        "id" : "Check boxes (vertical)",
+        "text" : "Check boxes (vertical)"
+      }, {
+        "id" : "List",
+        "text" : "List"
+      }, {
+        "id" : "Twinlist",
+        "text" : "Twinlist"
+      }, {
+        "id" : "ComboBox",
+        "text" : "ComboBox"
+      } ]
+    } ]
+  } ],
+  "globalUpdates" : [ {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/column"
+    },
+    "dependencies" : [ "#/properties/model/properties/column", "#/properties/model/properties/defaultValues" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/multipleOrSingleValues"
+    },
+    "dependencies" : [ "#/properties/model/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/multipleOrSingleValues", "#/properties/model/properties/type" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel"
+    },
+    "dependencies" : [ "#/properties/model/properties/column", "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel" ]
+  }, {
+    "trigger" : {
+      "scope" : "#/properties/model/properties/type"
+    },
+    "dependencies" : [ "#/properties/model/properties/limitVisibleOptions/properties/numberOfVisibleOptions", "#/properties/model/properties/multipleOrSingleValues", "#/properties/model/properties/type" ]
+  } ]
+}

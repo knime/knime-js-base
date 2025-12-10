@@ -48,6 +48,16 @@
  */
 package org.knime.js.base.node.widget.filter.definition.rangeslider;
 
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_CUSTOM_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_MERGE_WITH_EXISTING_FILTERS_MODEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_MERGE_WITH_EXISTING_FILTERS_TABLE;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.CFG_USE_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_CUSTOM_LABEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
+import static org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.DEFAULT_USE_LABEL;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -75,15 +85,10 @@ public class RangeSliderFilterWidgetConfig {
 
     private SettingsModelString m_domainColumn = new SettingsModelString(SliderNodeDialogUI.CFG_DOMAIN_COLUMN, null);
 
-    static final String CFG_USE_LABEL = "useLabel";
-    private static final boolean DEFAULT_USE_LABEL = false;
     private boolean m_useLabel;
 
-    static final String CFG_LABEL = "label";
     private String m_label;
 
-    static final String CFG_CUSTOM_LABEL = "customLabel";
-    private static final boolean DEFAULT_CUSTOM_LABEL = false;
     private boolean m_customLabel;
 
     static final String CFG_CUSTOM_MIN = "customMin";
@@ -98,12 +103,8 @@ public class RangeSliderFilterWidgetConfig {
     private static final boolean[] DEFAULT_USE_DOMAIN_EXTENDS = new boolean[]{true, true};
     private boolean[] m_useDomainExtends = DEFAULT_USE_DOMAIN_EXTENDS;
 
-    static final String CFG_MERGE_WITH_EXISTING_FILTERS_TABLE = "mergeWithExistingFiltersTable";
-    static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE = true;
     private boolean m_mergeWithExistingFiltersTable = DEFAULT_MERGE_WITH_EXISTING_FILTERS_TABLE;
 
-    static final String CFG_MERGE_WITH_EXISTING_FILTERS_MODEL = "mergeWithExistingFiltersModel";
-    static final boolean DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL = true;
     private boolean m_mergeWithExistingFiltersModel = DEFAULT_MERGE_WITH_EXISTING_FILTERS_MODEL;
 
     private static final String CFG_CUSTOM_CSS = "customCSS";

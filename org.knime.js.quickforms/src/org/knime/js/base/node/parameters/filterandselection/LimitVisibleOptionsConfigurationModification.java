@@ -70,7 +70,7 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
     private static final int MIN_NUM_VIS_OPTIONS_TWINLIST = 5;
 
     @Override
-    String getLimitNumVisOptionsDescription() {
+    public String getLimitNumVisOptionsDescription() {
         return """
                 By default the List and Twinlist components adjust their height to display all possible \
                 choices without a scroll bar. If the setting is enabled, you will be able to limit the number \
@@ -79,7 +79,7 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
     }
 
     @Override
-    String getNumVisOptionsDescription() {
+    public String getNumVisOptionsDescription() {
         return """
                 A number of options visible in the List or Twinlist component without a vertical scroll bar. \
                 Changing this value will also affect the component's height. Notice that for Twinlist the \
@@ -88,14 +88,14 @@ public final class LimitVisibleOptionsConfigurationModification extends LimitVis
     }
 
     @Override
-    Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
+    public Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
         getEffectPredicates() {
         return new Pair<>(IsListOrTwinlistSelectionType.class, IsListOrTwinlistShowNumberOfVisibleOptions.class);
     }
 
     @Override
-    Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
-        getNumVisOptionsProviders() {
+    public Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, //
+            Class<? extends AbstractNumVisOptionsValueProvider>> getNumVisOptionsProviders() {
         return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
     }
 

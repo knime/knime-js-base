@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="test">
+    <entry key="hideInWizard" type="xboolean" value="false"/>
+    <entry key="customCSS" type="xstring" value=""/>
+    <entry key="mergeWithExistingFiltersTable" type="xboolean" value="true"/>
+    <entry key="mergeWithExistingFiltersModel" type="xboolean" value="true"/>
+    <entry key="useLabel" type="xboolean" value="true"/>
+    <entry key="customLabel" type="xboolean" value="true"/>
+    <entry key="label" type="xstring" value="Test Filter Label"/>
+    <entry key="column" type="xstring" value="StringColumn"/>
+    <config key="filterValues">
+        <entry key="filter-type" type="xstring" value="STANDARD"/>
+        <config key="included_names">
+            <entry key="array-size" type="xint" value="2"/>
+            <entry key="0" type="xstring" value="Value1"/>
+            <entry key="1" type="xstring" value="Value2"/>
+        </config>
+        <config key="excluded_names">
+            <entry key="array-size" type="xint" value="0"/>
+        </config>
+        <entry key="enforce_option" type="xstring" value="EnforceInclusion"/>
+        <config key="name_pattern">
+            <entry key="pattern" type="xstring" value=""/>
+            <entry key="type" type="xstring" value="Wildcard"/>
+            <entry key="caseSensitive" type="xboolean" value="true"/>
+            <entry key="excludeMatching" type="xboolean" value="false"/>
+        </config>
+    </config>
+    <entry key="useMultiple" type="xboolean" value="true"/>
+    <entry key="type" type="xstring" value="Twinlist"/>
+    <entry key="limit_number_visible_options" type="xboolean" value="true"/>
+    <entry key="number_visible_options" type="xint" value="15"/>
+</config>

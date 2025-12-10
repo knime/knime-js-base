@@ -59,8 +59,8 @@ import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
- * The visible options modification for multiple selection configuration nodes. Configurations allow to limit the number
- * of visible options for the List and Twinlist component.
+ * The visible options modification for multiple selection widget nodes. Widgets allow to limit the number of visible
+ * options for all components.
  */
 @SuppressWarnings("restriction")
 public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOptionsParametersModifier {
@@ -75,7 +75,7 @@ public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOpt
     public static final int MIN_NUM_VIS_OPTIONS_NON_COMBOBOX = 5;
 
     @Override
-    String getLimitNumVisOptionsDescription() {
+    public String getLimitNumVisOptionsDescription() {
         return """
                 By default, all components adjust their height to display all possible choices without a \
                 scroll bar. If the setting is enabled, you will be able to limit the number of visible options \
@@ -83,7 +83,7 @@ public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOpt
     }
 
     @Override
-    String getNumVisOptionsDescription() {
+    public String getNumVisOptionsDescription() {
         return """
                 A number of options visible in the view component without a vertical scroll bar. Changing this \
                 value will also affect the component's height. Notice that for Twinlist the height cannot be \
@@ -91,8 +91,8 @@ public final class LimitVisibleOptionsWidgetModification extends LimitVisibleOpt
     }
 
     @Override
-    Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, Class<? extends AbstractNumVisOptionsValueProvider>>
-        getNumVisOptionsProviders() {
+    public Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, //
+            Class<? extends AbstractNumVisOptionsValueProvider>> getNumVisOptionsProviders() {
         return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
     }
 
