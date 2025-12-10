@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Dynamically Created JavaScript Nodes
 Bundle-SymbolicName: org.knime.dynamic.js;singleton:=true
-Bundle-Version: 5.9.0.qualifier
+Bundle-Version: 5.10.0.qualifier
 Bundle-ClassPath: knime-dynamic-js-node-generation.jar,
   lib/schemas.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.dynamic.js,
   org.knime.dynamic.js.v212,
   org.knime.dynamic.js.v30
-Require-Bundle: org.knime.core;bundle-version="[5.9.0,6.0.0)",
+Require-Bundle: org.knime.core;bundle-version="[5.10.0,6.0.0)",
  org.knime.dynamic.node.generation;bundle-version="[5.9.0,6.0.0)",
  org.knime.js.core;bundle-version="[5.9.0,6.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.4.3,3.0.0)",
@@ -17,8 +17,9 @@ Require-Bundle: org.knime.core;bundle-version="[5.9.0,6.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.8.9,3.0.0)",
  org.apache.commons.codec;bundle-version="[1.6.0,2.0.0)",
- org.knime.ext.svg;bundle-version="[5.9.0,6.0.0)",
- org.apache.commons.lang;bundle-version="[2.6.0,3.0.0)"
+ org.knime.ext.svg;bundle-version="[5.10.0,6.0.0)",
+ org.apache.commons.lang;bundle-version="[2.6.0,3.0.0)",
+ org.knime.core.ui;bundle-version="[5.10.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Eclipse-BuddyPolicy: dependent
 Bundle-ActivationPolicy: lazy

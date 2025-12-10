@@ -14,12 +14,6 @@
     	     <n:p>
     	     The possible values are taken from a selected column in the input table.
     	     </n:p>
-    	     <n:p>
-             The node supports custom CSS styling. 
-             You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' 
-             in the node configuration dialog. 
-             You will find the list of available classes and their description on our <n:a href="https://knime.com/css-styling">documentation page</n:a>.
-             </n:p>
     	</intro>
     	<options>
     		<stringOption name="Label" id="label" label="Label" defaultValue="Label">
@@ -28,13 +22,13 @@
     		<stringOption name="Description" id="description" label="Description" defaultValue="Enter Description">
     			A tooltip for the textfield to display in the view.
     		</stringOption>
-    		<columnSelectorOption name="Autocomplete Column" id="autoSelect" inPortIndex="0" label="Column containing autocomplete options" filterClasses="org.knime.core.data.StringValue">
+    		<columnSelectorOption name="Autocomplete options column" id="autoSelect" inPortIndex="0" label="Column containing autocomplete options" filterClasses="org.knime.core.data.StringValue">
     			Select the column that contains the autocomplete options.
     		</columnSelectorOption>
     		<checkBoxOption name="Restrict to options" id="restrict" label="Only accept value from options" defaultValue="false">
     			Check if value has to be one of the given options. If not checked any string is accepted.
     		</checkBoxOption>
-    		<stringOption name="Default Value" id="string_input" label="Default Value" optional="true" saveInView="true">
+    		<stringOption name="Default value" id="string_input" label="Default value" optional="true" saveInView="true">
     			An optional default value.
     		</stringOption>
     	</options>

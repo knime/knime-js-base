@@ -1,0 +1,177 @@
+{
+  "data" : {
+    "model" : {
+      "hideInWizard" : false,
+      "customCSS" : "",
+      "label" : "Label",
+      "description" : "Enter Description",
+      "maxRows" : 2500,
+      "restrict" : false,
+      "stringInput" : "",
+      "generateImage" : false
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "autoSelect" : {
+            "type" : "string",
+            "title" : "Autocomplete options column",
+            "description" : "Select the column that contains the autocomplete options."
+          },
+          "customCSS" : {
+            "type" : "string",
+            "default" : ""
+          },
+          "description" : {
+            "type" : "string",
+            "title" : "Description",
+            "description" : "Some lines of description that will be shown in the view, for instance by means of a tooltip.",
+            "default" : "Enter Description"
+          },
+          "generateImage" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "hideInWizard" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "label" : {
+            "type" : "string",
+            "title" : "Label",
+            "description" : "A descriptive label that will be shown in the view.",
+            "default" : "Label"
+          },
+          "maxRows" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Max rows",
+            "description" : "The number of rows to calculate the autocomplete options from.",
+            "default" : 2500
+          },
+          "restrict" : {
+            "type" : "boolean",
+            "title" : "Restrict to options",
+            "description" : "Check if value has to be one of the given options. If not checked any string is accepted.",
+            "default" : false
+          },
+          "stringInput" : {
+            "type" : "string",
+            "title" : "Default value",
+            "description" : "An optional default value.",
+            "default" : ""
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Form Field",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/label"
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/description",
+        "options" : {
+          "rows" : 4,
+          "format" : "textArea"
+        }
+      } ]
+    }, {
+      "label" : "Data",
+      "type" : "Section",
+      "description" : "Settings regarding the data used to generate the autocomplete options.",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/maxRows",
+        "options" : {
+          "validation" : {
+            "max" : {
+              "errorMessage" : "The value must not exceed 2147483647.",
+              "parameters" : {
+                "isExclusive" : false,
+                "max" : 2.147483647E9
+              }
+            },
+            "min" : {
+              "errorMessage" : "The value must be at least -2147483648.",
+              "parameters" : {
+                "isExclusive" : false,
+                "min" : -2.147483648E9
+              }
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/autoSelect",
+        "options" : {
+          "format" : "dropDown"
+        },
+        "providedOptions" : [ "possibleValues" ]
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/restrict",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    }, {
+      "label" : "Output",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/model/properties/stringInput"
+      } ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "hideInWizard" : { },
+          "customCSS" : { },
+          "label" : { },
+          "description" : { },
+          "maxRows" : { },
+          "autoSelect" : { },
+          "restrict" : { },
+          "stringInput" : {
+            "configKey" : "string_input"
+          },
+          "generateImage" : { }
+        }
+      }
+    }
+  },
+  "initialUpdates" : [ {
+    "scope" : "#/properties/model/properties/autoSelect",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : "StringColumn"
+    } ]
+  }, {
+    "scope" : "#/properties/model/properties/autoSelect",
+    "providedOptionName" : "possibleValues",
+    "values" : [ {
+      "indices" : [ ],
+      "value" : [ {
+        "id" : "StringColumn",
+        "text" : "StringColumn",
+        "type" : {
+          "id" : "org.knime.core.data.StringValue",
+          "text" : "String"
+        }
+      } ]
+    } ]
+  } ]
+}
