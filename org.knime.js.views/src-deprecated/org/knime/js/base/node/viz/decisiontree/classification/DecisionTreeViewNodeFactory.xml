@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode icon="./decision_tree_view.png" type="Visualizer" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-	<name>Decision Tree View (JavaScript) (legacy)</name>
+<knimeNode icon="./decision_tree_view.png" type="Visualizer" deprecated="true" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Decision Tree View (JavaScript) (legacy) (deprecated)</name>
 	
 	<shortDescription>
 	    A JavaScript based plot of the provided decision tree.

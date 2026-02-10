@@ -56,7 +56,9 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 /**
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 public class DecisionTreeViewNodeFactory extends NodeFactory<DecisionTreeViewNodeModel> implements
     WizardNodeFactoryExtension<DecisionTreeViewNodeModel, DecisionTreeViewRepresentation, DecisionTreeViewValue> {
 

@@ -81,7 +81,9 @@ import org.knime.js.core.settings.numberFormat.NumberFormatNodeDialogUI;
 /**
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 public class DecisionTreeViewNodeDialogPane extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = 20;

@@ -63,7 +63,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * View representation for the decision tree view.
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class DecisionTreeViewRepresentation extends JSONViewContent {

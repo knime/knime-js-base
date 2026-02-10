@@ -47,7 +47,7 @@
       <node
             after="org.knime.dynamic.js.v30.DynamicJSNodeFactory#Conditional Box Plot (JavaScript)"
             category-path="/view/js-views"
-            deprecated="false"
+            deprecated="true"
             factory-class="org.knime.js.base.node.viz.decisiontree.classification.DecisionTreeViewNodeFactory">
       </node>
       <node
