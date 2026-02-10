@@ -91,7 +91,9 @@ import org.w3c.dom.Node;
 /**
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 public class DecisionTreeViewNodeModel extends AbstractSVGWizardNodeModel<DecisionTreeViewRepresentation,
         DecisionTreeViewValue> implements PortObjectHolder, LayoutTemplateProvider, CSSModifiable {
 

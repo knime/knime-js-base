@@ -58,7 +58,9 @@ import org.knime.js.core.JSONViewContent;
 /**
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 public class DecisionTreeViewValue extends JSONViewContent {
 
     static final String SELECTED_KEYS = "selectedKeys";

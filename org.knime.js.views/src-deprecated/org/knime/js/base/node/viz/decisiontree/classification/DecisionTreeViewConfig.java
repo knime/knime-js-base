@@ -59,7 +59,9 @@ import org.knime.js.core.settings.numberFormat.NumberFormatSettings;
 /**
  *
  * @author Adrian Nembach, KNIME.com
+ * @deprecated
  */
+@Deprecated
 public class DecisionTreeViewConfig {
 
     static final String ENABLE_CONFIG = "enableViewConfiguration";
