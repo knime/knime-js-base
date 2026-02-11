@@ -170,7 +170,7 @@ public abstract class ConfigurationNodeSettings implements NodeParameters {
 
         @Override
         protected String getPattern() {
-            return "[A-Za-z]((?:[A-Za-z0-9]|-(?=[A-Za-z0-9]))*[A-Za-z])?";
+            return DialogNode.PARAMETER_NAME_PATTERN.pattern();
         }
 
         @Override
