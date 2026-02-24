@@ -317,13 +317,11 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
         try {
             URI uri = getPathFromVariable().toUri();
             data.resource(uri);
-        } catch (InvalidSettingsException ex) {
-            getLogger().error("Could not get output resource URL: " + ex.getMessage(), ex);
-            try {
-                data.resource(new URI("unknown-filename"));
-            } catch (URISyntaxException e1) {
-                getLogger().error("Error while creating resource URI for unknown file: " + e1.getMessage(), e1);
-            }
+        } catch (InvalidSettingsException ex) { // NOSONAR
+            /* The variable/path is already validated in configure/execute (see usages of getPathFromVariable). If it
+             * fails here the node itself is in an idle state and the fallback without explicit log entry is desirable.
+             */
+            data.resource(URI.create("unknown-filename"));
         }
 
         return data.build();
