@@ -64,7 +64,9 @@ import org.knime.js.core.node.table.AbstractTableNodeModel;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
+@Deprecated
 public class TileViewNodeModel extends AbstractTableNodeModel<TileViewRepresentation, TileViewValue> {
 
     /**

@@ -59,7 +59,7 @@
       <node
             after="org.knime.js.base.node.viz.tagcloud.TagCloudViewNodeFactory"
             category-path="/view/js-views"
-            deprecated="false"
+            deprecated="true"
             factory-class="org.knime.js.base.node.viz.tileView.TileViewNodeFactory">
       </node>
       <node

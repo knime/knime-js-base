@@ -55,7 +55,9 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
+@Deprecated
 public class TileViewNodeFactory extends NodeFactory<TileViewNodeModel>
     implements WizardNodeFactoryExtension<TileViewNodeModel, TileViewRepresentation, TileViewValue> {
 
