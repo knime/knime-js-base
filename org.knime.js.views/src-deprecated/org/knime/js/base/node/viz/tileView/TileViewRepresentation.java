@@ -64,9 +64,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@Deprecated
 public class TileViewRepresentation extends AbstractTableRepresentation {
 
     private boolean m_useNumCols;
