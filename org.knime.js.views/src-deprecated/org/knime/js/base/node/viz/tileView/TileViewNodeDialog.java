@@ -90,7 +90,9 @@ import org.knime.js.core.settings.table.TableSettings;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
+@Deprecated
 public class TileViewNodeDialog extends NodeDialogPane {
 
     private static final int TEXT_FIELD_SIZE = DialogUtil.DEF_TEXTFIELD_WIDTH;

@@ -58,7 +58,9 @@ import org.knime.core.node.NodeModel;
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
+@Deprecated
 public class TileViewClassMapper extends MapNodeFactoryClassMapper {
 
     /**

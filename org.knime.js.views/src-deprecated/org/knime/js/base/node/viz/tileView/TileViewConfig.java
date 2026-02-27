@@ -57,7 +57,9 @@ import org.knime.js.core.settings.table.TableSettings;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
+@Deprecated
 public class TileViewConfig implements TableConfig {
 
     static final String CFG_USE_NUM_COLS = "useNumCols";

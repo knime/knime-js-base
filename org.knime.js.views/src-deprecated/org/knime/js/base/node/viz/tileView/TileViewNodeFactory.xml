@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode type="Visualizer" icon="./tile4portrait_content.png"
+<knimeNode type="Visualizer" icon="./tile4portrait_content.png" deprecated="true"
     xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://knime.org/node/v3.1 https://www.knime.org/node/Node_v3.1.xsd">
-    <name>Tile View (JavaScript) (legacy)</name>
+    <name>Tile View (JavaScript) (deprecated)</name>
     <shortDescription>This node provides a tile view where each data row is displayed as a tile.</shortDescription>
     <fullDescription>
         <intro>

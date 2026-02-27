@@ -63,9 +63,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
  * @author Alison Walter, KNIME GmbH, Konstanz, Germany
+ * @deprecated
  */
 @JsonAutoDetect
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@Deprecated
 public class TileViewValue extends AbstractTableValue {
 
     private TableValueSettings m_settings = new TableValueSettings();
