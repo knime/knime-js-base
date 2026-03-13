@@ -48,8 +48,13 @@
  */
 package org.knime.js.base.node.widget.input.string;
 
+import java.util.Map;
+
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.input.string.StringNodeRepresentation;
 import org.knime.js.base.node.base.input.string.StringNodeValue;
@@ -101,4 +106,9 @@ public class StringWidgetNodeFactory
         return new StringWidgetNodeDialog();
     }
 
+    @SuppressWarnings("restriction")
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, StringWidgetNodeParameters.class));
+    }
 }

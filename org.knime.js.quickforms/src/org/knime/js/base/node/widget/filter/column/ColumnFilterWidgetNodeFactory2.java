@@ -48,7 +48,12 @@
  */
 package org.knime.js.base.node.widget.filter.column;
 
+import java.util.Map;
+
 import org.knime.core.node.NodeDialogPane;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
 import org.knime.js.base.node.widget.WidgetNodeFactory;
@@ -98,6 +103,12 @@ public class ColumnFilterWidgetNodeFactory2 extends WidgetNodeFactory< //
     @Override
     public String getInteractiveViewName() {
         return NAME;
+    }
+
+    @SuppressWarnings("restriction")
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, ColumnFilterWidgetNodeParameters.class));
     }
 
 }

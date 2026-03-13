@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogFactory;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterfaceFactory;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.core.JSONViewContent;
@@ -81,7 +82,7 @@ public abstract class WidgetNodeFactory< //
         T extends NodeModel & WizardNode<V, U>, //
         V extends JSONViewContent, //
         U extends JSONViewContent //
-> extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory {
+> extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory, KaiNodeInterfaceFactory {
 
     private final WebUINodeConfiguration m_config;
 
