@@ -48,8 +48,13 @@
  */
 package org.knime.js.base.node.configuration.selection.multiple;
 
+import java.util.Map;
+
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -90,5 +95,11 @@ public class MultipleSelectionDialogNodeFactory extends ConfigurationNodeFactory
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new MultipleSelectionDialogNodeNodeDialog();
+    }
+
+    @SuppressWarnings("restriction")
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, MultipleSelectionDialogNodeParameters.class));
     }
 }

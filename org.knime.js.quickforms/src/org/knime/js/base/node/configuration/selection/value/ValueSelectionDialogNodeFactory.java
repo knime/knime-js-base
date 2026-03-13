@@ -48,9 +48,14 @@
  */
 package org.knime.js.base.node.configuration.selection.value;
 
+import java.util.Map;
+
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -93,6 +98,12 @@ public class ValueSelectionDialogNodeFactory extends ConfigurationNodeFactory<Va
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return new ValueSelectionDialogNodeNodeDialog();
+    }
+
+    @SuppressWarnings("restriction")
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, ValueSelectionDialogNodeParameters.class));
     }
 
 }

@@ -48,11 +48,15 @@
  */
 package org.knime.js.base.node.configuration.input.listbox;
 
+import java.util.Map;
+
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.js.base.node.configuration.ConfigurationNodeFactory;
 
@@ -102,4 +106,8 @@ public class ListBoxDialogNodeFactory extends ConfigurationNodeFactory<ListBoxDi
         return new ListBoxDialogNodeModel();
     }
 
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, ListBoxDialogNodeParameters.class));
+    }
 }
