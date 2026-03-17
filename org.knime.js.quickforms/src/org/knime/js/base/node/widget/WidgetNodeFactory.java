@@ -49,6 +49,7 @@
 package org.knime.js.base.node.widget;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.xmlbeans.XmlException;
 import org.knime.core.node.NodeDescription;
@@ -60,7 +61,10 @@ import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogFactory;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultKaiNodeInterface;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterface;
+import org.knime.core.webui.node.dialog.kai.KaiNodeInterfaceFactory;
 import org.knime.core.webui.node.impl.WebUINodeConfiguration;
 import org.knime.core.webui.node.impl.WebUINodeFactory;
 import org.knime.js.core.JSONViewContent;
@@ -81,7 +85,7 @@ public abstract class WidgetNodeFactory< //
         T extends NodeModel & WizardNode<V, U>, //
         V extends JSONViewContent, //
         U extends JSONViewContent //
-> extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory {
+> extends NodeFactory<T> implements WizardNodeFactoryExtension<T, V, U>, NodeDialogFactory, KaiNodeInterfaceFactory {
 
     private final WebUINodeConfiguration m_config;
 
@@ -142,6 +146,11 @@ public abstract class WidgetNodeFactory< //
     @Override
     public final NodeView<T> createNodeView(final int viewIndex, final T nodeModel) {
         return null;
+    }
+
+    @Override
+    public KaiNodeInterface createKaiNodeInterface() {
+        return new DefaultKaiNodeInterface(Map.of(SettingsType.MODEL, m_settingsClass));
     }
 
 }
