@@ -2,6 +2,6 @@ autoEnabled=true
 bindingSuggestionsDisabled=false
 eclipse.preferences.version=1
 idePrefixKey=
-projectKey=KNIME_knime-js-base
+projectKey=knime_knime-js-base
 serverId=SonarCloud
 sqPrefixKey=org.knime.dynamic.js
