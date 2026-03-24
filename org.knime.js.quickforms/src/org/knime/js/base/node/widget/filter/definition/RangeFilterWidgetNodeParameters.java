@@ -136,6 +136,7 @@ public class RangeFilterWidgetNodeParameters implements NodeParameters {
     @ValueReference(LabelReference.class)
     @ValueProvider(LabelProvider.class)
     @Effect(predicate = IsCustomLabel.class, type = EffectType.ENABLE)
+    @Effect(predicate = IsNoneLabel.class, type = EffectType.HIDE)
     String m_label;
 
     enum DisplayLabel {
@@ -152,6 +153,13 @@ public class RangeFilterWidgetNodeParameters implements NodeParameters {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
             return i.getEnum(DisplayLabelReference.class).isOneOf(DisplayLabel.CUSTOM);
+        }
+    }
+
+    private static final class IsNoneLabel implements EffectPredicateProvider {
+        @Override
+        public EffectPredicate init(final PredicateInitializer i) {
+            return i.getEnum(DisplayLabelReference.class).isOneOf(DisplayLabel.NONE);
         }
     }
 

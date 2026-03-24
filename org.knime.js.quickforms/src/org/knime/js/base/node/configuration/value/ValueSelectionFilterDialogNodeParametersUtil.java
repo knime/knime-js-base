@@ -71,6 +71,7 @@ import org.knime.node.parameters.persistence.Persistor;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
@@ -124,7 +125,6 @@ public class ValueSelectionFilterDialogNodeParametersUtil {
         public static final class EnableColumnFieldValueReference implements ParameterReference<Boolean> {
         }
     }
-
 
     /**
      * Persistor mapping from a boolean to the inverted boolean.
@@ -219,7 +219,7 @@ public class ValueSelectionFilterDialogNodeParametersUtil {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             m_defaultColumnSupplier = initializer.getValueSupplier(DefaultColumnValueReference.class);
             m_possibleColumnChoicesSupplier = initializer.computeFromProvidedState(m_possibleColumnChoicesProvider);
         }
@@ -300,7 +300,6 @@ public class ValueSelectionFilterDialogNodeParametersUtil {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
             m_defaultColumnSupplier = initializer.computeFromValueSupplier(DefaultColumnValueReference.class);
             m_possibleColumnValuesSupplier =
                 initializer.computeFromProvidedState(m_possibleColumnValuesChoicesProvider);

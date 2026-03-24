@@ -239,6 +239,7 @@ public class ValueFilterWidgetNodeModel extends WidgetNodeModel< //
             warning += "Auto-guessing default column and value.";
             column = possibleValues.keySet().toArray(new String[0])[0];
             values = new ArrayList<String>();
+            rValue.setColumn(column);
             setWarningMessage(warning);
         }
         List<String> columnValues = possibleValues.get(column);

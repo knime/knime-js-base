@@ -1046,104 +1046,152 @@
           }
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/positionValues",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "The string must consist of comma-separated numbers.",
-              "parameters" : {
-                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
-              }
-            }
-          }
-        },
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "positions"
-              } ]
-            }
-          }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/countValue",
-        "options" : {
-          "validation" : {
-            "max" : {
-              "errorMessage" : "The value must not exceed 2147483647.",
-              "parameters" : {
-                "isExclusive" : false,
-                "max" : 2.147483647E9
-              }
-            },
-            "min" : {
-              "errorMessage" : "The value must be at least -2147483648.",
-              "parameters" : {
-                "isExclusive" : false,
-                "min" : -2.147483648E9
-              }
+              "const" : true
             }
           }
         },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/positionValues",
+          "options" : {
+            "validation" : {
+              "pattern" : {
+                "errorMessage" : "The string must consist of comma-separated numbers.",
+                "parameters" : {
+                  "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "positions"
+                } ]
+              }
+            }
+          }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "count"
-              } ]
+              "const" : true
             }
           }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/values",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "The string must consist of comma-separated numbers.",
-              "parameters" : {
-                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/countValue",
+          "options" : {
+            "validation" : {
+              "max" : {
+                "errorMessage" : "The value must not exceed 2147483647.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "max" : 2.147483647E9
+                }
+              },
+              "min" : {
+                "errorMessage" : "The value must be at least -2147483648.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "min" : -2.147483648E9
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "count"
+                } ]
               }
             }
           }
-        },
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "values"
-              } ]
+              "const" : true
             }
           }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/stepped",
-        "options" : {
-          "format" : "checkbox"
         },
-        "rule" : {
-          "effect" : "HIDE",
-          "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
-            "schema" : {
-              "oneOf" : [ {
-                "const" : "range"
-              }, {
-                "const" : "steps"
-              } ]
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/values",
+          "options" : {
+            "validation" : {
+              "pattern" : {
+                "errorMessage" : "The string must consist of comma-separated numbers.",
+                "parameters" : {
+                  "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "values"
+                } ]
+              }
             }
           }
-        }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+            "schema" : {
+              "const" : true
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/stepped",
+          "options" : {
+            "format" : "checkbox"
+          },
+          "rule" : {
+            "effect" : "HIDE",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "range"
+                }, {
+                  "const" : "steps"
+                } ]
+              }
+            }
+          }
+        } ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/density",

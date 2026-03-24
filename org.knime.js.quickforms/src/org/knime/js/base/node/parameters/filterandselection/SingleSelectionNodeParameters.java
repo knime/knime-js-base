@@ -188,7 +188,6 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
             m_possibleChoicesSupplier = initializer.computeFromValueSupplier(PossibleChoicesReference.class);
             m_variableValueSupplier = initializer.getValueSupplier(VariableValueValueReference.class);
         }
@@ -198,12 +197,13 @@ public final class SingleSelectionNodeParameters implements NodeParameters {
             final var variableValue = m_variableValueSupplier.get();
             final var possibleChoicesString = m_possibleChoicesSupplier.get();
             if (possibleChoicesString != null && !possibleChoicesString.isEmpty()) {
-                final var possibleChoices = possibleChoicesString.split("\n");
+                final var possibleChoices =
+                    Arrays.stream(possibleChoicesString.split("\n")).filter(s -> !s.isEmpty()).toList();
                 if (variableValue != null
-                    && Arrays.stream(possibleChoices).anyMatch(val -> val.equals(variableValue))) {
-                    return variableValue;
+                    && possibleChoices.stream().anyMatch(val -> val.equals(variableValue))) {
+                    throw new StateComputationFailureException();
                 }
-                return possibleChoices[0];
+                return possibleChoices.get(0);
             }
             return null;
         }

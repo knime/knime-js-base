@@ -75,6 +75,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
 import org.knime.node.parameters.widget.choices.TypedStringChoice;
@@ -154,7 +155,7 @@ public final class ColumnSelectionNodeParameters implements NodeParameters {
         private Class<? extends ColumnChoicesProvider> m_columnChoicesProviderClass = AllColumnsProvider.class;
 
         ColumnValueValueProvider() {
-            // for serialization
+            // Default constructor.
         }
 
         /**
@@ -166,23 +167,39 @@ public final class ColumnSelectionNodeParameters implements NodeParameters {
 
         @Override
         public final void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             m_columnValueSupplier = initializer.getValueSupplier(ColumnValueReference.class);
             m_possibleColumnChoicesSupplier = initializer.computeFromProvidedState(m_columnChoicesProviderClass);
+        }
+
+        /**
+         * Configuration does not try to correct missing column values. Widget does.
+         */
+        @SuppressWarnings("javadoc")
+        protected boolean tryCorrectMissingColumnValues() {
+            return true;
         }
 
         @Override
         public final String computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
             final var possibleColumnChoices = m_possibleColumnChoicesSupplier.get();
+
             if (possibleColumnChoices.isEmpty()) {
-                return null;
+                if (tryCorrectMissingColumnValues()) {
+                    return null;
+                }
+                throw new StateComputationFailureException();
             }
+
             final var columnValue = m_columnValueSupplier.get();
             final var possibleColumnChoicesIds = possibleColumnChoices.stream().map(TypedStringChoice::id).toList();
+            if (columnValue == null || columnValue.isEmpty()) {
+                return possibleColumnChoicesIds.get(0);
+            }
 
-            if (columnValue != null && possibleColumnChoicesIds.contains(columnValue)) {
-                return columnValue;
+            if (possibleColumnChoicesIds.contains(columnValue) || !tryCorrectMissingColumnValues()) {
+                throw new StateComputationFailureException();
             }
             return possibleColumnChoicesIds.get(0);
         }

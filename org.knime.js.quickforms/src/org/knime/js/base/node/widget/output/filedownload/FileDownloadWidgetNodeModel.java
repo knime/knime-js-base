@@ -130,16 +130,22 @@ public class FileDownloadWidgetNodeModel extends AbstractWizardNodeModel<FileDow
     }
 
     private Path getPathFromVariable() throws InvalidSettingsException {
+        final Map<String, FlowVariable> flowVariables = getAvailableFlowVariables(
+            new VariableType[] {FSLocationVariableType.INSTANCE,VariableType.StringType.INSTANCE}
+        );
         String varName = m_config.getFlowVariable();
         if (varName == null || varName.length() == 0) {
-            throw new InvalidSettingsException("Invalid (empty) variable name");
+            final var firstFlowVar = flowVariables.values().stream().findFirst();
+            if (firstFlowVar.isPresent()) {
+                varName = firstFlowVar.get().getName();
+                m_config.setFlowVariable(varName);
+            } else {
+                throw new InvalidSettingsException("Invalid (empty) variable name");
+            }
         }
 
         String value;
         try {
-            final Map<String, FlowVariable> flowVariables = getAvailableFlowVariables(
-                new VariableType[] {FSLocationVariableType.INSTANCE,VariableType.StringType.INSTANCE}
-            );
             // since 4.3
             if (flowVariables.get(varName) != null &&
                     flowVariables.get(varName).getVariableType() instanceof FSLocationVariableType) {

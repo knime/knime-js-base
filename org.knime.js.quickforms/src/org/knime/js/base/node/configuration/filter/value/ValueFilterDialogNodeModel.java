@@ -120,9 +120,9 @@ public class ValueFilterDialogNodeModel extends
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         m_table = (BufferedDataTable)inObjects[0];
-        // 
+        //
         updateValues(m_table.getDataTableSpec());
-        // get filter configuration 
+        // get filter configuration
         Map<String, List<String>> value = createAndPushFlowVariable();
         // maps column name to the string representations of the permitted values
         Entry<String, List<String>> entry = value.entrySet().iterator().next();
@@ -219,6 +219,7 @@ public class ValueFilterDialogNodeModel extends
             // To respect the specified include/exclude option, even if the column is guessed,
             // we update the NodeValue with the domain of the guessed column. See AP-20227
             rValue.updateInclExcl(guessedColumn.getValue());
+            rValue.setColumn(column);
             setWarningMessage(warning);
         }
         var columnValues = possibleValues.get(column);

@@ -81,6 +81,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.message.TextMessage;
@@ -150,7 +151,7 @@ public class ValueSelectionNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             m_columnTypeSupplier = initializer.getValueSupplier(ColumnTypeParameterReference.class);
         }
 
@@ -158,7 +159,6 @@ public class ValueSelectionNodeParameters implements NodeParameters {
         public Map<String, List<String>> computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
             final var tableSpecOpt = parametersInput.getInTableSpec(0);
-
             return tableSpecOpt.isEmpty() ? Map.of()
                 : ValueSelectionNodeConfig.getPossibleValues(tableSpecOpt.get(), m_columnTypeSupplier.get());
         }
@@ -197,7 +197,6 @@ public class ValueSelectionNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
             m_defaultValueSupplier = initializer.getValueSupplier(DefaultValueValueReference.class);
             m_possibleValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValueChoicesProvider.class);
         }

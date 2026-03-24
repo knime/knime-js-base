@@ -74,6 +74,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
@@ -110,7 +111,8 @@ public final class MultipleSelectionNodeParameters implements NodeParameters {
 
     @PersistWithin.PersistEmbedded
     @Layout(FormFieldSection.class)
-    MultipleSelectionComponentParameters m_multiSelectionComponentParameters = new MultipleSelectionComponentParameters();
+    MultipleSelectionComponentParameters m_multiSelectionComponentParameters =
+        new MultipleSelectionComponentParameters();
 
     @Widget(title = "Possible choices", description = "The possible choices, each line is one possible value.")
     @TextAreaWidget
@@ -192,7 +194,7 @@ public final class MultipleSelectionNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             m_possibleChoicesSupplier = initializer.computeFromValueSupplier(PossibleChoicesReference.class);
             m_variableValueSupplier = initializer.getValueSupplier(VariableValueValueReference.class);
         }
@@ -203,15 +205,15 @@ public final class MultipleSelectionNodeParameters implements NodeParameters {
             final var variableValue = m_variableValueSupplier.get();
             final var possibleChoicesString = m_possibleChoicesSupplier.get();
             if (possibleChoicesString != null && !possibleChoicesString.isEmpty()) {
-                final var possibleChoices = possibleChoicesString.split("\n");
+                final var possibleChoices =
+                    Arrays.stream(possibleChoicesString.split("\n")).filter(s -> !s.isEmpty()).toList();
                 if (variableValue != null && variableValue.length != 0) {
-                    final var validChoices = Arrays.stream(variableValue)
-                        .filter(val -> Arrays.asList(possibleChoices).contains(val)).toArray(String[]::new);
+                    final var validChoices =
+                        Arrays.stream(variableValue).filter(possibleChoices::contains).toArray(String[]::new);
                     if (validChoices.length > 0) {
                         return validChoices;
                     }
                 }
-                return new String[]{possibleChoices[0]};
             }
             return new String[0];
         }

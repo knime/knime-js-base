@@ -150,7 +150,6 @@ public final class ValueFilterDialogNodeParameters extends ConfigurationNodeSett
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
             m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
             m_defaultExcludesSupplier = initializer.getValueSupplier(DefaultExcludesValueReference.class);
             m_defaultValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);

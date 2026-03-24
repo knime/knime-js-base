@@ -228,8 +228,7 @@
           "format" : "valueSwitch"
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
@@ -240,7 +239,22 @@
               } ]
             }
           }
-        }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+          "rule" : {
+            "effect" : "HIDE",
+            "condition" : {
+              "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "NONE"
+                } ]
+              }
+            }
+          }
+        } ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/multipleOrSingleValues",
@@ -468,28 +482,19 @@
     } ]
   }, {
     "scope" : "#/properties/model/properties/defaultValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "mode" : "MANUAL",
-        "patternFilter" : {
-          "pattern" : "",
-          "isCaseSensitive" : false,
-          "isInverted" : false
-        },
-        "manualFilter" : {
-          "manuallySelected" : [ ],
-          "manuallyDeselected" : [ ],
-          "includeUnknownColumns" : false
-        }
-      }
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/defaultValues",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
-      "value" : [ ]
+      "value" : [ {
+        "id" : "A",
+        "text" : "A"
+      }, {
+        "id" : "B",
+        "text" : "B"
+      }, {
+        "id" : "C",
+        "text" : "C"
+      } ]
     } ]
   }, {
     "scope" : "#/properties/model/properties/limitVisibleOptions/properties/numberOfVisibleOptions",

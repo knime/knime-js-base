@@ -794,8 +794,7 @@
           "format" : "valueSwitch"
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
@@ -806,7 +805,22 @@
               } ]
             }
           }
-        }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+          "rule" : {
+            "effect" : "HIDE",
+            "condition" : {
+              "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "NONE"
+                } ]
+              }
+            }
+          }
+        } ]
       } ]
     }, {
       "label" : "Range",
@@ -1025,58 +1039,29 @@
           }
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-        "options" : {
-          "format" : "checkbox"
-        },
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
-              "schema" : {
-                "const" : true
-              }
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-              "schema" : {
-                "oneOf" : [ {
-                  "const" : "BOTH"
-                }, {
-                  "const" : "MINIMUM"
-                } ]
-              }
-            } ]
-          }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/decimals",
-        "options" : {
-          "validation" : {
-            "max" : {
-              "errorMessage" : "The value must not exceed 7.",
-              "parameters" : {
-                "isExclusive" : false,
-                "max" : 7.0
-              }
-            },
-            "min" : {
-              "errorMessage" : "The value must be at least 0.",
-              "parameters" : {
-                "isExclusive" : false,
-                "min" : 0.0
-              }
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
             }
           }
         },
-        "rule" : {
-          "effect" : "SHOW",
-          "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
+          "options" : {
+            "format" : "checkbox"
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
                 "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
@@ -1093,206 +1078,363 @@
                   } ]
                 }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/mark",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/decimals",
+          "options" : {
+            "validation" : {
+              "max" : {
+                "errorMessage" : "The value must not exceed 7.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "max" : 7.0
+                }
+              },
+              "min" : {
+                "errorMessage" : "The value must be at least 0.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "min" : 0.0
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/thousandSeparator",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/mark",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/prefix",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/thousandSeparator",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/postfix",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/prefix",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negative",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/postfix",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negativeBefore",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negative",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
+              } ]
+            }
+          }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
               }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "const" : "MINIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/numberFormatParameters/properties/negativeBefore",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "type" : "AND",
+              "conditions" : [ {
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MINIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
                 "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MINIMUM"
-                  } ]
+                  "const" : true
                 }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMinimum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
@@ -1313,58 +1455,29 @@
           }
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-        "options" : {
-          "format" : "checkbox"
-        },
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
-              "schema" : {
-                "const" : true
-              }
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-              "schema" : {
-                "oneOf" : [ {
-                  "const" : "BOTH"
-                }, {
-                  "const" : "MAXIMUM"
-                } ]
-              }
-            } ]
-          }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/decimals",
-        "options" : {
-          "validation" : {
-            "max" : {
-              "errorMessage" : "The value must not exceed 7.",
-              "parameters" : {
-                "isExclusive" : false,
-                "max" : 7.0
-              }
-            },
-            "min" : {
-              "errorMessage" : "The value must be at least 0.",
-              "parameters" : {
-                "isExclusive" : false,
-                "min" : 0.0
-              }
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
             }
           }
         },
-        "rule" : {
-          "effect" : "SHOW",
-          "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
+          "options" : {
+            "format" : "checkbox"
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
                 "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
@@ -1381,206 +1494,363 @@
                   } ]
                 }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/mark",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/decimals",
+          "options" : {
+            "validation" : {
+              "max" : {
+                "errorMessage" : "The value must not exceed 7.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "max" : 7.0
+                }
+              },
+              "min" : {
+                "errorMessage" : "The value must be at least 0.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "min" : 0.0
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/thousandSeparator",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/mark",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/prefix",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/thousandSeparator",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/postfix",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/prefix",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negative",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/postfix",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
-              }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
-                "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
-                }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negativeBefore",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "type" : "AND",
-            "conditions" : [ {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
+              }, {
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negative",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
               "type" : "AND",
               "conditions" : [ {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
                   "const" : true
                 }
+              } ]
+            }
+          }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "BOTH"
               }, {
-                "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                "const" : "MAXIMUM"
+              } ]
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/numberFormatParameters/properties/negativeBefore",
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "type" : "AND",
+              "conditions" : [ {
+                "type" : "AND",
+                "conditions" : [ {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/showTooltip",
+                  "schema" : {
+                    "const" : true
+                  }
+                }, {
+                  "scope" : "#/properties/model/properties/sliderSettings/properties/boundaryMode",
+                  "schema" : {
+                    "oneOf" : [ {
+                      "const" : "BOTH"
+                    }, {
+                      "const" : "MAXIMUM"
+                    } ]
+                  }
+                } ]
+              }, {
+                "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
                 "schema" : {
-                  "oneOf" : [ {
-                    "const" : "BOTH"
-                  }, {
-                    "const" : "MAXIMUM"
-                  } ]
+                  "const" : true
                 }
               } ]
-            }, {
-              "scope" : "#/properties/model/properties/sliderSettings/properties/tooltips/properties/tooltipMaximum/properties/useFormatter",
-              "schema" : {
-                "const" : true
-              }
-            } ]
+            }
           }
-        }
+        } ]
       } ]
     }, {
       "label" : "Labels & Ticks",
@@ -1604,104 +1874,152 @@
           }
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/positionValues",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "The string must consist of comma-separated numbers.",
-              "parameters" : {
-                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
-              }
-            }
-          }
-        },
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "positions"
-              } ]
-            }
-          }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/countValue",
-        "options" : {
-          "validation" : {
-            "max" : {
-              "errorMessage" : "The value must not exceed 2147483647.",
-              "parameters" : {
-                "isExclusive" : false,
-                "max" : 2.147483647E9
-              }
-            },
-            "min" : {
-              "errorMessage" : "The value must be at least -2147483648.",
-              "parameters" : {
-                "isExclusive" : false,
-                "min" : -2.147483648E9
-              }
+              "const" : true
             }
           }
         },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/positionValues",
+          "options" : {
+            "validation" : {
+              "pattern" : {
+                "errorMessage" : "The string must consist of comma-separated numbers.",
+                "parameters" : {
+                  "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "positions"
+                } ]
+              }
+            }
+          }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "count"
-              } ]
+              "const" : true
             }
           }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/values",
-        "options" : {
-          "validation" : {
-            "pattern" : {
-              "errorMessage" : "The string must consist of comma-separated numbers.",
-              "parameters" : {
-                "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/countValue",
+          "options" : {
+            "validation" : {
+              "max" : {
+                "errorMessage" : "The value must not exceed 2147483647.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "max" : 2.147483647E9
+                }
+              },
+              "min" : {
+                "errorMessage" : "The value must be at least -2147483648.",
+                "parameters" : {
+                  "isExclusive" : false,
+                  "min" : -2.147483648E9
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "count"
+                } ]
               }
             }
           }
-        },
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
             "schema" : {
-              "oneOf" : [ {
-                "const" : "values"
-              } ]
+              "const" : true
             }
           }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/stepped",
-        "options" : {
-          "format" : "checkbox"
         },
-        "rule" : {
-          "effect" : "HIDE",
-          "condition" : {
-            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
-            "schema" : {
-              "oneOf" : [ {
-                "const" : "range"
-              }, {
-                "const" : "steps"
-              } ]
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/values",
+          "options" : {
+            "validation" : {
+              "pattern" : {
+                "errorMessage" : "The string must consist of comma-separated numbers.",
+                "parameters" : {
+                  "pattern" : "[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?( *, *[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)*( *,)?"
+                }
+              }
+            }
+          },
+          "rule" : {
+            "effect" : "SHOW",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "values"
+                } ]
+              }
             }
           }
-        }
+        } ]
+      }, {
+        "type" : "MultiRuleWrapper",
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/enableLabels",
+            "schema" : {
+              "const" : true
+            }
+          }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/stepped",
+          "options" : {
+            "format" : "checkbox"
+          },
+          "rule" : {
+            "effect" : "HIDE",
+            "condition" : {
+              "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/ticksSettings/properties/mode",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "range"
+                }, {
+                  "const" : "steps"
+                } ]
+              }
+            }
+          }
+        } ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/sliderSettings/properties/pips/properties/density",
@@ -2022,12 +2340,6 @@
     } ]
   } ],
   "globalUpdates" : [ {
-    "trigger" : {
-      "id" : "after-open-dialog"
-    },
-    "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/rangeColumn" ]
-  }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/rangeColumn"
     },

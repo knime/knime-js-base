@@ -403,7 +403,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/multipleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/multipleSelectionNodeParameters/properties/possibleChoices" ]
+    "dependencies" : [ ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/flowVariableName"

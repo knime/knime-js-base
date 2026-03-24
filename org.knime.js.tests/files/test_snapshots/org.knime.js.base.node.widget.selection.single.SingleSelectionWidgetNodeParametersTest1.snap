@@ -355,7 +355,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/singleSelectionNodeParameters/properties/defaultValue/properties/variableValue", "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices" ]
+    "dependencies" : [ ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/singleSelectionNodeParameters/properties/possibleChoices"

@@ -227,7 +227,12 @@ public class ValueFilterDefinitionWidgetNodeModel
     private DataTableSpec setFilter(final DataTableSpec spec) throws InvalidSettingsException {
         String colName = m_config.getColumn();
         if (colName == null || colName.isEmpty()) {
-            throw new InvalidSettingsException("No domain column set");
+            final var choices = getFilteredColumnChoices(spec);
+            if (choices.isEmpty()) {
+                throw new InvalidSettingsException("No domain column set");
+            }
+            colName = choices.get(choices.size() - 1).getName();
+            m_config.setColumn(colName);
         }
         RangeFilterWidgetValue value = getViewValue();
         String[] possibleValues = getPossibleValuesForColumn(colName, spec);
@@ -264,6 +269,13 @@ public class ValueFilterDefinitionWidgetNodeModel
             rep.setConfig(m_config);
         }
         return getOutSpec(spec, colName, FilterHandler.from(model));
+    }
+
+    static List<DataColumnSpec> getFilteredColumnChoices(final DataTableSpec tableSpec ) {
+        return tableSpec //
+            .stream() //
+            .filter(spec -> spec.getType().isCompatible(StringValue.class) && spec.getDomain().hasValues()) //
+            .toList();
     }
 
     static String[] getPossibleValuesForColumn(final String colName, final DataTableSpec spec) {
