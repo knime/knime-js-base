@@ -84,6 +84,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.choices.filter.TwinlistWidget;
@@ -174,7 +175,7 @@ public final class ValueFilterNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
         }
 
         @Override
@@ -193,7 +194,6 @@ public final class ValueFilterNodeParameters implements NodeParameters {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
             m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
             m_defaultValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);
         }

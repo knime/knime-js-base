@@ -116,6 +116,11 @@ public class ColumnSelectionDialogNodeParameters extends ConfigurationNodeSettin
             super(TypeFilteredColumnChoicesProvider.class);
         }
 
+        @Override
+        protected boolean tryCorrectMissingColumnValues() {
+            return false;
+        }
+
     }
 
     private static final class TypeFilteredColumnChoicesProvider implements ColumnChoicesProvider {

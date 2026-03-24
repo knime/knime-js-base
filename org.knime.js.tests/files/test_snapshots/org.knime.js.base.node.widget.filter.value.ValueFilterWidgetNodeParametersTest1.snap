@@ -476,19 +476,6 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/values",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/defaultValue/properties/values",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ ]
-    } ]
-  }, {
     "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/multipleSelectionComponentParameters/properties/limitVisibleOptions/properties/numberOfVisibleOptions",
     "providedOptionName" : "validation.min",
     "values" : [ {
@@ -524,15 +511,6 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/valueFilterNodeParameters/properties/possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "CategoryColumn" : [ "A", "B", "C" ],
-        "StringColumn" : [ "C1", "C2", "C3" ]
-      }
-    } ]
-  }, {
     "id" : "#/properties/model/properties/defaultValue/properties/noColumnsAvailableMessage",
     "providedOptionName" : "message",
     "values" : [ {
@@ -545,7 +523,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/defaultValue/properties/column", "#/properties/model/properties/defaultValue/properties/values", "#/properties/model/properties/valueFilterNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueFilterNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/defaultValue/properties/column"

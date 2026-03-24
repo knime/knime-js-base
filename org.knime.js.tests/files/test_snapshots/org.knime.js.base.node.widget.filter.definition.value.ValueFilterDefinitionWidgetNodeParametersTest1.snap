@@ -229,8 +229,7 @@
           "format" : "valueSwitch"
         }
       }, {
-        "type" : "Control",
-        "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+        "type" : "MultiRuleWrapper",
         "rule" : {
           "effect" : "ENABLE",
           "condition" : {
@@ -241,7 +240,22 @@
               } ]
             }
           }
-        }
+        },
+        "elements" : [ {
+          "type" : "Control",
+          "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
+          "rule" : {
+            "effect" : "HIDE",
+            "condition" : {
+              "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/displayLabel",
+              "schema" : {
+                "oneOf" : [ {
+                  "const" : "NONE"
+                } ]
+              }
+            }
+          }
+        } ]
       }, {
         "type" : "Control",
         "scope" : "#/properties/model/properties/multipleOrSingleValues",
@@ -466,24 +480,6 @@
           "text" : "String"
         }
       } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/defaultValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "mode" : "MANUAL",
-        "patternFilter" : {
-          "pattern" : "",
-          "isCaseSensitive" : false,
-          "isInverted" : false
-        },
-        "manualFilter" : {
-          "manuallySelected" : [ "C1", "C2", "C3" ],
-          "manuallyDeselected" : [ ],
-          "includeUnknownColumns" : false
-        }
-      }
     } ]
   }, {
     "scope" : "#/properties/model/properties/defaultValues",

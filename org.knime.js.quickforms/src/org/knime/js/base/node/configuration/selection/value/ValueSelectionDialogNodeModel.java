@@ -141,6 +141,8 @@ public class ValueSelectionDialogNodeModel extends DialogNodeModel<ValueSelectio
             column = possibleValues.keySet().iterator().next();
             value = possibleValues.get(column).get(0);
             setWarningMessage(warning);
+            rValue.setColumn(column);
+            rValue.setValue(value);
         }
         final List<String> values = possibleValues.get(column);
         if (!values.contains(value)) {

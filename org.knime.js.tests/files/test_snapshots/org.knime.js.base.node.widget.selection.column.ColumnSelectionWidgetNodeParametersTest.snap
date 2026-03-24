@@ -322,12 +322,6 @@
   },
   "initialUpdates" : [ {
     "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : "StringColumn"
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue",
     "providedOptionName" : "possibleValues",
     "values" : [ {
       "indices" : [ ],
@@ -407,6 +401,6 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/columnSelectionNodeParameters/properties/defaultValue/properties/columnValue" ]
+    "dependencies" : [ ]
   } ]
 }

@@ -423,27 +423,6 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : null
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue",
-    "providedOptionName" : "possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : [ ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/possibleValues",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : {
-        "Test" : [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" ]
-      }
-    } ]
-  }, {
     "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/singleSelectionComponentParameters/properties/selectionType",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -475,7 +454,7 @@
       "id" : "after-open-dialog"
     },
     "triggerInitially" : true,
-    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/columnType", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn", "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultValue", "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
+    "dependencies" : [ "#/properties/model/properties/valueSelectionNodeParameters/properties/enableColumnFieldParameter/properties/enableColumnField" ]
   }, {
     "trigger" : {
       "scope" : "#/properties/model/properties/valueSelectionNodeParameters/properties/defaultValue/properties/defaultColumn"

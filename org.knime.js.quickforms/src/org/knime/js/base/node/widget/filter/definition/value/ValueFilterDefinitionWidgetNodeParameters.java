@@ -55,13 +55,11 @@ import static org.knime.js.base.dialog.selection.single.SingleSelectionComponent
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.StringValue;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filter.StringFilterMode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
@@ -90,6 +88,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.ChoicesProvider;
 import org.knime.node.parameters.widget.choices.ColumnChoicesProvider;
 import org.knime.node.parameters.widget.choices.Label;
@@ -192,17 +191,17 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
 
         private Supplier<String> m_column;
 
-        private Supplier<List<TypedStringChoice>> m_columnChoices;
+        private Supplier<List<TypedStringChoice>> m_choices;
 
         @Override
         public void init(final StateProviderInitializer initializer) {
             m_column = initializer.getValueSupplier(FilterColumnReference.class);
-            m_columnChoices = initializer.computeFromProvidedState(FilterColumnChoicesProvider.class);
+            m_choices = initializer.computeFromProvidedState(FilterColumnChoicesProvider.class);
         }
 
         @Override
         public String computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var choices = m_columnChoices.get();
+            final var choices = m_choices.get();
             if (choices.isEmpty()) {
                 return "";
             }
@@ -215,16 +214,19 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
     }
 
     private static final class FilterColumnChoicesProvider implements ColumnChoicesProvider {
+
         @Override
-        public List<DataColumnSpec> columnChoices(final NodeParametersInput context) {
-            return context.getInTableSpec(0) //
-                .map(DataTableSpec::stream) //
-                .orElse(Stream.empty()) //
-                .filter(spec -> spec.getType().isCompatible(StringValue.class)) //
-                .filter(spec -> spec.getDomain().hasValues()) //
-                .toList();
+        public void init(final StateProviderInitializer initializer) {
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
+            ColumnChoicesProvider.super.init(initializer);
         }
 
+        @Override
+        public List<DataColumnSpec> columnChoices(final NodeParametersInput context) {
+            final var spec = context.getInTableSpec(0);
+            return spec.isEmpty() ? List.of()
+                : ValueFilterDefinitionWidgetNodeModel.getFilteredColumnChoices(spec.get());
+        }
     }
 
     private static final class DefaultValuesPersistor extends LegacyNameFilterPersistor {
@@ -239,6 +241,7 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
 
         @Override
         public void init(final StateProviderInitializer initializer) {
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             initializer.computeBeforeOpenDialog();
             m_columnSupplier = initializer.computeFromValueSupplier(FilterColumnReference.class);
         }
@@ -265,10 +268,20 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
         public StringFilter computeState(final NodeParametersInput parametersInput)
             throws StateComputationFailureException {
             final var currentFilter = m_defaultValuesSupplier.get();
-            final var possibleValues = m_columnSupplier.get().stream().map(StringChoice::id).toArray(String[]::new);
-            final var currentValidSelection = currentFilter.filter(possibleValues);
-            return currentValidSelection.length == 0 ? new StringFilter(possibleValues)
-                : new StringFilter(currentValidSelection);
+            if (currentFilter.m_mode != StringFilterMode.MANUAL) {
+                throw new StateComputationFailureException();
+            }
+            final var choices = m_columnSupplier.get().stream() //
+                .map(StringChoice::id).toList();
+            final var choicesArr = choices.toArray(String[]::new);
+            final var missingSelected = currentFilter.getMissingSelected(choicesArr);
+            final var missingDeselected = Arrays.stream(currentFilter.m_manualFilter.m_manuallyDeselected)
+                .filter(d -> !choices.contains(d)).toArray(String[]::new);
+            if (missingSelected.length == 0 && missingDeselected.length == 0) {
+                throw new StateComputationFailureException();
+            }
+            final var currentValidSelection = currentFilter.filter(choicesArr);
+            return new StringFilter(currentValidSelection);
         }
     }
 

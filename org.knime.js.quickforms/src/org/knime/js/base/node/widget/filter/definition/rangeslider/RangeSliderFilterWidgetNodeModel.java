@@ -60,6 +60,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
+import org.knime.core.data.LongValue;
 import org.knime.core.data.property.filter.FilterHandler;
 import org.knime.core.data.property.filter.FilterModel;
 import org.knime.core.data.property.filter.FilterModelRange;
@@ -74,13 +75,20 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.viewproperty.FilterDefinitionHandlerPortObject;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.wizard.CSSModifiable;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil;
 import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetValue;
 import org.knime.js.core.node.AbstractWizardNodeModel;
 import org.knime.js.core.selections.json.AbstractColumnRangeSelection;
 import org.knime.js.core.selections.json.NumericColumnRangeSelection;
 import org.knime.js.core.selections.json.RangeSelection;
+import org.knime.js.core.settings.numberFormat.NumberFormatSettings;
 import org.knime.js.core.settings.slider.SliderNodeDialogUI;
+import org.knime.js.core.settings.slider.SliderPipsSettings;
+import org.knime.js.core.settings.slider.SliderPipsSettings.PipMode;
 import org.knime.js.core.settings.slider.SliderSettings;
+import org.knime.js.core.settings.slider.SliderSettings.Direction;
+import org.knime.js.core.settings.slider.SliderSettings.Orientation;
+import org.knime.node.parameters.widget.choices.util.ColumnSelectionUtil;
 
 /**
  * Model for the range slider filter node.
@@ -234,7 +242,14 @@ public class RangeSliderFilterWidgetNodeModel extends AbstractWizardNodeModel<Ra
     private DataTableSpec setFilter(final DataTableSpec spec) throws InvalidSettingsException {
         String columnName = m_config.getDomainColumn().getStringValue();
         if (columnName == null) {
-            throw new InvalidSettingsException("No domain column set");
+            final var doubleColumns = ColumnSelectionUtil.getDoubleColumns(spec);
+            if (doubleColumns.isEmpty()) {
+                throw new InvalidSettingsException("No domain column set");
+            }
+            columnName = doubleColumns.get(doubleColumns.size() - 1).getName();
+            m_config.getDomainColumn().setStringValue(columnName);
+
+            m_config.setSliderSettings(autoGuessSliderSettings(spec, columnName));
         }
         RangeFilterWidgetValue value = getViewValue();
         double minimum;
@@ -284,6 +299,35 @@ public class RangeSliderFilterWidgetNodeModel extends AbstractWizardNodeModel<Ra
         }
         return getOutSpec(spec, columnName, FilterHandler.from(model));
 
+    }
+
+    private static SliderSettings autoGuessSliderSettings(final DataTableSpec spec, final String columnName) {
+        final SliderSettings sliderSettings = new SliderSettings();
+        final var colSpec = spec.getColumnSpec(columnName);
+        final var domain = colSpec.getDomain();
+        final var lowerBound = domain.getLowerBound();
+        final var upperBound = domain.getUpperBound();
+        final var min = lowerBound == null ? 0
+            : SliderWidgetNodeParametersUtil.roundTo6DecimalPlaces(((DoubleValue)lowerBound).getDoubleValue());
+        final var max = upperBound == null ? 100 :
+            SliderWidgetNodeParametersUtil.roundTo6DecimalPlaces(((DoubleValue)upperBound).getDoubleValue());
+        sliderSettings.setRangeMinValue(min);
+        sliderSettings.setRangeMaxValue(max);
+        sliderSettings.setStart(new double[]{min, max});
+        sliderSettings.setFix(new boolean[]{false, true, false});
+        sliderSettings.setOrientation(Orientation.HORIZONTAL);
+        sliderSettings.setDirection(Direction.LTR);
+        final var tooltipParameters = new NumberFormatSettings();
+        if (colSpec.getType().isCompatible(LongValue.class)) {
+            tooltipParameters.setDecimals(0);
+        }
+        sliderSettings.setTooltips(new Object[]{tooltipParameters, tooltipParameters});
+        SliderPipsSettings defaultPips = new SliderPipsSettings();
+        defaultPips.setMode(PipMode.RANGE);
+        defaultPips.setDensity(3);
+        defaultPips.setFormat(tooltipParameters);
+        sliderSettings.setPips(defaultPips);
+        return sliderSettings;
     }
 
     /**

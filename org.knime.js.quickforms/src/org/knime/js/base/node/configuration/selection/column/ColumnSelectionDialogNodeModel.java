@@ -127,6 +127,10 @@ public class ColumnSelectionDialogNodeModel extends DialogNodeModel<ColumnSelect
         }
 
         String value = getRelevantValue().getColumn();
+        if (value.isEmpty()) {
+            value = possibleColumns.get(0);
+            getRelevantValue().setColumn(value);
+        }
         if (!possibleColumns.contains(value)) {
             CheckUtils.checkSetting(m_autoConfigure,
                 "Column '%s' is not part of the table spec anymore.", value);
