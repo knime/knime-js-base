@@ -196,6 +196,7 @@ public final class ValueFilterNodeParameters implements NodeParameters {
         public void init(final StateProviderInitializer initializer) {
             m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
             m_defaultValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
         }
 
         @Override

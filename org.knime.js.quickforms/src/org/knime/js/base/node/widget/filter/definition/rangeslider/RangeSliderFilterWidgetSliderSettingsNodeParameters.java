@@ -72,7 +72,7 @@ import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.C
 import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RangeParameters;
 import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RangeParameters.RangeParametersProviderModification;
 import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.RoundedDoubleValueProvider;
-import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.TrueValueProvider;
+import org.knime.js.base.node.parameters.slider.SliderWidgetNodeParametersUtil.TrueValueLoader;
 import org.knime.js.base.node.parameters.slider.StepSizeParameter;
 import org.knime.js.base.node.widget.filter.definition.RangeFilterWidgetNodeParameters.FilterColumnReference;
 import org.knime.js.base.node.widget.filter.definition.rangeslider.StartParameters.StartParametersPersistor;
@@ -82,6 +82,7 @@ import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
 import org.knime.node.parameters.migration.LoadDefaultsForAbsentFields;
+import org.knime.node.parameters.migration.Migration;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
@@ -89,7 +90,6 @@ import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
 import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
-import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
 import org.knime.node.parameters.widget.choices.Label;
 import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
@@ -103,7 +103,7 @@ import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
 @LoadDefaultsForAbsentFields
 public final class RangeSliderFilterWidgetSliderSettingsNodeParameters implements NodeParameters {
 
-    @ValueProvider(TrueValueProvider.class)
+    @Migration(TrueValueLoader.class)
     @Persist(configKey = RangeSliderFilterWidgetConfig.CFG_SLIDER_EXISTS)
     boolean m_sliderExists = true;
 

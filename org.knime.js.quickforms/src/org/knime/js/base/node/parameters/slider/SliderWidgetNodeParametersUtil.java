@@ -48,6 +48,7 @@
  */
 package org.knime.js.base.node.parameters.slider;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -65,6 +66,8 @@ import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
 import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.migration.ConfigMigration;
+import org.knime.node.parameters.migration.NodeParametersMigration;
 import org.knime.node.parameters.persistence.NodeParametersPersistor;
 import org.knime.node.parameters.persistence.Persist;
 import org.knime.node.parameters.persistence.Persistor;
@@ -93,16 +96,11 @@ public final class SliderWidgetNodeParametersUtil {
      * or dragged in non-configured from another AP). When it is opened in the modern dialog, it needs to be set to
      * true.
      */
-    public static final class TrueValueProvider implements StateProvider<Boolean> {
+    public static final class TrueValueLoader implements NodeParametersMigration<Boolean> {
 
         @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDialog();
-        }
-
-        @Override
-        public Boolean computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            return true;
+        public List<ConfigMigration<Boolean>> getConfigMigrations() {
+            return List.of(ConfigMigration.builder(s -> true).withMatcher(s -> true).build());
         }
 
     }

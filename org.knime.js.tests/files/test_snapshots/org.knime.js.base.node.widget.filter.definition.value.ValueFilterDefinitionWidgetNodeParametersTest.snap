@@ -510,12 +510,6 @@
       }
     } ]
   }, {
-    "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : ""
-    } ]
-  }, {
     "scope" : "#/properties/model/properties/type",
     "providedOptionName" : "possibleValues",
     "values" : [ {

@@ -81,6 +81,7 @@ import org.knime.node.parameters.updates.ParameterReference;
 import org.knime.node.parameters.updates.StateProvider;
 import org.knime.node.parameters.updates.ValueProvider;
 import org.knime.node.parameters.updates.ValueReference;
+import org.knime.node.parameters.updates.internal.StateProviderInitializerInternal;
 import org.knime.node.parameters.widget.choices.Label;
 import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
@@ -153,6 +154,7 @@ public final class ValueFilterDialogNodeParameters extends ConfigurationNodeSett
             m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
             m_defaultExcludesSupplier = initializer.getValueSupplier(DefaultExcludesValueReference.class);
             m_defaultValuesChoicesSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
             m_anyUnknownValueHandlingSupplier =
                 initializer.getValueSupplier(DefaultAnyUnkownValueHandlingValueReference.class);
         }

@@ -15,7 +15,7 @@
         "useCustomDefaultMax" : false
       },
       "sliderSettings" : {
-        "sliderExists" : false,
+        "sliderExists" : true,
         "range" : {
           "numSettings" : 2,
           "key0" : "min",
@@ -2141,7 +2141,10 @@
             "type" : "object",
             "properties" : {
               "sliderExists" : {
-                "configKey" : "sliderExists"
+                "configKey" : "sliderExists",
+                "deprecatedConfigKeys" : [ {
+                  "deprecated" : [ ]
+                } ]
               },
               "range" : {
                 "type" : "object",
@@ -2307,12 +2310,6 @@
       } ]
     } ]
   }, {
-    "scope" : "#/properties/model/properties/rangeFilterWidgetNodeParameters/properties/label",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : ""
-    } ]
-  }, {
     "scope" : "#/properties/model/properties/sliderSettings/properties/orientationAndDirection/properties/direction",
     "providedOptionName" : "possibleValues",
     "values" : [ {
@@ -2324,12 +2321,6 @@
         "id" : "rtl",
         "text" : "Right to left"
       } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/sliderSettings/properties/sliderExists",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : true
     } ]
   }, {
     "scope" : "#/properties/model/properties/sliderSettings/properties/stepSizeParameter/properties/step",

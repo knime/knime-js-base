@@ -16,7 +16,7 @@
         <entry key="1" type="xboolean" value="true"/>
     </config>
     <config key="sliderSettings">
-        <entry key="sliderExists" type="xboolean" value="false"/>
+        <entry key="sliderExists" type="xboolean" value="true"/>
         <config key="range">
             <entry key="numSettings" type="xint" value="2"/>
             <entry key="key_0" type="xstring" value="min"/>
