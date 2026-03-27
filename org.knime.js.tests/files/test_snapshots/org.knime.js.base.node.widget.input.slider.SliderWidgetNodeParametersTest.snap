@@ -1329,7 +1329,10 @@
             "type" : "object",
             "properties" : {
               "sliderExists" : {
-                "configKey" : "sliderExists"
+                "configKey" : "sliderExists",
+                "deprecatedConfigKeys" : [ {
+                  "deprecated" : [ ]
+                } ]
               },
               "connect" : {
                 "configPaths" : [ [ "connect" ] ]
@@ -1532,12 +1535,6 @@
         "id" : "rtl",
         "text" : "Right to left"
       } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/sliderSettings/properties/sliderExists",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : true
     } ]
   }, {
     "scope" : "#/properties/model/properties/sliderSettings/properties/start",

@@ -197,6 +197,7 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
         public void init(final StateProviderInitializer initializer) {
             m_column = initializer.getValueSupplier(FilterColumnReference.class);
             m_choices = initializer.computeFromProvidedState(FilterColumnChoicesProvider.class);
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
         }
 
         @Override
@@ -262,6 +263,7 @@ public final class ValueFilterDefinitionWidgetNodeParameters extends WidgetNodeP
         public void init(final StateProviderInitializer initializer) {
             m_defaultValuesSupplier = initializer.getValueSupplier(DefaultValuesValueReference.class);
             m_columnSupplier = initializer.computeFromProvidedState(DefaultValuesChoicesProvider.class);
+            ((StateProviderInitializerInternal)initializer).computeOnParametersLoaded();
         }
 
         @Override

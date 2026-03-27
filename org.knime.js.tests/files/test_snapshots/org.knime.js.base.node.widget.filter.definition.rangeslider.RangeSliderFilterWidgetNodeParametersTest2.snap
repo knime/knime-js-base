@@ -2147,7 +2147,10 @@
             "type" : "object",
             "properties" : {
               "sliderExists" : {
-                "configKey" : "sliderExists"
+                "configKey" : "sliderExists",
+                "deprecatedConfigKeys" : [ {
+                  "deprecated" : [ ]
+                } ]
               },
               "range" : {
                 "type" : "object",
@@ -2324,12 +2327,6 @@
         "id" : "rtl",
         "text" : "Bottom to top"
       } ]
-    } ]
-  }, {
-    "scope" : "#/properties/model/properties/sliderSettings/properties/sliderExists",
-    "values" : [ {
-      "indices" : [ ],
-      "value" : true
     } ]
   }, {
     "scope" : "#/properties/model/properties/sliderSettings/properties/stepSizeParameter/properties/step",
