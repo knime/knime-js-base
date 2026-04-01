@@ -63,10 +63,6 @@ import org.knime.node.parameters.widget.choices.StringChoice;
  */
 public final class ManualFilterRenderer extends AbstractRepresentationRenderer implements ManualFilterRendererSpec {
 
-    private final boolean m_isLimitNumberOfVizOptions;
-
-    private final int m_numberOfVizOptions;
-
     private final List<String> m_possibleValues;
 
     /**
@@ -74,16 +70,10 @@ public final class ManualFilterRenderer extends AbstractRepresentationRenderer i
      *
      * @param rep providing title and description
      * @param possibleValues the possible values of the dropdown
-     * @param isLimitNumberOfVizOptions whether the number of options is limited
-     * @param numberOfVizOptions the number of options to visualize
      */
-    public ManualFilterRenderer(final SubNodeDescriptionProvider<?> rep, final String[] possibleValues,
-        final boolean isLimitNumberOfVizOptions, final int numberOfVizOptions) {
+    public ManualFilterRenderer(final SubNodeDescriptionProvider<?> rep, final String[] possibleValues) {
         super(rep);
         m_possibleValues = Arrays.asList(possibleValues);
-        m_isLimitNumberOfVizOptions = isLimitNumberOfVizOptions;
-        m_numberOfVizOptions = numberOfVizOptions;
-
     }
 
     @Override
@@ -93,11 +83,6 @@ public final class ManualFilterRenderer extends AbstractRepresentationRenderer i
             @Override
             public Optional<StringChoice[]> getPossibleValues() {
                 return Optional.of(m_possibleValues.stream().map(StringChoice::fromId).toArray(StringChoice[]::new));
-            }
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return Optional.of(m_numberOfVizOptions).filter(size -> m_isLimitNumberOfVizOptions);
             }
 
         });

@@ -33,11 +33,11 @@
             <entry key="array-size" type="xint" value="0"/>
         </config>
     </config>
-    <entry key="limit_number_visible_options" type="xboolean" value="false"/>
-    <entry key="number_visible_options" type="xint" value="10"/>
     <config key="possibleColumns">
         <entry key="array-size" type="xint" value="0"/>
     </config>
     <entry key="type" type="xstring" value="Twinlist"/>
+    <entry key="limit_number_visible_options" type="xboolean" value="false"/>
+    <entry key="number_visible_options" type="xint" value="10"/>
     <entry key="enable_search" type="xboolean" value="false"/>
 </config>

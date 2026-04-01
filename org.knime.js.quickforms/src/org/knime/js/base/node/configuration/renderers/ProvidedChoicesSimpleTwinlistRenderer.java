@@ -49,7 +49,6 @@
 package org.knime.js.base.node.configuration.renderers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.SimpleTwinlistRendererSpec;
 import org.knime.node.parameters.updates.StateProvider;
@@ -63,34 +62,15 @@ import org.knime.node.parameters.widget.choices.StringChoice;
 public final class ProvidedChoicesSimpleTwinlistRenderer extends AbstractProvidedChoicesRenderer
     implements SimpleTwinlistRendererSpec {
 
-    private boolean m_hasSizeLimit;
-
-    private Integer m_sizeLimit;
-
     /**
      * Creates a new radio button renderer with the given title and possible values.
      *
      * @param title the title
      * @param possibleValues the possible values
-     * @param hasSizeLimit whether the twinlist has a size limit
-     * @param sizeLimit the size limit of the twinlist, if applicable
      */
     public ProvidedChoicesSimpleTwinlistRenderer(final String title,
-        final StateProvider<List<StringChoice>> possibleValues, final boolean hasSizeLimit, final Integer sizeLimit) {
+        final StateProvider<List<StringChoice>> possibleValues) {
         super(title, possibleValues);
-        m_hasSizeLimit = hasSizeLimit;
-        m_sizeLimit = sizeLimit;
-    }
-
-    @Override
-    public Optional<SimpleTwinlistRendererOptions> getOptions() {
-        return Optional.of(new SimpleTwinlistRendererOptions() {
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return m_hasSizeLimit ? Optional.of(m_sizeLimit) : Optional.empty();
-            }
-        });
     }
 
 }

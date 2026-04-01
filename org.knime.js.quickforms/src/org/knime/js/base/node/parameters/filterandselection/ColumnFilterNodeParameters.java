@@ -55,16 +55,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification.WidgetGroupModifier;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeConfig;
 import org.knime.js.base.node.base.filter.column.ColumnFilterNodeValue;
-import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.OutputSection;
 import org.knime.js.base.node.parameters.OverwrittenByValueMessage;
-import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
 import org.knime.node.parameters.NodeParameters;
 import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.Widget;
@@ -81,7 +78,6 @@ import org.knime.node.parameters.widget.choices.TypedStringChoice;
 import org.knime.node.parameters.widget.choices.filter.ColumnFilter;
 import org.knime.node.parameters.widget.choices.util.AllColumnsProvider;
 import org.knime.node.parameters.widget.message.TextMessage;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * Shared WebUI Node Parameters for Column Filter Configuration and Widget.
@@ -137,45 +133,6 @@ public final class ColumnFilterNodeParameters implements NodeParameters {
     }
 
     DefaultValue m_defaultValue = new DefaultValue();
-
-    @PersistWithin.PersistEmbedded
-    @Modification(LimitVisibleOptionsModification.class)
-    @Layout(FormFieldSection.class)
-    LimitVisibleOptionsParameters m_limitVisibleOptionsParameters = new LimitVisibleOptionsParameters(true);
-
-    private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
-
-        @Override
-        public String getLimitNumVisOptionsDescription() {
-            return """
-                    By default the filter component adjusts its height to display all possible choices without a \
-                    scroll bar. If the setting is enabled, you will be able to limit the number of visible options in \
-                    case you have too many of them.""";
-        }
-
-        @Override
-        public String getNumVisOptionsDescription() {
-            return """
-                    A number of options visible in the filter component without a vertical scroll bar. Changing this \
-                    value will also affect the component's height. Notice that the height cannot be less than the \
-                    overall height of the control buttons in the middle.""";
-        }
-
-        @Override
-        public Class<? extends MinValidation> getMinNumVisOptions() {
-            return IsMin5Validation.class;
-        }
-
-    }
-
-    private static final class IsMin5Validation extends MinValidation {
-
-        @Override
-        protected double getMin() {
-            return 5;
-        }
-
-    }
 
     @ValueProvider(SelectableColumnsValueProvider.class)
     @Persist(configKey = ColumnFilterNodeConfig.CFG_POSSIBLE_COLUMNS)
