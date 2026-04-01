@@ -48,115 +48,53 @@
  */
 package org.knime.js.base.node.parameters.filterandselection;
 
-import java.util.function.Supplier;
-
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.StateComputationFailureException;
 import org.knime.js.base.dialog.selection.multiple.MultipleSelectionsComponentFactory;
 import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
 import org.knime.js.base.node.parameters.filterandselection.MultipleSelectionComponentParameters.SelectionTypeValueReference;
-import org.knime.node.parameters.NodeParametersInput;
 import org.knime.node.parameters.updates.EffectPredicate;
 import org.knime.node.parameters.updates.EffectPredicateProvider;
-import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * The visible options modification for multiple selection configuration nodes. Configurations allow to limit the number
- * of visible options for the List and Twinlist component.
+ * of visible options for the List component.
  */
 @SuppressWarnings("restriction")
 public final class LimitVisibleOptionsConfigurationModification extends LimitVisibleOptionsParametersModifier {
 
-    private static final int MIN_NUM_VIS_OPTIONS_TWINLIST = 5;
-
     @Override
     public String getLimitNumVisOptionsDescription() {
         return """
-                By default the List and Twinlist components adjust their height to display all possible \
-                choices without a scroll bar. If the setting is enabled, you will be able to limit the number \
-                of visible options in case you have too many of them. The setting is available only for List \
-                or Twinlist selection type.""";
+                By default the List component adjusts its height to display all possible choices without a \
+                scroll bar. If the setting is enabled, you will be able to limit the number of visible options \
+                in case you have too many of them. The setting is available only for List selection type.""";
     }
 
     @Override
     public String getNumVisOptionsDescription() {
         return """
-                A number of options visible in the List or Twinlist component without a vertical scroll bar. \
-                Changing this value will also affect the component's height. Notice that for Twinlist the \
-                height cannot be less than the overall height of the control buttons in the middle. The \
-                setting is available only for List or Twinlist selection type.""";
+                A number of options visible in the List component without a vertical scroll bar. Changing this \
+                value will also affect the component's height. The setting is available only for List selection \
+                type.""";
     }
 
     @Override
     public Pair<Class<? extends EffectPredicateProvider>, Class<? extends AbstractShowNumberOfVisibleOptions>>
         getEffectPredicates() {
-        return new Pair<>(IsListOrTwinlistSelectionType.class, IsListOrTwinlistShowNumberOfVisibleOptions.class);
+        return new Pair<>(IsListSelectionType.class, IsListShowNumberOfVisibleOptions.class);
     }
 
-    @Override
-    public Pair<Class<? extends AbstractNumVisOptionsValidationProvider>, //
-            Class<? extends AbstractNumVisOptionsValueProvider>> getNumVisOptionsProviders() {
-        return new Pair<>(NumVisOptionsMinValidationProvider.class, NumVisOptionsValueProvider.class);
-    }
-
-    private static final class IsListOrTwinlistSelectionType implements EffectPredicateProvider {
+    private static final class IsListSelectionType implements EffectPredicateProvider {
         @Override
         public EffectPredicate init(final PredicateInitializer i) {
-            return i.getString(SelectionTypeValueReference.class).isEqualTo(MultipleSelectionsComponentFactory.LIST).or(
-                i.getString(SelectionTypeValueReference.class).isEqualTo(MultipleSelectionsComponentFactory.TWINLIST));
+            return i.getString(SelectionTypeValueReference.class).isEqualTo(MultipleSelectionsComponentFactory.LIST);
         }
     }
 
-    private static final class IsListOrTwinlistShowNumberOfVisibleOptions extends AbstractShowNumberOfVisibleOptions {
-        IsListOrTwinlistShowNumberOfVisibleOptions() {
-            super(IsListOrTwinlistSelectionType.class);
+    private static final class IsListShowNumberOfVisibleOptions extends AbstractShowNumberOfVisibleOptions {
+        IsListShowNumberOfVisibleOptions() {
+            super(IsListSelectionType.class);
         }
-    }
-
-    private static final class NumVisOptionsMinValidationProvider extends AbstractNumVisOptionsValidationProvider {
-        private Supplier<String> m_selectionTypeSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            super.init(initializer);
-            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
-        }
-
-        @Override
-        public MinValidation computeState(final NodeParametersInput parametersInput)
-            throws StateComputationFailureException {
-            if (!m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST)) {
-                return super.computeState(parametersInput);
-            }
-            return new MinValidation() {
-
-                @Override
-                protected double getMin() {
-                    return MIN_NUM_VIS_OPTIONS_TWINLIST;
-                }
-
-            };
-
-        }
-    }
-
-    private static final class NumVisOptionsValueProvider extends AbstractNumVisOptionsValueProvider {
-
-        private Supplier<String> m_selectionTypeSupplier;
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            super.init(initializer);
-            m_selectionTypeSupplier = initializer.computeFromValueSupplier(SelectionTypeValueReference.class);
-        }
-
-        @Override
-        public Integer computeState(final NodeParametersInput parametersInput) throws StateComputationFailureException {
-            final var numVisOptions = m_numVisOptionsSupplier.get();
-            final var isTwinlist = m_selectionTypeSupplier.get().equals(MultipleSelectionsComponentFactory.TWINLIST);
-            return isTwinlist ? Math.max(numVisOptions, MIN_NUM_VIS_OPTIONS_TWINLIST) : numVisOptions;
-        }
-
     }
 
 }

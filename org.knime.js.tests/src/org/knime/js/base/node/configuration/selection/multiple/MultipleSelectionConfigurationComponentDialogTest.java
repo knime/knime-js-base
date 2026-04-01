@@ -143,14 +143,16 @@ class MultipleSelectionConfigurationComponentDialogTest extends IntegratedCompon
     }
 
     @Test
-    void testMultipleSelectionConfigurationComponentDialogTypeTwinListWithLimit() throws JsonProcessingException {
+    void testMultipleSelectionConfigurationComponentDialogTypeTwinListIgnoresLimitSetting()
+        throws JsonProcessingException {
         final var uiSchema = getComponentDialog(getTopLevelNodeId(6)).getUiSchema();
         final var paramName = "twinlist-with-limit-11";
         final var ind = 5;
         assertUiSchemaElements(uiSchema, ind, "scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/value", paramName));
         assertUiSchemaOptions(uiSchema, ind, "format").isString().isEqualTo("twinList");
-        assertUiSchemaOptions(uiSchema, ind, "twinlistSize").isNumber().isEqualTo(BigDecimal.valueOf(6));
+        assertThatJson(uiSchema).inPath(String.format("$.elements[%d].options", ind)).isObject()
+            .doesNotContainKey("twinlistSize");
     }
 
 }

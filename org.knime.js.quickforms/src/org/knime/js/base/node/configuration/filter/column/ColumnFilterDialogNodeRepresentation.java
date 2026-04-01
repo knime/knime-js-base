@@ -231,7 +231,7 @@ public class ColumnFilterDialogNodeRepresentation extends ColumnFilterNodeRepres
         final var possibleColumns = new HashSet<>(Arrays.asList(getPossibleColumns()));
         final var possibleSpecs =
             m_spec.stream().filter(spec -> possibleColumns.contains(spec.getName())).toArray(DataColumnSpec[]::new);
-        return new TypedStringFilterRenderer(this, possibleSpecs, isLimitNumberVisOptions(), getNumberVisOptions())
+        return new TypedStringFilterRenderer(this, possibleSpecs)
             .at(ColumnFilterDialogNodeValue.DIALOG_JSON_KEY);
     }
 

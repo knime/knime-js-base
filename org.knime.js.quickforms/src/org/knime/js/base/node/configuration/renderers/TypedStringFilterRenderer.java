@@ -67,24 +67,16 @@ public class TypedStringFilterRenderer extends AbstractRepresentationRenderer
 
     private final DataColumnSpec[] m_possibleSpecs;
 
-    private final boolean m_hasSizeLimit;
-
-    private final int m_sizeLimit;
-
     /**
      * Creates a new column filter renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
      * @param possibleSpecs the possible column specs to choose columns from
-     * @param hasSizeLimit whether the component should limit its size
-     * @param sizeLimit the size limit of possible values to display simultaneously
      */
-    public TypedStringFilterRenderer(final SubNodeDescriptionProvider<?> nodeRep, final DataColumnSpec[] possibleSpecs,
-        final boolean hasSizeLimit, final int sizeLimit) {
+    public TypedStringFilterRenderer(final SubNodeDescriptionProvider<?> nodeRep,
+        final DataColumnSpec[] possibleSpecs) {
         super(nodeRep);
         m_possibleSpecs = possibleSpecs;
-        m_hasSizeLimit = hasSizeLimit;
-        m_sizeLimit = sizeLimit;
     }
 
     @Override
@@ -94,11 +86,6 @@ public class TypedStringFilterRenderer extends AbstractRepresentationRenderer
             public Optional<TypedStringChoice[]> getPossibleValues() {
                 return Optional.of(Arrays.stream(m_possibleSpecs).map(TypedStringChoice::fromColSpec)
                     .toArray(TypedStringChoice[]::new));
-            }
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return m_hasSizeLimit ? Optional.of(m_sizeLimit) : Optional.empty();
             }
 
             @Override

@@ -31,12 +31,12 @@
           },
           "columns" : [ ]
         },
-        "limitVisibleOptionsParameters" : {
-          "limitNumberOfVisibleOptions" : true,
-          "numberOfVisibleOptions" : 5
-        },
         "possibleColumns" : [ ],
         "type" : "Twinlist"
+      },
+      "limitVisibleOptionsParameters" : {
+        "limitNumberOfVisibleOptions" : true,
+        "numberOfVisibleOptions" : 5
       },
       "enableSearchParameter" : {
         "enableSearch" : false
@@ -220,28 +220,6 @@
                   "columns" : [ ]
                 }
               },
-              "limitVisibleOptionsParameters" : {
-                "type" : "object",
-                "properties" : {
-                  "limitNumberOfVisibleOptions" : {
-                    "type" : "boolean",
-                    "title" : "Limit number of visible options",
-                    "description" : "By default the filter component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them.",
-                    "default" : false
-                  },
-                  "numberOfVisibleOptions" : {
-                    "type" : "integer",
-                    "format" : "int32",
-                    "title" : "Number of visible options",
-                    "description" : "A number of options visible in the filter component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that the height cannot be less than the overall height of the control buttons in the middle.",
-                    "default" : 5
-                  }
-                },
-                "default" : {
-                  "limitNumberOfVisibleOptions" : true,
-                  "numberOfVisibleOptions" : 5
-                }
-              },
               "overwrittenByValueMessage" : {
                 "type" : "object"
               },
@@ -279,10 +257,6 @@
                   }
                 },
                 "columns" : [ ]
-              },
-              "limitVisibleOptionsParameters" : {
-                "limitNumberOfVisibleOptions" : true,
-                "numberOfVisibleOptions" : 5
               },
               "possibleColumns" : [ ],
               "type" : "Twinlist"
@@ -328,6 +302,28 @@
             "description" : "A descriptive label that will be shown in the view.",
             "default" : "Label"
           },
+          "limitVisibleOptionsParameters" : {
+            "type" : "object",
+            "properties" : {
+              "limitNumberOfVisibleOptions" : {
+                "type" : "boolean",
+                "title" : "Limit number of visible options",
+                "description" : "By default the filter component adjusts its height to display all possible choices without a scroll bar. If the setting is enabled, you will be able to limit the number of visible options in case you have too many of them.",
+                "default" : false
+              },
+              "numberOfVisibleOptions" : {
+                "type" : "integer",
+                "format" : "int32",
+                "title" : "Number of visible options",
+                "description" : "A number of options visible in the filter component without a vertical scroll bar. Changing this value will also affect the component's height. Notice that the height cannot be less than the overall height of the control buttons in the middle.",
+                "default" : 5
+              }
+            },
+            "default" : {
+              "limitNumberOfVisibleOptions" : true,
+              "numberOfVisibleOptions" : 5
+            }
+          },
           "required" : {
             "type" : "boolean",
             "default" : true
@@ -358,13 +354,13 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
         "options" : {
           "format" : "checkbox"
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/numberOfVisibleOptions",
+        "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/numberOfVisibleOptions",
         "options" : {
           "validation" : {
             "max" : {
@@ -386,7 +382,7 @@
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
-            "scope" : "#/properties/model/properties/columnFilterNodeParameters/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
+            "scope" : "#/properties/model/properties/limitVisibleOptionsParameters/properties/limitNumberOfVisibleOptions",
             "schema" : {
               "const" : true
             }
@@ -480,23 +476,23 @@
                   }
                 }
               },
-              "limitVisibleOptionsParameters" : {
-                "type" : "object",
-                "properties" : {
-                  "limitNumberOfVisibleOptions" : {
-                    "configKey" : "limit_number_visible_options"
-                  },
-                  "numberOfVisibleOptions" : {
-                    "configKey" : "number_visible_options"
-                  }
-                },
-                "propertiesRoute" : [ ".." ]
-              },
               "possibleColumns" : {
                 "configKey" : "possibleColumns"
               },
               "type" : {
                 "configKey" : "type"
+              }
+            },
+            "propertiesRoute" : [ ".." ]
+          },
+          "limitVisibleOptionsParameters" : {
+            "type" : "object",
+            "properties" : {
+              "limitNumberOfVisibleOptions" : {
+                "configKey" : "limit_number_visible_options"
+              },
+              "numberOfVisibleOptions" : {
+                "configKey" : "number_visible_options"
               }
             },
             "propertiesRoute" : [ ".." ]

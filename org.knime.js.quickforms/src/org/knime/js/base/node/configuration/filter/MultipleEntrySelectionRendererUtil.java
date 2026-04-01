@@ -100,8 +100,8 @@ public final class MultipleEntrySelectionRendererUtil {
                     new MultiSelectListBoxRenderer(nodeRep, possibleValues, hasSizeLimit, sizeLimit);
             case MultipleSelectionsComponentFactory.TWINLIST -> //
                     supportUnknownValues //
-                        ? new ManualFilterRenderer(nodeRep, possibleValues, hasSizeLimit, sizeLimit)
-                        : new SimpleTwinlistRenderer(nodeRep, possibleValues, hasSizeLimit, sizeLimit);
+                        ? new ManualFilterRenderer(nodeRep, possibleValues)
+                        : new SimpleTwinlistRenderer(nodeRep, possibleValues);
             case MultipleSelectionsComponentFactory.COMBOBOX -> //
                     new ComboboxRenderer(nodeRep, possibleValues);
             default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));
@@ -134,10 +134,8 @@ public final class MultipleEntrySelectionRendererUtil {
                         numberVisOptions);
             case MultipleSelectionsComponentFactory.TWINLIST -> //
                     supportUnknownValues //
-                        ? new ProvidedChoicesManualFilterRenderer(name, possibleValuesProvider, limitNumberVisOptions,
-                            numberVisOptions)
-                        : new ProvidedChoicesSimpleTwinlistRenderer(name, possibleValuesProvider, limitNumberVisOptions,
-                            numberVisOptions);
+                        ? new ProvidedChoicesManualFilterRenderer(name, possibleValuesProvider)
+                        : new ProvidedChoicesSimpleTwinlistRenderer(name, possibleValuesProvider);
             case MultipleSelectionsComponentFactory.COMBOBOX -> //
                     new ProvidedChoicesComboboxRenderer(name, possibleValuesProvider);
             default -> throw new IllegalArgumentException(String.format("Unsupported renderer: %s", type));

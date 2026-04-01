@@ -121,12 +121,10 @@ class ValueFilterConfigurationComponentDialogTest extends IntegratedComponentDia
 
         final var uiSchema = dialogData.getUiSchema();
         assertThatJson(uiSchema).inPath("$.elements[2].elements[1].type").isString().isEqualTo("Control");
-        assertThatJson(uiSchema).inPath("$.elements[2].elements[1].options.twinlistSize").isNumber();
         assertThatJson(uiSchema).inPath("$.elements[2].elements[1].scope").isString()
             .contains("value-filter-with-limited-options-5");
 
         assertThatJson(uiSchema).inPath("$.elements[3].type").isString().isEqualTo("Control");
-        assertThatJson(uiSchema).inPath("$.elements[3].options.twinlistSize").isNumber();
         assertThatJson(uiSchema).inPath("$.elements[3].scope").isString()
             .contains("value-filter-with-locked-column-and-limited-options-6");
 

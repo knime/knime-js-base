@@ -67,24 +67,15 @@ public class SimpleTwinlistRenderer extends AbstractRepresentationRenderer
 
     private final String[] m_possibleValues;
 
-    private final boolean m_hasSizeLimit;
-
-    private final int m_sizeLimit;
-
     /**
      * Creates a new simple twinlist renderer from the given node representation and config.
      *
      * @param nodeRep the representation of the node
      * @param possibleValues the possible values to choose from
-     * @param hasSizeLimit whether the component should limit its size
-     * @param sizeLimit the size limit of possible values to display simultaneously
      */
-    public SimpleTwinlistRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues,
-        final boolean hasSizeLimit, final int sizeLimit) {
+    public SimpleTwinlistRenderer(final SubNodeDescriptionProvider<?> nodeRep, final String[] possibleValues) {
         super(nodeRep);
         m_possibleValues = possibleValues;
-        m_hasSizeLimit = hasSizeLimit;
-        m_sizeLimit = sizeLimit;
     }
 
     @Override
@@ -94,11 +85,6 @@ public class SimpleTwinlistRenderer extends AbstractRepresentationRenderer
             public Optional<StringChoice[]> getPossibleValues() {
                 return Optional
                     .of(Arrays.stream(m_possibleValues).map(StringChoice::fromId).toArray(StringChoice[]::new));
-            }
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return m_hasSizeLimit ? Optional.of(m_sizeLimit) : Optional.empty();
             }
         });
     }

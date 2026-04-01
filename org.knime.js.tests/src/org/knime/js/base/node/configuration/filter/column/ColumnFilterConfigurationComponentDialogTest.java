@@ -50,8 +50,6 @@ package org.knime.js.base.node.configuration.filter.column;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-import java.math.BigDecimal;
-
 import org.junit.jupiter.api.Test;
 import org.knime.js.base.node.configuration.IntegratedComponentDialogTestBase;
 
@@ -111,7 +109,6 @@ class ColumnFilterConfigurationComponentDialogTest extends IntegratedComponentDi
         final var ind = 2;
         assertUiSchemaElements(uiSchema, ind, "scope").isString()
             .isEqualTo(String.format("#/properties/model/properties/%s/properties/columnFilter", paramName));
-        assertUiSchemaOptions(uiSchema, ind, "twinlistSize").isNumber().isEqualTo(BigDecimal.valueOf(5));
     }
 
 }

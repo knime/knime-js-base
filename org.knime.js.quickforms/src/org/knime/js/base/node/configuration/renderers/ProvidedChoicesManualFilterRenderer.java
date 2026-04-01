@@ -49,7 +49,6 @@
 package org.knime.js.base.node.configuration.renderers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.renderers.ManualFilterRendererSpec;
 import org.knime.node.parameters.updates.StateProvider;
@@ -63,36 +62,15 @@ import org.knime.node.parameters.widget.choices.StringChoice;
 public final class ProvidedChoicesManualFilterRenderer extends AbstractProvidedChoicesRenderer
     implements ManualFilterRendererSpec {
 
-    private final boolean m_isLimitNumberOfVizOptions;
-
-    private final Integer m_numberOfVizOptions;
-
     /**
      * Creates a new string filter widget renderer with the given title and possible values.
      *
      * @param title the title of the dropdown
      * @param possibleValues the possible values of the dropdown
-     * @param isLimitNumberOfVizOptions whether to limit the number of options visible
-     * @param numberOfVizOptions the number of vizible options
      */
     public ProvidedChoicesManualFilterRenderer(final String title,
-        final StateProvider<List<StringChoice>> possibleValues, final boolean isLimitNumberOfVizOptions,
-        final Integer numberOfVizOptions) {
+        final StateProvider<List<StringChoice>> possibleValues) {
         super(title, possibleValues);
-        m_isLimitNumberOfVizOptions = isLimitNumberOfVizOptions;
-        m_numberOfVizOptions = numberOfVizOptions;
-    }
-
-    @Override
-    public Optional<ManualFilterRendererOptions> getOptions() {
-        return Optional.of(new ManualFilterRendererOptions() {
-
-            @Override
-            public Optional<Integer> getTwinlistSize() {
-                return Optional.of(m_numberOfVizOptions).filter(size -> m_isLimitNumberOfVizOptions);
-            }
-
-        });
     }
 
 }

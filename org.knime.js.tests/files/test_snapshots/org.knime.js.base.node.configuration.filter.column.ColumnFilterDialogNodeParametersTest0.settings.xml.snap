@@ -42,8 +42,6 @@
             <entry key="4" type="xstring" value="Cluster Membership"/>
         </config>
     </config>
-    <entry key="limit_number_visible_options" type="xboolean" value="true"/>
-    <entry key="number_visible_options" type="xint" value="5"/>
     <config key="possibleColumns">
         <entry key="array-size" type="xint" value="5"/>
         <entry key="0" type="xstring" value="Universe_0_0"/>

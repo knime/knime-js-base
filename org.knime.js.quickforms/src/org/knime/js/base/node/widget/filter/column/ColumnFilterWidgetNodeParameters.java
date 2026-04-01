@@ -49,9 +49,15 @@
 package org.knime.js.base.node.widget.filter.column;
 
 import org.knime.core.webui.node.dialog.defaultdialog.internal.widget.PersistWithin;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Modification;
+import org.knime.js.base.node.parameters.ConfigurationAndWidgetNodeParametersUtil.FormFieldSection;
 import org.knime.js.base.node.parameters.filterandselection.ColumnFilterNodeParameters;
 import org.knime.js.base.node.parameters.filterandselection.EnableSearchParameter;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters;
+import org.knime.js.base.node.parameters.filterandselection.LimitVisibleOptionsParameters.LimitVisibleOptionsParametersModifier;
 import org.knime.js.base.node.widget.ReexecutionWidgetNodeParameters;
+import org.knime.node.parameters.layout.Layout;
+import org.knime.node.parameters.widget.number.NumberInputWidgetValidation.MinValidation;
 
 /**
  * WebUI Node Parameters for the Column Filter Widget.
@@ -69,6 +75,45 @@ public final class ColumnFilterWidgetNodeParameters extends ReexecutionWidgetNod
     ColumnFilterNodeParameters m_columnFilterNodeParameters = new ColumnFilterNodeParameters();
 
     @PersistWithin.PersistEmbedded
+    @Modification(LimitVisibleOptionsModification.class)
+    @Layout(FormFieldSection.class)
+    LimitVisibleOptionsParameters m_limitVisibleOptionsParameters = new LimitVisibleOptionsParameters(true);
+
+    @PersistWithin.PersistEmbedded
     EnableSearchParameter m_enableSearchParameter = new EnableSearchParameter();
+
+    private static final class LimitVisibleOptionsModification extends LimitVisibleOptionsParametersModifier {
+
+        @Override
+        public String getLimitNumVisOptionsDescription() {
+            return """
+                    By default the filter component adjusts its height to display all possible choices without a \
+                    scroll bar. If the setting is enabled, you will be able to limit the number of visible options in \
+                    case you have too many of them.""";
+        }
+
+        @Override
+        public String getNumVisOptionsDescription() {
+            return """
+                    A number of options visible in the filter component without a vertical scroll bar. Changing this \
+                    value will also affect the component's height. Notice that the height cannot be less than the \
+                    overall height of the control buttons in the middle.""";
+        }
+
+        @Override
+        public Class<? extends MinValidation> getMinNumVisOptions() {
+            return IsMin5Validation.class;
+        }
+
+    }
+
+    private static final class IsMin5Validation extends MinValidation {
+
+        @Override
+        protected double getMin() {
+            return 5;
+        }
+
+    }
 
 }
